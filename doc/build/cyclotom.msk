@@ -9,7 +9,7 @@
 %%
 \Chapter{Cyclotomic Numbers}
 
-\index{type!cyclotomic}\index{irrationalities}%
+\index{type!cyclotomic}\index{irrationalities}
 \index{cyclotomic field elements}
 
 {\GAP} admits computations in abelian extension fields of the rational
@@ -100,7 +100,8 @@ gap> IsIntegralCyclotomic( r3 );
 true
 \endexample
 
-The operation `Int'\index{Int!for cyclotomics}
+\indextt{Int!for cyclotomics}
+The operation `Int'
 can be used to find a cyclotomic integer near to an arbitrary cyclotomic.
 For rationals, `Int' returns the largest integer smaller or equal to the
 argument.
@@ -110,7 +111,8 @@ E(5)
 E(4)
 \endexample
 
-The operation `String'\index{String!for cyclotomics}
+\indextt{String!for cyclotomics}
+The operation `String'
 returns for a cyclotomic a string corresponding to the way
 the cyclotomic is printed by `ViewObj' and `PrintObj'.
 \beginexample
@@ -131,8 +133,7 @@ gap> Conductor( 0 ); Conductor( E(10) ); Conductor( E(12) );
 \beginexample
 gap> RoundCyc( E(5)+1/2*E(5)^2 ); RoundCyc( 2/3*E(7)+3/2*E(4) );
 E(5)+E(5)^2
--2*E(28)^3+E(28)^4-2*E(28)^11-2*E(28)^15-2*E(28)^19-2*E(28)^23
- -2*E(28)^27
+-2*E(28)^3+E(28)^4-2*E(28)^11-2*E(28)^15-2*E(28)^19-2*E(28)^23-2*E(28)^27
 \endexample
 
 \Declaration{CoeffsCyc}
@@ -145,6 +146,8 @@ gap> CoeffsCyc( cyc, 5 );  CoeffsCyc( cyc, 15 );  CoeffsCyc( cyc, 7 );
 [ 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, -1, 0 ]
 fail
 \endexample
+
+\Declaration{DenominatorCyc}
 
 \>ExtRepOfObj(<cyc>)!{external representation!for cyclotomics}
 \beginexample
@@ -169,7 +172,7 @@ gap> DescriptionOfRootOfUnity( -E(3) );
 \Declaration{IsGaussRat}
 
 
-\index{DefaultField!for cyclotomics}
+\indextt{DefaultField!for cyclotomics}
 \FileHeader[1]{cyclotom}
 \beginexample
 gap> Field( E(5)+E(5)^4 );  DefaultField( E(5)+E(5)^4 );
@@ -179,7 +182,7 @@ CF(5)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Infinity}
+\Section{Infinity}\null
 
 \Declaration{IsInfinity}
 \beginexample
@@ -236,15 +239,22 @@ true
 
 \index{atomic irrationalities}
 
-\index{bN}\index{cN}\index{dN}\index{eN}\index{fN}\index{gN}\index{hN}
+\atindex{bN}{@$b\noexpand_N$}\atindex{cN}{@$c\noexpand_N$}
+\atindex{dN}{@$d\noexpand_N$}\atindex{eN}{@$e\noexpand_N$}
+\atindex{fN}{@$f\noexpand_N$}\atindex{gN}{@$g\noexpand_N$}
+\atindex{hN}{@$h\noexpand_N$}
 \Declaration{EB}
-\index{iN}\index{rN}
+\atindex{iN}{@$i\noexpand_N$}\atindex{rN}{@$r\noexpand_N$}
 \Declaration{EI}
-\index{sN}\index{tN}\index{uN}\index{vN}\index{wN}\index{xN}\index{yN}
+\atindex{sN}{@$s\noexpand_N$}\atindex{tN}{@$t\noexpand_N$}
+\atindex{uN}{@$u\noexpand_N$}\atindex{vN}{@$v\noexpand_N$}
+\atindex{wN}{@$w\noexpand_N$}\atindex{xN}{@$x\noexpand_N$}
+\atindex{yN}{@$y\noexpand_N$}
 \Declaration{EY}
-\index{jN}\index{kN}\index{lN}\index{mN}
+\atindex{jN}{@$j\noexpand_N$}\atindex{kN}{@$k\noexpand_N$}
+\atindex{lN}{@$l\noexpand_N$}\atindex{mN}{@$m\noexpand_N$}
 \Declaration{EM}
-\index{nk}
+\atindex{nk}{@$n\noexpand_k$}
 \Declaration{NK}
 
 \beginexample
@@ -285,54 +295,41 @@ fail
 \Declaration{Quadratic}
 \beginexample
 gap> Quadratic( EB(5) ); Quadratic( EB(27) );
-rec(
-  a := -1,
-  b := 1,
-  root := 5,
-  d := 2,
-  ATLAS := "b5",
+rec( a := -1, b := 1, root := 5, d := 2, ATLAS := "b5", 
   display := "(-1+ER(5))/2" )
-rec(
-  a := -1,
-  b := 3,
-  root := -3,
-  d := 2,
-  ATLAS := "1+3b3",
+rec( a := -1, b := 3, root := -3, d := 2, ATLAS := "1+3b3", 
   display := "(-1+3*ER(-3))/2" )
 gap> Quadratic(0); Quadratic( E(5) );
-rec(
-  a := 0,
-  b := 0,
-  root := 1,
-  d := 1,
-  ATLAS := "0",
-  display := "0" )
+rec( a := 0, b := 0, root := 1, d := 1, ATLAS := "0", display := "0" )
 fail
 \endexample
 
 \Declaration{GaloisMat}
+
+In the following example we temporarily increase the line length limit from
+its default value 80 to 84 in order to get a nicer output format.
+
 \beginexample
+gap> SizeScreen([ 84, ]);;
 gap> GaloisMat( [ [ E(3), E(4) ] ] );
-rec(
-  mat := [ [ E(3), E(4) ], [ E(3), -E(4) ], [ E(3)^2, E(4) ],
-      [ E(3)^2, -E(4) ] ],
-  galoisfams := [ [ [ 1, 2, 3, 4 ], [ 1, 7, 5, 11 ] ], 0, 0, 0 ],
+rec( 
+  mat := [ [ E(3), E(4) ], [ E(3), -E(4) ], [ E(3)^2, E(4) ], [ E(3)^2, -E(4) ] ],
+  galoisfams := [ [ [ 1, 2, 3, 4 ], [ 1, 7, 5, 11 ] ], 0, 0, 0 ], 
   generators := [ (1,2)(3,4), (1,3)(2,4) ] )
+gap> SizeScreen([ 80, ]);;
 gap> GaloisMat( [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ] ] );
-rec(
-  mat := [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ], [ 1, E(3)^2, E(3) ] ],
-  galoisfams := [ 1, [ [ 2, 3 ], [ 1, 2 ] ], 0 ],
-  generators := [ (2,3) ] )
+rec( mat := [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ], [ 1, E(3)^2, E(3) ] ], 
+  galoisfams := [ 1, [ [ 2, 3 ], [ 1, 2 ] ], 0 ], generators := [ (2,3) ] )
 \endexample
 
 \Declaration{RationalizedMat}
 \beginexample
 gap> mat:=List(Irr(CharacterTable( "A5" )),ValuesOfClassFunction);
-[ [ 1, 1, 1, 1, 1 ], [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ],
-  [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ], [ 4, 0, 1, -1, -1 ],
+[ [ 1, 1, 1, 1, 1 ], [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ], 
+  [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ], [ 4, 0, 1, -1, -1 ], 
   [ 5, 1, -1, 0, 0 ] ]
 gap> RationalizedMat( mat );
-[ [ 1, 1, 1, 1, 1 ], [ 6, -2, 0, 1, 1 ], [ 4, 0, 1, -1, -1 ],
+[ [ 1, 1, 1, 1, 1 ], [ 6, -2, 0, 1, 1 ], [ 4, 0, 1, -1, -1 ], 
   [ 5, 1, -1, 0, 0 ] ]
 \endexample
 

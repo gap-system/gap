@@ -2,13 +2,14 @@
 ##
 #W  wordrep.gi                  GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
+#W                                                         & Alexander Hulpke
 ##
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This  file contains  methods for   associative words  that  depend on the
+##  This  file contains  methods for   associative words in syllable
 ##  representation.
 ##
 ##  Currently,  there are four  representations for objects with the external
@@ -36,24 +37,23 @@ Revision.wordrep_gi :=
 
 #############################################################################
 ##
-
 #R  Is8BitsAssocWord( <obj> )
 #R  Is16BitsAssocWord( <obj> )
 #R  Is32BitsAssocWord( <obj> )
 #R  IsInfBitsAssocWord( <obj> )
 ##
+
 DeclareRepresentation( "Is8BitsAssocWord",
-    IsAssocWord and IsDataObjectRep, [] );
+    IsSyllableAssocWordRep and IsDataObjectRep, [] );
 
 DeclareRepresentation( "Is16BitsAssocWord",
-    IsAssocWord and IsDataObjectRep, [] );
+    IsSyllableAssocWordRep and IsDataObjectRep, [] );
 
 DeclareRepresentation( "Is32BitsAssocWord",
-    IsAssocWord and IsDataObjectRep, [] );
+    IsSyllableAssocWordRep and IsDataObjectRep, [] );
 
 DeclareRepresentation( "IsInfBitsAssocWord",
-    IsAssocWord and IsPositionalObjectRep, [] );
-
+    IsSyllableAssocWordRep and IsPositionalObjectRep,[]);
 
 #############################################################################
 ##
@@ -113,38 +113,36 @@ end );
 ##
 #M  Print( <w> )
 ##
-InstallMethod( PrintObj,
-    "for an associative word",
-    true,
+InstallMethod( PrintObj, "for an associative word", true,
     [ IsAssocWord ], 0,
-    function( elm )
+function( elm )
 
     local names,
           word,
           len,
           i;
 
-    names:= FamilyObj( elm )!.names;
-    word:= ExtRepOfObj( elm );
-    len:= Length( word ) - 1;
-    i:= 1;
-    if len < 0 then
-      Print( "<identity ...>" );
-    else
-      while i < len do
-        Print( names[ word[i] ] );
-        if word[ i+1 ] <> 1 then
-          Print( "^", word[ i+1 ] );
-        fi;
-        Print( "*" );
-        i:= i+2;
-      od;
+  names:= FamilyObj( elm )!.names;
+  word:= ExtRepOfObj( elm );
+  len:= Length( word ) - 1;
+  i:= 1;
+  if len < 0 then
+    Print( "<identity ...>" );
+  else
+    while i < len do
       Print( names[ word[i] ] );
       if word[ i+1 ] <> 1 then
-        Print( "^", word[ i+1 ] );
+	Print( "^", word[ i+1 ] );
       fi;
+      Print( "*" );
+      i:= i+2;
+    od;
+    Print( names[ word[i] ] );
+    if word[ i+1 ] <> 1 then
+      Print( "^", word[ i+1 ] );
     fi;
-    end );
+  fi;
+end );
 
 
 #############################################################################
@@ -204,36 +202,48 @@ end );
 ##
 #M  ObjByExtRep( <F>, <descr> )
 ##
-InstallMethod( ObjByExtRep,
-    "for a family of associative words, and a homogeneous list",
-    true,
-    [ IsAssocWordFamily, IsHomogeneousList ], 0,
-    function( F, descr )
-    local maxexp,   # maximal exponent in `descr'
-          i,        # loop over exponents in `descr'
-          expbits;  # list of maximal exponents for the four representations
+BindGlobal("SyllableWordObjByExtRep",function( F, descr )
+local maxexp,   # maximal exponent in `descr'
+      i,        # loop over exponents in `descr'
+      expbits;  # list of maximal exponents for the four representations
 
-    maxexp:= 0;
-    for i in [ 2, 4 .. Length( descr ) ] do
-      if maxexp < descr[i] then
-        maxexp:= descr[i];
-      elif maxexp < - descr[i] then
-        maxexp:= - descr[i];
-      fi;
-    od;
-    expbits:= F!.expBitsInfo;
-    if   maxexp < expbits[2] then
-      if maxexp < expbits[1] then
-        return AssocWord( F!.types[1], descr );
-      else
-        return AssocWord( F!.types[2], descr );
-      fi;
-    elif maxexp < expbits[3] then
-        return AssocWord( F!.types[3], descr );
-    else
-        return AssocWord( F!.types[4], descr );
+  maxexp:= 0;
+  for i in [ 2, 4 .. Length( descr ) ] do
+    if maxexp < descr[i] then
+      maxexp:= descr[i];
+    elif maxexp < - descr[i] then
+      maxexp:= - descr[i];
     fi;
-    end );
+  od;
+  if IsInfBitsFamily(F) then
+    return AssocWord( F!.types[4], descr );
+  fi;
+
+  expbits:= F!.expBitsInfo;
+  if   maxexp < expbits[2] then
+    if maxexp < expbits[1] then
+      return AssocWord( F!.types[1], descr );
+    else
+      return AssocWord( F!.types[2], descr );
+    fi;
+  elif maxexp < expbits[3] then
+      return AssocWord( F!.types[3], descr );
+  else
+      return AssocWord( F!.types[4], descr );
+  fi;
+end );
+
+InstallMethod( ObjByExtRep,
+    "for a family of associative words, and a homogeneous list", true,
+    [ IsAssocWordFamily and IsSyllableWordsFamily, IsHomogeneousList ], 0,
+    SyllableWordObjByExtRep);
+
+InstallMethod(SyllableRepAssocWord, "assoc word: via extrep", true,
+  [ IsAssocWord ], 0,
+  w->SyllableWordObjByExtRep(FamilyObj(w),ExtRepOfObj(w)));
+
+InstallMethod(SyllableRepAssocWord, "assoc word in syllable rep", true,
+  [ IsAssocWord and IsSyllableAssocWordRep], 0, w->w);
 
 InstallOtherMethod( ObjByExtRep,
     "for a 8Bits-family of associative words, and a homogeneous list",
@@ -282,7 +292,8 @@ InstallOtherMethod( ObjByExtRep,
 InstallOtherMethod( ObjByExtRep,
     "for a fam. of assoc. words, a cyclotomic, an int., and a homog. list",
     true,
-    [ IsAssocWordFamily, IsCyclotomic, IsInt, IsHomogeneousList ], 0,
+    [ IsAssocWordFamily and IsSyllableWordsFamily,
+      IsCyclotomic, IsInt, IsHomogeneousList ], 0,
     function( F, exp, maxcand, descr )
 
     local info, expbits;
@@ -720,10 +731,11 @@ InstallMethod( NumberSyllables,
 
 InfBits_ExponentSums1 := function( obj )
     local expvec, i;
-    expvec:= [];
-    for i in [ 1 .. TypeObj( obj )![ AWP_NR_GENS ] ] do
-      expvec[i]:= 0;
-    od;
+    #expvec:= [];
+    #for i in [ 1 .. TypeObj( obj )![ AWP_NR_GENS ] ] do
+    #  expvec[i]:= 0;
+    #od;
+    expvec:=ListWithIdenticalEntries(TypeObj( obj )![ AWP_NR_GENS ],0);
     obj:= obj![1];
     for i in [ 1, 3 .. Length( obj ) - 1 ] do
       expvec[ obj[i] ]:= expvec[ obj[i] ] + obj[ i+1 ];
@@ -739,16 +751,18 @@ InstallMethod( ExponentSums,
 
 InfBits_ExponentSums3 := function( obj, from, to )
     local expvec, i;
-    expvec:= [];
     if from < 2 then from:= 1; else from:= 2 * from - 1; fi;
     if TypeObj( obj )![ AWP_NR_GENS ] < to then
       to:= 2 * TypeObj( obj )![ AWP_NR_GENS ] - 1;
     else
       to:= 2 * to - 1;
     fi;
-    for i in [ from .. to ] do
-      expvec[i]:= 0;
-    od;
+    # expvec:= [];
+    # this for loop looks wrong AH
+    #for i in [ from .. to ] do
+    #  expvec[i]:= 0;
+    #od;
+    expvec:=ListWithIdenticalEntries(TypeObj( obj )![ AWP_NR_GENS ],0);
     obj:= obj![1];
     for i in [ from, from + 2 .. to ] do
       expvec[ obj[i] ]:= expvec[ obj[i] ] + obj[ i+1 ];
@@ -846,80 +860,88 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
           rbits,
           K;
 
-    # Store the names, initialize the types list.
-    F!.types := [];
-    F!.names := Immutable( names );
+  # Store the names, initialize the types list.
+  F!.types := [];
+  F!.names := Immutable( names );
 
-    if not IsFinite( names ) then
+  # for letter word families we do not need these types
+  if not IsFinite( names ) then
 
-      SetFilterObj( F, IsInfBitsFamily );
+    SetFilterObj( F, IsInfBitsFamily );
 
-    else
+  else
 
-      # Install the data (number of bits available for exponents).
-      # Note that in the case of the 32 bits representation,
-      # at most 28 bits are allowed for the exponents in order to avoid
-      # overflow checks.
-      rank  := Length( names );
-      rbits := 1;
-      while 2^rbits < rank do
-        rbits:= rbits + 1;
-      od;
-      F!.expBits:= [  8 - rbits,
-                      16 - rbits,
-                      Minimum( 32 - rbits, 28 ),
-                      infinity ];
+    # Install the data (number of bits available for exponents).
+    # Note that in the case of the 32 bits representation,
+    # at most 28 bits are allowed for the exponents in order to avoid
+    # overflow checks.
+    rank  := Length( names );
+    rbits := 1;
+    while 2^rbits < rank do
+      rbits:= rbits + 1;
+    od;
+    F!.expBits:= [  8 - rbits,
+		    16 - rbits,
+		    Minimum( 32 - rbits, 28 ),
+		    infinity ];
 
-      # Note that one bit of the exponents is needed for the sign,
-      # and we disallow the use of a representation if at most two
-      # additional bits would be available.
-      if F!.expBits[1] <= 3 then F!.expBits[1]:= 0; fi;
-      if F!.expBits[2] <= 3 then F!.expBits[2]:= 0; fi;
-      if F!.expBits[3] <= 3 then F!.expBits[3]:= 0; fi;
+    # Note that one bit of the exponents is needed for the sign,
+    # and we disallow the use of a representation if at most two
+    # additional bits would be available.
+    if F!.expBits[1] <= 3 then F!.expBits[1]:= 0; fi;
+    if F!.expBits[2] <= 3 then F!.expBits[2]:= 0; fi;
+    if F!.expBits[3] <= 3 then F!.expBits[3]:= 0; fi;
 
-      F!.expBitsInfo := [ 2^( F!.expBits[1] - 1 ),
-                          2^( F!.expBits[2] - 1 ),
-                          2^( F!.expBits[3] - 1 ),
-                          infinity          ];
+    F!.expBitsInfo := [ 2^( F!.expBits[1] - 1 ),
+			2^( F!.expBits[2] - 1 ),
+			2^( F!.expBits[3] - 1 ),
+			infinity          ];
 
-      # Store the internal types.
-      K:= NewType( F, Is8BitsAssocWord and req );
-      K![ AWP_PURE_TYPE    ]      := K;
-      K![ AWP_NR_BITS_EXP  ]      := F!.expBits[1];
-      K![ AWP_NR_GENS      ]      := rank;
-      K![ AWP_NR_BITS_PAIR ]      := 8;
-      K![ AWP_FUN_OBJ_BY_VECTOR ] := 8Bits_ObjByVector;
-      K![ AWP_FUN_ASSOC_WORD    ] := 8Bits_AssocWord;
-      F!.types[1]:= K;
-
-      K:= NewType( F, Is16BitsAssocWord and req );
-      K![ AWP_PURE_TYPE    ]      := K;
-      K![ AWP_NR_BITS_EXP  ]      := F!.expBits[2];
-      K![ AWP_NR_GENS      ]      := rank;
-      K![ AWP_NR_BITS_PAIR ]      := 16;
-      K![ AWP_FUN_OBJ_BY_VECTOR ] := 16Bits_ObjByVector;
-      K![ AWP_FUN_ASSOC_WORD    ] := 16Bits_AssocWord;
-      F!.types[2]:= K;
-
-      K:= NewType( F, Is32BitsAssocWord and req );
-      K![ AWP_PURE_TYPE    ]      := K;
-      K![ AWP_NR_BITS_EXP  ]      := F!.expBits[3];
-      K![ AWP_NR_GENS      ]      := rank;
-      K![ AWP_NR_BITS_PAIR ]      := 32;
-      K![ AWP_FUN_OBJ_BY_VECTOR ] := 32Bits_ObjByVector;
-      K![ AWP_FUN_ASSOC_WORD    ] := 32Bits_AssocWord;
-      F!.types[3]:= K;
-
-    fi;
-
-    K:= NewType( F, IsInfBitsAssocWord and req );
+    # Store the internal types.
+    K:= NewType( F, Is8BitsAssocWord and req );
     K![ AWP_PURE_TYPE    ]      := K;
-    K![ AWP_NR_BITS_EXP  ]      := infinity;
-    K![ AWP_NR_GENS      ]      := Length( names );
-    K![ AWP_NR_BITS_PAIR ]      := infinity;
-    K![ AWP_FUN_OBJ_BY_VECTOR ] := InfBits_ObjByVector;
-    K![ AWP_FUN_ASSOC_WORD    ] := InfBits_AssocWord;
-    F!.types[4]:= K;
+    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[1];
+    K![ AWP_NR_GENS      ]      := rank;
+    K![ AWP_NR_BITS_PAIR ]      := 8;
+    K![ AWP_FUN_OBJ_BY_VECTOR ] := 8Bits_ObjByVector;
+    K![ AWP_FUN_ASSOC_WORD    ] := 8Bits_AssocWord;
+    F!.types[1]:= K;
+
+    K:= NewType( F, Is16BitsAssocWord and req );
+    K![ AWP_PURE_TYPE    ]      := K;
+    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[2];
+    K![ AWP_NR_GENS      ]      := rank;
+    K![ AWP_NR_BITS_PAIR ]      := 16;
+    K![ AWP_FUN_OBJ_BY_VECTOR ] := 16Bits_ObjByVector;
+    K![ AWP_FUN_ASSOC_WORD    ] := 16Bits_AssocWord;
+    F!.types[2]:= K;
+
+    K:= NewType( F, Is32BitsAssocWord and req );
+    K![ AWP_PURE_TYPE    ]      := K;
+    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[3];
+    K![ AWP_NR_GENS      ]      := rank;
+    K![ AWP_NR_BITS_PAIR ]      := 32;
+    K![ AWP_FUN_OBJ_BY_VECTOR ] := 32Bits_ObjByVector;
+    K![ AWP_FUN_ASSOC_WORD    ] := 32Bits_AssocWord;
+    F!.types[3]:= K;
+
+  fi;
+
+  K:= NewType( F, IsInfBitsAssocWord and req );
+  K![ AWP_PURE_TYPE    ]      := K;
+  K![ AWP_NR_BITS_EXP  ]      := infinity;
+  K![ AWP_NR_GENS      ]      := Length( names );
+  K![ AWP_NR_BITS_PAIR ]      := infinity;
+  K![ AWP_FUN_OBJ_BY_VECTOR ] := InfBits_ObjByVector;
+  K![ AWP_FUN_ASSOC_WORD    ] := InfBits_AssocWord;
+  F!.types[4]:= K;
+
+  if IsBLetterWordsFamily(F) then
+    K:= NewType( F, IsBLetterAssocWordRep and req );
+  else
+    K:= NewType( F, IsWLetterAssocWordRep and req );
+  fi;
+  F!.letterWordType:=K;
 
 end );
 
@@ -1093,7 +1115,11 @@ InstallMethod( \[\],
     if i <= Length( list![2] ) then
       return list![2][i];
     elif IsAssocWordFamily( list![1] ) then
-      return ObjByExtRep( list![1], [ i, 1 ] );
+      if IsLetterWordsFamily(list![1]) then
+	return AssocWordByLetterRep( list![1], [ i ] );
+      else
+	return ObjByExtRep( list![1], [ i, 1 ] );
+      fi;
     else
       return ObjByExtRep( list![1], i );
     fi;
@@ -1110,15 +1136,16 @@ InstallMethod( Position,
       return fail;
     fi;
 
-    ext:= ExtRepOfObj( obj );
 
     if IsAssocWord( obj ) then
-      if ext[2] <> 1 then
+      ext:=LetterRepAssocWord(obj);
+      if Length(ext)<> 1 or ext[1]<0 then
         return fail;
       else
         return ext[1];
       fi;
     else
+      ext:= ExtRepOfObj( obj );
       if not IsInt( ext ) then
         return fail;
       else
@@ -1176,10 +1203,247 @@ InstallGlobalFunction( InfiniteListOfGenerators, function( arg )
     return list;
 end );
 
+# letter representation
+
+InstallOtherMethod(LetterRepAssocWord,"syllable rep, generators",
+true, #TODO: This should be IsElmsColls once the tietze code is fixed.
+  [IsSyllableAssocWordRep,IsList],0,
+function ( word, generators )
+local ind,n,i,e,l,g;
+
+  ind:=[];
+  n:=1;
+  for i in generators do
+    ind[GeneratorSyllable(i,1)]:=n;
+    n:=n+1;
+  od;
+
+  e:=ExtRepOfObj(word);
+  l:=[];
+  for i in [1,3..Length(e)-1] do
+    g:=ind[e[i]];
+    n:=e[i+1];
+    if n<0 then
+      g:=-g;
+      n:=-n;
+    fi;
+    Append(l,ListWithIdenticalEntries(n,g));
+  od;
+  return l;
+
+end );
+
+InstallMethod(LetterRepAssocWord,"syllable rep",true,
+  [IsSyllableAssocWordRep],0,
+function(word)
+local n,i,e,l,g;
+
+  e:=ExtRepOfObj(word);
+  l:=[];
+  for i in [1,3..Length(e)-1] do
+    g:=e[i];
+    n:=e[i+1];
+    if n<0 then
+      g:=-g;
+      n:=-n;
+    fi;
+    Append(l,ListWithIdenticalEntries(n,g));
+  od;
+  return l;
+
+end );
+
+InstallMethod(AssocWordByLetterRep,"family, list: syllables",true,
+  [IsSyllableWordsFamily,IsHomogeneousList],0,
+function ( wfam,word )
+local e,lg,i,num,mex;
+
+   # first generate an external representation
+   e:=[];
+   mex:=1;
+   lg:=0;
+   i:=0;
+   for num in word do
+     if num<0 then
+       if -num=lg then
+	 # increase exponent
+         e[i]:=e[i]-1;
+	 mex:=Maximum(mex,-e[i]);
+       else
+	 # add new generator/exponent pair
+         Append(e,[-num,-1]);
+	 lg:=-num;
+	 i:=i+2;
+       fi;
+     else
+       if num=lg then
+	 # increase exponent
+         e[i]:=e[i]+1;
+	 mex:=Maximum(mex,e[i]);
+       else
+	 # add new generator/exponent pair
+         Append(e,[num,1]);
+	 lg:=num;
+	 i:=i+2;
+       fi;
+     fi;
+   od;
+   # then build a word from it
+   e:=ObjByExtRep(wfam,mex,mex,e);
+   return e;
+end );
+
+
+InstallOtherMethod(AssocWordByLetterRep,"family, list, gens: syllables",true,
+  [IsSyllableWordsFamily,IsHomogeneousList,IsHomogeneousList],0,
+function (fam, word, fgens )
+local ind,e,lg,i,num,mex;
+
+   # index the generators
+   ind:=List(fgens,i->GeneratorSyllable(i,1));
+
+   # first generate an external representation
+   e:=[];
+   mex:=1;
+   lg:=0;
+   i:=0;
+   for num in word do
+     if num<0 then
+       if -num=lg then
+	 # increase exponent
+         e[i]:=e[i]-1;
+	 mex:=Maximum(mex,-e[i]);
+       else
+	 # add new generator/exponent pair
+         Append(e,[ind[-num],-1]);
+	 lg:=-num;
+	 i:=i+2;
+       fi;
+     else
+       if num=lg then
+	 # increase exponent
+         e[i]:=e[i]+1;
+	 mex:=Maximum(mex,e[i]);
+       else
+	 # add new generator/exponent pair
+         Append(e,[ind[num],1]);
+	 lg:=num;
+	 i:=i+2;
+       fi;
+     fi;
+   od;
+   # then build a word from it
+   e:=ObjByExtRep(fam,mex,mex,e);
+   return e;
+end );
 
 #############################################################################
 ##
+#M  Length( <w> )
+##
+InstallOtherMethod( Length, "for an assoc. word in syllable rep", true,
+    [ IsAssocWord  and IsSyllableAssocWordRep], 0,
+function( w )
+local len, i;
+  w:= ExtRepOfObj( w );
+  len:= 0;
+  for i in [ 2, 4 .. Length( w ) ] do
+    len:= len + AbsInt( w[i] );
+  od;
+  return len;
+end );
 
+
+#############################################################################
+##
+#M  ExponentSyllable( <w>, <n> )
+##
+InstallMethod( ExponentSyllable,
+    "for an assoc. word in syllable rep, and a positive integer", true,
+    [ IsAssocWord and IsSyllableAssocWordRep, IsPosInt ], 0,
+function( w, n )
+  return ExtRepOfObj( w )[ 2*n ];
+end );
+
+
+#############################################################################
+##
+#M  GeneratorSyllable( <w>, <n> )
+##
+InstallMethod( GeneratorSyllable,
+    "for an assoc. word in syllable rep, and a positive integer", true,
+    [ IsAssocWord and IsSyllableAssocWordRep, IsPosInt ], 0,
+function( w, n )
+  return ExtRepOfObj( w )[ 2*n-1 ];
+end );
+
+
+#############################################################################
+##
+#M  NumberSyllables( <w> )
+##
+InstallMethod( NumberSyllables, "for an assoc. word in syllable rep", true,
+    [ IsAssocWord  and IsSyllableAssocWordRep], 0,
+    w -> Length( ExtRepOfObj( w ) ) / 2 );
+
+
+#############################################################################
+##
+#M  ExponentSumWord( <w>, <gen> )
+##
+InstallMethod( ExponentSumWord, "syllable rep as.word, gen", IsIdenticalObj,
+    [ IsAssocWord and IsSyllableAssocWordRep, IsAssocWord ], 0,
+function( w, gen )
+local n, g, i;
+  w:= ExtRepOfObj( w );
+  gen:= ExtRepOfObj( gen );
+  if Length( gen ) <> 2 or ( gen[2] <> 1 and gen[2] <> -1 ) then
+    Error( "<gen> must be a generator" );
+  fi;
+  n:= 0;
+  g:= gen[1];
+  for i in [ 1, 3 .. Length( w ) - 1 ] do
+    if w[i] = g then
+      n:= n + w[ i+1 ];
+    fi;
+  od;
+  if gen[2] = -1 then
+    n:= -n;
+  fi;
+  return n;
+end );
+
+
+#############################################################################
+##
+#M  ExponentSums( <f>,<w> )
+##
+InstallOtherMethod( ExponentSums,
+    "for a group and an assoc. word in syllable rep", true,
+    [ IsGroup, IsAssocWord ], 0,
+function( f, w )
+local l,gens,g,i,p;
+  
+  Info(InfoWarning,2,"obsolete undocumented method");
+  gens:=List(FreeGeneratorsOfFpGroup(f),x->ExtRepOfObj(x));
+  g:=gens{[1..Length(gens)]}[1];
+  l:=List(gens,x->0);
+  w:= ExtRepOfObj( w );
+  for i in [ 1, 3 .. Length( w ) - 1 ] do
+    p:=Position(g,w[i]);
+    l[p]:=l[p]+w[i+1];
+  od;
+
+  for i in [1..Length(l)] do
+    if gens[i][2]=-1 then l[i]:=-l[i];fi;
+  od;
+
+  return l;
+
+end );
+
+
+#############################################################################
+##
 #E
 ##
-

@@ -1,12 +1,26 @@
 #############################################################################
 ##
 #W  ghompcgs.gi                 GAP library                      Bettina Eick
+#W							     Alexander Hulpke
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 Revision.ghompcgs_gi :=
     "@(#)$Id$";
+
+# compute the powers of the source pcgs. We cache these to speed up frequent
+# mapping.
+BindGlobal("PcgsHomSoImPow",function(hom)
+local p,q;
+  if not IsBound(hom!.sourcePcgsImagesPowers) then
+    p:=hom!.sourcePcgs;
+    q:=hom!.sourcePcgsImages;
+    hom!.sourcePcgsImagesPowers := List([1..Length(p)],
+      i->List([1..RelativeOrders(p)[i]-1], j->q[i]^j));
+  fi;
+  return hom!.sourcePcgsImagesPowers;
+end);
 
 
 #############################################################################
@@ -22,7 +36,7 @@ local hom, pcgs, pcgsimgs, H, filter, G;
     pcgs := hom2!.sourcePcgs;
 
     pcgsimgs := List( hom2!.sourcePcgsImages, 
-                      x -> ImageElm( hom1, x ) );
+		      x -> ImageElm( hom1, x ) );
 
     G := Source( hom2 );
     H := Range( hom1 );
@@ -44,16 +58,8 @@ local hom, pcgs, pcgsimgs, H, filter, G;
 #             HasCoKernelOfMultiplicativeGeneralMapping and
               HasImagesSource;
 
-    hom:=rec( generators       := pcgs,
-	      genimages        := pcgsimgs,
-	      sourcePcgs       := pcgs,
-	      sourcePcgsImages := pcgsimgs,
-	      # precompute powers of the pcgs images
-	      sourcePcgsImagesPowers :=
-		List([1..Length(pcgs)],
-		    i->List([1..RelativeOrders(pcgs)[i]],
-			    j->pcgsimgs[i]^j))
-	      );
+    hom:=rec( sourcePcgs       := pcgs,
+	      sourcePcgsImages := pcgsimgs);
 
     ObjectifyWithAttributes(hom,
 	      NewType( 
@@ -62,6 +68,7 @@ local hom, pcgs, pcgsimgs, H, filter, G;
 		filter ),
 	      Source,G,
 	      Range,H,
+	      MappingGeneratorsImages,[pcgs,pcgsimgs],
               ImagesSource,SubgroupNC( H, pcgsimgs )
 #    ,CoKernelOfMultiplicativeGeneralMapping,TrivialSubgroup(H);
 		);
@@ -97,23 +104,16 @@ local fam,hom, pcgs, pcgsimgs, G;
       HasSource and HasRange and HasImagesSource and HasPreImagesRange);
   fi;
 
-  hom:=rec( generators       := pcgs,
-	    genimages        := pcgsimgs,
-	    sourcePcgs       := pcgs,
-	    sourcePcgsImages := pcgsimgs,
-	    # precompute powers of the pcgs images
-	    sourcePcgsImagesPowers :=
-	      List([1..Length(pcgs)],
-		  i->List([1..RelativeOrders(pcgs)[i]],
-			  j->pcgsimgs[i]^j))
-	    );
+  hom:=rec( sourcePcgs       := pcgs,
+	    sourcePcgsImages := pcgsimgs);
 
   ObjectifyWithAttributes(hom,
             fam!.defaultAutomorphismType,
 	    Source,G,
 	    Range,G,
 	    ImagesSource,G,
-	    PreImagesRange,G
+	    PreImagesRange,G,
+	    MappingGeneratorsImages,[pcgs,pcgsimgs]
 		  );
 
   return hom;
@@ -130,12 +130,13 @@ InstallMethod( ImagesRepresentative,
           IsMultiplicativeElementWithInverse ],
         100,  # to override methods for `IsPerm( <elm> )'
 function( hom, elm )
-local exp, img, i;
+local exp, img, i,sp;
   exp  := ExponentsOfPcElement( hom!.sourcePcgs, elm );
   img  := One( Range( hom ) );
+  sp:=PcgsHomSoImPow(hom);
   for i in [1..Length(hom!.sourcePcgsImages)] do
     if exp[i]>0 then
-      img := img * hom!.sourcePcgsImagesPowers[i][exp[i]];
+      img := img * sp[i][exp[i]];
     fi;
   od;
   return img;
@@ -148,10 +149,11 @@ end );
 InstallMethod( IsSingleValued, "for GMBPCGS: test relations",true,
   [ IsGroupGeneralMappingByPcgs ],0,
 function(map)
-local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp;
+local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp,sp,mapi;
   pcgs:=map!.sourcePcgs;
   pcgsimg:=map!.sourcePcgsImages;
   r:=RelativeOrders(pcgs);
+  sp:=PcgsHomSoImPow(map);
   o:=One(Range(map));
   for i in [1..Length(pcgs)] do
     elm:=pcgs[i]^r[i];
@@ -159,7 +161,7 @@ local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp;
     img  := o;
     for k in [1..Length(pcgsimg)] do
       if exp[k]>0 then
-	img := img * map!.sourcePcgsImagesPowers[k][exp[k]];
+	img := img * sp[k][exp[k]];
       fi;
     od;
     if img<>pcgsimg[i]^r[i] then
@@ -172,7 +174,7 @@ local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp;
       img  := o;
       for k in [1..Length(pcgsimg)] do
 	if exp[k]>0 then
-	  img := img * map!.sourcePcgsImagesPowers[k][exp[k]];
+	  img := img * sp[k][exp[k]];
 	fi;
       od;
       if img<>pcgsimg[j]^pcgsimg[i] then
@@ -183,22 +185,85 @@ local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp;
 
   # we still need to test any additional generators. (This could happen
   # easily, if the mapping is a general inverse.)
-  for i in [1..Length(map!.generators)] do
-    if not i in pcgs then
-      exp:=ExponentsOfPcElement(pcgs,map!.generators[i]);
+  mapi:=MappingGeneratorsImages(map);
+  for i in [1..Length(mapi[1])] do
+    if not mapi[2][i] in pcgsimg then
+      exp:=ExponentsOfPcElement(pcgs,mapi[1][i]);
       img  := o;
       for k in [1..Length(pcgsimg)] do
 	if exp[k]>0 then
-	  img := img * map!.sourcePcgsImagesPowers[k][exp[k]];
+	  img := img * sp[k][exp[k]];
 	fi;
       od;
-      if img<>map!.genimages[i] then
+      if img<>mapi[2][i] then
         return false; # the extra generator would be mapped inconsistently.
       fi;
     fi;
   od;
 
   return true;
+end);
+
+#############################################################################
+##
+#M  CoKernelOfMultiplicativeGeneralMapping( <hom> )
+##
+InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
+  "for GMBPCGS: evaluate relations",true,
+  [ IsGroupGeneralMappingByPcgs ],0,
+function(map)
+local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp,sp,R,C,mapi;
+  C:=TrivialSubgroup(Range(map));
+  pcgs:=map!.sourcePcgs;
+  pcgsimg:=map!.sourcePcgsImages;
+  r:=RelativeOrders(pcgs);
+  sp:=PcgsHomSoImPow(map);
+  o:=One(Range(map));
+  for i in [1..Length(pcgs)] do
+    elm:=pcgs[i]^r[i];
+    exp  := ExponentsOfPcElement( pcgs, elm );
+    img  := o;
+    for k in [1..Length(pcgsimg)] do
+      if exp[k]>0 then
+	img := img * sp[k][exp[k]];
+      fi;
+    od;
+    #NC is safe (init with Triv(range))
+    C:=ClosureSubgroupNC(C,img/pcgsimg[i]^r[i]);
+
+    for j in [i+1..Length(pcgs)] do
+      elm:=pcgs[j]^pcgs[i];
+      exp  := ExponentsOfPcElement( pcgs, elm );
+      img  := o;
+      for k in [1..Length(pcgsimg)] do
+	if exp[k]>0 then
+	  img := img * sp[k][exp[k]];
+	fi;
+      od;
+      #NC is safe (init with Triv(range))
+      C:=ClosureSubgroupNC(C,img/pcgsimg[j]^pcgsimg[i]);
+    od;
+  od;
+
+  # we still need to test any additional generators. (This could happen
+  # easily, if the mapping is a general inverse.)
+  mapi:=MappingGeneratorsImages(map);
+  for i in [1..Length(mapi[1])] do
+    if not mapi[2][i] in pcgsimg then
+      exp:=ExponentsOfPcElement(pcgs,mapi[1][i]);
+      img  := o;
+      for k in [1..Length(pcgsimg)] do
+	if exp[k]>0 then
+	  img := img * sp[k][exp[k]];
+	fi;
+      od;
+      #NC is safe (init with Triv(range))
+      C:=ClosureSubgroupNC(C,img/mapi[2][i]);
+    fi;
+  od;
+
+  C:=NormalClosure(ImagesSource(map),C);
+  return C;
 end);
 
 #############################################################################
@@ -291,8 +356,9 @@ InversePcgs := function( hom )
     
     # otherwise we have to do some work
     pcgs := Pcgs( Image( hom ) );
-    new  := CanonicalPcgsByGeneratorsWithImages( pcgs, hom!.genimages,
-                                                       hom!.generators );
+    new:=MappingGeneratorsImages(hom);
+    new  := CanonicalPcgsByGeneratorsWithImages( pcgs, new[2],
+                                                       new[1] );
     hom!.rangePcgs := new[1];
     hom!.rangePcgsPreimages := new[2];
 end;
@@ -444,7 +510,7 @@ end);
 InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
         [ IsPcGroup, IsPcGroup ], 0,
     function( G, N )
-    local   pcgsG,  pcgsN,  pcgsK,  pcgsF,  F,  hom;
+    local   pcgsG,  pcgsN,  pcgsK,  pcgsF,  F,  hom,pF;
     
     pcgsG := Pcgs( G );  pcgsN := Pcgs( N );
     if IsInducedPcgs( pcgsN )  then
@@ -461,12 +527,20 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
     fi;
     pcgsF := pcgsG mod pcgsK;
     F := PcGroupWithPcgs( pcgsF );
-    hom := Objectify( NewType( GeneralMappingsFamily
-                   ( ElementsFamily( FamilyObj( G ) ),
-                     ElementsFamily( FamilyObj( F ) ) ),
-                   IsNaturalHomomorphismPcGroupRep ),
-                   rec( pcgsSource := pcgsF,
-                        pcgsRange  := Pcgs( F ) ) );
+    pF:=Pcgs(F);
+    hom:=Objectify( NewType( GeneralMappingsFamily
+                  ( ElementsFamily( FamilyObj( G ) ),
+                    ElementsFamily( FamilyObj( F ) ) ),
+                  IsPcgsToPcgsHomomorphism ),
+	  rec(  sourcePcgs:= pcgsF,
+		sourcePcgsImages:= pF,
+# the following components are not really needed but expensive to compute.
+#		generators:=pcgsG,
+#		genimages:=List(pcgsG,  i->
+#		  PcElementByExponentsNC(pF,ExponentsOfPcElement(pcgsF,i))),
+		rangePcgs:= pF,
+		rangePcgsPreImages:= pcgsF));
+
     SetSource( hom, G );
     SetRange ( hom, F );
     SetKernelOfMultiplicativeGeneralMapping( hom, GroupOfPcgs( pcgsK ) );
@@ -477,18 +551,25 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
         [ IsGroup and HasSpecialPcgs, 
           IsGroup and HasInducedPcgsWrtSpecialPcgs ], 0,
     function( G, N )
-    local   pcgsG,  pcgsN,  pcgsF,  F,  hom;
+    local   pcgsG,  pcgsN,  pcgsF,  F,  hom,pF;
     
     pcgsG := SpecialPcgs( G );
-    pcgsN := InducedPcgsWrtSpecialPcgs( N ); 
+    pcgsN := InducedPcgs(pcgsG, N ); 
     pcgsF := pcgsG mod pcgsN;
     F     := PcGroupWithPcgs( pcgsF );
-    hom   := Objectify( NewType( GeneralMappingsFamily
+    pF:=Pcgs(F);
+    hom := Objectify( NewType( GeneralMappingsFamily
                    ( ElementsFamily( FamilyObj( G ) ),
                      ElementsFamily( FamilyObj( F ) ) ),
-                   IsNaturalHomomorphismPcGroupRep ),
-                   rec( pcgsSource := pcgsF,
-                        pcgsRange  := Pcgs( F ) ) );
+                   IsPcgsToPcgsHomomorphism ),
+	  rec(  sourcePcgs:= pcgsF,
+		sourcePcgsImages:= pF,
+# the following components are not really needed but expensive to compute.
+#		generators:=pcgsG,
+#		genimages:=List(pcgsG,  i->
+#		  PcElementByExponentsNC(pF,ExponentsOfPcElement(pcgsF,i))),
+		rangePcgs:= pF,
+		rangePcgsPreImages:= pcgsF));
     SetSource( hom, G );
     SetRange ( hom, F );
     SetKernelOfMultiplicativeGeneralMapping( hom, N );
@@ -505,7 +586,7 @@ InstallMethod( ViewObj,
     true,
     [ IsNaturalHomomorphismPcGroupRep ], 0,
     function( hom )
-    Print( Source( hom ), " -> ", Range( hom ) );
+    View( Source( hom ), " -> ", Range( hom ) );
 end );
 
 
@@ -529,12 +610,11 @@ end );
 #M  ImagesRepresentative( <hom>, <elm> )  . . . . . . . . . . . via depth map
 ##
 InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
-    [ IsNaturalHomomorphismPcGroupRep, IsMultiplicativeElementWithInverse ],0,
-    function( hom, elm )
-    local   exp;
-    
-    exp := ExponentsOfPcElement( hom!.pcgsSource, elm );
-    return PcElementByExponentsNC( hom!.pcgsRange, exp );
+    [ IsPcgsToPcgsHomomorphism, IsMultiplicativeElementWithInverse ],0,
+function( hom, elm )
+local   exp;
+  exp := ExponentsOfPcElement( hom!.sourcePcgs, elm );
+  return PcElementByExponentsNC( hom!.rangePcgs, exp );
 end );
 
 #############################################################################
@@ -542,12 +622,11 @@ end );
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . via depth map
 ##
 InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
-  [ IsNaturalHomomorphismPcGroupRep,IsMultiplicativeElementWithInverse ], 0,
-    function( hom, elm )
-    local   exp;
-    
-    exp := ExponentsOfPcElement( hom!.pcgsRange, elm );
-    return PcElementByExponentsNC( hom!.pcgsSource, exp );
+  [ IsPcgsToPcgsHomomorphism,IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+local   exp;
+    exp := ExponentsOfPcElement( hom!.rangePcgs, elm );
+    return PcElementByExponentsNC( hom!.sourcePcgs, exp );
 end );
 
 #############################################################################

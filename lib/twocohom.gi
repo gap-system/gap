@@ -262,9 +262,9 @@ InstallGlobalFunction( CollectorSQ, function( G, M, isSplit )
     r := ShallowCopy(Gcoll);
 
     # create module gens (the transposed is a technical detail)
-    r.module := List( M.generators, TransposedMat );
-    r.mone   := Immutable( IdentityMat( M.dimension, M.field ) );
-    r.mzero  := Immutable( NullMat( M.dimension, M.dimension, M.field ) );
+    r.module:=List(M.generators,i->ImmutableMatrix(M.field,TransposedMat(i)));
+    r.mone  :=ImmutableMatrix(M.field,(IdentityMat(M.dimension, M.field)));
+    r.mzero :=ImmutableMatrix(M.field,Zero(r.mone));
 
     # add avoid 
     r.avoid := [];

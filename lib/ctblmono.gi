@@ -32,8 +32,7 @@ Revision.ctblmono_gi :=
 ##
 InstallMethod( Alpha,
     "for a group",
-    true,
-    [ IsGroup ], 0,
+    [ IsGroup ],
     function( G )
 
     local irr,        # irreducible characters of `G'
@@ -128,8 +127,7 @@ InstallMethod( Alpha,
 ##
 InstallMethod( Delta,
     "for a group",
-    true,
-    [ IsGroup ], 0,
+    [ IsGroup ],
     function( G )
 
     local delta,  # result list
@@ -152,8 +150,7 @@ InstallMethod( Delta,
 ##
 InstallOtherMethod( IsBergerCondition,
     "for a class function",
-    true,
-    [ IsClassFunction ], 0,
+    [ IsClassFunction ],
     function( chi )
 
     local tbl,         # character table of <chi>
@@ -210,8 +207,7 @@ InstallOtherMethod( IsBergerCondition,
 ##
 InstallMethod( IsBergerCondition,
     "for a group",
-    true,
-    [ IsGroup ], 0,
+    [ IsGroup ],
     function( G )
 
     local tbl,         # character table of `G'
@@ -365,8 +361,7 @@ end );
 ##
 InstallMethod( TestQuasiPrimitive,
     "for a character",
-    true,
-    [ IsCharacter ], 0,
+    [ IsCharacter ],
     function( chi )
 
     local values,   # list of character values
@@ -459,8 +454,7 @@ InstallMethod( TestQuasiPrimitive,
 ##
 InstallMethod( IsQuasiPrimitive,
     "for a character",
-    true,
-    [ IsCharacter ], 0,
+    [ IsCharacter ],
     chi -> TestQuasiPrimitive( chi ).isQuasiPrimitive );
 
 
@@ -470,8 +464,7 @@ InstallMethod( IsQuasiPrimitive,
 ##
 InstallMethod( IsPrimitiveCharacter,
     "for a class function",
-    true,
-    [ IsClassFunction ], 0,
+    [ IsClassFunction ],
     function( chi )
     if not IsSolvableGroup( UnderlyingGroup( chi ) ) then
       TryNextMethod();
@@ -486,8 +479,7 @@ InstallMethod( IsPrimitiveCharacter,
 ##
 InstallOtherMethod( IsPrimitive,
     "for a character",
-    true,
-    [ IsClassFunction ], 0,
+    [ IsClassFunction ],
     IsPrimitiveCharacter );
 #T really install this?
 
@@ -674,8 +666,7 @@ end );
 ##
 InstallMethod( IsInducedFromNormalSubgroup,
     "for a character",
-    true,
-    [ IsCharacter ], 0,
+    [ IsCharacter ],
     chi -> TestInducedFromNormalSubgroup( chi ).isInduced );
 
 
@@ -691,8 +682,7 @@ InstallMethod( IsInducedFromNormalSubgroup,
 ##
 InstallMethod( TestSubnormallyMonomial,
     "for a group",
-    true,
-    [ IsGroup ], 0,
+    [ IsGroup ],
     function( G )
 
     local test,       # result record
@@ -761,8 +751,7 @@ InstallMethod( TestSubnormallyMonomial,
 ##
 InstallOtherMethod( TestSubnormallyMonomial,
     "for a character",
-    true,
-    [ IsClassFunction ], 0,
+    [ IsClassFunction ],
     function( chi )
 
     local test,       # result record
@@ -927,14 +916,12 @@ InstallOtherMethod( TestSubnormallyMonomial,
 ##
 InstallMethod( IsSubnormallyMonomial,
     "for a group",
-    true,
-    [ IsGroup ], 0,
+    [ IsGroup ],
     G -> TestSubnormallyMonomial( G ).isSubnormallyMonomial );
 
 InstallOtherMethod( IsSubnormallyMonomial,
     "for a character",
-    true,
-    [ IsClassFunction ], 0,
+    [ IsClassFunction ],
     chi -> TestSubnormallyMonomial( chi ).isSubnormallyMonomial );
 
 
@@ -944,8 +931,7 @@ InstallOtherMethod( IsSubnormallyMonomial,
 ##
 InstallMethod( IsMonomialNumber,
     "for a positive integer",
-    true,
-    [ IsPosInt ], 0,
+    [ IsPosInt ],
     function( n )
 
     local factors,   # list of prime factors of `n'
@@ -1031,8 +1017,7 @@ InstallMethod( IsMonomialNumber,
 ##
 InstallMethod( TestMonomialQuick,
     "for a character",
-    true,
-    [ IsClassFunction ], 0,
+    [ IsClassFunction ],
     function( chi )
 
     local G,          # group of `chi'
@@ -1093,44 +1078,63 @@ InstallMethod( TestMonomialQuick,
 
     if IsPrimePowerInt( codegree ) then
 
-      # If the codegree is a prime power then the character is monomial
-      # (Chillag, Mann, Manz).
-#T also if the group is not solvable?
+      # If the codegree is a prime power then the character is monomial,
+      # by a result of Chillag, Mann, and Manz.
+      # Here is a short proof due to M. I. Isaacs
+      # (communicated by E. Horvath).
+      #
+      # Let $G$ be a finite group, $\chi\in Irr(G)$ with codegree $p^a$
+      # for a prime $p$, and $P\in Syl_p(G)$.
+      # Then there exists an irreducible character $\psi$ of $P$
+      # with $\psi^G = \chi$.
+      #
+      # {\it Proof:}
+      # Let $b$ be an integer such that $\chi(1) = [G : P] p^b$,
+      # and consider $\chi_P = \sum_{\psi\in Irr(P)} a_{\psi} \psi$.
+      # There exists $\psi$ with $a_{\psi} \not= 0$ and $\psi(1) \leq p^b$,
+      # as otherwise $\chi(1)$ would be divisible by a larger power of $p$.
+      # On the other hand, $\chi$ must be a constituent of $\psi^G$ and thus
+      # $p^b \leq \psi(1)$.
+      # So there is equality, and thus $\psi^G = \chi$.
       Info( InfoMonomial, 1,
             "TestMonomialQuick returns with `true'" );
       return rec( isMonomial := true,
                   comment    := "codegree is prime power" );
     fi;
 
-    # If $\pi$ is the set of primes dividing the codegree
+    # If $G$ is solvable and $\pi$ is the set of primes dividing the codegree
     # then the character is induced from a $\pi$ Hall subgroup.
-#T also if the group is not solvable?
-    pi   := Set( FactorsInt( codegree ) );
-    hall := Product( Filtered( FactorsInt( factsize ), x -> x in pi ), 1 );
+    # This follows from Theorem~(2D) in~\cite{Fon62}.
+    if IsSolvableGroup( G ) then
 
-    if factsize / hall = chi[1] then
+      pi   := Set( FactorsInt( codegree ) );
+      hall := Product( Filtered( FactorsInt( factsize ), x -> x in pi ), 1 );
 
-      # The character is induced from a {\em linear} character
-      # of the $\pi$ Hall group.
-      Info( InfoMonomial, 1,
-            "TestMonomialQuick returns with `true'" );
-      return rec( isMonomial := true,
-                  comment    := "degree is index of Hall subgroup" );
+      if factsize / hall = chi[1] then
 
-    elif IsMonomialNumber( hall ) then
+        # The character is induced from a {\em linear} character
+        # of the $\pi$ Hall group.
+        Info( InfoMonomial, 1,
+              "TestMonomialQuick returns with `true'" );
+        return rec( isMonomial := true,
+                    comment    := "degree is index of Hall subgroup" );
 
-      # The {\em order} of this Hall subgroup is monomial.
-      Info( InfoMonomial, 1,
-            "TestMonomialQuick returns with `true'" );
-      return rec( isMonomial := true,
-                  comment    := "induced from monomial Hall subgroup" );
+      elif IsMonomialNumber( hall ) then
+
+        # The {\em order} of this Hall subgroup is monomial.
+        Info( InfoMonomial, 1,
+              "TestMonomialQuick returns with `true'" );
+        return rec( isMonomial := true,
+                    comment    := "induced from monomial Hall subgroup" );
+
+      fi;
 
     fi;
 
     # Inspect the factor group modulo the kernel.
     if 1 < Length( ker ) then
 
-      if   IsMonomialNumber( factsize ) then
+      if   IsSolvableGroup( G ) and IsMonomialNumber( factsize ) then
 
         # The order of the kernel factor group is monomial.
         # (For faithful characters this check has been done already.)
@@ -1139,7 +1143,7 @@ InstallMethod( TestMonomialQuick,
         return rec( isMonomial := true,
                     comment    := "size of kernel factor is monomial" );
 
-      elif IsSubsetSet( ker, SupersolvableResiduum( t ) ) then
+      elif IsSubsetSet( ker, ClassPositionsOfSupersolvableResiduum(t) ) then
 
         # The factor group modulo the kernel is supersolvable.
         Info( InfoMonomial, 1,
@@ -1190,8 +1194,7 @@ InstallMethod( TestMonomialQuick,
 ##
 InstallOtherMethod( TestMonomialQuick,
     "for a group",
-    true,
-    [ IsGroup ], 0,
+    [ IsGroup ],
     function( G )
 
 #T if the table is known then call TestMonomialQuick( G.charTable ) !
@@ -1270,6 +1273,7 @@ InstallOtherMethod( TestMonomialQuick,
 #############################################################################
 ##
 #M  TestMonomial( <chi> ) . . . . . . . . . . . . . . . . . . for a character
+#M  TestMonomial( <chi>, <uselattice> ) . . .  for a character, and a Boolean
 ##
 ##  Called with a character <chi> as argument, `TestMonomialQuick( <chi> )'
 ##  is inspected first.  If this did not decide the question, we test all
@@ -1277,11 +1281,47 @@ InstallOtherMethod( TestMonomialQuick,
 ##  whether the interesting character of the inertia subgroup is monomial.
 ##  (If <chi> is quasiprimitive then it is nonmonomial.)
 ##
+BindGlobal( "TestMonomialFromLattice", function( chi )
+    local G, chars, reps, psi, H, source;
+
+    # Distinguish whether the argument is a character or a group.
+    if IsClassFunction( chi ) then
+      G:= UnderlyingGroup( chi );
+      chars:= [ chi ];
+    else
+      G:= chi;
+      chars:= Irr( G );
+    fi;
+
+    # Compute representatives of the conjugacy classes of subgroups.
+    reps:= List( ConjugacyClassesSubgroups( G ), Representative );
+
+    # Loop over the characters in question.
+    for psi in chars do
+      for H in reps do
+        if Index( G, H ) = psi[1] then
+          source:= First( LinearCharacters( H ),
+                          lambda -> lambda^G = psi );
+          if source = fail then
+            return fail;
+          fi;
+        fi;
+      od;
+    od;
+
+    # Return the positive result.
+    return source;
+end );
+
 InstallMethod( TestMonomial,
     "for a character",
-    true,
-    [ IsClassFunction ], 0,
-    function( chi )
+    [ IsClassFunction ],
+    chi -> TestMonomial( chi, false ) );
+
+InstallMethod( TestMonomial,
+    "for a character, and a Boolean",
+    [ IsClassFunction, IsBool ],
+    function( chi, uselattice )
 
     local G,         # group of `chi'
           test,      # result record
@@ -1306,7 +1346,7 @@ InstallMethod( TestMonomial,
 
     Info( InfoMonomial, 1, "TestMonomial called" );
 
-    # elementary test for monomiality
+    # Start wirth elementary tests for monomiality.
     test:= TestMonomialQuick( chi );
 
     if test.isMonomial = "?" then
@@ -1314,120 +1354,160 @@ InstallMethod( TestMonomial,
       G:= UnderlyingGroup( chi );
 
       if not IsSolvableGroup( G ) then
-        Info( InfoMonomial, 1,
-              "sorry, no implementation for nonsolvable groups" );
-        TryNextMethod();
-      fi;
 
-      t:= CharacterTable( G );
+        # Use the subgroup lattice or give up.
+        if uselattice or Size( G ) <= TestMonomialUseLattice then
 
-      # Loop over all normal subgroups of `G' to that <chi> restricts
-      # nonhomogeneously.
-      # (If there are no such normal subgroups then <chi> is
-      # quasiprimitive hence not monomial.)
-      ker:= ClassPositionsOfKernel( ValuesOfClassFunction( chi ) );
-      nsg:= Filtered( ClassPositionsOfNormalSubgroups( t ),
-                      x -> IsSubsetSet( x, ker ) );
-      isqp:= true;
-
-      i:= 1;
-      found:= false;
-
-      while not found and i <= Length( nsg ) do
-
-        testhom:= TestHomogeneous( chi, nsg[i] );
-        if not testhom.isHomogeneous then
-
-          isqp:= false;
-
-          # Take a constituent `theta' in a nonhomogeneous restriction.
-          theta:= testhom.character;
-
-          # We have $<chi>_N = e \sum_{i=1}^t \theta_i$.
-          # <chi> is induced from an irreducible character of
-          # $'T' = I_G(\theta_1)$ that restricts to $e \theta_1$,
-          # so we have proved monomiality if $e = \theta(1) = 1$.
-          if testhom.multiplicity = 1 and DegreeOfCharacter( theta ) = 1 then
-
-            found:= true;
+          test:= TestMonomialFromLattice( chi );
+          if test = fail then
+            test:= rec( isMonomial := false,
+                        comment    := "lattice checked" );
+          else
             test:= rec( isMonomial := true,
                         comment    := "induced from \'character\'",
-                        character  := theta );
+                        character  := test );
+          fi;
 
-          else
+        else
 
-            # Compute the inertia group `T'.
-            T:= InertiaSubgroup( G, theta );
-            if TestMonomialQuick( T ).isMonomial = true then
+          # We do not know whether <chi> is monomial.
+          Info( InfoMonomial, 1,
+                "TestMonomial: nonsolvable group" );
+          test:= rec( isMonomial:= "?",
+                      comment:= "no criterion for nonsolvable group" );
 
-              # `chi' is induced from `T', and `T' is monomial.
+        fi;
+
+      else
+
+        # Loop over all normal subgroups of `G' to that <chi> restricts
+        # nonhomogeneously.
+        # (If there are no such normal subgroups then <chi> is
+        # quasiprimitive hence not monomial.)
+        t:= CharacterTable( G );
+        ker:= ClassPositionsOfKernel( ValuesOfClassFunction( chi ) );
+        nsg:= Filtered( ClassPositionsOfNormalSubgroups( t ),
+                        x -> IsSubsetSet( x, ker ) );
+        isqp:= true;
+
+        i:= 1;
+        found:= false;
+
+        while not found and i <= Length( nsg ) do
+
+          testhom:= TestHomogeneous( chi, nsg[i] );
+          if not testhom.isHomogeneous then
+
+            isqp:= false;
+
+            # Take a constituent `theta' in a nonhomogeneous restriction.
+            theta:= testhom.character;
+
+            # We have $<chi>_N = e \sum_{i=1}^t \theta_i$.
+            # <chi> is induced from an irreducible character of
+            # $'T' = I_G(\theta_1)$ that restricts to $e \theta_1$,
+            # so we have proved monomiality if $e = \theta(1) = 1$.
+            if     testhom.multiplicity = 1
+               and DegreeOfCharacter( theta ) = 1 then
+
               found:= true;
               test:= rec( isMonomial := true,
-                          comment    := "induced from monomial subgroup",
-                          subgroup   := T );
+                          comment    := "induced from \'character\'",
+                          character  := theta );
 
             else
 
-              # Check whether a character of `T' from that <chi>
-              # is induced can be proved to be monomial.
+              # Compute the inertia group `T'.
+              T:= InertiaSubgroup( G, theta );
+              if TestMonomialQuick( T ).isMonomial = true then
 
-              # First get all characters `psi' of `T'
-              # from that <chi> is induced.
-              t:= Irr( T );
-              fus:= FusionConjugacyClasses( OrdinaryCharacterTable( T ),
-                                            OrdinaryCharacterTable( G ) );
-              deg:= DegreeOfCharacter( chi ) / Index( G, T );
-              rest:= ValuesOfClassFunction( chi ){ fus };
-              j:= 1;
-              found2:= false;
-              while not found2 and j <= Length(t) do
-                if     DegreeOfCharacter( t[j] ) = deg
-                   and ScalarProduct( CharacterTable( T ),
-                                      ValuesOfClassFunction( t[j] ),
-                                      rest ) <> 0 then
-                  psi:= t[j];
-                  testmon:= TestMonomial( psi );
-                  if testmon.isMonomial = true then
-                    found:= true;
-                    found2:= true;
-                    test:= testmon;
+                # `chi' is induced from `T', and `T' is monomial.
+                found:= true;
+                test:= rec( isMonomial := true,
+                            comment    := "induced from monomial subgroup",
+                            subgroup   := T );
+
+              else
+
+                # Check whether a character of `T' from that <chi>
+                # is induced can be proved to be monomial.
+
+                # First get all characters `psi' of `T'
+                # from that <chi> is induced.
+                t:= Irr( T );
+                fus:= FusionConjugacyClasses( OrdinaryCharacterTable( T ),
+                                              OrdinaryCharacterTable( G ) );
+                deg:= DegreeOfCharacter( chi ) / Index( G, T );
+                rest:= ValuesOfClassFunction( chi ){ fus };
+                j:= 1;
+                found2:= false;
+                while not found2 and j <= Length(t) do
+                  if     DegreeOfCharacter( t[j] ) = deg
+                     and ScalarProduct( CharacterTable( T ),
+                                        ValuesOfClassFunction( t[j] ),
+                                        rest ) <> 0 then
+                    psi:= t[j];
+                    testmon:= TestMonomial( psi );
+                    if testmon.isMonomial = true then
+                      found:= true;
+                      found2:= true;
+                      test:= testmon;
+                    fi;
                   fi;
-                fi;
-                j:= j+1;
-              od;
+                  j:= j+1;
+                od;
+
+              fi;
 
             fi;
 
           fi;
 
+          i:= i+1;
+
+        od;
+
+        if isqp then
+
+          # <chi> is quasiprimitive, for a solvable group this implies
+          # primitivity,
+          # for a nonlinear character this proves nonmonomiality.
+          test:= rec( isMonomial := false,
+                      comment    := "quasiprimitive character" );
+
+        elif not found then
+
+          # We have tried all suitable normal subgroups and always got
+          # back that the character of the inertia subgroup was
+          # (possibly) nonmonomial.
+          if uselattice or Size( G ) <= TestMonomialUseLattice then
+
+            # Use explicit computations with the subgroup lattice,
+            test:= TestMonomialFromLattice( chi );
+            if test = fail then
+              test:= rec( isMonomial := false,
+                          comment    := "lattice checked" );
+            else
+              test:= rec( isMonomial := true,
+                          comment    := "induced from \'character\'",
+                          character  := test );
+            fi;
+
+          else
+
+            # We cannot decide whether <chi> is monomial.
+            test:= rec( isMonomial:= "?",
+                     comment:= "all inertia subgroups checked, no result" );
+
+          fi;
+
         fi;
-
-        i:= i+1;
-
-      od;
-
-      if isqp then
-
-        # <chi> is quasiprimitive, for a solvable group this implies
-        # primitivity, for a nonlinear character this proves
-        # nonmonomiality.
-        test:= rec( isMonomial := false,
-                    comment    := "quasiprimitive character" );
-
-      elif not found then
-
-        # We have tried all suitable normal subgroups and always got
-        # back that the character of the inertia subgroup was
-        # (possibly) nonmonomial.
-        # So we do not know whether <chi> is monomial.
-        test:= rec( isMonomial:= "?",
-                    comment:= "all inertia subgroups checked, no result" );
-#T call a method that handles this case1
 
       fi;
 
     fi;
 
+    # Return the result.
     Info( InfoMonomial, 1,
           "TestMonomial returns with `", test.isMonomial, "'" );
     return test;
@@ -1437,6 +1517,7 @@ InstallMethod( TestMonomial,
 #############################################################################
 ##
 #M  TestMonomial( <G> ) . . . . . . . . . . . . . . . . . . . . . for a group
+#M  TestMonomial( <G>, <uselattice> ) . . . . . .  for a group, and a Boolean
 ##
 ##  Called with a group <G> the program checks whether all representatives
 ##  of character orbits are monomial.
@@ -1445,9 +1526,13 @@ InstallMethod( TestMonomial,
 ##
 InstallOtherMethod( TestMonomial,
     "for a group",
-    true,
-    [ IsGroup ], 0,
-    function( G )
+    [ IsGroup ],
+    G -> TestMonomial( G, false ) );
+
+InstallOtherMethod( TestMonomial,
+    "for a group, and a Boolean",
+    [ IsGroup, IsBool ],
+    function( G, uselattice )
 
     local test,      # result record
           found,     # monomial character found
@@ -1469,9 +1554,8 @@ InstallOtherMethod( TestMonomial,
         # For even order groups it is checked whether
         # the list `Delta( G )' contains an entry that is bigger
         # than one. (For monomial groups and for odd order groups
-        # this is always less than one, according to Taketa\'s Theorem
-        # and Berger\'s result).
-
+        # this is always less than one,
+        # according to Taketa's Theorem and Berger's result).
         test:= rec( isMonomial := false,
                     comment    := "list Delta( G ) contains entry > 1" );
 
@@ -1483,7 +1567,7 @@ InstallOtherMethod( TestMonomial,
         poss:= [];
         while ( not found ) and j <= Length( orbits ) do
           psi:= orbits[j];
-          testmon:= TestMonomial( psi ).isMonomial;
+          testmon:= TestMonomial( psi, uselattice ).isMonomial;
           if testmon = false then
             found:= true;
           elif testmon = "?" then
@@ -1494,19 +1578,20 @@ InstallOtherMethod( TestMonomial,
 
         if found then
 
-          # nonmonomial character found
+          # A nonmonomial character was found.
           test:= rec( isMonomial := false,
                       comment    := "nonmonomial character found",
                       character  := psi );
 
-        elif Length( poss ) = 0 then
+        elif IsEmpty( poss ) then
 
-          # all checks answered `true'
+          # All checks answered `true'.
           test:= rec( isMonomial := true,
                       comment    := "all characters checked" );
 
         else
 
+          # We give up.
           test:= rec( isMonomial := "?",
                       comment    := "(possibly) nonmon. characters found",
                       characters := poss );
@@ -1530,8 +1615,8 @@ InstallOtherMethod( TestMonomial,
 ##
 InstallMethod( IsMonomialGroup,
     "for a group",
-    true, [ IsGroup ], 0,
-    G -> TestMonomial( G ).isMonomial );
+    [ IsGroup ],
+    G -> TestMonomial( G, true ).isMonomial );
 
 
 #############################################################################
@@ -1540,9 +1625,8 @@ InstallMethod( IsMonomialGroup,
 ##
 InstallMethod( IsMonomialCharacter,
     "for a character",
-    true,
-    [ IsClassFunction ], 0,
-    chi -> TestMonomial( chi ).isMonomial );
+    [ IsClassFunction ],
+    chi -> TestMonomial( chi, true ).isMonomial );
 
 
 #############################################################################
@@ -1815,26 +1899,22 @@ end );
 
 InstallMethod( TestRelativelySM,
     "for a character",
-    true,
-    [ IsClassFunction ], 0,
+    [ IsClassFunction ],
     TestRelativelySMFun );
 
 InstallOtherMethod( TestRelativelySM,
     "for a group",
-    true,
-    [ IsGroup ], 0,
+    [ IsGroup ],
     TestRelativelySMFun );
 
 InstallOtherMethod( TestRelativelySM,
     "for a character, and an object",
-    true,
-    [ IsClassFunction, IsObject ], 0,
+    [ IsClassFunction, IsObject ],
     TestRelativelySMFun );
 
 InstallOtherMethod( TestRelativelySM,
     "for a group, and an object",
-    true,
-    [ IsGroup, IsObject ], 0,
+    [ IsGroup, IsObject ],
     TestRelativelySMFun );
 
 
@@ -1845,14 +1925,12 @@ InstallOtherMethod( TestRelativelySM,
 ##
 InstallMethod( IsRelativelySM,
     "for a character",
-    true,
-    [ IsClassFunction ], 0,
+    [ IsClassFunction ],
     chi -> TestRelativelySM( chi ).isRelativelySM );
 
 InstallOtherMethod( IsRelativelySM,
     "for a group",
-    true,
-    [ IsGroup ], 0,
+    [ IsGroup ],
     G -> TestRelativelySM( G ).isRelativelySM );
 
 
@@ -1870,8 +1948,7 @@ InstallOtherMethod( IsRelativelySM,
 ##
 InstallMethod( IsMinimalNonmonomial,
     "for a (solvable) group",
-    true,
-    [ IsGroup ], 0,
+    [ IsGroup ],
     function( K )
 
     local F,          # Fitting subgroup
@@ -2147,7 +2224,7 @@ InstallGlobalFunction( MinimalNonmonomialGroup, function( p, factsize )
         return fail;
       fi;
 
-      K:= FreeGroup( 5 );
+      K:= FreeGroup(IsSyllableWordsFamily, 5 );
       Kgens:= GeneratorsOfGroup( K );
       name:= Concatenation( String(p), "^(1+2):4" );
       rels:= [
@@ -2178,7 +2255,7 @@ InstallGlobalFunction( MinimalNonmonomialGroup, function( p, factsize )
       # Choose $t$ with $t^2 \equiv -1 \pmod{p}$.
       t:= PrimitiveRootMod( p ) ^ ( (p-1)/4 );
 
-      K:= FreeGroup( 6 );
+      K:= FreeGroup(IsSyllableWordsFamily, 6 );
       Kgens:= GeneratorsOfGroup( K );
       name:= Concatenation( String(p), "^(1+2):Q8" );
       rels:= [
@@ -2238,7 +2315,7 @@ InstallGlobalFunction( MinimalNonmonomialGroup, function( p, factsize )
       od;
 
       # Write down the presentation,
-      K:= FreeGroup( 2m+2 );
+      K:= FreeGroup(IsSyllableWordsFamily, 2m+2 );
       Kgens:= GeneratorsOfGroup( K );
       name:= Concatenation( String(p), "^(1+", String( 2m ), "):",
                             String(q) );
@@ -2297,7 +2374,7 @@ InstallGlobalFunction( MinimalNonmonomialGroup, function( p, factsize )
       # The first generator is $t$, the second is $r$,
       # generators 3 to $3+s-1$ are the powers of $t$ that are
       # not contained in $Z(K)$.
-      K:= FreeGroup( 2*m + s + 3 );
+      K:= FreeGroup(IsSyllableWordsFamily, 2*m + s + 3 );
       Kgens:= GeneratorsOfGroup( K );
       name:= Concatenation( "2^(1+", String( 2*m ), ")" );
       if 0 < s then
@@ -2457,7 +2534,7 @@ InstallGlobalFunction( MinimalNonmonomialGroup, function( p, factsize )
       od;
 
       # Write down the presentation.
-      K:= FreeGroup( 2*m + 4 );
+      K:= FreeGroup(IsSyllableWordsFamily, 2*m + 4 );
       Kgens:= GeneratorsOfGroup( K );
       name:= Concatenation( String(p), "^(1+", String( 2*m), "):2.D",
                             String( factsize/2 ) );

@@ -33,9 +33,9 @@ false
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Fail}
+\Section{Fail}\null
 
-\>`fail'{fail} V
+\>`fail' V
 
 The value `fail' is used to indicate situations when an operation could
 not be performed for the given arguments, either because of shortcomings of
@@ -74,7 +74,7 @@ false
 gap> false = (true = fail);
 true
 gap> true <> 17;
-true 
+true
 \endexample
 
 \>`<bool1> \< <bool2>'{ordering!booleans}
@@ -91,14 +91,14 @@ true
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Operations for Booleans}%
+\Section{Operations for Booleans}
 
 \index{operations!for booleans}
 \index{logical operations}
 
 The following boolean operations are only applicable to `true' and `false'.
 
-\>`<bool1> or <bool2>'{or}
+\>`<bool1> or <bool2>'{or}@{`or'}
 
 The logical operator `or' evaluates to `true' if at least one of the two
 boolean operands <bool1> and <bool2> is `true' and to `false' otherwise.
@@ -126,7 +126,7 @@ gap> if i <= 0 or l[i] = false then Print("aha\n"); fi;
 aha  # no error, because `l[i]' is not evaluated
 \endexample
 
-\>`<bool1> and <bool2>'{and}
+\>`<bool1> and <bool2>'{and}@{`and'}
 
 The logical operator `and' evaluates to `true' if both boolean operands
 <bool1> and <bool2> are `true' and to `false' otherwise.
@@ -155,10 +155,10 @@ gap> false and 17;
 false  # is no error, because `17' is never looked at
 \endexample
 
-\>`<fil1> and <fil2>'{and!for filters}
+\>`<fil1> and <fil2>'{and!for filters}@{`and'!for filters}
 
-`and' can also be applied to filters. It returns a filter that tests
-`<fil1>(x) and <fil2>(x)'
+`and' can also be applied to filters. It returns a filter that when applied
+to some argument <x>, tests `<fil1>(<x>) and <fil2>(<x>)'.
 
 \beginexample
 gap> andfilt:= IsPosRat and IsInt;;
@@ -167,7 +167,7 @@ true
 false
 \endexample
 
-\>`not <bool>'{not}
+\>`not <bool>'{not}@{`not'}
 
 The logical operator `not' returns `true' if the boolean value <bool> is
 `false' and `true' otherwise. An error is signalled if <bool> does not

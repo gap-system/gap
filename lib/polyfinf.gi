@@ -66,13 +66,12 @@ local   c,  ind,  br,  g,  h,  k,  i,dou;
 
   # if p > 2 take <g> ^ ((p ^ (k*<d>) - 1) / 2) - 1
   else
-      h := PowerMod( R, g,
-	      (Characteristic(br)^(DegreeOverPrimeField(br)*d)-1)/2, f )
+      h:=PowerMod(g,(Characteristic(br)^(DegreeOverPrimeField(br)*d)-1)/2,f)
 	    - One(br);
   fi;
 
   # gcd of <f> and <h> is with probability > 1/2 a proper factor
-  g := GcdOp(R,f,h);
+  g := GcdOp(f,h);
   return Concatenation(
       FactorsCommonDegreePol( R, Quotient(R,f,g), d ),
       FactorsCommonDegreePol( R, g, d ) );
@@ -107,7 +106,7 @@ local   br,  ind,  c,  facs,  deg,  px,  pow,  cyc,  gcd,d;
   deg := 0;
   px  := LaurentPolynomialByExtRep(
 	      FamilyObj(f), [One(br)],1, ind );
-  pow := PowerMod( R, px, Size(br), f );
+  pow := PowerMod( px, Size(br), f );
 
   # while <f> could still have two irreducible factors
   while 2*(deg+1) <= DegreeOfLaurentPolynomial(f)  do
@@ -115,19 +114,19 @@ local   br,  ind,  c,  facs,  deg,  px,  pow,  cyc,  gcd,d;
       # next degree and next cyclotomic polynomial x^(q^(<deg>+1))-x
       deg := deg + 1;
       cyc := pow - px;
-      pow := PowerMod(R,pow,Size(br),f);
+      pow := PowerMod(pow,Size(br),f);
 
       if not IsBound(opt.onlydegs) or deg in opt.onlydegs  then
 
 	  # compute the gcd of <f> and <cyc>
-	  gcd := GcdOp( R, f, cyc );
+	  gcd := GcdOp( f, cyc );
 
 	  # split the gcd with 'FactorsCommonDegree'
 	  d:=DegreeOfLaurentPolynomial(gcd);
 	  if 0<d and d>=deg then
 	      Info(InfoPoly,3,"Factor Common Deg.",deg );
 	      Append(facs,FactorsCommonDegreePol(R,gcd,deg));
-	      f := Quotient(R,f,gcd);
+	      f := Quotient(f,gcd);
 	  fi;
       fi;
   od;
@@ -219,7 +218,7 @@ InstallGlobalFunction(FFPFactors,function (arg)
 
     # make the polynomial normed, remember the leading coefficient for later
     g   := StandardAssociate(R,f);
-    l   := Quotient(R,f,g);
+    l   := Quotient(f,g);
     v   := CoefficientsOfLaurentPolynomial(g);
     k   := LaurentPolynomialByExtRep( FamilyObj(f), v[1],0, ind );
     v   := v[2];
@@ -231,11 +230,11 @@ InstallGlobalFunction(FFPFactors,function (arg)
     if d <> Zero(R)  then
 
       # compute the gcd of <k> and the derivative <d>
-      g := GcdOp( R, k, d );
+      g := GcdOp( k, d );
       if DegreeOfLaurentPolynomial(g)>0 then
 
 	# factor the squarefree quotient and the remainder
-	facs := FactorsSquarefree( R, Quotient(R,k,g), opt );
+	facs := FactorsSquarefree( R, Quotient(k,g), opt );
       else
 	facs := FactorsSquarefree( R, k, opt );
       fi;
@@ -249,11 +248,11 @@ InstallGlobalFunction(FFPFactors,function (arg)
 
       if DegreeOfLaurentPolynomial(g)>0 then
 	for h in ShallowCopy(facs)  do
-	  q := Quotient( R, g, h );
+	  q := Quotient( g, h );
 	  while q <> fail  do
 	    Add( facs, h );
 	    g := q;
-	    q := Quotient( R, g, h );
+	    q := Quotient( g, h );
 	  od;
 	od;
       fi;
@@ -305,11 +304,11 @@ end);
 
 
 InstallMethod( Factors, "polynomial over a finite field",
-    true, [ IsFiniteFieldPolynomialRing, IsUnivariatePolynomial ],0,
+    IsCollsElms, [ IsFiniteFieldPolynomialRing, IsUnivariatePolynomial ],0,
   FFPFactors);
 
 InstallOtherMethod( Factors, "polynomial over a finite field, option",
-    true, [ IsFiniteFieldPolynomialRing, IsUnivariatePolynomial,IsRecord ],0,
+    IsCollsElmsX, [ IsFiniteFieldPolynomialRing, IsUnivariatePolynomial,IsRecord ],0,
   FFPFactors);
 
 
@@ -383,16 +382,16 @@ end);
 
 #############################################################################
 ##
-#F  FFPPowerModCheck( <R>, <g>, <pp>, <f> ) . . . . . . . . . . . . . . local
+#F  FFPPowerModCheck(<g>, <pp>, <f> ) . . . . . . . . . . . . . . local
 ##
-BindGlobal("FFPPowerModCheck",function( R, g, pp, f )
+BindGlobal("FFPPowerModCheck",function( g, pp, f )
 local   qq,  i;
 
   qq := [];
   for i  in [ 1 .. Length(pp)/2 ]  do
       Add( qq, pp[2*i-1] );
       Add( qq, pp[2*i] );
-      g := PowerMod( R, g, pp[2*i-1] ^ pp[2*i], f );
+      g := PowerMod( g, pp[2*i-1] ^ pp[2*i], f );
       if DegreeOfLaurentPolynomial(g) = 0  then
 	  return [ g, qq ];
       fi;
@@ -508,7 +507,7 @@ local   l,  a,  h,  n1,  pp1,  pp2,  k,  o,  q;
       pp := ShallowCopy( pp );
       a  := QuoInt( pp[2], 2 );
       q  := pp[1] ^ a;
-      h  := PowerMod( R, g, q, f );
+      h  := PowerMod( g, q, f );
 
       # if <h> is constant try again with smaller dividend
       if 0 = DegreeOfLaurentPolynomial(h)  then
@@ -534,7 +533,7 @@ local   l,  a,  h,  n1,  pp1,  pp2,  k,  o,  q;
     Info( InfoPoly, 3, "    <pp2> = ", pp2 );
 
       # raise <g> to the power <pp2>
-      k   := FFPPowerModCheck( R, g, pp2, f );
+      k   := FFPPowerModCheck( g, pp2, f );
       pp2 := k[2];
       k   := k[1];
 
@@ -542,7 +541,7 @@ local   l,  a,  h,  n1,  pp1,  pp2,  k,  o,  q;
       o := FFPOrderKnownDividend( R, k, f, pp1 );
 
       # compute order for <pp2>
-      k := PowerMod( R, g, o[1], f );
+      k := PowerMod( g, o[1], f );
       l := FFPOrderKnownDividend( R, k, f, pp2 );
       o := [ o[1]*l[1], l[2] ];
       Info( InfoPoly, 3, "FFPOrderKnownDividend returns ", o );

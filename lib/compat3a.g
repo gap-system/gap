@@ -143,15 +143,6 @@ DeclareSynonym( "CharTableQuaternionic", CharacterTableQuaternionic );
 
 #############################################################################
 ##
-#F  CharTableLibrary( <arglist> )
-##
-BindGlobal( "CharTableLibrary", function( arglist )
-    return CallFuncList( CharacterTableFromLibrary, arglist );
-end );
-
-
-#############################################################################
-##
 #F  CharTablePGroup( <G> )
 #F  CharTableSSGroup( <G> )
 ##
@@ -191,14 +182,13 @@ DeclareOperation( "CharPol", [ IsField, IsScalar ] );
 
 InstallOtherMethod( CharPol,
     "for a scalar",
-    true,
-    [ IsScalar ], 0,
+    [ IsScalar ],
     z -> CharPol( DefaultField( z ), z ) );
 
 InstallMethod( CharPol,
     "for a field, and a scalar",
     IsCollsElms,
-    [ IsField, IsScalar ], 0,
+    [ IsField, IsScalar ],
     function( F, z )
 
     local   pol,        # characteristic polynom of <z> in <F>, result
@@ -550,16 +540,14 @@ DeclareSynonymAttr( "LengthWord", Length );
 ##  (Note the different behaviour in {\GAP}~3 if the argument is a string;
 ##  but fortunately this was never documented.)
 ##
-InstallOtherMethod( ListOp,
+InstallMethod( ListOp,
     "method for a list (compatibility mode)",
-    true,
-    [ IsList ], 0,
+    [ IsList ],
     IdFunc );
 
 InstallOtherMethod( ListOp,
     "method for a permutation (compatibility mode)",
-    true,
-    [ IsPerm ], 0,
+    [ IsPerm ],
     ListPerm );
 
 
@@ -600,14 +588,13 @@ DeclareOperation( "MinPol", [ IsField, IsScalar ] );
 
 InstallOtherMethod( MinPol,
     "for a scalar",
-    true,
-    [ IsScalar ], 0,
+    [ IsScalar ],
     z -> MinPol( DefaultField( z ), z ) );
 
 InstallMethod( MinPol,
     "for a field, and a scalar",
     IsCollsElms,
-    [ IsField, IsScalar ], 0,
+    [ IsField, IsScalar ],
     function( F, z )
 
     local   pol,        # minimal polynom of <z> in <F>, result
@@ -646,13 +633,6 @@ DeclareSynonym( "Mod", EuclideanRemainder );
 #F  NofCyc( <cyc> )
 ##
 DeclareSynonym( "NofCyc", Conductor );
-
-
-#############################################################################
-##
-#F  NotifyCharTable( <firstname>, <filename>, <othernames> )
-##
-DeclareSynonym( "NotifyCharTable", NotifyCharacterTable );
 
 
 #############################################################################
@@ -711,8 +691,7 @@ DeclareSynonym( "OrbitPowermaps", OrbitPowerMaps );
 ##
 InstallOtherMethod( Order,
     "two-argument method, ignore first argument",
-    true,
-    [ IsObject, IsObject ], 0,
+    [ IsObject, IsObject ],
     function( D, elm )
     return Order( elm );
     end );
@@ -734,8 +713,7 @@ DeclareSynonym( "OrderCyc", Order );
 ##
 InstallOtherMethod( PermutationCharacter,
     "method for a permutation group (compatibility mode)",
-    true,
-    [ IsPermGroup ], 0,
+    [ IsPermGroup ],
     NaturalCharacter );
 
 
@@ -890,13 +868,6 @@ DeclareSynonym( "RealClassesCharTable", RealClasses );
 
 #############################################################################
 ##
-#F  RecFields( <record> )
-##
-BindGlobal( "RecFields", RecNames );
-
-
-#############################################################################
-##
 #F  RepresentativesPowermaps( <listofpowermaps>, <matautomorphisms> )
 ##
 DeclareSynonym( "RepresentativesPowermaps", RepresentativesPowerMaps );
@@ -1019,26 +990,6 @@ DeclareSynonym( "TomMat", TableOfMarks );
 ##
 DeclareSynonym( "TransformingPermutationsCharTables",
     TransformingPermutationsCharacterTables );
-
-
-#############################################################################
-##
-#F  AllCharTableNames( ... )
-#F  CharTableSpecialized( <gentbl>, <param> )
-#F  FirstNameCharTable( <tblname> )
-#F  FileNameCharTable( <tblname> )
-##
-##  The following functions make sense only if the character table library
-##  is available.
-##
-if TBL_AVAILABLE then
-  DeclareSynonym( "AllCharTableNames", AllCharacterTableNames );
-  DeclareSynonym( "CharTableSpecialized", CharacterTableSpecialized );
-  BindGlobal( "FirstNameCharTable",
-              name -> LibInfoCharacterTable( name ).firstName );
-  BindGlobal( "FileNameCharTable",
-              name -> LibInfoCharacterTable( name ).fileName );
-fi;
 
 
 #############################################################################

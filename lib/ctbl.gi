@@ -204,9 +204,15 @@ InstallGlobalFunction( CompatibleConjugacyClassesDefault,
     # until either the bijection is found or no more criteria are available.
     # Uniquely identified classes are removed from `pi1' and `pi2',
     # and inserted in `bijection'.
-    pi1:= [ [ 1 .. nccl ] ];
-    pi2:= [ [ 1 .. nccl ] ];
-    bijection:= [];
+    if IsBound( arec.bijection ) then
+      bijection:= ShallowCopy( arec.bijection );
+      pi1:= [ Filtered( [ 1 .. nccl ], i -> not IsBound( bijection[i] ) ) ];
+      pi2:= [ Difference( [ 1 .. nccl ], bijection ) ];
+    else
+      bijection:= [];
+      pi1:= [ [ 1 .. nccl ] ];
+      pi2:= [ [ 1 .. nccl ] ];
+    fi;
 
     # the function that does the refinement,
     # the return value `false' means that the bijection is still ambiguous,
@@ -532,7 +538,7 @@ InstallGlobalFunction( CompatibleConjugacyClassesDefault,
     # Use Galois conjugacy of classes.
     usegalois:= function()
 
-      local galoisfams, copypi1, i, list, fam, id, im, res, fun1, fun2;
+      local galoisfams, copypi1, i, list, fam, id, im, res, pos, fun1, fun2;
 
       galoisfams:= GaloisMat( TransposedMat( Irr( tbl ) ) ).galoisfams;
       galoisfams:= List( Filtered( galoisfams, IsList ), x -> x[1] );
@@ -552,9 +558,11 @@ InstallGlobalFunction( CompatibleConjugacyClassesDefault,
             im:= bijection[ id ];
             res:= PrimeResidues( tbl_orders[ id ] );
             RemoveSet( res, 1 );
+            pos:= Position( pi1, copypi1[i] );
             fun1:= ( j -> First( res, k -> PowerMap( tbl, k, id ) = j ) );
-            fun2:= ( j -> First( res, k -> powerclass( im, k, pi2[i] ) = j ) );
-            if refine( fun1, fun2, [ Position( pi1, copypi1[i] ) ] ) then
+            fun2:= ( j -> First( res,
+                             k -> powerclass( im, k, pi2[ pos ] ) = j ) );
+            if refine( fun1, fun2, [ pos ] ) then
               return true;
             fi;
 
@@ -773,6 +781,30 @@ InstallMethod( Irr,
 
 #############################################################################
 ##
+#M  Irr( <G>, <0> )   . . . . . . . . . . . . . . . . .  for a group and zero
+##
+##  We compute the character table of <G> if it is not yet stored
+##  (which must be done anyhow), and then check whether the table already
+##  knows its irreducibles.
+##  This method is successful if the method for computing the table (head)
+##  automatically computes also the irreducibles.
+##
+InstallMethod( Irr,
+    "partial method for a group, and zero",
+    [ IsGroup, IsZeroCyc ], SUM_FLAGS,
+    function( G, zero )
+    local tbl;
+    tbl:= OrdinaryCharacterTable( G );
+    if HasIrr( tbl ) then
+      return Irr( tbl );
+    else
+      TryNextMethod();
+    fi;
+    end );
+
+
+#############################################################################
+##
 #M  Irr( <G>, <p> )   . . . . . . . . . . . . . . . . for a group and a prime
 ##
 InstallMethod( Irr,
@@ -798,7 +830,7 @@ InstallMethod( Irr,
     local p,       # characteristic
           ordtbl,  # ordinary character table
           i,       # loop variable
-          rest,    # restriction of characters to 'p'-regular classes
+          rest,    # restriction of characters to `p'-regular classes
           irr,     # list of Brauer characters
           cd,      # list of ordinary character degrees
           deg,     # one character degree
@@ -860,6 +892,10 @@ InstallMethod( Irr,
 ##  We must delegate this to the underlying group.
 ##  Note that the ordering of classes for the characters in the group
 ##  and the characters in the table may be different!
+##  Note that <ordtbl> may have been obtained by sorting the classes of the
+##  table stored as the `OrdinaryCharacterTable' value of $G$;
+##  In this case, the attribute `ClassPermutation' of <ordtbl> is set.
+##  (The `OrdinaryCharacterTable' value of $G$ itself does *not* have this.)
 ##
 InstallMethod( Irr,
     "for an ord. char. table with known group (delegate to the group)",
@@ -1374,10 +1410,14 @@ InstallMethod( OrdersClassRepresentatives,
     [ IsNearlyCharacterTable ],
     function( tbl )
 
-    local ord, p;
+    local pow, ord, p;
 
     # Compute the orders as determined by the known power maps.
-    ord:= ElementOrdersPowerMap( ComputedPowerMaps( tbl ) );
+    pow:= ComputedPowerMaps( tbl );
+    if IsEmpty( pow ) then
+      return fail;
+    fi;
+    ord:= ElementOrdersPowerMap( pow );
     if ForAll( ord, IsInt ) then
       return ord;
     fi;
@@ -1414,6 +1454,7 @@ InstallMethod( SizesCentralizers,
 InstallMethod( SizesCentralizers,
     "for a character table with known class lengths",
     [ IsNearlyCharacterTable and HasSizesConjugacyClasses ],
+    RankFilter( HasUnderlyingGroup ),
     function( tbl )
     local classlengths, size;
     classlengths:= SizesConjugacyClasses( tbl );
@@ -1451,6 +1492,7 @@ InstallMethod( SizesConjugacyClasses,
 InstallMethod( SizesConjugacyClasses,
     "for a character table with known centralizer sizes",
     [ IsNearlyCharacterTable and HasSizesCentralizers ],
+    RankFilter( HasUnderlyingGroup ),
     function( tbl )
     local centsizes, size;
     centsizes:= SizesCentralizers( tbl );
@@ -1584,6 +1626,16 @@ InstallMethod( ClassNames,
     # Return the list of classnames.
     return names;
     end );
+
+
+#############################################################################
+##
+#M  CharacterNames( <tbl> )  . . . . . . character names of a character table
+##
+InstallMethod( CharacterNames,
+    [ IsNearlyCharacterTable ],
+    tbl -> List( [ 1 .. NrConjugacyClasses( tbl ) ],
+                 i -> Concatenation( "X.", String( i ) ) ) );
 
 
 #############################################################################
@@ -1741,7 +1793,7 @@ BindGlobal( "DirectProductDecompositionsLocal",
     nsg:= Difference( nsg, [ [ 1 ] ] );
     sizes:= List( nsg, x -> Sum( classes{ x }, 0 ) );
     SortParallel( sizes, nsg );
-    
+
     decomp:= [];
     for i in [ 1 .. Length( nsg ) ] do
       quot:= size / sizes[i];
@@ -1756,7 +1808,7 @@ BindGlobal( "DirectProductDecompositionsLocal",
         pos:= Position( sizes, quot, pos );
       od;
     od;
-    
+
     return decomp;
 end );
 
@@ -2027,6 +2079,59 @@ InstallMethod( ClassPositionsOfUpperCentralSeries,
 
 #############################################################################
 ##
+#M  ClassPositionsOfSolvableResiduum( <tbl> )
+##
+InstallMethod( ClassPositionsOfSolvableResiduum,
+    "for an ordinary table",
+    [ IsOrdinaryTable ],
+    function( tbl )
+
+    local nsg,       # list of all normal subgroups
+          i,         # loop variable, position in `nsg'
+          N,         # one normal subgroup
+          posN,      # position of `N' in `nsg'
+          size,      # size of `N'
+          nextsize,  # size of largest normal subgroup contained in `N'
+          classes;   # class lengths
+
+    nsg:= ClassPositionsOfNormalSubgroups( tbl );
+
+    # Go down a chief series, starting with the whole group,
+    # until there is no step of prime order.
+    i:= Length( nsg );
+    nextsize:= Size( tbl );
+    classes:= SizesConjugacyClasses( tbl );
+
+    while 1 < i do
+
+      posN:= i;
+      N:= nsg[ posN ];
+      size:= nextsize;
+
+      # Get the largest normal subgroup contained in `N' \ldots
+      i:= posN - 1;
+      while not IsSubsetSet( N, nsg[ i ] ) do i:= i-1; od;
+
+      # \ldots and its size.
+      nextsize:= Sum( classes{ nsg[i] }, 0 );
+
+      if not IsPrimePowerInt( size / nextsize ) then
+
+        # The chief factor `N / nsg[i]' is not of prime power order,
+        # i.e., `N' is the solvable residuum.
+        return N;
+
+      fi;
+
+    od;
+
+    # The group is solvable.
+    return [ 1 ];
+    end );
+
+
+#############################################################################
+##
 #M  ClassPositionsOfSupersolvableResiduum( <tbl> )
 ##
 InstallMethod( ClassPositionsOfSupersolvableResiduum,
@@ -2107,20 +2212,14 @@ InstallMethod( ClassPositionsOfNormalClosure,
 ##
 #M  Identifier( <tbl> ) . . . . . . . . . . . . . . . . for an ordinary table
 ##
+##  Note that library tables have an `Identifier' value by construction.
+##
 InstallMethod( Identifier,
     "for an ordinary table",
     [ IsOrdinaryTable ],
     function( tbl )
 
-    # If the table knows its group and if this group has a name, take this.
-    if HasUnderlyingGroup( tbl ) then
-      tbl:= UnderlyingGroup( tbl );
-      if HasName( tbl ) then
-        return Name( tbl );
-      fi;
-    fi;
-
-    # Otherwise construct an identifier that is unique.
+    # Construct an identifier that is unique in the current session.
     LARGEST_IDENTIFIER_NUMBER[1]:= LARGEST_IDENTIFIER_NUMBER[1] + 1;
     tbl:= Concatenation( "CT", String( LARGEST_IDENTIFIER_NUMBER[1] ) );
     ConvertToStringRep( tbl );
@@ -2907,6 +3006,7 @@ InstallMethod( IsInternallyConsistent,
           orders,
           i, j,
           powermap,
+          comp,
           characters,
           map,
           row,
@@ -2921,8 +3021,8 @@ InstallMethod( IsInternallyConsistent,
     if HasSize( tbl ) then
       if Size( tbl ) <> order then
         Info( InfoWarning, 1,
-              "IsInternallyConsistent(", tbl,
-              "): centralizer of identity not equal to group order" );
+              "IsInternallyConsistent(", tbl, "):\n",
+              "#I  centralizer of identity not equal to group order" );
         flag:= false;
       fi;
     fi;
@@ -2932,14 +3032,14 @@ InstallMethod( IsInternallyConsistent,
       classes:= SizesConjugacyClasses( tbl );
       if classes <> List( centralizers, x -> order / x ) then
         Info( InfoWarning, 1,
-              "IsInternallyConsistent(", tbl,
-              "): centralizers and class lengths inconsistent" );
+              "IsInternallyConsistent(", tbl, "):\n",
+              "#I  centralizers and class lengths inconsistent" );
         flag:= false;
       fi;
       if Length( classes ) <> nccl then
         Info( InfoWarning, 1,
-              "IsInternallyConsistent(", tbl,
-              "): number of classes and centralizers inconsistent" );
+              "IsInternallyConsistent(", tbl, "):\n",
+              "#I  number of classes and centralizers inconsistent" );
         flag:= false;
       fi;
     else
@@ -2948,8 +3048,8 @@ InstallMethod( IsInternallyConsistent,
 
     if Sum( classes, 0 ) <> order then
       Info( InfoWarning, 1,
-            "IsInternallyConsistent(", tbl,
-            "): sum of class lengths not equal to group order" );
+            "IsInternallyConsistent(", tbl, "):\n",
+            "#I  sum of class lengths not equal to group order" );
       flag:= false;
     fi;
 
@@ -2957,16 +3057,16 @@ InstallMethod( IsInternallyConsistent,
       orders:= OrdersClassRepresentatives( tbl );
       if nccl <> Length( orders ) then
         Info( InfoWarning, 1,
-              "IsInternallyConsistent(", tbl,
-              "): number of classes and orders inconsistent" );
+              "IsInternallyConsistent(", tbl, "):\n",
+              "#I  number of classes and orders inconsistent" );
         flag:= false;
       else
         for i in [ 1 .. nccl ] do
           if centralizers[i] mod orders[i] <> 0 then
             Info( InfoWarning, 1,
-                  "IsInternallyConsistent(", tbl,
-                  "): not all representative orders divide the\n",
-                  "#I   corresponding centralizer order" );
+                  "IsInternallyConsistent(", tbl, "):\n",
+                  "#I  not all representative orders divide ",
+                  "the corresponding centralizer order" );
             flag:= false;
           fi;
         od;
@@ -2974,12 +3074,13 @@ InstallMethod( IsInternallyConsistent,
     fi;
 
     if HasComputedPowerMaps( tbl ) then
+
       powermap:= ComputedPowerMaps( tbl );
       for map in Set( powermap ) do
         if nccl <> Length( map ) then
           Info( InfoWarning, 1,
-                "IsInternallyConsistent(", tbl,
-                "): lengths of power maps and classes inconsistent" );
+                "IsInternallyConsistent(", tbl, "):\n",
+                "#I  lengths of power maps and classes inconsistent" );
           flag:= false;
         fi;
       od;
@@ -2989,18 +3090,34 @@ InstallMethod( IsInternallyConsistent,
       if     IsBound( orders )
          and ForAll( Set( FactorsInt( order ) ), x -> IsBound(powermap[x]) )
          and orders <> ElementOrdersPowerMap( powermap ) then
-        flag:= false;
         Info( InfoWarning, 1,
-              "IsInternallyConsistent(", tbl,
-              "): representative orders and power maps inconsistent" );
+              "IsInternallyConsistent(", tbl, "):\n",
+              "#I  representative orders and power maps inconsistent" );
+        flag:= false;
       fi;
+
+      # Check that the composed power maps are consistent with the power maps
+      # for primes.
+      for i in [ 2 .. Length( powermap ) ] do
+        if IsBound( powermap[i] ) and not IsPrimeInt( i ) then
+          comp:= PowerMapByComposition( tbl, i );
+          if comp <> fail and comp <> powermap[i] then
+            Info( InfoWarning, 1,
+                  "IsInternallyConsistent(", tbl, "):\n",
+                  "#I  ", Ordinal( i ),
+                  " power map inconsistent with composition from others" );
+            flag:= false;
+          fi;
+        fi;
+      od;
+
     fi;
 
     # From here on, we check the irreducible characters.
     if flag = false then
       Info( InfoWarning, 1,
-            "IsInternallyConsistent(", tbl,
-            "): corrupted table, no test of orthogonality" );
+            "IsInternallyConsistent(", tbl, "):\n",
+            "#I  corrupted table, no test of orthogonality" );
       return false;
     fi;
 
@@ -3016,9 +3133,8 @@ InstallMethod( IsInternallyConsistent,
           if ( i = j and sum <> order ) or ( i <> j and sum <> 0 ) then
             flag:= false;
             Info( InfoWarning, 1,
-                  "IsInternallyConsistent(", tbl,
-                  "): Scpr( ., X[", i, "], X[", j, "] ) = ",
-                  sum / order );
+                  "IsInternallyConsistent(", tbl, "):\n",
+                  "#I  Scpr( ., X[", i, "], X[", j, "] ) = ", sum / order );
           fi;
         od;
       od;
@@ -3028,8 +3144,8 @@ InstallMethod( IsInternallyConsistent,
                               0 ) then
         flag:= false;
         Info( InfoWarning, 1,
-              "IsInternallyConsistent(", tbl,
-              "): centralizer orders inconsistent with irreducibles" );
+              "IsInternallyConsistent(", tbl, "):\n",
+              "#I  centralizer orders inconsistent with irreducibles" );
       fi;
 
 #T what about indicators, p-blocks, computability of power maps?
@@ -3075,8 +3191,8 @@ InstallMethod( IsInternallyConsistent,
     if HasSize( tbl ) then
       if Size( tbl ) <> order then
         Info( InfoWarning, 1,
-              "IsInternallyConsistent(", tbl,
-              "): centralizer of identity not equal to group order" );
+              "IsInternallyConsistent(", tbl, "):\n",
+              "#I  centralizer of identity not equal to group order" );
         flag:= false;
       fi;
     fi;
@@ -3086,8 +3202,8 @@ InstallMethod( IsInternallyConsistent,
       classes:= SizesConjugacyClasses( tbl );
       if classes <> List( centralizers, x -> order / x ) then
         Info( InfoWarning, 1,
-              "IsInternallyConsistent(", tbl,
-              "): centralizers and class lengths inconsistent" );
+              "IsInternallyConsistent(", tbl, "):\n",
+              "#I  centralizers and class lengths inconsistent" );
         flag:= false;
       fi;
     else
@@ -3098,16 +3214,16 @@ InstallMethod( IsInternallyConsistent,
       orders:= OrdersClassRepresentatives( tbl );
       if nccl <> Length( orders ) then
         Info( InfoWarning, 1,
-              "IsInternallyConsistent(", tbl,
-              "): number of classes and orders inconsistent" );
+              "IsInternallyConsistent(", tbl, "):\n",
+              "#I  number of classes and orders inconsistent" );
         flag:= false;
       else
         for i in [ 1 .. nccl ] do
           if centralizers[i] mod orders[i] <> 0 then
             Info( InfoWarning, 1,
-                  "IsInternallyConsistent(", tbl,
-                  "): not all representative orders divide the\n",
-                  "#I   corresponding centralizer order" );
+                  "IsInternallyConsistent(", tbl, "):\n",
+                  "#I  not all representative orders divide ",
+                  "the corresponding centralizer order" );
             flag:= false;
             break;
           fi;
@@ -3120,8 +3236,8 @@ InstallMethod( IsInternallyConsistent,
       for map in Set( powermap ) do
         if nccl <> Length( map ) then
           Info( InfoWarning, 1,
-                "IsInternallyConsistent(", tbl,
-                "): lengths of power maps and classes inconsistent" );
+                "IsInternallyConsistent(", tbl, "):\n",
+                "#I  lengths of power maps and classes inconsistent" );
           flag:= false;
           break;
         fi;
@@ -3134,8 +3250,8 @@ InstallMethod( IsInternallyConsistent,
          and orders <> ElementOrdersPowerMap( powermap ) then
         flag:= false;
         Info( InfoWarning, 1,
-              "IsInternallyConsistent(", tbl,
-              "): representative orders and power maps inconsistent" );
+              "IsInternallyConsistent(", tbl, "):\n",
+              "#I  representative orders and power maps inconsistent" );
       fi;
 
     fi;
@@ -3143,8 +3259,8 @@ InstallMethod( IsInternallyConsistent,
     # From here on, we check the irreducible characters.
     if flag = false then
       Info( InfoWarning, 1,
-            "IsInternallyConsistent(", tbl,
-            "): corrupted table, no test of irreducibles" );
+            "IsInternallyConsistent(", tbl, "):\n",
+            "#I  corrupted table, no test of irreducibles" );
       return false;
     fi;
 
@@ -3155,15 +3271,15 @@ InstallMethod( IsInternallyConsistent,
         if not GaloisCyc( chi, -1 ) in characters then
           flag:= false;
           Info( InfoWarning, 1,
-                "IsInternallyConsistent(", tbl,
-                "): irreducibles not closed under complex conjugation" );
+                "IsInternallyConsistent(", tbl, "):\n",
+                "#I  irreducibles not closed under complex conjugation" );
           break;
         fi;
         if not GaloisCyc( chi, prime ) in characters then
           flag:= false;
           Info( InfoWarning, 1,
-                "IsInternallyConsistent(", tbl,
-                "): irreducibles not closed under Frobenius map" );
+                "IsInternallyConsistent(", tbl, "):\n",
+                "#I  irreducibles not closed under Frobenius map" );
           break;
         fi;
       od;
@@ -3584,6 +3700,48 @@ InstallMethod( CharacterTable,
     "for an ordinary table, and a prime integer",
     [ IsOrdinaryTable, IsPosInt ],
     BrauerTable );
+
+
+#############################################################################
+##
+#F  CharacterTableFromLibrary( <name>, <param1>, ... )
+##
+##  The `CharacterTable' methods for a string and optional parameters call
+##  `CharacterTableFromLibrary'.
+##  We bind this to a dummy function that signals an error.
+##
+BindGlobal( "CharacterTableFromLibrary", function( arg )
+    Error( "sorry, the GAP Character Table Library is not installed" );
+    end );
+
+
+#############################################################################
+##
+#M  CharacterTable( <name> )  . . . . . . . . . library table with given name
+#M  CharacterTable( <series>, <param> )
+#M  CharacterTable( <series>, <param1>, <param2> )
+##
+##  These methods are used in the Character Table Library, where the function
+##  `CharacterTableFromLibrary' is replaced by a meaningful function.
+##
+InstallMethod( CharacterTable,
+    "for a string",
+    [ IsString ],
+    str -> CharacterTableFromLibrary( str ) );
+
+InstallOtherMethod( CharacterTable,
+    "for a string and an object",
+    [ IsString, IsObject ],
+    function( str, obj )
+    return CharacterTableFromLibrary( str, obj );
+    end );
+
+InstallOtherMethod( CharacterTable,
+    "for a string and two objects",
+    [ IsString, IsObject, IsObject ],
+    function( str, obj1, obj2 )
+    return CharacterTableFromLibrary( str, obj1, obj2 );
+    end );
 
 
 #############################################################################
@@ -4383,7 +4541,7 @@ InstallOtherMethod( Display,
 ##
 InstallGlobalFunction( PrintCharacterTable, function( tbl, varname )
 
-    local i, info, class, comp;
+    local i, info, j, class, comp;
 
     # Check the arguments.
     if not IsNearlyCharacterTable( tbl ) then
@@ -4413,7 +4571,16 @@ InstallGlobalFunction( PrintCharacterTable, function( tbl, varname )
         Print( "tbl.", SupportedCharacterTableInfo[ i-1 ], ":=\n" );
         if     IsString( info )
            and ( IsEmptyString( info ) or not IsEmpty( info ) ) then
-          Print( "\"", info, "\";\n" );
+          if '\n' in info then
+            info:= SplitString( info, "\n" );
+            Print( "Concatenation([\n" );
+            for j in [ 1 .. Length( info ) - 1 ] do
+              Print( "\"", info[j], "\\n\",\n" );
+            od;
+            Print( "\"", info[ Length( info ) ], "\"\n]);\n" );
+          else
+            Print( "\"", info, "\";\n" );
+          fi;
         elif SupportedCharacterTableInfo[ i-1 ] = "ConjugacyClasses" then
           Print( "[\n" );
           for class in info do
@@ -4789,61 +4956,40 @@ InstallMethod( CharacterTableDirectProduct,
 
 #############################################################################
 ##
-#M  CharacterTableFactorGroup( <tbl>, <classes> )
+#F  CharacterTableHeadOfFactorGroupByFusion( <tbl>, <factorfusion> )
 ##
-InstallMethod( CharacterTableFactorGroup,
-    "for an ordinary table, and a list of class positions",
-    [ IsOrdinaryTable, IsList and IsCyclotomicCollection ],
-    function( tbl, classes )
+InstallGlobalFunction( CharacterTableHeadOfFactorGroupByFusion,
+    function( tbl, factorfusion )
 
-    local F,              # table of the factor group, result
+    local size,           # size of `tbl'
+          tclasses,       # class lengths of `tbl'
           N,              # classes of the normal subgroup
-          chi,            # loop over irreducibles
-          ker,            # kernel of a 'chi'
-          size,           # size of 'tbl'
-          tclasses,       # class lengths of 'tbl'
           suborder,       # order of the normal subgroup
-          factirr,        # irreducibles of 'F'
-          factorfusion,   # fusion from 'tbl' to 'F'
-          nccf,           # no. of classes of 'F'
-          cents,          # centralizer orders of 'F'
+          nccf,           # no. of classes of `F'
+          cents,          # centralizer orders of `F'
           i,              # loop over the classes
-          inverse,        # inverse of 'factorfusion'
-          p;              # loop over prime divisors
+          F,              # table of the factor group, result
+          inverse,        # inverse of `factorfusion'
+          p,              # loop over prime divisors
+          map;            # one computed power map of `F'
 
-    factirr:= [];
-    N:= [ 1 .. NrConjugacyClasses( tbl ) ];
-    for chi in Irr( tbl ) do
-      ker:= ClassPositionsOfKernel( chi );
-      if IsEmpty( Difference( classes, ker ) ) then
-        IntersectSet( N, ker );
-        Add( factirr, ValuesOfClassFunction( chi ) );
-      fi;
-    od;
-
-    # Compute the order of the normal subgroup corresponding to `N'.
+    # Compute the order of the normal subgroup.
     size:= Size( tbl );
     tclasses:= SizesConjugacyClasses( tbl );
+    N:= Filtered( [ 1 .. Length( factorfusion ) ],
+                  i -> factorfusion[i] = 1 );
     suborder:= Sum( tclasses{ N }, 0 );
     if size mod suborder <> 0 then
-      Error( "intersection of kernels of irreducibles containing\n",
-             "<classes> has an order not dividing the size of <tbl>" );
+      Error( "the order of the kernel of <factorfusion> does not divide ",
+             "the size of <tbl>" );
     fi;
-
-    # Compute the irreducibles of the factor.
-    factirr:= CollapsedMat( factirr, [] );
-    factorfusion := factirr.fusion;
-    factirr      := factirr.mat;
 
     # Compute the centralizer orders of the factor group.
     # \[ |C_{G/N}(gN)\| = \frac{|G|/|N|}{|Cl_{G/N}(gN)|}
     #    = \frac{|G|:|N|}{\frac{1}{|N|}\sum_{x fus gN} |Cl_G(x)|}
     #    = \frac{|G|}{\sum_{x fus gN} |Cl_G(x)| \]
-    nccf:= Length( factirr[1] );
-    cents:= [];
-    for i in [ 1 .. nccf ] do
-      cents[i]:= 0;
-    od;
+    nccf:= Maximum( factorfusion );
+    cents:= ListWithIdenticalEntries( nccf, 0 );
     for i in [ 1 .. Length( factorfusion ) ] do
       cents[ factorfusion[i] ]:= cents[ factorfusion[i] ] + tclasses[i];
     od;
@@ -4860,15 +5006,17 @@ InstallMethod( CharacterTableFactorGroup,
              UnderlyingCharacteristic := 0,
              Size                     := size / suborder,
              Identifier               := F,
-             Irr                      := factirr,
-             SizesCentralizers        := cents
+             SizesCentralizers        := cents,
+             ComputedPowerMaps        := []
             );
 
-    # Transfer necessary power maps of `tbl' to `F'.
+    # Transfer known power maps of `tbl' to `F'.
     inverse:= ProjectionMap( factorfusion );
-    F.ComputedPowerMaps:= [];
     for p in Set( Factors( F.Size ) ) do
-      F.ComputedPowerMaps[p]:= factorfusion{ PowerMap( tbl, p ){ inverse } };
+      if IsBound( ComputedPowerMaps( tbl )[p] ) then
+        map:= ComputedPowerMaps( tbl )[p];
+        F.ComputedPowerMaps[p]:= factorfusion{ map{ inverse } };
+      fi;
     od;
 
     # Convert the record into a library table.
@@ -4884,13 +5032,63 @@ InstallMethod( CharacterTableFactorGroup,
 
 #############################################################################
 ##
+#M  CharacterTableFactorGroup( <tbl>, <classes> )
+##
+InstallMethod( CharacterTableFactorGroup,
+    "for an ordinary table, and a list of class positions",
+    [ IsOrdinaryTable, IsList and IsCyclotomicCollection ],
+    function( tbl, classes )
+
+    local F,              # table of the factor group, result
+          chi,            # loop over irreducibles
+          ker,            # kernel of a `chi'
+          factirr,        # irreducibles of `F'
+          factorfusion,   # fusion from `tbl' to `F'
+          inverse,        # inverse of `factorfusion'
+          maps,           # computed power maps of `F'
+          p;              # loop over prime divisors
+
+    # Compute the irreducibles of the factor, and the factor fusion.
+    factirr:= [];
+    for chi in Irr( tbl ) do
+      ker:= ClassPositionsOfKernel( chi );
+      if IsSubset( ker, classes ) then
+        Add( factirr, ValuesOfClassFunction( chi ) );
+      fi;
+    od;
+    factirr:= CollapsedMat( factirr, [] );
+    factorfusion := factirr.fusion;
+    factirr      := factirr.mat;
+
+    # Compute the table head.
+    F:= CharacterTableHeadOfFactorGroupByFusion( tbl, factorfusion );
+
+    # Set the irreducibles.
+    SetIrr( F, List( factirr, chi -> Character( F, chi ) ) );
+
+    # Transfer necessary power maps of `tbl' to `F'.
+    inverse:= ProjectionMap( factorfusion );
+    maps:= ComputedPowerMaps( F );
+    for p in Set( Factors( Size( F ) ) ) do
+      if not IsBound( maps[p] ) then
+        maps[p]:= factorfusion{ PowerMap( tbl, p ){ inverse } };
+      fi;
+    od;
+
+    # Return the result.
+    return F;
+    end );
+
+
+#############################################################################
+##
 #M  CharacterTableIsoclinic( <ordtbl> ) . . . . . . . . for an ordinary table
 ##
 InstallMethod( CharacterTableIsoclinic,
     "for an ordinary character table",
     [ IsOrdinaryTable ],
     function( tbl )
-    local classes, half, kernel;
+    local classes, half, kernel, orders, centre;
 
     # Identify the unique normal subgroup of index 2.
     half:= Size( tbl ) / 2;
@@ -4899,9 +5097,22 @@ InstallMethod( CharacterTableIsoclinic,
                                        chi -> DegreeOfCharacter( chi ) = 1 ),
                              ClassPositionsOfKernel ),
                        ker -> Sum( classes{ ker }, 0 ) = half );
+
+    # If there is more than one index 2 subgroup
+    # and if there is a unique central subgroup $Z$ of order 2
+    # then consider only those index 2 subgroups containing $Z$.
+    if 1 < Length( kernel ) then
+      orders:= OrdersClassRepresentatives( tbl );
+      centre:= Filtered( [ 1 .. Length( classes ) ],
+                         x -> classes[x] = 1 and orders[x] = 2 );
+      if Length( centre ) = 1 then
+        centre:= centre[1];
+        kernel:= Filtered( kernel, ker -> centre in ker );
+      fi;
+    fi;
     if IsEmpty( kernel ) or 1 < Length( kernel ) then
       Error( "normal subgroup of index 2 not uniquely determined,\n",
-             "use CharTableIsoclinic( <tbl>, <classes_of_nsg> )" );
+             "use CharacterTableIsoclinic( <tbl>, <classes_of_nsg> )" );
     fi;
 
     # Delegate to the two-argument version.
@@ -5268,7 +5479,7 @@ InstallGlobalFunction( CharacterTableOfTypeGS3,
     fi;
 
     # Compute the needed fusions into `tbls3'.
-    orbits:= Set( Orbits( Group( aut ),
+    orbits:= Set( OrbitsDomain( Group( aut ),
                           [ 1 .. NrConjugacyClasses( tbl3 ) ] ) );
     tbl3fustbls3:= InverseMap( orbits );
     tbl2fustbls3:= CompositionMaps( tbl3fustbls3,
@@ -5434,7 +5645,7 @@ InstallGlobalFunction( PossibleActionsForTypeGS3, function( tbl, tbl2, tbl3 )
     # Two inner classes that are fused neither in `tbl2' nor in `t3'
     # cannot be conjugate in `ts3'.
     inv:= InverseMap( tfust3 );
-    pairs:= Union( List( elms, i -> Filtered( Orbits( Group( i ), inner ),
+    pairs:= Union( List( elms, i -> Filtered( OrbitsDomain( Group( i ), inner ),
                                               orb -> Length( orb ) = 2 ) ) );
     pairs:= Filtered( pairs, x ->     IsInt( inv[ x[1] ] )
                                   and IsInt( inv[ x[2] ] )
@@ -5506,7 +5717,7 @@ InstallGlobalFunction( CharacterTableOfTypeMGA,
                   ComputedPowerMaps := [] );
 
     # The class fusion of `tblMG' into `tblMGA' is given by `perm'.
-    orbits:= Set( Orbits( Group( perm ),
+    orbits:= Set( OrbitsDomain( Group( perm ),
                           [ 1 .. NrConjugacyClasses( tblMG ) ] ) );
     MGfusMGA:= InverseMap( orbits );
 
@@ -5657,7 +5868,7 @@ InstallGlobalFunction( PossibleActionsForTypeMGA,
     fi;
 
     # The automorphism must act nontrivially on the centre of $M.G$.
-    elms:= Filtered( elms, x -> Length( Orbits( Group( x ), ker ) )
+    elms:= Filtered( elms, x -> Length( OrbitsDomain( Group( x ), ker ) )
                                 < Length( ker ) );
     Info( InfoCharacterTable, 1,
           Length( elms ), " automorphism(s) acting on the centre" );
@@ -5738,7 +5949,7 @@ InstallGlobalFunction( PermutationToSortCharacters,
     listtosort:= [];
     if degree and norm then
       for i in [ 1 .. Length( chars ) ] do
-        listtosort[i]:= [ ScalarProduct( chars[i], chars[i] ),
+        listtosort[i]:= [ ScalarProduct( tbl, chars[i], chars[i] ),
                           DegreeOfCharacter( chars[i] ),
                           rational( chars[i] ), i ];
       od;
@@ -5749,7 +5960,7 @@ InstallGlobalFunction( PermutationToSortCharacters,
       od;
     elif norm then
       for i in [ 1 .. Length( chars ) ] do
-        listtosort[i]:= [ ScalarProduct( chars[i], chars[i] ),
+        listtosort[i]:= [ ScalarProduct( tbl, chars[i], chars[i] ),
                           rational( chars[i] ), i ];
       od;
     else

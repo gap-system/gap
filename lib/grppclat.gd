@@ -22,28 +22,31 @@ DeclareInfoClass("InfoPcSubgroup");
 
 #############################################################################
 ##
-#O  InvariantElementaryAbelianSeries( <G>, <morph>[, <N>] )
+#O  InvariantElementaryAbelianSeries( <G>, <morph>[, <N> [, <fine>]] )
 ##
 ##  For a (solvable) group <G> and a list of automorphisms <morph> of <G>,
 ##  this command finds a normal series of <G> with elementary abelian
 ##  factors such that every group in this series is invariant under every
-##  automorphism in <morph>. If a normal subgroup <N> of <G> which is
-##  invariant under <morph> is given, this
-##  series is chosen to contain <N>. No tests are performed to check the
-##  validity of the arguments.
+##  automorphism in <morph>.
 ##
-DeclareGlobalFunction(
-  "InvariantElementaryAbelianSeries");
+##  If a normal subgroup <N> of <G> which is invariant under <morph> is
+##  given, this series is chosen to contain <N>. No tests are performed to
+##  check the validity of the arguments.
+##
+##  The series obtained will be constructed to prefer large steps unless
+##  <fine> is given as `true'.
+##
+DeclareGlobalFunction("InvariantElementaryAbelianSeries");
 
 #############################################################################
 ##
-#O  InducedAutomorphism(<epi>,<aut>)
+#O  InducedAutomorphism( <epi>, <aut> )
 ##
-##  Let <aut> be an automorphism of a group <G> and $<epi>\colon<G>-><H>$ an
-##  homomorphism such that $\ker<epi>$ is fixed under <aut>.
+##  Let <aut> be an automorphism of a group <G> and `<epi>: <G> -> <H>' an
+##  homomorphism such that `ker <epi>' is fixed under <aut>.
 ##  Let <U> be the image of <epi>. This command returns the automorphism of
 ##  <U> induced by <aut> via <epi>, that is the automorphism of <U> which maps
-##  $g<epi>$ to $(g^{<aut>})<epi>$.
+##  `<g>^<epi>' to `(<g>^<aut>)^<epi>', for <g> $\in$ <G>.
 ##
 DeclareGlobalFunction("InducedAutomorphism");
 
@@ -96,7 +99,9 @@ DeclareGlobalFunction(
 ##  <G> with <actions>). This can be given in the component `funcnorm' and
 ##  will be computed if this component is not given.
 ##  
-##  `normal'&if set to `true' only normal subgroups are computed.
+##  `normal'&if set to `true' only normal subgroups are guaranteed to be
+##  returned (though some of the returned subgroups might still be not
+##  normal).
 ##  
 ##  `consider'&a function to restrict the groups computed. This must be a
 ##  function of five parameters, <C>,<A>,<N>,<B>,<M>, that are interpreted
@@ -125,6 +130,9 @@ DeclareGlobalFunction(
 ##
 ##  `series'&is an elementary abelian series of <G> which will be used for
 ##  the computation.
+##
+##  `groups'&is a list of groups to seed the calculation. Only subgroups of
+##  these groups are constructed.
 ##  \enditems
 ##  
 DeclareGlobalFunction("SubgroupsSolvableGroup");

@@ -18,8 +18,7 @@ Revision.package_g :=
 #F  CompareVersionNumbers(<supplied>,<required>)
 ##
 ##  compares two version numbers, given as strings. They are split at
-##  non-number
-##  characters, the resulting integer lists are compared
+##  non-number characters, the resulting integer lists are compared
 ##  lexicographically. The routine tests, whether <supplied> is at least as
 ##  large as <required> and returns `true' or `false' accordingly. A version
 ##  number ending in `dev' is considered to be infinite.
@@ -130,7 +129,7 @@ local init,path,isin;
   # locate the init file
   path := DirectoriesPackageLibrary(name,"");
   if path = fail  then
-    Info(InfoWarning,1,"Error, package `", name, "' does not exist" );
+    Info(InfoWarning,3,"Package `", name, "' does not exist" );
     return fail;
   fi;
   init := Filename( path, "init.g" );
@@ -244,6 +243,23 @@ end);
 
 #############################################################################
 ##
+#F  InstalledPackageVersion( <name> )
+##
+##  returns the version number string of the package <name> if it is installed
+##  and `false' otherwise.
+BindGlobal( "InstalledPackageVersion", function(name)
+local init;
+  
+  # Is the package already installed?
+  if IsBound(PACKAGES_VERSIONS.(name)) then
+    return PACKAGES_VERSIONS.(name);
+  else
+    return fail;
+  fi;
+end);
+
+#############################################################################
+##
 #F  RequirePackage( <name>, [<version>] )
 ##
 ##  loads the share package <name>. If the optional version string <version>
@@ -348,8 +364,8 @@ BindGlobal( "DeclareAutoPackage", function( name, version,tester )
     # test availability
     tester:=tester();
   fi;
-  if tester then
-    PACKAGES_VERSIONS.(name):=version;
+  if tester=true then
+    PACKAGES_VERSIONS.(name):=Immutable(version);
   fi;
 end );
 
@@ -366,25 +382,53 @@ end );
 
 #############################################################################
 ##
-#F  DeclarePackageDocumentation( <pkg>, <doc> )
-#F  DeclarePackageAutoDocumentation( <pkg>, <doc> )
+#F  DeclarePackageDocumentation( <pkg>, <doc>[, <short>[, <long> ] ] )
+#F  DeclarePackageAutoDocumentation( <pkg>, <doc>[, <short>[, <long> ] ] )
 ##
-##  This function indicates that the documentation of the share package
-##  <pkg> can be found in its <doc> subdirectory.
-##  The second version will enable that the documentation is loaded
-##  automatically when {\GAP} starts, even if the package itself will not be
-##  loaded.
-##  Both functions may only occur within the `init.g' file of a share
+##  This  function indicates  that the  documentation of  the share  package
+##  <pkg> can  be found in its  <doc> subdirectory. The second  version will
+##  enable  that  the  documentation  is loaded  automatically  when  {\GAP}
+##  starts, even if the package itself will not be loaded.
+##  
+##  Both  functions may  only  occur within  the `init.g'  file  of a  share
 ##  package.
-BindGlobal( "DeclarePackageAutoDocumentation", function( pkg, doc )
-local help,p;
+##  
+##  The string <pkg> is case insensitive (but internally  converted to lower
+##  case, e.g., for the directory name of the package). 
+##  
+##  There are  two optional arguments:  <short> is  a short string  which is
+##  used as identifying name of the book in {\GAP}'s online help. And <long>
+##  is a  short description  of the  book. This is  shown with  the `?books'
+##  query, so <short> and <long> together should easily fit on a line.
+##  
+##  If <short> and <long> are not given, the default values <pkg> for
+##  <short> and `Share Package `<pkg>'' for <long> are used.
+##  
+BindGlobal( "DeclarePackageAutoDocumentation", function( arg )
+  local pkg, doc, short, long, file;
+
+  pkg := arg[1];
+  doc := arg[2];
+  if Length(arg) > 2 then
+    short := arg[3];
+  else
+    short := pkg;
+  fi;
+  if Length(arg) > 3 then
+    long := arg[4];
+  else
+    long := Concatenation("Share Package `", pkg, "'" );
+  fi;
+  
   # on the second (true) read 
   if IS_IN_PACKAGE_TEST=false 
      or AUTOLOAD_LOAD_DOCU=true
   #install the documentation
    then
     # test for the existence of a `manual.six' file
-    if Filename(DirectoriesPackageLibrary(pkg,doc),"manual.six")=fail then
+    file := Filename(DirectoriesPackageLibrary(SIMPLE_STRING(pkg),doc),
+                     "manual.six");
+    if file = fail then
       # if we are not autoloading print a warning that the documentation
       # is not available.
       Info(InfoWarning,1,"Package `",pkg,
@@ -392,30 +436,20 @@ local help,p;
 	  "/manual.six'" );
     else
       # declare the location
-      help:=[ pkg, Concatenation( "pkg/", pkg, "/", doc ),
-	  Concatenation( "Share Package `", pkg, "'" ) ];
+      doc := Directory(file{[1..Length(file)-10]});
       if AUTOLOAD_LOAD_DOCU then
 	# indicate that the package still needs requiring
-	help[1]:=Concatenation(pkg," (not loaded)");
-	Append( HELP_BOOKS,help);
-      else
-	p:=Position(HELP_BOOKS,help[2]);
-	if p=fail then
-	  # was not yet loaded, append
-	  Append( HELP_BOOKS,help);
-	else
-	  # overwrite the `not loaded' message
-	  HELP_BOOKS[p-1]:=pkg;
-        fi;
+        short := Concatenation(short," (not loaded)");
       fi;
+      HELP_ADD_BOOK(short, long, doc);
     fi;
   fi;
 
 end );
 
-BindGlobal( "DeclarePackageDocumentation", function( pkg, doc )
+BindGlobal( "DeclarePackageDocumentation", function( arg )
   if IS_IN_AUTOLOAD=false then
-    DeclarePackageAutoDocumentation( pkg, doc );
+    CallFuncList(DeclarePackageAutoDocumentation, arg);
   fi;
 end );
 
@@ -458,7 +492,7 @@ BindGlobal("AutoloadablePackagesList",function()
         CloseStream(f);
     fi;
 
-    # get the lines from `ALLPKG' and test whther they are subdirectories
+    # get the lines from `ALLPKG' and test whether they are subdirectories
     # which contain an `init' file.
     f:=Filename(pkgdir,"ALLPKG");
     if f<>fail then
@@ -490,8 +524,9 @@ end);
 ##
 #F  ReadPkg(<pkg>,<file>)
 ##
-##  reads the file <file> of the share package <pkg>. <file> is given as a
-##  relative path to the directory of <pkg>.
+##  reads the file <file> of the share package <pkg>, where <file> is given
+##  as a relative path to the directory of <pkg>.
+##
 BindGlobal( "ReadPkg", function( arg )
 # This must be a wrapper to be skipped when `init.g' is read the first
 # time.
@@ -511,15 +546,24 @@ end);
 #############################################################################
 ##
 #F  RereadPkg( <pkg>, <file> )
+#F  RereadPkg( <pkg-file> )
 ##
-##  rereads the file <file> of the share package <pkg>. <file> is given as a
-##  relative path to the directory of <pkg>.
+##  In the first form, `RereadPkg' rereads  the  file  <file>  of  the  share
+##  package <pkg>, where <file> is given as a relative path to the  directory
+##  of <pkg>. In the second form where only one argument <pkg-file> is given,
+##  <pkg-file> should be the complete path of a  file  relative  to  a  `pkg'
+##  subdirectory of a {\GAP} root path (see~"ref:GAP root directory"  in  the
+##  Reference Manual). Each of <pkg>,  <file>  and  <pkg-file>  should  be  a
+##  string.
+##
 BindGlobal( "RereadPkg", function( arg )
     if IS_IN_PACKAGE_TEST = false and AUTOLOAD_LOAD_DOCU = false then
       if Length( arg ) = 1 then
         DoRereadPkg( arg[1] );
-      else
+      elif Length( arg ) = 2 then
         DoRereadPkg( Concatenation( arg[1], "/", arg[2] ) );
+      else
+        Error("expected 1 or 2 arguments\n");
       fi;
     fi;
 end );

@@ -559,9 +559,7 @@ InstallImmediateMethod( IsTotal,
 ##
 #M  IsTotal( <map> )  . . . . . . . . . . . . . . . . . . for general mapping
 ##
-InstallMethod( IsTotal,
-    "for a general mapping",
-    true,
+InstallMethod( IsTotal, "for a general mapping", true,
     [ IsGeneralMapping ], 0,
     function( map )
 
@@ -569,6 +567,7 @@ InstallMethod( IsTotal,
     # the range cannot be smaller than the source.
 
     if     HasIsInjective( map ) and IsInjective( map )
+       and CanComputeSize(Range(map)) and CanComputeSize(Source(map))
        and Size( Range( map ) ) < Size( Source( map ) ) then
       return false;
     else
@@ -581,9 +580,7 @@ InstallMethod( IsTotal,
 ##
 #M  IsSurjective( <map> ) . . . . . . . . . . . . . . . . for general mapping
 ##
-InstallMethod( IsSurjective,
-    "for a general mapping",
-    true,
+InstallMethod( IsSurjective, "for a general mapping", true,
     [ IsGeneralMapping ], 0,
     function( map )
 
@@ -591,6 +588,7 @@ InstallMethod( IsSurjective,
     # the source cannot be smaller than the range.
 
     if     HasIsSingleValued( map ) and IsSingleValued( map )
+       and CanComputeSize(Range(map)) and CanComputeSize(Source(map))
        and Size( Source( map ) ) < Size( Range( map ) ) then
       return false;
     else
@@ -603,13 +601,12 @@ InstallMethod( IsSurjective,
 ##
 #M  IsSingleValued( <map> ) . . . . . . . . . . . . . . for a general mapping
 ##
-InstallMethod( IsSingleValued,
-    "for a general mapping",
-    true,
+InstallMethod( IsSingleValued, "for a general mapping", true,
     [ IsGeneralMapping ], 0,
     function( map )
 
-    if HasIsSurjective( map ) and IsSurjective( map ) then
+    if HasIsSurjective( map ) and IsSurjective( map ) 
+       and CanComputeSize(Range(map)) and CanComputeSize(Source(map)) then
 
       # For a single-valued and surjective general mapping,
       # the range cannot be larger than the source.
@@ -638,9 +635,7 @@ InstallMethod( IsSingleValued,
 ##
 #M  IsInjective( <map> )  . . . . . . . . . . . . . . . for a general mapping
 ##
-InstallMethod( IsInjective,
-    "for a general mapping",
-    true,
+InstallMethod( IsInjective, "for a general mapping", true,
     [ IsGeneralMapping ], 0,
     function( map )
 
@@ -653,7 +648,8 @@ InstallMethod( IsInjective,
 
       # For a total and injective general mapping,
       # the source cannot be larger than the range.
-      if Size( Range( map ) ) < Size( Source( map ) ) then
+      if Size( Range( map ) ) < Size( Source( map ) ) 
+       and CanComputeSize(Range(map)) and CanComputeSize(Source(map)) then
         return false;
       fi;
 
@@ -686,15 +682,14 @@ InstallMethod( IsInjective,
 ##
 #M  IsInjective( <map> )  . . . . . . . . . . . . . . . . . . . for a mapping
 ##
-InstallMethod( IsInjective,
-    "for a mapping",
-    true,
+InstallMethod( IsInjective, "for a mapping", true,
     [ IsGeneralMapping and IsTotal and IsSingleValued ], 0,
     function( map )
 
     # For a total and injective general mapping,
     # the source cannot be larger than the range.
-    if Size( Range( map ) ) < Size( Source( map ) ) then
+    if Size( Range( map ) ) < Size( Source( map ) ) 
+       and CanComputeSize(Range(map)) and CanComputeSize(Source(map)) then
       return false;
 
     # compare the size of the source with the size of the image
@@ -1528,6 +1523,34 @@ InstallMethod( IsGeneratorsOfMagmaWithInverses,
     [ IsGeneralMappingCollection ], 0,
     mappinglist -> ForAll( mappinglist, map -> Inverse( map ) <> fail ) );
 
+#############################################################################
+##
+#M  CopyMappingAttributes(<from>,<to>)
+##
+InstallGlobalFunction(CopyMappingAttributes,
+function(f,t)
+  if HasIsTotal(f) and not HasIsTotal(t) then
+    SetIsTotal(t,IsTotal(f));
+  fi;
+  if HasIsSingleValued(f) and not HasIsSingleValued(t) then
+    SetIsSingleValued(t,IsSingleValued(f));
+  fi;
+  if HasIsInjective(f) and not HasIsInjective(t) then
+    SetIsInjective(t,IsInjective(f));
+  fi;
+  if HasIsSurjective(f) and not HasIsSurjective(t) then
+    SetIsSurjective(t,IsSurjective(f));
+  fi;
+  if HasSource(f) and not HasSource(t) then
+    SetSource(t,Source(f));
+  fi;
+  if HasImagesSource(f) and not HasImagesSource(t) then
+    SetImagesSource(t,ImagesSource(f));
+  fi;
+  if HasRange(f) and not HasRange(t) then
+    SetRange(t,Range(f));
+  fi;
+end);
     
 #############################################################################
 ##

@@ -29,6 +29,7 @@ BindGlobal("GeneralStepClEANSNonsolv",function( H, N,NT, cl )
            ran,        # constant range `[ 1 .. r ]'
            aff,        # <N> as affine space
            xset,       # affine operation of <C> on <aff>
+	   eo,	       # xorbits/stabilizers
            imgs,  M,   # generating matrices for affine operation
            orb,        # orbit of affine operation
            rep,# set of classes with canonical representatives
@@ -37,6 +38,7 @@ BindGlobal("GeneralStepClEANSNonsolv",function( H, N,NT, cl )
 	   stabsubgens,
 	   comm,s,stab;# for class correction
 	  
+  NT:=AsSubgroup(H,NT);
   C := cl[2];
   field := GF( RelativeOrders( N )[ 1 ] );
   one:=One(field);
@@ -53,6 +55,7 @@ BindGlobal("GeneralStepClEANSNonsolv",function( H, N,NT, cl )
   
   # Construct matrices for the affine operation on $N/[h,N]$.
   aff := ExtendedVectors( field ^ r );
+
   if IsSolvableGroup(C) then
     gens:=Pcgs(C);
   else
@@ -77,17 +80,19 @@ BindGlobal("GeneralStepClEANSNonsolv",function( H, N,NT, cl )
 
   classes := [  ];
 
-  stabsub:=AsSubgroup(H,ClosureGroup(NT,cNh));
+  # NC is safe
+  stabsub:=ClosureSubgroupNC(NT,cNh);
   stabsubgens:=Set(GeneratorsOfGroup(stabsub));
   SetActionKernelExternalSet(xset,stabsub);
+  eo:=ExternalOrbitsStabilizers( xset );
 
-  for orb  in ExternalOrbitsStabilizers( xset )  do
+  for orb in eo do
     rep := PcElementByExponentsNC( N, N{ N!.subspace.baseComplement },
 		    Representative( orb ){ ran } );
 
     # filter those we don't get anyhow.
     stab:=Filtered(GeneratorsOfGroup(StabilizerOfExternalSet(orb)),
-                   i->not i in stabsubgens);
+                   i->not i in stabsub);
 
     comm := [  ];
     for s  in [ 1 .. Length( stab ) ]  do
@@ -98,11 +103,17 @@ BindGlobal("GeneralStepClEANSNonsolv",function( H, N,NT, cl )
     comm := comm * N!.subspace.inverse;
     for s  in [ 1 .. Length( comm ) ]  do
 	stab[ s ] := stab[ s ] / PcElementByExponentsNC
-	  ( N!.capH, N!.capH{ N!.subspace.needed }, comm[ s ] );
+	  ( N, N{ N!.subspace.needed }, comm[ s ] );
+	  #( N!.capH, N!.capH{ N!.subspace.needed }, comm[ s ] );
     od;
-    #stab := Concatenation( cNh, stab );
 
-    c := [h * rep,ClosureSubgroupNC(stabsub,stab)];
+  # NC is safe
+    stab:=ClosureSubgroupNC(stabsub,stab);
+
+    if IsSolvableGroup(C) then
+      SetIsSolvableGroup(stab,true);
+    fi;
+    c := [h * rep,stab];
 
     Add( classes, c );
   od;
@@ -154,7 +165,6 @@ local  classes,    	# classes to be constructed, the result
 
   com:=BaseSteinitzVectors(IdentityMat(n,f),space);
 
-
   # decomposition of vectors into the subspace basis
   r:=Length(com.subspace);
   if r>0 then
@@ -205,10 +215,10 @@ local cnt,iso,Gi,ai,dom,s,u,a;
   s:=Blocks(G,dom);
   if Length(s)=1 then
     Info(InfoHomClass,2,"point action");
-    iso:=ActionHomomorphism(G,dom);
+    iso:=ActionHomomorphism(G,dom,"surjective");
   else
     Info(InfoHomClass,2,"block refinement");
-    iso:=ActionHomomorphism(G,s,OnSets);
+    iso:=ActionHomomorphism(G,s,OnSets,"surjective");
   fi;
   repeat
     Gi:=ImagesSet(iso,G);
@@ -246,7 +256,7 @@ local cnt,iso,Gi,ai,dom,s,u,a;
       # arbitrary values.
     until Index(G,u)>1 and Index(G,u)<cnt*10*Length(dom);
     # next attempt at iso
-    iso:=ActionHomomorphism(G,RightTransversal(G,u),OnRight);
+    iso:=ActionHomomorphism(G,RightTransversal(G,u),OnRight,"surjective");
   until false;
 end;
 
@@ -422,7 +432,7 @@ local clT,	# classes T
   Info(InfoHomClass,2,"fused to ",Length(fus)," colours");
 
   # get the allowed colour bars
-  ophom:=ActionHomomorphism(F,components,OnSets);
+  ophom:=ActionHomomorphism(F,components,OnSets,"surjective");
   op:=Image(ophom);
   bars:=ClassRepsPermutedTuples(op,[1..Length(fus)]);
 
@@ -440,7 +450,7 @@ local clT,	# classes T
     Info(InfoHomClass,1,"component ",i);
     emb:=embeddings[i];
     pi:=projections[i];
-    Add(varpi,ActionHomomorphism(M,Union(components{[1..i]})));
+    Add(varpi,ActionHomomorphism(M,Union(components{[1..i]}),"surjective"));
     Add(Mproj,Image(varpi[i],M));
     newreps:=[];
     newcent:=[];
@@ -468,7 +478,7 @@ local clT,	# classes T
       cen:=Group(GeneratorsOfGroup(cen),());
       StabChain(cen,rec(base:=components[i],size:=d));
       centralizers[j]:=cen;
-      etas[j]:=ActionHomomorphism(cen,components[i]);
+      etas[j]:=ActionHomomorphism(cen,components[i],"surjective");
 
     od;
     Info(InfoHomClass,2,Length(centimages)," centralizer images");
@@ -682,7 +692,8 @@ local clT,	# classes T
       for j in [1..Length(reps)] do
 	scj:=Size(centralizers[j]);
 	dsz:=0;
-	centrhom:=ActionHomomorphism(centralizers_r[j],components[i]);
+	centrhom:=ActionHomomorphism(centralizers_r[j],components[i],
+	            "surjective");
 	localcent_r:=Image(centrhom);
 	Info(InfoHomClass,3,i,":",j);
 	Info(InfoHomClass,2,"acting: ",Size(centralizers[j])," minimum ",
@@ -926,7 +937,7 @@ local clT,	# classes T
 		    pf:=Length(smacla);
 		    remainlen:=List(clTR{smacla},i->Size(i[3]));
 
-		    Info(InfoHomClass,2,
+		    Info(InfoHomClass,3,
 			"This is the true orbit length (missing ",
 			maxdiff,")");
 
@@ -1291,7 +1302,7 @@ local cs,	# chief series of G
 	# now T[1] is a complement to csM[1] in G/N.
 	
 	# now compute the operation of G on M/N
-	Qhom:=ActionHomomorphism(G,T);
+	Qhom:=ActionHomomorphism(G,T,"surjective");
 	Q:=Image(Qhom,G);
 	S:=PreImage(Qhom,Stabilizer(Q,1)); 
 
@@ -1542,13 +1553,13 @@ local r,	#radical
     # we have to get a better series
     ser:=InvariantElementaryAbelianSeries(r,
              List( GeneratorsOfGroup( G ),
-                   i -> ConjugatorAutomorphismNC( r, i ) ) );
-
+                   i -> ConjugatorAutomorphismNC( r, i ) ),
+		   TrivialSubgroup(r),
+		   true);
 
     pcgs:=false; # remember there is no universal parent pcgs
   else
     ind:=IndicesNormalSteps(pcgs);
-    # try to make steps large
     pcgs:=List([1..Length(ind)],
                i->InducedPcgsByPcSequenceNC(pcgs,pcgs{[ind[i]..Length(pcgs)]}));
   fi;
@@ -1609,19 +1620,24 @@ end);
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . of perm group
 ##
 InstallMethod( ConjugacyClasses, "perm group", true, [ IsPermGroup ], 0,
-    function( G )
-    if (not HasIsNaturalSymmetricGroup(G) and IsNaturalSymmetricGroup(G)) or 
-       (not HasIsNaturalAlternatingGroup(G) and IsNaturalAlternatingGroup(G))
-       then
-      # we found out anew that the group is symmetric or alternating ->
-      # Redispatch
-      return ConjugacyClasses(G);
-    fi;
-    if IsSimpleGroup( G )  then
-        return ConjugacyClassesByRandomSearch( G );
-    else
-      return ConjugacyClassesViaRadical(G);
-    fi;
+function( G )
+local cl;
+  if (not HasIsNaturalSymmetricGroup(G) and IsNaturalSymmetricGroup(G)) or 
+      (not HasIsNaturalAlternatingGroup(G) and IsNaturalAlternatingGroup(G))
+      then
+    # we found out anew that the group is symmetric or alternating ->
+    # Redispatch
+    return ConjugacyClasses(G);
+  fi;
+
+  cl:=ConjugacyClassesForSmallGroup(G);
+  if cl<>fail then
+    return cl;
+  elif IsSimpleGroup( G )  then
+    return ConjugacyClassesByRandomSearch( G );
+  else
+    return ConjugacyClassesViaRadical(G);
+  fi;
 end );
 
 

@@ -43,8 +43,9 @@ returned by functions.
 \Declaration{IsObject}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Elements}
+\Section{Elements as equivalence classes}
 
+\index{elements!definition}
 The equality operation ``{`='}'' defines an equivalence relation on all
 {\GAP} objects.
 The equivalence classes are called *elements*.
@@ -360,6 +361,11 @@ There are a number of general operations which can be applied, in
 principle, to any object in {\GAP}. Some of these are documented
 elsewhere -- see "String", "PrintObj" and
 "Display". Others are mainly somewhat technical.
+
+\>SetName( <obj>, <name> ) F
+
+for a suitable object <obj> sets that object to have  name  <name>  (a
+string).
 
 \Declaration{Name}
 

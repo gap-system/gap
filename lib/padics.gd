@@ -131,7 +131,7 @@ DeclareGlobalFunction( "PurePadicNumberFamily" );
 ##  not checked by {\sf GAP}.*
 ##
 ##  Every number  out   of  $L$ is  represented   as   a coeff.-list   for
-##  the basis $\{1,x,x^2,...,y,xy,x^2y,...\}$ of $L$. The integer
+##  the basis $\{1,x,x^2,\ldots,y,xy,x^2y,\ldots\}$ of $L$. The integer
 ##  <precision> is the number of ``digits'' that all the coefficients have.
 ##  
 DeclareGlobalFunction( "PadicExtensionNumberFamily" );

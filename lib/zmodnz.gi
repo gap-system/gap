@@ -58,11 +58,11 @@ DeclareRepresentation( "IsModulusRep", IsPositionalObjectRep, [ 1 ] );
 #############################################################################
 ##
 #M  ZmodnZObj( <Fam>, <residue> )
+#M  ZmodnZObj( <residue>, <modulus> )
 ##
 InstallMethod( ZmodnZObj,
     "for family of elements in Z/nZ (nonprime), and integer",
-    true,
-    [ IsZmodnZObjNonprimeFamily, IsInt ], 0,
+    [ IsZmodnZObjNonprimeFamily, IsInt ],
     function( Fam, residue )
     return Objectify( Fam!.typeOfZmodnZObj,
                    [ residue mod Fam!.modulus ] );
@@ -70,8 +70,7 @@ InstallMethod( ZmodnZObj,
 
 InstallOtherMethod( ZmodnZObj,
     "for family of FFE elements, and integer",
-    true,
-    [ IsFFEFamily, IsInt ], 0,
+    [ IsFFEFamily, IsInt ],
     function( Fam, residue )
     local p;
     p:= Characteristic( Fam );
@@ -88,6 +87,13 @@ InstallOtherMethod( ZmodnZObj,
     return Objectify( Fam!.typeOfZmodnZObj, [ residue mod p ] );
     end );
 
+InstallMethod( ZmodnZObj,
+    "for a positive integer, and an integer",
+    [ IsInt, IsPosInt ],
+    function( residue, n )
+    return ZmodnZObj( ElementsFamily( FamilyObj( ZmodnZ( n ) ) ), residue );
+    end );
+
 
 #############################################################################
 ##
@@ -97,8 +103,7 @@ InstallOtherMethod( ZmodnZObj,
 ##
 InstallMethod( ObjByExtRep,
     "for family of elements in Z/nZ (nonprime), and integer",
-    true,
-    [ IsZmodnZObjNonprimeFamily, IsInt ], 0,
+    [ IsZmodnZObjNonprimeFamily, IsInt ],
     function( Fam, residue )
     return ZmodnZObj( Fam, residue mod Fam!.modulus );
     end );
@@ -110,8 +115,7 @@ InstallMethod( ObjByExtRep,
 ##
 InstallMethod( ExtRepOfObj,
     "for element in Z/nZ (ModulusRep, nonprime)",
-    true,
-    [ IsZmodnZObjNonprime and IsModulusRep ], 0,
+    [ IsZmodnZObjNonprime and IsModulusRep ],
     obj -> obj![1] );
 
 
@@ -122,15 +126,14 @@ InstallMethod( ExtRepOfObj,
 InstallMethod( PrintObj,
     "for element in Z/nZ (ModulusRep)",
     IsZmodnZObjNonprimeFamily,
-    [ IsZmodnZObj and IsModulusRep ], 0,
+    [ IsZmodnZObj and IsModulusRep ],
     function( x )
     Print( "ZmodnZObj( ", x![1], ", ", DataType( TypeObj( x ) ), " )" );
     end );
 
 InstallMethod( PrintObj,
     "for element in Z/pZ (ModulusRep)",
-    true,
-    [ IsZmodpZObj and IsModulusRep ], 0,
+    [ IsZmodpZObj and IsModulusRep ],
     function( x )
     Print( "ZmodpZObj( ", x![1], ", ", Characteristic( x ), " )" );
     end );
@@ -144,13 +147,13 @@ InstallMethod( PrintObj,
 InstallMethod( \=,
     "for two elements in Z/nZ (ModulusRep)",
     IsIdenticalObj,
-    [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
+    [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
     function( x, y ) return x![1] = y![1]; end );
 
 InstallMethod( \=,
     "for element in Z/pZ (ModulusRep) and internal FFE",
     IsIdenticalObj,
-    [ IsZmodpZObj and IsModulusRep, IsFFE and IsInternalRep ], 0,
+    [ IsZmodpZObj and IsModulusRep, IsFFE and IsInternalRep ],
     function( x, y )
     return DegreeFFE( y ) = 1 and x![1] = IntFFE( y );
     end );
@@ -158,7 +161,7 @@ InstallMethod( \=,
 InstallMethod( \=,
     "for internal FFE and element in Z/pZ (ModulusRep)",
     IsIdenticalObj,
-    [ IsFFE and IsInternalRep, IsZmodpZObj and IsModulusRep ], 0,
+    [ IsFFE and IsInternalRep, IsZmodpZObj and IsModulusRep ],
     function( x, y )
     return DegreeFFE( x ) = 1 and y![1] = IntFFE( x );
     end );
@@ -167,21 +170,21 @@ InstallMethod( \<,
     "for two elements in Z/nZ (ModulusRep, nonprime)",
     IsIdenticalObj,
     [ IsZmodnZObjNonprime and IsModulusRep,
-      IsZmodnZObjNonprime and IsModulusRep ], 0,
+      IsZmodnZObjNonprime and IsModulusRep ],
     function( x, y ) return x![1] < y![1]; end );
 
 InstallMethod( \<,
     "for two elements in Z/pZ (ModulusRep, large)",
     IsIdenticalObj,
     [ IsZmodpZObjLarge and IsModulusRep,
-      IsZmodpZObjLarge and IsModulusRep ], 0,
+      IsZmodpZObjLarge and IsModulusRep ],
     function( x, y ) return x![1] < y![1]; end );
 
 InstallMethod( \<,
     "for two elements in Z/pZ (ModulusRep, small)",
     IsIdenticalObj,
     [ IsZmodpZObjSmall and IsModulusRep,
-      IsZmodpZObjSmall and IsModulusRep ], 0,
+      IsZmodpZObjSmall and IsModulusRep ],
     function( x, y )
     local p, r;      # characteristic and primitive root
     if x![1] = 0 then
@@ -198,7 +201,7 @@ InstallMethod( \<,
 InstallMethod( \<,
     "for element in Z/pZ (ModulusRep) and internal FFE",
     IsIdenticalObj,
-    [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ], 0,
+    [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ],
     function( x, y )
     return x![1] * One( Z( Characteristic( x ) ) ) < y;
     end );
@@ -206,7 +209,7 @@ InstallMethod( \<,
 InstallMethod( \<,
     "for internal FFE and element in Z/pZ (ModulusRep)",
     IsIdenticalObj,
-    [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ], 0,
+    [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ],
     function( x, y )
     return x < y![1] * One( Z( Characteristic( y ) ) );
     end );
@@ -220,17 +223,17 @@ InstallMethod( \<,
 #M  \/( <x>, <y> )
 #M  \^( <x>, <n> )
 ##
-##  The result of an arithmetic operation between two `ZmodnZObj' is again a
-##  `ZmodnZObj'.
-##  The result of an arithmetic operation between a `ZmodnZObj' and an
-##  integer is a `ZmodnZObj'.
-##  The result of an arithmetic operation between a `ZmodpZObj' and an
-##  internal FFE is an internal FFE.
+##  The result of an arithmetic operation of
+##  - two `ZmodnZObj' is again a `ZmodnZObj',
+##  - a `ZmodnZObj' and a rational with acceptable denominator
+##    is a `ZmodnZObj',
+##  - a `ZmodpZObj' and an internal FFE in the same characteristic
+##    is an internal FFE.
 ##
 InstallMethod( \+,
     "for two elements in Z/nZ (ModulusRep)",
     IsIdenticalObj,
-    [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
+    [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
                       [ ( x![1] + y![1] ) mod DataType( TypeObj( x ) ) ] );
@@ -238,8 +241,7 @@ InstallMethod( \+,
 
 InstallMethod( \+,
     "for element in Z/nZ (ModulusRep) and integer",
-    true,
-    [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
+    [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, y )
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
                       [ ( x![1] + y ) mod DataType( TypeObj( x ) ) ] );
@@ -247,29 +249,57 @@ InstallMethod( \+,
 
 InstallMethod( \+,
     "for integer and element in Z/nZ (ModulusRep)",
-    true,
-    [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
+    [ IsInt, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
                       [ ( x + y![1] ) mod DataType( TypeObj( y ) ) ] );
     end );
 
 InstallMethod( \+,
+    "for element in Z/nZ (ModulusRep) and rational",
+    [ IsZmodnZObj and IsModulusRep, IsRat ],
+    function( x, y )
+    local m;
+    m:= DataType( TypeObj( x ) );
+    if GcdInt( DenominatorRat( y ), m ) = 1 then
+      return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                        [ ( x![1] + y ) mod m ] );
+    else
+      return fail;
+    fi;
+    end );
+
+InstallMethod( \+,
+    "for rational and element in Z/nZ (ModulusRep)",
+    [ IsRat, IsZmodnZObj and IsModulusRep ],
+    function( x, y )
+    local m;
+    m:= DataType( TypeObj( y ) );
+    if GcdInt( DenominatorRat( x ), m ) = 1 then
+      return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
+                        [ ( x + y![1] ) mod m ] );
+    else
+      return fail;
+    fi;
+    end );
+
+InstallMethod( \+,
     "for element in Z/pZ (ModulusRep) and internal FFE",
     IsIdenticalObj,
-    [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ], 0,
+    [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ],
     function( x, y ) return x![1] + y; end );
 
 InstallMethod( \+,
     "for internal FFE and element in Z/pZ (ModulusRep)",
     IsIdenticalObj,
-    [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ], 0,
+    [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ],
     function( x, y ) return x + y![1]; end );
+
 
 InstallMethod( \-,
     "for two elements in Z/nZ (ModulusRep)",
     IsIdenticalObj,
-    [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
+    [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
                       [ ( x![1] - y![1] ) mod DataType( TypeObj( x ) ) ] );
@@ -277,8 +307,7 @@ InstallMethod( \-,
 
 InstallMethod( \-,
     "for element in Z/nZ (ModulusRep) and integer",
-    true,
-    [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
+    [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, y )
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
                       [ ( x![1] - y ) mod DataType( TypeObj( x ) ) ] );
@@ -286,29 +315,57 @@ InstallMethod( \-,
 
 InstallMethod( \-,
     "for integer and element in Z/nZ (ModulusRep)",
-    true,
-    [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
+    [ IsInt, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
                       [ ( x - y![1] ) mod DataType( TypeObj( y ) ) ] );
     end );
 
 InstallMethod( \-,
+    "for element in Z/nZ (ModulusRep) and rational",
+    [ IsZmodnZObj and IsModulusRep, IsRat ],
+    function( x, y )
+    local m;
+    m:= DataType( TypeObj( x ) );
+    if GcdInt( DenominatorRat( y ), m ) = 1 then
+      return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                        [ ( x![1] - y ) mod m ] );
+    else
+      return fail;
+    fi;
+    end );
+
+InstallMethod( \-,
+    "for rational and element in Z/nZ (ModulusRep)",
+    [ IsRat, IsZmodnZObj and IsModulusRep ],
+    function( x, y )
+    local m;
+    m:= DataType( TypeObj( y ) );
+    if GcdInt( DenominatorRat( x ), m ) = 1 then
+      return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
+                        [ ( x - y![1] ) mod m ] );
+    else
+      return fail;
+    fi;
+    end );
+
+InstallMethod( \-,
     "for element in Z/pZ (ModulusRep) and internal FFE",
     IsIdenticalObj,
-    [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ], 0,
+    [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ],
     function( x, y ) return x![1] - y; end );
 
 InstallMethod( \-,
     "for internal FFE and element in Z/pZ (ModulusRep)",
     IsIdenticalObj,
-    [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ], 0,
+    [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ],
     function( x, y ) return x - y![1]; end );
+
 
 InstallMethod( \*,
     "for two elements in Z/nZ (ModulusRep)",
     IsIdenticalObj,
-    [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
+    [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
                       [ ( x![1] * y![1] ) mod DataType( TypeObj( x ) ) ] );
@@ -316,8 +373,7 @@ InstallMethod( \*,
 
 InstallMethod( \*,
     "for element in Z/nZ (ModulusRep) and integer",
-    true,
-    [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
+    [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, y )
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
                       [ ( x![1] * y ) mod DataType( TypeObj( x ) ) ] );
@@ -325,29 +381,57 @@ InstallMethod( \*,
 
 InstallMethod( \*,
     "for integer and element in Z/nZ (ModulusRep)",
-    true,
-    [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
+    [ IsInt, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
                       [ ( x * y![1] ) mod DataType( TypeObj( y ) ) ] );
     end );
 
 InstallMethod( \*,
+    "for element in Z/nZ (ModulusRep) and rational",
+    [ IsZmodnZObj and IsModulusRep, IsRat ],
+    function( x, y )
+    local m;
+    m:= DataType( TypeObj( x ) );
+    if GcdInt( DenominatorRat( y ), m ) = 1 then
+      return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                        [ ( x![1] * y ) mod m ] );
+    else
+      return fail;
+    fi;
+    end );
+
+InstallMethod( \*,
+    "for rational and element in Z/nZ (ModulusRep)",
+    [ IsRat, IsZmodnZObj and IsModulusRep ],
+    function( x, y )
+    local m;
+    m:= DataType( TypeObj( y ) );
+    if GcdInt( DenominatorRat( x ), m ) = 1 then
+      return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
+                        [ ( x * y![1] ) mod m ] );
+    else
+      return fail;
+    fi;
+    end );
+
+InstallMethod( \*,
     "for element in Z/pZ (ModulusRep) and internal FFE",
     IsIdenticalObj,
-    [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ], 0,
+    [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ],
     function( x, y ) return x![1] * y; end );
 
 InstallMethod( \*,
     "for internal FFE and element in Z/pZ (ModulusRep)",
     IsIdenticalObj,
-    [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ], 0,
+    [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ],
     function( x, y ) return x * y![1]; end );
+
 
 InstallMethod( \/,
     "for two elements in Z/nZ (ModulusRep)",
     IsIdenticalObj,
-    [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
+    [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     # Avoid to touch the rational arithmetics.
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
@@ -357,8 +441,7 @@ InstallMethod( \/,
 
 InstallMethod( \/,
     "for element in Z/nZ (ModulusRep) and integer",
-    true,
-    [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
+    [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, y )
     # Avoid to touch the rational arithmetics.
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
@@ -368,8 +451,7 @@ InstallMethod( \/,
 
 InstallMethod( \/,
     "for integer and element in Z/nZ (ModulusRep)",
-    true,
-    [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
+    [ IsInt, IsZmodnZObj and IsModulusRep ],
     function( x, y )
     # Avoid to touch the rational arithmetics.
     return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
@@ -378,21 +460,49 @@ InstallMethod( \/,
     end );
 
 InstallMethod( \/,
+    "for element in Z/nZ (ModulusRep) and rational",
+    [ IsZmodnZObj and IsModulusRep, IsRat ],
+    function( x, y )
+    local m;
+    m:= DataType( TypeObj( x ) );
+    if GcdInt( NumeratorRat( y ), m ) = 1 then
+      return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
+                        [ ( x![1] / y ) mod m ] );
+    else
+      return fail;
+    fi;
+    end );
+
+InstallMethod( \/,
+    "for rational and element in Z/nZ (ModulusRep)",
+    [ IsRat, IsZmodnZObj and IsModulusRep ],
+    function( x, y )
+    local m;
+    m:= DataType( TypeObj( y ) );
+    if GcdInt( DenominatorRat( x ), m ) = 1 then
+      return Objectify( TypeObj( y )![ ZNZ_PURE_TYPE ],
+                        [ ( x / y![1] ) mod m ] );
+    else
+      return fail;
+    fi;
+    end );
+
+InstallMethod( \/,
     "for element in Z/pZ (ModulusRep) and internal FFE",
     IsIdenticalObj,
-    [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ], 0,
+    [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ],
     function( x, y ) return x![1] / y; end );
 
 InstallMethod( \/,
     "for internal FFE and element in Z/pZ (ModulusRep)",
     IsIdenticalObj,
-    [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ], 0,
+    [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ],
     function( x, y ) return x / y![1]; end );
+
 
 InstallMethod( \^,
     "for element in Z/nZ (ModulusRep), and integer",
-    true,
-    [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
+    [ IsZmodnZObj and IsModulusRep, IsInt ],
     function( x, n )
     return Objectify( TypeObj( x )![ ZNZ_PURE_TYPE ],
                   [ PowerModInt( x![1], n, DataType( TypeObj( x ) ) ) ] );
@@ -405,8 +515,7 @@ InstallMethod( \^,
 ##
 InstallMethod( ZeroOp,
     "for element in Z/nZ (ModulusRep)",
-    true,
-    [ IsZmodnZObj ], 0,
+    [ IsZmodnZObj ],
     elm -> ZmodnZObj( FamilyObj( elm ), 0 ) );
 
 
@@ -416,9 +525,8 @@ InstallMethod( ZeroOp,
 ##
 InstallMethod( AdditiveInverseOp,
     "for element in Z/nZ (ModulusRep)",
-    true,
-    [ IsZmodnZObj and IsModulusRep ], 0,
-    elm -> ZmodnZObj( FamilyObj( elm ), -elm![1] ) );
+    [ IsZmodnZObj and IsModulusRep ],
+    elm -> ZmodnZObj( FamilyObj( elm ), AdditiveInverse( elm![1] ) ) );
 
 
 #############################################################################
@@ -427,8 +535,7 @@ InstallMethod( AdditiveInverseOp,
 ##
 InstallMethod( OneOp,
     "for element in Z/nZ (ModulusRep)",
-    true,
-    [ IsZmodnZObj ], 0,
+    [ IsZmodnZObj ],
     elm -> ZmodnZObj( FamilyObj( elm ), 1 ) );
 
 
@@ -438,8 +545,7 @@ InstallMethod( OneOp,
 ##
 InstallMethod( InverseOp,
     "for element in Z/nZ (ModulusRep)",
-    true,
-    [ IsZmodnZObj and IsModulusRep ], 0,
+    [ IsZmodnZObj and IsModulusRep ],
     function( elm )
     local modulus;
     modulus:= QuotientMod( Integers, 1, elm![1], FamilyObj( elm )!.modulus );
@@ -456,8 +562,7 @@ InstallMethod( InverseOp,
 ##
 InstallMethod( DegreeFFE,
     "for element in Z/pZ (ModulusRep)",
-    true,
-    [ IsZmodpZObj and IsModulusRep ], 0,
+    [ IsZmodpZObj and IsModulusRep ],
     z -> 1 );
 
 
@@ -468,7 +573,7 @@ InstallMethod( DegreeFFE,
 InstallMethod( LogFFE,
     "for two elements in Z/pZ (ModulusRep)",
     IsIdenticalObj,
-    [ IsZmodpZObj and IsModulusRep, IsZmodpZObj and IsModulusRep ], 0,
+    [ IsZmodpZObj and IsModulusRep, IsZmodpZObj and IsModulusRep ],
     function( n, r )
     return LogMod( n![1], r![1], Characteristic( n ) );
     end );
@@ -480,8 +585,7 @@ InstallMethod( LogFFE,
 ##
 InstallMethod( Int,
     "for element in Z/nZ (ModulusRep)",
-    true,
-    [ IsZmodnZObj and IsModulusRep ], 0,
+    [ IsZmodnZObj and IsModulusRep ],
     z -> z![1] );
 
 
@@ -493,12 +597,40 @@ InstallMethod( Int,
 
 #############################################################################
 ##
+#M  InverseOp( <mat> )  . . . . . . . . . . . . for ordinary matrix over Z/nZ
+##
+##  For a nonprime integer $n$, the residue class ring $\Z/n\Z$ has zero
+##  divisors, so the standard algorithm to invert a matrix over $\Z/n\Z$
+##  cannot be applied.
+##
+##  The method below should of course be replaced by a method that uses
+##  inversion modulo the maximal prime powers dividing the modulus,
+##  the ``brute force method'' is only preliminary!
+##
+InstallMethod( InverseOp,
+    "for an ordinary matrix over a ring Z/nZ",
+    [ IsMatrix and IsOrdinaryMatrix and IsZmodnZObjNonprimeCollColl ],
+    function( mat )
+    local one;
+    one:= One( mat[1][1] );
+    mat:= InverseOp( List( mat, row -> List( row, Int ) ) );
+    if mat <> fail then
+      mat:= mat * one;
+    fi;
+    if not IsMatrix( mat ) then
+      mat:= fail;
+    fi;
+    return mat;
+    end );
+
+
+#############################################################################
+##
 #M  ViewObj( <R> )  . . . . . . . . . . . . . . . . method for full ring Z/nZ
 #M  PrintObj( <R> ) . . . . . . . . . . . . . . . . method for full ring Z/nZ
 ##
 InstallMethod( ViewObj,
     "for full ring Z/nZ",
-    true,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], SUM_FLAGS,
     function( obj )
     Print( "(Integers mod ", Size( obj ), ")" );
@@ -506,7 +638,6 @@ InstallMethod( ViewObj,
 
 InstallMethod( PrintObj,
     "for full ring Z/nZ",
-    true,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], SUM_FLAGS,
     function( obj )
     Print( "(Integers mod ", Size( obj ), ")" );
@@ -520,8 +651,7 @@ InstallMethod( PrintObj,
 ##
 InstallMethod( AsList,
     "for full ring Z/nZ",
-    true,
-    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], 0,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
     function( R )
     local F;
     F:= ElementsFamily( FamilyObj( R ) );
@@ -533,8 +663,7 @@ InstallMethod( AsList,
 
 InstallMethod( AsSSortedList,
     "for full ring Z/nZ",
-    true,
-    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], 0,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
     function( R )
     local F;
     F:= ElementsFamily( FamilyObj( R ) );
@@ -550,8 +679,7 @@ InstallMethod( AsSSortedList,
 ##
 InstallMethod( Random,
     "for full ring Z/nZ",
-    true,
-    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], 0,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
     R -> ZmodnZObj( ElementsFamily( FamilyObj( R ) ),
                     Random( [ 0 .. Size( R ) - 1 ] ) ) );
 
@@ -562,8 +690,7 @@ InstallMethod( Random,
 ##
 InstallMethod( Size,
     "for full ring Z/nZ",
-    true,
-    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], 0,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
     R -> ElementsFamily( FamilyObj( R ) )!.modulus );
 
 
@@ -573,8 +700,7 @@ InstallMethod( Size,
 ##
 InstallMethod( Units,
     "for full ring Z/nZ",
-    true,
-    [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing ], 0,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing ],
     function( R )
     local   G,  gens;
     
@@ -600,7 +726,7 @@ end );
 InstallMethod( \in,
     "for subgroups of Z/p^aZ, p<>2",
     IsElmsColls,
-    [ IsZmodnZObjNonprime, IsGroup and IsZmodnZObjNonprimeCollection ],0,
+    [ IsZmodnZObjNonprime, IsGroup and IsZmodnZObjNonprimeCollection ],
     function( res, G )
     local   m;
 
@@ -632,8 +758,7 @@ DeclareRepresentation( "IsZmodnZEnumeratorRep",
 ##
 InstallMethod( \[\],
     "for enumerator of full ring Z/nZ, and pos. integer",
-    true,
-    [ IsList and IsZmodnZEnumeratorRep, IsPosInt ], 0,
+    [ IsList and IsZmodnZEnumeratorRep, IsPosInt ],
     function( enum, nr )
     if nr <= enum!.size then
       return Objectify( enum!.type, [ nr - 1 ] );
@@ -644,8 +769,7 @@ InstallMethod( \[\],
 
 InstallMethod( Position,
     "for enumerator of full ring Z/nZ, and element",
-    true,
-    [ IsZmodnZEnumeratorRep, IsZmodnZObj and IsModulusRep, IsZeroCyc ], 0,
+    [ IsZmodnZEnumeratorRep, IsZmodnZObj and IsModulusRep, IsZeroCyc ],
     function( enum, elm, zero )
     if IsCollsElms( FamilyObj( enum ), FamilyObj( elm ) ) then
       return elm![1] + 1;
@@ -656,7 +780,6 @@ InstallMethod( Position,
 
 InstallMethod( Enumerator,
     "for full ring Z/nZ",
-    true,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], SUM_FLAGS,
     function( R )
     local enum;
@@ -682,7 +805,7 @@ InstallMethod( Enumerator,
 InstallMethod( SquareRoots,
     "for prime field and object in Z/pZ",
     IsCollsElms,
-    [ IsField and IsPrimeField, IsZmodpZObj and IsModulusRep ], 0,
+    [ IsField and IsPrimeField, IsZmodpZObj and IsModulusRep ],
     function( F, obj )
     F:= FamilyObj( obj );
     return List( RootsMod( obj![1], 2, Characteristic( obj ) ),
@@ -797,8 +920,7 @@ end );
 ##
 InstallMethod( \mod,
     "for `Integers', and positive integers",
-    true,
-    [ IsIntegers, IsPosInt ], 0,
+    [ IsIntegers, IsPosInt ],
     function( Integers, n ) return ZmodnZ( n ); end );
 
 
@@ -812,20 +934,17 @@ InstallMethod( \mod,
 ##
 InstallMethod( ModulusOfZmodnZObj,
     "for element in Z/nZ (nonprime)",
-    true,
-    [ IsZmodnZObjNonprime ], 0,
+    [ IsZmodnZObjNonprime ],
     res -> FamilyObj( res )!.modulus );
 
 InstallMethod( ModulusOfZmodnZObj,
     "for element in Z/pZ (prime)",
-    true,
-    [ IsZmodpZObj ], 0,
+    [ IsZmodpZObj ],
     Characteristic );
 
 InstallOtherMethod( ModulusOfZmodnZObj,
     "for FFE",
-    true,
-    [ IsFFE ], 0,
+    [ IsFFE ],
     function( ffe )
     if DegreeFFE( ffe ) = 1 then
       return Characteristic( ffe );

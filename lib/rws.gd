@@ -42,7 +42,7 @@
 ##  given element.
 ##
 ##  As in  general  a rewriting system will    be first built   and then used
-##  without   changing   it,  some   functions   (e.   g.  `GroupByRws') call
+##  without   changing   it,  some   functions    (e.g.  `GroupByRws')   call
 ##  `ReduceRules'  to give the rewriting  system a chance to optimise itself.
 ##  The default method for `ReduceRules' is "do nothing".
 ##
@@ -58,7 +58,7 @@
 
 #2
 ##  The key point to note about rewriting systems is that they have 
-##  properties such as IsConfluent and attributes such as Rules, however
+##  properties such as `IsConfluent' and attributes such as `Rules', however
 ##  they are rarely stored, but rather computed afresh each time they
 ##  are asked for, from data stored in the private members of the rewriting
 ##  system object.  This is because a rewriting system often evolves
@@ -67,9 +67,9 @@
 ##  the system confluent.
 ##  
 ##  For example in the case of Knuth Bendix rewriting systems
-##  (see `Finitely Presented Semigroups'), the function
+##  (see~`Finitely Presented Semigroups'), the function
 ##  `CreateKnuthBendixRewritingSystemOfFpSemigroup' creating the
-##  rewriting system (in kbsemi.gi) uses
+##  rewriting system (in `kbsemi.gi') uses
 ##  
 ##  \beginexample
 ##  kbrws := Objectify(NewType(fam,
@@ -83,8 +83,8 @@
 ##  lessthan:=wordlt));
 ##  \endexample
 ##  
-##  In particular, since we don't use the filter IsAttributeStoringRep
-##  in the Objectify, whenever IsConfluent is called, the appropriate
+##  In particular, since we don't use the filter `IsAttributeStoringRep'
+##  in the `Objectify', whenever `IsConfluent' is called, the appropriate
 ##  method to determine confluence is called. 
 
 Revision.rws_gd :=
@@ -105,8 +105,9 @@ DeclareCategory(
 ##
 #C  IsReducedConfluentRewritingSystem( <obj> )
 ##
-##  This is a subcategory of IsRewritingSystem for (immutable) rws which
-##  are reduced and confluent##
+##  This is a subcategory of `IsRewritingSystem' for (immutable) rws which
+##  are reduced and confluent.
+##
 DeclareCategory(
     "IsReducedConfluentRewritingSystem",
     IsRewritingSystem);
@@ -173,9 +174,14 @@ InstallTrueMethod( IsBuiltFromMagmaWithOne, IsBuiltFromMagmaWithInverses );
 ##
 #P  IsBuiltFromSemigroup( <obj> )
 ##
-DeclareProperty(
-    "IsBuiltFromSemigroup",
-    IsObject );
+DeclareProperty( "IsBuiltFromSemigroup", IsObject );
+
+#############################################################################
+##
+#P  IsBuiltFromMonoid( <obj> )
+##
+DeclareProperty( "IsBuiltFromMonoid", IsObject );
+
 
 #############################################################################
 ##
@@ -183,6 +189,29 @@ DeclareProperty(
 ##
 InstallTrueMethod( IsBuiltFromMagmaWithInverses, IsBuiltFromGroup );
 
+#############################################################################
+##
+#A  SemigroupOfRewritingSystem( <rws> )
+##
+##  returns the semigroup over which <rws> is
+##  a rewriting system
+##
+DeclareAttribute("SemigroupOfRewritingSystem",IsRewritingSystem);
+
+#############################################################################
+##
+#A  MonoidOfRewritingSystem( <rws> )
+##  
+##  returns the monoid over which <rws> is a rewriting system
+##
+DeclareAttribute("MonoidOfRewritingSystem",IsRewritingSystem);
+
+
+#############################################################################
+##
+#O  FreeStructureOfRewritingSystem( <obj> )
+##
+DeclareOperation( "FreeStructureOfRewritingSystem", [IsRewritingSystem]);
 
 #############################################################################
 ##
@@ -250,30 +279,32 @@ DeclareAttribute(
 #############################################################################
 ##
 #A  OrderOfRewritingSystem(<rws>)
+#A  OrderingOfRewritingSystem(<rws>)
 ##
-##  The order of the rewriting system.
+##  return the ordering of the rewriting system <rws>.
+##  %the synonym here guarantees compatibility with {\GAP}~4.1 and {\GAP}~4.2.
 ##
-DeclareAttribute("OrderOfRewritingSystem",
-  IsRewritingSystem);
-
-
+DeclareAttribute("OrderingOfRewritingSystem", IsRewritingSystem);
+DeclareSynonym("OrderOfRewritingSystem", OrderingOfRewritingSystem);
 
 #############################################################################
 ##
 #P  IsConfluent( <rws> )
 #P  IsConfluent( <A> )
 ##
-##  Checks whether the rewriting system <rws> is confluent. 
+##  return `true' if and only if the rewriting system <rws> is confluent. 
 ##  A rewriting system is *confluent* if, for every two words 
 ##  <u> and <v> in the free algebra <T> which represent the same element 
 ##  of the algebra <A> defined by <rws>,
-##  ReducedForm(<rws>,<u>) =  ReducedForm(<rws>,<v>) as words in the
+##  `ReducedForm(<rws>,<u>) =  ReducedForm(<rws>,<v>)' as words in the
 ##  free algebra <T>. This element is the *unique normal form*
 ##  of the element represented by <u>.
 ##
 ##  In its second
 ##  form, if <A> is an algebra with a canonical rewriting system associated
-##  with it,  it checks whether that rewriting system is confluent.
+##  with it, `IsConfluent' checks whether that rewriting system is confluent.
+##
+##  Also see~"IsConfluent!for pc groups".
 ##
 
 #  NOTE: this is a property *but* the rewriting system does not store  this
@@ -410,6 +441,19 @@ DeclareOperation(
     "ReducedForm", 
     [ IsRewritingSystem,
       IsObject ] );
+
+#############################################################################
+##
+#O  IsReducedForm( <rws>, <u> )
+##
+##  Given an element <u> in the free (or term) algebra over which
+##  <rws> is defined, returns `<u> = ReducedForm(<rws>, <u>)'. 
+##
+DeclareOperation(
+    "IsReducedForm",
+    [ IsRewritingSystem,
+      IsObject ] );
+
 
 
 #############################################################################

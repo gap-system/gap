@@ -105,57 +105,58 @@ extern  Stat *          PtrBody;
 #define T_REPEAT2               (FIRST_STAT_TNUM+29)
 #define T_REPEAT3               (FIRST_STAT_TNUM+30)
 #define T_BREAK                 (FIRST_STAT_TNUM+31)
-#define T_RETURN_OBJ            (FIRST_STAT_TNUM+32)
-#define T_RETURN_VOID           (FIRST_STAT_TNUM+33)
+#define T_CONTINUE              (FIRST_STAT_TNUM+32)
+#define T_RETURN_OBJ            (FIRST_STAT_TNUM+33)
+#define T_RETURN_VOID           (FIRST_STAT_TNUM+34)
 
-#define T_ASS_LVAR              (FIRST_STAT_TNUM+34)
-#define T_ASS_LVAR_01           (FIRST_STAT_TNUM+35)
-#define T_ASS_LVAR_02           (FIRST_STAT_TNUM+36)
-#define T_ASS_LVAR_03           (FIRST_STAT_TNUM+37)
-#define T_ASS_LVAR_04           (FIRST_STAT_TNUM+38)
-#define T_ASS_LVAR_05           (FIRST_STAT_TNUM+39)
-#define T_ASS_LVAR_06           (FIRST_STAT_TNUM+40)
-#define T_ASS_LVAR_07           (FIRST_STAT_TNUM+41)
-#define T_ASS_LVAR_08           (FIRST_STAT_TNUM+42)
-#define T_ASS_LVAR_09           (FIRST_STAT_TNUM+43)
-#define T_ASS_LVAR_10           (FIRST_STAT_TNUM+44)
-#define T_ASS_LVAR_11           (FIRST_STAT_TNUM+45)
-#define T_ASS_LVAR_12           (FIRST_STAT_TNUM+46)
-#define T_ASS_LVAR_13           (FIRST_STAT_TNUM+47)
-#define T_ASS_LVAR_14           (FIRST_STAT_TNUM+48)
-#define T_ASS_LVAR_15           (FIRST_STAT_TNUM+49)
-#define T_ASS_LVAR_16           (FIRST_STAT_TNUM+50)
-#define T_UNB_LVAR              (FIRST_STAT_TNUM+51)
-#define T_ASS_HVAR              (FIRST_STAT_TNUM+52)
-#define T_UNB_HVAR              (FIRST_STAT_TNUM+53)
-#define T_ASS_GVAR              (FIRST_STAT_TNUM+54)
-#define T_UNB_GVAR              (FIRST_STAT_TNUM+55)
-#define T_ASS_LIST              (FIRST_STAT_TNUM+56)
-#define T_ASSS_LIST             (FIRST_STAT_TNUM+57)
-#define T_ASS_LIST_LEV          (FIRST_STAT_TNUM+58)
-#define T_ASSS_LIST_LEV         (FIRST_STAT_TNUM+59)
-#define T_UNB_LIST              (FIRST_STAT_TNUM+60)
-#define T_ASS_REC_NAME          (FIRST_STAT_TNUM+61)
-#define T_ASS_REC_EXPR          (FIRST_STAT_TNUM+62)
-#define T_UNB_REC_NAME          (FIRST_STAT_TNUM+63)
-#define T_UNB_REC_EXPR          (FIRST_STAT_TNUM+64)
-#define T_ASS_POSOBJ            (FIRST_STAT_TNUM+65)
-#define T_ASSS_POSOBJ           (FIRST_STAT_TNUM+66)
-#define T_ASS_POSOBJ_LEV        (FIRST_STAT_TNUM+67)
-#define T_ASSS_POSOBJ_LEV       (FIRST_STAT_TNUM+68)
-#define T_UNB_POSOBJ            (FIRST_STAT_TNUM+69)
-#define T_ASS_COMOBJ_NAME       (FIRST_STAT_TNUM+70)
-#define T_ASS_COMOBJ_EXPR       (FIRST_STAT_TNUM+71)
-#define T_UNB_COMOBJ_NAME       (FIRST_STAT_TNUM+72)
-#define T_UNB_COMOBJ_EXPR       (FIRST_STAT_TNUM+73)
+#define T_ASS_LVAR              (FIRST_STAT_TNUM+35)
+#define T_ASS_LVAR_01           (FIRST_STAT_TNUM+36)
+#define T_ASS_LVAR_02           (FIRST_STAT_TNUM+37)
+#define T_ASS_LVAR_03           (FIRST_STAT_TNUM+38)
+#define T_ASS_LVAR_04           (FIRST_STAT_TNUM+39)
+#define T_ASS_LVAR_05           (FIRST_STAT_TNUM+40)
+#define T_ASS_LVAR_06           (FIRST_STAT_TNUM+41)
+#define T_ASS_LVAR_07           (FIRST_STAT_TNUM+42)
+#define T_ASS_LVAR_08           (FIRST_STAT_TNUM+43)
+#define T_ASS_LVAR_09           (FIRST_STAT_TNUM+44)
+#define T_ASS_LVAR_10           (FIRST_STAT_TNUM+45)
+#define T_ASS_LVAR_11           (FIRST_STAT_TNUM+46)
+#define T_ASS_LVAR_12           (FIRST_STAT_TNUM+47)
+#define T_ASS_LVAR_13           (FIRST_STAT_TNUM+48)
+#define T_ASS_LVAR_14           (FIRST_STAT_TNUM+49)
+#define T_ASS_LVAR_15           (FIRST_STAT_TNUM+50)
+#define T_ASS_LVAR_16           (FIRST_STAT_TNUM+51)
+#define T_UNB_LVAR              (FIRST_STAT_TNUM+52)
+#define T_ASS_HVAR              (FIRST_STAT_TNUM+53)
+#define T_UNB_HVAR              (FIRST_STAT_TNUM+54)
+#define T_ASS_GVAR              (FIRST_STAT_TNUM+55)
+#define T_UNB_GVAR              (FIRST_STAT_TNUM+56)
+#define T_ASS_LIST              (FIRST_STAT_TNUM+57)
+#define T_ASSS_LIST             (FIRST_STAT_TNUM+58)
+#define T_ASS_LIST_LEV          (FIRST_STAT_TNUM+59)
+#define T_ASSS_LIST_LEV         (FIRST_STAT_TNUM+60)
+#define T_UNB_LIST              (FIRST_STAT_TNUM+61)
+#define T_ASS_REC_NAME          (FIRST_STAT_TNUM+62)
+#define T_ASS_REC_EXPR          (FIRST_STAT_TNUM+63)
+#define T_UNB_REC_NAME          (FIRST_STAT_TNUM+64)
+#define T_UNB_REC_EXPR          (FIRST_STAT_TNUM+65)
+#define T_ASS_POSOBJ            (FIRST_STAT_TNUM+66)
+#define T_ASSS_POSOBJ           (FIRST_STAT_TNUM+67)
+#define T_ASS_POSOBJ_LEV        (FIRST_STAT_TNUM+68)
+#define T_ASSS_POSOBJ_LEV       (FIRST_STAT_TNUM+69)
+#define T_UNB_POSOBJ            (FIRST_STAT_TNUM+70)
+#define T_ASS_COMOBJ_NAME       (FIRST_STAT_TNUM+71)
+#define T_ASS_COMOBJ_EXPR       (FIRST_STAT_TNUM+72)
+#define T_UNB_COMOBJ_NAME       (FIRST_STAT_TNUM+73)
+#define T_UNB_COMOBJ_EXPR       (FIRST_STAT_TNUM+74)
 
-#define T_INFO                  (FIRST_STAT_TNUM+74)
-#define T_ASSERT_2ARGS          (FIRST_STAT_TNUM+75)
-#define T_ASSERT_3ARGS          (FIRST_STAT_TNUM+76)
+#define T_INFO                  (FIRST_STAT_TNUM+75)
+#define T_ASSERT_2ARGS          (FIRST_STAT_TNUM+76)
+#define T_ASSERT_3ARGS          (FIRST_STAT_TNUM+77)
 
-#define T_EMPTY                 (FIRST_STAT_TNUM+77)
+#define T_EMPTY                 (FIRST_STAT_TNUM+78)
 
-#define T_PROCCALL_OPTS        (FIRST_STAT_TNUM+ 78)
+#define T_PROCCALL_OPTS        (FIRST_STAT_TNUM+ 79)
 
 #define LAST_STAT_TNUM          T_PROCCALL_OPTS
 
@@ -836,7 +837,8 @@ extern  void            CodePow ( void );
 */
 extern  void            CodeIntExpr (
             Char *              str );
-
+extern  void            CodeLongIntExpr (
+            Obj                 string ); 
 
 /****************************************************************************
 **
@@ -916,7 +918,7 @@ extern  void            CodeListExprEnd (
 *F  CodeStringExpr(<str>) . . . . . . . . . .  code literal string expression
 */
 extern  void            CodeStringExpr (
-            Char *              str );
+            Obj              str );
 
 
 /****************************************************************************

@@ -39,7 +39,7 @@ Revision.zmodnz_gd :=
 ##  \beginlist
 ##  \item{-}
 ##    that objects in `IsZmodnZObjNonprime' have an external representation
-##    (namely the residue in the range $[ 0, 1, ... n-1 ]$),
+##    (namely the residue in the range $[ 0, 1, \ldots, n-1 ]$),
 ##  \item{-}
 ##    that the comparison of elements can be defined as comparison of the
 ##    residues, and
@@ -134,12 +134,18 @@ DeclareGlobalFunction( "ZmodpZNC" );
 
 #############################################################################
 ##
-#O  ZmodnZObj( <Fam>, <i> )
+#O  ZmodnZObj( <Fam>, <r> )
+#O  ZmodnZObj( <r>, <n> )
 ##
-##  creates an object in the residue class family <Fam> whose coset is
-##  represented by integer <i>.
+##  If the first argument is a residue class family <Fam> then `ZmodnZObj'
+##  returns the element in <Fam> whose coset is represented by the integer
+##  <r>.
+##  If the two arguments are an integer <r> and a positive integer <n> then
+##  `ZmodnZObj' returns the element in `ZmodnZ( <n> )' (see~"ZmodnZ")
+##  whose coset is represented by the integer <r>.
 ##
 DeclareOperation( "ZmodnZObj", [ IsZmodnZObjNonprimeFamily, IsInt ] );
+DeclareOperation( "ZmodnZObj", [ IsInt, IsPosInt ] );
 
 
 #############################################################################

@@ -59,6 +59,22 @@ CosetTableDefaultMaxLimit := 256000;
 
 #############################################################################
 ##
+#V  CosetTableStandard
+##
+##  specifies the definiton of a *standard coset table*. It is used
+##  whenever coset tables or augmented coset tables are created. Its value
+##  may be `"lenlex"' or `"semilenlex"'. If it is `"lenlex"' coset tables
+##  will be standardized using all their columns as defined in Charles Sims'
+##  book (this is the new default standard of GAP). If it is `"semilenlex"'
+##  they will be standardized using only their generator columns (this was
+##  the original GAP standard). The default value of `CosetTableStandard' is
+##  `"lenlex"'.
+##
+CosetTableStandard := "lenlex";
+
+
+#############################################################################
+##
 #V  InfoFpGroup
 ##
 ##  The info class for functions dealing with finitely presented groups is
@@ -81,18 +97,18 @@ InstallTrueMethod(CanEasilyTestMembership, IsSubgroupFpGroup and IsWholeFamily);
 
 #############################################################################
 ##
-#C  IsElementOfFpGroup
-##
-DeclareCategory( "IsElementOfFpGroup",
-    IsMultiplicativeElementWithInverse and IsAssociativeElement );
-
-#############################################################################
-##
 #F  IsFpGroup(<G>)
 ##
 ##  is a synonym for `IsSubgroupFpGroup(<G>)' and `IsGroupOfFamily(<G>)'.
 ##
 DeclareSynonym( "IsFpGroup", IsSubgroupFpGroup and IsGroupOfFamily );
+
+#############################################################################
+##
+#C  IsElementOfFpGroup
+##
+DeclareCategory( "IsElementOfFpGroup",
+    IsMultiplicativeElementWithInverse and IsAssociativeElement );
 
 #############################################################################
 ##
@@ -105,8 +121,10 @@ DeclareCategoryCollections( "IsElementOfFpGroup" );
 ##
 #m  IsSubgroupFpGroup
 ##
-InstallTrueMethod( IsSubgroupFpGroup,
-    IsGroup and IsElementOfFpGroupCollection );
+InstallTrueMethod(IsSubgroupFpGroup,IsGroup and IsElementOfFpGroupCollection);
+
+##  free groups also are to be fp
+InstallTrueMethod(IsSubgroupFpGroup,IsGroup and IsAssocWordCollection);
 
 
 #############################################################################
@@ -123,6 +141,16 @@ InstallTrueMethod( IsGeneratorsOfMagmaWithInverses,
 ##
 DeclareCategoryFamily( "IsElementOfFpGroup" );
 
+
+#############################################################################
+##
+#A  FpElmEqualityMethod(<fam>)
+##
+##  If <fam> is the elements family of a finitely presented group this
+##  attribute returns a function `equal(<left>, <right>)' that will be
+##  used to compare elements in <fam>.
+##
+DeclareAttribute( "FpElmEqualityMethod",IsElementOfFpGroupFamily);
 
 #############################################################################
 ##
@@ -210,6 +238,38 @@ DeclareGlobalFunction("CosetTableFromGensAndRels");
 
 #############################################################################
 ##
+#F  StandardizeTable( <table>, <standard> )
+##
+##  standardizes the given coset table <table>. The second argument is
+##  optional. It defines the standard to be used, its values may be
+##  `"lenlex"' or `"semilenlex"' specifying the new or the old convention,
+##  respectively. If no value for the parameter <standard> is provided the
+##  function will use the global variable `CosetTableStandard' instead. Note
+##  that the function alters the given table, it does not create a copy.
+##
+DeclareGlobalFunction("StandardizeTable");
+
+#############################################################################
+##
+#F  StandardizeTable2( <table>, <table2>, <standard> )
+##
+##  standardizes the augmented coset table given by <table> and <table2>.
+##  The third argument is optional. It defines the standard to be used, its
+##  values may be `"lenlex"' or `"semilenlex"' specifying the new or the old
+##  convention, respectively. If no value for the parameter <standard> is
+##  provided the function will use the global variable `CosetTableStandard'
+##  instead. Note that the function alters the given table, it does not
+##  create a copy.
+##
+##  Warning: The function alters just the two tables. Any further lists
+##  involved in the object *augmented coset table* which refer to these two
+##  tables will not be updated.
+##
+DeclareGlobalFunction("StandardizeTable2");
+
+
+#############################################################################
+##
 #A  CosetTableInWholeGroup(< H >)
 #O  TryCosetTableInWholeGroup(< H >)
 ##
@@ -225,6 +285,29 @@ DeclareGlobalFunction("CosetTableFromGensAndRels");
 ##
 DeclareAttribute( "CosetTableInWholeGroup", IsGroup );
 DeclareOperation( "TryCosetTableInWholeGroup", [IsGroup] );
+
+
+#############################################################################
+##
+#A  CosetTableNormalClosureInWholeGroup(< H >)
+##
+##  is equivalent to `CosetTableNormalClosure(<G>,<H>)' where <G> is the
+##  (unique) finitely presented group such that <H> is a subgroup of <G>.
+##  It overrides a `silent' option (see~"CosetTableFromGensAndRels") with
+##  `false'.
+##
+DeclareAttribute( "CosetTableNormalClosureInWholeGroup", IsGroup );
+
+
+#############################################################################
+##
+#F  TracedCosetFpGroup(<tab>,<word>,<pt>)
+##
+##  Traces the coset number <pt> under the word <word> through the coset
+##  table <tab>. (Note: <word> must be in the free group, use
+##  `UnderlyingElement' if in doubt.)
+##
+DeclareGlobalFunction("TracedCosetFpGroup");
 
 #############################################################################
 ##
@@ -259,6 +342,15 @@ DeclareRepresentation("IsSubgroupOfWholeGroupByQuotientRep",
 
 #############################################################################
 ##
+#F  DefiningQuotientHomomorphism(<U>)
+##
+##  if <U> is a subgroup in quotient representation
+##  (`IsSubgroupOfWholeGroupByQuotientRep'), this function returns the
+##  defining homomorphism from the whole group to `<U>!.quot'.
+DeclareGlobalFunction("DefiningQuotientHomomorphism");
+
+#############################################################################
+##
 #A  AsSubgroupOfWholeGroupByQuotient(<U>)
 ##
 ##  returns the same subgroup in the representation
@@ -267,43 +359,7 @@ DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 
 ############################################################################
 ##
-#R  IsFromFpGroupGeneralMappingByImages(<map>)
-#R  IsFromFpGroupGeneralMappingByImages(<map>)
-##
-##  is the representation of mappings from an fp group.
-DeclareRepresentation( "IsFromFpGroupGeneralMappingByImages",
-      IsGroupGeneralMappingByImages, [ "generators", "genimages" ] );
-DeclareSynonym("IsFromFpGroupHomomorphismByImages",
-  IsFromFpGroupGeneralMappingByImages and IsMapping);
-
-############################################################################
-##
-#R  IsFromFpGroupStdGensGeneralMappingByImages(<map>)
-#R  IsFromFpGroupStdGensHomomorphismByImages(<map>)
-##
-##  is the representation of mappings from an fp group that give images of
-##  the standard generators.
-DeclareRepresentation( "IsFromFpGroupStdGensGeneralMappingByImages",
-      IsFromFpGroupGeneralMappingByImages, [ "generators", "genimages" ] );
-DeclareSynonym("IsFromFpGroupStdGensHomomorphismByImages",
-  IsFromFpGroupStdGensGeneralMappingByImages and IsMapping);
-
-
-############################################################################
-##
-#R  IsToFpGroupGeneralMappingByImages(<map>)
-#R  IsToFpGroupHomomorphismByImages(<map>)
-##
-DeclareRepresentation( "IsToFpGroupGeneralMappingByImages",
-      IsGroupGeneralMappingByImages,
-      [ "generators", "genimages" ] );
-DeclareSynonym("IsToFpGroupHomomorphismByImages",
-  IsToFpGroupGeneralMappingByImages and IsMapping);
-
-
-############################################################################
-##
-#O  LowIndexSubgroupsFpGroup(<G>,<H>,<index>[,<excluded>])
+#O  LowIndexSubgroupsFpGroup(<G>,[<H>,]<index>[,<excluded>])
 ##
 ##  returns a list of representatives of the conjugacy classes of subgroups
 ##  of the finitely presented group <G> that contain the subgroup <H> of <G>
@@ -314,6 +370,8 @@ DeclareSynonym("IsToFpGroupHomomorphismByImages",
 ##  free group of <G>, and `LowIndexSubgroupsFpGroup' returns only those
 ##  subgroups of index at most <index> that contain <H>, but do not contain
 ##  any conjugate of any of the group elements defined by these words.
+##
+##  If not given, <H> defaults to the trivial subgroup.
 ##
 ##  The function `LowIndexSubgroupsFpGroup' finds the requested subgroups
 ##  by systematically running through a tree of all potential coset tables
@@ -411,6 +469,21 @@ DeclareGlobalFunction("RelatorRepresentatives");
 ##
 DeclareGlobalFunction("RelsSortedByStartGen");
 
+#############################################################################
+##
+#A  IsomorphismPermGroupOrFailFpGroup( <G> [,<max>] )
+##
+##  returns an isomorphism $\varphi$ from the fp group <G> onto
+##  a permutation group <P> which is isomorphic to <G>, if one can be found
+##  with reasonable effort and of reasonable degree. The function
+##  returns `fail' otherwise.
+##
+##  The optional argument `max' can be used to override the default maximal
+##  size of a coset table used (and thus the maximal degree of the resulting
+##  permutation).
+##
+DeclareGlobalFunction("IsomorphismPermGroupOrFailFpGroup");
+
 
 #############################################################################
 ##
@@ -448,6 +521,37 @@ DeclareGlobalFunction( "FactorGroupFpGroupByRels" );
 DeclareGlobalFunction("ExcludedOrders");
 DeclareAttribute( "StoredExcludedOrders",IsSubgroupFpGroup,"mutable");
 
+#############################################################################
+##
+#F  NewmanInfinityCriterion(<G>,<p>)
+##
+##  Let <G> be a finitely presented group and <p> a prime that divides the
+##  order of $<G>/<G>'$. This function applies an infinity
+##  criterion due to M.F.~Newman \cite{New90} to <G>. (See chapter~16 
+##  of~\cite{Joh97} for a more explicit description.)
+##  It returns `true'
+##  if the criterion succeeds in proving that <G> is infinite and `fail'
+##  otherwise.
+##  
+##  Note that the criterion uses the number of generators and
+##  relations in the presentation of <G>. Reduction of the persentation via
+##  Tietze transformations (`IsomorphismSimplifiedFpGroup') therefore might
+##  produce an isomorphic group, for which the criterion will work better.
+##
+DeclareGlobalFunction("NewmanInfinityCriterion");
+
+#############################################################################
+##
+#F  FibonacciGroup(<r>,<n>)
+#F  FibonacciGroup(<n>)
+##
+##  This function returns the *Fibonacci group* with parameters <r>, <n>.
+##  This is a finitely presented group with <n> generators $x_i$ and <n>
+##  relators $x_i\cdot\cdots\cdot x_{r+i-1}/x_{r+i}$ (with indices reduced
+##  modulo <n>).
+##
+##  If <r> is ommitted, it defaults to 2.
+DeclareGlobalFunction("FibonacciGroup");
 
 #############################################################################
 ##

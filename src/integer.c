@@ -114,6 +114,7 @@ const char * Revision_integer_c =
 
 #include        "saveload.h"            /* saving and loading              */
 
+#include <stdio.h>
 
 /****************************************************************************
 **
@@ -218,6 +219,7 @@ TypDigit        PrIntC [1000];          /* copy of integer to be printed   */
 #define PRINT_FORMAT "%09d"             /* print 9 decimals at a time      */
 #define CHARS_PER_PRINT_BASE 9
 TypDigit        PrIntD [1071];          /* integer converted to base 10^9  */
+#define NR_HEX_DIGITS 8
 
 #else
 
@@ -225,11 +227,190 @@ TypDigit        PrIntD [1071];          /* integer converted to base 10^9  */
 #define PRINT_FORMAT "%04d"             /* print 4 decimals at a time      */
 #define CHARS_PER_PRINT_BASE 4
 TypDigit        PrIntD [1205];          /* integer converted to base 10000 */
+#define NR_HEX_DIGITS 4
 
 #endif
+/****************************************************************************
+**
+*F  FuncHexStringInt( <self>, <int> ) . . . . . . . . hex string for integer
+*F  FuncIntHexString( <self>, <string> ) . . . . . .  integer from hex string
+**  
+**  The  function  `FuncHexStringInt'  constructs from  an  integer  the
+**  corresponding string in  hexadecimal notation. It has  a leading '-'
+**  for negative numbers and the digits 10..15 are written as A..F.
+**  
+**  The  function `FuncIntHexString'  does  the converse,  but here  the
+**  letters a..f are also allowed in <string> instead of A..F.
+**  
+*/
+Obj FuncHexStringInt( Obj self, Obj integer )
+{
+     Int len, i, j, n;
+     UInt nf;
+     TypDigit d, f;
+     UInt1 *p, a;
+     Obj res;
 
+     /* immediate integers */
+     if (IS_INTOBJ(integer)) {
+         n = INT_INTOBJ(integer);
+         /* 0 is special */
+         if (n == 0) {
+             res = NEW_STRING(1);
+             CHARS_STRING(res)[0] = '0';
+             return res;
+         }
 
+         /* else we create a string big enough for any immediate integer */
+         res = NEW_STRING(2 * NR_HEX_DIGITS + 1);
+         p = CHARS_STRING(res);
+         /* handle sign */
+         if (n<0) {
+            p[0] = '-';
+            n = -n;
+            p++;
+         }
+         else 
+            SET_LEN_STRING(res, GET_LEN_STRING(res)-1);
+         /* collect digits, skipping leading zeros */
+         j = 0;
+         nf = ((UInt)15) << (4*(2*NR_HEX_DIGITS-1));
+         for (i = 2*NR_HEX_DIGITS; i; i-- ) {
+             a = ((UInt)n & nf) >> (4*(i-1));
+             if (j==0 && a==0) SET_LEN_STRING(res, GET_LEN_STRING(res)-1);
+             else if (a<10) p[j++] = a + '0';
+             else p[j++] = a - 10 + 'A';
+             nf = nf >> 4;
+         }
+         /* final null character */
+         p[j] = 0;
+         return res;
+     }
+     else if (TNUM_OBJ(integer) == T_INTNEG || TNUM_OBJ(integer) == T_INTPOS) {
+         /* nr of digits */
+         len = SIZE_INT(integer);
+         for (; ADDR_INT(integer)[len-1] == 0; len--);
 
+         /* result string and sign */
+         if (TNUM_OBJ(integer) == T_INTNEG) {
+             res = NEW_STRING(len * NR_HEX_DIGITS + 1);
+             p = CHARS_STRING(res);
+             p[0] = '-';
+             p++;
+         }
+         else {
+             res = NEW_STRING(len * NR_HEX_DIGITS);
+             p = CHARS_STRING(res);
+         }
+         /* collect digits */
+         j = 0;
+         for (; len; len--) {
+             d = ADDR_INT(integer)[len-1];
+             f = 15 << (4*(NR_HEX_DIGITS-1));
+             for (i = NR_HEX_DIGITS; i; i-- ) {
+                 a = (d & f) >> (4*(i-1));
+                 if (j==0 && a==0) SET_LEN_STRING(res, GET_LEN_STRING(res)-1);
+                 else if (a<10) p[j++] = a + '0';
+                 else p[j++] = a - 10 + 'A';
+                 f = f >> 4;
+             }
+         }
+         /* final null character */
+         p[j] = 0;
+         return res;
+     }
+     else 
+         ErrorReturnObj("HexStringInt: argument must be integer, (not a %s)",
+           (Int)TNAM_OBJ(integer), 0L,
+           "");
+     return (Obj) 0L; /* please picky cc */
+}
+     
+Obj  FuncIntHexString( Obj self,  Obj str )
+{
+    Obj res;
+    Int  i, j, s, ii, len, sign, nd;
+    UInt n;
+    UInt1 *p, a;
+    TypDigit d;
+    
+    if (! IS_STRING(str))
+        ErrorReturnObj("IntHexString: argument must be string (not a %s)",
+          (Int)TNAM_OBJ(str), 0L,
+          "");
+
+    /* number of hex digits and sign */
+    len = GET_LEN_STRING(str);
+    if (len == 0) {
+       res = INT_INTOBJ(0);
+       return res;
+    }
+    if (*(CHARS_STRING(str)) == '-') {
+       sign = -1;
+       i = 1;
+    }
+    else {
+       sign = 1;
+       i = 0;
+    }
+
+    /* small int case */
+    if ((len-i)*4 <= NR_SMALL_INT_BITS) {
+       n = 0;
+       p = CHARS_STRING(str);
+       for (; i<len; i++) {
+          a = p[i];
+          if (a>96) 
+             a -= 87;
+          else if (a>64) 
+             a -= 55;
+          else 
+             a -= 48;
+          if (a > 15)
+              ErrorReturnObj("IntHexString: non-valid character in hex-string",
+                0L, 0L, "");
+          n = (n << 4) + a;
+       }
+       res = INTOBJ_INT(sign * n);
+       return res;
+    }
+    else {
+       /* number of Digits */
+       nd = (len-i)/NR_HEX_DIGITS;
+       if (nd * NR_HEX_DIGITS < (len-i)) nd++;
+       nd += ((3*nd) % 4);
+       if (sign == 1)
+          res = NewBag( T_INTPOS, nd*sizeof(TypDigit) );
+       else
+          res = NewBag( T_INTNEG, nd*sizeof(TypDigit) );
+       /* collect digits, easiest to start from the end */
+       p = CHARS_STRING(str);
+       for (j=0; j < nd; j++) {
+          d = 0;
+          for (s=0, ii=len-j*NR_HEX_DIGITS-1; 
+               ii>=i && ii>len-(j+1)*NR_HEX_DIGITS-1; 
+               s+=4, ii--) {
+             a = p[ii];
+             if (a>96) 
+                a -= 87;
+             else if (a>64) 
+                a -= 55;
+             else 
+                a -= 48;
+             if (a > 15)
+               ErrorReturnObj("IntHexString: non-valid character in hex-string",
+                   0L, 0L, "");
+            
+             d += (a<<s);
+          }
+          ADDR_INT(res)[j] = d;
+       }
+       return res;
+    }
+}
+
+          
+        
 Int IntToPrintBase ( Obj op )
 {
     UInt                 i, k;           /* loop counter                    */
@@ -313,20 +494,23 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
   /* handle a small integer                                               */
   if ( IS_INTOBJ(integer) ) {
     x = INT_INTOBJ(integer);
-    str = NewBag(T_STRING+IMMUTABLE, (NR_SMALL_INT_BITS+5)/3 );
+    str = NEW_STRING( (NR_SMALL_INT_BITS+5)/3 );
+    RetypeBag(str, T_STRING+IMMUTABLE);
     len = 0;
     /* Case of zero */
     if (x == 0)
       {
-	CSTR_STRING(str)[0] = '0';
-	CSTR_STRING(str)[1] = '\0';
-	ResizeBag(str,2);
+	CHARS_STRING(str)[0] = '0';
+	CHARS_STRING(str)[1] = '\0';
+	ResizeBag(str, SIZEBAG_STRINGLEN(1));
+	SET_LEN_STRING(str, 1);
+	
 	return str;
       }
     /* Negative numbers */
     if (x < 0)
       {
-	CSTR_STRING(str)[len++] = '-';
+	CHARS_STRING(str)[len++] = '-';
 	x = -x;
 	neg = 1;
       }
@@ -336,20 +520,21 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
     /* Now the main case */
     while (x != 0)
       {
-	CSTR_STRING(str)[len++] = '0'+ x % 10;
+	CHARS_STRING(str)[len++] = '0'+ x % 10;
 	x /= 10;
       }
-    CSTR_STRING(str)[len] = '\0';
+    CHARS_STRING(str)[len] = '\0';
     
     /* finally, reverse the digits in place */
     for (i = neg; i < (neg+len)/2; i++)
       {
-	c = CSTR_STRING(str)[neg+len-1-i];
-	CSTR_STRING(str)[neg+len-1-i] = CSTR_STRING(str)[i];
-	CSTR_STRING(str)[i] = c;
+	c = CHARS_STRING(str)[neg+len-1-i];
+	CHARS_STRING(str)[neg+len-1-i] = CHARS_STRING(str)[i];
+	CHARS_STRING(str)[i] = c;
       }
     
-    ResizeBag(str, len+1);
+    ResizeBag(str, SIZEBAG_STRINGLEN(len));
+    SET_LEN_STRING(str, len);
     return str;
   }
   
@@ -358,7 +543,8 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
 
     /* convert the integer into base PRINT_BASE                        */
     len = IntToPrintBase(integer);
-    str =  NewBag(T_STRING+IMMUTABLE, CHARS_PER_PRINT_BASE*(len+1)+ 2 );
+    str = NEW_STRING(CHARS_PER_PRINT_BASE*(len+1)+2);
+    RetypeBag(str, T_STRING+IMMUTABLE);
 
     /* sort out the length of the top group */
     j = 1;
@@ -371,13 +557,13 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
     /* Start filling in the string */
     i = 0;
     if ( TNUM_OBJ(integer) == T_INTNEG ) {
-      CSTR_STRING(str)[i++] = '-';
+      CHARS_STRING(str)[i++] = '-';
     }
     
     while (j > 1)
       {
 	j /= 10;
-        CSTR_STRING(str)[i++] = '0' + (top / j) % 10;
+        CHARS_STRING(str)[i++] = '0' + (top / j) % 10;
       }
 
     /* Now the rest of the base PRINT_BASE digits are easy */
@@ -387,13 +573,14 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
 	j = PRINT_BASE/10;
 	while (j > 0)
 	  {
-	    CSTR_STRING(str)[i++] = '0' + (chunk / j) % 10;
+	    CHARS_STRING(str)[i++] = '0' + (chunk / j) % 10;
 	    j /= 10;
 	  }
       }
 
-    CSTR_STRING(str)[i] = '\0';
-    ResizeBag(str,i+1);
+    CHARS_STRING(str)[i] = '\0';
+    ResizeBag(str, SIZEBAG_STRINGLEN(i));
+    SET_LEN_STRING(str, i);
     return str;
   }
   else {
@@ -1267,7 +1454,7 @@ Obj             ProdIntObj (
             return ErrorReturnObj(
                 "Operations: <obj> must have an additive inverse",
                 0L, 0L,
-                "you can return an inverse for <obj>" );
+                "you can supply an inverse <inv> for <obj> via 'return <inv>;'" );
         }
         res = PROD( AINV( n ), res );
     }
@@ -1279,7 +1466,7 @@ Obj             ProdIntObj (
             return ErrorReturnObj(
                 "Operations: <obj> must have an additive inverse",
                 0L, 0L,
-                "you can return an inverse for <obj>" );
+                "you can supply an inverse <inv> for <obj> via 'return <inv>;'" );
         }
         res = PROD( AINV( n ), res );
     }
@@ -1376,9 +1563,9 @@ Obj             PowInt (
             pow = INTOBJ_INT(-1);
         else {
             opR = ErrorReturnObj(
-                "Integer operands: <exponent> is to large",
+                "Integer operands: <exponent> is too large",
                 0L, 0L,
-                "you can return a smaller <exponent>" );
+                "you can replace the integer <exponent> via 'return <exponent>;'" );
             return POW( opL, opR );
         }
     }
@@ -1389,7 +1576,7 @@ Obj             PowInt (
             opL = ErrorReturnObj(
                 "Integer operands: <base> must not be zero",
                 0L, 0L,
-                "you can return a nonzero <base>" );
+                "you can replace the integer <base> via 'return <base>;'" );
             return POW( opL, opR );
         }
         else if ( opL == INTOBJ_INT(1) )
@@ -1452,7 +1639,7 @@ Obj             PowObjInt (
             return ErrorReturnObj(
                 "Operations: <obj> must have an inverse",
                 0L, 0L,
-                "you can return an inverse for <obj>" );
+                "you can supply an inverse <inv> for <obj> via 'return <inv>;'" );
         }
         res = POW( res, AINV( n ) );
     }
@@ -1464,7 +1651,7 @@ Obj             PowObjInt (
             return ErrorReturnObj(
                 "Operations: <obj> must have an inverse",
                 0L, 0L,
-                "you can return an inverse for <obj>" );
+                "you can supply an inverse <inv> for <obj> via 'return <inv>;'" );
         }
         res = POW( res, AINV( n ) );
     }
@@ -1560,7 +1747,7 @@ Obj             ModInt (
             opR = ErrorReturnObj(
                 "Integer operations: <divisor> must be nonzero",
                 0L, 0L,
-                "you can return a nonzero value for <divisor>" );
+                "you can replace the integer <divisor> via 'return <divisor>;'" );
             return MOD( opL, opR );
         }
 
@@ -1609,7 +1796,7 @@ Obj             ModInt (
             opR = ErrorReturnObj(
                 "Integer operations: <divisor> must be nonzero",
                 0L, 0L,
-                "you can return a nonzero value for <divisor>" );
+                "you can replace the integer <divisor> via 'return <divisor>;'" );
             return MOD( opL, opR );
         }
 
@@ -1846,7 +2033,7 @@ Obj             QuoInt (
             opR = ErrorReturnObj(
                 "Integer operations: <divisor> must be nonzero",
                 0L, 0L,
-                "you can return a nonzero value for <divisor>" );
+                "you can replace the integer <divisor> via 'return <divisor>;'" );
             return QUO( opL, opR );
         }
 
@@ -1901,7 +2088,7 @@ Obj             QuoInt (
             opR = ErrorReturnObj(
                 "Integer operations: <divisor> must be nonzero",
                 0L, 0L,
-                "you can return a nonzero value for <divisor>" );
+                "you can replace the integer <divisor> via 'return <divisor>;'" );
             return QUO( opL, opR );
         }
 
@@ -2092,7 +2279,7 @@ Obj FuncQUO_INT (
         opL = ErrorReturnObj(
             "QuoInt: <left> must be an integer (not a %s)",
             (Int)TNAM_OBJ(opL), 0L,
-            "you can return an integer for <left>" );
+            "you can replace <left> via 'return <left>;'" );
     }
     while ( TNUM_OBJ(opR) != T_INT
          && TNUM_OBJ(opR) != T_INTPOS
@@ -2100,7 +2287,7 @@ Obj FuncQUO_INT (
         opR = ErrorReturnObj(
             "QuoInt: <right> must be an integer (not a %s)",
             (Int)TNAM_OBJ(opR), 0L,
-            "you can return an integer for <rigth>" );
+            "you can replace <right> via 'return <right>;'" );
     }
 
     /* return the quotient                                                 */
@@ -2149,7 +2336,7 @@ Obj             RemInt (
             opR = ErrorReturnObj(
                 "Integer operations: <divisor> must be nonzero",
                 0L, 0L,
-                "you can return a nonzero value for <divisor>" );
+                "you can replace the integer <divisor> via 'return <divisor>;'" );
             return QUO( opL, opR );
         }
 
@@ -2194,7 +2381,7 @@ Obj             RemInt (
             opR = ErrorReturnObj(
                 "Integer operations: <divisor> must be nonzero",
                 0L, 0L,
-                "you can return a nonzero value for <divisor>" );
+                "you can replace the integer <divisor> via 'return <divisor>;'" );
             return QUO( opL, opR );
         }
 
@@ -2363,7 +2550,7 @@ Obj             FuncREM_INT (
         opL = ErrorReturnObj(
             "RemInt: <left> must be an integer (not a %s)",
             (Int)TNAM_OBJ(opL), 0L,
-            "you can return an integer for <left>" );
+            "you can replace <left> via 'return <left>;'" );
     }
     while ( TNUM_OBJ(opR) != T_INT
          && TNUM_OBJ(opR) != T_INTPOS
@@ -2371,7 +2558,7 @@ Obj             FuncREM_INT (
         opR = ErrorReturnObj(
             "RemInt: <right> must be an integer (not a %s)",
             (Int)TNAM_OBJ(opR), 0L,
-            "you can return an integer for <rigth>" );
+            "you can replace <right> via 'return <right>;'" );
     }
 
     /* return the remainder                                                */
@@ -2445,8 +2632,20 @@ Obj             GcdInt (
         }
 
         /* maybe it's trivial                                              */
-        if ( opR == INTOBJ_INT(0) )
-            return opL;
+        if ( opR == INTOBJ_INT(0) ) {
+            if( TNUM_OBJ( opL ) == T_INTNEG ) {
+                /* If opL is negative, change the sign.  We do this by    */
+                /* copying opL into a bag of type T_INTPOS.  Note that    */
+                /* opL is a large negative number, so it cannot be the    */
+                /* the negative of 1 << NR_SMALL_INT_BITS.                */
+                gcd = NewBag( T_INTPOS, SIZE_OBJ(opL) );
+                l = ADDR_INT(opL); r = ADDR_INT(gcd);
+                for ( k = SIZE_INT(opL); k != 0; k-- ) *r++ = *l++;
+                
+                return gcd;
+            }
+            else return opL;
+        }
 
         /* get the right operand value, make it positive                   */
         i = INT_INTOBJ(opR);  if ( i < 0 )  i = -i;
@@ -2698,7 +2897,7 @@ Obj             FuncGCD_INT (
         opL = ErrorReturnObj(
             "GcdInt: <left> must be an integer (not a %s)",
             (Int)TNAM_OBJ(opL), 0L,
-            "you can return an integer for <left>" );
+            "you can replace <left> via 'return <left>;'" );
     }
     while ( TNUM_OBJ(opR) != T_INT
          && TNUM_OBJ(opR) != T_INTPOS
@@ -2706,7 +2905,7 @@ Obj             FuncGCD_INT (
         opR = ErrorReturnObj(
             "GcdInt: <right> must be an integer (not a %s)",
             (Int)TNAM_OBJ(opR), 0L,
-            "you can return an integer for <right>" );
+            "you can replace <right> via 'return <right>;'" );
     }
 
     /* return the gcd                                                      */
@@ -2751,21 +2950,21 @@ Obj             FuncHASHKEY_BAG (
       opR = ErrorReturnObj(
 	  "HASHKEY_BAG: <factor> must be a small integer (not a %s)",
 	  (Int)TNAM_OBJ(opR), 0L,
-	  "you can return an integer for <factor>" );
+	  "you can replace <factor> via 'return <factor>;'" );
   }
 
   while ( TNUM_OBJ(opO) != T_INT ) {
       opR = ErrorReturnObj(
 	  "HASHKEY_BAG: <offset> must be a small integer (not a %s)",
 	  (Int)TNAM_OBJ(opO), 0L,
-	  "you can return an integer for <offset>" );
+	  "you can replace <offset> via 'return <offset>;'" );
   }
 
   while ( TNUM_OBJ(opM) != T_INT ) {
       opR = ErrorReturnObj(
 	  "HASHKEY_BAG: <maxlen> must be a small integer (not a %s)",
 	  (Int)TNAM_OBJ(opM), 0L,
-	  "you can return an integer for <maxlen>" );
+	  "you can replace <maxlen> via 'return <maxlen>;'" );
   }
 
   sum=0;
@@ -2872,6 +3071,12 @@ static StructGVarFunc GVarFuncs [] = {
     { "POW_OBJ_INT", 2, "obj, int",
       FuncPOW_OBJ_INT, "src/integer.c:POW_OBJ_INT" },
 
+    { "HexStringInt", 1, "integer",
+      FuncHexStringInt, "src/integer.c:HexStringInt" },
+
+    { "IntHexString", 1, "string",
+      FuncIntHexString, "src/integer.c:IntHexString" },
+
     { "STRING_INT", 1, "int",
       FuncSTRING_INT, "src/integer.c:STRING_INT" },
 
@@ -2948,10 +3153,12 @@ static Int InitKernel (
             ProdFuncs[ t1 ][ t2 ] = ProdIntObj;
             PowFuncs [ t2 ][ t1 ] = PowObjInt;
         }
+#ifdef XTNUMS
         for ( t2 = FIRST_VIRTUAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
             ProdFuncs[ t1 ][ t2 ] = ProdIntObj;
             PowFuncs [ t2 ][ t1 ] = PowObjInt;
         }
+#endif
     }
 
     /* install the binary arithmetic methods                               */

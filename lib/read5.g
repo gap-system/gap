@@ -58,7 +58,6 @@ ReadLib( "liefam.gi"   );
 ReadLib( "algrep.gi"   );
 ReadLib( "lierep.gi"   );
 
-ReadLib( "integer.gi"  );
 ReadLib( "numtheor.gi" );
 ReadLib( "string.gi"   );
 
@@ -94,6 +93,7 @@ ReadLib( "meataxe.gi"  );
 ReadLib( "word.gi"     );
 ReadLib( "wordass.gi"  );
 ReadLib( "wordrep.gi"  );
+ReadLib( "wordlett.gi" );
 
 
 # files dealing with free magmas, semigroups, monoids, groups
@@ -174,6 +174,8 @@ ReadLib( "randiso.gi");
 ReadLib( "randiso2.gi");
 ReadLib( "grppcfp.gi");
 
+ReadLib( "schur.gi");
+
 # files dealing with nice monomorphism
 ReadLib( "grpnice.gi"  );
 
@@ -195,6 +197,7 @@ ReadLib( "grpramat.gi" );
 ReadLib( "grpfp.gi"    );
 ReadLib( "sgpres.gi" );
 ReadLib( "tietze.gi" );
+ReadLib( "ghomfp.gi" );
 
 ReadLib( "addgphom.gi" );
 
@@ -206,6 +209,7 @@ ReadLib( "dict.gi"  );
 ReadLib( "trans.gi");
 ReadLib( "fastendo.gi");
 ReadLib( "fpsemi.gi");
+ReadLib( "fpmon.gi");
 ReadLib( "rwssmg.gi");
 ReadLib( "kbsemi.gi");
 ReadLib( "tcsemi.gi");
@@ -213,11 +217,14 @@ ReadLib( "semirel.gi");
 ReadLib( "semitran.gi");
 ReadLib( "reesmat.gi");
 ReadLib("semiquo.gi");
-ReadLib( "inflist.gi");
 
 
 # prototyping utilities
 ReadLib( "proto.gi");
+
+ReadLib( "orders.gi");
+
+ReadLib( "other.gi");
 
 #############################################################################
 ##

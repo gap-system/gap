@@ -1425,7 +1425,7 @@ Obj FuncE (
         n = ErrorReturnObj(
             "E: <n> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(n), 0L,
-            "you can return a positive integer for <n>" );
+            "you can replace <n> via 'return <n>;'" );
     }
 
     /* for $e_1$ return 1 and for $e_2$ return -1                          */
@@ -1571,7 +1571,7 @@ Obj FuncCONDUCTOR (
         cyc = ErrorReturnObj(
             "Conductor: <cyc> must be a cyclotomic or a small list (not a %s)",
             (Int)TNAM_OBJ(cyc), 0L,
-            "you can return a cyclotomic or a small list for <cyc>" );
+            "you can replace <cyc> via 'return <cyc>;'" );
     }
 
     /* handle cyclotomics                                                  */
@@ -1595,7 +1595,7 @@ Obj FuncCONDUCTOR (
                 cyc = ErrorReturnObj(
                     "Conductor: <list>[%d] must be a cyclotomic (not a %s)",
                     (Int)i, (Int)TNAM_OBJ(cyc),
-                    "you can return a cyclotomic for the list element" );
+                    "you can replace the list element with <cyc> via 'return <cyc>;'" );
             }
             if ( TNUM_OBJ(cyc) == T_INT    || TNUM_OBJ(cyc) == T_RAT
               || TNUM_OBJ(cyc) == T_INTPOS || TNUM_OBJ(cyc) == T_INTNEG ) {
@@ -1652,7 +1652,7 @@ Obj FuncCOEFFS_CYC (
         cyc = ErrorReturnObj(
             "COEFFSCYC: <cyc> must be a cyclotomic (not a %s)",
             (Int)TNAM_OBJ(cyc), 0L,
-            "you can return a cyclotomic for <cyc>" );
+            "you can replace <cyc> via 'return <cyc>;'" );
     }
 
     /* if <cyc> is rational just put it in a list of length 1              */

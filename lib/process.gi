@@ -19,14 +19,11 @@ Revision.process_gi :=
 #M  Process( <dir>, <prg>, <in-none>, <out-none>, <args> )  . . . . none/none
 ##
 InstallMethod( Process,
-    true,
     [ IsDirectory and IsDirectoryRep,
       IsString,
       IsInputTextNone,
       IsOutputTextNone,
       IsList ],
-    0,
-
 function( dir, prg, input, output, args )
 
     # get the directory path
@@ -45,7 +42,6 @@ function( dir, prg, input, output, args )
 
     # execute the process
     return ExecuteProcess( dir, prg, -1, -1, args );
-
 end );
 
 
@@ -54,14 +50,11 @@ end );
 #M  Process( <dir>, <prg>, <in-text>, <out-none>, <args> )  . . . . file/none
 ##
 InstallMethod( Process,
-    true,
     [ IsDirectory and IsDirectoryRep,
       IsString,
       IsInputTextStream and IsInputTextFileRep,
       IsOutputTextNone,
       IsList ],
-    0,
-
 function( dir, prg, input, output, args )
 
     # get the directory path
@@ -80,7 +73,6 @@ function( dir, prg, input, output, args )
 
     # execute the process
     return ExecuteProcess( dir, prg, input![1], -1, args );
-
 end );
 
 
@@ -89,14 +81,11 @@ end );
 #M  Process( <dir>, <prg>, <in-none>, <out-text>, <args> )  . . . . none/file
 ##
 InstallMethod( Process,
-    true,
     [ IsDirectory and IsDirectoryRep,
       IsString,
       IsInputTextNone,
       IsOutputTextStream and IsOutputTextFileRep,
       IsList ],
-    0,
-
 function( dir, prg, input, output, args )
 
     # get the directory path
@@ -115,7 +104,6 @@ function( dir, prg, input, output, args )
 
     # execute the process
     return ExecuteProcess( dir, prg, -1, output![1], args );
-
 end );
 
 
@@ -146,13 +134,11 @@ end;
 
 
 InstallMethod( Process,
-    true,
     [ IsDirectory and IsDirectoryRep,
       IsString,
       IsInputTextStream and IsInputTextFileRep,
       IsOutputTextStream and IsOutputTextFileRep,
       IsList ],
-    0,
     EXECUTE_PROCESS_FILE_STREAM );
 
 
@@ -165,21 +151,18 @@ PROCESS_INPUT_TEMPORARY := fail;
 PROCESS_OUTPUT_TEMPORARY := fail;
 
 InstallMethod( Process,
-    true,
     [ IsDirectory and IsDirectoryRep,
       IsString,
       IsInputTextStream,
       IsOutputTextStream,
       IsList ],
-    0,
-
 function( dir, prg, input, output, args )
     local   name_input,  new,  name_output,  res,  new_output;
 
     # convert input into a file
     if not IsInputTextFileRep(input)  then
         while PROCESS_INPUT_TEMPORARY = fail or
-          IsExistingFile(PROCESS_INPUT_TEMPORARY) do
+          IsExistingFile( PROCESS_INPUT_TEMPORARY ) = true do
             PROCESS_INPUT_TEMPORARY := TmpName();
         od;
         name_input := PROCESS_INPUT_TEMPORARY;
@@ -192,7 +175,7 @@ function( dir, prg, input, output, args )
     # convert output into a file
     if not IsOutputTextFileRep(output)  then
         while PROCESS_OUTPUT_TEMPORARY = fail or
-          IsExistingFile(PROCESS_OUTPUT_TEMPORARY) do
+          IsExistingFile( PROCESS_OUTPUT_TEMPORARY ) = true do
             PROCESS_OUTPUT_TEMPORARY := TmpName();
         od;
         name_output := PROCESS_OUTPUT_TEMPORARY;
@@ -252,7 +235,5 @@ end );
 
 #############################################################################
 ##
-
-#E  process.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
 

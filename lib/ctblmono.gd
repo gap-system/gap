@@ -262,7 +262,7 @@ DeclareProperty( "IsInducedFromNormalSubgroup", IsClassFunction );
 ##  A finite group $G$ is called *monomial* (or *$M$-group*) if each
 ##  ordinary irreducible character of $G$ is monomial.
 ##
-##  There are {\GAP} `IsMonomialGroup' (see~"IsMonomialGroup")
+##  There are {\GAP} properties `IsMonomialGroup' (see~"IsMonomialGroup")
 ##  and `IsMonomialCharacter', but one can use `IsMonomial' instead.
 ##  \indextt{IsMonomial!for groups}\indextt{IsMonomial!for characters}
 ##
@@ -345,8 +345,9 @@ DeclareProperty( "IsMonomialNumber", IsPosInt );
 ##  \enditems
 ##
 ##  A group <G> is proved to be monomial by `TestMonomialQuick' if
-##  its order is not divisible by the third power of a prime,
-##  or if <G> is nilpotent or Sylow abelian by supersolvable.
+##  <G> is nilpotent or Sylow abelian by supersolvable,
+##  or if <G> is solvable and its order is not divisible by the third power
+##  of a prime,
 ##  Nonsolvable groups are proved to be nonmonomial by `TestMonomialQuick'.
 ##
 ##  An irreducible character <chi> is proved to be monomial if
@@ -363,31 +364,58 @@ DeclareAttribute( "TestMonomialQuick", IsGroup );
 ##
 #A  TestMonomial( <chi> )
 #A  TestMonomial( <G> )
+#O  TestMonomial( <chi>, <uselattice> )
+#O  TestMonomial( <G>, <uselattice> )
 ##
-##  is a record containing information about monomiality of the group
+##  Called with a group character <chi> of a group <G>, `TestMonomial'
+##  returns a record containing information about monomiality of the group
 ##  <G> or the group character <chi>, respectively.
 ##
-##  If a character <chi> is proved to be monomial the result contains
-##  components `isMonomial' (then `true'), `comment' (a string telling a
-##  reason for monomiality), and if it was necessary to compute a linear
-##  character from that <chi> is induced, also a component `character'.
+##  If `TestMonomial' proves the character <chi> to be monomial then
+##  the result contains components `isMonomial' (with value `true'),
+##  `comment' (a string telling a reason for monomiality),
+##  and if it was necessary to compute a linear character from which <chi> is
+##  induced, also a component `character'.
 ##
-##  If <chi> or <G> is proved to be nonmonomial the component `isMonomial'
-##  is `false', and in the case of <G> a nonmonomial character is contained
-##  in the component `character' if it had been necessary to compute it.
+##  If `TestMonomial' proves <chi> or <G> to be nonmonomial then the value of
+##  the component `isMonomial' is `false',
+##  and in the case of <G> a nonmonomial character is the value
+##  of the component `character' if it had been necessary to compute it.
 ##
-##  If the program cannot prove or disprove monomiality, then the result
+##  A Boolean can be entered as the second argument <uselattice>;
+##  if the value is `true' then the subgroup lattice of the underlying group
+##  is used if necessary,
+##  if the value is `false' then the subgroup lattice is used only for groups
+##  of order at most `TestMonomialUseLattice' (see~"TestMonomialUseLattice").
+##  The default value of <uselattice> is `false'.
+##
+##  For a group whose lattice must not be used, it may happen that 
+##  `TestMonomial' cannot prove or disprove monomiality; then the result
 ##  record contains the component `isMonomial' with value `\"?\"'.
 ##  This case occurs in the call for a character <chi> if and only if
 ##  <chi> is not induced from the inertia subgroup of a component of any
-##  reducible restriction to a normal subgroup.  It can happen that <chi>
-##  is monomial in this situation.
-##  For a group this case occurs if no irreducible character can be proved
+##  reducible restriction to a normal subgroup.
+##  It can happen that <chi> is monomial in this situation.
+##  For a group, this case occurs if no irreducible character can be proved
 ##  to be nonmonomial, and if no decision is possible for at least one
 ##  irreducible character.
 ##
 DeclareAttribute( "TestMonomial", IsClassFunction );
 DeclareAttribute( "TestMonomial", IsGroup );
+DeclareOperation( "TestMonomial", [ IsClassFunction, IsBool ] );
+DeclareOperation( "TestMonomial", [ IsGroup, IsBool ] );
+
+
+#############################################################################
+##
+#V  TestMonomialUseLattice
+##
+##  This global variable controls for which groups the operation
+##  `TestMonomial' (see~"TestMonomial") may compute the subgroup lattice.
+##  The value can be set to a positive integer or `infinity',
+##  the default is $1000$.
+##
+TestMonomialUseLattice := 1000;
 
 
 #############################################################################

@@ -280,7 +280,7 @@ end );
 InstallMethod( ViewObj,
     "for abelian number field of cyclotomics",
     [ IsAbelianNumberField and IsCyclotomicCollection ],
-    function ( F )
+    function( F )
     if IsPrimeField( LeftActingDomain( F ) ) then
       Print( "NF(", Conductor( F ), ",",
               GaloisStabilizer( F ), ")" );
@@ -293,7 +293,7 @@ InstallMethod( ViewObj,
 InstallMethod( ViewObj,
     "for cyclotomic field of cyclotomics",
     [ IsCyclotomicField and IsCyclotomicCollection ],
-    function ( F )
+    function( F )
     if IsPrimeField( LeftActingDomain( F ) ) then
       Print( "CF(", Conductor( F ), ")" );
     else
@@ -310,7 +310,7 @@ InstallMethod( ViewObj,
 InstallMethod( PrintObj,
     "for abelian number field of cyclotomics",
     [ IsAbelianNumberField and IsCyclotomicCollection ],
-    function ( F )
+    function( F )
     if IsPrimeField( LeftActingDomain( F ) ) then
       Print( "NF(", Conductor( F ), ",",
               GaloisStabilizer( F ), ")" );
@@ -323,12 +323,57 @@ InstallMethod( PrintObj,
 InstallMethod( PrintObj,
     "for cyclotomic field of cyclotomics",
     [ IsCyclotomicField and IsCyclotomicCollection ],
-    function ( F )
+    function( F )
     if IsPrimeField( LeftActingDomain( F ) ) then
       Print( "CF(", Conductor( F ), ")" );
     else
       Print( "AsField( ", LeftActingDomain( F ),
              ", CF(", Conductor( F ), ") )" );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  String( <F> ) . . . . . . . . . . . . . string of an abelian number field
+##
+InstallMethod( String,
+    "for abelian number field of cyclotomics",
+    [ IsAbelianNumberField and IsCyclotomicCollection ],
+    function( F )
+    if IsPrimeField( LeftActingDomain( F ) ) then
+      return Concatenation( "NF(", String( Conductor( F ) ), ",",
+                            String( GaloisStabilizer( F ) ), ")" );
+    else
+      return Concatenation( "AsField( ", String( LeftActingDomain( F ) ),
+                            ", NF(", String( Conductor( F ) ), ",",
+                            String( GaloisStabilizer( F ) ), ") )" );
+    fi;
+    end );
+
+InstallMethod( String,
+    "for cyclotomic field of cyclotomics",
+    [ IsCyclotomicField and IsCyclotomicCollection ],
+    function( F )
+
+    local n;
+
+    n:= Conductor( F );
+
+    if IsPrimeField( LeftActingDomain( F ) ) then
+      if   n = 1 then
+        return "Rationals";
+      elif n = 4 then
+        return "GaussianRationals";
+      else
+        return Concatenation( "CF(", String( n ), ")" );
+      fi;
+    elif n = 4 then
+      return Concatenation( "AsField( ", String( LeftActingDomain( F ) ),
+                            ", GaussianRationals )" );
+    else
+      return Concatenation( "AsField( ", String( LeftActingDomain( F ) ),
+                            ", CF(", String( n ), ") )" );
     fi;
     end );
 
@@ -1248,7 +1293,7 @@ InstallMethod( CanonicalBasis,
 
       # Let $(c_1, \ldots, c_{mk})$ denote the coefficients with respect
       # to the new base.  To achieve `<coeffs> \* normalbase = <z>' we have
-      # to take $\sum_{i=1}^m c_{i+m(j-1)} v_i$ as $j$--th coefficient\:
+      # to take $\sum_{i=1}^m c_{i+m(j-1)} v_i$ as $j$--th coefficient:
 
       coeffsmat:= [];
       for i in [ 1 .. Length( C ) ] do     # for all rows
@@ -1284,8 +1329,9 @@ InstallMethod( CanonicalBasis,
 #M  Basis( <F> )
 ##
 InstallMethod( Basis,
-    "for abelian number field of cyclotomics",
+    "for abelian number field of cyclotomics (delegate to `CanonicalBasis')",
     [ IsAbelianNumberField and IsCyclotomicCollection ],
+    CANONICAL_BASIS_FLAGS,
     CanonicalBasis );
 
 
@@ -2030,7 +2076,7 @@ InstallMethod( \^,
 ##
 InstallMethod( PrintObj,
     "for ANF automorphism",
-    true, [ IsFieldHomomorphism and IsANFAutomorphismRep ],
+    [ IsFieldHomomorphism and IsANFAutomorphismRep ],
     function ( aut )
     Print( "ANFAutomorphism( ", Source( aut ), ", ", aut!.galois, " )" );
     end );

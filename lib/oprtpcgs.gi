@@ -19,6 +19,7 @@ local   orb,             # orbit
 	stb,             # stabilizing element, a word in <pcgs>
 	i, ii, j, k;     # loop variables
 
+  pnt:=Immutable(pnt);
   d:=NewDictionary(pnt,true,D);
   orb := [ pnt ];
   AddDictionary(d,pnt,1);
@@ -28,6 +29,7 @@ local   orb,             # orbit
   rel := [  ];
   for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
     img := act( pnt, acts[ i ] );
+    MakeImmutable(img);
     pos := Position( orb, img );
     pos := LookupDictionary( d, img );
     if pos = fail  then
@@ -38,12 +40,14 @@ local   orb,             # orbit
 
       for j  in [ 2 .. len[ i + 1 ] ]  do
 	img := act( orb[ j ], acts[ i ] );
+	MakeImmutable(img);
 	Add( orb, img );
 	AddDictionary(d,img,Length(orb));
       od;
       for k  in [ 3 .. RelativeOrders( pcgs )[ i ] ]  do
 	for j  in Length( orb ) + [ 1 - len[ i + 1 ] .. 0 ]  do
 	  img := act( orb[ j ], acts[ i ] );
+	  MakeImmutable(img);
 	  Add( orb, img );
 	  AddDictionary(d,img,Length(orb));
 	od;
@@ -432,6 +436,7 @@ end );
 BindGlobal("DoPcgsOrbitOp",function( G, D, pt, U, V, act )
 local   orb,  v,  img,  len,  i,  j,  k,d,nimg;
 
+  pt:=Immutable(pt);
   d:=NewDictionary(pt,false,D);
   orb := [ pt ];
   AddDictionary(d,pt);
@@ -439,18 +444,21 @@ local   orb,  v,  img,  len,  i,  j,  k,d,nimg;
   for i  in Reversed( [ 1 .. Length( V ) ] )  do
     v := V[ i ];
     img := act( pt, v );
+    MakeImmutable(img);
     if not KnowsDictionary(d,img) then
       len := Length( orb );
       Add( orb, img );
       AddDictionary(d,img);
       for j  in [ 2 .. len ]  do
 	nimg:=act( orb[ j ], v );
+	MakeImmutable(nimg);
 	Add( orb, nimg );
 	AddDictionary(d,nimg);
       od;
       for k  in [ 3 .. RelativeOrders( U )[ i ] ]  do
 	for j  in [ Length( orb ) - len + 1 .. Length( orb ) ]  do
 	  nimg:=act( orb[ j ], v );
+	  MakeImmutable(nimg);
 	  Add( orb, nimg );
 	  AddDictionary(d,nimg);
 	od;
@@ -525,7 +533,11 @@ end );
 
 InstallMethod( StabilizerOp,
         "G (solv.), D,pnt, gens, gens, act", true,
-        OrbitishReq, 0,
+        [ IsGroup and CanEasilyComputePcgs, IsListOrCollection,
+	  IsObject,
+          IsList,
+          IsList,
+          IsFunction ], 0,
 function( G,D, pt, gens, acts, op )
   if gens = acts  then
     return Pcgs_MutableOrbitStabilizerOp(G,D,pt,Pcgs(G),Pcgs(G),op).stabilizer;

@@ -12,7 +12,7 @@
 ##  is not compiled in the default setup. See also methsel2.g
 ##
 Revision.methsel1_g :=
-    "@(#)$Id:";
+    "@(#)$Id$";
 
 #############################################################################
 ##
@@ -22,10 +22,10 @@ METHOD_0ARGS := function ( operation )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 0 );
-    for i  in [1..LEN_LIST(methods)/4]  do
-        if methods[4*(i-1)+1]()
+    for i  in [1,5..LEN_LIST(methods)-3]  do
+        if methods[i]()
         then
-            return methods[4*(i-1)+2];
+            return methods[i+1];
         fi;
     od;
     return fail;
@@ -40,11 +40,11 @@ METHOD_1ARGS := function ( operation, type1 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 1 );
-    for i  in [1..LEN_LIST(methods)/5]  do
-        if    IS_SUBSET_FLAGS( type1![2], methods[5*(i-1)+2] )
-          and methods[5*(i-1)+1]( type1![1] )
+    for i  in [1,6..LEN_LIST(methods)-4]  do
+        if    IS_SUBSET_FLAGS( type1![2], methods[i+1] )
+          and methods[i]( type1![1] )
         then
-            return methods[5*(i-1)+3];
+            return methods[i+2];
         fi;
     od;
     return fail;
@@ -59,12 +59,12 @@ METHOD_2ARGS := function ( operation, type1, type2 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 2 );
-    for i  in [1..LEN_LIST(methods)/6]  do
-        if    IS_SUBSET_FLAGS( type1![2], methods[6*(i-1)+2] )
-          and IS_SUBSET_FLAGS( type2![2], methods[6*(i-1)+3] )
-          and methods[6*(i-1)+1]( type1![1], type2![1] )
+    for i  in [1,7..LEN_LIST(methods)-5]  do
+        if    IS_SUBSET_FLAGS( type1![2], methods[i+1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[i+2] )
+          and methods[i]( type1![1], type2![1] )
         then
-            return methods[6*(i-1)+4];
+            return methods[i+3];
         fi;
     od;
     return fail;
@@ -79,13 +79,13 @@ METHOD_3ARGS := function ( operation, type1, type2, type3 )
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 3 );
-    for i  in [1..LEN_LIST(methods)/7]  do
-        if    IS_SUBSET_FLAGS( type1![2], methods[7*(i-1)+2] )
-          and IS_SUBSET_FLAGS( type2![2], methods[7*(i-1)+3] )
-          and IS_SUBSET_FLAGS( type3![2], methods[7*(i-1)+4] )
-          and methods[7*(i-1)+1]( type1![1], type2![1], type3![1] )
+    for i  in [1,8..LEN_LIST(methods)-6]  do
+        if    IS_SUBSET_FLAGS( type1![2], methods[i+1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[i+2] )
+          and IS_SUBSET_FLAGS( type3![2], methods[i+3] )
+          and methods[i]( type1![1], type2![1], type3![1] )
         then
-            return methods[7*(i-1)+5];
+            return methods[i+4];
         fi;
     od;
     return fail;
@@ -101,15 +101,15 @@ METHOD_4ARGS := function ( operation, type1, type2, type3,
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 4 );
-    for i  in [1..LEN_LIST(methods)/8]  do
-        if    IS_SUBSET_FLAGS( type1![2], methods[8*(i-1)+2] )
-          and IS_SUBSET_FLAGS( type2![2], methods[8*(i-1)+3] )
-          and IS_SUBSET_FLAGS( type3![2], methods[8*(i-1)+4] )
-          and IS_SUBSET_FLAGS( type4![2], methods[8*(i-1)+5] )
-          and  methods[8*(i-1)+1]( type1![1], type2![1], type3![1],
+    for i  in [1,9..LEN_LIST(methods)-7]  do
+        if    IS_SUBSET_FLAGS( type1![2], methods[i+1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[i+2] )
+          and IS_SUBSET_FLAGS( type3![2], methods[i+3] )
+          and IS_SUBSET_FLAGS( type4![2], methods[i+4] )
+          and  methods[i]( type1![1], type2![1], type3![1],
                                    type4![1] )
         then
-            return methods[8*(i-1)+6];
+            return methods[i+5];
         fi;
     od;
     return fail;
@@ -125,16 +125,16 @@ METHOD_5ARGS := function ( operation, type1, type2, type3,
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 5 );
-    for i  in [1..LEN_LIST(methods)/9]  do
-        if    IS_SUBSET_FLAGS( type1![2], methods[9*(i-1)+2] )
-          and IS_SUBSET_FLAGS( type2![2], methods[9*(i-1)+3] )
-          and IS_SUBSET_FLAGS( type3![2], methods[9*(i-1)+4] )
-          and IS_SUBSET_FLAGS( type4![2], methods[9*(i-1)+5] )
-          and IS_SUBSET_FLAGS( type5![2], methods[9*(i-1)+6] )
-          and  methods[9*(i-1)+1]( type1![1], type2![1], type3![1],
+    for i  in [1,10..LEN_LIST(methods)-8]  do
+        if    IS_SUBSET_FLAGS( type1![2], methods[i+1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[i+2] )
+          and IS_SUBSET_FLAGS( type3![2], methods[i+3] )
+          and IS_SUBSET_FLAGS( type4![2], methods[i+4] )
+          and IS_SUBSET_FLAGS( type5![2], methods[i+5] )
+          and  methods[i]( type1![1], type2![1], type3![1],
                                    type4![1], type5![1] )
         then
-            return methods[9*(i-1)+7];
+            return methods[i+6];
         fi;
     od;
     return fail;
@@ -150,17 +150,17 @@ METHOD_6ARGS := function ( operation, type1, type2, type3,
     local   methods, i;
 
     methods := METHODS_OPERATION( operation, 6 );
-    for i  in [1..LEN_LIST(methods)/10]  do
-        if    IS_SUBSET_FLAGS( type1![2], methods[10*(i-1)+2] )
-          and IS_SUBSET_FLAGS( type2![2], methods[10*(i-1)+3] )
-          and IS_SUBSET_FLAGS( type3![2], methods[10*(i-1)+4] )
-          and IS_SUBSET_FLAGS( type4![2], methods[10*(i-1)+5] )
-          and IS_SUBSET_FLAGS( type5![2], methods[10*(i-1)+6] )
-          and IS_SUBSET_FLAGS( type6![2], methods[10*(i-1)+7] )
-          and  methods[10*(i-1)+1]( type1![1], type2![1], type3![1],
-                                   type4![1], type5![1], type6![1] )
+    for i  in [1,11..LEN_LIST(methods)-9]  do
+        if    IS_SUBSET_FLAGS( type1![2], methods[i+1] )
+          and IS_SUBSET_FLAGS( type2![2], methods[i+2] )
+          and IS_SUBSET_FLAGS( type3![2], methods[i+3] )
+          and IS_SUBSET_FLAGS( type4![2], methods[i+4] )
+          and IS_SUBSET_FLAGS( type5![2], methods[i+5] )
+          and IS_SUBSET_FLAGS( type6![2], methods[i+6] )
+          and  methods[i]( type1![1], type2![1], type3![1],
+                      type4![1], type5![1], type6![1] )
         then
-            return methods[10*(i-1)+8];
+            return methods[i+7];
         fi;
     od;
     return fail;

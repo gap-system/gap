@@ -37,10 +37,11 @@ local s,h,q,fpi,factorpres,com,ncom,nlcom,comgens,ncomgens,nlcomgens,cen,
   fi;
   fpi:=IsomorphismFpGroup(q);
   Info(InfoComplement,2,"using a presentation with ",
-       Length(fpi!.genimages)," generators");
+       Length(MappingGeneratorsImages(fpi)[2])," generators");
   factorpres:=[FreeGeneratorsOfFpGroup(Range(fpi)),
                RelatorsOfFpGroup(Range(fpi)),
-	       List(fpi!.genimages,i->PreImagesRepresentative(fpi,i))];
+	       List(MappingGeneratorsImages(fpi)[2],
+	            i->PreImagesRepresentative(fpi,i))];
 
   Assert(1,ForAll(factorpres[3],i->Image(h,PreImagesRepresentative(h,i))=i));
   # initialize
@@ -131,7 +132,8 @@ local s,h,q,fpi,factorpres,com,ncom,nlcom,comgens,ncomgens,nlcomgens,cen,
       for k in l do
 	v:=StabilizerOfExternalSet(k);
 	k:=ocr.cocycleToComplement(Representative(k));
-	Assert(3,Length(GeneratorsOfGroup(k))=Length(fpi!.genimages));
+	Assert(3,Length(GeneratorsOfGroup(k))
+	          =Length(MappingGeneratorsImages(fpi)[2]));
 	# correct stabilizer to obtain centralizer
 	v:=Normalizer(v,ClosureGroup(s[i],k));
 

@@ -57,6 +57,7 @@ DeclareGlobalFunction("AbelianInvariantsSubgroupFpGroupMtc");
 ##
 DeclareGlobalFunction("AbelianInvariantsSubgroupFpGroupRrs");
 
+
 ############################################################################
 ##
 #F  AbelianInvariantsSubgroupFpGroup(<G>,<H>)
@@ -64,6 +65,71 @@ DeclareGlobalFunction("AbelianInvariantsSubgroupFpGroupRrs");
 ##  is a synonym for `AbelianInvariantsSubgroupFpGroupRrs(<G>,<H>)'.
 ##
 AbelianInvariantsSubgroupFpGroup := AbelianInvariantsSubgroupFpGroupRrs;
+
+
+#############################################################################
+##
+#O  AugmentedCosetTableInWholeGroup(< H > [,<gens>])
+##
+##  For a subgroup <H> of a finitely presented group, this function returns
+##  an augmented coset table. If a generator set <gens> is given, it is
+##  guaranteed that <gens> will be a subset of the primary and secondary
+##  subgroup generators of this coset table.
+##
+##  It is mutable so we are permitted to add further entries. However
+##  existing entries may not be changed. Any entries added however should
+##  correspond to the subgroup only and not to an homomorphism.
+##
+DeclareGlobalFunction( "AugmentedCosetTableInWholeGroup" );
+
+##  values for table types
+BindGlobal("TABLE_TYPE_RRS",1);
+BindGlobal("TABLE_TYPE_MTC",2);
+
+
+#############################################################################
+##
+#A  AugmentedCosetTableMtcInWholeGroup(< H >)
+##
+##  For a subgroup <H> of a finitely presented group, this attribute
+##  contains an augmented coset table for <H>. It is guaranteed that the
+##  primary subgroup generators for this coset table will correspond to the
+##  `GeneratorsOfGroup(<H>)'.
+##
+##  It is mutable so we are permitted to add further entries, however
+##  existing entries may not be changed. Any entries added however should
+##  correspond to the subgroup only and not to an homomorphism.
+##
+DeclareAttribute("AugmentedCosetTableMtcInWholeGroup",IsGroup,"mutable");
+
+
+#############################################################################
+##
+#A  AugmentedCosetTableRrsInWholeGroup(< H >)
+##
+##  For a subgroup <H> of a finitely presented group, this attribute
+##  contains an augmented coset table for <H>. The corresponding generator
+##  set for <H> is not specified by this operation.
+##
+##  It is mutable so we are permitted to add further entries, however
+##  existing entries may not be changed. Any entries added however should
+##  correspond to the subgroup only and not to an homomorphism.
+##
+DeclareAttribute("AugmentedCosetTableRrsInWholeGroup",IsGroup,"mutable");
+
+
+#############################################################################
+##
+#A  AugmentedCosetTableNormalClosureInWholeGroup(< H >)
+##
+##  For a subgroup <H> of a finitely presented group, this attribute
+##  contains an augmented coset table of the normal closure of <H> in its
+##  whole group.
+##
+##  It is mutable so we are permitted to add further entries.
+##
+DeclareAttribute( "AugmentedCosetTableNormalClosureInWholeGroup",
+    IsGroup, "mutable" );
 
 
 #############################################################################
@@ -95,6 +161,17 @@ DeclareGlobalFunction("AugmentedCosetTableMtc");
 ##
 DeclareGlobalFunction("AugmentedCosetTableRrs");
 
+
+#############################################################################
+##
+#O  AugmentedCosetTableNormalClosure( <G>, <H> )
+##
+##  returns the augmented coset table  of the finitely presented group <G> on
+##  the cosets of the normal closure of the subgroup <H>.
+##
+DeclareOperation( "AugmentedCosetTableNormalClosure", [ IsGroup, IsGroup ] );
+
+
 #############################################################################
 ##
 #O  CosetTableBySubgroup(<G>,<H>)
@@ -103,6 +180,7 @@ DeclareGlobalFunction("AugmentedCosetTableRrs");
 ##  columns of the table correspond to the `GeneratorsOfGroup(<G>)'.
 ##
 DeclareOperation("CosetTableBySubgroup",[IsGroup,IsGroup]);
+
 
 #############################################################################
 ##
@@ -146,10 +224,21 @@ PresentationsFamily := NewFamily( "PresentationsFamily", IsPresentation );
 
 #############################################################################
 ##
-#F  PresentationAugmentedCosetTable( <aug>  [,<print level>] )
+#F  PresentationAugmentedCosetTable(<aug>,<string>,[,<pl> [,<img>]] )
 ##
 ##  creates a presentation from the given augmented coset table. It assumes
 ##  that <aug> is an augmented coset table of type 2.
+##  The generators will be named <string>1,
+##  <string>2, ... .
+##  The optional argument <pl> set the printlevel for the presentation.
+##
+##  `PresentationAugmentedCosetTable' will call `TzHandleLength1Or2Relators'
+##  on the resulting presentation. this might eliminate generators and thus
+##  makes it impossible to relate the presentation to the coset table. To
+##  avoid this problem, if the optional argument <img> is set to `true',
+##  `TzInitGeneratorImages' will be called, *before* starting this
+##  elimination, thus preserving a way to connect the coset table with the
+##  presentation.
 ##
 DeclareGlobalFunction("PresentationAugmentedCosetTable");
 
@@ -316,7 +405,7 @@ DeclareGlobalFunction("RewriteAbelianizedSubgroupRelators");
 ##  is a subroutine  of the  Reduced
 ##  Reidemeister-Schreier and the  Modified Todd-Coxeter  routines.  It
 ##  computes  a set of subgroup relators from the coset factor table of an
-##  augmented coset table <aug> and the  relators <rels> of the  parent
+##  augmented coset table <aug> and the  relators <prels> of the  parent
 ##  group.  It assumes  that  <aug> is an augmented coset table of type 2.
 ##
 ##  It returns the rewritten relators as list of integers
@@ -343,6 +432,56 @@ DeclareGlobalFunction("SortRelsSortedByStartGen");
 ##  <table>.
 ##
 DeclareGlobalFunction("SpanningTree");
+
+#############################################################################
+##
+#F  RewriteWord( <aug>, <word> )
+##
+##  RewriteWord rewrites <word> (which must be a word in the full group with
+##  respect to which the augmented coset table <aug> is given) in the
+##  subgroup generators given by the augmented coset table <aug>. It returns
+##  a tietze-type word (i.e. a list of integers), referring to the primary
+##  and secondary generators of <aug>.
+##
+##  If <word> is not contained in the subgroup, `fail' is returned.
+##
+DeclareGlobalFunction("RewriteWord");
+
+#############################################################################
+##
+#F  DecodedTreeEntry(<tree>,<imgs>,<nr>) 
+##
+##  returns tree element <nr>, when mapping the first elements of <tree>
+##  onto <imgs>. (Conventions for trees are as with augmented coset tables.)
+DeclareGlobalFunction("DecodedTreeEntry");
+
+#############################################################################
+##
+#F  GeneratorTranslationAugmentedCosetTable(<aug>) 
+##
+##  decode all the secondary generators as words in the primary generators,
+##  using the `.subgroupGenerators' and creating their subset
+##  `.primarySubgroupGenerators'.
+DeclareGlobalFunction("GeneratorTranslationAugmentedCosetTable");
+
+#############################################################################
+##
+#F  SecondaryGeneratorWordsAugmentedCosetTable(<aug>) 
+##
+##  returns words in the (underlying free) groups generators for the coset
+##  table's secondary generators.
+DeclareGlobalFunction("SecondaryGeneratorWordsAugmentedCosetTable");
+
+#############################################################################
+##
+#F  CopiedAugmentedCosetTable(<aug>) 
+##
+##  returns a new augmented coset table, equal to the old one. The
+##  components of this new table are immutable, but new components may be
+##  added.
+##  (This function is needed to have different homomorphisms share the same
+##  augmented coset table data.)
+DeclareGlobalFunction("CopiedAugmentedCosetTable");
 
 
 #############################################################################

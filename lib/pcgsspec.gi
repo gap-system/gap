@@ -666,7 +666,7 @@ end);
 InstallOtherMethod( SpecialPcgs,
     "generic method for groups",
     true,
-    [ IsGroup and CanEasilyComputePcgs ],
+    [ IsGroup ],
     0,
 
 function( group )

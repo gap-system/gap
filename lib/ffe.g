@@ -158,7 +158,6 @@ InstallOtherMethod( \*,
 
 #############################################################################
 ##
-
 #F  SUM_FFE_LARGE
 #F  DIFF_FFE_LARGE
 #F  PROD_FFE_LARGE
@@ -208,6 +207,12 @@ BIND_GLOBAL( "LOG_FFE_LARGE", function( x, y )
     Error( "not supported yet" );
 end );
 
+#############################################################################
+##
+#O  ZOp -- operation to compute Z for large values of q
+##
+
+DeclareOperation("ZOp", [IsPosInt]);
 
 #############################################################################
 ##

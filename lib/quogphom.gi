@@ -99,8 +99,8 @@ InstallMethod( QuotientGroupHom, "for group homomorphisms", true,
         local grp, genimages, gensource;
 
         if IsCompositionMappingRep(hom) and
-           IsBound(hom!.map2) and IsBound(hom!.map2!.genimages) then
-            genimages := hom!.map2!.genimages;
+           IsBound(hom!.map2) then
+            genimages := MappingGeneratorsImages(hom!.map2)[2];
         else genimages := fail;
         fi;
         # gdc - Actually, GAP doesn't define ImagesSource() for comp. maps.
@@ -354,9 +354,9 @@ InstallMethod( ViewObj, "for hom coset", true,
     function( hcoset )
         Print("( "); 
 	if HasImageElt( hcoset ) then
-	    ViewObj( ImageElt( hcoset ) );
+	    View( ImageElt( hcoset ) );
 	else
-	    Print( StringImType( hcoset ) );
+	    View( StringImType( hcoset ) );
 	    # place holder if image not known
 	fi;
 	Print(" <- ");
@@ -996,6 +996,17 @@ InstallMethod( ImagesSet,
     function( map, grp )
         return ImagesSet( map, Image(Homomorphism(grp)) );
     end );
-
+    
+    
+    InstallMethod( PreOrbishProcessing, [IsHomQuotientGroup], 
+            function(G)
+        local g,h;
+        g := G;
+        while IsHomQuotientGroup(g) do
+            h := Homomorphism(One(g));
+            g := Group(List(GeneratorsOfGroup(g), x->Image(h, SourceElt(x))));
+        od;
+        return g;
+    end);
 #E
 

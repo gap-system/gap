@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %A  pcgs.msk                    GAP documentation            Alexander Hulpke
-%A                                                               Bettina Eick 
+%A                                                               Bettina Eick
 %%
 %A  @(#)$Id$
 %%
@@ -9,25 +9,25 @@
 %%
 \Chapter{Polycyclic Groups}
 
-A group <G> is *polycyclic* if there exists a subnormal series 
+A group <G> is *polycyclic* if there exists a subnormal series
 $G = C_1 > C_2 > \ldots > C_n > C_{n+1} = \{1\}$
 with cyclic factors. Such a series is called *pc series* of <G>.
 
 Every polycyclic group is solvable and every finite solvable group
 is polycyclic. However, there are infinite solvable groups which
-are not polycyclic. 
+are not polycyclic.
 
-In GAP there exists a large number of methods for polycyclic groups
+In {\GAP} there exists a large number of methods for polycyclic groups
 which are based upon the polycyclic structure of these groups. These
-methods are usually very efficient and hence GAP tries to use them 
+methods are usually very efficient and hence {\GAP} tries to use them
 whenever possible.
 
-In GAP 3 these methods have been available for AgGroups only; that
+In {\GAP} 3 these methods have been available for AgGroups only; that
 is, for groups defined via a power-commutator presentation, see
-Chapter "Pc Groups" for the GAP 4 analogon. This has changed in GAP 4
-where these methods can be applied to many types of groups. For example, 
-the methods can be applied to permutation groups or matrix groups which 
-are known to be polycyclic. The only exeption is the representation as 
+Chapter "Pc Groups" for the {\GAP} 4 analogon. This has changed in {\GAP} 4
+where these methods can be applied to many types of groups. For example,
+the methods can be applied to permutation groups or matrix groups which
+are known to be polycyclic. The only exeption is the representation as
 finitely presented group for which the polycyclic methods cannot
 be used in general.
 
@@ -42,46 +42,46 @@ implementation is planned.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Polycyclic Generating Systems}
 
-Let <G> be a polycyclic group with a pc series as above.  A 
-*polycyclic generating sequence* (*pcgs* for short) of <G> is a 
-sequence $P := (g_1, \ldots, g_n)$ of elements of <G> such that 
+Let <G> be a polycyclic group with a pc series as above.  A
+*polycyclic generating sequence* (*pcgs* for short) of <G> is a
+sequence $P := (g_1, \ldots, g_n)$ of elements of <G> such that
 $C_i = \langle C_{i+1}, g_i \rangle$ for $1 \leq i \leq n$.
 Note that each polycyclic group has a pcgs, but except for very
-small groups, a pcgs is not unique. 
+small groups, a pcgs is not unique.
 
-For each index $i$ the subsequence of elements $(g_i, \ldots, g_n)$ 
+For each index $i$ the subsequence of elements $(g_i, \ldots, g_n)$
 forms a pcgs of the subgroup $C_i$. In particular, these *tails*
 generate the subgroups of the pc series and hence we say that
 the pc series is *determined* by $P$.
 
-Let $r_i$ be the index of $C_{i+1}$ in $C_i$ which is either 
+Let $r_i$ be the index of $C_{i+1}$ in $C_i$ which is either
 a finite positive number or infinity. Then $r_i$ is the order of
-$g_i C_{i+1}$ and we call the resulting list of indices the 
-*relative orders* of the pcgs <P>. 
+$g_i C_{i+1}$ and we call the resulting list of indices the
+*relative orders* of the pcgs <P>.
 
 Moreover, with respect to a given pcgs $(g_1, \ldots, g_n)$ each
-element <g> of <G> can be represented in a unique 
-way as a product $g = g_1^{e_1} \cdot g_2^{e_2} \cdots g_n^{e_n}$ 
-with exponents $e_i \in \{0, \ldots, r_i-1\}$, if $r_i$ is finite, 
+element <g> of <G> can be represented in a unique
+way as a product $g = g_1^{e_1} \cdot g_2^{e_2} \cdots g_n^{e_n}$
+with exponents $e_i \in \{0, \ldots, r_i-1\}$, if $r_i$ is finite,
 and $e_i \in \Z$ otherwise.
 Words of this form are called *normal words* or *words in normal form*.
-Then the integer vector $[e_1, \ldots, e_n]$ is called the 
-*exponent vector* of the element $g$. Furthermore, the smallest 
-index $k$ such that $e_k \neq 0$ is called the *depth* of <g> and 
-$e_k$ is the *leading exponent* of <g>. 
+Then the integer vector $[e_1, \ldots, e_n]$ is called the
+*exponent vector* of the element $g$. Furthermore, the smallest
+index $k$ such that $e_k \neq 0$ is called the *depth* of <g> and
+$e_k$ is the *leading exponent* of <g>.
 
-For many applications we have to assume that each of the relative orders 
-$r_i$ is either a prime or infinity. This is equivalent to saying that 
-there are no trivial factors in the pc series and the finite factors of the 
-pc series are maximal refined. Then we obtain that $r_i$ is the order of 
-$g C_{i+1}$ for all elements $g$ in $C_i \setminus C_{i+1}$ and we call 
+For many applications we have to assume that each of the relative orders
+$r_i$ is either a prime or infinity. This is equivalent to saying that
+there are no trivial factors in the pc series and the finite factors of the
+pc series are maximal refined. Then we obtain that $r_i$ is the order of
+$g C_{i+1}$ for all elements $g$ in $C_i \setminus C_{i+1}$ and we call
 $r_i$ the *relative order* of the element $g$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Computing a Pcgs}
 
 Suppose a group <G> is given; for example, let <G> be a permutation
-or matrix group. Then we can ask GAP to compute a pcgs of this group.
+or matrix group. Then we can ask {\GAP} to compute a pcgs of this group.
 If <G> is not polycyclic, the result will be `fail'.
 
 Note that these methods can only be applied if <G> is not given
@@ -95,9 +95,9 @@ Note also that a pcgs behaves like a list.
 \Declaration{IsPcgs}
 
 \beginexample
-gap> G := Group((1,2,3,4),(1,2));;    
+gap> G := Group((1,2,3,4),(1,2));;
 gap> p := Pcgs(G);
-[ (3,4), (2,4,3), (1,4)(2,3), (1,2)(3,4) ]
+Pcgs([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ])
 gap> IsPcgs( p );
 true
 gap> p[1];
@@ -118,7 +118,7 @@ Group([ (1,2,3,4), (1,2) ])
 gap> CanEasilyComputePcgs(G);
 false
 gap> Pcgs(G);
-[ (3,4), (2,4,3), (1,4)(2,3), (1,2)(3,4) ]
+Pcgs([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ])
 gap> CanEasilyComputePcgs(G);
 true
 \endexample
@@ -127,14 +127,14 @@ true
 \Section{Defining a Pcgs Yourself}
 
 In a number of situations it might be useful to supply a pgcs
-to a group. 
+to a group.
 
 \Declaration{PcgsByPcSequence}
 
 \beginexample
 gap> fam := FamilyObj( (1,2) );; # the family of permutations
 gap> p := PcgsByPcSequence( fam, [(1,2),(1,2,3)] );
-[ (1,2), (1,2,3) ]
+Pcgs([ (1,2), (1,2,3) ])
 gap> RelativeOrders(p);
 [ 2, 3 ]
 gap> ExponentsOfPcElement( p, (1,3,2) );
@@ -142,7 +142,7 @@ gap> ExponentsOfPcElement( p, (1,3,2) );
 \endexample
 
 Note that the elementary operations for such a pcgs might be rather
-inefficient, since GAP has to use generic methods in this case.
+inefficient, since {\GAP} has to use generic methods in this case.
 It might be helpful to supply the relative orders of the self-defined
 pcgs as well by `SetRelativeOrders( pcgs, orders )'.
 See also~"IsPrimeOrdersPcgs".
@@ -150,7 +150,7 @@ See also~"IsPrimeOrdersPcgs".
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Elementary Operations for a Pcgs}
 
-\Declaration{RelativeOrders}[pcgs]
+\Declaration{RelativeOrders}[pcgs]!{of a pcgs}
 
 the list of relative orders of the pcgs <pcgs>.
 
@@ -169,9 +169,9 @@ true
 gap> IsPrimeOrdersPcgs(p);
 true
 gap> PcSeries(p);
-[ Group([ (3,4), (2,4,3), (1,4)(2,3), (1,2)(3,4) ]), 
-  Group([ (2,4,3), (1,4)(2,3), (1,2)(3,4) ]), 
-  Group([ (1,4)(2,3), (1,2)(3,4) ]), Group([ (1,2)(3,4) ]), Group(()) ]
+[ Group([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
+  Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
+  Group([ (1,4)(2,3), (1,3)(2,4) ]), Group([ (1,3)(2,4) ]), Group(()) ]
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -188,7 +188,7 @@ gap> PcSeries(p);
 \beginexample
 gap> G := Group( (1,2,3,4),(1,2) );; P := Pcgs(G);;
 gap> g := PcElementByExponents(P, [0,1,1,1]);
-(1,3,4)
+(1,2,3)
 gap> ExponentsOfPcElement(P, g);
 [ 0, 1, 1, 1 ]
 \endexample
@@ -227,11 +227,11 @@ up and do not need to be computed.
 \Section{Subgroups of Polycyclic Groups - Induced Pcgs}
 
 Let <U> be a subgroup of <G> and let <P> be a pcgs of <G> as above such
-that <P> determines the subnormal series $G = C_1 > \ldots > C_{n+1} = 
-\{1\}$. Then the series of subgroups $U \cap C_i$ is a subnormal series 
-of <U> with cyclic or trivial factors. Hence, if we choose an element 
-$u_{i_j} \in (U \cap C_{i_j}) \setminus (U \cap C_{i_j+1})$ whenever 
-this factor is non-trivial, then we obtain a pcgs $Q = (u_{i_1}, \ldots, 
+that <P> determines the subnormal series $G = C_1 > \ldots > C_{n+1} =
+\{1\}$. Then the series of subgroups $U \cap C_i$ is a subnormal series
+of <U> with cyclic or trivial factors. Hence, if we choose an element
+$u_{i_j} \in (U \cap C_{i_j}) \setminus (U \cap C_{i_j+1})$ whenever
+this factor is non-trivial, then we obtain a pcgs $Q = (u_{i_1}, \ldots,
 u_{i_m})$ of $U$. We say that $Q$ is an *induced pcgs* with respect to
 <P>. The pcgs <P> is the *parent pcgs* to the induced pcgs <Q>.
 
@@ -257,19 +257,19 @@ An induced pcgs is ``compatible'' with its parent.
 \Declaration{ParentPcgs}
 
 \beginexample
-gap> G := Group( (1,2,3,4),(1,2) );;  
+gap> G := Group( (1,2,3,4),(1,2) );;
 gap> P := Pcgs(G);;
 gap> K := InducedPcgsByPcSequence( P, [(1,2,3,4),(1,3)(2,4)] );
-[ (1,2,3,4), (1,3)(2,4) ]
+Pcgs([ (1,2,3,4), (1,3)(2,4) ])
 gap> ParentPcgs( K );
-[ (3,4), (2,4,3), (1,4)(2,3), (1,2)(3,4) ]
+Pcgs([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ])
 gap> IsInducedPcgs( K );
 true
 \endexample
 
 In \cite{SOGOS} a ``non-commutative gauss'' algorithm is
-described to compute an induced pcgs of a subgroup <U>  from a 
-generating set of <U>. This can be called in GAP via one of the
+described to compute an induced pcgs of a subgroup <U>  from a
+generating set of <U>. This can be called in {\GAP} via one of the
 following commands.
 
 \Declaration{InducedPcgs}
@@ -279,9 +279,9 @@ following commands.
 \beginexample
 gap> G := Group( (1,2,3,4),(1,2) );;  P := Pcgs(G);;
 gap> I := InducedPcgsByGenerators( P, [(1,2,3,4)] );
-[ (1,2,3,4), (1,3)(2,4) ]
+Pcgs([ (1,2,3,4), (1,3)(2,4) ])
 gap> J := InducedPcgsByPcSequenceAndGenerators( P, I, [(1,2)] );
-[ (1,2,3,4), (2,4,3), (1,4)(2,3), (1,2)(3,4) ]
+Pcgs([ (1,2,3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ])
 \endexample
 
 \Declaration{LeadCoeffsIGS}
@@ -289,7 +289,7 @@ gap> J := InducedPcgsByPcSequenceAndGenerators( P, I, [(1,2)] );
 \Declaration{ExtendedPcgs}
 
 To create a subgroup generated by an induced pcgs such that the
-induced pcgs gets stored automatically there is the following 
+induced pcgs gets stored automatically there is the following
 operation.
 
 \Declaration{SubgroupByPcgs}
@@ -298,9 +298,9 @@ operation.
 \Section{Subgroups of Polycyclic Groups - Canonical Pcgs}
 
 The induced pcgs <Q> of <U> is called *canonical* if the matrix
-of exponent vectors contains normed vectors only and above each 
-leading entry in the matrix there are 0's only.  The canonical pcgs 
-of <U> with respect to <P> is unique and hence such pcgs can be used 
+of exponent vectors contains normed vectors only and above each
+leading entry in the matrix there are 0's only.  The canonical pcgs
+of <U> with respect to <P> is unique and hence such pcgs can be used
 to compare subgroups.
 
 \Declaration{IsCanonicalPcgs}
@@ -310,18 +310,18 @@ to compare subgroups.
 gap> G := Group((1,2,3,4),(5,6,7));
 Group([ (1,2,3,4), (5,6,7) ])
 gap> P := Pcgs(G);
-[ (5,6,7), (1,2,3,4), (1,3)(2,4) ]
+Pcgs([ (5,6,7), (1,2,3,4), (1,3)(2,4) ])
 gap> I := InducedPcgsByPcSequence(P, [(5,6,7)*(1,3)(2,4),(1,3)(2,4)] );
-[ (1,3)(2,4)(5,6,7), (1,3)(2,4) ]
+Pcgs([ (1,3)(2,4)(5,6,7), (1,3)(2,4) ])
 gap> CanonicalPcgs(I);
-[ (5,6,7), (1,3)(2,4) ]
+Pcgs([ (5,6,7), (1,3)(2,4) ])
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Factor Groups of Polycyclic Groups - Modulo Pcgs}
 
 Let <N> be a normal subgroup of <G> such that <G/N> is polycyclic
-with pcgs $(h_1 N, \ldots, h_r N)$. Then we call the sequence of 
+with pcgs $(h_1 N, \ldots, h_r N)$. Then we call the sequence of
 preimages $(h_1, \ldots h_r)$ a *modulo pcgs* of <G/N>.
 <G> is called the *numerator* of the modulo pcgs and <N> is the
 *denominator* of the modulo pcgs.
@@ -332,7 +332,7 @@ formally defining the factor group at all.
 
 All elementary operations of pcgs, see Sections "Elementary Operations
 for a Pcgs" and "Elementary Operations for a Pcgs and an Element",
-apply to modulo pcgs as well. However, it is in general not possible to 
+apply to modulo pcgs as well. However, it is in general not possible to
 compute induced pcgs with respect to a modulo pcgs.
 
 \Declaration{ModuloPcgs}
@@ -351,7 +351,7 @@ Additionally there are two more elementary operations for modulo pcgs.
 gap> G := Group( (1,2,3,4,5),(1,2) );
 Group([ (1,2,3,4,5), (1,2) ])
 gap> P := ModuloPcgs(G, DerivedSubgroup(G) );
-[ (4,5) ]
+Pcgs([ (4,5) ])
 gap> NumeratorOfModuloPcgs(P);
 [ (1,2,3,4,5), (1,2) ]
 gap> DenominatorOfModuloPcgs(P);
@@ -360,7 +360,7 @@ gap> RelativeOrders(P);
 [ 2 ]
 gap> ExponentsOfPcElement( P, (1,2,3,4,5) );
 [ 0 ]
-gap> ExponentsOfPcElement( P, (4,5) );      
+gap> ExponentsOfPcElement( P, (4,5) );
 [ 1 ]
 \endexample
 
@@ -372,9 +372,9 @@ with respect to the *same* Pcgs.) Then we can compute a modulo pcgs of
 
 \>`<P> mod <I>'{modulo!for pcgs}
 
-Note that in this case we obtain the advantage that the 
+Note that in this case we obtain the advantage that the
 `NumeratorOfModuloPcgs' and the `DenominatorOfModuloPcgs' are
-just <P> and <I>, respectively, and hence are unique. 
+just <P> and <I>, respectively, and hence are unique.
 
 The resulting modulo pcgs will consist of a subset of <P> and will be
 ``compatible'' with <P> (or its parent).
@@ -382,15 +382,15 @@ The resulting modulo pcgs will consist of a subset of <P> and will be
 \beginexample
 gap> G := Group((1,2,3,4));;
 gap> P := Pcgs(G);
-[ (1,2,3,4), (1,3)(2,4) ]
+Pcgs([ (1,2,3,4), (1,3)(2,4) ])
 gap> I := InducedPcgsByGenerators(P, [(1,3)(2,4)]);
-[ (1,3)(2,4) ]
+Pcgs([ (1,3)(2,4) ])
 gap> M := P mod I;
-[ (1,2,3,4) ]
+Pcgs([ (1,2,3,4) ])
 gap> NumeratorOfModuloPcgs(M);
-[ (1,2,3,4), (1,3)(2,4) ]
+Pcgs([ (1,2,3,4), (1,3)(2,4) ])
 gap> DenominatorOfModuloPcgs(M);
-[ (1,3)(2,4) ]
+Pcgs([ (1,3)(2,4) ])
 \endexample
 
 \Declaration{CorrespondingGeneratorsByModuloPcgs}
@@ -416,10 +416,10 @@ calling `PcGroupWithPcgs' on a modulo pcgs, see~"PcGroupWithPcgs").
 
 By definition, a pcgs determines a pc series of its underlying group.
 However, in many applications it will be necessary that this pc series
-refines a normal series with certain properties; for example, a normal 
-series with abelian factors. 
+refines a normal series with certain properties; for example, a normal
+series with abelian factors.
 
-There are functions in GAP to compute a pcgs through a normal series
+There are functions in {\GAP} to compute a pcgs through a normal series
 with elementary abelian factors, a central series or the lower p-central
 series. See also Section "Special Pcgs" for a more explicit possibility.
 
@@ -442,20 +442,20 @@ subgroups of this series, the following attributes can be used:
 \Declaration{IndicesNormalSteps}
 
 \beginexample
-gap> g:=Group((1,2,3,4),(1,2));;            
+gap> g:=Group((1,2,3,4),(1,2));;
 gap> p:=PcgsElementaryAbelianSeries(g);
-[ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ]
+Pcgs([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ])
 gap> IndicesNormalSteps(p);
 [ 1, 2, 3, 5 ]
 gap> g:=Group((1,2,3,4),(1,5)(2,6)(3,7)(4,8));;
-gap> p:=PcgsCentralSeries(g);           
-[ (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (5,7)(6,8), (1,4,3,2)(5,6,7,8), 
-  (1,3)(2,4)(5,7)(6,8) ]
+gap> p:=PcgsCentralSeries(g);
+Pcgs([ (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (5,7)(6,8), (1,4,3,2)(5,6,7,8), 
+  (1,3)(2,4)(5,7)(6,8) ])
 gap> IndicesNormalSteps(p);
 [ 1, 2, 4, 5, 6 ]
-gap> q:=PcgsPCentralSeriesPGroup(g);             
-[ (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (5,7)(6,8), (1,4,3,2)(5,6,7,8), 
-  (1,3)(2,4)(5,7)(6,8) ]
+gap> q:=PcgsPCentralSeriesPGroup(g);
+Pcgs([ (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (5,7)(6,8), (1,4,3,2)(5,6,7,8), 
+  (1,3)(2,4)(5,7)(6,8) ])
 gap> IndicesNormalSteps(q);
 [ 1, 3, 5, 6 ]
 \endexample
@@ -483,23 +483,23 @@ efficient algorithms.
 Let <G> be a finite polycyclic group. A *special pcgs* of <G> is a pcgs
 which is closely related to a Hall system and the maximal subgroups of <G>.
 These pcgs have been introduced by C. R. Leedham-Green who also gave an
-algorithm to compute them. Improvements to this algorithm 
-%%  and the {\GAP} implementation 
+algorithm to compute them. Improvements to this algorithm
+%%  and the {\GAP} implementation
 are due to Bettina Eick.  For a more detailed account of
 their definition the reader is referred to \cite{Eick97}
 
 To introduce the definition of special pcgs we first need to define
 the *LG-series* and *head complements* of a finite polycyclic group <G>.
 Let $G = G_1 > G_2 > \ldots G_m > G_{m+1} = \{1\}$ be the lower
-nilpotent series of $G$; that is, $G_i$ is the smallest normal 
+nilpotent series of $G$; that is, $G_i$ is the smallest normal
 subgroup of $G_{i-1}$ with nilpotent factor. To obtain the LG-series
-of <G> we need to refine this series. Thus consider a factor $F_i := 
-G_i / G_{i+1}$. Since $F_i$ is finite nilpotent, it is a direct 
+of <G> we need to refine this series. Thus consider a factor $F_i :=
+G_i / G_{i+1}$. Since $F_i$ is finite nilpotent, it is a direct
 product of its Sylow subgroups, say $F_i = P_{i,1} \cdots P_{i,r_i}$.
-For each Sylow $p_j$-subgroup $P_{i, j}$ we can consider its 
-lower $p_j$-central series. To obtain a characteristic central series 
+For each Sylow $p_j$-subgroup $P_{i, j}$ we can consider its
+lower $p_j$-central series. To obtain a characteristic central series
 with elementary abelian factors of $F_i$ we loop over its Sylow subgroups.
-Each time we consider $P_{i,j}$ in this process we take the next step of 
+Each time we consider $P_{i,j}$ in this process we take the next step of
 its lower $p_j$-central series into the series of $F_i$. If there
 is no next step, then we just skip the consideration of $P_{i,j}$.
 Note that the second term of the lower $p$-central series of a $p$-group
@@ -513,13 +513,13 @@ A head complement of $G$ is a subgroup $U$ of $G$ such that $U / G_i^{*}$
 is a complement to the head $G_i / G_i^{*}$ in $G / G_i^{*}$ for some $i$.
 
 Now we are able to define a special pcgs of <G>. It is a pcgs of <G>
-with three additional properties. First, the pc series determined 
-by the pcgs refines the LG-series of <G>. Second, a special pcgs 
-*exhibits* a Hall system of the group <G>; that is, for each set of 
-primes $\pi$ the elements of the pcgs with relative order in $\pi$ 
-form a pcgs of a Hall $\pi$-subgroup in a Hall system of <G>. 
+with three additional properties. First, the pc series determined
+by the pcgs refines the LG-series of <G>. Second, a special pcgs
+*exhibits* a Hall system of the group <G>; that is, for each set of
+primes $\pi$ the elements of the pcgs with relative order in $\pi$
+form a pcgs of a Hall $\pi$-subgroup in a Hall system of <G>.
 Third, a special pcgs exhibits a head complement for each head
-of <G>. 
+of <G>.
 
 To record information about the LG-series with the special pcgs
 we define the *LGWeights* of the special pcgs. These weights are
@@ -527,17 +527,17 @@ a list which contains a weight $w$ for each elements $g$ of the
 special pcgs. Such a weight $w$ represents the smallest subgroup of
 the LG-series containing $g$.
 
-Since the LG-series is defined in terms of the lower nilpotent 
+Since the LG-series is defined in terms of the lower nilpotent
 series, Sylow subgroups of the factors and lower
 $p$-central series of the Sylow subgroup, the weight $w$ is a
 triple. More precisely, $g$ is contained in the $w[1]$th term
 $U$ of the lower nilpotent series of <G>, but not in the next smaller
-one $V$. Then $w[3]$ is a prime such that $g V$ is contained in the 
-Sylow $w[3]$-subgroup $P/V$ of $U/V$. Moreover, $gV$ is contained in 
+one $V$. Then $w[3]$ is a prime such that $g V$ is contained in the
+Sylow $w[3]$-subgroup $P/V$ of $U/V$. Moreover, $gV$ is contained in
 the $w[2]$th term of the lower $p$-central series of $P/V$.
 
 There are two more attributes of a special pcgs containing
-information about the LG-series: the list *LGLayers* and the 
+information about the LG-series: the list *LGLayers* and the
 list *LGFirst*. The list of layers corresponds to the elements
 of the special pcgs and denotes the layer of the LG-series in
 which an element lies. The list LGFirst corresponds to the
@@ -555,7 +555,7 @@ special pcgs of the corresponding subgroup.
 gap> G := SmallGroup( 96, 220 );
 <pc group of size 96 with 6 generators>
 gap> spec := SpecialPcgs( G );
-[ f1, f2, f3, f4, f5, f6 ]
+Pcgs([ f1, f2, f3, f4, f5, f6 ])
 gap> LGWeights(spec);
 [ [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 3 ], 
   [ 1, 2, 2 ] ]
@@ -569,7 +569,7 @@ gap> LGLength( G );
 
 \beginexample
 gap> p := SpecialPcgs( Pcgs( SmallGroup( 96, 120 ) ) );
-[ f1, f2, f3, f4, f5, f6 ]
+Pcgs([ f1, f2, f3, f4, f5, f6 ])
 gap> LGWeights(p);
 [ [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 2, 2 ], [ 1, 3, 2 ], 
   [ 2, 1, 3 ] ]
@@ -587,7 +587,7 @@ The second group, `SmallGroup(96, 120)', has a lower nilpotent series of length
 is just the Sylow 3-subgroup and it is generated by $f6$. The subgroup
 generated by $f1, \ldots, f5$ is a Sylow 2-subgroup of the group and
 also a head complement to the second head of the group. Its lower
-2-central series has length 2. 
+2-central series has length 2.
 
 In this example the `FamilyPcgs' of the groups used was a special pcgs, but
 this is not necessarily the case. For performance reasons it can be worth to
@@ -604,47 +604,43 @@ If you need an induced pcgs compatible with a *given* special pcgs use
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Action on Subfactors Defined by a Pcgs}
 
-When working with a polycyclic group, one often needs to compute matrix 
-operations of the group on a factor of the group. For this purpose there 
+When working with a polycyclic group, one often needs to compute matrix
+operations of the group on a factor of the group. For this purpose there
 are the following functions.
 
 \Declaration{VectorSpaceByPcgsOfElementaryAbelianGroup}
-\index{LinearOperation}
-\Declaration{LinearAction}
-\index{LinearOperationLayer}
-\Declaration{LinearActionLayer}
+\Declaration{LinearOperation}
+\Declaration{LinearOperationLayer}
 
 In certain situations, for example within the computation of conjugacy
 classes of finite soluble groups as described in \cite{MeckyNeubueser89},
 affine actions of groups are required. For this purpose we introduce
 the following functions.
 
-\index{AffineOperation}
-\Declaration{AffineAction}
-\index{AffineOperationLayer}
-\Declaration{AffineActionLayer}
+\Declaration{AffineOperation}
+\Declaration{AffineOperationLayer}
 
 \beginexample
 gap> G := SmallGroup( 96, 51 );
 <pc group of size 96 with 6 generators>
 gap> spec := SpecialPcgs( G );
-[ f1, f2, f3, f4, f5, f6 ]
+Pcgs([ f1, f2, f3, f4, f5, f6 ])
 gap> LGWeights( spec );
 [ [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 3 ], [ 1, 2, 2 ], [ 1, 2, 2 ], 
   [ 1, 3, 2 ] ]
 gap> mpcgs := InducedPcgsByPcSequence( spec, spec{[4,5,6]} );
-[ f4, f5, f6 ]
+Pcgs([ f4, f5, f6 ])
 gap> npcgs := InducedPcgsByPcSequence( spec, spec{[6]} );
-[ f6 ]
+Pcgs([ f6 ])
 gap> modu := mpcgs mod npcgs;
 [ f4, f5 ]
 gap> mat:=LinearActionLayer( G, spec{[1,2,3]}, modu );
-[ <an immutable 2x2 matrix over GF2>, <an immutable 2x2 matrix over GF2>,
+[ <an immutable 2x2 matrix over GF2>, <an immutable 2x2 matrix over GF2>, 
   <an immutable 2x2 matrix over GF2> ]
 \endexample
 \begintt
 gap> Print(mat);
-[ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ], [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), 
+[ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ], [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2),
     Z(2)^0 ] ], [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] ]
 \endtt
 
@@ -655,34 +651,51 @@ If a pcgs <pcgs> is known for a group <G>, then orbits and stabilizers
 can be computed by a special method which is particularly efficient.
 Note that within this function only the elements in <pcgs> and the
 relative orders of <pcgs> are needed. Hence this function works effectively
-even if the elementary operations for <pcgs> are slow. 
+even if the elementary operations for <pcgs> are slow.
 
 \> StabilizerPcgs( <pcgs>, <pt> )
 
-\Declaration{Pcgs_OrbitStabilizer}[pcgs]
+\Declaration{Pcgs_OrbitStabilizer}[pcgs]!{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operations which have Special Methods for Groups with Pcgs}
 
+\indextt{IsNilpotent!for groups with pcgs}
+\indextt{IsSupersolvable!for groups with pcgs}
+\indextt{Size!for groups with pcgs}
+\indextt{CompositionSeries!for groups with pcgs}
+\indextt{ConjugacyClasses!for groups with pcgs}
+\indextt{Centralizer!for groups with pcgs}
+\indextt{FrattiniSubgroup!for groups with pcgs}
+\indextt{PrefrattiniSubgroup!for groups with pcgs}
+\indextt{MaximalSubgroups!for groups with pcgs}
+\indextt{HallSystem!for groups with pcgs}
+\indextt{MinimalGeneratingSet!for groups with pcgs}
+\indextt{Centre!for groups with pcgs}
+\indextt{Intersection!for groups with pcgs}
+\indextt{AutomorphismGroup!for groups with pcgs}
+\indextt{IrreducibleModules!for groups with pcgs}
 For the following methods there are special operations for groups with
 pcgs installed:
 
-IsNilpotent, IsSupersolvable, Size, CompositionSeries, ConjugacyClasses, 
-Centralizer, FrattiniSubgroup, PrefrattiniSubgroup, MaximalSubgroups and
-related, HallSystem and related, MinimalGeneratingSet, Centre, Intersection,
-AutomorphismGroup, IrreducibleModules.
+`IsNilpotent', `IsSupersolvable', `Size', `CompositionSeries', 
+`ConjugacyClasses', `Centralizer', `FrattiniSubgroup', `PrefrattiniSubgroup',
+`MaximalSubgroups' and related operations, `HallSystem' and related operations,
+`MinimalGeneratingSet', `Centre', `Intersection', `AutomorphismGroup', 
+`IrreducibleModules'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Conjugacy Classes in Solvable Groups}
 
 There are a variety of algorithms to compute conjugacy classes and
 centralizers in solvable groups via epimorphic images
-(\cite{FelschNeubueser79},\cite{MeckyNeubueser89},\cite{Theissen93}).
+(\cite{FelschNeubueser79}, \cite{MeckyNeubueser89}, \cite{Theissen93}).
 Usually these are only invoked as methods, but it is possible to access the
 algorithm directly.
 
 @*The syntax of this function may change in a future rewrite!*@
 
 \Declaration{ClassesSolvableGroup}
+\Declaration{CentralizerSizeLimitConsiderFunction}
 
-See also `SubgroupsSolvableGroup'.
+See also `SubgroupsSolvableGroup' ("SubgroupsSolvableGroup").

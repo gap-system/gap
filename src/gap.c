@@ -17,7 +17,7 @@
 #include        "system.h"              /* system dependent part           */
 
 const char * Revision_gap_c =
-   "@(#)$Id$";
+"@(#)$Id$";
 
 extern char * In;
 
@@ -43,6 +43,7 @@ extern char * In;
 #include        "finfield.h"            /* finite fields and ff elements   */
 
 #include        "bool.h"                /* booleans                        */
+#include        "float.h"               /* machine doubles                 */
 #include        "permutat.h"            /* permutations                    */
 
 #include        "records.h"             /* generic records                 */
@@ -96,7 +97,7 @@ extern char * In;
 #include        "weakptr.h"             /* weak pointers                   */
 
 #ifdef GAPMPI
-#include        "gapmpi.h"              /* GAPMPI			   */
+#include        "gapmpi.h"              /* ParGAP/MPI			   */
 #endif
 
 #ifdef SYS_IS_MAC_MWC
@@ -171,27 +172,27 @@ UInt ViewObjGVar;
 
 void ViewObjHandler ( Obj obj )
 {
-    volatile Obj        func;
-    jmp_buf             readJmpError;
+  volatile Obj        func;
+  jmp_buf             readJmpError;
 
-    /* get the function                                                    */
-    func = ValAutoGVar(ViewObjGVar);
+  /* get the function                                                    */
+  func = ValAutoGVar(ViewObjGVar);
 
-    /* if non-zero use this function, otherwise use `PrintObj'             */
-    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
-    if ( ! READ_ERROR() ) {
-        if ( func == 0 || TNUM_OBJ(func) != T_FUNCTION ) {
-            PrintObj(obj);
-        }
-        else {
-            ViewObj( obj );
-        }
-        Pr( "\n", 0L, 0L );
-        memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+  /* if non-zero use this function, otherwise use `PrintObj'             */
+  memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+  if ( ! READ_ERROR() ) {
+    if ( func == 0 || TNUM_OBJ(func) != T_FUNCTION ) {
+      PrintObj(obj);
     }
     else {
-        memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+      ViewObj( obj );
     }
+    Pr( "\n", 0L, 0L );
+    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+  }
+  else {
+    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+  }
 }
 
 
@@ -201,141 +202,186 @@ void ViewObjHandler ( Obj obj )
 */
 Obj AtExitFunctions;
 
+Obj AlternativeMainLoop = 0;
+
 UInt SaveOnExitFileGVar;
 
 UInt QUITTINGGVar;
 
+Obj OnGapPromptHook = 0;
+
 int main (
-    int                 argc,
-    char *              argv [] )
+	  int                 argc,
+	  char *              argv [] )
 {
-    ExecStatus          status;                 /* result of ReadEvalCommand*/
-    UInt                type;                   /* result of compile       */
-    UInt                time;                   /* start time              */
-    Obj                 func;                   /* function (compiler)     */
-    Int4                crc;                    /* crc of file to compile  */
-    volatile UInt       i;                      /* loop variable           */
-    Obj                 SaveOnExitFile;         /* contents of the GVar    */
+  ExecStatus          status;                 /* result of ReadEvalCommand*/
+  UInt                type;                   /* result of compile       */
+  UInt                time;                   /* start time              */
+  Obj                 func;                   /* function (compiler)     */
+  Int4                crc;                    /* crc of file to compile  */
+  volatile UInt       i;                      /* loop variable           */
+  Obj                 SaveOnExitFile;         /* contents of the GVar    */
 
-    /* initialize everything                                               */
-    InitializeGap( &argc, argv );
-    if (UserHasQUIT)		/* maybe the user QUIT from the initial
-				 read of init.g */
-      goto finalize;
+  /* initialize everything                                               */
+  InitializeGap( &argc, argv );
+  if (UserHasQUIT)		/* maybe the user QUIT from the initial
+				   read of init.g */
+    goto finalize;
 
-    /* maybe compile                                                       */
-    if ( SyCompilePlease ) {
-        if ( ! OpenInput(SyCompileInput) ) {
-            SyExit(1);
-        }
-        func = READ_AS_FUNC();
-        crc  = SyGAPCRC(SyCompileInput);
-	if (SyStrlen(SyCompileOptions) != 0)
-	  SetCompileOpts(SyCompileOptions);
-        type = CompileFunc(
-			   SyCompileOutput,
-                            func,
-                            SyCompileName,
-                            crc,
-                            SyCompileMagic1 );
-        if ( type == 0 )
-            SyExit( 1 );
-        SyExit( 0 );
+  /* maybe compile                                                       */
+  if ( SyCompilePlease ) {
+    if ( ! OpenInput(SyCompileInput) ) {
+      SyExit(1);
     }
+    func = READ_AS_FUNC();
+    crc  = SyGAPCRC(SyCompileInput);
+    if (SyStrlen(SyCompileOptions) != 0)
+      SetCompileOpts(SyCompileOptions);
+    type = CompileFunc(
+		       SyCompileOutput,
+		       func,
+		       SyCompileName,
+		       crc,
+		       SyCompileMagic1 );
+    if ( type == 0 )
+      SyExit( 1 );
+    SyExit( 0 );
+  }
 
-    /* read-eval-print loop                                                */
-    while ( 1 ) {
-
-        /* start the stopwatch                                             */
-        time = SyTime();
-
-        /* read and evaluate one command                                   */
-        Prompt = "gap> ";
-        ClearError();
-        status = ReadEvalCommand();
-	if (UserHasQUIT)
-	  break;
-
-        /* stop the stopwatch                                              */
-        AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
-
-        /* handle ordinary command                                         */
-        if ( status == STATUS_END && ReadEvalResult != 0 ) {
-
-            /* remember the value in 'last' and the time in 'time'         */
-            AssGVar( Last3, VAL_GVAR( Last2 ) );
-            AssGVar( Last2, VAL_GVAR( Last  ) );
-            AssGVar( Last,  ReadEvalResult   );
-
-            /* print the result                                            */
-            if ( ! DualSemicolon ) {
-                ViewObjHandler( ReadEvalResult );
-            }
-	    
-        }
-
-        /* handle return-value or return-void command                      */
-        else if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
-            Pr( "'return' must not be used in main read-eval-print loop",
-                0L, 0L );
-        }
-
-        /* handle quit command or <end-of-file>                            */
-        else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
-            break;
-        }
-	
-	/* handle QUIT */
-	else if (status & (STATUS_QQUIT)) {
-	  UserHasQUIT = 1;
-	  break;
+  if (AlternativeMainLoop != (Obj) 0)
+    {
+      if (!IS_FUNC(AlternativeMainLoop))
+	{
+	  Pr("#E AlternativeMainLoop set to non-function, ignoring\n",0L,0L);
 	}
-	
-	/* stop the stopwatch                                          */
-	AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
-	
-	UserHasQuit = 0;	/* quit has done its job if we are here */
-
+      else
+	{
+	  ClearError();
+	  if (READ_ERROR())
+	    {
+	      if (UserHasQUIT)
+		goto finalize;
+	      ClearError();
+	    }
+	  ExecBegin( BottomLVars );
+	  CALL_0ARGS(AlternativeMainLoop);
+	  /* If we ever get to here then the AlternativeMainLoop function actual
+	     exited. In this case, we are done */
+	  ExecEnd(0);
+	  goto finalize;
+	}
     }
+
+  /* read-eval-print loop                                                */
+  while ( 1 ) {
+
+    /* start the stopwatch                                             */
+    time = SyTime();
+
+    /* read and evaluate one command                                   */
+    Prompt = "gap> ";
+    ClearError();
+
+    /* here is a hook: */
+    if (OnGapPromptHook) {
+      if (!IS_FUNC(OnGapPromptHook))
+	{
+	  Pr("#E OnGapPromptHook set to non-function, ignoring\n",0L,0L);
+	}
+      else
+        {
+          Call0ArgsInNewReader(OnGapPromptHook);
+          /* Recover from a potential break loop: */
+          Prompt = "gap> ";
+          ClearError();
+        }
+    }
+
+    /* now enter the read-eval-command loop: */
+    status = ReadEvalCommand();
+    if (UserHasQUIT)
+      break;
+
+    /* stop the stopwatch                                              */
+    AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
+
+    /* handle ordinary command                                         */
+    if ( status == STATUS_END && ReadEvalResult != 0 ) {
+
+      /* remember the value in 'last' and the time in 'time'         */
+      AssGVar( Last3, VAL_GVAR( Last2 ) );
+      AssGVar( Last2, VAL_GVAR( Last  ) );
+      AssGVar( Last,  ReadEvalResult   );
+
+      /* print the result                                            */
+      if ( ! DualSemicolon ) {
+	ViewObjHandler( ReadEvalResult );
+      }
+	    
+    }
+
+    /* handle return-value or return-void command                      */
+    else if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
+      Pr( "'return' must not be used in main read-eval-print loop",
+	  0L, 0L );
+    }
+
+    /* handle quit command or <end-of-file>                            */
+    else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
+      break;
+    }
+	
+    /* handle QUIT */
+    else if (status & (STATUS_QQUIT)) {
+      UserHasQUIT = 1;
+      break;
+    }
+	
+    /* stop the stopwatch                                          */
+    AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
+	
+    UserHasQuit = 0;	/* quit has done its job if we are here */
+
+  }
 
  finalize:
-    /* The QUITTING variable is made available to the AtExitFunction */
-    MakeReadWriteGVar(QUITTINGGVar);
-    AssGVar(QUITTINGGVar, UserHasQUIT ? True : False );
-    MakeReadOnlyGVar(QUITTINGGVar);
+  /* The QUITTING variable is made available to the AtExitFunction */
+  MakeReadWriteGVar(QUITTINGGVar);
+  AssGVar(QUITTINGGVar, UserHasQUIT ? True : False );
+  MakeReadOnlyGVar(QUITTINGGVar);
 
-    /* call the exit functions                                             */
-    BreakOnError = 0;
+  /* call the exit functions                                             */
+  BreakOnError = 0;
 
-    for ( i = 1;  i <= LEN_PLIST(AtExitFunctions);  i++ ) {
-        if ( setjmp(ReadJmpError) == 0 ) {
-            func = ELM_PLIST( AtExitFunctions, i );
-            CALL_0ARGS(func);
-        }
+  for ( i = 1;  i <= LEN_PLIST(AtExitFunctions);  i++ ) {
+    if ( setjmp(ReadJmpError) == 0 ) {
+      func = ELM_PLIST( AtExitFunctions, i );
+      CALL_0ARGS(func);
     }
+  }
 
-    /* Possibly save the workspace */
-    if ( !UserHasQUIT
-	 && (SaveOnExitFile = VAL_GVAR(SaveOnExitFileGVar))
-	 && SaveOnExitFile != False)
-      {
-	if (IsStringConv(SaveOnExitFile))
-	  {
-	    if (SaveWorkspace(SaveOnExitFile) == True)
-	      Pr("Workspace saved in %s\n",
-		 (Int)CSTR_STRING(SaveOnExitFile), 0);
-	    else
-	      Pr("Attempt to save in %s failed\n",
-		 (Int)CSTR_STRING(SaveOnExitFile), 0);
-	  }
-	else
-	  Pr("SaveOnExitFile is a %s not a filename\n",
-	     (Int)TNAM_OBJ(SaveOnExitFile), 0);
-      }
+  /* Possibly save the workspace */
+  if ( !UserHasQUIT
+       && (SaveOnExitFile = VAL_GVAR(SaveOnExitFileGVar))
+       && SaveOnExitFile != False)
+    {
+      if (IsStringConv(SaveOnExitFile))
+	{
+	  if (SaveWorkspace(SaveOnExitFile) == True)
+	    Pr("Workspace saved in %s\n",
+	       (Int)CSTR_STRING(SaveOnExitFile), 0);
+	  else
+	    Pr("Attempt to save in %s failed\n",
+	       (Int)CSTR_STRING(SaveOnExitFile), 0);
+	}
+      else
+	Pr("SaveOnExitFile is a %s not a filename\n",
+	   (Int)TNAM_OBJ(SaveOnExitFile), 0);
+    }
     
-    /* exit to the operating system, the return is there to please lint    */
-    SyExit(0);
-    return 0;
+  /* exit to the operating system, the return is there to please lint    */
+  SyExit(0);
+  return 0;
 }
 
 
@@ -344,10 +390,10 @@ int main (
 *F  FuncID_FUNC( <self>, <val1> ) . . . . . . . . . . . . . . . return <val1>
 */
 Obj FuncID_FUNC (
-    Obj                 self,
-    Obj                 val1 )
+		 Obj                 self,
+		 Obj                 val1 )
 {
-    return val1;
+  return val1;
 }
 
 
@@ -364,9 +410,9 @@ Obj FuncID_FUNC (
 **  The accuracy of this number is also system dependent.
 */
 Obj FuncRuntime (
-    Obj                 self )
+		 Obj                 self )
 {
-    return INTOBJ_INT( SyTime() );
+  return INTOBJ_INT( SyTime() );
 }
 
 
@@ -391,82 +437,82 @@ Obj FuncRuntime (
 **  set with the command line options '-x <x>' and '-y <y>'.
 */
 Obj FuncSizeScreen (
-    Obj                 self,
-    Obj                 args )
+		    Obj                 self,
+		    Obj                 args )
 {
-    Obj                 size;           /* argument and result list        */
-    Obj                 elm;            /* one entry from size             */
-    UInt                len;            /* length of lines on the screen   */
-    UInt                nr;             /* number of lines on the screen   */
+  Obj                 size;           /* argument and result list        */
+  Obj                 elm;            /* one entry from size             */
+  UInt                len;            /* length of lines on the screen   */
+  UInt                nr;             /* number of lines on the screen   */
 
-    /* check the arguments                                                 */
-    while ( ! IS_SMALL_LIST(args) || 1 < LEN_LIST(args) ) {
-        args = ErrorReturnObj(
-            "Function: number of arguments must be 0 or 1 (not %d)",
-            LEN_LIST(args), 0L,
-            "you can return a list of arguments" );
-    }
+  /* check the arguments                                                 */
+  while ( ! IS_SMALL_LIST(args) || 1 < LEN_LIST(args) ) {
+    args = ErrorReturnObj(
+			  "Function: number of arguments must be 0 or 1 (not %d)",
+			  LEN_LIST(args), 0L,
+			  "you can replace the argument list <args> via 'return <args>;'" );
+  }
 
-    /* get the arguments                                                   */
-    if ( LEN_LIST(args) == 0 ) {
-        size = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( size, 0 );
-    }
+  /* get the arguments                                                   */
+  if ( LEN_LIST(args) == 0 ) {
+    size = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( size, 0 );
+  }
 
-    /* otherwise check the argument                                        */
-    else {
-        size = ELM_LIST( args, 1 );
-        while ( ! IS_SMALL_LIST(size) || 2 < LEN_LIST(size) ) {
-            size = ErrorReturnObj(
-                "SizeScreen: <size> must be a list of length 2",
-                0L, 0L,
-                "you can return a new list for <size>" );
-        }
+  /* otherwise check the argument                                        */
+  else {
+    size = ELM_LIST( args, 1 );
+    while ( ! IS_SMALL_LIST(size) || 2 < LEN_LIST(size) ) {
+      size = ErrorReturnObj(
+			    "SizeScreen: <size> must be a list of length 2",
+			    0L, 0L,
+			    "you can replace <size> via 'return <size>;'" );
     }
+  }
 
-    /* extract the length                                                  */
-    if ( LEN_LIST(size) < 1 || ELM0_LIST(size,1) == 0 ) {
-        len = SyNrCols;
+  /* extract the length                                                  */
+  if ( LEN_LIST(size) < 1 || ELM0_LIST(size,1) == 0 ) {
+    len = SyNrCols;
+  }
+  else {
+    elm = ELMW_LIST(size,1);
+    while ( TNUM_OBJ(elm) != T_INT ) {
+      elm = ErrorReturnObj(
+			   "SizeScreen: <x> must be an integer",
+			   0L, 0L,
+			   "you can replace <x> via 'return <x>;'" );
     }
-    else {
-        elm = ELMW_LIST(size,1);
-        while ( TNUM_OBJ(elm) != T_INT ) {
-            elm = ErrorReturnObj(
-                "SizeScreen: <x> must be an integer",
-                0L, 0L,
-                "you can return a new integer for <x>" );
-        }
-        len = INT_INTOBJ( elm );
-        if ( len < 20  )  len = 20;
-        if ( 256 < len )  len = 256;
-    }
+    len = INT_INTOBJ( elm );
+    if ( len < 20  )  len = 20;
+    if ( 256 < len )  len = 256;
+  }
 
-    /* extract the number                                                  */
-    if ( LEN_LIST(size) < 2 || ELM0_LIST(size,2) == 0 ) {
-        nr = SyNrRows;
+  /* extract the number                                                  */
+  if ( LEN_LIST(size) < 2 || ELM0_LIST(size,2) == 0 ) {
+    nr = SyNrRows;
+  }
+  else {
+    elm = ELMW_LIST(size,2);
+    while ( TNUM_OBJ(elm) != T_INT ) {
+      elm = ErrorReturnObj(
+			   "SizeScreen: <y> must be an integer",
+			   0L, 0L,
+			   "you can replace <y> via 'return <y>;'" );
     }
-    else {
-        elm = ELMW_LIST(size,2);
-        while ( TNUM_OBJ(elm) != T_INT ) {
-            elm = ErrorReturnObj(
-                "SizeScreen: <y> must be an integer",
-                0L, 0L,
-                "you can return a new integer for <y>" );
-        }
-        nr = INT_INTOBJ( elm );
-        if ( nr < 10 )  nr = 10;
-    }
+    nr = INT_INTOBJ( elm );
+    if ( nr < 10 )  nr = 10;
+  }
 
-    /* set length and number                                               */
-    SyNrCols = len;
-    SyNrRows = nr;
+  /* set length and number                                               */
+  SyNrCols = len;
+  SyNrRows = nr;
 
-    /* make and return the size of the screen                              */
-    size = NEW_PLIST( T_PLIST, 2 );
-    SET_LEN_PLIST( size, 2 );
-    SET_ELM_PLIST( size, 1, INTOBJ_INT(len) );
-    SET_ELM_PLIST( size, 2, INTOBJ_INT(nr)  );
-    return size;
+  /* make and return the size of the screen                              */
+  size = NEW_PLIST( T_PLIST, 2 );
+  SET_LEN_PLIST( size, 2 );
+  SET_ELM_PLIST( size, 1, INTOBJ_INT(len) );
+  SET_ELM_PLIST( size, 2, INTOBJ_INT(nr)  );
+  return size;
 
 }
 
@@ -478,147 +524,149 @@ Obj FuncSizeScreen (
 static Obj WindowCmdString;
 
 Obj FuncWindowCmd (
-    Obj	      	    self,
-    Obj             args )
+		   Obj	      	    self,
+		   Obj             args )
 {
-    Obj             tmp;
-    Obj       	    list;
-    Int             len;
-    Int             n,  m;
-    Int             i;
-    Char *          ptr;
-    Char *          qtr;
+  Obj             tmp;
+  Obj       	    list;
+  Int             len;
+  Int             n,  m;
+  Int             i;
+  Char *          ptr;
+  Char *          qtr;
 
-    /* check arguments                                                     */
-    while ( ! IS_SMALL_LIST(args) ) {
-	args = ErrorReturnObj( "argument list must be a list (not a %s)",
-            (Int)TNAM_OBJ(args), 0L,
-            "you can return a list of arguments" );
+  /* check arguments                                                     */
+  while ( ! IS_SMALL_LIST(args) ) {
+    args = ErrorReturnObj( "argument list must be a list (not a %s)",
+			   (Int)TNAM_OBJ(args), 0L,
+			   "you can replace the argument list <args> via 'return <args>;'" );
 
+  }
+  tmp = ELM_LIST(args,1);
+  while ( ! IsStringConv(tmp) || 3 != LEN_LIST(tmp) ) {
+    while ( ! IsStringConv(tmp) ) {
+      tmp = ErrorReturnObj( "<cmd> must be a string (not a %s)",
+			    (Int)TNAM_OBJ(tmp), 0L,
+			    "you can replace <cmd> via 'return <cmd>;'" );
     }
-    tmp = ELM_LIST(args,1);
-    while ( ! IsStringConv(tmp) || 3 != LEN_LIST(tmp) ) {
-	while ( ! IsStringConv(tmp) ) {
-	    tmp = ErrorReturnObj( "<cmd> must be a string (not a %s)",
-	        (Int)TNAM_OBJ(tmp), 0L,
-		"you can return a string as command" );
-	}
-	if ( 3 != LEN_LIST(tmp) ) {
-	    tmp = ErrorReturnObj( "<cmd> must be a string of length 3",
-	        0L, 0L,
-		"you can return a string as command" );
-	}
+    if ( 3 != LEN_LIST(tmp) ) {
+      tmp = ErrorReturnObj( "<cmd> must be a string of length 3",
+			    0L, 0L,
+			    "you can replace <cmd> via 'return <cmd>;'" );
     }
+  }
 
-    /* compute size needed to store argument string                        */
-    len = 13;
-    for ( i = 2;  i <= LEN_LIST(args);  i++ )
+  /* compute size needed to store argument string                        */
+  len = 13;
+  for ( i = 2;  i <= LEN_LIST(args);  i++ )
     {
-	tmp = ELM_LIST( args, i );
-	while ( TNUM_OBJ(tmp) != T_INT && ! IsStringConv(tmp) ) {
-	    tmp = ErrorReturnObj(
-              "%d. argument must be a string or integer (not a %s)",
-	      i, (Int)TNAM_OBJ(tmp),
-	      "yout can return a string or integer" );
-	    SET_ELM_PLIST( args, i, tmp );
-	}
-	if ( TNUM_OBJ(tmp) == T_INT )
-	    len += 12;
+      tmp = ELM_LIST( args, i );
+      while ( TNUM_OBJ(tmp) != T_INT && ! IsStringConv(tmp) ) {
+	tmp = ErrorReturnObj(
+			     "%d. argument must be a string or integer (not a %s)",
+			     i, (Int)TNAM_OBJ(tmp),
+			     "you can replace the argument <arg> via 'return <arg>;'" );
+	SET_ELM_PLIST( args, i, tmp );
+      }
+      if ( TNUM_OBJ(tmp) == T_INT )
+	len += 12;
+      else
+	len += 12 + LEN_LIST(tmp);
+    }
+  if ( SIZE_OBJ(WindowCmdString) <= len ) {
+    ResizeBag( WindowCmdString, 2*len+1 );
+  }
+
+  /* convert <args> into an argument string                              */
+  ptr  = (Char*) CSTR_STRING(WindowCmdString);
+  *ptr = '\0';
+
+  /* first the command name                                              */
+  SyStrncat( ptr, CSTR_STRING( ELM_LIST(args,1) ), 3 );
+  ptr += 3;
+
+  /* and now the arguments                                               */
+  for ( i = 2;  i <= LEN_LIST(args);  i++ )
+    {
+      tmp = ELM_LIST(args,i);
+
+      if ( TNUM_OBJ(tmp) == T_INT ) {
+	*ptr++ = 'I';
+	m = INT_INTOBJ(tmp);
+	for ( m = (m<0)?-m:m;  0 < m;  m /= 10 )
+	  *ptr++ = (m%10) + '0';
+	if ( INT_INTOBJ(tmp) < 0 )
+	  *ptr++ = '-';
 	else
-	    len += 12 + LEN_LIST(tmp);
+	  *ptr++ = '+';
+      }
+      else {
+	*ptr++ = 'S';
+	m = LEN_LIST(tmp);
+	for ( ; 0 < m;  m/= 10 )
+	  *ptr++ = (m%10) + '0';
+	*ptr++ = '+';
+	qtr = CSTR_STRING(tmp);
+	for ( m = LEN_LIST(tmp);  0 < m;  m-- )
+	  *ptr++ = *qtr++;
+      }
     }
-    if ( SIZE_OBJ(WindowCmdString) <= len ) {
-	ResizeBag( WindowCmdString, 2*len+1 );
+  *ptr = 0;
+
+  /* now call the window front end with the argument string              */
+  qtr = CSTR_STRING(WindowCmdString);
+  ptr = SyWinCmd( qtr, SyStrlen(qtr) );
+  len = SyStrlen(ptr);
+
+  /* now convert result back into a list                                 */
+  list = NEW_PLIST( T_PLIST, 11 );
+  SET_LEN_PLIST( list, 0 );
+  i = 1;
+  while ( 0 < len ) {
+    if ( *ptr == 'I' ) {
+      ptr++;
+      for ( n=0,m=1; '0' <= *ptr && *ptr <= '9'; ptr++,m *= 10,len-- )
+	n += (*ptr-'0') * m;
+      if ( *ptr++ == '-' )
+	n *= -1;
+      len -= 2;
+      AssPlist( list, i, INTOBJ_INT(n) );
     }
-
-    /* convert <args> into an argument string                              */
-    ptr  = (Char*) CSTR_STRING(WindowCmdString);
-    *ptr = '\0';
-
-    /* first the command name                                              */
-    SyStrncat( ptr, CSTR_STRING( ELM_LIST(args,1) ), 3 );
-    ptr += 3;
-
-    /* and now the arguments                                               */
-    for ( i = 2;  i <= LEN_LIST(args);  i++ )
-    {
-	tmp = ELM_LIST(args,i);
-
-	if ( TNUM_OBJ(tmp) == T_INT ) {
-	    *ptr++ = 'I';
-	    m = INT_INTOBJ(tmp);
-	    for ( m = (m<0)?-m:m;  0 < m;  m /= 10 )
-		*ptr++ = (m%10) + '0';
-	    if ( INT_INTOBJ(tmp) < 0 )
-		*ptr++ = '-';
-	    else
-		*ptr++ = '+';
-	}
-	else {
-	    *ptr++ = 'S';
-	    m = LEN_LIST(tmp);
-	    for ( ; 0 < m;  m/= 10 )
-		*ptr++ = (m%10) + '0';
-	    *ptr++ = '+';
-	    qtr = CSTR_STRING(tmp);
-	    for ( m = LEN_LIST(tmp);  0 < m;  m-- )
-		*ptr++ = *qtr++;
-	}
-    }
-    *ptr = 0;
-
-    /* now call the window front end with the argument string              */
-    qtr = CSTR_STRING(WindowCmdString);
-    ptr = SyWinCmd( qtr, SyStrlen(qtr) );
-    len = SyStrlen(ptr);
-
-    /* now convert result back into a list                                 */
-    list = NEW_PLIST( T_PLIST, 11 );
-    SET_LEN_PLIST( list, 0 );
-    i = 1;
-    while ( 0 < len ) {
-	if ( *ptr == 'I' ) {
-	    ptr++;
-	    for ( n=0,m=1; '0' <= *ptr && *ptr <= '9'; ptr++,m *= 10,len-- )
-		n += (*ptr-'0') * m;
-	    if ( *ptr++ == '-' )
-		n *= -1;
-	    len -= 2;
-	    AssPlist( list, i, INTOBJ_INT(n) );
-	}
-	else if ( *ptr == 'S' ) {
-	    ptr++;
-	    for ( n=0,m=1;  '0' <= *ptr && *ptr <= '9';  ptr++,m *= 10,len-- )
-		n += (*ptr-'0') * m;
-	    ptr++; /* ignore the '+' */
-	    tmp = NEW_STRING(n);
-	    *CSTR_STRING(tmp) = '\0';
-	    SyStrncat( CSTR_STRING(tmp), ptr, n );
-	    ptr += n;
-	    len -= n+2;
-	    AssPlist( list, i, tmp );
-	}
-	else {
-	    ErrorQuit( "unknown return value '%s'", (Int)ptr, 0 );
-	    return 0;
-	}
-	i++;
-    }
-
-    /* if the first entry is one signal an error */
-    if ( ELM_LIST(list,1) == INTOBJ_INT(1) ) {
-	tmp = NEW_STRING(15);
-	SyStrncat( CSTR_STRING(tmp), "window system: ", 15 );
-	SET_ELM_PLIST( list, 1, tmp );
-	SET_LEN_PLIST( list, i-1 );
-	return FuncError( 0, list );
+    else if ( *ptr == 'S' ) {
+      ptr++;
+      for ( n=0,m=1;  '0' <= *ptr && *ptr <= '9';  ptr++,m *= 10,len-- )
+	n += (*ptr-'0') * m;
+      ptr++; /* ignore the '+' */
+      /*CCC tmp = NEW_STRING(n);
+      *CSTR_STRING(tmp) = '\0';
+      SyStrncat( CSTR_STRING(tmp), ptr, n ); CCC*/
+      C_NEW_STRING(tmp, n, ptr);
+      ptr += n;
+      len -= n+2;
+      AssPlist( list, i, tmp );
     }
     else {
-	for ( m = 1;  m <= i-2;  m++ )
-	    SET_ELM_PLIST( list, m, ELM_PLIST(list,m+1) );
-	SET_LEN_PLIST( list, i-2 );
-	return list;
+      ErrorQuit( "unknown return value '%s'", (Int)ptr, 0 );
+      return 0;
     }
+    i++;
+  }
+
+  /* if the first entry is one signal an error */
+  if ( ELM_LIST(list,1) == INTOBJ_INT(1) ) {
+    /*CCCtmp = NEW_STRING(15);
+      SyStrncat( CSTR_STRING(tmp), "window system: ", 15 );CCC*/
+    C_NEW_STRING(tmp, 15, "window system: ");  
+    SET_ELM_PLIST( list, 1, tmp );
+    SET_LEN_PLIST( list, i-1 );
+    return FuncError( 0, list );
+  }
+  else {
+    for ( m = 1;  m <= i-2;  m++ )
+      SET_ELM_PLIST( list, m, ELM_PLIST(list,m+1) );
+    SET_LEN_PLIST( list, i-2 );
+    return list;
+  }
 }
 
 
@@ -669,54 +717,54 @@ void DownEnvInner( Int depth )
 }
   
 Obj FuncDownEnv (
-    Obj                 self,
-    Obj                 args )
+		 Obj                 self,
+		 Obj                 args )
 {
-    Int                 depth;
+  Int                 depth;
 
-    if ( LEN_LIST(args) == 0 ) {
-        depth = 1;
-    }
-    else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
-        depth = INT_INTOBJ( ELM_PLIST( args, 1 ) );
-    }
-    else {
-        ErrorQuit( "usage: DownEnv( [ <depth> ] )", 0L, 0L );
-        return 0;
-    }
-    if ( ErrorLVars == 0 ) {
-        Pr( "not in any function\n", 0L, 0L );
-        return 0;
-    }
-
-    DownEnvInner( depth);
-
-    /* return nothing                                                      */
+  if ( LEN_LIST(args) == 0 ) {
+    depth = 1;
+  }
+  else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
+    depth = INT_INTOBJ( ELM_PLIST( args, 1 ) );
+  }
+  else {
+    ErrorQuit( "usage: DownEnv( [ <depth> ] )", 0L, 0L );
     return 0;
+  }
+  if ( ErrorLVars == 0 ) {
+    Pr( "not in any function\n", 0L, 0L );
+    return 0;
+  }
+
+  DownEnvInner( depth);
+
+  /* return nothing                                                      */
+  return 0;
 }
 
 Obj FuncUpEnv (
-    Obj                 self,
-    Obj                 args )
+	       Obj                 self,
+	       Obj                 args )
 {
-    Int                 depth;
-    if ( LEN_LIST(args) == 0 ) {
-        depth = 1;
-    }
-    else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
-        depth = INT_INTOBJ( ELM_PLIST( args, 1 ) );
-    }
-    else {
-        ErrorQuit( "usage: UpEnv( [ <depth> ] )", 0L, 0L );
-        return 0;
-    }
-    if ( ErrorLVars == 0 ) {
-        Pr( "not in any function\n", 0L, 0L );
-        return 0;
-    }
-
-    DownEnvInner(-depth);
+  Int                 depth;
+  if ( LEN_LIST(args) == 0 ) {
+    depth = 1;
+  }
+  else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
+    depth = INT_INTOBJ( ELM_PLIST( args, 1 ) );
+  }
+  else {
+    ErrorQuit( "usage: UpEnv( [ <depth> ] )", 0L, 0L );
     return 0;
+  }
+  if ( ErrorLVars == 0 ) {
+    Pr( "not in any function\n", 0L, 0L );
+    return 0;
+  }
+
+  DownEnvInner(-depth);
+  return 0;
 }
 
 /****************************************************************************
@@ -724,82 +772,134 @@ Obj FuncUpEnv (
 *F  FuncWhere( <self>, <depth> )  . . . . . . . . . . . .  print stack frames
 */
 Obj FuncWhere (
-    Obj                 self,
-    Obj                 args )
+	       Obj                 self,
+	       Obj                 args )
 {
-    Obj                 currLVars;
-    Int                 depth;
-    Expr                call;
+  Obj                 currLVars;
+  Int                 depth;
+  Expr                call;
 
 #ifndef NO_BRK_CALLS
 
-    /* evaluate the argument                                               */
-    if ( LEN_LIST(args) == 0 ) {
-        depth = 5;
+  /* evaluate the argument                                               */
+  if ( LEN_LIST(args) == 0 ) {
+    depth = 5;
+  }
+  else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
+    depth = INT_INTOBJ( ELM_PLIST( args, 1 ) );
+    if ( depth == 0 ) {
+      /* We do this to avoid the enclosing " called from" and "..."
+         when the depth is zero                                         */
+      depth = -1;
     }
-    else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
-        depth = INT_INTOBJ( ELM_PLIST( args, 1 ) );
-    }
-    else {
-        ErrorQuit( "usage: Where( [ <depth> ] )", 0L, 0L );
-        return 0;
-    }
-
-    currLVars = CurrLVars;
-
-    if ( ErrorLVars != 0  && ErrorLVars != BottomLVars ) {
-        SWITCH_TO_OLD_LVARS( ErrorLVars );
-        SWITCH_TO_OLD_LVARS( BRK_CALL_FROM() );
-        while ( CurrLVars != BottomLVars && 0 < depth ) {
-            call = BRK_CALL_TO();
-            if ( call == 0 ) {
-                Pr( "<compiled or corrupted call value> ", 0L, 0L );
-            }
-#if T_PROCCALL_0ARGS
-            else if ( T_PROCCALL_0ARGS <= TNUM_STAT(call)
-                   && TNUM_STAT(call)  <= T_PROCCALL_XARGS ) {
-#else
-            else if ( TNUM_STAT(call)  <= T_PROCCALL_XARGS ) {
-#endif
-                PrintStat( call );
-            }
-            else if ( T_FUNCCALL_0ARGS <= TNUM_EXPR(call)
-                   && TNUM_EXPR(call)  <= T_FUNCCALL_XARGS ) {
-                PrintExpr( call );
-            }
-            Pr( " called from\n", 0L, 0L );
-            SWITCH_TO_OLD_LVARS( BRK_CALL_FROM() );
-            depth--;
-        }
-        if ( 0 < depth ) {
-            Pr( "<function>( <arguments> ) called from read-eval-loop\n",
-                0L, 0L );
-        }
-        else {
-            Pr( "...\n", 0L, 0L );
-        }
-    }
-    else {
-        Pr( "not in any function\n", 0L, 0L );
-    }
-
-    SWITCH_TO_OLD_LVARS( currLVars );
-
-#endif
-
+  }
+  else {
+    ErrorQuit( "usage: Where( [ <depth> ] )", 0L, 0L );
     return 0;
+  }
+
+  currLVars = CurrLVars;
+
+  if ( ErrorLVars != 0  && ErrorLVars != BottomLVars ) {
+    SWITCH_TO_OLD_LVARS( ErrorLVars );
+    SWITCH_TO_OLD_LVARS( BRK_CALL_FROM() );
+    if ( 0 < depth ) {
+      Pr( " called from\n", 0L, 0L );
+    }
+    while ( CurrLVars != BottomLVars && 0 < depth ) {
+      call = BRK_CALL_TO();
+      if ( call == 0 ) {
+	Pr( "<compiled or corrupted call value> ", 0L, 0L );
+      }
+#if T_PROCCALL_0ARGS
+      else if ( T_PROCCALL_0ARGS <= TNUM_STAT(call)
+		&& TNUM_STAT(call)  <= T_PROCCALL_XARGS ) {
+#else
+      else if ( TNUM_STAT(call)  <= T_PROCCALL_XARGS ) {
+#endif
+	PrintStat( call );
+      }
+      else if ( T_FUNCCALL_0ARGS <= TNUM_EXPR(call)
+                && TNUM_EXPR(call)  <= T_FUNCCALL_XARGS ) {
+        PrintExpr( call );
+      }
+      Pr( " called from\n", 0L, 0L );
+      SWITCH_TO_OLD_LVARS( BRK_CALL_FROM() );
+      depth--;
+    }
+    if ( 0 < depth ) {
+      Pr( "<function>( <arguments> ) called from read-eval-loop\n",
+          0L, 0L );
+    }
+    else if ( depth == 0 ) {
+      Pr( "...\n", 0L, 0L );
+    }
+  }
+  else {
+    Pr( "not in any function\n", 0L, 0L );
+  }
+
+  SWITCH_TO_OLD_LVARS( currLVars );
+    
+#endif
+    
+  return 0;
 }
 
+/****************************************************************************
+**
+*F  FuncCallFuncTrapError( <self>, <func> )
+**
+*/
+  
 
+Obj FuncCallFuncTrapError( Obj self, Obj func)
+  {
+    jmp_buf readJmpError;
+    ClearError();
+
+    /* Save the old error long-jump */
+    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+    if (READ_ERROR())
+      {
+	/* Get out any old how */
+	if (UserHasQUIT)
+	  longjmp( readJmpError, 1);
+	ExecEnd(1);
+	ClearError();
+	return True;
+      }
+    
+    ExecBegin( BottomLVars );
+    CALL_0ARGS( func );
+    ExecEnd(0);
+    return False;
+
+  }
+  
 /****************************************************************************
 **
 *F  ErrorMode( <msg>, <arg1>, <arg2>, <args>, <msg2>, <mode> )
 */
 
-Obj OnBreak;			/* a Fopy of the global OnBreak,
-				   which by default is set to Where. */
+    Obj OnBreak;			/* a Fopy of the global OnBreak,
+				         which by default is set to Where. */
+    Obj OnBreakMessage;			/* a Fopy of the global
+                                         OnBreakMessage.                   */
 
+Obj ErrorHandler = (Obj) 0;		/* not yet settable from GAP level */
 
+ Obj FuncSetErrorHandler( Obj self, Obj Handler)
+   {
+     Obj handler;
+     if (ErrorHandler != (Obj) 0)
+       handler = ErrorHandler;
+     else
+       handler = Fail;
+     ErrorHandler = Handler;
+     return handler;
+   }
+ 
 UInt UserHasQuit = 0;
 UInt UserHasQUIT = 0; 
  
@@ -816,6 +916,7 @@ Obj ErrorMode (
     UInt                errorLLevel;
     ExecStatus          status;
     char                prompt [16];
+    Obj                 errorHandler;
 
     ErrorCount++;
     if (ErrorCount >= ((UInt)1)<<NR_SMALL_INT_BITS)
@@ -827,12 +928,106 @@ Obj ErrorMode (
             Pr( msg, arg1, arg2 );
         }
         else if ( args != (Obj)0 ) {
-            Pr( "Error : ", 0L, 0L );
+            Pr( "Error, ", 0L, 0L );
             FuncPrint( (Obj)0, args );
         }
         Pr( "\n", 0L, 0L );
         ReadEvalError();
     }
+
+    /* See if we have an Error Handler */
+    if (ErrorHandler != 0 && IS_FUNC(ErrorHandler))
+      {
+	Obj mess;
+	Obj mess2;
+	Obj ret;
+	Int len;
+	errorHandler = ErrorHandler;
+	ErrorHandler = (Obj)0;
+
+	/* Transform the messages into GAP strings */
+	if (msg)
+	  {
+	    /*CCC mess = NEW_STRING(SyStrlen(msg));
+	    CSTR_STRING(mess)[0] = '\0';
+	    SyStrncat(CSTR_STRING(mess),msg,SyStrlen(msg));CCC*/
+	    len = SyStrlen(msg);
+	    C_NEW_STRING(mess, len, msg);
+	  }
+	else
+	  {
+	    mess = NEW_STRING(0);
+	    /*CCC CSTR_STRING(mess)[0] = '\0';CCC*/
+	  }
+	if (msg2)
+	  {
+	    /*CCC mess2 = NEW_STRING(SyStrlen(msg2));
+	    CSTR_STRING(mess2)[0] = '\0';
+	    SyStrncat(CSTR_STRING(mess2),msg2,SyStrlen(msg2));CCC*/
+	    len = SyStrlen(msg2);
+	    C_NEW_STRING(mess2, len, msg2);
+	  }
+	else
+	  {
+	    mess2 = NEW_STRING(0);
+	    /*CCC CSTR_STRING(mess2)[0] = '\0'; CCC*/
+	  }
+
+	/* Now call the handler */
+	if (args != 0)
+	  ret = CALL_4ARGS( errorHandler, mess, args, mess2, ObjsChar[mode]);
+	else
+	  ret = CALL_4ARGS( errorHandler, mess, Fail, mess2, ObjsChar[mode]);
+
+	/* Now handle the return, allowing for the mode */
+	if (ret == True)
+	  {
+	    ReadEvalError();
+	  }
+	else if (IS_PLIST(ret))
+	  {
+	    if (LEN_PLIST(ret) == 0)
+	      {
+		if (mode == 'x')
+		  return 0;
+		else
+		  {
+		    Pr("%%E Error handler tried to return null in mode %c\n",mode,0);
+		    if (mode == 'v')
+		      return Fail;
+		    if (mode == 'q')
+		      {
+			ReadEvalError();
+		      }
+		    Pr("Panic: impossible error mode %c\n",mode,0);
+		  }
+	      }
+	    else if (LEN_PLIST(ret) > 1)
+	      {
+		Pr("%%E Error handler returned %d objects, all but the first are ignored\n",
+		   LEN_PLIST(ret),0);
+	      }
+	    
+	    if (mode == 'v')
+	      return ELM_PLIST(ret,1);
+	    
+	    Pr("%%E Error handler tried to return an object in mode %c\n",mode,0);
+	    if (mode == 'x')
+	      {
+		return 0;
+	      }
+	    if (mode == 'q')
+	      {
+		ReadEvalError();
+	      }
+	    Pr("Panic: impossible error mode %c\n",mode,0);
+	  }
+	else 
+	  {
+	    Pr("%%E Error handler returned bad value or nothing, treating as true\n", 0L, 0L);
+	  }
+	ReadEvalError();
+      }
 
     /* open the standard error output file                                 */
     OpenOutput( "*errout*" );
@@ -849,16 +1044,21 @@ Obj ErrorMode (
         Pr( msg, arg1, arg2 );
     }
     else if ( args != (Obj)0 ) {
-        Pr( "Error ", 0L, 0L );
+        Pr( "Error, ", 0L, 0L );
         FuncPrint( (Obj)0, args );
     }
 
     /* print the location                                                  */
-    if ( CurrStat != 0 ) {
+    if ( CurrStat != 0 && msg != (Char*)0) {
+	/* only print the current command if the `msg' variable is not 0.
+	 * This will avoid printing the `Error("blabla")' line again */
         Pr( " at\n", 0L, 0L );
-        PrintStat( CurrStat );
+	PrintStat( CurrStat );
+        Pr( "\n", 0L, 0L );
     }
-    Pr( "\n", 0L, 0L );
+    else if ( mode != 'f' ) {
+        Pr( "\n", 0L, 0L );
+    }
 
     /* try to open input for a break loop                                  */
     if ( mode == 'q' || ! OpenInput( "*errin*") ) {
@@ -876,10 +1076,18 @@ Obj ErrorMode (
        are about to enter a break r-e-v loop*/
     CALL_0ARGS(OnBreak);
 
-    /* print the sencond message                                           */
-    Pr( "Entering break read-eval-print loop, ", 0L, 0L );
-    Pr( "you can 'quit;' to quit to outer loop,\n", 0L, 0L );
-    Pr( "or %s to continue\n", (Int)msg2, 0L );
+    /* print the second message                                            */
+    Pr( "Entering break read-eval-print loop ...\n", 0L, 0L );
+
+    if ( mode == 'f' ) { 
+        /* If called via (Func)Error call the OnBreakMessage which the 
+           user may have customised                                        */
+        CALL_0ARGS(OnBreakMessage);
+    }
+    else {
+        Pr( "you can 'quit;' to quit to outer loop, or\n", 0L, 0L );
+        Pr( "%s to continue\n", (Int)msg2, 0L );
+    }
 
     /* read-eval-print loop                                                */
     while ( 1 ) {
@@ -941,7 +1149,7 @@ Obj ErrorMode (
 
         /* handle return-value                                             */
         else if ( status == STATUS_RETURN_VOID ) {
-            if ( mode == 'x' ) {
+            if ( mode == 'x' || mode == 'f' ) {
                 ErrorLevel -= 1;
                 ErrorLVars0 = errorLVars0;
                 ErrorLVars = errorLVars;
@@ -1101,6 +1309,20 @@ void ErrorQuitNrArgs (
         narg, LEN_PLIST( args ) );
 }
 
+/****************************************************************************
+**
+*F  ErrorQuitRange3( <first>, <second>, <last> ) . . divisibility
+*/
+void ErrorQuitRange3 (
+		      Obj                 first,
+		      Obj                 second,
+		      Obj                 last)
+{
+    ErrorQuit(
+        "Range expression <last>-<first> must be divisible by <second>-<first>, not %d %d",
+        INT_INTOBJ(last)-INT_INTOBJ(first), INT_INTOBJ(second)-INT_INTOBJ(first) );
+}
+
 
 /****************************************************************************
 **
@@ -1139,7 +1361,7 @@ Obj FuncError (
     Obj                 self,
     Obj                 args )
 {
-    return ErrorMode( (Char*)0, 0L, 0L, args, "you can return", 'x' );
+    return ErrorMode( (Char*)0, 0L, 0L, args, (Char*)0, 'f' );
 }
 
 /****************************************************************************
@@ -1214,11 +1436,11 @@ void Complete (
     /* now do the reading                                                  */
     while ( 1 ) {
         type = ReadEvalCommand();
-        if ( type == 1 || type == 2 ) {
+        if ( type == STATUS_RETURN_VAL || type == STATUS_RETURN_VOID ) {
             Pr( "'return' must not be used in file read-eval loop",
                 0L, 0L );
         }
-        else if ( type == 8 || type == 16 ) {
+        else if ( type == STATUS_QUIT || type == STATUS_EOF ) {
             break;
         }
     }
@@ -1382,13 +1604,13 @@ Obj FuncCOM_FILE (
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
     while ( ! IS_INTOBJ(crc) ) {
         crc = ErrorReturnObj(
             "<crc> must be a small integer (not a %s)",
             (Int)TNAM_OBJ(crc), 0L,
-            "you can return an integer for <crc>" );
+            "you can replace <crc> via 'return <crc>;'" );
     }
 
     /* check if have a statically or dynamically loadable module           */
@@ -1449,8 +1671,10 @@ Obj FuncCOM_FILE (
                 return INTOBJ_INT(4);
             }
         }
-        filename = NEW_STRING( SyStrlen(result) );
-        SyStrncat( CSTR_STRING(filename), result, SyStrlen(result) );
+        /*CCC filename = NEW_STRING( SyStrlen(result) );
+	  SyStrncat( CSTR_STRING(filename), result, SyStrlen(result) );CCC*/
+	len = SyStrlen(result);
+	C_NEW_STRING(filename, len, result);
 
         CompThenFuncs = NEW_PLIST( T_PLIST, COMP_THEN_OFFSET );
         SET_LEN_PLIST( CompThenFuncs, COMP_THEN_OFFSET );
@@ -1526,6 +1750,8 @@ Obj FuncCOM_FUN (
 /****************************************************************************
 **
 *F  FuncMAKE_INIT( <out>, <in>, ... ) . . . . . . . . . .  generate init file
+**  XXX  This is not correct with long integers or strings which are long
+**  or contain zero characters ! (FL) XXX
 */
 #define MAKE_INIT_GET_SYMBOL                    \
     do {                                        \
@@ -1637,7 +1863,7 @@ Obj FuncMAKE_INIT (
             case S_LPAREN:   Pr( "(",       0L, 0L );  break;
             case S_RPAREN:   Pr( ")",       0L, 0L );  break;
             case S_COMMA:    Pr( ",",       0L, 0L );  break;
-            case S_DOTDOT:   Pr( "..",      0L, 0L );  break;
+            case S_DOTDOT:   Pr( "%>..%<",  0L, 0L );  break;
 
             case S_BDOT:     Pr( "!.",      0L, 0L );  break;
             case S_BLBRACK:  Pr( "![",      0L, 0L );  break;
@@ -1746,7 +1972,7 @@ Obj FuncGAP_CRC (
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
 
     /* compute the crc value                                               */
@@ -1773,13 +1999,13 @@ Obj FuncLOAD_DYN (
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
     while ( ! IS_INTOBJ(crc) && crc!=False ) {
         crc = ErrorReturnObj(
             "<crc> must be a small integer or 'false' (not a %s)",
             (Int)TNAM_OBJ(crc), 0L,
-            "you can return a small integer or 'false' for <crc>" );
+            "you can replace <crc> via 'return <crc>;'" );
     }
 
     /* try to read the module                                              */
@@ -1857,13 +2083,13 @@ Obj FuncLOAD_STAT (
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
     while ( !IS_INTOBJ(crc) && crc!=False ) {
         crc = ErrorReturnObj(
             "<crc> must be a small integer or 'false' (not a %s)",
             (Int)TNAM_OBJ(crc), 0L,
-            "you can return a small integer or 'false' for <crc>" );
+            "you can replace <crc> via 'return <crc>;'" );
     }
 
     /* try to find the module                                              */
@@ -1929,6 +2155,7 @@ Obj FuncSHOW_STAT (
     StructInitInfo *    info;
     Int                 k;
     Int                 im;
+    Int                 len;
 
     /* count the number of install modules                                 */
     for ( k = 0,  im = 0;  CompInitFuncs[k];  k++ ) {
@@ -1948,8 +2175,11 @@ Obj FuncSHOW_STAT (
         if ( info == 0 ) {
             continue;
         }
-        name = NEW_STRING( SyStrlen(info->name) );
-        SyStrncat( CSTR_STRING(name), info->name, SyStrlen(info->name) );
+        /*CCC name = NEW_STRING( SyStrlen(info->name) );
+	  SyStrncat( CSTR_STRING(name), info->name, SyStrlen(info->name) );CCC*/
+	len = SyStrlen(info->name);
+	C_NEW_STRING(name, len, info->name);
+
         SET_ELM_PLIST( modules, im, name );
 
         /* compute the crc value                                           */
@@ -2038,7 +2268,7 @@ Obj FuncGASMAN (
         args = ErrorReturnObj(
             "usage: GASMAN( \"display\"|\"displayshort\"|\"clear\"|\"collect\"|\"message\"|\"partial\" )",
             0L, 0L,
-            "you can return a list of arguments" );
+            "you can replace the argument list <args> via 'return <args>;'" );
     }
 
     /* loop over the arguments                                             */
@@ -2051,7 +2281,7 @@ again:
            cmd = ErrorReturnObj(
                "GASMAN: <cmd> must be a string (not a %s)",
                (Int)TNAM_OBJ(cmd), 0L,
-               "you can return a string for <cmd>" );
+               "you can replace <cmd> via 'return <cmd>;'" );
        }
 
         /* if request display the statistics                               */
@@ -2138,7 +2368,7 @@ again:
                 "GASMAN: <cmd> must be %s or %s",
                 (Int)"\"display\" or \"clear\" or \"global\" or ",
                 (Int)"\"collect\" or \"partial\" or \"message\"",
-                "you can return a new string for <cmd>" );
+                "you can replace <cmd> via 'return <cmd>;'" );
             goto again;
         }
     }
@@ -2171,6 +2401,7 @@ Obj FuncTNUM_OBJ (
 {
     Obj                 res;
     Obj                 str;
+    Int                 len;
     const Char *        cst;
 
     res = NEW_PLIST( T_PLIST, 2 );
@@ -2179,8 +2410,10 @@ Obj FuncTNUM_OBJ (
     /* set the type                                                        */
     SET_ELM_PLIST( res, 1, INTOBJ_INT( TNUM_OBJ(obj) ) );
     cst = TNAM_OBJ(obj);
-    str = NEW_STRING( SyStrlen(cst) );
-    SyStrncat( CSTR_STRING(str), cst, SyStrlen(cst) );
+    /*CCC    str = NEW_STRING( SyStrlen(cst) );
+      SyStrncat( CSTR_STRING(str), cst, SyStrlen(cst) );CCC*/
+    len = SyStrlen(cst);
+    C_NEW_STRING(str, len, cst);
     SET_ELM_PLIST( res, 2, str );
 
     /* and return                                                          */
@@ -2207,11 +2440,12 @@ Obj FuncXTNUM_OBJ (
     Obj                 res;
     Obj                 str;
     UInt                xtype;
+    Int                 len;
     const Char *        cst;
 
     res = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( res, 2 );
-
+#ifdef XTNUMS
     /* set the type                                                        */
     xtype = XTNum(obj);
     SET_ELM_PLIST( res, 1, INTOBJ_INT(xtype) );
@@ -2227,10 +2461,16 @@ Obj FuncXTNUM_OBJ (
     else {
         cst = InfoBags[xtype].name;
     }
-    str = NEW_STRING( SyStrlen(cst) );
-    SyStrncat( CSTR_STRING(str), cst, SyStrlen(cst) );
+    /*CCC    str = NEW_STRING( SyStrlen(cst) );
+      SyStrncat( CSTR_STRING(str), cst, SyStrlen(cst) ); CCC*/
+    len = SyStrlen(cst);
+    C_NEW_STRING(str, len, cst);
     SET_ELM_PLIST( res, 2, str );
-
+#else
+    SET_ELM_PLIST( res, 1, Fail );
+    C_NEW_STRING(str, 16, "xtnums abolished");
+    SET_ELM_PLIST(res, 2,str);
+#endif
     /* and return                                                          */
     return res;
 }
@@ -2798,16 +3038,35 @@ Obj FuncExportToKernelFinished (
 
 Obj FuncSleep( Obj self, Obj secs )
 {
-  Int s = INT_INTOBJ(secs);
-  if (s > 0)
+  Int  s;
+
+  while( ! IS_INTOBJ(secs) )
+    secs = ErrorReturnObj( "<secs> must be a small integer", 0L, 0L, 
+                           "you can replace <secs> via 'return <secs>;'" );
+
+  
+  if ( (s = INT_INTOBJ(secs)) > 0)
     SySleep((UInt)s);
   
-  /* either we uised up the time, or we were interrupted. */
+  /* either we used up the time, or we were interrupted. */
   if (SyIsIntr())
     ErrorReturnVoid("user interrupt in sleep", 0L, 0L,
-		    "you can return to continue as if the sleep was finished");
+		    "you can 'return;' as if the sleep was finished");
   
   return (Obj) 0;
+}
+
+/****************************************************************************
+**
+*F  FuncQUIT_GAP()
+**
+*/
+
+Obj FuncQUIT_GAP( Obj self )
+{
+  UserHasQUIT = 1;
+  ReadEvalError();
+  return (Obj)0; 
 }
 
 /****************************************************************************
@@ -2904,6 +3163,15 @@ static StructGVarFunc GVarFuncs [] = {
     { "Sleep", 1, "secs",
       FuncSleep, "src/gap.c:Sleep" },
 
+    { "QUIT_GAP", 0, "",
+      FuncQUIT_GAP, "src/gap.c:QUIT_GAP" },
+
+    { "SetErrorHandler", 1, "handler",
+      FuncSetErrorHandler, "src/gap.c:SetErrorHandler" },
+
+    { "CallFuncTrapError", 1, "func",
+      FuncCallFuncTrapError, "src/gap.c:FuncCallFuncTrapError" },
+
     { 0 }
 
 };
@@ -2947,8 +3215,30 @@ static Int InitKernel (
     /* establish Fopy of ViewObj                                           */
     ImportFuncFromLibrary(  "ViewObj", 0L );
 
-    /* Also of OnBreak, but we don't want it made ReadOnly                 */
+    /* Also of OnBreak and OnBreakMessage, but we don't want them made 
+       ReadOnly                                                            */
     InitFopyGVar(  "OnBreak", &OnBreak );
+    InitFopyGVar(  "OnBreakMessage", &OnBreakMessage );
+
+    /* Initialize some hooks: */
+    InitCopyGVar("OnGapPromptHook",&OnGapPromptHook);
+#if !SYS_MAC_MWC
+#if HAVE_SELECT
+    InitCopyGVar("OnCharReadHookActive",&OnCharReadHookActive);
+    InitCopyGVar("OnCharReadHookInFds",&OnCharReadHookInFds);
+    InitCopyGVar("OnCharReadHookInFuncs",&OnCharReadHookInFuncs);
+    InitCopyGVar("OnCharReadHookOutFds",&OnCharReadHookOutFds);
+    InitCopyGVar("OnCharReadHookOutFuncs",&OnCharReadHookOutFuncs);
+    InitCopyGVar("OnCharReadHookExcFds",&OnCharReadHookExcFds);
+    InitCopyGVar("OnCharReadHookExcFuncs",&OnCharReadHookExcFuncs);
+#endif
+#endif
+
+    /* If a package or .gaprc or file read from the command line
+       sets this to a function, then we want to know                       */
+    InitCopyGVar(  "AlternativeMainLoop", &AlternativeMainLoop );
+
+    InitGlobalBag(&ErrorHandler, "gap.c: ErrorHandler");
 
     /* return success                                                      */
     return 0;
@@ -2962,8 +3252,9 @@ static Int InitKernel (
 static Int PostRestore (
     StructInitInfo *    module )
 {
-  UInt var;
-  Obj string;
+    UInt var;
+    Obj string;
+    Int len;
     Char *              version = "v4r0p0 1999/04/29";
   
     /* create a revision record                                            */
@@ -2974,12 +3265,13 @@ static Int PostRestore (
     MakeReadOnlyGVar(var);
 
     /* version info                                                        */
-    string = NEW_STRING( SyStrlen(version) );
-    SyStrncat( CSTR_STRING(string), version, SyStrlen(version) );
+/* either throw this away or maintain it properly !?  FL   
+    len = SyStrlen(version);
+    C_NEW_STRING(string, len, version);
     var = GVarName( "VERSRC" );
     MakeReadWriteGVar(var);
     AssGVar( var, string );
-    MakeReadOnlyGVar(var);
+    MakeReadOnlyGVar(var);    */
 
     /* library name and other stuff                                        */
     var = GVarName( "QUIET" );
@@ -3130,6 +3422,7 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoFinfield,
     InitInfoPermutat,
     InitInfoBool,
+    InitInfoFloat,
 
     /* record packages                                                     */
     InitInfoRecords,
@@ -3176,7 +3469,7 @@ static InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoGap,
 
 #ifdef GAPMPI
-    /* GAPMPI module							   */
+    /* ParGAP/MPI module						   */
     InitInfoGapmpi,
 #endif
 
@@ -3286,7 +3579,7 @@ void InitializeGap (
 
     /* initialize the basic system and gasman                              */
 #ifdef GAPMPI
-    /* GAPMPI needs to call MPI_Init() first to remove command line args */
+    /* ParGAP/MPI needs to call MPI_Init() first to remove command line args */
     InitGapmpi( pargc, &argv, &BreakOnError );
 #endif
 
@@ -3499,15 +3792,34 @@ void InitializeGap (
                 ClearError();
                 while ( 1 ) {
                     type = ReadEvalCommand();
-                    if ( type == 1 || type == 2 ) {
+                    if ( type == STATUS_RETURN_VAL || type == STATUS_RETURN_VOID ) {
                         Pr("'return' must not be used in file",0L,0L);
                     }
-                    else if ( type == 8 || type == 16 ) {
+                    else if ( type == STATUS_QUIT || type == STATUS_EOF ) {
                         break;
                     }
+		    else if (type == STATUS_QQUIT)
+		      {
+			UserHasQUIT = 1;
+			break;
+		      }
+		    else if (type == STATUS_ERROR)
+		      {
+			Pr("Error reading initial file \"%s\" abandoning remaining files\n",
+			   (Int)SyInitfiles[i], 0);
+			UserHasQuit = 0; /* enough to have got to here */
+			break;
+		      }
+		    else if (type != STATUS_END)
+		      {
+			Pr("Unexpected status %d from reading initial file \"%s\"\n",type, (Int)SyInitfiles[i]);
+			break;
+		      }
                 }
                 CloseInput();
                 ClearError();
+		if (UserHasQUIT)
+		  break;
             }
             else {
                 Pr( "Error, file \"%s\" must exist and be readable\n",

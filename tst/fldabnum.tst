@@ -261,10 +261,11 @@ true
 gap> id = aut^0;
 true
 
-#gap> aut^0 < ANFAutomorphism( f, 3 );
-#true
-#gap> ANFAutomorphism( f, 3 ) < aut^0;
-#false
+gap> auts:= List( PrimeResidues( 45 ), i -> ANFAutomorphism( f, i ) );;
+gap> IsSSortedList( auts );
+true
+gap> Position( auts, aut );
+2
 gap> aut^0 < id;
 false
 gap> id < aut^0;

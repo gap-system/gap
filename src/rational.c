@@ -506,6 +506,8 @@ Obj             InvRat (
 {
   Obj res;
     CHECK_RAT(op);
+    if (op == INTOBJ_INT(0))
+      return Fail;
     res = QuoRat( INTOBJ_INT( 1L ), op );
     CHECK_RAT(res);
     return res;
@@ -552,9 +554,9 @@ Obj             QuoRat (
     /* division by zero is an error                                        */
     if ( numR == INTOBJ_INT( 0L ) ) {
         opR = ErrorReturnObj(
-            "Rational operations: divisor must not be zero",
+            "Rational operations: <divisor> must not be zero",
             0L, 0L,
-            "you can return a new divisor" );
+            "you can replace <divisor> via 'return <divisor>;'" );
         return QUO( opL, opR );
     }
 
@@ -606,16 +608,19 @@ Obj             QuoRat (
 **  'ModRat' returns the remainder  of the fraction  <opL> modulo the integer
 **  <opR>.  The remainder is always an integer.
 **
-**  '<r>  / <s> mod  <n>' yields  the remainder of   the fraction '<r> / <s>'
-**  modulo the integer '<n>'.
+**  '<r>  / <s> mod  <n>' yields  the remainder of   the fraction '<p> / <q>'
+**  modulo  the  integer '<n>',  where '<p> / <q>' is  the  reduced  form  of
+**  '<r>  / <s>'.
 **
-**  The  modular  remainder of  $r  / s$  mod $n$  is defined  as  a $l$ from
-**  $0..n-1$ such that $r = l s$ mod $n$.  As a special  case $1 / s$ mod $n$
-**  is the modular inverse of $s$ modulo $n$.
+**  The modular remainder of $r / s$ mod $n$ is defined to be the integer $k$
+**  in $0 .. n-1$ such that $p = k q$ mod $n$, where $p = r / gcd(r, s)$  and
+**  $q = s / gcd(r, s)$. In particular, $1  /  s$  mod  $n$  is  the  modular
+**  inverse of $s$ modulo $n$, whenever $s$ and $n$ are relatively prime.
 **
-**  Note  that the remainder will  not exist if $s$  is not relative prime to
-**  $n$.  However note that $4 / 6$  mod $32$ does  exist (and is $22$), even
-**  though $6$ is not invertible modulo $32$, because the $2$ cancels.
+**  Note that  the  remainder  will  not  exist  if  $s / gcd(r, s)$  is  not
+**  relatively prime to $n$. Note that $4 / 6$ mod $32$ does  exist  (and  is
+**  $22$), even though $6$ is not invertible modulo  $32$,  because  the  $2$
+**  cancels.
 **
 **  Another possible  definition of $r/s$ mod $n$  would be  a rational $t/s$
 **  such that $0 \<= t/s \< n$ and $r/s - t/s$ is a multiple of $n$.  This is
@@ -633,24 +638,28 @@ Obj             ModRat (
         opR = ProdInt( INTOBJ_INT( -1L ), opR );
     }
 
-    /* invert the denominator with Euclids algorithm                       */
-    a = opR;               aL = INTOBJ_INT( 0L );
-    b = DEN_RAT(opL);  bL = INTOBJ_INT( 1L );
-    while ( b != INTOBJ_INT( 0L ) ) {
-        hdQ  = QuoInt( a, b );
-        c  = b;  cL = bL;
-        b  = DiffInt( a,  ProdInt( hdQ, b  ) );
-        bL = DiffInt( aL, ProdInt( hdQ, bL ) );
-        a  = c;  aL = cL;
-    }
+    /* let <p>/<q> represent <r>/<s> in reduced form                       */
+    /* invert the denominator <q> modulo <n> with Euclids algorithm        */
+    a = opR;           aL = INTOBJ_INT( 0L );   /* a = <n>                 */
+    b = DEN_RAT(opL);  bL = INTOBJ_INT( 1L );   /* b = <q>                 */
+    while ( a != INTOBJ_INT( 1L ) ) {
+        while ( b != INTOBJ_INT( 0L ) ) {
+            hdQ  = QuoInt( a, b );
+            c  = b;  cL = bL;
+            b  = DiffInt( a,  ProdInt( hdQ, b  ) );
+            bL = DiffInt( aL, ProdInt( hdQ, bL ) );
+            a  = c;  aL = cL;
+        }
 
-    /* check whether the denominator really was invertible mod <opR>       */
-    if ( a != INTOBJ_INT( 1L ) ) {
-        opR = ErrorReturnObj(
-            "Rational operations: denominator must be invertible",
-            0L, 0L,
-            "you can return a new right operand" );
-        return QUO( opL, opR );
+        /* check whether the denominator <q> really was invertible mod <n> */
+        if ( a != INTOBJ_INT( 1L ) ) {
+            opR = ErrorReturnObj(
+                      "ModRat: for <r>/<s> mod <n>, <s>/gcd(<r>,<s>) and <n> must be coprime",
+                      0L, 0L,
+                      "you can replace the integer <n> via 'return <n>;'" );
+            a = opR;           aL = INTOBJ_INT( 0L );   /* a = <n>         */
+            b = DEN_RAT(opL);  bL = INTOBJ_INT( 1L );   /* b = <q>         */
+        }
     }
 
     /* return the remainder                                                */
@@ -783,7 +792,7 @@ Obj             FuncNumeratorRat (
         rat = ErrorReturnObj(
             "Numerator: <rat> must be a rational (not a %s)",
             (Int)TNAM_OBJ(rat), 0L,
-            "you can return a rational for <rat>" );
+            "you can replace <rat> via 'return <rat>;'" );
     }
 
     /* return the numerator                                                */
@@ -816,7 +825,7 @@ Obj             FuncDenominatorRat (
         rat = ErrorReturnObj(
             "DenominatorRat: <rat> must be a rational (not a %s)",
             (Int)TNAM_OBJ(rat), 0L,
-            "you can return a rational for <rat>" );
+            "you can replace <rat> via 'return <rat>;'" );
     }
 
     /* return the denominator                                              */

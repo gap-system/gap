@@ -66,9 +66,34 @@ DeclareAttribute( "TietzeOrigin", IsSubgroupFpGroup );
 ##  assumes  <fgens>  to be  a list  of  free group
 ##  generators and  <word> to be a Tietze word in these generators,  i. e., a
 ##  list of positive or negative generator numbers.  It converts <word> to an
-##  abstract word,
+##  abstract word.
+##
+##  This function simply calls `AssocWordByLetterRep'.
 ##
 DeclareGlobalFunction("AbstractWordTietzeWord");
+
+
+#############################################################################
+##
+#F  TietzeWordAbstractWord( <word>, <fgens> )
+##
+##  assumes  <fgens>  to be a  list  of  free group
+##  generators  and  <word>  to be an abstract word  in these generators.  It
+##  converts <word> into a Tietze word, i. e., a list of positive or negative
+##  generator numbers.
+##
+##  This function simply calls `LetterRepAssocWord'.
+##
+DeclareSynonym("TietzeWordAbstractWord",LetterRepAssocWord);
+
+#############################################################################
+##
+#F  TzWordAbstractWord( <word> )
+#F  AbstractWordTzWord(<fam>, <tzword> )
+##
+##  only supported for compatibility.
+DeclareSynonym("TzWordAbstractWord",LetterRepAssocWord);
+DeclareSynonym("AbstractWordTzWord",AssocWordByLetterRep);
 
 
 #############################################################################
@@ -123,7 +148,7 @@ DeclareGlobalFunction("DecodeTree");
 
 #############################################################################
 ##
-#F  FpGroupPresentation( <P> )
+#F  FpGroupPresentation( <P> [,<nam>] )
 ##
 ##  constructs an `FpGroup' group as defined by the  given Tietze
 ##  presentation <P>.
@@ -153,15 +178,33 @@ DeclareGlobalFunction("PresentationFpGroup");
 
 #############################################################################
 ##
+#F  PresentationRegularPermutationGroup(<G>)
+#F  PresentationRegularPermutationGroupNC(<G>)
+##
+##  constructs a presentation from the given regular permutation group using
+##  the algorithm which has been described in \cite{Can73} and \cite{Neu82}.
+##
+DeclareGlobalFunction("PresentationRegularPermutationGroup");
+DeclareGlobalFunction("PresentationRegularPermutationGroupNC");
+
+
+#############################################################################
+##
 #F  PresentationViaCosetTable(<G>)
 #F  PresentationViaCosetTable(<G>,<F>,<words>)
 ##
 ##  constructs a presentation for a given concrete finite group. It applies
 ##  the relations finding algorithm which has been described in \cite{Can73}
-##  and \cite{Neu82}.
+##  and \cite{Neu82}. It automatically applies Tietze transformations to the
+##  presentation found.
 ##
 ##  If only a group <G> has been specified, the single stage algorithm is
 ##  applied.
+##
+##  The operation `IsomorphismFpGroup' in contrast uses a multiple-stage
+##  algorithm using a composition series and stabilizer chains. It usually
+##  should be used rather than `PresentationViaCosetTable'. (It does not
+##  apply Tietze transformations automatically.)
 ##
 ##  If the two stage algorithm is to be used, `PresentationViaCosetTable'
 ##  expects a subgroup <H> of <G> to be provided in form of two additional
@@ -214,18 +257,6 @@ DeclareGlobalFunction("RemoveRelator");
 ##  transformations.
 ##
 DeclareGlobalFunction("SimplifiedFpGroup");
-
-
-#############################################################################
-##
-#F  TietzeWordAbstractWord( <word>, <fgens> )
-##
-##  assumes  <fgens>  to be a  list  of  free group
-##  generators  and  <word>  to be an abstract word  in these generators.  It
-##  converts <word> into a Tietze word, i. e., a list of positive or negative
-##  generator numbers.
-##
-DeclareGlobalFunction("TietzeWordAbstractWord");
 
 
 ############################################################################

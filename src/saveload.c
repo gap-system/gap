@@ -270,6 +270,39 @@ void LoadCStr( Char *buf, UInt maxsize)
     }
 }
 
+
+/****************************************************************************
+**
+*F  SaveString( <string> )  . . . . . . . . . . . . . . . . . . save a string
+**
+*/
+void SaveString ( Obj string )
+{
+  UInt i, len = GET_LEN_STRING(string);
+  UInt1 *p = (UInt1*)CHARS_STRING(string);
+  SaveUInt(len);
+  for (i=0; i<len; i++)
+    SAVE_BYTE(p[i]);
+}
+
+/****************************************************************************
+**
+*F  LoadString( <string> )
+**
+*/
+void LoadString ( Obj string )
+{
+  UInt i, len;
+  UInt1 c;
+  UInt1 *p = (UInt1*)CHARS_STRING(string);
+  len = LoadUInt();
+  SET_LEN_STRING(string, len);
+  for (i=0; i<len; i++) {
+    c = LOAD_BYTE();
+    p[i] = c;
+  }
+}
+
 void SaveSubObj( Obj subobj )
 {
   if (!subobj)
@@ -456,6 +489,26 @@ static void CheckEndiannessMarker( void )
     }
 }
 
+
+/***************************************************************************
+**
+**  BagStats
+*/
+
+static FILE *file;
+
+static void report( Bag bag)
+{
+  fprintf(file,"%i %i\n", TNUM_BAG(bag), SIZE_BAG(bag));
+}
+
+Obj BagStats(Obj self, Obj filename)
+{
+  file = fopen((Char *)CHARS_STRING(filename),"w");
+  CallbackForAllBags(report);
+  fclose(file);
+  return (Obj) 0;
+}
 
 /***************************************************************************
 **
@@ -830,6 +883,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "FindBag", 3, "minsize, maxsize, tnum", 
       FuncFindBag, "src/saveload.c:FindBag" },
+
+    { "BagStats", 1, "filename", 
+      BagStats, "src/saveload.c:BagStats" },
 
     { 0 }
 

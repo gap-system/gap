@@ -334,12 +334,13 @@ InstallMethod( LowerCentralSeries, true, [ IsGroup   ], 0,
 ##
 #O  Rank( <obj> )
 ##
-##  is the rank of a matrix or ...
+##  is the rank of a matrix or a $p$-group or ...
 ##
 DeclareOperation( "Rank", [ IsObject ] );
 
-InstallMethod( Rank, true, [ IsMatrix ], 0,
-    RankMat );
+InstallMethod( Rank, [ IsMatrix ], RankMat );
+
+InstallMethod( Rank, [ IsGroup ], RankPGroup );
 
 
 #############################################################################

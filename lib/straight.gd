@@ -1,6 +1,7 @@
 #############################################################################
 ##
 #W  straight.gd              GAP library                        Thomas Breuer
+#W                                                           Alexander Hulpke
 ##
 #H  @(#)$Id$
 ##
@@ -10,8 +11,17 @@
 ##  This file contains the declarations of the operations
 ##  for straight line programs.
 ##
+##  1. Functions for straight line programs
+##  2. Functions for elements represented by straight line programs
+##
 Revision.straight_gd :=
     "@(#)$Id$";
+
+
+#############################################################################
+##
+##  1. Functions for straight line programs
+##
 
 
 #############################################################################
@@ -32,19 +42,19 @@ Revision.straight_gd :=
 ##  each of which has one of the following three forms.
 ##  \beginlist
 ##  \item{1.}
-##      a nonempty list $l$ of integers,
+##      a nonempty dense list $l$ of integers,
 ##  \item{2.}
 ##      a pair $[ l, i ]$
 ##      where $l$ is a list of form 1. and $i$ is a positive integer,
 ##  \item{3.}
 ##      a list $[ l_1, l_2, \ldots, l_k ]$
 ##      where each $l_i$ is a list of form 1.;
-##      this may occur only as last line of the program.
+##      this may occur only for the last line of the program.
 ##  \endlist
 ##
 ##  The lists of integers that occur are interpreted as external
 ##  representations of associative words
-##  (see~"External Representation for Associative Words");
+##  (see~"The External Representation for Associative Words");
 ##  for example, the list $[ 1, 3, 2, -1 ]$ represents the word
 ##  $g_1^3 g_2^{-1}$, with $g_1$ and $g_2$ the first and second abstract
 ##  generator, respectively.
@@ -187,13 +197,15 @@ DeclareAttribute( "NrInputsOfStraightLineProgram", IsStraightLineProgram );
 ##      in the first $n$ generators then the image of this word under the
 ##      homomorphism that is given by mapping $r$ to these first $n$
 ##      generators is added to $r$;
-##      if $p_i$ is a pair $[ l, j ]$ then the same element is computed,
-##      but instead of being added to $r$, it replaces the $j$-th entry
-##      of $r$.
+##      if $p_i$ is a pair $[ l, j ]$, for a list $l$, then the same element
+##      is computed, but instead of being added to $r$,
+##      it replaces the $j$-th entry of $r$.
 ##  \item{(c)}
 ##      For $i = k$, if $p_k$ is the external representation of an
 ##      associative word then the element described in (b) is the result
 ##      of the program,
+##      if $p_k$ is a pair $[ l, j ]$, for a list $l$, then the result is
+##      the element described by $l$,
 ##      and if $p_k$ is a list $[ l_1, l_2, \ldots, l_k ]$ of lists
 ##      then the result is a list of group elements, where each $l_i$ is
 ##      treated as in (b).
@@ -278,6 +290,145 @@ DeclareOperation( "ResultOfStraightLineProgram",
 ##
 DeclareGlobalFunction( "StringOfResultOfStraightLineProgram" );
 
+
+#############################################################################
+##
+#F  CompositionOfStraightLinePrograms( <prog2>, <prog1> )
+##
+##  For two straight line programs <prog1> and <prog2>,
+##  `CompositionOfStraightLinePrograms' returns a straight line program
+##  <prog> with the properties that <prog1> and <prog> have the same number
+##  of inputs, and the result of <prog> when applied to given generators
+##  <gens> equals the result of <prog2> when this is applied to the output of
+##  <prog1> applied to <gens>.
+##
+##  (Of course the number of outputs of <prog1> must be the same as the
+##  number of inputs of <prog2>.)
+##
+DeclareGlobalFunction( "CompositionOfStraightLinePrograms" );
+
+
+#############################################################################
+##
+#F  IntegratedStraightLineProgram( <listofprogs> )
+##
+##  For a nonempty dense list <listofprogs> of straight line programs
+##  that have the same number $n$, say, of inputs
+##  (see~"NrInputsOfStraightLineProgram")
+##  and for which the results (see~"ResultOfStraightLineProgram") are single
+##  elements (i.e., *not* lists of elements),
+##  `IntegratedStraightLineProgram' returns a straight line program <prog>
+##  with $n$ inputs such that for each $n$-tuple <gens> of generators,
+##  `ResultOfStraightLineProgram( <prog>, <gens> )' is equal to the list
+##  `List( <listofprogs>, <p> -> ResultOfStraightLineProgram( <p>, <gens> )'.
+##
+DeclareGlobalFunction( "IntegratedStraightLineProgram" );
+
+
+#############################################################################
+##
+##  2. Functions for elements represented by straight line programs
+##
+
+#2
+##  When computing with very large (in terms of memory) elements, for
+##  example permutations of degree a few hundred thousands, it can be
+##  helpful (in terms of memory usage) to represent them via straight line
+##  programs in terms of an original generator set. (So every element takes
+##  only small extra storage for the straight line program.)
+##
+##  A straight line program element has a *seed* (a list of group elements)
+##  and a straight line program on the same number of generators as the
+##  length of this seed, its value is the value of the evaluated straight
+##  line program. 
+##
+##  At the moment, the entries of the straight line program have to be
+##  simple lists (i.e. of the first form).
+##
+##  Straight line program elements are in the same categories
+##  and families as the elements of the seed, so they should work together
+##  with existing algorithms.
+##
+##  Note however, that due to the different way of storage some normally
+##  very cheap operations (such as testing for element equality) can become
+##  more expensive when dealing with straight line program elements. This is
+##  essentially the tradeoff for using less memory.
+
+
+#############################################################################
+##
+#R  IsStraightLineProgElm(<obj>)
+##
+##  A straight line program element is a group element given (for memory
+##  reasons) as a straight line program. Straight line program elements are
+##  positional objects, the first component is a record with a component
+##  `seeds', the second component the straight line program.
+# we need to rank higher than default methods
+DeclareFilter("StraightLineProgramElmRankFilter",100);
+
+DeclareRepresentation("IsStraightLineProgElm",
+  IsMultiplicativeElementWithInverse and IsPositionalObjectRep 
+  and StraightLineProgramElmRankFilter,[]);
+
+#############################################################################
+##
+#A  StraightLineProgElmType(<fam>)
+##
+##  returns a type for straigth line program elements over the family <fam>
+DeclareAttribute("StraightLineProgElmType",IsFamily);
+
+#############################################################################
+##
+#F  StraightLineProgElm(<seed>,<prog>)
+##
+##  Creates a straight line program element for seed <seed> and program
+##  <prog>.
+DeclareGlobalFunction("StraightLineProgElm");
+
+#############################################################################
+##
+#F  EvalStraightLineProgElm(<slpel>)
+##
+##  evaluates a straight line program element <slpel> from its seeds.
+DeclareGlobalFunction("EvalStraightLineProgElm");
+
+#############################################################################
+##
+#F  StraightLineProgGens(<gens>[,<base>])
+##
+##  returns a set of straight line program elements corresponding to the
+##  generators in <gens>.
+##  If <gens> is a set of permutations then <base> can be given which must
+##  be a base for the group generated by <gens>. (Such a base will be used to
+##  speed up equality tests.)
+DeclareGlobalFunction("StraightLineProgGens");
+
+#############################################################################
+##
+#O  StretchImportantSLPElement(<elm>)
+##
+##  If <elm> is a straight line program element whose straight line
+##  representation is very long, this operation changes the
+##  representation of <elm> to a straight line program element, equal to
+##  <elm>, whose seed contains the evaluation of <elm> and whose straight
+##  line program has length 1.
+##  
+##  For other objects nothing happens.
+##
+##  This operation permits to designate ``important'' elements within an
+##  algorithm (elements that wil be referred to often), which will be
+##  represented by guaranteed short straight line program elements.
+DeclareOperation("StretchImportantSLPElement",
+  [IsMultiplicativeElementWithInverse]);
+
+#############################################################################
+##
+#F  TreeRepresentedWord( <roots>,<tree>,<nr> )
+##
+##  returns a straight line element by decoding element <nr> of <tree> with
+##  respect to <roots>. <tree> is a tree as given by the augmented coset
+##  table routines.
+DeclareGlobalFunction("TreeRepresentedWord");
 
 #############################################################################
 ##

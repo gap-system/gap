@@ -32,7 +32,7 @@ Revision.gaussian_gi :=
 InstallMethod( \in,
     "for Gaussian integers",
     IsElmsColls,
-    [ IsCyc, IsGaussianIntegers ], 0,
+    [ IsCyc, IsGaussianIntegers ],
     function( cyc, GaussianIntegers )
     return IsCycInt( cyc ) and 4 mod Conductor( cyc ) = 0;
     end );
@@ -43,9 +43,8 @@ InstallMethod( \in,
 #M  Basis( GaussianIntegers ) . . . . . . . . . . . . . for Gaussian integers
 ##
 InstallMethod( Basis,
-    "for Gaussian integers",
-    true,
-    [ IsGaussianIntegers ], 0,
+    "for Gaussian integers (delegate to `CanonicalBasis')",
+    [ IsGaussianIntegers ], CANONICAL_BASIS_FLAGS,
     CanonicalBasis );
 
     
@@ -59,8 +58,7 @@ DeclareRepresentation(
 
 InstallMethod( CanonicalBasis,
     "for Gaussian integers",
-    true,
-    [ IsGaussianIntegers ], 0,
+    [ IsGaussianIntegers ],
     function( GaussianIntegers )
     local B;
 
@@ -87,9 +85,9 @@ InstallMethod( CanonicalBasis,
 ##
 InstallMethod( Coefficients,
     "for canon. basis of Gaussian integers, and cyclotomic",
-    true,
+    IsCollsElms,
     [ IsBasis and IsCanonicalBasis and IsCanonicalBasisGaussianIntegersRep,
-      IsCyc ], 0,
+      IsCyc ],
     function( B, z )
     local N,
           coeffs,
@@ -119,7 +117,7 @@ InstallMethod( Coefficients,
 InstallMethod( Quotient,
     "for Gaussian integers",
     IsCollsElmsElms,
-    [ IsGaussianIntegers, IsCyc, IsCyc ], 0,
+    [ IsGaussianIntegers, IsCyc, IsCyc ],
     function ( GaussianIntegers, x, y )
     local   q;
     q := x / y;
@@ -144,7 +142,7 @@ InstallMethod( Quotient,
 InstallMethod( StandardAssociate,
     "for Gaussian integers",
     IsCollsElms,
-    [ IsGaussianIntegers, IsCyc ], 0,
+    [ IsGaussianIntegers, IsCyc ],
     function ( GaussianIntegers, x )
     if not IsGaussInt( x )  then
         Error( "<x> must lie in <GaussianIntegers>" );
@@ -171,7 +169,7 @@ InstallMethod( StandardAssociate,
 InstallMethod( EuclideanDegree,
     "for Gaussian integers",
     IsCollsElms,
-    [ IsGaussianIntegers, IsCyc ], 0,
+    [ IsGaussianIntegers, IsCyc ],
     function( GaussianIntegers, x )
     if IsGaussInt( x ) then
       return x * GaloisCyc( x, -1 );
@@ -188,7 +186,7 @@ InstallMethod( EuclideanDegree,
 InstallMethod( EuclideanRemainder,
     "for Gaussian integers",
     IsCollsElmsElms,
-    [ IsGaussianIntegers, IsCyc, IsCyc ], 0,
+    [ IsGaussianIntegers, IsCyc, IsCyc ],
     function ( GaussianIntegers, x, y )
     if IsGaussInt( x ) and IsGaussInt( y ) then
       return x - RoundCyc( x/y ) * y;
@@ -205,7 +203,7 @@ InstallMethod( EuclideanRemainder,
 InstallMethod( EuclideanQuotient,
     "for Gaussian integers",
     IsCollsElmsElms,
-    [ IsGaussianIntegers, IsCyc, IsCyc ], 0,
+    [ IsGaussianIntegers, IsCyc, IsCyc ],
     function ( GaussianIntegers, x, y )
     if IsGaussInt( x ) and IsGaussInt( y ) then
       return RoundCyc( x/y );
@@ -222,7 +220,7 @@ InstallMethod( EuclideanQuotient,
 InstallMethod( QuotientRemainder,
     "for Gaussian integers",
     IsCollsElmsElms,
-    [ IsGaussianIntegers, IsCyc, IsCyc ], 0,
+    [ IsGaussianIntegers, IsCyc, IsCyc ],
     function ( GaussianIntegers, x, y )
     local   q;
     if IsGaussInt( x ) and IsGaussInt( y ) then
@@ -241,7 +239,7 @@ InstallMethod( QuotientRemainder,
 InstallMethod( IsPrime,
     "for Gaussian integers and integer",
     IsCollsElms,
-    [ IsGaussianIntegers, IsInt ], 0,
+    [ IsGaussianIntegers, IsInt ],
     function ( GaussianIntegers, x )
     return x mod 4 = 3  and IsPrimeInt( x );
     end );
@@ -249,7 +247,7 @@ InstallMethod( IsPrime,
 InstallMethod( IsPrime,
     "for Gaussian integers and cyclotomic",
     IsCollsElms,
-    [ IsGaussianIntegers, IsCyc ], 0,
+    [ IsGaussianIntegers, IsCyc ],
     function ( GaussianIntegers, x )
     if IsGaussInt( x ) then
       return IsPrimeInt( x * GaloisCyc( x, -1 ) );
@@ -266,7 +264,7 @@ InstallMethod( IsPrime,
 InstallMethod( Factors,
     "for Gaussian integers",
     IsCollsElms,
-    [ IsGaussianIntegers, IsCyc ], 0,
+    [ IsGaussianIntegers, IsCyc ],
     function ( GaussianIntegers, x )
     local   facs,       # factors (result)
             prm,        # prime factors of the norm

@@ -19,7 +19,7 @@ Revision.combinat_gd :=
 #F  Factorial( <n> )  . . . . . . . . . . . . . . . . factorial of an integer
 ##
 ##  returns the *factorial*  $n!$  of the positive  integer <n>, which is
-##  defined as the product $1 \* 2 \* 3 \* .. \* n$.
+##  defined as the product $1 . 2 . 3 \cdots  n$.
 ##
 ##  $n!$ is the  number of permutations of a set of $n$ elements.  $1/n!$
 ##  is the coefficient  of  $x^n$  in  the  formal series  $e^x$, which  is
@@ -34,15 +34,15 @@ DeclareGlobalFunction("Factorial");
 ##
 ##  returns the *binomial coefficient* ${n \choose k}$ of integers <n> and
 ##  <k>, which  is defined as $n!  / (k!  (n-k)!)$ (see "Factorial").  We
-##  define ${0 \choose 0} = 1$, ${n \choose  k} = 0$  if $k\<0$ or $n\<k$,
+##  define ${0 \choose 0} = 1, {n \choose  k} = 0$  if $k\<0$ or $n\<k$,
 ##  and ${n \choose k} = (-1)^k {-n+k-1  \choose  k}$ if  $n \<  0$, which
 ##  is consistent with the equivalent definition 
-##  ${n \choose k} = {n-1 \choose k} + {n-1 \choose k-1}$.
+##  ${n \choose k} = {n-1 \choose k} + {n-1 \choose k-1}.$
 ## 
 ##  ${n \choose k}$ is the number of combinations with  $k$  elements,  i.e.,
 ##  the number of subsets with $k$ elements, of  a  set  with  $n$  elements.
 ##  ${n \choose k}$  is the coefficient of the  term $x^k$ of the  polynomial
-##  $(x + 1)^n$, which is the generating function for ${n \choose \*}$, hence
+##  $(x + 1)^n$, which is the generating function for ${n \choose .},$ hence
 ##  the name.
 ##
 DeclareGlobalFunction("Binomial");
@@ -53,8 +53,7 @@ DeclareGlobalFunction("Binomial");
 #F  Bell( <n> ) . . . . . . . . . . . . . . . . .  value of the Bell sequence
 ##
 ##  returns the *Bell number* $B(n)$.  The Bell numbers are defined by
-##  $B(0)=1$ and the recurrence $B(n+1) = \sum_{k=0}^{n}{{n \choose
-##  k}B(k)}$.
+##  $B(0)=1$ and the recurrence $B(n+1) = \sum_{k=0}^{n}{{n \choose k}B(k)}$.
 ## 
 ##  $B(n)$ is the  number of ways to  partition a  set of <n> elements
 ##  into pairwise disjoint  nonempty subsets  (see "PartitionsSet").  This
@@ -71,7 +70,7 @@ DeclareGlobalFunction("Bell");
 ##
 ##  returns the *Stirling number of the first kind* $S_1(n,k)$ of the
 ##  integers <n> and <k>.  Stirling numbers of the first kind are defined by
-##  $S_1(0,0)  = 1$, $S_1(n,0) =  S_1(0,k) = 0$  if  $n, k \<> 0$  and the
+##  $S_1(0,0)  = 1$, $S_1(n,0) =  S_1(0,k) = 0$  if  $n, k \ne 0$  and the
 ##  recurrence $S_1(n,k) = (n-1) S_1(n-1,k) + S_1(n-1,k-1)$.
 ##
 ##  $S_1(n,k)$ is the number  of permutations of  <n> points with <k>
@@ -93,7 +92,7 @@ DeclareGlobalFunction("Stirling1");
 ##
 ##  returns the *Stirling number of  the  second kind* $S_2(n,k)$ of the
 ##  integers <n>  and <k>.  Stirling  numbers  of the second  kind are
-##  defined by $S_2(0,0) = 1$, $S_2(n,0) = S_2(0,k) = 0$ if $n,  k \<> 0$
+##  defined by $S_2(0,0) = 1$, $S_2(n,0) = S_2(0,k) = 0$ if $n,  k \ne 0$
 ##  and the recurrence $S_2(n,k) = k S_2(n-1,k) + S_2(n-1,k-1)$.
 ##
 ##  $S_2(n,k)$ is the number of ways to partition a set of <n>  elements
@@ -232,7 +231,7 @@ DeclareGlobalFunction("NrTuples");
 ##  is a proper  set there are $|mset| !$ (see "Factorial")  such
 ##  permutations.  Otherwise if the  first elements appears $k_1$  times,
 ##  the second element appears  $k_2$  times and so  on,  the  number
-##  of permutations is $|mset|! /  (k_1! k_2! ..)$,  which  is
+##  of permutations is $|mset|! /  (k_1! k_2! \ldots)$,  which  is
 ##  sometimes  called  multinomial coefficient.
 ##
 DeclareGlobalFunction("PermutationsList");
@@ -313,9 +312,10 @@ DeclareGlobalFunction("NrPartitionsSet");
 ##  <n> into sums with <k> summands.  If <k> is not given it returns
 ##  all unordered partitions of <set> for all <k>.
 ##
-##  An *unordered partition* is an  unordered sum $n =  p_1+p_2 +..+ p_k$
-##  of positive integers and is represented by the list  $p =
-##  [p_1,p_2,..,p_k]$, in nonincreasing order, i.e., $p_1>=p_2>=..>=p_k$.
+##  An *unordered partition* is an  unordered sum $n = p_1+p_2 +\cdots+ p_k$
+##  of positive integers and is represented by the list 
+##  $p = [p_1,p_2,\ldots,p_k]$, in nonincreasing order, i.e., 
+##  $p_1>=p_2>= \ldots  >=p_k$.
 ##  We write $p\vdash n$.  There are approximately $e^{\pi \sqrt{2/3 n}}
 ##  / {4 \sqrt{3} n}$ such partitions.
 ##
@@ -332,6 +332,7 @@ DeclareGlobalFunction("NrPartitionsSet");
 ##  case there are 37338 partitions, since the list will simply become too
 ##  large.
 ##
+DeclareGlobalFunction("PartitionsRecursively");
 DeclareGlobalFunction("Partitions");
 
 
@@ -346,14 +347,34 @@ DeclareGlobalFunction("NrPartitions");
 
 #############################################################################
 ##
+#F  PartitionsGreatestLE( <n>, <m> ) . . .  set of partitions of n parts <= n
+##
+##  returns the set of all (unordered) partitions of the integer <n> having
+##  parts less or equal to the integer <m>.
+##
+DeclareGlobalFunction("PartitionsGreatestLE");
+
+
+#############################################################################
+##
+#F  PartitionsGreatestEQ( <n>, <m> ) . . . . set of partitions of n parts = n
+##
+##  returns the set of all (unordered) partitions of the integer <n> having
+##  greatest part equal to the integer <m>.
+##
+DeclareGlobalFunction("PartitionsGreatestEQ");
+
+
+#############################################################################
+##
 #F  OrderedPartitions( <n> [,<k>] )
 ##
 ##  returns the  set  of  all ordered partitions of the positive integer <n>
 ##  into sums with <k> summands.  If <k> is not given it returns all
 ##  ordered partitions of <set> for all <k>.
 ##
-## An *ordered partition* is an ordered sum $n = p_1 + p_2 + .. +  p_k$ of
-## positive integers and is represented by the list $[ p_1, p_2, .., p_k ]$.
+## An *ordered partition* is an ordered sum $n = p_1 + p_2 +\ldots+  p_k$ of
+## positive integers and is represented by the list $[ p_1, p_2,\ldots, p_k ]$.
 ## There are  totally $2^{n-1}$ ordered  partitions  and ${n-1 \choose k-1}$
 ## (see "Binomial") ordered partitions with <k> summands.
 ##
@@ -383,8 +404,8 @@ DeclareGlobalFunction("NrOrderedPartitions");
 ##  returned.
 ##
 ##  A *restricted partition* is like an ordinary partition (see
-##  "Partitions") an  unordered  sum $n =  p_1+p_2 +..+  p_k$ of  positive
-##  integers and is represented by the list  $p =  [p_1,p_2,..,p_k]$, in
+##  "Partitions") an  unordered  sum $n = p_1+p_2+\ldots+p_k$ of  positive
+##  integers and is represented by the list  $p =  [p_1,p_2,\ldots,p_k]$, in
 ##  nonincreasing order.  The difference is that  here  the $p_i$ must be
 ##  elements from the set <set>, while for ordinary partitions they may be
 ##  elements from `[1..n]'.

@@ -164,11 +164,17 @@ gap> LieDerivedSubalgebra( L );
 
 \Declaration{LieNilRadical}
 
+In the following two examples we temporarily increase the line length limit
+from its default value 80 to 81 in order to make the long output expressions
+fit each into one line.
+
 \beginexample
 gap> mats:= [ [[1,0],[0,0]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
 gap> L:= LieAlgebra( Rationals, mats );;
+gap> SizeScreen([ 81, ]);;
 gap> LieNilRadical( L );
 <two-sided ideal in <Lie algebra of dimension 3 over Rationals>, (dimension 2)>
+gap> SizeScreen([ 80, ]);;
 \endexample
 
 
@@ -177,8 +183,10 @@ gap> LieNilRadical( L );
 
 \beginexample
 gap> L:= FullMatrixLieAlgebra( Rationals, 3 );;
+gap> SizeScreen([ 81, ]);;
 gap> LieSolvableRadical( L ); 
 <two-sided ideal in <Lie algebra of dimension 9 over Rationals>, (dimension 1)>
+gap> SizeScreen([ 80, ]);;
 \endexample
 
 
@@ -273,7 +281,7 @@ In this section we describe two functions that calculate a direct sum
 decomposition of a Lie algebra; the so-called Levi decomposition
 and the decomposition into a direct sum of ideals. 
 
-\Declaration{LeviMalcevDecomposition}
+\Declaration{LeviMalcevDecomposition}!{for Lie algebras}
 
 \beginexample
 gap> L:= FullMatrixLieAlgebra( Rationals, 5 );; 
@@ -284,7 +292,7 @@ gap> LeviMalcevDecomposition( L );
 \endexample
 
 
-\Declaration{DirectSumDecomposition}
+\Declaration{DirectSumDecomposition}!{for Lie algebras}
 
 \beginexample
 gap> L:= FullMatrixLieAlgebra( Rationals, 5 );; 
@@ -368,15 +376,14 @@ gap> g:=CanonicalGenerators( R );
 gap> g[3][1]*x[1];
 (2)*v.1
 gap> g[3][2]*x[1];
-(-1)*v.1
-# i.e., x[1] is the root vector belonging to the root [ 2, -1 ]
+(-1)*v.1   # i.e., x[1] is the root vector belonging to the root [ 2, -1 ]
 gap> BilinearFormMat( R );
 [ [ 1/12, -1/8 ], [ -1/8, 1/4 ] ]
 \endexample
 
 The next few sections deal with the Weyl group of a root system. 
 A Weyl group is represented by its action on the weight lattice. 
-A {\it weight} is by denition a linear function $\lambda : H\to F$
+A *weight* is by definition a linear function $\lambda : H\to F$
 (where $F$ is the ground field), such that the values $\lambda(h_i)$ are
 all integers (where the $h_i$ are the Cartan elements of the 
 `CanonicalGenerators'). On the other hand each weight is determined by
@@ -510,7 +517,7 @@ true
 gap> L:= SimpleLieAlgebra( "W", [1], GF(11) );
 <Lie algebra of dimension 11 over GF(11)>
 gap> B:= Basis( L );
-Basis( <Lie algebra of dimension 11 over GF(11)>, ... )
+CanonicalBasis( <Lie algebra of dimension 11 over GF(11)> )
 gap> PthPowerImages( B );           
 [ 0*v.1, v.2, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1 ]
 \endexample
@@ -527,6 +534,7 @@ v.1+v.11
 \endexample
 
 \Declaration{JenningsLieAlgebra}
+\Declaration{PCentralLieAlgebra}
 
 \beginexample
 gap> G:= SmallGroup( 3^6, 123 );
@@ -708,13 +716,13 @@ rec( min_degree := 1, max_degree := 50, source := Integers,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Modules over Lie Algebras and Their Cohomology}
 
-Representatios of Lie algebras are delat with in the same way as 
+Representatios of Lie algebras are dealt with in the same way as 
 representations of ordinary algebras (see "Representations of Algebras").
 In this section we mainly deal with modules over general Lie algebras
 and their cohomology. The next section is devoted to modules over
 semisimple Lie algebras.
 
-\Declaration{FaithfulModule}
+\Declaration{FaithfulModule}!{for Lie algebras}
 
 \beginexample
 gap> T:= EmptySCTable( 3, 0, "antisymmetric" );;
@@ -889,14 +897,18 @@ gap> ExtRepOfObj( q );
 \Declaration{IsWeightRepElement}
 \Declaration{HighestWeightModule}
 
+Note that for the following examples of this chapter we increase the line
+length limit from its default value 80 to 81 in order to make some long
+output expressions fit into the lines.
+
 \beginexample
+gap> SizeScreen([ 81, ]);;
 gap> K1:= SimpleLieAlgebra( "G", 2, Rationals );;
 gap> K2:= SimpleLieAlgebra( "B", 2, Rationals );;
 gap> L:= DirectSumOfAlgebras( K1, K2 );
 <Lie algebra of dimension 24 over Rationals>
 gap> V:= HighestWeightModule( L, [ 0, 1, 1, 1 ] );
-<224-dimensional left-module over <Lie algebra of dimension 
-24 over Rationals>>
+<224-dimensional left-module over <Lie algebra of dimension 24 over Rationals>>
 gap> vv:= GeneratorsOfLeftModule( V );;
 gap> vv[100];                 
 y5*y7*y10*v0
@@ -911,14 +923,13 @@ gap> Basis(L)[17]^vv[100];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Tensor Products and Exterior and Symmetric Powers}
 
-\Declaration{TensorProduct}
+\Declaration{TensorProductOfAlgebraModules}
 
 \beginexample
 gap> L:= SimpleLieAlgebra("G",2,Rationals);;
 gap> V:= HighestWeightModule( L, [ 1, 0 ] );;          
-gap> W:= TensorProduct( [ V, V, V ] );
-<343-dimensional left-module over <Lie algebra of dimension 
-14 over Rationals>>
+gap> W:= TensorProductOfAlgebraModules( [ V, V, V ] );
+<343-dimensional left-module over <Lie algebra of dimension 14 over Rationals>>
 gap> w:= Basis(W)[1];
 1*(1*v0<x>1*v0<x>1*v0)
 gap> Basis(L)[1]^w;
@@ -927,27 +938,25 @@ gap> Basis(L)[7]^w;
 1*(1*v0<x>1*v0<x>y1*v0)+1*(1*v0<x>y1*v0<x>1*v0)+1*(y1*v0<x>1*v0<x>1*v0)
 \endexample
 
-\Declaration{ExteriorPower}
+\Declaration{ExteriorPowerOfAlgebraModule}
 
 \beginexample
 gap> L:= SimpleLieAlgebra("G",2,Rationals);;
 gap> V:= HighestWeightModule( L, [ 1, 0 ] );;
-gap> W:= ExteriorPower( V, 3 );
+gap> W:= ExteriorPowerOfAlgebraModule( V, 3 );
 <35-dimensional left-module over <Lie algebra of dimension 14 over Rationals>>
 gap> w:= Basis(W)[1];
 1*(1*v0/\y1*v0/\y3*v0)
-gap> Basis(L)[2]^w;
--1*(1*v0/\y1*v0/\y1*v0)
-gap> Basis(L)[7]^w;
-1*(1*v0/\y1*v0/\y4*v0)+1*(y1*v0/\y1*v0/\y3*v0)
+gap> Basis(L)[10]^w;
+1*(1*v0/\y1*v0/\y6*v0)+1*(1*v0/\y3*v0/\y5*v0)+1*(y1*v0/\y3*v0/\y4*v0)
 \endexample
 
-\Declaration{SymmetricPower}
+\Declaration{SymmetricPowerOfAlgebraModule}
 
 \beginexample
 gap> L:= SimpleLieAlgebra("G",2,Rationals);;
 gap> V:= HighestWeightModule( L, [ 1, 0 ] );;
-gap> W:= SymmetricPower( V, 3 );
+gap> W:= SymmetricPowerOfAlgebraModule( V, 3 );
 <84-dimensional left-module over <Lie algebra of dimension 14 over Rationals>>
 gap> w:= Basis(W)[1];
 1*(1*v0.1*v0.1*v0)
@@ -957,7 +966,7 @@ gap> Basis(L)[7]^w;
 3*(1*v0.1*v0.y1*v0)
 \endexample
 
-\Declaration{DirectSumOfAlgebraModules}
+\Declaration{DirectSumOfAlgebraModules}!{for Lie algebras}
 
 \beginexample
 gap> L:= SimpleLieAlgebra( "C", 3, Rationals );;
@@ -966,6 +975,6 @@ gap> V:= HighestWeightModule( L, [ 1, 1, 0 ] );
 gap> W:= HighestWeightModule( L, [ 0, 0, 2 ] );
 <84-dimensional left-module over <Lie algebra of dimension 21 over Rationals>>
 gap> U:= DirectSumOfAlgebraModules( V, W );
-<148-dimensional left-module over <Lie algebra of dimension 
-21 over Rationals>>
+<148-dimensional left-module over <Lie algebra of dimension 21 over Rationals>>
+gap> SizeScreen([ 80, ]);;
 \endexample

@@ -27,7 +27,7 @@
 ##
 ##  (Whenever the term `Ideal' occurs without specifying prefix `Left' or
 ##  `Right', this means the same as `TwoSidedIdeal'. Conversely, any 
-##  occurrence of `TwoSidedIdeal' can be subsituted by `Ideal'.)
+##  occurrence of `TwoSidedIdeal' can be substituted by `Ideal'.)
 ##
 ##  For any of the above kinds of ideals, there is a notion of generators,
 ##  namely `GeneratorsOfLeftIdeal', `GeneratorsOfRightIdeal', and
@@ -124,12 +124,12 @@ DeclareGlobalFunction( "RightIdealNC" );
 #P  IsLeftIdealInParent( <I> )
 #P  IsRightIdealInParent( <I> )
 ##
-##  The properties `IsTowSidedIdealInParent' etc., are attributes of the
+##  The properties `IsTwoSidedIdealInParent' etc., are attributes of the
 ##  ideal, and once known they are stored in the ideal. 
 ##
-InParentFOA( "IsTwoSidedIdeal", IsRing, IsRing, NewProperty );
-InParentFOA( "IsLeftIdeal", IsRing, IsRing, NewProperty );
-InParentFOA( "IsRightIdeal", IsRing, IsRing, NewProperty );
+InParentFOA( "IsTwoSidedIdeal", IsRing, IsRing, DeclareProperty );
+InParentFOA( "IsLeftIdeal", IsRing, IsRing, DeclareProperty );
+InParentFOA( "IsRightIdeal", IsRing, IsRing, DeclareProperty );
 
 DeclareSynonym( "IsIdeal", IsTwoSidedIdeal );
 DeclareSynonym( "IsIdealOp", IsTwoSidedIdealOp );

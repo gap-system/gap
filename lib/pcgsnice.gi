@@ -32,6 +32,7 @@ InstallMethod( Pcgs, "via niceomorphism", true,
     SetNiceMonomorphism( pcgs, nice );
     SetNiceObject      ( pcgs, npcgs );
     SetGroupOfPcgs     ( pcgs, G );
+    SetOneOfPcgs(pcgs,One(G));
     SetFilterObj       ( pcgs, IsHandledByNiceMonomorphism );
     return pcgs;
 end );

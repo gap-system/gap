@@ -114,9 +114,10 @@ end);
 ##
 #M  RepresentativeAction( <G>, <d>, <e>, <opr> ). . for alternating groups
 ##
-InstallOtherMethod( RepresentativeActionOp,
-    true,
-    [ IsNaturalAlternatingGroup, IsObject, IsObject, IsFunction ], 0,
+InstallOtherMethod( RepresentativeActionOp, "natural alternating group",
+  true, [ IsNaturalAlternatingGroup, IsObject, IsObject, IsFunction ], 
+  # the objects might be group elements: rank up	
+  2*RankFilter(IsMultiplicativeElementWithInverse),
 function ( G, d, e, opr )
 local dom,sortfun,max,cd,ce,rep;
   dom:=Set(MovedPoints(G));
@@ -181,22 +182,22 @@ local dom,sortfun,max,cd,ce,rep;
     fi;
     if IsSubset(dom,Set(d)) and IsSubset(dom,Set(e)) then
       rep:=MappingPermListList(d,e);
-    fi;
-    if SignPerm(rep)=-1 then
-      cd:=Difference(dom,e);
-      if Length(cd)>1 then
-        rep:=rep*(cd[1],cd[2]);
-      elif opr=OnSets then
-        if Length(d)>1 then
-	  rep:=(d[1],d[2])*rep;
-        else
-	  rep:=fail; # set Length <2, maximal 1 further point in dom,impossible
+      if SignPerm(rep)=-1 then
+	cd:=Difference(dom,e);
+	if Length(cd)>1 then
+	  rep:=rep*(cd[1],cd[2]);
+	elif opr=OnSets then
+	  if Length(d)>1 then
+	    rep:=(d[1],d[2])*rep;
+	  else
+	    rep:=fail; # set Length <2, maximal 1 further point in dom,imposs.
+	  fi;
+	else # opr=OnTuples, not enough points left
+	  rep:=fail;
 	fi;
-      else # opr=OnTuples, not enough points left
-        rep:=fail;
       fi;
+      return rep;
     fi;
-    return rep;
   fi;
   TryNextMethod(); 
 end);
@@ -296,17 +297,14 @@ function ( G )
     return classes;
 end);
 
-InstallMethod( IsomorphismFpGroup,
-    "alternating group",
-    true,
+InstallMethod( IsomorphismFpGroup, "alternating group", true,
     [ IsNaturalAlternatingGroup ], 10, # override `IsSimpleGroup' method
 function(G)
   return IsomorphismFpGroup(G,
            Concatenation("A_",String(Length(MovedPoints(G))),".") );
 end);
 
-InstallOtherMethod( IsomorphismFpGroup,
-    "alternating group,name",
+InstallOtherMethod( IsomorphismFpGroup, "alternating group,name",
     true,
     [ IsNaturalAlternatingGroup, IsString ],
     10, # override `IsSimpleGroup' method
@@ -522,10 +520,10 @@ end);
 ##
 #M  StabilizerOp( <nat-sym-grp>, <int>, OnPoints )
 ##
-InstallOtherMethod( StabilizerOp,
-    true,
+InstallOtherMethod( StabilizerOp,"symmetric group", true,
     [ IsNaturalSymmetricGroup, IsPosInt, IsFunction ],
-    0,
+  # the objects might be a group element: rank up	
+  RankFilter(IsMultiplicativeElementWithInverse),
 
 function( sym, p, opr )
     if opr <> OnPoints  then
@@ -598,11 +596,10 @@ end);
 ##
 #M  RepresentativeAction( <G>, <d>, <e>, <opr> ) .  . for symmetric groups
 ##
-InstallOtherMethod( RepresentativeActionOp,
-    "for natural symmetric group",
-    true,
-    [ IsNaturalSymmetricGroup, IsObject, IsObject,
-      IsFunction ], 0,
+InstallOtherMethod( RepresentativeActionOp, "for natural symmetric group",
+    true, [ IsNaturalSymmetricGroup, IsObject, IsObject, IsFunction ], 
+  # the objects might be group elements: rank up	
+  2*RankFilter(IsMultiplicativeElementWithInverse),
 function ( G, d, e, opr )
 local dom,sortfun,max,cd,ce;
   dom:=Set(MovedPoints(G));
@@ -712,11 +709,16 @@ function ( G )
     return classes;
 end);
 
-InstallMethod( IsomorphismFpGroup,
-    "symmetric group",
-    true,
+InstallMethod( IsomorphismFpGroup, "alternating group", true,
     [ IsNaturalSymmetricGroup ], 0,
-function ( G )
+function(G)
+  return IsomorphismFpGroup(G,
+           Concatenation("S_",String(Length(MovedPoints(G))),".") );
+end);
+
+InstallOtherMethod( IsomorphismFpGroup, "symmetric group,name", true,
+    [ IsNaturalSymmetricGroup,IsString ], 0,
+function ( G,nam )
 local   F,      # free group
 	gens,	#generators of F
 	imgs,
@@ -729,7 +731,7 @@ local   F,      # free group
     deg:=Length(mov);
 
     # create the finitely presented group with <G>.degree-1 generators
-    F := FreeGroup( deg-1, Concatenation("S_",String(deg),".") );
+    F := FreeGroup( deg-1, nam );
     gens:=GeneratorsOfGroup(F);
 
     # add the relations according to the Coxeter presentation $a-b-c-...-d$
@@ -837,7 +839,7 @@ InstallMethod( OrbitStabilizingParentGroup, "direct product of S_n's",
     true, [ IsPermGroup ], 0,
 function(G)
 local o,d,i,j,l,s;
-  o:=ShallowCopy(Orbits(G,MovedPoints(G)));
+  o:=ShallowCopy(OrbitsDomain(G,MovedPoints(G)));
   Sort(o,function(a,b) return Length(a)<Length(b);end);
   d:=false;
   i:=1;
@@ -865,8 +867,26 @@ local o,d,i,j,l,s;
   return d;
 end);
 
+#############################################################################
+##
+#M  AlternatingSubgroup( <grp> )
+##
+InstallMethod(AlternatingSubgroup,"for perm groups",true,[IsPermGroup],0,
+function(G)
+local a;
+  if SignPermGroup(G)=1 then
+    return G;
+  fi;
+  a:=DerivedSubgroup(G);
+  if SignPermGroup(a)=1 and Index(G,a)=2 then
+    return a;
+  fi;
+  # this is faster than intersecting with A_n, because no stabchain for A_n
+  # needs to be built
+  return SubgroupProperty(G,i->SignPerm(i)=1);
+end);
+
 
 #############################################################################
 ##
 #E
-

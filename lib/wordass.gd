@@ -77,15 +77,70 @@ DeclareCategoryFamily( "IsAssocWordWithInverse" );
 
 #############################################################################
 ##
-#C  Is8BitsFamily
-#C  Is16BitsFamily
-#C  Is32BitsFamily
-#C  IsInfBitsFamily
+#C  IsSyllableWordsFamily( <obj> )
 ##
-DeclareCategory( "Is8BitsFamily", IsFamily );
-DeclareCategory( "Is16BitsFamily", IsFamily );
-DeclareCategory( "Is32BitsFamily", IsFamily );
-DeclareCategory( "IsInfBitsFamily", IsFamily );
+##  A syllable word family stores words by default in syllable form.
+DeclareCategory( "IsSyllableWordsFamily", IsAssocWordFamily );
+
+#C  Is8BitsFamily( <obj> )
+#C  Is16BitsFamily( <obj> )
+#C  Is32BitsFamily( <obj> )
+#C  IsInfBitsFamily( <obj> )
+##
+DeclareCategory( "Is8BitsFamily", IsSyllableWordsFamily );
+DeclareCategory( "Is16BitsFamily", IsSyllableWordsFamily );
+DeclareCategory( "Is32BitsFamily", IsSyllableWordsFamily );
+DeclareCategory( "IsInfBitsFamily", IsSyllableWordsFamily );
+
+#############################################################################
+##
+#R  IsSyllableAssocWordRep( <obj> )
+##
+##  A word in syllable representation stores generator/exponents pairs (as
+##  given by `ExtRepOfObj'. Syllable access is fast, letter access is slow
+##  for such words.
+DeclareRepresentation( "IsSyllableAssocWordRep", IsAssocWord, [] );
+
+#############################################################################
+##
+#R  IsLetterAssocWordRep( <obj> )
+##
+##  A word in letter representation stores a list of generator/inverses
+##  numbers (as given by `LetterRepAssocWord'). Letter access is fast,
+##  syllable access is slow for such words.
+##
+DeclareRepresentation( "IsLetterAssocWordRep", IsAssocWord, [] );
+
+#############################################################################
+##
+#R  IsBLetterAssocWordRep( <obj> )
+#R  IsWLetterAssocWordRep( <obj> )
+##
+##  these two subrepresentations of `IsLetterAssocWordRep' indicate whether
+##  the word is stored as a list of bytes (in a string) or as a list of
+##  integers)
+##
+DeclareRepresentation( "IsBLetterAssocWordRep", IsLetterAssocWordRep, [] );
+DeclareRepresentation( "IsWLetterAssocWordRep", IsLetterAssocWordRep, [] );
+
+#############################################################################
+##
+#C  IsLetterWordsFamily( <obj> )
+##
+##  A letter word family stores words by default in letter form. 
+##
+DeclareCategory( "IsLetterWordsFamily", IsAssocWordFamily );
+
+#############################################################################
+##
+#C  IsBLetterWordsFamily( <obj> )
+#C  IsWLetterWordsFamily( <obj> )
+##
+##  These two subcategories of `IsLetterWordsFamily' specify the type of
+##  letter representation to be used.
+##
+DeclareCategory( "IsBLetterWordsFamily", IsLetterWordsFamily );
+DeclareCategory( "IsWLetterWordsFamily", IsLetterWordsFamily );
 
 
 #############################################################################
@@ -120,6 +175,36 @@ InstallTrueMethod( IsGeneratorsOfMagmaWithInverses,
 
 #############################################################################
 ##
+#F  AssignGeneratorVariables(<G>)
+##
+##  If <G> is a group, whose generators are represented by symbols (for 
+##  example a free group, a finitely presented group or a pc group) this
+##  function assigns these generators to global variables with the same 
+##  names.
+##
+##  The aim of this function to make it easy in interactive use to work with
+##  (for example) a free group. It is a shorthand for a sequence of
+##  assignments of the form
+##
+##  \begintt
+##  gap> var1:=GeneratorsOfGroup(G)[1];
+##  gap> var2:=GeneratorsOfGroup(G)[2];
+##  ...
+##  gap> varn:=GeneratorsOfGroup(G)[n];
+##  \endtt
+##
+##  However, since overwriting global variables can be very dangerous, *it
+##  is not permitted to use this function within a function*. (If -- despite
+##  this warning -- this is done, the result is undefined.)
+##  
+##  If the assignment overwrites existing variables a warning is given, if
+##  any of the variables if write protected, or any of the generator names   
+##  would not be a proper variable name, an error is raised.
+##
+DeclareGlobalFunction( "AssignGeneratorVariables" );
+
+#############################################################################
+##
 ##  2. Comparison of Associative Words
 #2
 ##  \>`<w1> = <w2>'{equality!associative words}
@@ -127,7 +212,7 @@ InstallTrueMethod( IsGeneratorsOfMagmaWithInverses,
 ##  Two associative words are equal if they are words over the same alphabet
 ##  and if they are sequences of the same letters.
 ##  This is equivalent to saying that the external representations of the
-##  words are equal, see~"External Representation for Associative Words" and
+##  words are equal, see~"The External Representation for Associative Words" and
 ##  "Comparison of Words".
 ##
 ##  There is no ``universal'' empty word,
@@ -173,29 +258,6 @@ InstallTrueMethod( IsGeneratorsOfMagmaWithInverses,
 ##  true
 ##  \endexample
 ##
-
-
-#############################################################################
-##
-#F  IsShortLexLessThanOrEqual( <u>, <v> )
-##
-##  For two associative words <u> and <v>,
-##  `IsShortLexLessThanOrEqual' returns `true' if <u> is less than or equal
-##  to <v>, with respect to the short-lex ordering
-##  (which is the default ordering on associative words).
-##
-DeclareGlobalFunction( "IsShortLexLessThanOrEqual" );
-
-
-#############################################################################
-##
-#F  IsBasicWreathLessThanOrEqual( <u>, <v> )
-##
-##  For two associative words <u> and <v>,
-##  `IsBasicWreathLessThanOrEqual' returns `true' if <u> is less than or
-##  equal to <v>, with respect to the basic wreath product ordering.
-##
-DeclareGlobalFunction( "IsBasicWreathLessThanOrEqual" );
 
 
 #############################################################################
@@ -288,9 +350,8 @@ DeclareOperation( "SubstitutedWord",
 #O  EliminatedWord( <w>, <gen>, <by> )
 ##
 ##  For an associative word <w>, a generator <gen>, and an associative word
-##  <by>,
-##  `EliminatedWord' returns the associative word obtained by replacing
-##  each occurrence of <gen> in <w> by <by>.
+##  <by>, `EliminatedWord' returns the associative word obtained by
+##  replacing each occurrence of <gen> in <w> by <by>.
 ##
 DeclareOperation( "EliminatedWord",
     [ IsAssocWord, IsAssocWord, IsAssocWord ] );
@@ -308,6 +369,13 @@ DeclareOperation( "EliminatedWord",
 ##
 DeclareOperation( "ExponentSumWord", [ IsAssocWord, IsAssocWord ] );
 
+#4
+##  There are two internal representations of associative words: By letters
+##  and by syllables (see~"Representations for Associative Words"). Unless
+##  something else is specified, words are stored in the letter
+##  representation. Note, however, that operations to extract or act on
+##  parts of words (letter or syllables) can carry substantially different
+##  costs, depending on the representation the words are in.
 
 #############################################################################
 ##
@@ -361,8 +429,56 @@ DeclareOperation( "GeneratorSyllable", [ IsAssocWord, IsInt ] );
 ##  where <from> and <to> must be positive integers,
 ##  and indexing is done with origin 1.
 ##
-DeclareOperation( "SubSyllables", [ IsAssocWord, IsPosInt, IsPosInt ] );
+DeclareOperation( "SubSyllables", [ IsAssocWord, IsInt, IsInt ] );
 
+
+#############################################################################
+##
+##  5. Operations for Associative Words by their Letters
+
+
+#############################################################################
+##
+#O  LetterRepAssocWord( <w> )
+#O  LetterRepAssocWord( <w>, <gens> )
+##
+##  The *letter representation* of an associated word is as a list of
+##  integers, each entry corresponding to a group generator. Inverses of the
+##  generators are represented by negative numbers. The generator numbers
+##  are as associated to the family.
+##  
+##  This operation returns the letter representation of the associative word
+##  <w>.
+##
+##  In the second variant, the generator numbers correspond to the
+##  generator order given in the list <gens>.
+##
+##  (For words stored in syllable form the letter representation has to be
+##  comnputed.)
+##
+DeclareOperation( "LetterRepAssocWord", [ IsAssocWord ] );
+
+
+#############################################################################
+##
+#O  AssocWordByLetterRep( <Fam>, <lrep> [,<gens>] )
+##
+##  takes a letter representation <lrep> (see `LetterRepAssocWord',
+##  section~"LetterRepAssocWord") and returns an associative word in
+##  family <fam>. corresponding to this letter representation.
+##
+##  If <gens> is given, the numbers in the letter
+##  rerpresentation correspond to <gens>.
+DeclareOperation( "AssocWordByLetterRep",[IsFamily,IsList] );
+
+
+#############################################################################
+##
+#O  SyllableRepAssocWord( <w> )
+##
+##  returns a word equal to <w> in syllable representation. This is needed
+##  for the use of words for pc groups.
+DeclareOperation( "SyllableRepAssocWord", [ IsAssocWord ] );
 
 #############################################################################
 ##
@@ -382,6 +498,11 @@ DeclareOperation( "SubSyllables", [ IsAssocWord, IsPosInt, IsPosInt ] );
 ##  for example, $g_1 * g_2 * g_2^{-1} * g_1$ has the external representation
 ##  `[ 1, 2 ]'.
 ##
+##  Regardless of the family preference for letter or syllable
+##  representations (see~"Representations for Associative Words"),
+##  `ExtRepOfObj' and `ObjByExtRep' can be used and interface to this
+##  ``syllable''-like representation.
+##
 
 
 #############################################################################
@@ -393,10 +514,10 @@ DeclareOperation( "SubSyllables", [ IsAssocWord, IsPosInt, IsPosInt ] );
 #############################################################################
 ##
 #O  ExponentSums( <w> )
-#O  ExponentSums( <w>, <?>, <?> )
+#O  ExponentSums( <w>, <from>, <to> )
 ##
-##  ???
-##
+##  returns the exponent sums in <w>. The second version loops over the
+##  syllables <from> to <to>.
 DeclareOperation( "ExponentSums", [ IsAssocWord ] );
 
 
@@ -433,11 +554,12 @@ DeclareGlobalFunction( "AssocWord" );
 DeclareGlobalFunction( "ObjByVector" );
 
 
-#############################################################################
-##
-#O  CyclicReducedWordList( <word>, <gens> )
-##
-DeclareOperation( "CyclicReducedWordList", [ IsAssocWord, IsList ] );
+# is not used anywhere
+# #############################################################################
+# ##
+# #O  CyclicReducedWordList( <word>, <gens> )
+# ##
+# DeclareOperation( "CyclicReducedWordList", [ IsAssocWord, IsList ] );
 
 
 #############################################################################
@@ -481,6 +603,21 @@ DeclareGlobalFunction( "InfiniteListOfNames" );
 ##  if $i > n$.
 ##
 DeclareGlobalFunction( "InfiniteListOfGenerators" );
+
+#############################################################################
+##
+#F  ERepAssWorProd( <l>,<r> )
+##
+##  multiplies two associative words in the external representation.
+DeclareGlobalFunction("ERepAssWorProd");
+
+#############################################################################
+##
+#F  ERepAssWorInv( <w> )
+##
+##  returns the inverse of the associative word <w> given in external
+##  representation.
+DeclareGlobalFunction("ERepAssWorInv");
 
 
 #############################################################################

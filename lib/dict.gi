@@ -241,16 +241,24 @@ local hashfun,obj,dom,lookup;
   fi;
 
   # are we given a domain, which can index very quickly?
-  if dom<>fail and IsQuickPositionList(dom) and Length(dom)<2^17 then
-    Info(InfoHash,1,obj," ",dom," Position dictionary");
+  if dom<>fail and 
+    (IsQuickPositionList(dom) or 
+      (not IsMutable(dom) and IsSSortedList(dom) and
+       CanEasilySortElements(dom[1]) )  )
+      and Length(dom)<2^17 then
+    Info(InfoHash,1,obj," Position dictionary");
     return DictionaryByPosition(dom,lookup);
   fi;
 
-  # can we try hashing?
-  hashfun:=SparseIntKey(dom,obj);
+  # can we try hashing? Only if domain is given and not for small perms.
+  if dom<>fail and (not IsPerm(obj) or NrMovedPoints(obj)>100000) then
+    hashfun:=SparseIntKey(dom,obj);
+  else
+    hashfun:=fail;
+  fi;
 
   if hashfun<>fail then
-    Info(InfoHash,1,obj," ",dom," Hash dictionary");
+    Info(InfoHash,1,obj," Hash dictionary");
     # uncomment the next line to get back the old version.
     #return NaiveHashDictionary(dom,lookup,hashfun);
     return SparseHashTable(hashfun);
@@ -258,7 +266,7 @@ local hashfun,obj,dom,lookup;
 
   # can we sort the elements cheaply?
   if CanEasilySortElements(obj) then
-    Info(InfoHash,1,obj," ",dom," Sort dictionary");
+    Info(InfoHash,1,obj," Sort dictionary");
     return DictionaryBySort(lookup);
   fi;
 
@@ -930,25 +938,72 @@ local f,n,pow;
   fi;
 end);
 
+InstallMethod(SparseIntKey,
+  "for matrices over finite field vector spaces",true,
+  [IsObject,IsFFECollColl and IsMatrix],0,
+function(d,m)
+local f,n,pow;
+  if IsList(d) and Length(d)>0 and IsMatrix(d[1]) then
+    f:=FieldOfMatrixList(d);
+  else
+    f:=FieldOfMatrixList([m]);
+  fi;
+
+  n:=Size(f);
+  pow:=NextPrimeInt(n); # otherwise we produce big numbers which take time
+			# and can produce very bad results when hashing.
+  if Size(f)<256 then
+    return function(x)
+	   local i,gsy;
+	     gsy:=0;
+	     for i in x do
+	       gsy:=pow*gsy+NumberFFVector(i,n);
+	     od;
+	     return gsy;
+           end;
+  else
+    f:=AsSSortedList(f);
+    return function(ma)
+	   local x,y,sy,gsy,p;
+	      gsy:=0;
+	      for y in ma do
+		sy := 0;
+		for x in y do
+		  p := Position(f, x);
+# want to be quick: Assume no failures
+#		if p = fail then
+#		    Error("NumberFFVector: Vector not over specified field");
+#		fi;
+		  sy := n*sy + (p-1);
+		od;
+		gsy := pow*gsy + sy;
+	      od;
+	      return gsy;
+           end;
+  fi;
+end);
+
 #############################################################################
 ##
-#M  SparseIntKey( <dom>, <key> ) for vector spaces over finite fields
+#M  SparseIntKey( <dom>, <key> ) for row spaces over finite fields
 ##
-InstallMethod( SparseIntKey, "for vector spaces over finite fields", true,
-    [ IsObject,IsVectorSpace ], 0,
-    function( key, dom )
-	return function(key)
-	local sz, n, ret, k;
+InstallMethod( SparseIntKey, "for row spaces over finite fields", true,
+    [ IsObject,IsVectorSpace and IsRowSpace], 0,
+function( key, dom )
+  return function(key)
+    local sz, n, ret, k,d;
 
-        sz := Size( LeftActingDomain( key ) );
-	key := BasisVectors( CanonicalBasis( key ) );
-	n := sz ^ Length( key[1] );
-	ret := 1;
-     	for k in key do
-	    ret := ret * n + NumberFFVector( k, sz );
-        od;
-	return ret;
-    end; end );
+    d:=LeftActingDomain( key );
+    sz := Size(d);
+    key := BasisVectors( CanonicalBasis( key ) );
+    n := sz ^ Length( key[1] );
+    ret := 1;
+    for k in key do
+	ret := ret * n + NumberFFVector( k, sz );
+    od;
+    return ret;
+  end;
+end );
 
 
 InstallMethod(DenseIntKey,"integers",true,
@@ -1019,6 +1074,15 @@ local o,e;
 	   od;
 	   return h;
          end;
+end);
+
+InstallMethod(DenseIntKey,"transformations, arbitrary domain",true,
+  [IsObject,IsTransformationRep],0,
+function(d,t)
+local n,l;
+  n:=DegreeOfTransformation(t);
+  l:=List([1..n],i->n^(i-1));
+  return x->x![1]*l;
 end);
 
 #E

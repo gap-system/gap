@@ -216,18 +216,131 @@ DeclareGlobalFunction( "LowercaseString" );
 ##
 ##  A separator at the end of a string is interpreted as a terminator; in
 ##  this case, the separator does not produce a trailing empty string.
+##  Also see~"Chomp".
 ##
 DeclareOperation( "SplitString", [IsString, IsObject, IsObject] );
 
 #############################################################################
 ##
+#F  NormalizedWhitespace( <str> ) .  copy of string with normalized whitespace
+##  
+##  This function returns a copy of string <str> to which
+##  "NormalizeWhitespace" was applied.
+##  
+DeclareGlobalFunction( "NormalizedWhitespace" );
+
+#############################################################################
+##
 #F  ReplacedString( <string>, <old>, <new> )
 ##
-##  replaces occurrences of the string <old> in <string> by <new>, starting
-##  from the left and always replacing the first occurrence.
-##  To avoid inifinite recursion, characters which have been replaced
-##  already, are not subject to renewed replacement.
+##  replaces occurrences of the string <old> in <string> by  <new>,  starting
+##  from the left  and  always  replacing  the  first  occurrence.  To  avoid
+##  infinite recursion, characters which have been replaced already, are  not
+##  subject to renewed replacement.
+##
 MakeReadOnlyGlobal("ReplacedString"); # function defined in `init.g'.
+
+#############################################################################
+##
+#F  EvalString( <expr> ) . . . . . . . . . . . . evaluate a string expression
+##
+##  passes <expr> (a string) through  an  input text stream  so  that  {\GAP}
+##  interprets it, and returns the  result.  The  following  trivial  example
+##  demonstrates its use.
+##
+##  \beginexample
+##  gap> a:=10;
+##  10
+##  gap> EvalString("a^2");
+##  100
+##  \endexample
+##
+##  `EvalString' is intended for *single* expressions. A sequence of commands
+##  may   be   interpreted   by   using   the   functions   `InputTextString'
+##  (see~"InputTextString")  and  `ReadAsFunction'   (see~"ReadAsFunction!for
+##  streams") together; see "Operations for Input Streams" for an example.
+##
+DeclareGlobalFunction( "EvalString" );
+
+#############################################################################
+##
+#F  JoinStringsWithSeparator( <list>[, <sep>] )
+##
+##  joins <list> (a list of strings) after interpolating <sep> (or  `","'  if
+##  the second argument is omitted) between each adjacent  pair  of  strings;
+##  <sep> should be a string.
+##
+##  *Examples*
+##
+##  \beginexample
+##  gap> list := List([1..10], String);                                  
+##  [ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" ]
+##  gap> JoinStringsWithSeparator(list);
+##  "1,2,3,4,5,6,7,8,9,10"
+##  gap> JoinStringsWithSeparator(["The", "quick", "brown", "fox"], " ");
+##  "The quick brown fox"
+##  gap> JoinStringsWithSeparator(["a", "b", "c", "d"], ",\n    ");    
+##  "a,\n    b,\n    c,\n    d"
+##  gap> Print("    ", last, "\n");
+##      a,
+##      b,
+##      c,
+##      d
+##  \endexample
+##
+##  Recall, `last' is the last expression output by {\GAP}.
+##
+DeclareGlobalFunction( "JoinStringsWithSeparator" );
+
+#############################################################################
+##
+#F  Chomp( <str> )  . . .  remove a trailing '\n' from a string if it has one
+##
+##  Like the similarly  named  Perl  function,  `Chomp'  removes  a  trailing
+##  newline character from a string  argument  <str>  if  there  is  one  and
+##  returns the result. If <str> is not a string or does not end in a newline
+##  character it is returned  unchanged.  This  latter  property  means  that
+##  `Chomp' is safe to use in cases where one is manipulating the  result  of
+##  another function which might sometimes return `fail', for example.
+##
+##  \beginexample
+##  gap> Chomp("The quick brown fox jumps over the lazy dog.\n");
+##  "The quick brown fox jumps over the lazy dog."
+##  gap> Chomp("The quick brown fox jumps over the lazy dog.");
+##  "The quick brown fox jumps over the lazy dog."
+##  gap> Chomp(fail);
+##  fail
+##  gap> Chomp(32);
+##  32
+##  \endexample
+##
+##  *Note:*
+##  `Chomp' only removes a trailing newline character  from  <str>.  If  your
+##  string contains several newline characters and you really want  to  split
+##  <str> into lines at the newline  characters  (and  remove  those  newline
+##  characters) then you should use `SplitString' (see~"SplitString"), e.g.
+##
+##  \beginexample
+##  gap> str := "The quick brown fox\njumps over the lazy dog.\n";
+##  "The quick brown fox\njumps over the lazy dog.\n"
+##  gap> SplitString(str, "", "\n");
+##  [ "The quick brown fox", "jumps over the lazy dog." ]
+##  gap> Chomp(str);
+##  "The quick brown fox\njumps over the lazy dog."
+##  \endexample
+##
+DeclareGlobalFunction( "Chomp" );
+
+
+#############################################################################
+##
+#F  StringFile( <name> ) . . . . . . return content of file <name> as string
+#F  FileString( <name>, <string>[, <append> ] ) . . write <string> to <name> 
+##  
+##  fast copy of file into string and vice versa
+##  
+DeclareGlobalFunction("StringFile");
+DeclareGlobalFunction("FileString");
 
 #############################################################################
 ##

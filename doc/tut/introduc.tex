@@ -62,9 +62,9 @@ at the end.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Starting and Leaving GAP}\null
 
-\atindex{starting GAP}{@starting {\GAP}}%
-\atindex{leaving GAP}{@leaving {\GAP}}%
-\indextt{quit}%
+\atindex{starting GAP}{@starting {\GAP}}
+\atindex{leaving GAP}{@leaving {\GAP}}
+\indextt{quit}
 If the  program is correctly  installed then you usually start {\GAP} by
 simply
 typing  `gap' at  the  prompt of your   operating system followed by  the
@@ -95,7 +95,7 @@ On some systems (for example the Apple Macintosh) minor changes might be
 necessary. This is explained in chapter "ref:Installing GAP" in the reference
 manual.
 
-\index{whitespace}%
+\index{whitespace}
 In  most   places *whitespace*  characters   (i.e.  <space>s, <tab>s  and
 <return>s) are insignificant for the meaning of {\GAP} input. Identifiers
 and keywords must however not contain any whitespace.  On the other hand,
@@ -103,7 +103,7 @@ sometimes there  must be  whitespace  around identifiers and keywords  to
 separate them from each other and from numbers. We will use whitespace to
 format more complicated commands for better readability.
 
-\index{comments}%
+\index{comments}
 A *comment* in  {\GAP} starts with the  symbol `\#' and continues to  the
 end of the line. Comments are  treated like whitespace  by {\GAP}. We use
 comments in   the printed examples  in this  tutorial to  explain certain
@@ -115,9 +115,10 @@ You should be able to reproduce the results of the *examples* of {\GAP}
 sessions in this manual, in the following sense.
 If you start the {\GAP} session with the two commands
 \begintt
-gap> SizeScreen( [ 72, ] ); LogTo( "erg.log" );
+gap> SizeScreen( [ 80, ] ); LogTo( "erg.log" );
 \endtt
-(which are used to set the line length to 72 and to save a listing of
+(which are used to set the line length to 80 if this isn't already your
+default line length and to save a listing of
 the session on some file), then choose any chapter and rerun its
 examples in one continuous session and in the given order, the {\GAP}
 output should look like the output shown in the manual, except for a
@@ -129,7 +130,7 @@ you extract single examples and run them separately.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Read Evaluate Print Loop}\null
 
-\atindex{read evaluate print loop}{|indexit}%
+\atindex{read evaluate print loop}{|indexit}
 {\GAP}  is  an   interactive   system.    It  continuously   executes   a
 read evaluate print loop.  Each  expression you type  at the  keyboard is
 read by {\GAP}, evaluated, and then the result is shown.
@@ -166,7 +167,7 @@ Then {\GAP} echoes   the result 22 on the   next line and shows with  the
 prompt  that it is ready  for the  next problem.  Henceforth,  we will no
 longer print this additional prompt.
 
-\index{line editing}%
+\index{line editing}
 If you make a mistake while typing the line,
 but *before* typing the final <return>,
 you can use the <delete> key (or sometimes <backspace> key)
@@ -186,7 +187,7 @@ returns.
 \beginexample
 gap> (9 - 7) * (5 + 6)
 > ;
-22 
+22
 \endexample
 So the input can consist of several lines, and {\GAP} prints a partial
 prompt `>' in each input line except the first, until the command is
@@ -210,7 +211,7 @@ Syntax error: ) expected
 (9 - 7) * (5 + 6;
                 ^
 \endtt
-\index{line editing}%
+\index{line editing}
 Instead of the result an error message  occurs indicating the place where
 an unexpected  symbol occurred with   an arrow sign  `^'  under it.  As a
 computer program  cannot know what your  intentions really were,  this is
@@ -229,7 +230,7 @@ Each line  of commands  you  type is sent to    {\GAP} for evaluation  by
 pressing <return> regardless of the position of  the cursor in that line.
 We will no longer mention the <return> key from now on.
 
-\index{break loops}%
+\index{break loops}
 Sometimes a syntax error will cause {\GAP} to enter a *break loop*.  This
 is indicated by the special prompt `brk>'. If another syntax error occurs
 while  {\GAP} is in  a break loop, the prompt  will  change to `brk_02>',
@@ -241,7 +242,7 @@ prompt `gap>' again.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Constants and Operators}\null
 
-\index{constants}\index{operators}%
+\index{constants}\index{operators}
 In an  expression like `(9  - 7) * (5 +  6)' the constants `5', `6', `7',
 and `9' are being composed by the operators `+', `*' and `-' to result in
 a new value.
@@ -254,7 +255,7 @@ integer values.  There are some  more operators applicable to integers in
 resulting in noninteger rational values.
 \beginexample
 gap> 12345/25;
-2469/5 
+2469/5
 \endexample
 Note  that  the numerator and denominator  are divided by their  greatest
 common divisor  and that the result is uniquely represented as a division
@@ -265,19 +266,19 @@ self-explanatory examples.
 \beginexample
 gap> -3; 17 - 23;
 -3
--6 
+-6
 \endexample
 The exponentiation   operator  is  written  as  `^'. This   operation  in
 particular might lead  to  very large numbers.  This  is  no problem  for
 {\GAP} as it can handle numbers of (almost) any size.
 \beginexample
 gap> 3^132;
-955004950796825236893190701774414011919935138974343129836853841 
+955004950796825236893190701774414011919935138974343129836853841
 \endexample
 The `mod' operator allows you to compute one value modulo another.
 \beginexample
 gap> 17 mod 3;
-2 
+2
 \endexample
 Note  that  there must be   whitespace around the  keyword  `mod' in this
 example since `17mod3' or `17mod' would be interpreted as identifiers.
@@ -288,7 +289,7 @@ the operators `*' and `-', is not necessary.
 parentheses.
 \beginexample
 gap> (9 - 7) * 5 = 9 - 7  * 5;
-false 
+false
 \endexample
 Besides these arithmetical operators there are comparison operators in
 {\GAP}. A comparison results  in a  *boolean  value* which is  another
@@ -297,7 +298,7 @@ kind  of constant.  The comparison  operators `=', `\<>', `\<', `\<=',
 equal, greater than and greater than or equal, respectively.
 \beginexample
 gap> 10^5 < 10^4;
-false 
+false
 \endexample
 The boolean values  `true' and   `false'  can be  manipulated via logical
 operators, i.~e., the unary operator `not' and the binary operators `and'
@@ -308,7 +309,7 @@ false
 false
 true
 gap> 10 > 0 and 10 < 100;
-true 
+true
 \endexample
 Another important  type of constants in   {\GAP} are *permutations*. They
 are written in cycle notation and they can be multiplied.
@@ -316,7 +317,7 @@ are written in cycle notation and they can be multiplied.
 gap> (1,2,3);
 (1,2,3)
 gap> (1,2,3) * (1,2);
-(2,3) 
+(2,3)
 \endexample
 The inverse of the   permutation  `(1,2,3)' is denoted   by `(1,2,3)^-1'.
 Moreover the caret operator `^' is used to determine the image of a point
@@ -327,7 +328,7 @@ gap> (1,2,3)^-1;
 gap> 2^(1,2,3);
 3
 gap> (1,2,3)^(1,2);
-(1,3,2) 
+(1,3,2)
 \endexample
 The various other constants that {\GAP} can deal with will be introduced
 when they are used, for example there are elements of finite fields
@@ -342,7 +343,7 @@ literals can  be  entered   in  {\GAP} by  enclosing  the   character  in
 gap> 'a';
 'a'
 gap> '*';
-'*' 
+'*'
 \endexample
 There are no  operators defined for characters except that characters can
 be compared.
@@ -360,8 +361,8 @@ position to use {\GAP} as a simple desktop calculator.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Variables versus Objects}\null
 
-\index{variables}\index{assignment}\index{identifier}\index{objects}%
-\atindex{objects!vs.\ variables}{|indexit}%
+\index{variables}\index{assignment}\index{identifier}\index{objects}
+\atindex{objects!vs.\ variables}{|indexit}
 The  constants described  in the  last  section are  specified by certain
 combinations   of digits and  minus  signs (in  the case  of integers) or
 digits,  commas  and parentheses  (in   the case  of permutations). These
@@ -391,7 +392,7 @@ false
 gap> a:= 10;
 10
 gap> a * (a + 1);
-110 
+110
 \endexample
 After an assignment the assigned object is echoed on the  next line.  The
 printing of the  object of a statement may  be in every case prevented by
@@ -459,13 +460,13 @@ Whenever {\GAP} returns an object by printing it  on  the next  line this
 object is assigned to the variable `last'.  So if you computed
 \beginexample
 gap> (9 - 7) * (5 + 6);
-22 
+22
 \endexample
 and forgot to assign the object to the  variable `a' for further use, you
 can still do it by the following assignment.
 \beginexample
 gap> a:= last;
-22 
+22
 \endexample
 Moreover there are variables `last2' and `last3', you can guess their values.
 
@@ -479,7 +480,7 @@ a double semicolon prevents the result of a statement from being printed.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Objects vs.\ Elements}\null
 
-\atindex{objects!vs.\ elements}{|indexit}\index{elements}%
+\atindex{objects!vs.\ elements}{|indexit}\index{elements}
 In the last section  we mentioned that every object   is given a  certain
 place  in memory by the  {\GAP} storage manager  (although that place may
 change in the course  of  a {\GAP}  session). In  this sense, objects  at
@@ -498,7 +499,7 @@ gap> b:= a;; IsIdenticalObj( a, b );
 true
 \endexample
 
-\indextt{IsIdenticalObj}%
+\indextt{IsIdenticalObj}
 
 %\exercise `IsIdenticalObj' works not   only for variables, but  also  for
 %constants.   Try   the   commands      `IsIdenticalObj'(  -1,  -1    )',
@@ -557,7 +558,7 @@ example,  can be applied to an  integer and will  return the factorial of
 this integer.
 \beginexample
 gap> Factorial(17);
-355687428096000 
+355687428096000
 \endexample
 Applying  a  function  to arguments  means  to  write  the  arguments  in
 parentheses following the function.   Several arguments are  separated by
@@ -565,7 +566,7 @@ commas, as for the  function  `Gcd' which  computes  the greatest  common
 divisor of two integers.
 \beginexample
 gap> Gcd(1234, 5678);
-2 
+2
 \endexample
 There   are other functions that  do  not return   an  object but only
 produce  a side effect, for  example changing one  of their arguments.
@@ -573,7 +574,7 @@ These functions are sometimes called procedures.  The function `Print'
 is only called for the side effect of printing something on the screen.
 \beginexample
 gap> Print(1234, "\n");
-1234 
+1234
 \endexample
 In order to be able to compose arbitrary text with `Print', this function
 itself will not produce a line break  after printing. Thus we had another
@@ -585,19 +586,19 @@ the list  elements that it has  performed.  You will not understand right
 now what it means  to change an object.   We will return to this  subject
 several times in the next sections.
 
-\index{maps-to operator}%
+\index{maps-to operator}
 A comfortable way to define a function yourself is the *maps-to* operator
 `->' consisting of  a minus sign and a   greater sign with  no whitespace
 between them. The function  `cubed' which maps a  number  to its  cube is
 defined on the following line.
 \beginexample
 gap> cubed:= x -> x^3;
-function ( x ) ... end 
+function( x ) ... end
 \endexample
 After the function has been defined, it can now be applied.
 \beginexample
 gap> cubed(5);
-125 
+125
 \endexample
 More complicated  functions,  especially  functions with   more  than one
 argument cannot be defined in this way.
@@ -612,29 +613,71 @@ function.   Moreover you have seen an easy  way  to define a  function in
 {\GAP} with the maps-to operator.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{The Help System}
+\Section{Help}
 
-The contents of the {\GAP} manuals is also available as on-line help.
+The  content of  the {\GAP}  manuals is  also available  as on-line  help. A
+{\GAP} session loads  a long list of index entries.  This typically contains
+all  chapter  and  section  headers,  all  names  of  documented  functions,
+operations and so on, as well as  some explicit index entries defined in the
+manuals.
 
-`?<book>:<section>'
+The format of a query is as follows.
 
-The help command `?' displays the section  with the name <section> in the
-manual <book> on the screen.  For example
+`?[<book>:][?]<topic>'
+
+A simple example would be to type  `?help' at the {\GAP} prompt. If there is
+a single section with index entry <topic> then this is displayed directly.
+
+If  there are  several matches  you get  an overview  like in  the following
+example.
+
 \begintt
-?tutorial:The Help system
+gap> ?sets
+Help: several entries match this topic - type ?2 to get match [2]
+
+[1] Tutorial: Sets
+[2] Reference: Sets
+[3] Reference: sets
+[4] Reference: Sets of Subgroups
+[5] Reference: setstabilizer
 \endtt
-will display this section on the screen.  When the whole section has been
-displayed  the normal {\GAP}  prompt  `gap>' is  shown and normal  {\GAP}
-interaction resumes.
 
-`??<topic>'
+{\GAP}'s manuals consist of several  *books*, which are indicated before the
+colon in the list above. A help query can be restricted to one book by using
+the optional <book>: part. For example  `?tut : sets' will display the first
+of these help sections. More precisely, the parts of the string <book> which
+are separated  by white  space are  interpreted as  beginnings of  the first
+words in  the name of the  book. Try `?books'  to see the list  of available
+books and their names.
 
-`??' looks up <topic> in {\GAP}'s index and prints  all the index entries
-that contain the substring <topic>.  Then you can decide which section is
-the one you are actually interested in and request this one.
+The  search for  a  matching <topic>  (and optional  <book>)  is done  *case
+insensitively*.  If  there  is  another  `?'  before  the  <topic>,  then  a
+*substring search* for <topic> is  performed on all index entries. Otherwise
+the parts  of <topic> which are  separated by white space  are considered as
+*beginnings of the first words* in an index entry.
 
-A complete list of commands for the help system is available in
-Section~"ref:Help" of the reference manual.
+White space is normalized in the search string (and the index entries). 
+
+*Examples.* All the  following queries lead to the chapter  of the reference
+manual which explains the use of {\GAP}'s help system in more detail.
+
+\begintt
+gap> ?Reference: The Help System
+gap> ?  REF : t h s
+gap> ?ref:?  help   system 
+\endtt
+
+The query `??sets' shows all help  sections in all books whose index entries
+contain the substring `sets'.
+
+As mentioned in the  example above a complete list of  commands for the help
+system  is available  in Section~`?Ref:  The Help  System' of  the reference
+manual.  In  particular  there  are  commands to  browse  through  the  help
+sections, see~`?Ref:  Browsing through the Sections'  and there is a  way to
+influence  the  way  *how*  the  help  sections  are  displayed,  see~`?Ref:
+SetHelpViewer'. For  example you can  use an  external pager program,  a Web
+browser,  `dvi'-previewer and/or  `pdf'-viewer for  reading {\GAP}'s  online
+help.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Further Information introducing the System}

@@ -112,7 +112,7 @@ InstallOtherMethod( MonoidByGenerators,
 
 InstallImmediateMethod( GeneratorsOfSemigroup,
     IsMonoid and HasGeneratorsOfMonoid and IsAttributeStoringRep, 0,
-    M->Union(GeneratorsOfMonoid(M), [One(M)]));
+    M->Concatenation([One(M)],GeneratorsOfMonoid(M)));
 
 
 #############################################################################

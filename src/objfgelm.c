@@ -166,14 +166,14 @@ Obj Func8Bits_ExponentSums3 (
 
     /* <start> must be positive                                            */
     while ( !IS_INTOBJ(vstart) || INT_INTOBJ(vstart) <= 0 )
-        vstart = ErrorReturnObj( "<start> must be positive", 0L, 0L,
-                                 "you can return an integer for <start>" );
+        vstart = ErrorReturnObj( "<start> must be a positive integer", 0L, 0L,
+                                 "you can replace <start> via 'return <start>;'" );
     start = INT_INTOBJ(vstart);
 
     /* <end> must be positive                                              */
     while ( !IS_INTOBJ(vend) || INT_INTOBJ(vend) <= 0 )
-        vend = ErrorReturnObj( "<end> must be positive", 0L, 0L,
-                               "you can return an integer for <end>" );
+        vend = ErrorReturnObj( "<end> must be a positive integer", 0L, 0L,
+                               "you can replace <end> via 'return <end>;'" );
     end = INT_INTOBJ(vend);
 
     /* <end> must be at least <start>                                      */
@@ -259,8 +259,8 @@ Obj Func8Bits_ExponentSyllable (
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
     while ( !IS_INTOBJ(vi) || INT_INTOBJ(vi) <= 0 || num < INT_INTOBJ(vi) )
-        vi = ErrorReturnObj( "<i> must be between 1 and %d", num, 0L,
-                             "you can return an integer for <i>" );
+        vi = ErrorReturnObj( "<i> must be an integer between 1 and %d", num, 0L,
+                             "you can replace <i> via 'return <i>;'" );
     i = INT_INTOBJ(vi);
 
     /* get the number of bits for exponents                                */
@@ -349,8 +349,8 @@ Obj Func8Bits_GeneratorSyllable (
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
     while ( !IS_INTOBJ(vi) || INT_INTOBJ(vi) <= 0 || num < INT_INTOBJ(vi) )
-        vi = ErrorReturnObj( "<i> must be between 1 and %d", num, 0L,
-                             "you can return an integer for <i>" );
+        vi = ErrorReturnObj( "<i> must be an integer between 1 and %d", num, 0L,
+                             "you can replace <i> via 'return <i>;'" );
     i = INT_INTOBJ(vi);
 
     /* get the number of bits for exponents                                */
@@ -511,7 +511,7 @@ Obj Func8Bits_Less (
 
             /* compare the exponents, and check the next generator.  This  */
             /* amounts to stripping off the common prefix  x^|expl-expr|.  */
-            if( exl > exr ) 
+            if( exl > exr ) {
                 if( nr > 0 ) {
                   lexico = (*pl & genm) < (*(pr+1) & genm) ? True : False;
                   break;
@@ -519,7 +519,7 @@ Obj Func8Bits_Less (
                 else
                     /* <r> is now essentially the empty word.             */
                     return False;
-
+            }
             if( nl > 0 ) {  /* exl < exr                                  */
                 lexico = (*(pl+1) & genm) < (*pr & genm) ? True : False;
                 break;
@@ -584,8 +584,9 @@ Obj Func8Bits_AssocWord (
         vexp = ELMW_LIST( data, 2*i );
         nexp = INT_INTOBJ(vexp);
         while ( ! IS_INTOBJ(vexp) || nexp == 0 ) {
-            vexp = ErrorReturnObj( "exponent must not be zero", 0L, 0L,
-                                   "you can return a positive integer" );
+            vexp = ErrorReturnObj( "<exponent> must be a positive integer", 
+                                   0L, 0L,
+                                   "you can replace <exponent> via 'return <exponent>;'" );
             nexp = INT_INTOBJ(vexp);
             ptr  = (UInt1*)DATA_WORD(obj) + (i-1);
         }
@@ -631,7 +632,7 @@ Obj Func8Bits_ObjByVector (
             vexp = ErrorReturnObj(
                 "%d element must be integer (not a %s)",
                 (Int) i, (Int) TNAM_OBJ(vexp),
-                "you can return an integer" );
+                "you can replace the element by <val> via 'return <val>;'" );
         }
         if ( vexp != INTOBJ_INT(0) ) {
             j = i;
@@ -1153,14 +1154,14 @@ Obj Func16Bits_ExponentSums3 (
 
     /* <start> must be positive                                            */
     while ( !IS_INTOBJ(vstart) || INT_INTOBJ(vstart) <= 0 )
-        vstart = ErrorReturnObj( "<start> must be positive", 0L, 0L,
-                                 "you can return an integer for <start>" );
+        vstart = ErrorReturnObj( "<start> must be a positive integer", 0L, 0L,
+                                 "you can replace <start> via 'return <start>;'" );
     start = INT_INTOBJ(vstart);
 
     /* <end> must be positive                                              */
     while ( !IS_INTOBJ(vend) || INT_INTOBJ(vend) <= 0 )
-        vend = ErrorReturnObj( "<end> must be positive", 0L, 0L,
-                               "you can return an integer for <end>" );
+        vend = ErrorReturnObj( "<end> must be a positive integer", 0L, 0L,
+                               "you can replace <end> via 'return <end>;'" );
     end = INT_INTOBJ(vend);
 
     /* <end> must be at least <start>                                      */
@@ -1246,8 +1247,8 @@ Obj Func16Bits_ExponentSyllable (
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
     while ( !IS_INTOBJ(vi) || INT_INTOBJ(vi) <= 0 || num < INT_INTOBJ(vi) )
-        vi = ErrorReturnObj( "<i> must be between 1 and %d", num, 0L,
-                             "you can return an integer for <i>" );
+        vi = ErrorReturnObj( "<i> must be an integer between 1 and %d", num, 0L,
+                             "you can replace <i> via 'return <i>;'" );
     i = INT_INTOBJ(vi);
 
     /* get the number of bits for exponents                                */
@@ -1336,8 +1337,8 @@ Obj Func16Bits_GeneratorSyllable (
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
     while ( !IS_INTOBJ(vi) || INT_INTOBJ(vi) <= 0 || num < INT_INTOBJ(vi) )
-        vi = ErrorReturnObj( "<i> must be between 1 and %d", num, 0L,
-                             "you can return an integer for <i>" );
+        vi = ErrorReturnObj( "<i> must be an integer between 1 and %d", num, 0L,
+                             "you can replace <i> via 'return <i>;'" );
     i = INT_INTOBJ(vi);
 
     /* get the number of bits for exponents                                */
@@ -1477,7 +1478,7 @@ Obj Func16Bits_Less (
 
             /* compare the exponents, and check the next generator.  This  */
             /* amounts to stripping off the common prefix  x^|expl-expr|.  */
-            if( exl > exr ) 
+            if( exl > exr ) {
                 if( nr > 0 ) {
                   lexico = (*pl & genm) < (*(pr+1) & genm) ? True : False;
                   break;
@@ -1485,7 +1486,7 @@ Obj Func16Bits_Less (
                 else
                     /* <r> is now essentially the empty word.             */
                     return False;
-
+            }
             if( nl > 0 ) {  /* exl < exr                                  */
                 lexico = (*(pl+1) & genm) < (*pr & genm) ? True : False;
                 break;
@@ -1550,8 +1551,9 @@ Obj Func16Bits_AssocWord (
         vexp = ELMW_LIST( data, 2*i );
         nexp = INT_INTOBJ(vexp);
         while ( ! IS_INTOBJ(vexp) || nexp == 0 ) {
-            vexp = ErrorReturnObj( "exponent must not be zero", 0L, 0L,
-                                   "you can return a positive integer" );
+            vexp = ErrorReturnObj( "<exponent> must be a positive integer", 
+                                   0L, 0L,
+                                   "you can replace <exponent> via 'return <exponent>;'" );
             nexp = INT_INTOBJ(vexp);
             ptr = (UInt2*)DATA_WORD(obj) + (i-1);
         }
@@ -1595,9 +1597,9 @@ Obj Func16Bits_ObjByVector (
         vexp = ELMW_LIST(data,i);
         while ( ! IS_INTOBJ(vexp) ) {
             vexp = ErrorReturnObj(
-                "%d element must be integer (not a %s)",
+                "%d element must be an integer (not a %s)",
                 (Int) i, (Int) TNAM_OBJ(vexp),
-                "you can return an integer" );
+                "you can replace the element by <val> via 'return <val>;'" );
         }
         if ( vexp != INTOBJ_INT(0) ) {
             j = i;
@@ -2121,14 +2123,14 @@ Obj Func32Bits_ExponentSums3 (
 
     /* <start> must be positive                                            */
     while ( !IS_INTOBJ(vstart) || INT_INTOBJ(vstart) <= 0 )
-        vstart = ErrorReturnObj( "<start> must be positive", 0L, 0L,
-                                 "you can return an integer for <start>" );
+        vstart = ErrorReturnObj( "<start> must be a positive integer", 0L, 0L,
+                                 "you can replace <start> via 'return <start>;'" );
     start = INT_INTOBJ(vstart);
 
     /* <end> must be positive                                              */
     while ( !IS_INTOBJ(vend) || INT_INTOBJ(vend) <= 0 )
-        vend = ErrorReturnObj( "<end> must be positive", 0L, 0L,
-                               "you can return an integer for <end>" );
+        vend = ErrorReturnObj( "<end> must be a positive integer", 0L, 0L,
+                               "you can replace <end> via 'return <end>;'" );
     end = INT_INTOBJ(vend);
 
     /* <end> must be at least <start>                                      */
@@ -2214,8 +2216,8 @@ Obj Func32Bits_ExponentSyllable (
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
     while ( !IS_INTOBJ(vi) || INT_INTOBJ(vi) <= 0 || num < INT_INTOBJ(vi) )
-        vi = ErrorReturnObj( "<i> must be between 1 and %d", num, 0L,
-                             "you can return an integer for <i>" );
+        vi = ErrorReturnObj( "<i> must be an integer between 1 and %d", num, 0L,
+                             "you can replace <i> via 'return <i>;'" );
     i = INT_INTOBJ(vi);
 
     /* get the number of bits for exponents                                */
@@ -2304,8 +2306,8 @@ Obj Func32Bits_GeneratorSyllable (
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
     while ( !IS_INTOBJ(vi) || INT_INTOBJ(vi) <= 0 || num < INT_INTOBJ(vi) )
-        vi = ErrorReturnObj( "<i> must be between 1 and %d", num, 0L,
-                             "you can return an integer for <i>" );
+        vi = ErrorReturnObj( "<i> must be an integer between 1 and %d", num, 0L,
+                             "you can replace <i> via 'return <i>;'" );
     i = INT_INTOBJ(vi);
 
     /* get the number of bits for exponents                                */
@@ -2445,7 +2447,7 @@ Obj Func32Bits_Less (
 
             /* compare the exponents, and check the next generator.  This  */
             /* amounts to stripping off the common prefix  x^|expl-expr|.  */
-            if( exl > exr ) 
+            if( exl > exr ) {
                 if( nr > 0 ) {
                   lexico = (*pl & genm) < (*(pr+1) & genm) ? True : False;
                   break;
@@ -2453,7 +2455,7 @@ Obj Func32Bits_Less (
                 else
                     /* <r> is now essentially the empty word.             */
                     return False;
-
+            }
             if( nl > 0 ) {  /* exl < exr                                  */
                 lexico = (*(pl+1) & genm) < (*pr & genm) ? True : False;
                 break;
@@ -2518,8 +2520,9 @@ Obj Func32Bits_AssocWord (
         vexp = ELMW_LIST( data, 2*i );
         nexp = INT_INTOBJ(vexp);
         while ( ! IS_INTOBJ(vexp) || nexp == 0 ) {
-            vexp = ErrorReturnObj( "exponent must not be zero", 0L, 0L,
-                                   "you can return a positive integer" );
+            vexp = ErrorReturnObj( "<exponent> must not be a positive integer",
+                                   0L, 0L,
+                                   "you can replace <exponent> via 'return <exponent>;'" );
             nexp = INT_INTOBJ(vexp);
             ptr = (UInt4*)DATA_WORD(obj) + (i-1);
         }
@@ -2563,9 +2566,9 @@ Obj Func32Bits_ObjByVector (
         vexp = ELMW_LIST(data,i);
         while ( ! IS_INTOBJ(vexp) ) {
             vexp = ErrorReturnObj(
-                "%d element must be integer (not a %s)",
+                "%d element must be an integer (not a %s)",
                 (Int) i, (Int) TNAM_OBJ(vexp),
-                "you can return an integer" );
+                "you can replace the element by <val> via 'return <val>;'" );
         }
         if ( vexp != INTOBJ_INT(0) ) {
             j = i;
@@ -3047,6 +3050,234 @@ Obj FuncNBits_NumberSyllables (
 }
 
 
+/**************************************************************************
+* letter rep arithmetic */
+/**************************************************************************
+*F  FuncMultWorLettrep( <self>, <a>,<b> ) */
+Obj FuncMultWorLettrep (
+    Obj         self,
+    Obj         a,
+    Obj	        b)
+{
+  UInt l,m,i,j,newlen,as,bs,ae,be;
+  Obj n;
+  Obj *p;
+  Obj *q;
+
+  /* short check */
+  while ( ! IS_PLIST(a) ) {
+      a = ErrorReturnObj(
+                "first argument must be plain list (not a %s)",
+                (Int) TNAM_OBJ(a), 0L,
+                "you can replace the element by <val> via 'return <val>;'" );
+  }
+  while ( ! IS_PLIST(b) ) {
+      b = ErrorReturnObj(
+                "second argument must be plain list (not a %s)",
+                (Int) TNAM_OBJ(b), 0L, 
+                "you can replace the element by <val> via 'return <val>;'" );
+  }
+
+  /* Find overlap */
+  /* l:=Length(a); */
+  l=LEN_PLIST(a);
+  if (l==0) {
+    return b; 
+  }  
+  /* m:=Length(b); */
+  m=LEN_PLIST(b);
+  if (m==0) {
+    return a; 
+  }  
+  /* now we know both lists are length >0 */
+
+  /* i:=l; */
+  i=l;
+  /* j:=1; */
+  j=1;
+  /* while i>=1 and j<=m and a[i]=-b[j] do */
+  while ((i>=1)&&(j<=m)&& 
+    (INT_INTOBJ(ELM_PLIST(a,i))==-INT_INTOBJ(ELM_PLIST(b,j)))) {
+    /* i:=i-1; */
+    i--;
+    /* j:=j+1; */
+    j++;
+  /* od; */
+  }
+  /* if i=0 then */
+  if (i==0) {
+    /* if j>m then */
+    if (j>m) {
+      /* full cancellation */
+      /* return false; */
+      return False;
+    }
+    /* fi; */
+    /* a:=b{[j..m]}; */
+    as=1;
+    ae=0;
+    bs=j;
+    be=m;
+    newlen=m-j+1;
+  }
+  /* elif j>m then */
+  else {
+    if (j>m) {
+    /* a:=a{[1..i]}; */
+      as=1;
+      ae=i;
+      bs=1;
+      be=0;
+      newlen=i;
+    }
+    else {
+  /* else */
+    /* a:=Concatenation(a{[1..i]},b{[j..m]}); */
+      as=1;
+      ae=i;
+      bs=j;
+      be=m;
+      newlen=m-j+1+i;
+    }
+  /* fi; */
+  }
+  /* make the new list */
+  n=NEW_PLIST(TNUM_OBJ(a),newlen);
+  q=ADDR_OBJ(n);
+  q++;
+  j=as;
+  /* a[as] position */
+  /* there must be a better way for giving this address ... */
+  p=(Obj*) &(ADDR_OBJ(a)[as]);
+  while (j<=ae) {
+    *q++=*p++;
+    j++;
+  }
+  j=bs;
+  /* b[bs] position */
+  /* there must be a better way for giving this address ... */
+  p=(Obj*) &(ADDR_OBJ(b)[bs]);
+  while (j<=be) {
+    *q++=*p++;
+    j++;
+  }
+  SET_LEN_PLIST(n,newlen);
+  CHANGED_BAG(n);
+  /* return a; */
+  return n;
+}
+
+/*F  FuncMultBytLettrep( <self>, <a>,<b> ) */
+Obj FuncMultBytLettrep (
+    Obj         self,
+    Obj         a,
+    Obj	        b)
+{
+  UInt l,m,i,j,newlen,as,bs,ae,be;
+  Obj n;
+  UInt1 *p,*q;
+  
+  /* short check, if necessary strings are compacted */
+  while ( ! IsStringConv(a) ) {
+      a = ErrorReturnObj(
+                "first argument must be string (not a %s)",
+                (Int) TNAM_OBJ(a), 0L,
+                "you can replace the element by <val> via 'return <val>;'" );
+  }
+  while ( ! IsStringConv(b) ) {
+      b = ErrorReturnObj(
+                "second argument must be string (not a %s)",
+                (Int) TNAM_OBJ(b), 0L, 
+                "you can replace the element by <val> via 'return <val>;'" );
+  }
+  
+  /* Find overlap */
+  /* l:=Length(a); */
+  l=GET_LEN_STRING(a);
+  if (l==0) {
+    return b; 
+  }  
+  /* m:=Length(b); */
+  m=GET_LEN_STRING(b);
+  if (m==0) {
+    return a; 
+  }  
+  /* now we know both lists are length >0 */
+
+  /* i:=l; */
+  i=l;
+  /* j:=1; */
+  j=1;
+  /* while i>=1 and j<=m and a[i]=-b[j] do */
+  p=CHARS_STRING(a);
+  q=CHARS_STRING(b);
+  while ((i>=1)&&(j<=m)&&
+    (SINT_CHAR(p[i-1])==-SINT_CHAR(q[j-1]))) {
+    /* i:=i-1; */
+    i--;
+    /* j:=j+1; */
+    j++;
+  /* od; */
+  }
+  /* if i=0 then */
+  if (i==0) {
+    /* if j>m then */
+    if (j>m) {
+      /* full cancellation */
+      /* return false; */
+      return False;
+    }
+    /* fi; */
+    /* a:=b{[j..m]}; */
+    as=1;
+    ae=0;
+    bs=j;
+    be=m;
+    newlen=m-j+1;
+  }
+  /* elif j>m then */
+  else {
+    if (j>m) {
+    /* a:=a{[1..i]}; */
+      as=1;
+      ae=i;
+      bs=1;
+      be=0;
+      newlen=i;
+    }
+    else {
+  /* else */
+    /* a:=Concatenation(a{[1..i]},b{[j..m]}); */
+      as=1;
+      ae=i;
+      bs=j;
+      be=m;
+      newlen=m-j+1+i;
+    }
+  /* fi; */
+  }
+  /* make the new list */
+  n=NEW_STRING(newlen);
+  q=CHARS_STRING(n);
+  p=CHARS_STRING(a);
+  j=as;
+  /* a[as] position */
+  while (j<=ae) {
+    *q++=p[j-1];
+    j++;
+  }
+  j=bs;
+  p=CHARS_STRING(b);
+  /* b[bs] position */
+  while (j<=be) {
+    *q++=p[j-1];
+    j++;
+  }
+  /* return a; */
+  CHANGED_BAG(n);
+  return n;
+}
+
 /****************************************************************************
 **
 
@@ -3194,6 +3425,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "32Bits_LengthWord", 1, "32_bits_word",
       Func32Bits_LengthWord, "src/objfgelm.c:32Bits_LengthWord" },
+
+    { "MULT_WOR_LETTREP", 2, "list,list",
+      FuncMultWorLettrep, "src/objfgelm.c:MULT_WOR_LETTREP" },
+
+    { "MULT_BYT_LETTREP", 2, "string,string",
+      FuncMultBytLettrep, "src/objfgelm.c:MULT_BYT_LETTREP" },
 
     { 0 }
 

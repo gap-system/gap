@@ -28,7 +28,7 @@ They consist of row vectors, that is, lists whose elements lie in $F$.
 \beginexample
 gap> F:= Rationals;;
 gap> V:= VectorSpace( F, [ [ 1, 1, 1 ], [ 1, 0, 2 ] ] );
-# The vector space spanned by [ 1, 1, 1] and [ 1, 0, 2 ].
+  # The vector space spanned by [ 1, 1, 1] and [ 1, 0, 2 ].
 <vector space over Rationals, with 2 generators>
 gap> [ 2, 1, 3 ] in V;
 true
@@ -38,8 +38,7 @@ The full row space $F^n$ is created by commands like:
 
 \beginexample
 gap> F:= GF( 7 );;
-gap> V:= F^3;                                           
-# The full row space over F of dimension 3. 
+gap> V:= F^3;   # The full row space over F of dimension 3. 
 ( GF(7)^3 )
 gap> [ 1, 2, 3 ] * One( F ) in V;  
 true
@@ -80,7 +79,7 @@ as vector spaces over fields other than the prime field.
 gap> F:= GF( 16 );;
 gap> LeftActingDomain( F );
 GF(2)
-gap> G:= AsVectorSpace( GF( 4 ), F );       
+gap> G:= AsVectorSpace( GF( 4 ), F );
 AsField( GF(2^2), GF(2^4) )
 gap> F = G;
 true
@@ -129,7 +128,7 @@ gap> m1:= [ [ 1, 2 ], [ 3, 4 ] ];; m2:= [ [ 1, 1 ], [ 1, 0 ] ];;
 gap> V:= VectorSpace( Rationals, [ m1, m2 ] );
 <vector space over Rationals, with 2 generators>
 gap> B:= Basis( V );
-SemiEchelonBasis( <vector space over Rationals, with 2 generators>,... )
+SemiEchelonBasis( <vector space over Rationals, with 2 generators>, ... )
 gap> BasisVectors( Basis( V ) );
 [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 0, 1 ], [ 2, 4 ] ] ]
 \endexample
@@ -143,7 +142,7 @@ are constructed using `LinearCombination'.
 gap> V:= VectorSpace( Rationals, [ [ 1, 2 ], [ 3, 4 ] ] );
 <vector space over Rationals, with 2 generators>
 gap> B:= Basis( V );
-SemiEchelonBasis( <vector space over Rationals, with 2 generators>,... )
+SemiEchelonBasis( <vector space over Rationals, with 2 generators>, ... )
 gap> BasisVectors( Basis( V ) );
 [ [ 1, 2 ], [ 0, 1 ] ]
 gap> Coefficients( B, [ 1, 0 ] );
@@ -160,7 +159,7 @@ to `Basis'.
 \beginexample
 gap> V:= VectorSpace( Rationals, [ [ 1, 2 ], [ 3, 4 ] ] );; 
 gap> B:= Basis( V, [ [ 1, 0 ], [ 0, 1 ] ] );
-SemiEchelonBasis( <vector space over Rationals, with 2 generators>,
+SemiEchelonBasis( <vector space over Rationals, with 2 generators>, 
 [ [ 1, 0 ], [ 0, 1 ] ] )
 gap> Coefficients( B, [ 1, 2 ] );
 [ 1, 2 ]
@@ -282,7 +281,9 @@ table. Let $A$ be a finite dimensional algebra with basis
 $\{x_1,\ldots,x_n\}$, then for $1\leq i,j\leq n$ the product $x_ix_j$ is
 a linear combination of basis elements, i.e., there are $c_{ij}^k$ in the
 ground field such that
-$$x_ix_j=\sum_{k=1}^n c_{ij}^k x_k.$$
+$$
+x_i x_j = \sum_{k=1}^n c_{ij}^k x_k\.
+$$
 It is not difficult to show that the constants $c_{ij}^k$
 determine the multiplication completely. Therefore, the $c_{ij}^k$ are
 called *structure constants*. In {\GAP} we can create a finite dimensional
@@ -306,7 +307,9 @@ is the table
 of an algebra with basis $\{x_1,\ldots ,x_8\}$ and that `S[3][7]' 
 equals `[ [ 2, 4, 6 ], [ 1/2, 2, 2/3 ] ]'. Then in the algebra we 
 have the relation 
-$$x_3 x_7=(1/2) x_2 + 2 x_4 + (2/3) x_6.$$
+$$
+x_3 x_7 = (1/2) x_2 + 2 x_4 + (2/3) x_6\.
+$$
 Furthermore, if `S[6][1] = [ [  ], [  ] ]' then the product of the
 sixth and first basis elements is zero.
 
@@ -335,12 +338,18 @@ in any algebra described by $T$ is set to $\sum_l c_{ij}^{k_l} x_{k_l}$.
 If $T$ knows that it is (anti)symmetric, then at the same time also
 the product of the $j$-th and the $i$-th basis vector is set appropriately.
 
+In the following example we temporarily increase the line length limit from
+its default value 80 to 82 in order to make the long output expression fit
+into one line.
+
 \beginexample
+gap> SizeScreen([ 82, ]);;
 gap> T:= EmptySCTable( 2, 0, "symmetric" );
 [ [ [ [  ], [  ] ], [ [  ], [  ] ] ], [ [ [  ], [  ] ], [ [  ], [  ] ] ], 1, 0 ]
 gap> SetEntrySCTable( T, 1, 2, [1/2,1,1/3,2] );  T;
 [ [ [ [  ], [  ] ], [ [ 1, 2 ], [ 1/2, 1/3 ] ] ], 
-[ [ [ 1, 2 ], [ 1/2, 1/3 ] ], [ [  ], [  ] ] ], 1, 0 ]
+  [ [ [ 1, 2 ], [ 1/2, 1/3 ] ], [ [  ], [  ] ] ], 1, 0 ]
+gap> SizeScreen([ 80, ]);;
 \endexample
 
 If we have defined a structure constants table, then we can construct
@@ -381,23 +390,28 @@ gap> Dimension( A );
 gap> LeftActingDomain( A );
 GF(2)
 gap> Basis( A );
-Basis( <algebra of dimension 3 over GF(2)>,... )
+CanonicalBasis( <algebra of dimension 3 over GF(2)> )
 \endexample
 
 Subalgebras and ideals of an algebra can be constructed by specifying
 a set of generators for the subalgebra or ideal. The quotient space
 of an algebra by an ideal is naturally an algebra itself.
 
+In the following example we temporarily increase the line length limit from
+its default value 80 to 81 in order to make the long output expression fit
+into one line.
+
 \beginexample
 gap> m:= [ [ 1, 2, 3 ], [ 0, 1, 6 ], [ 0, 0, 1 ] ];;
 gap> A:= Algebra( Rationals, [ m ] );;
-gap> subA:= Subalgebra( A, [ m-m^2 ] );   
+gap> subA:= Subalgebra( A, [ m-m^2 ] );
 <algebra over Rationals, with 1 generators>
 gap> Dimension( subA );
 2
+gap> SizeScreen([ 81, ]);;
 gap> idA:= Ideal( A, [ m-m^3 ] );
-<two-sided ideal in <algebra of dimension 3 over Rationals>, (
-1generators)>
+<two-sided ideal in <algebra of dimension 3 over Rationals>, (1 generators)>
+gap> SizeScreen([ 80, ]);;
 gap> Dimension( idA ); 
 2
 gap> B:= A/idA;
@@ -423,9 +437,8 @@ gap> Dimension( A );
 gap> R:= RadicalOfAlgebra( A );
 <algebra of dimension 3 over Rationals>
 gap> h:= NaturalHomomorphismByIdeal( A, R );
-<linear mapping by matrix, 
-  Algebra( Rationals,[[[1,0,0],[0,2,0],[0,0,3]], [[0,1,0],[0,0,2],[0,0,0]]])
-  ->Algebra(Rationals,[v.1,v.2,v.3])>
+<linear mapping by matrix, <algebra of dimension 
+6 over Rationals> -> <algebra of dimension 3 over Rationals>>
 \endexample
 \beginexample
 gap> AmodR:= ImagesSource( h );
@@ -527,9 +540,8 @@ gap> Length( cos );
 24
 gap> hom:= OperationHomomorphism( g, cos, OnRight );;
 gap> im:= Image( hom );
-Group([ ( 2, 3, 5, 9,15)( 4, 7,12, 8,14)(10,17,23,20,24)(11,19,22,16,13),
-  ( 1, 2, 4, 8, 3, 6,11,20,17,19)( 5,10,18, 7,13,22,12,21,24,15)( 9,16)
-    (14,23) ])
+Group([ (2,3,5,9,15)(4,7,12,8,14)(10,17,23,20,24)(11,19,22,16,13), 
+  (1,2,4,8,3,6,11,20,17,19)(5,10,18,7,13,22,12,21,24,15)(9,16)(14,23) ])
 gap> Size( im );
 120
 \endexample
@@ -543,7 +555,7 @@ gap> bas:= CanonicalBasis( q );;
 gap> BasisVectors( bas );
 [ e, i, j, k ]
 gap> op:= OperationAlgebraHomomorphism( q, bas, OnRight );
-<op. hom. AlgebraWithOne( NF(5,[ 1, 4 ]),
+<op. hom. AlgebraWithOne( NF(5,[ 1, 4 ]), 
 [ e, i, j, k ] ) -> matrices of dim. 4>
 gap> ImagesRepresentative( op, e );
 [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ]

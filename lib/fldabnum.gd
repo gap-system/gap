@@ -24,7 +24,10 @@ Revision.fldabnum_gd :=
 ##
 #P  IsNumberField( <F> )
 ##
-##  A number field is a finite extension of a prime field in characteristic
+##  returns `true' if the field <F> is a number field, or `false' otherwise. 
+##
+##  \index{number field}
+##  A *number field* is a finite extension of a prime field in characteristic
 ##  zero.
 ##
 DeclareProperty( "IsNumberField", IsField );
@@ -40,8 +43,11 @@ InstallIsomorphismMaintenance( IsNumberField,
 ##
 #P  IsAbelianNumberField( <F> )
 ##
+##  returns the abelian number field of the field <F>.
+##
+##  \index{abelian number field}
 ##  An *abelian number field* is a number field that is a Galois extension
-##  of the prime field with abelian Galois group (see~"GaloisGroup.field").
+##  of the prime field with abelian Galois group (see~"GaloisGroup!of field").
 ##
 DeclareProperty( "IsAbelianNumberField", IsField );
 

@@ -72,10 +72,10 @@ void AddIn( Obj list, Obj w, Obj e ) {
       g = INT_INTOBJ( ELM_PLIST( w, i ) );
 
       s = ELM_PLIST( w, i+1 );
-      C_PROD_FIA( t, s, e );
+      C_PROD_FIA( t, s, e );      /*   t = s * e   */
 
       r = ELM_PLIST( list, g );
-      C_SUM_FIA( s, t, r );
+      C_SUM_FIA( s, t, r );       /*   s = r + s * e   */
 
       SET_ELM_PLIST( list, g, s );  CHANGED_BAG( list );
   }
@@ -108,7 +108,7 @@ Obj CollectPolycyc (
 
     Int    i, g, syl, h, hh;
 
-    Obj    e, ge, mge, we, r, s, t, u;
+    Obj    e, ee, ge, mge, we, r, s, t, u;
     Obj    w, x = (Obj)0, y = (Obj)0;
 
 
@@ -182,7 +182,7 @@ Obj CollectPolycyc (
           e = ELM_PLIST( est, st );
           
           if( LtInt( INTOBJ_INT(0), e ) ) {
-            C_DIFF_FIA( e, e, INTOBJ_INT(1) );
+            C_DIFF_FIA( ee, e, INTOBJ_INT(1) );  e = ee;
             SET_ELM_PLIST( est, st, e );
             conj  = ADDR_OBJ(pcp)[PC_CONJUGATES];
             iconj = ADDR_OBJ(pcp)[PC_INVERSECONJUGATES];
@@ -190,7 +190,7 @@ Obj CollectPolycyc (
             C_SUM_FIA( ge, ELM_PLIST( list, g ), INTOBJ_INT(1) );
           }
           else {
-            C_SUM_FIA( e, e, INTOBJ_INT(1) );
+            C_SUM_FIA( ee, e, INTOBJ_INT(1) );  e = ee;
             SET_ELM_PLIST( est, st, e );
             conj  = ADDR_OBJ(pcp)[PC_CONJUGATESINVERSE];
             iconj = ADDR_OBJ(pcp)[PC_INVERSECONJUGATESINVERSE];
@@ -253,7 +253,7 @@ Obj CollectPolycyc (
               }
               else {
                   x = ELM_PLIST( igens, hh );
-                  C_PROD_FIA( e, e, INTOBJ_INT(-1) );
+                  C_PROD_FIA( ee, e, INTOBJ_INT(-1) );  e = ee;
               }
               
               PUSH_STACK( x, e );
@@ -274,9 +274,9 @@ Obj CollectPolycyc (
               if( LtInt( INTOBJ_INT(0), e ) ) x = ELM_PLIST(  gens, h );
               else                            x = ELM_PLIST( igens, h );
             
-            if( LtInt( e, INTOBJ_INT(0) ) )
-              C_PROD_FIA( e, e, INTOBJ_INT(-1) );
-            
+            if( LtInt( e, INTOBJ_INT(0) ) ) {
+              C_PROD_FIA( ee, e, INTOBJ_INT(-1) );  e = ee;
+            }
             PUSH_STACK( x, e );
           }
         }

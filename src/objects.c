@@ -845,7 +845,7 @@ void            PrintObj (
         ErrorReturnVoid(
             "user interrupt while printing",
             0L, 0L,
-            "you can return" );
+            "you can 'return;'" );
         PrintObjDepth = i;
     }
 
@@ -1408,24 +1408,26 @@ Obj FuncCLONE_OBJ (
     /* check <src>                                                         */
     if ( IS_INTOBJ(src) ) {
         ErrorReturnVoid( "small integers cannot be cloned", 0, 0,
-                         "you can `return' to skip the cloneing" );
+                         "you can 'return;' to skip the cloning" );
         return 0;
     }
     if ( IS_FFE(src) ) {
         ErrorReturnVoid( "finite field elements cannot be cloned", 0, 0,
-                         "you can `return' to skip the cloneing" );
+                         "you can 'return;' to skip the cloning" );
         return 0;
     }
 
-    /* check <dst>                                                         */
+    /* check <dst>                                                         
     if ( (REREADING != True) &&
 	 (CALL_1ARGS( IsToBeDefinedObj, dst ) != True) ) {
-        ErrorReturnVoid( "the destination must a `to-be-defined' (not a %s)",
+        ErrorReturnVoid( "the destination must be `to-be-defined' (not a %s)",
                          (Int)TNAM_OBJ(dst), 0,
-                         "you can `return' to skip the cloneing" );
+                         "you can 'return;'" );
         return 0;
     }
 
+    */
+    
     /* if object is mutable, produce a structural copy                     */
     if ( IS_MUTABLE_OBJ(src) ) {
         src = CopyObj( src, 1 );
@@ -1720,7 +1722,7 @@ static Int InitLibrary (
     AssGVar(GVarName("LAST_REAL_TNUM"), INTOBJ_INT(LAST_REAL_TNUM));
     MakeReadOnlyGVar(GVarName("LAST_REAL_TNUM"));
     
-    AssGVar(GVarName("FIRST_VIRTUAL_TNUM"), INTOBJ_INT(FIRST_VIRTUAL_TNUM));
+    AssGVar(GVarName("FIRST_VIRTUAL_TNUM"), Fail);
     MakeReadOnlyGVar(GVarName("FIRST_VIRTUAL_TNUM"));
 
     AssGVar(GVarName("LAST_VIRTUAL_TNUM"), INTOBJ_INT(LAST_VIRTUAL_TNUM));

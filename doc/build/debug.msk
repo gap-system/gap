@@ -29,18 +29,17 @@ error as in the following example occurs and a break loop is entered:
 
 \begintt
 gap> IsNormal(2,2);
-For debugging hints type ?Recovery from NoMethodFound
-Error no 1st choice method found for `IsNormalOp' on 2 arguments at
-Error( inf );
-oper( super, sub ) called from
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `IsNormal' on 2 arguments called from
 <function>( <arguments> ) called from read-eval-loop
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or you can return to continue
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
 brk> 
 \endtt
 
-This only says, that the method selection tried to find a method for the
-operation `IsNormalOp' on two arguments and failed. In this situation it is
+This only says, that the method selection tried to find a method for 
+`IsNormal' on two arguments and failed. In this situation it is
 crucial to find out, why this happened. Therefore there are a few functions
 which can display further information.
 Note that you can leave the break loop by the `quit' command (see~"quit")
@@ -72,7 +71,7 @@ afterwards.
 gap> TraceMethods( [ Size ] );
 gap> g:= Group( (1,2,3), (1,2) );;
 gap> Size( g );
-#I  Size: method for a permutation group
+#I  Size: for a permutation group
 #I  Setter(Size): system setter
 #I  Size: system getter
 #I  Size: system getter
@@ -85,16 +84,18 @@ gap> UntraceMethods( [ Size ] );
 \beginexample
 gap> TraceImmediateMethods( true );
 gap> g:= Group( (1,2,3), (1,2) );;
-#I  immediate: IsFinitelyGeneratedGroup
+#I  immediate: Size
+#I  immediate: IsCommutative
+#I  immediate: IsTrivial
+#I  immediate: IsStabChainViaChainSubgroup
+#I  immediate: IsChainTypeGroup
 gap> Size( g );
-#I  Size: method for a permutation group
-#I  immediate: IsFinitelyGeneratedGroup
-#I  immediate: IsCyclic
-#I  immediate: IsFinitelyGeneratedGroup
-#I  Setter(Size): system setter
-#I  Size: system getter
+#I  immediate: IsNonTrivial
+#I  immediate: Size
+#I  immediate: IsStabChainViaChainSubgroup
+#I  immediate: IsChainTypeGroup
+#I  immediate: IsNonTrivial
 #I  immediate: IsPerfectGroup
-#I  Size: system getter
 #I  immediate: IsEmpty
 6
 gap> TraceImmediateMethods( false );
@@ -124,8 +125,8 @@ algorithms for the computation of a subgroup lattice.
 The amount of information to be displayed can be specified by the user for
 each info class separately by a *level*, the higher the level the more
 information will be displayed.
-Ab initio all info classes have level zero except `InfoWarning' which
-has level 1.
+Ab initio all info classes have level zero except `InfoWarning' 
+(see~"InfoWarning") which initially has level 1.
 
 \>NewInfoClass( <name> ) O
 
@@ -193,6 +194,12 @@ gap> InfoLevel(InfoWarning);
 1
 \endexample
 
+\>`InfoWarning' V
+
+is an info class to which general warnings are sent at level 1, which is
+its default level. More specialised warnings are `Info'-ed at `InfoWarning'
+level 2, e.g.~information about the autoloading of share packages and the
+initial line matched when displaying an on-line help topic.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Assertions}
@@ -362,7 +369,7 @@ the same numbers as produced by `combinat.tst'.
 
 The {\GAP} interpreter monitors the level of nesting of {\GAP}
 functions during execution. By default, whenever this nesting reaches
-a multiple of 5000, {\GAP} enters a break loop ("break loop") allowing 
+a multiple of 5000, {\GAP} enters a break loop ("break loops") allowing 
 you to terminate the calculation, or enter `return;' to continue it. 
 
 
@@ -376,27 +383,33 @@ gap> dive(6000);
 recursion depth trap (5000)
  at
 dive( depth - 1 );
+ called from
 dive( depth - 1 ); called from
 ...
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or you may return to continue
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you may 'return;' to continue
 brk> return;
 gap> dive(11000);
 recursion depth trap (5000)
  at
 dive( depth - 1 );
+ called from
 dive( depth - 1 ); called from
 ...
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or you may return to continue
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you may 'return;' to continue
 brk> return;
 recursion depth trap (10000)
  at
 dive( depth - 1 );
+ called from
 dive( depth - 1 ); called from
 ...
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or you may return to continue
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you may 'return;' to continue
 brk> return;
 gap>
 \endtt
@@ -419,31 +432,37 @@ gap> dive(2500);
 recursion depth trap (1000)
  at
 dive( depth - 1 );
+ called from
 dive( depth - 1 ); called from
 ...
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or you may return to continue
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you may 'return;' to continue
 brk> return;
 recursion depth trap (2000)
  at
 dive( depth - 1 );
+ called from
 dive( depth - 1 ); called from
 ...
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or you may return to continue
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you may 'return;' to continue
 brk> return;
 gap> SetRecursionTrapInterval(-1);
 SetRecursionTrapInterval( <interval> ): <interval> must be a non-negative smal\
 l integer
 not in any function
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or You can return a non-negative small integer to continue
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can replace <interval> via 'return <interval>;' to continue
 brk> return ();
 SetRecursionTrapInterval( <interval> ): <interval> must be a non-negative smal\
 l integer
 not in any function
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or You can return a non-negative small integer to continue
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can replace <interval> via 'return <interval>;' to continue
 brk> return 0;
 gap> dive(20000);
 gap> dive(2000000);

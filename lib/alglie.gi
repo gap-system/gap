@@ -377,12 +377,9 @@ InstallMethod( LieCentralizer,
     M:= List( M, x -> LinearCombination( B, x ) );
 
     # Return the subalgebra.
-    if IsIdeal( A, S ) then
-#T really check this?
-      return IdealNC( A, M, "basis" );
-    else
-      return SubalgebraNC( A, M, "basis" );
-    fi;
+
+    return SubalgebraNC( A, M, "basis" );
+
     end );
 
 
@@ -548,12 +545,8 @@ InstallMethod( KappaPerp,
     # Extract the generators.
     bas:= List( bas, x -> LinearCombination( B, x ) );
 
-    if IsIdeal( L, U ) then
-      return SubalgebraNC( L, bas, "basis" );
-#T or always return just a space?
-    else
-      return SubspaceNC( L, bas, "basis" );
-    fi;
+    return SubspaceNC( L, bas, "basis" );
+
     end );
 
 
@@ -920,7 +913,12 @@ InstallMethod( AdjointBasis,
         CloseMutableBasis( adLsp, adi );
       fi;
     od;
-    adLbas:= Basis( VectorSpace( F, adL ), adL );
+
+    if adL = [ ] then
+       adLbas:= Basis( VectorSpace( F, [ ], NullMat( n, n, F ) ) );
+    else
+       adLbas:= Basis( VectorSpace( F, adL ), adL );
+    fi;
 
     SetIndicesOfAdjointBasis( adLbas, inds );
 
@@ -3203,7 +3201,7 @@ InstallGlobalFunction( DescriptionOfNormalizedUEAElement,
           indices,           # list that stores at position $i$ up to what
                              # position the $i$-th monomial is known to be
                              # normalized
-          i, j, k, l,        # loop variables
+          s, i, j, k, l,     # loop variables
           2i,                # `2*i'
           scalar,            # coefficient of the monomial under work
           mon,               # monomial under work
@@ -3264,20 +3262,11 @@ InstallGlobalFunction( DescriptionOfNormalizedUEAElement,
             # We must swap two generators.
             # First construct head and tail of the arising monomials.
             head:= mon{ [ 1 .. j-1 ] };
-            if 1 < mon[ j+1 ] then
-              Add( head, mon[  j  ]     );
-              Add( head, mon[ j+1 ] - 1 );
-            fi;
 
-            middle:= [ mon[ j+2 ], 1, mon[j], 1 ];
+            middle:= [ mon[ j+2 ], mon[j+3], mon[j], mon[j+1] ];
 
-            if 1 < mon[ j+3 ] then
-              tail:= Concatenation( [ mon[ j+2 ], mon[ j+3 ] - 1 ],
-                                    mon{ [ j+4 .. len ] } );
-            else
-              tail:= mon{ [ j+4 .. len ] };
-            fi;
-
+            tail:= mon{ [ j+4 .. len ] };
+              
             # Adjust `indices[i]'.
             index:= indices[i] - 1;
             if index = 0 then
@@ -3291,13 +3280,43 @@ InstallGlobalFunction( DescriptionOfNormalizedUEAElement,
 
             # Add the coeffs/monomials that are given by the commutator.
             # The part between `head' and `tail' of these listofpairs is
-            # $\sum_{k=1}^d c_{ijk} x_d$.
+            # $a_{ji}=\sum_{k=1}^d c_{ijk} x_d$.
+            # Here we use the following formula (which is easily proved
+            # by induction):
+            #
+            #  x_j^m x_i^n = x_i^n x_j^m + \sum_{l=0}^{m-1} \sum_{k=0}^{n-1}
+            #                      x_j^l x_i^k a_{ji} x_i^{n-1-k} x_j^{m-1-l}
+            #
+            #
+            # where x_jx_i = x_ix_j + a_{ji}
+            #
             Tcoeffs:= T[ mon[j] ][ mon[ j+2 ] ];
-            for k in [ 1 .. Length( Tcoeffs[1] ) ] do
-              Append( listofpairs,
-                  [ Concatenation( head, [ Tcoeffs[1][k], 1 ], tail ),
-                    scalar * Tcoeffs[2][k] ] );
-              Add( indices, index );
+            for s in [ 1 .. Length( Tcoeffs[1] ) ] do
+                for l in [ 0 .. mon[j+1] - 1 ] do
+                    for k in [ 0 .. mon[j+3] - 1 ] do
+                        
+                        middle:= [ ];
+                        
+                        if l > 0 then
+                            middle:= [ mon[j], l ];
+                        fi;
+                        if k > 0 then
+                            Append( middle, [ mon[j+2], k ] );
+                        fi;
+                        Append( middle, [ Tcoeffs[1][s], 1 ] );
+                        if mon[j+3]-1-k > 0 then
+                            Append( middle, [ mon[j+2], mon[j+3]-1-k ] );
+                        fi;
+                        if mon[j+1]-1-l > 0 then
+                            Append( middle, [ mon[j], mon[j+1]-1-l ] );
+                        fi;
+                            
+                        Append( listofpairs,
+                                [ Concatenation( head, middle, tail ),
+                                  scalar * Tcoeffs[2][s] ] );
+                        Add( indices, index );
+                    od;
+                od;
             od;
 
             break;
@@ -3363,11 +3382,11 @@ end );
 ##
 #M  UniversalEnvelopingAlgebra( <L> ) . . . . . . . . . . . for a Lie algebra
 ##
-InstallMethod( UniversalEnvelopingAlgebra,
-    "for a finite dimensional Lie algebra",
+InstallOtherMethod( UniversalEnvelopingAlgebra,
+    "for a finite dimensional Lie algebra and a basis of it",
     true,
-    [ IsLieAlgebra ], 0,
-    function( L )
+    [ IsLieAlgebra, IsBasis ], 0,
+    function( L, B )
 
     local F,          # free associative algebra
           U,          # universal enveloping algebra, result
@@ -3402,7 +3421,7 @@ InstallMethod( UniversalEnvelopingAlgebra,
                                    and IsPackedElementDefaultRep
                                    and IsNormalForm );
 
-    T:= StructureConstantsTable( Basis( L ) );
+    T:= StructureConstantsTable( B );
     FamMon:= ElementsFamily( FamilyObj( UnderlyingMagma( F ) ) );
     FamFree:= ElementsFamily( FamilyObj( F ) );
 
@@ -3431,6 +3450,15 @@ InstallMethod( UniversalEnvelopingAlgebra,
 #T missing: embedding of the Lie algebra (as vector space)
 #T missing: relators (only compute them if they are explicitly wanted)
 #T          (attribute `Relators'?)
+
+InstallMethod( UniversalEnvelopingAlgebra,
+    "for a finite dimensional Lie algebra",
+    true,
+    [ IsLieAlgebra ], 0,
+    function( L )
+
+    return UniversalEnvelopingAlgebra( L, Basis(L) );
+end );
 
 
 #############################################################################
@@ -3770,8 +3798,9 @@ BindGlobal( "FptoSCAMorphismImageElm", function( h, x )
           fi;
        end;
  
-       gens:= h!.generators;
-       imgs:= h!.genimages;
+       e:=MappingGeneratorsImages(h);
+       gens:= e[1];
+       imgs:= e[2];
        e:= ExtRepOfObj(x)[2];
        im:= 0*imgs[1];
        k:= 1;
@@ -4403,6 +4432,7 @@ local ReductionModuloTable,   #
                             generators := gens,
                             genimages  := imgs
                            ) );
+     SetMappingGeneratorsImages(map,[Immutable(gens),Immutable(imgs)]);
      return map;
    fi;
 
@@ -4526,6 +4556,7 @@ local ReductionModuloTable,   #
                               generators := gens,
                               genimages  := imgs
                              ) );
+             SetMappingGeneratorsImages(map,[Immutable(gens),Immutable(imgs)]);
              return map;
            fi;
            e[2]:= [ ];
@@ -4845,6 +4876,7 @@ local ReductionModuloTable,   #
                               generators := gens,
                               genimages  := imgs
                              ) );
+             SetMappingGeneratorsImages(map,[Immutable(gens),Immutable(imgs)]);
              return map;
            fi;
            e:=[ e[1], [] ];
@@ -4914,6 +4946,7 @@ local ReductionModuloTable,   #
                               generators := gens,
                               genimages  := imgs
                              ) );
+             SetMappingGeneratorsImages(map,[Immutable(gens),Immutable(imgs)]);
              return map;
          fi;
 
@@ -5072,6 +5105,8 @@ local ReductionModuloTable,   #
                             generators := gens,
                             genimages  := imgs
                            ) );
+   SetMappingGeneratorsImages(map,[Immutable(gens),Immutable(imgs)]);	
+
    return map;
 
 end );
@@ -5241,7 +5276,12 @@ InstallMethod( JenningsLieAlgebra,
           B,         # Basis of L 
           vv, x,     # elements of L
           comp,      # homogeneous component
-          grading;   # list of homogeneous components 
+          grading,   # list of homogeneous components 
+          pcgps,     # list of pc groups, isom to the elts of `grades'.
+          hom_pcg,   # list of isomomorphisms of `grades[i]' to `pcgps[i]'. 
+          enum_gens, # List of numbers of elts of `gens' in extrep.
+          pp;        # Position in a list.
+
 
     # We do not know the characteristic if `G' is trivial.
     if IsTrivial( G ) then
@@ -5254,11 +5294,17 @@ InstallMethod( JenningsLieAlgebra,
     Homs:= List ( [1..Length(J)-1] , x -> 
                   NaturalHomomorphismByNormalSubgroup ( J[x], J[x+1] ));
     grades := List ( Homs , Range );
+    hom_pcg:= List( grades, IsomorphismPcGroup );
+    pcgps:= List( hom_pcg, Range );
     gens := [];
+    enum_gens:= [ ];
     pos := [];
     for i in [1.. Length(grades)] do
-        tempgens:= GeneratorsOfGroup( grades[i] );
+        tempgens:= GeneratorsOfGroup( pcgps[i] );
         Append ( gens , tempgens);
+
+        # Record the number that each generator has in extrep.
+        Add( enum_gens, List( tempgens, x -> ExtRepOfObj( x )[1] ) );
         Append ( pos , List ( tempgens , x-> i ) );
     od;
 
@@ -5270,12 +5316,14 @@ InstallMethod( JenningsLieAlgebra,
     T:= EmptySCTable( dim , Zero(F) , "antisymmetric" );
     pimgs := [];
     for i in [1..dim] do
-        a:= PreImagesRepresentative( Homs[pos[i]] , gens[i] );
+        a:= PreImagesRepresentative( Homs[pos[i]] , 
+                    PreImagesRepresentative( hom_pcg[pos[i]], gens[i] ) );
 
         # calculate the p-th power image of `a':
 
         if pos[i]*p <= Length(Homs) then
-            Add( pimgs, Image( Homs[pos[i]*p], a^p) );
+            Add( pimgs, Image( hom_pcg[pos[i]*p], 
+                    Image( Homs[pos[i]*p], a^p) ) );
         else
             Add( pimgs, "zero" );
         fi;
@@ -5284,18 +5332,17 @@ InstallMethod( JenningsLieAlgebra,
             if pos[i]+pos[j] <= Length( Homs ) then
    
                # Calculate the commutator [a,b], and map the result into
-               # the right homogeneous component.
+               # the correct homogeneous component.
 
-                b:= PreImagesRepresentative( Homs[pos[j]] , gens[j] );
-                c:= Image(Homs[pos[i] + pos[j]], a^-1*b^-1*a*b);
+                b:= PreImagesRepresentative( Homs[pos[j]], 
+                         PreImagesRepresentative( hom_pcg[pos[j]], gens[j] ));
+                c:= Image( hom_pcg[pos[i] + pos[j]], 
+                           Image(Homs[pos[i] + pos[j]], a^-1*b^-1*a*b) );
                 e:= ExtRepOfObj(c);
                 co:=[];
                 for k in [1,3..Length(e)-1] do
-                    if c in G then
-                        f:= GeneratorsOfGroup( G )[e[k]];
-                    else
-                        f:= GeneratorsOfGroup( grades[pos[i]+pos[j]] )[e[k]];
-                    fi;
+                    pp:= Position( enum_gens[pos[i]+pos[j]], e[k] );
+                    f:= GeneratorsOfGroup( pcgps[pos[i]+pos[j]] )[pp];
                     t:= Position( gens, f );
                     Add( co, One( F )*e[k+1] );
                     Add( co, t );
@@ -5350,11 +5397,8 @@ InstallMethod( JenningsLieAlgebra,
             e:= ExtRepOfObj( pimgs[i] );
             x:= Zero( L );
             for k in [1,3..Length(e)-1] do
-                if pimgs[i] in G then
-                    f:= GeneratorsOfGroup( G )[e[k]];
-                else
-                    f:= GeneratorsOfGroup( grades[pos[i]*p] )[e[k]];
-                fi;
+                pp:= Position( enum_gens[pos[i]*p], e[k] );
+                f:= GeneratorsOfGroup( pcgps[pos[i]*p] )[pp];
                 t:= Position( gens, f );
                 x:= x+ One( F )*e[k+1]*vv[t];
             od;
@@ -5362,6 +5406,7 @@ InstallMethod( JenningsLieAlgebra,
         fi;
     od;
     SetPthPowerImages( B, pimgs );
+    SetIsRestrictedLieAlgebra( L, true );
 
     return L;
             
@@ -5370,5 +5415,149 @@ end );
 
 #############################################################################
 ##
+#M  PCentralLieAlgebra( <G> )
+##
+##  The p-central Lie algebra of the p-group G. 
+##
+##
+InstallMethod( PCentralLieAlgebra,
+                "for a p-group",
+                 true,
+                 [IsGroup], 0,
+
+ function ( G )
+
+    local J,         # p-central series of G
+          Homs,      # Homomorphisms of J[i] onto the quotient J[i]/J[i+1] 
+          grades,    # List of the full images of the maps in Homs
+          gens,      # List of the generators of the quotients J[i]/J[i+1],
+                     # i.e., a basis of the Lie algebra.
+          pos,       # list of positions: if pos[j] = p, then the element
+                     # gens[i] belongs to grades[p]
+          i,j,k,     # loop variables
+          tempgens,
+          t,         # integer
+          T,         # multiplication table of the Lie algebra
+          dim,       # dimension of the Lie algebra
+          a,b,c,f,   # group elements
+          e,         # ext rep of a group element
+          co,        # entry of the multiplication table
+          p,         # the prime of G
+          F,         # ground field 
+          L,         # the Lie algebra to be constructed
+          B,         # Basis of L 
+          vv, x,     # elements of L
+          comp,      # homogeneous component
+          grading,   # list of homogeneous components 
+          pcgps,     # list of pc groups, isom to the elts of `grades'.
+          hom_pcg,   # list of isomomorphisms of `grades[i]' to `pcgps[i]'. 
+          enum_gens, # List of numbers of elts of `gens' in extrep.
+          pp;        # Position in a list.
+
+
+    # We do not know the characteristic if `G' is trivial.
+    if IsTrivial( G ) then
+      Error( "<G> must be a nontrivial p-group" );
+    fi;
+
+    # Construct the homogeneous components of `L': 
+
+    p:= PrimePGroup( G );
+    J:= PCentralSeries( G, p );
+    Homs:= List ( [1..Length(J)-1] , x -> 
+                  NaturalHomomorphismByNormalSubgroup ( J[x], J[x+1] ));
+    grades := List ( Homs , Range );
+    hom_pcg:= List( grades, IsomorphismPcGroup );
+    pcgps:= List( hom_pcg, Range );
+    gens := [];
+    enum_gens:= [ ];
+    pos := [];
+    for i in [1.. Length(grades)] do
+        tempgens:= GeneratorsOfGroup( pcgps[i] );
+        Append ( gens , tempgens);
+
+        # Record the number that each generator has in extrep.
+        Add( enum_gens, List( tempgens, x -> ExtRepOfObj( x )[1] ) );
+        Append ( pos , List ( tempgens , x-> i ) );
+    od;
+
+    # Construct the field and the multiplication table:
+
+    dim:= Length(gens);
+    F:= GF( p );
+    T:= EmptySCTable( dim , Zero(F) , "antisymmetric" );
+
+    for i in [1..dim] do
+        a:= PreImagesRepresentative( Homs[pos[i]] , 
+                    PreImagesRepresentative( hom_pcg[pos[i]], gens[i] ) );
+
+
+        for j in [i+1.. dim] do
+            if pos[i]+pos[j] <= Length( Homs ) then
+   
+               # Calculate the commutator [a,b], and map the result into
+               # the correct homogeneous component.
+
+                b:= PreImagesRepresentative( Homs[pos[j]], 
+                         PreImagesRepresentative( hom_pcg[pos[j]], gens[j] ));
+                c:= Image( hom_pcg[pos[i] + pos[j]], 
+                           Image(Homs[pos[i] + pos[j]], a^-1*b^-1*a*b) );
+                e:= ExtRepOfObj(c);
+                co:=[];
+                for k in [1,3..Length(e)-1] do
+                    pp:= Position( enum_gens[pos[i]+pos[j]], e[k] );
+                    f:= GeneratorsOfGroup( pcgps[pos[i]+pos[j]] )[pp];
+                    t:= Position( gens, f );
+                    Add( co, One( F )*e[k+1] );
+                    Add( co, t );
+                od;
+                SetEntrySCTable( T, i, j, co );
+            fi;
+            
+        od;
+    od;
+
+    L:= LieAlgebraByStructureConstants( F, T );
+
+    B:= Basis( L );
+
+    # Now we compute the natural grading of `L'.
+
+    grading:= [ ];
+    k:= 1;
+    while k <= Length( pos ) do
+      x:= pos[k];
+      comp:= [ ];
+      while k <= Length( pos ) and pos[k] = x do
+        Add( comp, B[k] );
+        k:= k+1;
+      od;
+      Add( grading, VectorSpace( F, comp ) );
+    od;
+
+    Add( grading, Subspace( L, [ ] ) );
+
+    SetGrading( L, rec( min_degree:= 1, 
+                        max_degree:= Length( grading ) - 1,
+                        source:= Integers,
+                        hom_components:= function( d )
+                                            if d in [1..Length(grading)] then
+                                              return grading[d];
+                                            else
+                                              return grading[Length(grading)];
+                                            fi;
+                                         end
+                      )
+              );
+
+    return L;
+            
+end );
+
+
+
+#############################################################################
+##
 #E
+
 

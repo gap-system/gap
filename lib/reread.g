@@ -75,20 +75,6 @@ BIND_GLOBAL("RereadGrp",RereadAndCheckFunc("grp"));
 
 #############################################################################
 ##
-#F  RereadTbl( <name> ) . . . . . . . . . . . . . . . .  character tables files
-##
-BIND_GLOBAL("RereadTbl",RereadAndCheckFunc("tbl"));
-
-
-#############################################################################
-##
-#F  RereadTom( <name> ) . . . . . . . . . . . . . . . . .  table of marks files
-##
-BIND_GLOBAL("RereadTom",RereadAndCheckFunc("tom"));
-
-
-#############################################################################
-##
 #F  RereadSmall( <name> ) . . . . . . . . . . . . .  small groups library files
 ##
 BIND_GLOBAL("RereadSmall",RereadAndCheckFunc("small"));

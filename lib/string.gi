@@ -379,20 +379,38 @@ end );
 #############################################################################
 ##
 #M  ViewObj(<string>)
-##
-InstallMethod(ViewObj,"strings",true,[IsString and IsFinite],0,
+#M  ViewObj(<char>)
+##  
+##  The difference  to PrintObj is  that printable non-ASCII  characters are
+##  output directly. Use PrintObj to get a result which can be safely reread
+##  by GAP or used for cut and paste.
+##  
+InstallMethod(ViewObj, "IsChar", true, [IsChar], 0,
+function(x)
+  local pos;
+  Print("'");
+  pos := Position(SPECIAL_CHARS_VIEW_STRING[1], x);
+  if pos <> fail  then
+    Print( SPECIAL_CHARS_VIEW_STRING[2][pos] );
+  else
+    Print( [ x ] );
+  fi;
+  Print("\'");
+end);
+
+InstallMethod(ViewObj, "IsString", true, [IsString and IsFinite],0,
 function(s)
-local i;
-  Print("\"");
-  for i in s do
-    if i in VIEW_STRING_SPECIAL_CHARACTERS[1] then
-      Print("\\",VIEW_STRING_SPECIAL_CHARACTERS[2]{
-        [PositionSorted(VIEW_STRING_SPECIAL_CHARACTERS[1],i)]});
-    else
-      Print([i]);
-    fi;
-  od;
-  Print("\"");
+    local  x, pos;
+    Print("\"");
+    for x  in s  do
+        pos := Position(SPECIAL_CHARS_VIEW_STRING[1], x);
+        if pos <> fail  then
+            Print( SPECIAL_CHARS_VIEW_STRING[2][pos] );
+        else
+            Print( [ x ] );
+        fi;
+    od;
+    Print("\"");
 end);
 
 InstallMethod(ViewObj,"empty strings",true,[IsString and IsEmpty],0,
@@ -416,18 +434,22 @@ InstallMethod( SplitString,
 function( string, seps, wspace )
     local   substrings,  a,  z;
 
+    ##  make sets from char lists
+    seps := Set(seps);
+    wspace := Set(wspace);
+
     ##  store the substrings in a list.
     substrings := [];
 
-    ##  a is the position after the last seperator/white space.
+    ##  a is the position after the last separator/white space.
     a := 1;
     z := 0;
 
     for z in [1..Length( string )] do
         ##  Whenever we encounter a separator or a white space, the substring
-        ##  starting after the last seperator/white space is cut out.  The
-        ##  only difference between white spaces and seperators is that white
-        ##  spaces don't seperate empty strings.  
+        ##  starting after the last separator/white space is cut out.  The
+        ##  only difference between white spaces and separators is that white
+        ##  spaces don't separate empty strings.  
         if string[z] in wspace then
             if a < z then
                 Add( substrings, string{[a..z-1]} );
@@ -487,6 +509,136 @@ function( string, d )
         return SplitString( string, [d], "" );
 end );
 
+
+InstallOtherMethod(PositionSublist, "for two args in IsStringRep", true,
+             [IS_STRING_REP, IS_STRING_REP], 0,
+function( string, sub )
+  return POSITION_SUBSTRING(string, sub, 0);
+end );
+
+InstallOtherMethod(PositionSublist, "for two args in IsStringRep and offset", 
+             true, [IS_STRING_REP, IS_STRING_REP, IsInt], 0,
+function( string, sub, off )
+  if off<0 then 
+    off := 0;
+  fi;
+  return POSITION_SUBSTRING(string, sub, off);
+end );
+
+#############################################################################
+##
+#F  NormalizedWhitespace( <str> ) . . . . . . . copy of string with normalized
+#F  white space
+##  
+##  doesn't work in place like the kernel function `NormalizeWhitespace'
+##   
+InstallGlobalFunction("NormalizedWhitespace", function ( str )
+    local  res;
+    res := ShallowCopy( str );
+    NormalizeWhitespace( res );
+    return res;
+end);
+
+#############################################################################
+##
+#F  EvalString( <expr> ) . . . . . . . . . . . . evaluate a string expression
+##
+InstallGlobalFunction("EvalString", function( expr )
+  local tmp;
+  tmp := Concatenation( "return ", expr, ";" );
+  return ReadAsFunction( InputTextString( tmp ) )();
+end );
+
+#############################################################################
+##
+#F  JoinStringsWithSeparator( <list>[, <sep>] )
+##
+InstallGlobalFunction("JoinStringsWithSeparator", function( arg )
+  local str, sep, res, i;
+  str := List(arg[1], String);
+  if Length(str) = 0 then return ""; fi;
+  if Length(arg) > 1 then sep := arg[2]; else sep := ","; fi;
+  res := ShallowCopy(str[1]);
+  for i in [2 .. Length(str)] do
+    Append(res, sep);
+    Append(res, str[i]);
+  od;
+  return res;
+end );
+
+#############################################################################
+##
+#F  Chomp( <str> )  . . .  remove a trailing '\n' from a string if it has one
+##
+InstallGlobalFunction(Chomp, function(str)
+
+  if IsString(str) and str <> "" and str[Length(str)] = '\n' then
+    return str{[1 .. Length(str) - 1]};
+  else
+    return str;
+  fi;
+end);
+
+
+#############################################################################
+##
+#F  StringFile( <name> ) . . . . . . return content of file <name> as string
+#F  FileString( <name>, <string>[, <append> ] ) . . write <string> to <name> 
+##
+##  <#GAPDoc Label="StringFile">
+##  <ManSection >
+##  <Func Arg="filename" Name="StringFile" />
+##  <Func Arg="filename, str[, append]" Name="FileString" />
+##  <Description>
+##  The  function <Ref  Func="StringFile" />  returns the  content of
+##  file  <A>filename</A> as  a string.  This works  efficiently with
+##  arbitrary (binary or text) files. If something went wrong,   this 
+##  function returns <K>fail</K>.
+##  <P/>
+##  
+##  Conversely  the function  <Ref  Func="FileString"  /> writes  the
+##  content of a string <A>str</A>  into the file <A>filename</A>. If
+##  the  optional third  argument <A>append</A>  is given  and equals
+##  <K>true</K> then  the content  of <A>str</A>  is appended  to the
+##  file. Otherwise  previous  content  of  the file is deleted. This 
+##  function returns the number of  bytes  written  or <K>fail</K> if 
+##  something went wrong.<P/>
+##  
+##  Both functions are quite efficient, even with large files. 
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##  
+InstallGlobalFunction(StringFile, function(name)
+  local   f,  str;
+  f := InputTextFile(name);
+  if f=fail then
+    return fail;
+  fi;
+  str := READ_STRING_FILE(f![1]);
+  CloseStream(f);
+  return str;
+end);
+
+# arg: filename, string[, append]   (default for append is false) 
+InstallGlobalFunction(FileString, function(arg)
+  local   name,  str,  append,  out;
+  name := arg[1];
+  str := arg[2];
+  if Length(arg)>2 then
+    append := arg[3];
+  else
+    append := false;
+  fi;
+  out := OutputTextFile(name, append);
+  if out=fail then
+    return fail;
+  fi;
+  IS_STRING_CONV(str);
+  WRITE_STRING_FILE_NC(out![1], str);
+  CloseStream(out);
+  return Length(str);
+end);
 
 #############################################################################
 ##

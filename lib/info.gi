@@ -228,7 +228,11 @@ BIND_GLOBAL( "InfoDecision", function(selectors, level)
     local usage;
     usage := "Usage : InfoDecision(<selectors>, <level>)";
     if not IsInt(level) or level <= 0 then
-        Error(usage);
+        if level = 0 then
+            Error("Level 0 info messages are not allowed");
+        else
+            Error(usage);
+        fi;
     fi;
     
     if IsInfoClass(selectors) then
@@ -338,3 +342,30 @@ fi;
 ##
 DeclareInfoClass( "InfoPerformance" );
 SetInfoLevel( InfoPerformance, 1 );
+
+InstallGlobalFunction(CompletionBar,function(c,a,s,v)
+local w,i;
+  if InfoLevel(c)>=a then
+    if not IsRat(v) then
+      Print("\n");
+      return;
+    fi;
+    w:=SizeScreen()[1];
+    for i in [1..w] do
+      Print("\r");
+    od;
+    Print("\c");
+    w:=w-Length(s)-5;
+    v:=v*w;
+    Print(s," ");
+    for i in [1..w] do
+      if v>0 then
+	Print("#");
+      else
+	Print(" ");
+      fi;
+      v:=v-1;
+    od;
+    Print("|\c");
+  fi;
+end);

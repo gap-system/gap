@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  ctblsolv.gd                 GAP library                     Thomas Breuer 
+#W  ctblsolv.gd                 GAP library                     Thomas Breuer
 ##
 #H  @(#)$Id$
 ##
@@ -12,6 +12,17 @@
 ##
 Revision.ctblsolv_gd :=
     "@(#)$Id$";
+
+
+#############################################################################
+##
+#V  BaumClausenInfoDebug  . . . . . . . . . . . . . . testing BaumClausenInfo
+##
+##  This global record contains functions used for testing intermediate
+##  results in `BaumClausenInfo' computations;
+##  they are called only inside `Assert' statements.
+##
+DeclareGlobalVariable( "BaumClausenInfoDebug" );
 
 
 #############################################################################
@@ -103,9 +114,25 @@ DeclareAttribute( "BaumClausenInfo", IsGroup );
 ##  If <G> is the only argument then `IrreducibleRepresentations' returns a
 ##  list of representatives of the absolutely irreducible complex
 ##  representations of <G>, up to equivalence.
-##  
-DeclareAttribute( "IrreducibleRepresentations", IsGroup );
-DeclareOperation( "IrreducibleRepresentations", [ IsGroup, IsField ] );
+##
+##  At the moment, methods are available for the following cases: If <G> is
+##  abelian by supersolvable the method of~\cite{BC94} is used.
+##
+##  Otherwise, if <F> and <G> are both finite, the regular module of <G> is
+##  split by MeatAxe methods which can make this an expensive operation.
+##
+##  Finally, if <F> is not given (i.e. it defaults to the cyclotomic
+##  numbers) and <G> is a finite group, the method of \cite{Dix93} (see
+##  "IrreducibleRepresentationsDixon") is used.
+##
+##  For other cases no methods are implemented yet.
+##
+##  See also `IrreducibleModules', which provides efficient
+##  methods for solvable groups.
+##
+DeclareAttribute( "IrreducibleRepresentations", IsGroup and IsFinite );
+DeclareOperation( "IrreducibleRepresentations",
+    [ IsGroup and IsFinite, IsField ] );
 
 
 #############################################################################
@@ -206,6 +233,6 @@ DeclareAttribute( "IrrConlon", IsGroup );
 
 
 #############################################################################
-##              
+##
 #E
 

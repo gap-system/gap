@@ -94,17 +94,24 @@ InstallGlobalFunction( SmallGroup, function( arg )
     local inforec, g, size, i;
 
     if Length( arg ) = 1 then
+        if not IsList( arg[1] ) or Length( arg[1] ) <> 2 then 
+            Error( "usage: SmallGroups( order, number )" ); 
+        fi;
         size := arg[ 1 ][ 1 ];
         i    := arg[ 1 ][ 2 ];
-    else
+    elif Length( arg ) = 2 then 
         size := arg[ 1 ];
         i    := arg[ 2 ];
+    else 
+        Error( "usage: SmallGroups( order, number )" ); 
+    fi;
+    if not IsPosInt( size ) or not IsPosInt( i ) then 
+        Error( "usage: SmallGroups( order, number )" ); 
     fi;
     inforec := SMALL_AVAILABLE( size );
     if inforec = fail then
         Error( "the library of groups of size ", size, " is not available" );
     fi;
-
     g := SMALL_GROUP_FUNCS[ inforec.func ]( size, i, inforec );
     SetIdGroup( g, [ size, i ] );
     IsPGroup( g );
@@ -119,6 +126,9 @@ end );
 InstallGlobalFunction( NumberSmallGroups, function( size )
     local inforec;
 
+    if not IsPosInt( size ) then 
+        Error( "usage: NumberSmallGroups( order )" ); 
+    fi;
     if size = 1024 then 
         return 49487365422;
     fi;
@@ -225,6 +235,8 @@ ID_AVAILABLE_FUNCS := [ ];
 ##
 InstallGlobalFunction( ID_AVAILABLE, function( size )
     local l, r;
+
+    if not IsInt( size ) then return fail; fi;
 
     for l in [ 1 .. Length( ID_AVAILABLE_FUNCS ) ] do
         if IsBound( ID_AVAILABLE_FUNCS[ l ] ) then

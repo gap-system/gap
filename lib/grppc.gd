@@ -163,10 +163,13 @@ InstallTrueMethod(IsGroup,CanEasilyComputePcgs);
 #############################################################################
 ##
 #A  PcgsElementaryAbelianSeries( <G> )
+#A  PcgsElementaryAbelianSeries( [<G>,<N1>,<N2>,....])
 ##
 ##  computes a pcgs for <G> that refines an elementary abelian series.
-##  `IndicesNormalSteps' gives the indices in the Pcgs, at which normal
-##  subgroups start.
+##  `IndicesNormalSteps' gives the indices in the Pcgs, at which the normal
+##  subgroups of this series start.
+##  The second variant returns a pcgs that runs through the normal subgroups
+##  <N1>, <N2>, etc.
 DeclareAttribute( "PcgsElementaryAbelianSeries", IsGroup );
 
 #############################################################################
@@ -208,9 +211,10 @@ DeclareOperation( "SubgroupByPcgs", [IsGroup, IsPcgs] );
 
 #############################################################################
 ##
+#O  AffineOperation( <gens>, <basisvectors>, <linear>, <transl> )
 #O  AffineAction( <gens>, <basisvectors>, <linear>, <transl> )
 ##
-##  returns a list of matrices, one for each element of <gens>, which
+##  return a list of matrices, one for each element of <gens>, which
 ##  corresponds to the affine action of the elements in <gens> on the
 ##  basis <basisvectors> via <linear> with translation <transl>.
 DeclareOperation( "AffineAction", 
@@ -220,6 +224,7 @@ DeclareSynonym( "AffineOperation", AffineAction );
 
 #############################################################################
 ##
+#O  LinearOperation( <gens>, <basisvectors>, <linear> )
 #O  LinearAction( <gens>, <basisvectors>, <linear> )
 ##
 ##  returns a list of matrices, one for each element of <gens>, which
@@ -240,6 +245,7 @@ InstallTrueMethod(
 
 #############################################################################
 ##
+#F  AffineOperationLayer( <G>, <gens>, <pcgs>, <transl> )
 #F  AffineActionLayer( <G>, <gens>, <pcgs>, <transl> )
 ##
 ##  returns a list of matrices, one for each element of <gens>, which
@@ -261,6 +267,7 @@ DeclareSynonym( "GeneratorsCenterPGroup", GeneratorsCentrePGroup );
 
 #############################################################################
 ##
+#F  LinearOperationLayer( <G>, <gens>, <pcgs> )
 #F  LinearActionLayer( <G>, <gens>, <pcgs> )
 ##
 ##  returns a list of matrices, one for each element of <gens>, which

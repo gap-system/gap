@@ -19,13 +19,14 @@ Revision.ctbllatt_gd :=
 ##
 #F  LLL( <tbl>, <characters>[, <y>][, \"sort\"][, \"linearcomb\"] )
 ##
-##  \index{LLL algorithm!for virtual characters}%
+##  \atindex{LLL algorithm!for virtual characters}%
+##  {@LLL algorithm!for virtual characters}
 ##  \index{short vectors spanning a lattice}%
 ##  \index{lattice basis reduction!for virtual characters}
 ##
 ##  `LLL' calls the LLL algorithm (see~"LLLReducedBasis") in the case of
 ##  lattices spanned by the virtual characters <characters>
-##  of the ordinary character table <tbl> (see~"ScalarProduct.ctblfuns").
+##  of the ordinary character table <tbl> (see~"ScalarProduct!for characters").
 ##  By finding shorter vectors in the lattice spanned by <characters>,
 ##  i.e., virtual characters of smaller norm,
 ##  in some cases `LLL' is able to find irreducible characters.

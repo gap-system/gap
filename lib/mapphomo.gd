@@ -55,16 +55,16 @@ DeclareProperty( "RespectsMultiplication", IsGeneralMapping );
 #P  RespectsOne( <mapp> )
 ##
 ##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq S \times R$,
-##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
+##  $F \subseteq <S> \times <R>$,
+##  where <S> and <R> are the source and the range of <mapp>, respectively.
 ##  Then `RespectsOne' returns `true' if
-##  $S$ and $R$ are magmas-with-one such that
-##  $( `One('S'), One('R')' ) \in F$,
+##  <S> and <R> are magmas-with-one such that
+##  $( `One(<S>)', `One(<R>)' ) \in F$,
 ##  and `false' otherwise.
 ##
 ##  If <mapp> is single-valued then `RespectsOne' returns `true'
 ##  if and only if the equation
-##  `One( S )^<mapp> = One( R )'
+##  `One( <S> )^<mapp> = One( <R> )'
 ##  holds.
 ##
 DeclareProperty( "RespectsOne", IsGeneralMapping );
@@ -75,10 +75,11 @@ DeclareProperty( "RespectsOne", IsGeneralMapping );
 #P  RespectsInverses( <mapp> )
 ##
 ##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq S \times R$,
-##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
+##  $F \subseteq <S> \times <R>$,
+##  where <S> and <R> are the source and the range of <mapp>, respectively.
 ##  Then `RespectsInverses' returns `true' if
-##  $S$ and $R$ are magmas-with-inverses such that
+##  <S> and <R> are magmas-with-inverses such that,
+##  for $s \in <S>$ and $r \in <R>$, 
 ##  $(s,r) \in F$ implies $(s^{-1},r^{-1}) \in F$,
 ##  and `false' otherwise.
 ##
@@ -176,16 +177,16 @@ DeclareProperty( "RespectsAddition", IsGeneralMapping );
 #P  RespectsZero( <mapp> )
 ##
 ##  Let <mapp> be a general mapping with underlying relation
-##  $F \subseteq S \times R$,
-##  where $S$ and $R$ are the source and the range of <mapp>, respectively.
+##  $F \subseteq <S> \times <R>$,
+##  where <S> and <R> are the source and the range of <mapp>, respectively.
 ##  Then `RespectsZero' returns `true' if
-##  $S$ and $R$ are additive-magmas-with-zero such that
-##  $( `Zero('S'), Zero('R')' ) \in F$,
+##  <S> and <R> are additive-magmas-with-zero such that
+##  $( `Zero(<S>)', `Zero(<R>)' ) \in F$,
 ##  and `false' otherwise.
 ##
 ##  If <mapp> is single-valued then `RespectsZero' returns `true'
 ##  if and only if the equation
-##  `Zero( S )^<mapp> = Zero( R )'
+##  `Zero( <S> )^<mapp> = Zero( <R> )'
 ##  holds.
 ##
 DeclareProperty( "RespectsZero", IsGeneralMapping );

@@ -436,16 +436,15 @@ InstallMethod( IsSemiEchelonized,
 #M  Basis( <V>, <vectors> ) . . . . . . . . . . . . for Gaussian matrix space
 #M  BasisNC( <V>, <vectors> ) . . . . . . . . . . . for Gaussian matrix space
 ##
-##  Distinguish the cases whether the space <V> is a Gaussian matrix vector
+##  Distinguish the cases whether the space <V> is a *Gaussian* matrix vector
 ##  space or not.
 ##
 ##  If the coefficients field is big enough then either a semi-echelonized or
 ##  a relative basis is constructed.
 ##
-##  Otherwise the mechanism of associated bases is used.
+##  Otherwise the mechanism of associated nice bases is used.
 ##  In this case the default methods have been installed by
-##  `NewRepresentationBasisByNiceBasis'.
-#T ?
+##  `InstallHandlingByNiceBasis'.
 ##
 InstallMethod( Basis,
     "for Gaussian matrix space (construct a semi-echelonized basis)",

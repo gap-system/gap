@@ -18,11 +18,9 @@ Revision.classic_gi :=
 ##
 InstallMethod( SymplecticGroupCons,
     "matrix group for dimension and finite field size",
-    true,
     [ IsMatrixGroup and IsFinite,
       IsPosInt,
       IsPosInt ],
-    0,
     function( filter, d, q )
 
     local   g,  f,  z,  o,  mat1,  mat2,  i,  size,  qi,  c;
@@ -112,7 +110,6 @@ InstallMethod( SymplecticGroupCons,
 
     # and return
     return g;
-
     end );
 
 
@@ -122,11 +119,9 @@ InstallMethod( SymplecticGroupCons,
 ##
 InstallMethod( GeneralUnitaryGroupCons,
     "matrix group for dimension and finite field size",
-    true,
     [ IsMatrixGroup and IsFinite,
       IsPosInt,
       IsPosInt ],
-    0,
     function( filter, n, q )
 
      local g, i, e, f, z, o, mat1, mat2, size, qi, eps, c;
@@ -223,11 +218,9 @@ InstallMethod( GeneralUnitaryGroupCons,
 ##
 InstallMethod( SpecialUnitaryGroupCons,
     "matrix group for dimension and finite field size",
-    true,
     [ IsMatrixGroup and IsFinite,
       IsPosInt,
       IsPosInt ],
-    0,
     function( filter, n, q )
 
      local g, i, e, f, z, o, mat1, mat2, size, qi, eps, c;
@@ -336,7 +329,6 @@ InstallMethod( SpecialUnitaryGroupCons,
 
 #############################################################################
 ##
-
 #F  EichlerTransformation( <g>, <u>, <x> )  . .  eichler trans of <u> and <x>
 ##
 BindGlobal( "EichlerTransformation", function( g, u, x )
@@ -357,7 +349,6 @@ BindGlobal( "EichlerTransformation", function( g, u, x )
 
     # and return
     return e;
-
 end );
 
 
@@ -418,7 +409,6 @@ BindGlobal( "Oplus45", function()
 
     # and return
     return g;
-
 end );
 
 
@@ -494,7 +484,6 @@ BindGlobal( "Opm3", function( s, d )
     SetSize( g, 2*3^(d/2*(d/2-1))*(3^(d/2)-s)*delta );
 
     return g;
-
 end );
 
 
@@ -570,7 +559,6 @@ BindGlobal( "OpmSmall", function( s, d, q )
     SetSize( g, 2*q^(d/2*(d/2-1))*(q^(d/2)-s)*delta );
 
     return g;
-
 end );
 
 
@@ -716,7 +704,6 @@ BindGlobal( "OpmOdd", function( s, d, q )
     SetSize( g, 2*q^(d/2*(d/2-1))*(q^(d/2)-s)*delta );
 
     return g;
-
 end );
 
 
@@ -745,7 +732,6 @@ BindGlobal( "Oplus2", function( q )
       [ [ 0, 1 ], [ 0, 0 ] ] * z^0 ) );
     SetSize( g, 2*(q-1) );
     return g;
-
 end );
 
 
@@ -801,7 +787,6 @@ BindGlobal( "Oplus4Even", function( q )
 
     # and return
     return g;
-
 end );
 
 
@@ -932,7 +917,6 @@ BindGlobal( "OplusEven", function( d, q )
     SetSize( g, 2*q^(d/2*(d/2-1))*(q^(d/2)-1)*delta );
 
     return g;
-
 end );
 
 
@@ -941,14 +925,16 @@ end );
 #F  Ominus2( <q> )  . . . . . . . . . . . . . . . . . . . . . . . . O-_2(<q>)
 ##
 BindGlobal( "Ominus2", function( q )
-    local   z,  x,  t,  n,  e,  bc,  m2,  m1,  g;
+    local z, f, R, x, t, n, e, bc, m2, m1, g;
 
     # construct the root
     z := Z(q);
 
-    # find irreducible x^2+x+t
-    x := Indeterminate(GF(q));
-    t := z^First( [ 0 .. q-2 ], u -> Length(Factors(x^2+x+z^u)) = 1 );
+    # find $x^2+x+t$ that is irreducible over GF(`q')
+    f:= GF( q );
+    R:= PolynomialRing( f );
+    x:= Indeterminate( f );
+    t:= z^First( [ 0 .. q-2 ], u -> Length( Factors( R, x^2+x+z^u ) ) = 1 );
 
     # get roots in GF(q^2)
     n := List( Factors( PolynomialRing( GF( q^2 ) ), x^2+x+t ),
@@ -959,9 +945,9 @@ BindGlobal( "Ominus2", function( q )
     bc := [ [ n[1]/e, 1/e ], [ n[2], z^0 ] ];
 
     # matrix of order 2
-    m2 := [ [ -1, 0 ], [ -1, 1 ] ] * Z(q)^0;
+    m2 := [ [ -1, 0 ], [ -1, 1 ] ] * z^0;
 
-    # matrix of order q+1 (this will lie in F(q)^dxd)
+    # matrix of order q+1 (this will lie in $GF(q)^{d \times d}$)
     z  := Z(q^2)^(q-1);
     m1 := bc^-1 * [[z,0*z],[0*z,z^-1]] * bc;
 
@@ -974,8 +960,8 @@ BindGlobal( "Ominus2", function( q )
     SetInvariantQuadraticForm( g, rec( matrix:=
       [ [ 1, 1 ], [ 0, t ] ] * z^0 ) );
     SetSize( g, 2*(q+1) );
-    return g;
 
+    return g;
 end );
 
 
@@ -984,7 +970,7 @@ end );
 #F  Ominus4Even( <q> )  . . . . . . . . . . . . . . . . . . . . . . O-_4(<q>)
 ##
 BindGlobal( "Ominus4Even", function( q )
-    local   f,  id,  rho,  delta,  phi,  x,  t,  eichler,  g;
+    local f, id, rho, delta, phi, R, x, t, eichler, g;
 
     # <q> must be even
     if q mod 2 = 1  then
@@ -1008,10 +994,11 @@ BindGlobal( "Ominus4Even", function( q )
     phi[1][1] := PrimitiveRoot( f );
     phi[2][2] := PrimitiveRoot( f )^-1;
 
-    # find irreducible x^2+x+t
-    x := Indeterminate(f);
-    t := First( [ 0 .. q-2 ], u ->
-        Length(Factors(x^2+x+PrimitiveRoot( f )^u)) = 1 );
+    # find x^2+x+t that is irreducible over <f>
+    R:= PolynomialRing( f, 1 );
+    x:= Indeterminate( f );
+    t:= First( [ 0 .. q-2 ],
+               u -> Length( Factors( R, x^2+x+PrimitiveRoot( f )^u ) ) = 1 );
 
     # compute square root of <t>
     t := t/2 mod (q-1);
@@ -1040,7 +1027,6 @@ BindGlobal( "Ominus4Even", function( q )
 
     # and return
     return g;
-
 end );
 
 
@@ -1049,17 +1035,14 @@ end );
 #F  OminusEven( <d>, <q> )  . . . . . . . . . . . . . . . . . . . O-_<d>(<q>)
 ##
 BindGlobal( "OminusEven", function( d, q )
-    local   f,  id,  k,  phi,  delta,  theta,  i,  delta2,  eichler,
-            rho,  g,  t,  x;
+    local f, id, k, phi, delta, theta, i, delta2, eichler, rho, g, t, R, x;
 
     # <d> and <q> must be odd
     if d mod 2 = 1  then
         Error( "<d> must be even" );
-    fi;
-    if d < 6  then
+    elif d < 6  then
         Error( "<d> must be at least 6" );
-    fi;
-    if q mod 2 = 1  then
+    elif q mod 2 = 1  then
         Error( "<q> must be even" );
     fi;
     f := GF(q);
@@ -1113,10 +1096,11 @@ BindGlobal( "OminusEven", function( d, q )
         od;
     fi;
 
-    # find irreducible x^2+x+t
-    x := Indeterminate(f);
-    t := First( [ 0 .. q-2 ], u ->
-        Length(Factors(x^2+x+PrimitiveRoot( f )^u)) = 1 );
+    # find x^2+x+t that is irreducible over GF(`q')
+    R:= PolynomialRing( f );
+    x:= Indeterminate( f );
+    t:= First( [ 0 .. q-2 ],
+               u -> Length( Factors( R, x^2+x+PrimitiveRoot( f )^u ) ) = 1 );
 
     # compute square root of <t>
     t := t/2 mod (q-1);
@@ -1183,7 +1167,6 @@ BindGlobal( "OminusEven", function( d, q )
     SetSize( g, 2*q^(d/2*(d/2-1))*(q^(d/2)+1)*delta );
 
     return g;
-
 end );
 
 
@@ -1200,11 +1183,9 @@ BindGlobal( "OzeroOdd", function( d, q, b )
     # <d> and <q> must be odd
     if d mod 2 = 0  then
         Error( "<d> must be odd" );
-    fi;
-    if d < 3  then
+    elif d < 3  then
         Error( "<d> must be at least 3" );
-    fi;
-    if q mod 2 = 0  then
+    elif q mod 2 = 0  then
         Error( "<q> must be odd" );
     fi;
     f := GF(q);
@@ -1263,7 +1244,134 @@ BindGlobal( "OzeroOdd", function( d, q, b )
 
     # and return
     return g;
+end );
 
+
+#############################################################################
+##
+#F  OzeroEven( <d>, <q> ) . . . . . . . . . . . . . . . . . . . . O0_<d>(<q>)
+##
+##  'OzeroEven' constructs the orthogonal group in odd dimension and even
+##  characteristic.
+##  The generators are constructed via the isomorphism with the symplectic
+##  group in dimension $<d>-1$ over the field with <q> elements.
+##
+##  Removing the first row and the first column from the matrices defines the
+##  isomorphism to the symplectic group.
+##  This group is *not* equal to the symplectic group constructed with the
+##  function `Sp',
+##  since the bilinear form of the orthogonal group is the one used in the
+##  book of Carter and not the one used for `SP'.
+##  (Note that our matrices are transposed, relative to the ones given by
+##  Carter, because the group shall act on a *row* space.)
+##
+##  The generators of the orthogonal groups can be computed as those matrices
+##  that project onto the generators of the symplectic group and satisfy the
+##  quadratic form
+##  $f(x) = x_0^2 + x_1 x_{-1} + x_2 x_{-2} + \cdots + x_l x_{-l}$.
+##  This condition results in a quadratic equation system that can be
+##  interpreted as a linear equation system because taking square roots is
+##  one-to-one in characteristic $2$.
+##
+BindGlobal( "OzeroEven", function( d, q )
+    local f, z, o, n, mat1, mat2, i, g, size, qi, c, s;
+
+    # <d> must be odd, <q> must be even
+    if d mod 2 = 0 then
+      Error( "<d> must be odd" );
+    elif d < 3 then
+      Error( "<d> must be at least 3" );
+    elif q mod 2 = 1 then
+      Error( "<q> must be even" );
+    fi;
+    f:= GF(q);
+    z:= PrimitiveRoot( f );
+    o:= One( f );
+    n:= Zero( f );
+
+    if d = 3 then
+
+      # The isomorphic symplectic group is $SL(2,<q>)$.
+      if q = 2 then
+        mat1:= ImmutableMatrix( f, [ [o,n,n], [o,o,o], [n,n,o] ] );
+        mat2:= ImmutableMatrix( f, [ [o,n,n], [n,n,o], [n,o,n] ] );
+      else
+        mat1:= ImmutableMatrix( f, [ [o,n,n], [n,z,n], [n,n,z^-1] ] );
+        mat2:= ImmutableMatrix( f, [ [o,n,n], [o,o,o], [n,o,n] ] );
+      fi;
+
+    elif d = 5 and q = 2  then
+
+      # The isomorphic symplectic group is $SP(4,2)$.
+      mat1:= ImmutableMatrix( f, [ [o,n,n,n,n], [o,n,o,n,o], [o,n,o,o,o],
+                                   [n,o,n,n,o], [n,o,o,o,o] ] );
+      mat2:= ImmutableMatrix( f, [ [o,n,n,n,n], [n,n,o,n,n], [n,n,n,o,n],
+                                   [n,n,n,n,o], [n,o,n,n,n] ] );
+
+    else
+
+      mat1:= IdentityMat( d, o );
+      mat2:= List( 0 * mat1, ShallowCopy );
+      mat2[1][1]:= o;
+      mat2[d][2]:= o;
+      for i in [ 2 .. d-1 ] do
+        mat2[i][i+1]:= o;
+      od;
+
+      if q = 2 then
+        mat1[(d+1)/2][      1]:= o;
+        mat1[(d+1)/2][      2]:= o;
+        mat1[(d+1)/2][      d]:= o;
+        mat1[(d+3)/2][      d]:= o;
+      else
+        mat1[      2][      2]:= z;
+        mat1[(d+1)/2][(d+1)/2]:= z;
+        mat1[(d+3)/2][(d+3)/2]:= z^-1;
+        mat1[      d][      d]:= z^-1;
+        mat2[(d+1)/2][      1]:= o;
+        mat2[(d+1)/2][      2]:= o;
+        mat2[(d+1)/2][      3]:= o;
+        mat2[(d+3)/2][      2]:= o;
+      fi;
+
+    fi;
+
+    mat1:= ImmutableMatrix( f, mat1 );
+    mat2:= ImmutableMatrix( f, mat2 );
+
+    # avoid to call 'Group' because this would check invertibility ...
+    g:= GroupWithGenerators( [ mat1, mat2 ] );
+    SetDimensionOfMatrixGroup( g, Length( mat1 ) );
+    SetFieldOfMatrixGroup( g, f );
+
+    # add the size
+    size := 1;
+    qi   := 1;
+    for i in [ 1 .. (d-1)/2 ] do
+      qi   := qi * q^2;
+      size := size * (qi-1);
+    od;
+    SetSize( g, q^(((d-1)/2)^2) * size );
+
+    # construct the form
+    c := List( 0 * One( g ), ShallowCopy );
+    for i in [ 2 .. (d+1)/2 ] do
+      c[(d-1)/2+i][i] := o;
+      c[i][(d-1)/2+i] := o;
+    od;
+    SetInvariantBilinearForm( g, rec( matrix := c ) );
+    SetIsSubgroupSL( g, true );
+
+    # and the quadratic form
+    s := List( 0 * One( g ), ShallowCopy );
+    s[1][1]:= o;
+    for i in [ 2 .. (d+1)/2 ] do
+      s[(d-1)/2+i][i]:= o;
+    od;
+    SetInvariantQuadraticForm( g, rec( matrix:= s ) );
+
+    # and return
+    return g;
 end );
 
 
@@ -1283,25 +1391,23 @@ InstallMethod( GeneralOrthogonalGroupCons,
 
     # <e> must be -1, 0, +1
     if e <> -1 and e <> 0 and e <> +1  then
-        Error( "sign <e> must be -1, 0, +1" );
+        Error( "sign <e> must be -1, 0, +1\n" );
     fi;
 
     # if <e> = 0  then <d> must be odd
     if e = 0 and d mod 2 = 0  then
-        Error( "sign <e> = 0 but dimension <d> is even" );
+        Error( "sign <e> = 0 but dimension <d> is even\n" );
 
     # if <e> <> 0  then <d> must be even
     elif e <> 0 and d mod 2 = 1  then
-        Error( "sign <e> <> 0 but dimension <d> is odd" );
+        Error( "sign <e> <> 0 but dimension <d> is odd\n" );
     fi;
 
     # construct the various orthogonal groups
     if   e = 0 and q mod 2 <> 0  then
         g := OzeroOdd( d, q, 1 );
     elif e = 0  then
-        # g := OzeroEven( d, q );
-        Error( "<d> must be even" );
-#T what's the problem here?
+        g := OzeroEven( d, q );
 
     # O+(2,q) = D_2(q-1)
     elif e = +1 and d = 2  then
@@ -1349,7 +1455,6 @@ InstallMethod( GeneralOrthogonalGroupCons,
 
     # and return
     return g;
-
 end );
 
 
@@ -1563,6 +1668,5 @@ end );
 
 #############################################################################
 ##
-
 #E
 

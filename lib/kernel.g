@@ -140,8 +140,6 @@ STRING_LOWER := function( str )
     if 0 = LEN_LIST(STRING_LOWER1)  then
         APPEND_LIST_INTR( STRING_LOWER1, "abcdefghijklmnopqrstuvwxyz  " );
         APPEND_LIST_INTR( STRING_LOWER2, "ABCDEFGHIJKLMNOPQRSTUVWXYZ!~" );
-        APPEND_LIST_INTR( STRING_LOWER1, "abcdefghijklmnopqrstuvwxyz" );
-        APPEND_LIST_INTR( STRING_LOWER2, "abcdefghijklmnopqrstuvwxyz" );
         SortParallel( STRING_LOWER2, STRING_LOWER1 );
     fi;
 

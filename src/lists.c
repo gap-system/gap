@@ -243,7 +243,7 @@ Int LenListError (
     list = ErrorReturnObj(
         "Length: <list> must be a list (not a %s)",
         (Int)TNAM_OBJ(list), 0L,
-        "you can return a list for <list>" );
+        "you can replace <list> via 'return <list>;'" );
     return LEN_LIST( list );
 }
 
@@ -258,7 +258,7 @@ Int LenListObject (
         len = ErrorReturnObj(
             "Length: method must return a nonnegative value (not a %s)",
             (Int)TNAM_OBJ(len), 0L,
-            "you can return a nonnegative integer value for <length>" );
+            "you can replace value <length> via 'return <length>;'" );
     }
     return INT_INTOBJ( len );
 }
@@ -288,7 +288,7 @@ Obj LengthError (
     list = ErrorReturnObj(
         "Length: <list> must be a list (not a %s)",
         (Int)TNAM_OBJ(list), 0L,
-        "you can return a list for <list>" );
+        "you can replace <list> via 'return <list>;'" );
     return LENGTH( list );
 }
 
@@ -350,7 +350,7 @@ Int             IsbListError (
     list = ErrorReturnObj(
         "IsBound: <list> must be a list (not a %s)",
         (Int)TNAM_OBJ(list), 0L,
-        "you can return a list for <list>" );
+        "you can replace <list> via 'return <list>;'" );
     return ISB_LIST( list, pos );
 }
 
@@ -394,7 +394,7 @@ Int            IsbbListError (
     list = ErrorReturnObj(
         "Isbound: <list> must be a list (not a %s)",
         (Int)TNAM_OBJ(list), 0L,
-        "you can return a list for <list>" );
+        "you can replace <list> via 'return <list>;'" );
     return ISBB_LIST( list, pos );
 }
 
@@ -461,7 +461,7 @@ Obj Elm0ListError (
     list = ErrorReturnObj(
         "List Element: <list> must be a list (not a %s)",
         (Int)TNAM_OBJ(list), 0L,
-        "you can return a list for <list>" );
+        "you can replace <list> via 'return <list>;'" );
     return ELM0_LIST( list, pos );
 }
 
@@ -588,7 +588,7 @@ Obj ElmListError (
     list = ErrorReturnObj(
         "List Element: <list> must be a list (not a %s)",
         (Int)TNAM_OBJ(list), 0L,
-        "you can return a list for <list>" );
+        "you can replace <list> via 'return <list>;'" );
     return ELM_LIST( list, pos );
 }
 
@@ -615,7 +615,7 @@ Obj ElmListObject (
     while ( elm == 0 ) {
         elm = ErrorReturnObj(
             "List access method must return a value", 0L, 0L,
-            "you can return a value or quit" );
+            "you can supply a value <val> via 'return <val>;'" );
     }
     return elm;
 }
@@ -631,7 +631,7 @@ Obj ElmbListError (
     list = ErrorReturnObj(
         "List Element: <list> must be a list (not a %s)",
         (Int)TNAM_OBJ(list), 0L,
-        "you can return a list for <list>" );
+        "you can replace <list> via 'return <list>;'" );
     return ELMB_LIST( list, pos );
 }
 
@@ -647,7 +647,7 @@ Obj ElmbListInternal (
     pos = ErrorReturnObj(
         "List Element: an internal list cannot have an element in such a position",
         0L, 0L,
-        "you can return a new position" );
+        "you can supply a new position <pos> via 'return <pos>;'" );
   } while (!IS_INTOBJ(pos) || INT_INTOBJ(pos) < 0);
   return ELM_LIST( list, INT_INTOBJ(pos) );
 }
@@ -674,7 +674,7 @@ Obj ElmbListObject (
     while ( elm == 0 ) {
         elm = ErrorReturnObj(
             "List access method must return a value", 0L, 0L,
-            "you can return a value or quit" );
+            "you can supply a value <val> via 'return <val>;'" );
     }
     return elm;
 }
@@ -726,7 +726,7 @@ Obj ElmsListError (
     list = ErrorReturnObj(
         "List Elements: <list> must be a list (not a %s)",
         (Int)TNAM_OBJ(list), 0L,
-        "you can return a list for <list>" );
+        "you can replace <list> via 'return <list>;'" );
     return ELMS_LIST( list, poss );
 }
 
@@ -749,7 +749,7 @@ Obj ElmsListObject (
     while ( elm == 0 ) {
         elm = ErrorReturnObj(
             "List multi-access method must return a value", 0L, 0L,
-            "you can return a value or quit");
+            "you can supply a value <val> via 'return <val>;'");
     }
     return elm;
 }
@@ -809,7 +809,8 @@ Obj ElmsListDefault (
 	  while (!IS_INTOBJ(p))
 	    {
 	      p = ErrorReturnObj("List Elements: position is too large for this type of list",
-				 0L, 0L, "You can return a new position to continue");
+				 0L, 0L, 
+                                 "you can supply a new position <pos> via 'return <pos>;'" );
 	    }
             pos = INT_INTOBJ( p );
 
@@ -819,7 +820,7 @@ Obj ElmsListDefault (
                 ErrorReturnVoid(
                     "List Elements: <list>[%d] must have an assigned value",
                     (Int)pos, 0L,
-                    "you can return after assigning a value" );
+                    "you can 'return;' after assigning a value" );
                 return ELMS_LIST( list, poss );
             }
 
@@ -849,14 +850,14 @@ Obj ElmsListDefault (
             ErrorReturnVoid(
                 "List Elements: <list>[%d] must have an assigned value",
                 (Int)pos, 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
             return ELMS_LIST( list, poss );
         }
         if ( lenList < pos + (lenPoss-1) * inc ) {
             ErrorReturnVoid(
                 "List Elements: <list>[%d] must have an assigned value",
                 (Int)pos + (lenPoss-1) * inc, 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
             return ELMS_LIST( list, poss );
         }
 
@@ -873,7 +874,7 @@ Obj ElmsListDefault (
                 ErrorReturnVoid(
                     "List Elements: <list>[%d] must have an assigned value",
                     (Int)pos, 0L,
-                    "you can return after assigning a value" );
+                    "you can 'return;' after assigning a value" );
                 return ELMS_LIST( list, poss );
             }
 
@@ -976,7 +977,7 @@ void            UnbListError (
     list = ErrorReturnObj(
         "Unbind: <list> must be a list (not a %s)",
         (Int)TNAM_OBJ(list), 0L,
-        "you can return a list for <list>" );
+        "you can replace <list> via 'return <list>;'" );
     UNB_LIST( list, pos );
 }
 
@@ -1029,7 +1030,7 @@ void            UnbbListError (
     list = ErrorReturnObj(
         "List Unbindment: <list> must be a list (not a %s)",
         (Int)TNAM_OBJ(list), 0L,
-        "you can return a list for <list>" );
+        "you can replace <list> via 'return <list>;'" );
     UNBB_LIST( list, pos );
 }
 
@@ -1090,7 +1091,7 @@ void            AssListError (
     list = ErrorReturnObj(
         "List Assignment: <list> must be a list (not a %s)",
         (Int)TNAM_OBJ(list), 0L,
-        "you can return a list for <list>" );
+        "you can replace <list> via 'return <list>;'" );
     ASS_LIST( list, pos, obj );
 }
 
@@ -1153,7 +1154,7 @@ void            AssbListError (
     list = ErrorReturnObj(
         "List Assignment: <list> must be a list (not a %s)",
         (Int)TNAM_OBJ(list), 0L,
-        "you can return a list for <list>" );
+        "you can replace <list> via 'return <list>;'" );
     ASSB_LIST( list, pos, obj );
 }
 
@@ -1164,7 +1165,8 @@ void            AssbListInternal (
 {
   do {
     pos = ErrorReturnObj( "List assignment: you cannot assign to such a large position in an internal list",
-			  0, 0, "You can return a new positive small integer for  position" );
+			  0, 0, 
+                          "you can supply a new position <pos> via 'return <pos>;'" );
   } while (!IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0);
   ASS_LIST(list, INT_INTOBJ(pos), obj);
 }
@@ -1223,7 +1225,7 @@ void            AsssListError (
     list = ErrorReturnObj(
         "List Assignments: <list> must be a list (not a %s)",
         (Int)TNAM_OBJ(list), 0L,
-        "you can return a list for <list>" );
+        "you can replace <list> via 'return <list>;'" );
     ASSS_LIST( list, poss, objs );
 }
 
@@ -1787,7 +1789,7 @@ Obj             PosListHandler3 (
         start = ErrorReturnObj(
             "Position: <start> must be a nonnegative integer (not a %s)",
             (Int)TNAM_OBJ(start), 0L,
-            "you can return a nonnegative integer for <start>" );
+            "you can replace <start> via 'return <start>;'" );
     }
     pos = POS_LIST( list, obj, INT_INTOBJ(start) );
     return ( 0 < pos ? INTOBJ_INT(pos) : Fail );
@@ -1801,7 +1803,7 @@ Int             PosListError (
     list = ErrorReturnObj(
         "Position: <list> must be a list (not a %s)",
         (Int)TNAM_OBJ(list), 0L,
-        "you can return a list for <list>" );
+        "you can replace <list> via 'return <list>;'" );
     return POS_LIST( list, obj, start );
 }
 
@@ -1843,9 +1845,9 @@ Int             PosListObject (
     pos = DoOperation3Args( PosListOper, list, obj, INTOBJ_INT(start) );
     while ( pos!=Fail && ( TNUM_OBJ(pos)!=T_INT || INT_INTOBJ(pos)<1 ) ) {
       pos = ErrorReturnObj(
-        "Position: method must return a positive integer (not a %s) or fail",
+        "Position: method must return a positive integer or fail (not a %s)",
         (Int)TNAM_OBJ(pos), 0L,
-        "you can return a positive integer for <pos> or fail" );
+        "you can replace position <pos> via 'return <pos>;'" );
     }
     return ( pos == Fail ? 0 : INT_INTOBJ( pos ) );
 }
@@ -2010,13 +2012,13 @@ void            AssListLevel (
             objs = ErrorReturnObj(
                 "List Assignment: <objs> must be a dense list (not a %s)",
                 (Int)TNAM_OBJ(objs), 0L,
-                "you can return a new dense list for <objs>" );
+                "you can replace <objs> via 'return <objs>;'" );
         }
         if ( LEN_LIST(lists) != LEN_LIST(objs) ) {
             objs = ErrorReturnObj(
          "List Assignment: <objs> must have the same length as <lists> (%d)",
                 LEN_LIST(lists), 0L,
-                "you can return a new dense list for <objs>" );
+                "you can replace <objs> via 'return <objs>;'" );
         }
     }
 
@@ -2091,13 +2093,13 @@ void            AsssListLevel (
             objs = ErrorReturnObj(
                 "List Assignment: <objs> must be a dense list (not a %s)",
                 (Int)TNAM_OBJ(objs), 0L,
-                "you can return a new dense list for <objs>" );
+                "you can replace <objs> via 'return <objs>;'" );
         }
         if ( LEN_LIST(lists) != LEN_LIST(objs) ) {
             objs = ErrorReturnObj(
          "List Assignment: <objs> must have the same length as <lists> (%d)",
                 LEN_LIST(lists), 0L,
-                "you can return a new dense list for <objs>" );
+                "you can replace <objs> via 'return <objs>;'" );
         }
     }
 
@@ -2119,13 +2121,13 @@ void            AsssListLevel (
                     obj = ErrorReturnObj(
                   "List Assignments: <objs> must be a dense list (not a %s)",
                         (Int)TNAM_OBJ(obj), 0L,
-                        "you can return a new dense list for <objs>" );
+                        "you can replace <objs> via 'return <objs>;'" );
                 }
                 if ( LEN_LIST( poss ) != LEN_LIST( obj ) ) {
                     obj = ErrorReturnObj(
-     "List Assigments: <objs> must have the same lenght as <positions> (%d)",
+     "List Assigments: <objs> must have the same length as <positions> (%d)",
                         LEN_LIST( poss ), 0L,
-                        "you can return a new dense list for <objs>" );
+                        "you can replace <objs> via 'return <objs>;'" );
                 }
             }
 
@@ -2187,6 +2189,7 @@ void            PlainListError (
 }
 
 
+#ifdef XTNUMS 
 /****************************************************************************
 **
 *F  XTNum(<list>) . . . . . . . . . . . . . . . . . extended type of an value
@@ -2226,7 +2229,7 @@ Int             XTNum (
     return T_OBJECT;
 }
 
-
+#endif
 /****************************************************************************
 **
 *F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of kinds of lists over a family
@@ -2404,7 +2407,7 @@ Obj FuncSET_FILTER_LIST (
 error:
     ErrorReturnVoid( "filter not possible for %s",
 		     (Int)TNAM_OBJ(list), 0,
-		     "you can return" );
+		     "you can 'return;'" );
     return 0;
 }
 
@@ -2440,7 +2443,7 @@ Obj FuncRESET_FILTER_LIST (
     else if ( new < 0 ) {
 	ErrorReturnVoid( "filter not possible for %s",
 			 (Int)TNAM_OBJ(list), 0,
-			 "you can return" );
+			 "you can 'return;'" );
     }
     return 0;
 }

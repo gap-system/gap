@@ -71,7 +71,7 @@ SMALL_GROUP_FUNCS[ 1 ] := function( size, i, inforec )
         Error( "there is just 1 group of size ", size );
     fi;
     if size = 1 then 
-        g := CyclicGroup( IsPermGroup, 1 );
+        g := TrivialGroup( IsPcGroup );
         SetNameIsomorphismClass( g, Concatenation( "c", String( size ) ) );
         return g;
     fi;

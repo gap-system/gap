@@ -290,7 +290,7 @@ Obj DoFail0args (
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
         (Int)NARG_FUNC( self ), 0L,
-        "you can return a list of arguments" );
+        "you can replace the argument list <args> via 'return <args>;'" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -307,7 +307,7 @@ Obj DoFail1args (
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
         (Int)NARG_FUNC( self ), 1L,
-        "you can return a list of arguments" );
+        "you can replace the argument list <args> via 'return <args>;'" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -325,7 +325,7 @@ Obj DoFail2args (
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
         (Int)NARG_FUNC( self ), 2L,
-        "you can return a list of arguments" );
+        "you can replace the argument list <args> via 'return <args>;'" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -344,7 +344,7 @@ Obj DoFail3args (
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
         (Int)NARG_FUNC( self ), 3L,
-        "you can return a list of arguments" );
+        "you can replace the argument list <args> via 'return <args>;'" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -364,7 +364,7 @@ Obj DoFail4args (
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
         (Int)NARG_FUNC( self ), 4L,
-        "you can return a list of arguments" );
+        "you can replace the argument list <args> via 'return <args>;'" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -385,7 +385,7 @@ Obj DoFail5args (
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
         (Int)NARG_FUNC( self ), 5L,
-        "you can return a list of arguments" );
+        "you can replace the argument list <args> via 'return <args>;'" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -407,7 +407,7 @@ Obj DoFail6args (
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
         (Int)NARG_FUNC( self ), 6L,
-        "you can return a list of arguments" );
+        "you can replace the argument list <args> via 'return <args>;'" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -424,7 +424,7 @@ Obj DoFailXargs (
     argx = ErrorReturnObj(
         "Function: number of arguments must be %d (not %d)",
         (Int)NARG_FUNC( self ), LEN_LIST( args ),
-        "you can return a list of arguments" );
+        "you can replace the argument list <args> via 'return <args>;'" );
     return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
@@ -1226,8 +1226,9 @@ Obj NewFunctionCT (
         while ( nams_c[l]!=' ' && nams_c[l]!=',' && nams_c[l]!='\0' ) {
             l++;
         }
-        name_o = NEW_STRING((l-k) );
-        SyStrncat( CSTR_STRING(name_o), nams_c+k, (UInt)(l-k) );
+	/*CCC        name_o = NEW_STRING((l-k) );
+	  SyStrncat( CSTR_STRING(name_o), nams_c+k, (UInt)(l-k) );CCC*/
+	C_NEW_STRING(name_o, l-k, nams_c+k);
         RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
         SET_ELM_PLIST( nams_o, i, name_o );
         k = l;
@@ -1235,8 +1236,9 @@ Obj NewFunctionCT (
 
     /* convert the name to an object                                       */
     len = SyStrlen( name_c );
-    name_o = NEW_STRING(len);
-    SyStrncat( CSTR_STRING(name_o), name_c, (UInt)len );
+    /*CCCname_o = NEW_STRING(len);
+      SyStrncat( CSTR_STRING(name_o), name_c, (UInt)len );CCC*/
+    C_NEW_STRING(name_o, len, name_c);
     RESET_FILT_LIST( name_o, FN_IS_MUTABLE );
 
     /* make the function                                                   */
@@ -1274,8 +1276,10 @@ Obj TypeFunction (
 **
 *F  PrintFunction( <func> )   . . . . . . . . . . . . . . .  print a function
 **
-
 */
+
+Obj PrintOperation;
+
 void PrintFunction (
     Obj                 func )
 {
@@ -1287,6 +1291,11 @@ void PrintFunction (
     /* complete the function if necessary                                  */
     if ( IS_UNCOMPLETED_FUNC(func) ) {
         COMPLETE_FUNC(func);
+    }
+
+    if ( IS_OPERATION(func) ) {
+      CALL_1ARGS( PrintOperation, func );
+      return;
     }
 
     /* print 'function ('                                                  */
@@ -1396,7 +1405,7 @@ Obj FuncCALL_FUNC (
         func = ErrorReturnObj(
             "usage: CallFunction( <func>, <arg1>... )",
             0L, 0L,
-            "you can return a function for <func>" );
+            "you can replace function <func> via 'return <func>;'" );
     }
     else {
         func = ELMV_LIST( args, 1 );
@@ -1408,7 +1417,7 @@ Obj FuncCALL_FUNC (
         func = ErrorReturnObj(
             "CallFunction: <func> must be a function",
             0L, 0L,
-            "you can return a function for <func>" );
+            "you can replace function <func> via 'return <func>;'" );
     }
 
     /* call the function                                                   */
@@ -1482,7 +1491,7 @@ Obj FuncCALL_FUNC_LIST (
         list = ErrorReturnObj(
             "CallFuncList: <list> must be a small list",
             0L, 0L,
-            "you can return a small list for <list>" );
+            "you can replace <list> via 'return <list>;'" );
     }
 
     /* check that the first argument is a function                         */
@@ -1491,7 +1500,7 @@ Obj FuncCALL_FUNC_LIST (
         func = ErrorReturnObj(
             "CallFuncList: <func> must be a function",
             0L, 0L,
-            "you can return a function for <func>" );
+            "you can replace function <func> via 'return <func>;'" );
     }
 
     /* call the function                                                   */
@@ -1555,13 +1564,14 @@ Obj FuncNAME_FUNC (
     Obj                 func )
 {
     Obj                 name;
-    const char *        deflt = "unknown";
+    /*CCC const char *        deflt = "unknown"; CCC*/
 
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         name = NAME_FUNC(func);
         if ( name == 0 ) {
-            name = NEW_STRING(SyStrlen(deflt));
-            SyStrncat( CSTR_STRING(name), deflt, SyStrlen(deflt) );
+	  /*CCC name = NEW_STRING(SyStrlen(deflt));
+            SyStrncat( CSTR_STRING(name), deflt, SyStrlen(deflt) );CCC*/
+	    C_NEW_STRING(name, 7, "unknown");
             RESET_FILT_LIST( name, FN_IS_MUTABLE );
             NAME_FUNC(func) = name;
 
@@ -1976,6 +1986,7 @@ static Int InitKernel (
     LoadObjFuncs[ T_FUNCTION ] = LoadFunction;
 
     /* install the printer                                                 */
+    InitFopyGVar( "PRINT_OPERATION", &PrintOperation );
     PrintObjFuncs[ T_FUNCTION ] = PrintFunction;
 
     /* initialise all 'Do<Something><N>args' handlers, give the most       */

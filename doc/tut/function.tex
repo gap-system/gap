@@ -35,7 +35,7 @@ exercise in {\GAP}.
 gap> sayhello:= function()
 > Print("hello, world.\n");
 > end;
-function (  ) ... end
+function(  ) ... end
 \endexample
 
 This function when called will only execute the  `Print' statement in the
@@ -105,7 +105,7 @@ gap> sign:= function(n)
 >           return 1;
 >        fi;
 >    end;
-function ( n ) ... end
+function( n ) ... end
 gap> sign(0); sign(-99); sign(11);
 0
 -1
@@ -144,7 +144,7 @@ gap> fib:= function(n)
 >          return fib(n-1) + fib(n-2);
 >       fi;
 >    end;
-function ( n ) ... end
+function( n ) ... end
 gap> fib(15);
 610
 \endexample
@@ -170,7 +170,7 @@ gap> gcd:= function(a, b)
 >       od;
 >       return c;
 >    end;
-function ( a, b ) ... end
+function( a, b ) ... end
 gap> gcd(30, 63);
 3
 \endexample
@@ -242,7 +242,7 @@ gap> nrparts:= function(n)
 >    end;
 >    return np(n,n);
 > end;
-function ( n ) ... end
+function( n ) ... end
 \endexample
 
 We wanted to  write a function that  takes one argument.   We solved  the

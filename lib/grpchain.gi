@@ -634,7 +634,7 @@ end );
 
 #############################################################################
 ##
-#F  QuotientGroupByChainHomomorphicImage( ??? )
+#F  QuotientGroupByChainHomomorphicImage( <quo>[, <quo2>] )
 ##
 ##  This function creates quotient groups of quotient groups.
 ##

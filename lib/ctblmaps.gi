@@ -4067,7 +4067,7 @@ InstallGlobalFunction( ConsiderTableAutomorphisms,
 
     images:= Set( Filtered( parafus, IsList ) );
     support:= LargestMovedPoint( grp );
-    orbits:= List( Orbits( grp, [ 1 .. support ] ), Set );
+    orbits:= List( OrbitsDomain( grp, [ 1 .. support ] ), Set );
                               # sets because entries of parafus are sets
 
     isunion:= function( image )
@@ -4110,7 +4110,7 @@ InstallGlobalFunction( ConsiderTableAutomorphisms,
         grp:= Stabilizer( grp, parafus[i], OnPoints );
         if not IsTrivial( grp ) then
           support:= LargestMovedPoint( grp );
-          orbits:= List( Orbits( grp, [ 1 .. support ] ), Set );
+          orbits:= List( OrbitsDomain( grp, [ 1 .. support ] ), Set );
 
           # Compute orbits of the smaller group; sets because entries
           # of parafus are sets

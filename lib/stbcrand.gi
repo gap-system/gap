@@ -360,7 +360,10 @@ InstallGlobalFunction( SCRMakeStabStrong,
 
         # on top level, we want to keep the original generators
         if not top or Length(S.generators) = 0  then
-            Append(S.generators,new);
+	  for j in new do
+	    StretchImportantSLPElement(j);
+	  od;
+	  Append(S.generators,new);
         fi;
         #construct orbit of basepoint
         SCRSchTree(S,new);
@@ -1048,7 +1051,7 @@ end );
 ##  restores usual group records after random stabilizer chain construction
 ##
 InstallGlobalFunction( SCRRestoredRecord, function( G )
-    local   sgs,  T,  S,  l,  lab,  pnt;
+    local   sgs,  T,  S,  l,  lab,  pnt,o,ind;
     
     S := G;
     sgs := [ S.identity ];
@@ -1066,14 +1069,33 @@ InstallGlobalFunction( SCRRestoredRecord, function( G )
         S.generators  := G.generators;
         S.orbit       := G.orbit;
         S.transversal := G.transversal;
-        for l  in sgs  do
-            lab := S.labels[ l ];
-            for pnt  in S.orbit  do
-                if S.transversal[ pnt ] = lab  then
-                    S.translabels[ pnt ] := l;
-                fi;
-            od;
-        od;
+	o:=ShallowCopy(S.orbit);
+	# check identity of transversal elements first: Most are
+	# identical and thus element comparisons are relatively
+	# infrequent
+	while Length(o)>0 do
+	  
+	  ind:=S.transversal[o[1]];
+	  ind:=Filtered([1..Length(o)],
+		  i->IsIdenticalObj(S.transversal[o[i]],ind));
+	  for l in sgs do
+	    if S.transversal[o[1]]=S.labels[l] then
+	      for pnt in o{ind} do # all these transv. elements are same
+		S.translabels[ pnt ] := l;
+	      od;
+	    fi;
+	  od;
+	  o:=o{Difference([1..Length(o)],ind)}; # the rest
+	od;
+
+	    #was:
+	    # (The element comparisons could be expensive)
+            #for pnt  in S.orbit  do
+            #    if S.transversal[ pnt ] = lab  then
+            #        S.translabels[ pnt ] := l;
+            #    fi;
+            #od;
+
         sgs := Filtered( sgs, l ->
                        S.orbit[ 1 ] ^ S.labels[ l ] = S.orbit[ 1 ] );
         S := S.stabilizer;
@@ -1381,7 +1403,7 @@ InstallGlobalFunction( VerifySGS, function(S,missing,correct)
  
             # first generator in first group can be verified easily
             if i=1 and Length(set) =1 then 
-                result := newgen^(CycleLengthPermInt(newgen,temp2.orbit[1]));
+                result := newgen^(CycleLengthOp(newgen,temp2.orbit[1]));
                 AddGeneratorsExtendSchreierTree(temp2, [newgen]); 
             elif result = () then
                 AddGeneratorsExtendSchreierTree( temp2, [ newgen ] );

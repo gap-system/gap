@@ -1,6 +1,7 @@
 #############################################################################
 ##
 #W  gpprmsya.gd                   GAP Library                    Frank Celler
+#W                                                           Alexander Hulpke
 ##
 #H  @(#)$Id$
 ##
@@ -49,7 +50,6 @@ InstallTrueMethod( IsAlternatingGroup, IsNaturalAlternatingGroup );
 ##
 DeclareProperty( "IsNaturalSymmetricGroup", IsPermGroup );
 
-
 #############################################################################
 ##
 #P  IsSymmetricGroup( <group> )
@@ -74,6 +74,15 @@ InstallTrueMethod( IsSymmetricGroup, IsNaturalSymmetricGroup );
 ##  that moves the same points as <grp> does.
 ##
 DeclareAttribute("SymmetricParentGroup",IsPermGroup);
+
+#############################################################################
+##
+#A  AlternatingSubgroup( <grp> )
+##
+##  returns the intersection of <grp> with the alternating group on the
+##  points moved by <grp>.
+##
+DeclareAttribute("AlternatingSubgroup",IsPermGroup);
 
 #############################################################################
 ##

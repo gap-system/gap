@@ -1888,7 +1888,7 @@ FinPowConjCol * FinPowConjCollectors [6] =
 #define C32Bits_SingleCollectorNo       2
        &C32Bits_SingleCollector,
 #define C8Bits_CombiCollectorNo         3
-       &C16Bits_CombiCollector,
+       &C8Bits_CombiCollector,
 #define C16Bits_CombiCollectorNo        4
        &C16Bits_CombiCollector,
 #define C32Bits_CombiCollectorNo        5

@@ -16,11 +16,11 @@ section~"tut:Attributes"  in the   tutorial. In   this  chapter  we  will
 describe further mechanisms that  allow storage of  results that  are not
 values of attributes.
 
-\index{FOA triples}%
+\index{FOA triples}
 The  idea which is   common to all  sections  is that certain operations,
 which are  not themselves attributes, have  an attribute  associated with
 them. To automatically delegate tasks to the  attribute, {\GAP} knows, in
-addition  to  the *operation*  and  the  *attributes*   also an  ordinary
+addition  to  the *operation*  and  the  *attributes*   also a
 *function*, which  is  ``wrapped around'' the  other  two. This ``wrapper
 function''  is called by    the user and    decides whether to  call  the
 operation    or  the    attribute     or  possibly     both.   The  whole
@@ -35,7 +35,7 @@ for the attribute are required either.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Key Dependent Operations}
 
-% see the test in the declaration of `KeyDependentOperation;
+% see the text in the declaration of `KeyDependentOperation';
 % eventually one would like to use the manual builder also for the `ext'
 % manual
 
@@ -105,14 +105,13 @@ gap> SylowSubgroup( s4, 2 );;  ComputedSylowSubgroups( s4 );
 [ 2, Group([(3,4),(1,4)(2,3),(1,3)(2,4)]), 5, Group(()) ]
 \endexample
 \begintt
-gap> SylowSubgroup( s4, 6 );                                
-Error SylowSubgroup: <p> must be a prime at
-Error( name, ": <p> must be a prime" );
-keytest( key ); called from
+gap> SylowSubgroup( s4, 6 );
+Error, SylowSubgroup: <p> must be a prime called from
+<compiled or corrupted call value>  called from
 <function>( <arguments> ) called from read-eval-loop
-Entering break read-eval-print loop, you can 'quit;' to quit to outer \
-loop,
-or you can return to continue
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
 brk> quit;
 \endtt
 
@@ -134,8 +133,8 @@ This section describes how you can add  new ``in parent attributes''
 As an example, we describe how `Index' and its related functions
 are implemented.
 
-There are a function `Index', an operation `IndexOp', and an attribute
-`IndexInParent'.
+There are two operations `Index' and `IndexOp',
+and an attribute `IndexInParent'.
 They are created together as shown below,
 and after they have been created,
 methods need be installed only for `IndexOp'.
@@ -145,33 +144,26 @@ installed
 see~"ref:Attributes" in the Reference Manual),
 namely `D -> IndexOp( Parent( D ), D )'.
 
-The function `Index' takes any number of arguments and proceeds as
-follows.
+The operation `Index' proceeds as follows.
 \beginlist
 \item{$\bullet$}
-  If it is called  with exactly two arguments  <super> and <sub>,  and if
-  `HasParent( <sub> )' and  `IsIdenticalObj( <super>, Parent( <sub> ) )',
-  the tester `HasIndexInParent( <sub> )' is consulted.
-  \itemitem{$\circ$}
-    If  the  tester returns `true',  `IndexInParent(  <sub> )'  is called
-    (which will then hopefully choose the system getter of the attribute)
-    and the result returned.
-  \itemitem{$\circ$}
-    If the tester returns `false', `IndexOp' is called in the obvious way
-    and the result is passed to the setter `SetIndexInParent' (which will
-    hopefully store it). The result is also returned.
+  If it is called with the two arguments <super> and <sub>, and if
+  `HasParent( <sub> )' and `IsIdenticalObj( <super>, Parent( <sub> ) )'
+  are `true', `IndexInParent' is called with argument <sub>,
+  and the result is returned.
 \item{$\bullet$}
   Otherwise, `IndexOp' is called with the same arguments that `Index' was
   called with, and the result is returned.
-  (Note that it is in principle possible to install even `IndexOp' methods
-  for a number of arguments different from two, with `InstallOtherMethod',
-  see~"prg:Creating Attributes and Properties" in ``Programming in GAP'').
 \endlist
+(Note that it is in principle possible to install even `Index' and
+`IndexOp' methods for a number of arguments different from two,
+with `InstallOtherMethod',
+see~"prg:Creating Attributes and Properties" in ``Programming in GAP'').
 
-\>InParentFOA( <name>, <super-req>, <sub-req>, NewAttribute )
-\>InParentFOA( <name>, <super-req>, <sub-req>, NewProperty )
+\>InParentFOA( <name>, <super-req>, <sub-req>, DeclareAttribute )
+\>InParentFOA( <name>, <super-req>, <sub-req>, DeclareProperty )
 
-declares function, operation, and attribute as described above,
+declares the operations and the attribute as described above,
 with names <name>, `<name>Op', and `<name>InParent'.
 <super-req> and <sub-req> specify the required filters for the first and
 second argument of the operation `<name>Op',
@@ -183,33 +175,34 @@ note that `HasParent' is *not* required for the argument <U> of
 `<name>InParent', because even without a parent stored,
 `Parent( <U> )' is legal, meaning <U> itself
 (see~"ref:Parents" in the Reference Manual).
-The fourth argument is `NewProperty' if `<name>InParent' takes only
+The fourth argument is `DeclareProperty' if `<name>InParent' takes only
 boolean values (for example in the case `IsNormalInParent'),
-and `NewAttribute' otherwise.
+and `DeclareAttribute' otherwise.
 
 For example, to set up the three objects `Index', `IndexOp',
 and `IndexInParent' together,
 the declaration file ``lib/domain.gd'' contains the following line of code.
 \begintt
-InParentFOA( "Index", IsGroup, IsGroup, NewAttribute );
+InParentFOA( "Index", IsGroup, IsGroup, DeclareAttribute );
 \endtt
 
-Note that no methods can/need be installed for `Index' and
-`IndexInParent'.
+Note that no methods need be installed for `Index' and `IndexInParent'.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operation Functions}
 
-Section~"ref:Operation  functions!for  groups"  of  the  Reference Manual
+\indextt{ExternalSet}\atindex{G-sets}{@$G$-sets}\indextt{Orbits}
+Chapter~"ref:Group Actions"  of  the  Reference Manual
+and, in particular, the Section~"ref:About Group Actions"
 % currently in `abattoir/group.tex', `abattoir/permgrp.tex',
 % `abattoir/solvgrp.tex' ...
-explains that certain operations such as `Orbits',
+explain that certain operations such as `Orbits' (see~"ref:Orbits"),
 besides their usual usage with arguments <G>, <D>, and <opr>,
-can also be applied to an external set,
+can also be applied to an external set ($G$-set),
 in which case they can be interpreted as attributes.
 Moreover, they can also be interpreted as attributes for permutation
-group, meansing the natural action on the set of its moved points.
+group, meaning the natural action on the set of its moved points.
 
 The definition of `Orbits' says that a method should be a function
 with arguments <G>, <D>, <gens>, <oprs>, and <opr>,

@@ -216,6 +216,7 @@ gap> DefaultFieldOfMatrix([[Z(4),Z(8)]]);
 GF(2^6)
 \endexample
 
+\indextt{Trace!of a matrix}
 \Declaration{TraceMat}
 \beginexample
 gap> TraceMat([[1,2,3],[4,5,6],[7,8,9]]);
@@ -405,11 +406,8 @@ gap> mm;
 \Declaration{SemiEchelonMatTransformation}
 \beginexample
 gap> SemiEchelonMatTransformation([[1,2,3],[0,0,1]]);
-rec(
-  heads := [ 1, 0, 2 ],
-  vectors := [ [ 1, 2, 3 ], [ 0, 0, 1 ] ],
-  coeffs := [ [ 1, 0 ], [ 0, 1 ] ],
-  relations := [  ] )
+rec( heads := [ 1, 0, 2 ], vectors := [ [ 1, 2, 3 ], [ 0, 0, 1 ] ], 
+  coeffs := [ [ 1, 0 ], [ 0, 1 ] ], relations := [  ] )
 \endexample
 \Declaration{SemiEchelonMats}
 \Declaration{SemiEchelonMatsDestructive}
@@ -439,10 +437,8 @@ gap> SumIntersectionMat(mat,[[2,7,6],[5,9,4]]);
 \Declaration{BaseSteinitzVectors}
 \beginexample
 gap> BaseSteinitzVectors(IdentityMat(3,1),[[11,13,15]]);
-rec(
-  factorspace := [ [ 0, 1, 15/13 ], [ 0, 0, 1 ] ],
-  factorzero := [ 0, 0, 0 ],
-  subspace := [ [ 1, 13/11, 15/11 ] ],
+rec( factorspace := [ [ 0, 1, 15/13 ], [ 0, 0, 1 ] ], 
+  factorzero := [ 0, 0, 0 ], subspace := [ [ 1, 13/11, 15/11 ] ], 
   heads := [ -1, 1, 2 ] )
 \endexample
 

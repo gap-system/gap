@@ -27,7 +27,7 @@ InstallMethod( DirectProductOp,
     fi;
 
     len := Sum( List( list, x -> Length( Pcgs( x ) ) ) );
-    F   := FreeGroup( len );
+    F   := FreeGroup(IsSyllableWordsFamily, len );
     gensF := GeneratorsOfGroup( F );
     relsF := [];
 
@@ -209,9 +209,7 @@ end );
 ##
 #A Projection
 ##
-InstallOtherMethod( Projection,
-        "of semidirect pc group and integer",
-         true, 
+InstallOtherMethod( Projection,"of semidirect pc group",true, 
          [ IsPcGroup and HasSemidirectProductInfo ],
          0,
     function( D )
@@ -238,6 +236,203 @@ InstallOtherMethod( Projection,
     return hom;
 end );
 
+##
+InstallGlobalFunction(SubdirProdPcGroups,function(G,gi,H,hi)
+local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
+      e,w,pow,b2,b3,comm,id;
+  mg:=GroupGeneralMappingByImages(G,H,gi,hi);
+  kh:=CoKernelOfMultiplicativeGeneralMapping(mg);
+  mh:=GroupGeneralMappingByImages(H,G,hi,gi);
+  kg:=CoKernelOfMultiplicativeGeneralMapping(mh);
+
+  #trivial cases?
+  if Size(kh)=1 then
+    return [G,gi];
+  elif Size(kg)=1 then
+    return [H,hi];
+  fi;
+
+
+  # get a new pcgs for g through kg
+  pkg:=InducedPcgs(FamilyPcgs(G),kg);
+  pkh:=InducedPcgs(FamilyPcgs(H),kh);
+  fp:=FamilyPcgs(G) mod pkg;
+  b2:=Length(fp);
+  b3:=Length(fp)+Length(pkg);
+  fh:=List(fp,i->ImagesRepresentative(mg,i));
+  F:=FreeGroup(IsSyllableWordsFamily,Length(fp)+Length(pkg)+Length(pkh));
+  gens:=GeneratorsOfGroup(F);
+  fpgens:=gens{[1..b2]};
+  pggens:=gens{[b2+1..b3]};
+  phgens:=gens{[b3+1..Length(gens)]};
+  coll:=SingleCollector(F,Concatenation(
+			RelativeOrders(fp),
+			RelativeOrders(pkg),
+			RelativeOrders(pkh)
+                        ));
+  id:=One(F);
+
+
+  # power relations
+
+  # for fp
+  for i in [1..Length(fp)] do
+    pow:=fp[i]^RelativeOrders(fp)[i];
+    e:=ExponentsOfPcElement(fp,pow);
+    w:=LinearCombinationPcgs(fpgens,e);
+
+    # the rest in kg
+    pow:=LeftQuotient(PcElementByExponentsNC(fp,e),pow);
+    w:=w*LinearCombinationPcgs(pggens,ExponentsOfPcElement(pkg,pow));
+
+    # rest in kh
+    pow:=LeftQuotient(LinearCombinationPcgs(fh,e),fh[i]^RelativeOrders(fp)[i]);
+    w:=w*LinearCombinationPcgs(phgens,ExponentsOfPcElement(pkh,pow));
+
+    if w<>id then
+      SetPower(coll,i,w);
+    fi;
+  od;
+
+  # for pkg
+  for i in [1..Length(pkg)] do
+    pow:=pkg[i]^RelativeOrders(pkg)[i];
+    e:=ExponentsOfPcElement(pkg,pow);
+    w:=LinearCombinationPcgs(pggens,e);
+    if w<>id then
+      SetPower(coll,i+b2,w);
+    fi;
+  od;
+  
+  # for pkh
+  for i in [1..Length(pkh)] do
+    pow:=pkh[i]^RelativeOrders(pkh)[i];
+    e:=ExponentsOfPcElement(pkh,pow);
+    w:=LinearCombinationPcgs(phgens,e);
+    if w<>id then
+      SetPower(coll,i+b3,w);
+    fi;
+  od;
+  
+  # commutator relations
+  # for fp
+  for i in [1..Length(fp)] do
+    # on fp
+    for j in [i+1..Length(fp)] do
+      comm:=Comm(fp[j],fp[i]);
+      e:=ExponentsOfPcElement(fp,comm);
+      w:=LinearCombinationPcgs(fpgens,e);
+
+      # the rest in kg
+      comm:=LeftQuotient(PcElementByExponentsNC(fp,e),comm);
+      w:=w*LinearCombinationPcgs(pggens,ExponentsOfPcElement(pkg,comm));
+
+      # rest in kh
+      comm:=LeftQuotient(LinearCombinationPcgs(fh,e),Comm(fh[j],fh[i]));
+      w:=w*LinearCombinationPcgs(phgens,ExponentsOfPcElement(pkh,comm));
+
+      if w<>id then
+	SetCommutator(coll,j,i,w);
+      fi;
+    od;
+
+    #on pkg
+    for j in [1..Length(pkg)] do
+      comm:=Comm(pkg[j],fp[i]);
+      w:=LinearCombinationPcgs(pggens,ExponentsOfPcElement(pkg,comm));
+
+      if w<>id then
+	SetCommutator(coll,j+b2,i,w);
+      fi;
+    od;
+
+    #on pkh
+    for j in [1..Length(pkh)] do
+      comm:=Comm(pkh[j],fh[i]);
+      w:=LinearCombinationPcgs(phgens,ExponentsOfPcElement(pkh,comm));
+
+      if w<>id then
+	SetCommutator(coll,j+b3,i,w);
+      fi;
+    od;
+
+  od;
+
+  # for pkg
+  for i in [1..Length(pkg)] do
+    for j in [i+1..Length(pkg)] do
+      comm:=Comm(pkg[j],pkg[i]);
+      e:=ExponentsOfPcElement(pkg,comm);
+      w:=LinearCombinationPcgs(pggens,e);
+
+      if w<>id then
+	SetCommutator(coll,j+b2,i+b2,w);
+      fi;
+    od;
+  od;
+
+  # for pkh
+  for i in [1..Length(pkh)] do
+    for j in [i+1..Length(pkh)] do
+      comm:=Comm(pkh[j],pkh[i]);
+      e:=ExponentsOfPcElement(pkh,comm);
+      w:=LinearCombinationPcgs(phgens,e);
+
+      if w<>id then
+	SetCommutator(coll,j+b3,i+b3,w);
+      fi;
+    od;
+  od;
+
+  w:=GroupByRwsNC(coll);
+
+  # compute the corresponding images
+  gens:=FamilyPcgs(w);
+  fpgens:=gens{[1..b2]};
+  pggens:=gens{[b2+1..b3]};
+  phgens:=gens{[b3+1..Length(gens)]};
+  comm:=[];
+  for i in [1..Length(gi)] do
+    e:=ExponentsOfPcElement(fp,gi[i]);
+    Add(comm,LinearCombinationPcgs(fpgens,e)
+            *LinearCombinationPcgs(pggens,ExponentsOfPcElement(pkg,
+	               LeftQuotient(LinearCombinationPcgs(fp,e),gi[i])))
+            *LinearCombinationPcgs(phgens,ExponentsOfPcElement(pkh,
+	               LeftQuotient(LinearCombinationPcgs(fh,e),hi[i]))));
+  od;
+
+  return [w,comm];
+  
+end);
+
+#############################################################################
+##
+#M  SubdirectProduct( <G1>, <G2>, <phi1>, <phi2> )
+##
+InstallMethod( SubdirectProductOp,"pcgroup", true,
+  [ IsPcGroup, IsPcGroup, IsGroupHomomorphism, IsGroupHomomorphism ], 0,
+function( G, H, gh, hh )
+local pg,ph,kg,kh,ig,ih,mg,mh,S,info;
+  pg:=Pcgs(G);
+  ph:=Pcgs(H);
+  kg:=KernelOfMultiplicativeGeneralMapping(gh);
+  kh:=KernelOfMultiplicativeGeneralMapping(hh);
+  ig:=InducedPcgs(pg,kg);
+  ih:=InducedPcgs(ph,kh);
+  mg:=pg mod ig;
+  mh:=List(mg,i->PreImagesRepresentative(hh,Image(gh,i)));
+  pg:=Concatenation(mg,ig,List(ih,i->One(G)));
+  ph:=Concatenation(mh,List(ig,i->One(H)),ih);
+  S:=SubdirProdPcGroups(G,pg,H,ph);
+  pg:=GroupHomomorphismByImagesNC(S[1],G,S[2],pg);
+  ph:=GroupHomomorphismByImagesNC(S[1],H,S[2],ph);
+  S:=S[1];
+  info:=rec(groups:=[G,H],
+	    homomorphisms:=[gh,hh],
+	    projections:=[pg,ph]);
+  SetSubdirectProductInfo(S,info);
+  return S;
+end);
 
 #############################################################################
 ##

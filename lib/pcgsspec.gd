@@ -34,6 +34,9 @@ InstallTrueMethod(IsPcgsElementaryAbelianSeries,IsSpecialPcgs);
 #A  SpecialPcgs( <G> )
 ##
 ##  computes a special pcgs for the group defined by <pcgs> or for <G>.
+
+##  A method for `SpecialPcgs(<G>)' must call `SpecialPcgs(Pcgs(<G>))' (this
+##  is to avoid accidentally forgetting information.)
 DeclareAttribute( "SpecialPcgs", IsPcgs );
 
 #############################################################################

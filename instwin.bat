@@ -3,12 +3,12 @@ rem  Installation file for GAP4 under windows. ahulpke, 19-5-99
 rem
 if not exist lib\init.g goto err1
 dir | find "Directory" > blubber.bat
-echo set gdir=%%2> Directory.bat
+echo set gdir=%%2 %%3 %%4 %%5 %%6 %%7 %%8> Directory.bat
 call blubber
 del blubber.bat
 del Directory.bat
 echo @echo off >bin\gap.bat
-echo %gdir%\bin\gapw95.exe -m 14m -l %gdir%; %%1 %%2 %%3 %%4 %%5 %%6 %%7 %%8 >>bin\gap.bat
+echo "%gdir%\bin\gapw95.exe" -m 14m -l "%gdir%"; %%1 %%2 %%3 %%4 %%5 %%6 %%7 %%8 >>bin\gap.bat
 if not exist bin\gapw95.exe goto err1
 if not exist bin\gap.bat goto err1
 echo Installation completed.

@@ -14,12 +14,15 @@ if ${BINDIR}/checkvar;  then echo;  else
     exit 1
 fi
 
+chmod a+x ${BINDIR}/saytext
+chmod a+x ${BINDIR}/saybin
+
 
 # clean the old files
 cd ${DISTROOT}
 [ -d OLD ] || mkdir OLD
 rm -rf OLD/*
-mv [a-z]*.zoo split OLD
+mv [a-z]*.zoo [a-z]*.tar [a-z]*.zip [a-z]*.tar.gz split OLD
 
 if [ \! -d split ];  then
     mkdir split
@@ -34,11 +37,6 @@ rm -rf doc/build doc/abattoir doc/Makefile alpha beta dev dev \
   config.*
 )
 
-# create the files that will indicate text and binary mode
-echo '!TEXT!' > TEXTCOM
-echo '/END'   >>TEXTCOM
-echo '!BINARY!'>BINCOM
-echo '/END'   >>BINCOM
 
 # go into the source directory and create the zoo files
 echo "$0: zooing version $VERSION of $DATE"
@@ -46,568 +44,281 @@ echo "$0: zooing version $VERSION of $DATE"
 #echo "README file"
 #cp ${DISTNAME}/etc/README .
 
-echo "HTML Documentation (section-wise)"
+addtext () {
+    archivename=$1
+    shift 
+    ${BINDIR}/saytext | zoo ahc ${archivename}.zoo $* >& /dev/null &
+    zip -l ${archivename}.zip $* > /dev/null  &
+    tar rf ${archivename}.tar $* &
+    wait
+}
 
-for i in ${DISTNAME}/doc/htm_small/ref/*; do
-  zoo ah split/html_sect$RBVERSION.zoo $i >/dev/null
-  zoo c split/html_sect$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/doc/htm_small/tut/*; do
-  zoo ah split/html_sect$RBVERSION.zoo $i >/dev/null
-  zoo c split/html_sect$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/doc/htm_small/ext/*; do
-  zoo ah split/html_sect$RBVERSION.zoo $i >/dev/null
-  zoo c split/html_sect$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/doc/htm_small/prg/*; do
-  zoo ah split/html_sect$RBVERSION.zoo $i >/dev/null
-  zoo c split/html_sect$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/doc/htm_small/new/*; do
-  zoo ah split/html_sect$RBVERSION.zoo $i >/dev/null
-  zoo c split/html_sect$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-
-for i in ${DISTNAME}/doc/htm_small/*.htm; do
-  zoo ah split/html_sect$RBVERSION.zoo $i >/dev/null
-  zoo c split/html_sect$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-
-rm -rf ${DISTNAME}/doc/htm_small
+addbin () {
+    archivename=$1
+    shift 
+    ${BINDIR}/saybin | zoo ahc ${archivename}.zoo $* >& /dev/null & 
+    zip  ${archivename}.zip $* > /dev/null &
+    tar rf ${archivename}.tar $* &
+    wait
+}
 
 (cd $DISTROOT;
 
+
+echo "Removing old attempts"
+
+
+
+
+echo "HTML Documentation (section-wise)"
+
+for j in ref tut ext prg new; do
+   addtext split/html_sect$RBVERSION ${DISTNAME}/doc/htm_small/${j}/*
+done
+
+addtext split/html_sect$RBVERSION ${DISTNAME}/doc/htm_small/*.htm
+
 echo "Basic version"
 
-for i in ${DISTNAME}/lib/*; do
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/grp/*; do
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/tst/*; do
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/pkg/example/*; do
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/pkg/example/src/*; do
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/pkg/example/doc/*; do
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/pkg/example/gap/*; do
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+for j in lib grp tst pkg/example pkg/example/src pkg/example/doc pkg/example/gap; do
+    addtext basic$RBVERSION ${DISTNAME}/${j}/*
 done
 
-for i in ${DISTNAME}/doc/ref/*.tex; do
-  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/doc/tut/*.tex; do
-  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/doc/ext/*.tex; do
-  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/doc/prg/*.tex; do
-  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/doc/new/*.tex; do
-  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+echo "Documentation -- TeX files"
+
+for j in ref tut ext prg new; do
+    addtext split/doc$RBVERSION ${DISTNAME}/doc/${j}/*.tex
+    addtext basic$RBVERSION ${DISTNAME}/doc/${j}/*.tex
+
 done
 
-zoo ah basic$RBVERSION.zoo ${DISTNAME}/doc/gapmacro.tex > /dev/null
-zoo c basic$RBVERSION.zoo ${DISTNAME}/doc/gapmacro.tex <TEXTCOM >&/dev/null
-zoo ah basic$RBVERSION.zoo ${DISTNAME}/doc/manual.bib > /dev/null
-zoo c basic$RBVERSION.zoo ${DISTNAME}/doc/manual.bib <TEXTCOM >&/dev/null
-zoo ah basic$RBVERSION.zoo ${DISTNAME}/doc/manualindex > /dev/null
-zoo c basic$RBVERSION.zoo ${DISTNAME}/doc/manualindex <TEXTCOM >&/dev/null
-
-zoo ah split/doc$RBVERSION.zoo ${DISTNAME}/doc/gapmacro.tex > /dev/null
-zoo c split/doc$RBVERSION.zoo ${DISTNAME}/doc/gapmacro.tex <TEXTCOM >&/dev/null
-zoo ah split/doc$RBVERSION.zoo ${DISTNAME}/doc/manual.bib > /dev/null
-zoo c split/doc$RBVERSION.zoo ${DISTNAME}/doc/manual.bib <TEXTCOM >&/dev/null
-zoo ah split/doc$RBVERSION.zoo ${DISTNAME}/doc/manualindex > /dev/null
-zoo c split/doc$RBVERSION.zoo ${DISTNAME}/doc/manualindex <TEXTCOM >&/dev/null
-
-for i in ${DISTNAME}/doc/{ref,tut,ext,prg,new}/manual.six; do
-  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+for i in gapmacro.tex manual.bib manualindex; do
+    addtext basic$RBVERSION ${DISTNAME}/doc/$i
+    addtext split/doc$RBVERSION ${DISTNAME}/doc/$i
 done
 
-# there is no README.... zoo ah basic$RBVERSION.zoo README> /dev/null
+
+for j in six mst; do
+    addtext split/doc$RBVERSION ${DISTNAME}/doc/{ref,tut,ext,prg,new}/manual.$j
+    addtext basic$RBVERSION ${DISTNAME}/doc/{ref,tut,ext,prg,new}/manual.$j
+done
+
 
 # this version will also be used for mac and pc, we don't give them the
 # source however.
 cp basic$RBVERSION.zoo macpc.zoo
+cp basic$RBVERSION.zip macpc.zip
+cp basic$RBVERSION.tar macpc.tar
+
+echo "Source files"
 
 cp INSTALL ${DISTNAME}
-zoo ah basic$RBVERSION.zoo ${DISTNAME}/INSTALL > /dev/null
-zoo c basic$RBVERSION.zoo ${DISTNAME}/INSTALL <TEXTCOM >&/dev/null
 
-zoo ah basic$RBVERSION.zoo ${DISTNAME}/gap.shi > /dev/null
-zoo c basic$RBVERSION.zoo ${DISTNAME}/gap.shi <TEXTCOM >&/dev/null
-zoo ah split/src$RBVERSION.zoo ${DISTNAME}/gap.shi > /dev/null
-zoo c split/src$RBVERSION.zoo ${DISTNAME}/gap.shi <TEXTCOM >&/dev/null
+addtext basic$RBVERSION ${DISTNAME}/INSTALL
+addtext basic$RBVERSION ${DISTNAME}/gap.shi
+addtext split/src$RBVERSION ${DISTNAME}/gap.shi
 
-for i in ${DISTNAME}/src/*; do
-  zoo ah split/src$RBVERSION.zoo $i >/dev/null
-  zoo c split/src$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/cnf/*; do
-  zoo ah split/src$RBVERSION.zoo $i >/dev/null
-  zoo c split/src$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+for j in src cnf; do
+    addtext split/src$RBVERSION ${DISTNAME}/${j}/*
+    addtext basic$RBVERSION ${DISTNAME}/${j}/*
 done
 
 for i in  ${DISTNAME}/{Makefile.in,sysinfo.in,configure}; do
-  zoo ah split/src$RBVERSION.zoo $i >/dev/null
-  zoo c split/src$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah basic$RBVERSION.zoo $i >/dev/null
-  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+    addtext  split/src$RBVERSION $i
+    addtext basic$RBVERSION $i
 done
 
 echo "Omnibus edition"
 # extend the basic version
 cp basic$RBVERSION.zoo gap$RBVERSION.zoo
+cp basic$RBVERSION.zip gap$RBVERSION.zip
+cp basic$RBVERSION.tar gap$RBVERSION.tar
 
 echo "TeXed Documentation"
-for i in ${DISTNAME}/doc/*/manual.dvi; do
-#  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-#  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah docdvi$RBVERSION.zoo $i >/dev/null
-  zoo c docdvi$RBVERSION.zoo $i <BINCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <BINCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <BINCOM >&/dev/null;
+addbin docdvi$RBVERSION ${DISTNAME}/doc/*/manual.dvi
+addbin macpc ${DISTNAME}/doc/*/manual.dvi
+addbin gap$RBVERSION ${DISTNAME}/doc/*/manual.dvi
+
+for i in docdvi$RBVERSION macpc gap$RBVERSION; do
+    addbin $i ${DISTNAME}/doc/fullindex.dvi
 done
 
-#zoo ah split/doc$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi > /dev/null
-#zoo c split/doc$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi <BINCOM >&/dev/null
-zoo ah docdvi$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi > /dev/null
-zoo c docdvi$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi <BINCOM >&/dev/null
-zoo ah macpc.zoo ${DISTNAME}/doc/fullindex.dvi > /dev/null
-zoo c macpc.zoo ${DISTNAME}/doc/fullindex.dvi <BINCOM >&/dev/null
-zoo ah gap$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi > /dev/null
-zoo c gap$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi <BINCOM >&/dev/null
+(cd split; ln -s ../docdvi$RBVERSION.zoo .)
+(cd split; ln -s ../docdvi$RBVERSION.zip .)
+(cd split; ln -s ../docdvi$RBVERSION.tar.gz .)
 
-ln -s docdvi$RBVERSION.zoo split
+addbin docpdf$RBVERSION ${DISTNAME}/doc/*/manual.pdf
+addbin macpc ${DISTNAME}/doc/*/manual.pdf
+addbin gap$RBVERSION ${DISTNAME}/doc/*/manual.pdf
 
 
-for i in ${DISTNAME}/doc/*/manual.pdf; do
-  zoo ah docpdf$RBVERSION.zoo $i >/dev/null
-  zoo c docpdf$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
+addbin docpdf$RBVERSION  ${DISTNAME}/doc/fullindex.pdf
+addbin gap$RBVERSION  ${DISTNAME}/doc/fullindex.pdf
 
-
-zoo ah docpdf$RBVERSION.zoo ${DISTNAME}/doc/fullindex.pdf > /dev/null
-zoo c docpdf$RBVERSION.zoo ${DISTNAME}/doc/fullindex.pdf <TEXTCOM >&/dev/null
-zoo ah gap$RBVERSION.zoo ${DISTNAME}/doc/fullindex.pdf > /dev/null
-zoo c gap$RBVERSION.zoo ${DISTNAME}/doc/fullindex.pdf <TEXTCOM >&/dev/null
-
-ln -s docpdf$RBVERSION.zoo split
+(cd split; ln -s ../docpdf$RBVERSION.zoo .)
+(cd split; ln -s ../docpdf$RBVERSION.zip .)
+(cd split; ln -s docpdf$RBVERSION.tar.gz .)
 
 
 # postscript files (do we really still want them?)
-for i in ${DISTNAME}/doc/*/manual.ps; do
-  zoo ah docps$RBVERSION.zoo $i >/dev/null
-  zoo c docps$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-done
-zoo ah docps$RBVERSION.zoo ${DISTNAME}/doc/fullindex.ps > /dev/null
-zoo c docps$RBVERSION.zoo ${DISTNAME}/doc/fullindex.ps <TEXTCOM >&/dev/null
+addtext docps$RBVERSION ${DISTNAME}/doc/*/manual.ps
 
-ln -s docps$RBVERSION.zoo split
+addtext docps$RBVERSION ${DISTNAME}/doc/fullindex.ps
 
+(cd split; ln -s ../docps$RBVERSION.zoo .)
+(cd split; ln -s ../docps$RBVERSION.zip .)
+(cd split; ln -s ../docps$RBVERSION.tar.gz .)
 
 echo "HTML Documentation"
-for i in ${DISTNAME}/doc/htm/ref/*; do
-#  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-#  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah html$RBVERSION.zoo $i >/dev/null
-  zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/doc/htm/tut/*; do
-#  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-#  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah html$RBVERSION.zoo $i >/dev/null
-  zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/doc/htm/ext/*; do
-#  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-#  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah html$RBVERSION.zoo $i >/dev/null
-  zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/doc/htm/prg/*; do
-#  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-#  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah html$RBVERSION.zoo $i >/dev/null
-  zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/doc/htm/new/*; do
-#  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-#  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah html$RBVERSION.zoo $i >/dev/null
-  zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/doc/htm/*.htm; do
-#  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-#  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah html$RBVERSION.zoo $i >/dev/null
-  zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+
+for j in ref tut ext prg new; do
+    for k in html$RBVERSION macpc gap$RBVERSION; do
+	addtext $k ${DISTNAME}/doc/htm/${j}/*
+    done
 done
 
-ln -s html$RBVERSION.zoo split
+for i in ${DISTNAME}/doc/htm/*.htm; do
+    for k in html$RBVERSION macpc gap$RBVERSION; do
+	addtext $k $i
+    done
+done
+
+(cd split; ln -s ../html$RBVERSION.zoo .)
+(cd split; ln -s ../html$RBVERSION.zip .)
+(cd split; ln -s ../html$RBVERSION.tar.gz .)
 
 echo "Trans"
-for i in ${DISTNAME}/trans/*; do
-  zoo ah split/trans$RBVERSION.zoo $i >/dev/null
-  zoo c split/trans$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+for j in split/trans$RBVERSION macpc gap$RBVERSION; do
+    addtext $j ${DISTNAME}/trans/*
 done
+
 cp split/trans$RBVERSION.zoo gdat$RBVERSION.zoo
+cp split/trans$RBVERSION.zip gdat$RBVERSION.zip
+cp split/trans$RBVERSION.tar gdat$RBVERSION.tar
 
 echo "Small"
-for i in ${DISTNAME}/small/*.*; do
-  zoo ah split/small$RBVERSION.zoo $i >/dev/null
-  zoo c split/small$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+
+for j in split/small$RBVERSION gdat$RBVERSION macpc gap$RBVERSION; do
+    addtext $j ${DISTNAME}/small/*.*
 done
-for i in ${DISTNAME}/small/id2/*; do
-  zoo ah split/id2$RBVERSION.zoo $i >/dev/null
-  zoo c split/id2$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/small/id3/*; do
-  zoo ah split/id3$RBVERSION.zoo $i >/dev/null
-  zoo c split/id3$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/small/id4/*; do
-  zoo ah split/id4$RBVERSION.zoo $i >/dev/null
-  zoo c split/id4$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/small/id5/*; do
-  zoo ah split/id5$RBVERSION.zoo $i >/dev/null
-  zoo c split/id5$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/small/id6/*; do
-  zoo ah split/id6$RBVERSION.zoo $i >/dev/null
-  zoo c split/id6$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/small/small2/*; do
-  zoo ah split/small2$RBVERSION.zoo $i >/dev/null
-  zoo c split/small2$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/small/small3/*; do
-  zoo ah split/small3$RBVERSION.zoo $i >/dev/null
-  zoo c split/small3$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/small/small4/*; do
-  zoo ah split/small4$RBVERSION.zoo $i >/dev/null
-  zoo c split/small4$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/small/small5/*; do
-  zoo ah split/small5$RBVERSION.zoo $i >/dev/null
-  zoo c split/small51$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/small/small6/*; do
-  zoo ah split/small6$RBVERSION.zoo $i >/dev/null
-  zoo c split/small6$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/small/small7/*; do
-  zoo ah split/small7$RBVERSION.zoo $i >/dev/null
-  zoo c split/small7$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/small/small8/*; do
-  zoo ah split/small8$RBVERSION.zoo $i >/dev/null
-  zoo c split/small8$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+
+for k in id2 id3 id4 id5 id6 small2 small3 small4 small5 small6 small7 small8; do
+    echo "     " $k
+    for j in split/${k}$RBVERSION gdat$RBVERSION macpc gap$RBVERSION; do
+	addtext $j ${DISTNAME}/small/${k}/*
+    done
 done
 
 
 echo "Prim"
-for i in ${DISTNAME}/prim/*.*; do
-  zoo ah split/prim$RBVERSION.zoo $i >/dev/null
-  zoo c split/prim$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
-for i in ${DISTNAME}/prim/grps/*; do
-  zoo ah split/prim$RBVERSION.zoo $i >/dev/null
-  zoo c split/prim$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gdat$RBVERSION.zoo $i >/dev/null
-  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+
+for j in split/prim$RBVERSION gdat$RBVERSION macpc gap$RBVERSION; do
+    addtext $j ${DISTNAME}/prim/*.* ${DISTNAME}/prim/grps/*
 done
 
-echo "Tbl"
-for i in ${DISTNAME}/tbl/*; do
-  zoo ah split/tbl$RBVERSION.zoo $i >/dev/null
-  zoo c split/tbl$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah tdat$RBVERSION.zoo $i >/dev/null
-  zoo c tdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
 
-${BINDIR}/tommove
-echo "Tom"
-for i in ${DISTNAME}/tom/*; do
-  zoo ah split/tom$RBVERSION.zoo $i >/dev/null
-  zoo c split/tom$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah tdat$RBVERSION.zoo $i >/dev/null
-  zoo c tdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah macpc.zoo $i >/dev/null
-  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
-  zoo ah gap$RBVERSION.zoo $i >/dev/null
-  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
-done
 
-echo "XTom"
-mv ${DISTNAME}/tom ${DISTNAME}/tomy
-mv ${DISTNAME}/tomx ${DISTNAME}/tom
 
-for i in ${DISTNAME}/tom/*; do
-  zoo ah split/xtom$RBVERSION.zoo $i >/dev/null
-  zoo c split/xtom$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-  zoo ah xtom$RBVERSION.zoo $i >/dev/null
-  zoo c xtom$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-done
+#char tables and tables of marks from ctbllib tomlib and tomxtlib zoo files
+#into macpc, tdat and gap
+
+# touch tdat$RBVERSION.zoo tdat$RBVERSION.zip tdat$RBVERSION.tar
+
+chmod 755 ${DISTNAME}/etc/zoomerge3
+
+for j in /home/ftp/pub/gappre/sys$RBVERSION/*.zoo; do
+    for i in tdat$RBVERSION mappc gap$RBVERSION; do
+	${DISTNAME}/etc/zoomerge3 $i $j ${DISTNAME}/pkg
+    done;
+done;
+
+
+
 
 echo "------------------------------"
 
 echo "Lib"
-for i in ${DISTNAME}/lib/*; do
-  zoo ah split/lib$RBVERSION.zoo $i >/dev/null
-  zoo c split/lib$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-done
+addtext split/lib$RBVERSION ${DISTNAME}/lib/*
+
 
 echo "Tst"
-for i in ${DISTNAME}/tst/*; do
-  zoo ah split/tst$RBVERSION.zoo $i >/dev/null
-  zoo c split/tst$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-done
+addtext split/tst$RBVERSION ${DISTNAME}/tst/*
 
 echo "Grp"
-for i in ${DISTNAME}/grp/*; do
-  zoo ah split/grp$RBVERSION.zoo $i >/dev/null
-  zoo c split/grp$RBVERSION.zoo $i <TEXTCOM >&/dev/null
-done
+addtext split/grp$RBVERSION ${DISTNAME}/grp/*
 
 echo "------------------------------"
-echo "Linux binaries"
-zoo ah gap$RBVERSION-${LINUXPATH}.zoo ${DISTNAME}/${LINUXPATH}/gap >/dev/null
-zoo c gap$RBVERSION-${LINUXPATH}.zoo ${DISTNAME}/${LINUXPATH}/gap <BINCOM >&/dev/null
-zoo ah gap$RBVERSION-${LINUXPATH}.zoo ${DISTNAME}/gac >/dev/null
-zoo c gap$RBVERSION-${LINUXPATH}.zoo ${DISTNAME}/gac <BINCOM >&/dev/null
 
 echo "Pc version"
 cp macpc.zoo gappc$RBVERSION.zoo
+cp macpc.zip gappc$RBVERSION.zip
+cp macpc.tar gappc$RBVERSION.tar
 
-cp ${DISTNAME}/bin/i586-pc-cygwin-gcc/gap.exe ${DISTNAME}/bin/gapw95.exe
+cp ${DISTNAME}/bin/i686-pc-cygwin-gcc/gap.exe ${DISTNAME}/bin/gapw95.exe
 cp /gap/4.0/bin/cygwin1.dll ${DISTNAME}/bin
-zoo ah gappc$RBVERSION.zoo ${DISTNAME}/bin/gapw95.exe> /dev/null
-zoo c gappc$RBVERSION.zoo ${DISTNAME}/bin/gapw95.exe <BINCOM >&/dev/null
-zoo ah gappc$RBVERSION.zoo ${DISTNAME}/bin/cygwin1.dll> /dev/null
-zoo c gappc$RBVERSION.zoo ${DISTNAME}/bin/cygwin1.dll <BINCOM >&/dev/null
-zoo ah gappc$RBVERSION.zoo ${DISTNAME}/bin/gap.bat> /dev/null
-zoo c gappc$RBVERSION.zoo ${DISTNAME}/bin/gap.bat <TEXTCOM >&/dev/null
-zoo ah gappc$RBVERSION.zoo ${DISTNAME}/instwin.bat> /dev/null
-zoo c gappc$RBVERSION.zoo ${DISTNAME}/instwin.bat <TEXTCOM >&/dev/null
+for i in ${DISTNAME}/bin/gapw95.exe ${DISTNAME}/bin/cygwin1.dll; do
+    addbin gappc$RBVERSION $i 
+    addbin winbin$RBVERSION $i
+done
+for i in ${DISTNAME}/bin/gap.bat ${DISTNAME}/instwin.bat; do
+    addtext gappc$RBVERSION $i 
+    addtext winbin$RBVERSION $i
+done
 
-zoo ah winbin$RBVERSION.zoo ${DISTNAME}/bin/gapw95.exe> /dev/null
-zoo c winbin$RBVERSION.zoo ${DISTNAME}/bin/gapw95.exe <BINCOM >&/dev/null
-zoo ah winbin$RBVERSION.zoo ${DISTNAME}/bin/cygwin1.dll> /dev/null
-zoo c winbin$RBVERSION.zoo ${DISTNAME}/bin/cygwin1.dll <BINCOM >&/dev/null
-zoo ah winbin$RBVERSION.zoo ${DISTNAME}/instwin.bat> /dev/null
-zoo c winbin$RBVERSION.zoo ${DISTNAME}/instwin.bat <TEXTCOM >&/dev/null
-
+	
 cp INSTALL.WIN ${DISTNAME}
-zoo ah gappc$RBVERSION.zoo ${DISTNAME}/INSTALL.WIN > /dev/null
-zoo c gappc$RBVERSION.zoo ${DISTNAME}/INSTALL.WIN <TEXTCOM >&/dev/null
+addtext gappc$RBVERSION ${DISTNAME}/INSTALL.WIN
 rm ${DISTNAME}/bin/{gapw95.exe,cygwin1.dll}
 
 echo "Mac version"
 mv macpc.zoo gapmac$RBVERSION.zoo
+mv macpc.zip gapmac$RBVERSION.zip
+mv macpc.tar gapmac$RBVERSION.tar
+
 cp INSTALL-MAC.TXT ${DISTNAME}
-zoo ah gapmac$RBVERSION.zoo ${DISTNAME}/INSTALL-MAC.TXT > /dev/null
-zoo c gapmac$RBVERSION.zoo ${DISTNAME}/INSTALL-MAC.TXT <TEXTCOM >&/dev/null
+addtext gapmac$RBVERSION ${DISTNAME}/INSTALL-MAC.TXT
+
 
 ##  echo "Mac src"
 ##  find ${DISTNAME}/{macsrc,macgac} -print | zoo ahI macsrc$RBVERSION.zoo > /dev/null
 
+
 echo "Accepted Share Packages"
-chmod 755 ${DISTNAME}/etc/zoomerge
-for i in /home/ftp/pub/gap/gap4/share/*.zoo; do
-${DISTNAME}/etc/zoomerge allshare$RBVERSION.zoo $i
+# touch allshare$RBVERSION.zoo allshare$RBVERSION.zip allshare$RBVERSION.tar
+
+for i in /home/ftp/pub/gappre/share$RBVERSION/*.zoo; do
+    ${DISTNAME}/etc/zoomerge3 allshare$RBVERSION $i
 done
-for i in /home/ftp/pub/gap/gap4/share/README*; do
+
+for i in /home/ftp/pub/gappre/share$RBVERSION/README*; do
 cp $i .
 done
 cp ${DISTNAME}/mkdistrib/README.allshare README
 for i in READM*; do
-zoo ah allshare$RBVERSION.zoo $i
-zoo c allshare$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+    addtext allshare$RBVERSION $i
 done
 rm -f README*
 
-echo "Submitted Share Packages"
-chmod 755 ${DISTNAME}/etc/zoomerge
-for i in /home/ftp/pub/gap/gap4/deposit/psh/*.zoo; do
-${DISTNAME}/etc/zoomerge submitshare$RBVERSION.zoo $i
+echo "Deposited  Packages"
+# touch deppack$RBVERSION.zoo deppack$RBVERSION.zip deppack$RBVERSION.tar
+
+for i in /home/ftp/pub/gappre/dep$RBVERSION/*.zoo; do
+    ${DISTNAME}/etc/zoomerge3 deppack$RBVERSION $i
 done
-for i in /home/ftp/pub/gap/gap4/deposit/psh/README*; do
+
+for i in /home/ftp/pub/gappre/dep$RBVERSION/README*; do
 cp $i .
 done
-cp ${DISTNAME}/mkdistrib/README.submitshare README
+
+cp ${DISTNAME}/mkdistrib/README.deppack README
 for i in READM*; do
-zoo ah submitshare$RBVERSION.zoo $i
-zoo c submitshare$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+    addtext deppack$RBVERSION $i
 done
 rm -f README*
+
+
+
+gzip *.tar split/*.tar
 
 )
 

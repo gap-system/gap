@@ -206,6 +206,13 @@ extern Obj TYPE_LIST_GF2VEC_IMM;
 */
 extern Obj TYPE_LIST_GF2VEC_IMM_LOCKED;
 
+/****************************************************************************
+**
+*V  TYPE_LIST_GF2VEC_LOCKED. . . .  type of a GF2 vector object
+**                                          with locked representation
+*/
+extern Obj TYPE_LIST_GF2VEC_LOCKED;
+
 
 /****************************************************************************
 **

@@ -16,7 +16,7 @@ FingerprintFF := function( G )
     local orb, ord, res, po, i, typ;
 
     res := [ ];
-    for orb in Orbits( G, AsList( G ) ) do
+    for orb in OrbitsDomain( G, AsList( G ) ) do
         ord := Order( orb[ 1 ] );
         typ := [ ord, Length( orb ) ];
         po := Set( FactorsInt( ord ) );
@@ -225,7 +225,7 @@ InstallGlobalFunction( PcGroupCode, function( code, size )
     fi;
 
     # create free group
-    F := FreeGroup( Length( FactorsInt( size ) ) );
+    F := FreeGroup(IsSyllableWordsFamily, Length( FactorsInt( size ) ) );
     gens := GeneratorsOfGroup( F );
 
     # usual case

@@ -363,7 +363,7 @@ InstallMethod(FactorCosetAction,"by right transversal operation, Niceo",
   IsIdenticalObj,[IsGroup and IsHandledByNiceMonomorphism,IsGroup],0,
 function(G,U)
 local hom;
-  hom:=NiceMonomorphism(G);
+  hom:=RestrictedNiceMonomorphism(NiceMonomorphism(G),G);
   return hom*DoFactorCosetAction(Image(hom,G),Image(hom,U));
 end);
 
@@ -372,7 +372,7 @@ InstallOtherMethod(FactorCosetAction,
   [IsGroup and IsHandledByNiceMonomorphism,IsGroup,IsGroup],0,
 function(G,U,N)
 local hom;
-  hom:=NiceMonomorphism(G);
+  hom:=RestrictedNiceMonomorphism(NiceMonomorphism(G),G);
   return hom*DoFactorCosetAction(Image(hom,G),Image(hom,U),Image(hom,N));
 end);
 
@@ -392,7 +392,7 @@ local dom,o,bl,i,j,b,op,pool;
 
     dom:=MovedPoints(G);
     # orbits
-    o:=Orbits(G,dom);
+    o:=OrbitsDomain(G,dom);
     o:=Set(List(o,Set));
 
     # do orbits and test for blocks 
@@ -409,13 +409,13 @@ local dom,o,bl,i,j,b,op,pool;
 	for j in AllBlocks(Image(op,G)) do
 	  j:=i{j}; # preimage
 	  b:=Orbit(G,j,OnSets);
-	  Add(bl,b);
+	  Add(bl,Immutable(Set(b)));
 	od;
       else
 	# one block system
 	b:=Blocks(G,i);
 	if Length(b)>1 then
-	  Add(bl,b);
+	  Add(bl,Immutable(Set(b)));
 	fi;
       fi;
     od;
@@ -440,31 +440,12 @@ end);
 
 #############################################################################
 ##
-#F  ImproveActionDegreeByBlocks( <G>, <N> , {hom/subgrp} [,forceblocks] )
+#F  ImproveActionDegreeByBlocks( <G>, <N> , hom )
 ##  extension of <U> in <G> such that   \bigcap U^g=N remains valid
 ##
-InstallGlobalFunction(ImproveActionDegreeByBlocks,function(arg)
-local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg,subo,op;
-  G:=arg[1];
-  N:=arg[2];
-  oh:=arg[3];
-  if Length(arg)>3 then
-    fb:=arg[4];
-  else
-    fb:=false;
-  fi;
-
-  # if subgroup is given, construct an homomorphism
-  if IsGroup(oh) then
-    # unless it is too hard compared to what we know already
-    if DegreeNaturalHomomorphismsPool(G,N)=fail 
-       or Index(G,oh)<=10000 then
-      oh:=FactorCosetAction(G,oh,N); #stores implicitely!
-    else
-      return fail;
-    fi;
-  fi;
-  AddNaturalHomomorphismsPool(G,N,oh);
+InstallGlobalFunction(ImproveActionDegreeByBlocks,function(G,N,oh)
+local gimg,img,dom,b,improve,bp,bb,i,k,bestdeg,subo,op,bc,bestblock,bdom,
+      bestop,sto,gimgbas,subomax;
   Info(InfoFactor,1,"try to find block systems");
 
   # remember that we computed the blocks
@@ -478,6 +459,9 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg,subo,op;
     b.cost:=[Length(MovedPoints(Range(oh)))];
     b.lock:=[false];
     b.blocksdone:=[false];
+    subomax:=20;
+  else
+    subomax:=500;
   fi;
 
   i:=PositionSet(b.ker,N);
@@ -490,20 +474,30 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg,subo,op;
     return 1;
   fi;
 
-  img:=Image(oh,G);
+  gimg:=Image(oh,G);
+  gimgbas:=false;
+  if HasBaseOfGroup(gimg) then
+    gimgbas:=Filtered(BaseOfGroup(gimg),i->ForAny(GeneratorsOfGroup(gimg),
+                                           j->i^j<>i));
+  fi;
+  img:=gimg;
   dom:=MovedPoints(img);
+  bdom:=fail;
 
   if IsTransitive(img,dom) then
     # one orbit: Blocks
     repeat
-
-      gens:=List(GeneratorsOfGroup(G),i->Image(oh,i));
       b:=Blocks(img,dom);
       improve:=false;
       if Length(b)>1 then
-	subo:=ApproximateSuborbitsStabilizerPermGroup(img,dom[1]);
-	subo:=Difference(List(subo,i->i[1]),dom{[1]});
-	if fb<>fail and (Length(subo)<=500 or fb=true) then
+	if Length(dom)<40000 then
+	  subo:=ApproximateSuborbitsStabilizerPermGroup(img,dom[1]);
+	  subo:=Difference(List(subo,i->i[1]),dom{[1]});
+	else
+	  subo:=fail;
+	fi;
+	bc:=First(b,i->dom[1] in i);
+	if subo<>fail and (Length(subo)<=subomax) then
 	  Info(InfoFactor,2,"try all seeds");
 	  # if the degree is not too big or if we are desparate then go for
 	  # all blocks
@@ -513,25 +507,60 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg,subo,op;
 	  bp:=[]; #Blocks pool
 	  i:=1;
 	  while i<=Length(subo) do
-	    bb:=Blocks(img,dom,[1,subo[i]]);
-	    if Length(bb)>1 and not bb[1] in bp then
-	      Info(InfoFactor,3,"found block system ",bb[1]);
+	    if subo[i] in bc then
+	      bb:=b;
+	    else
+	      bb:=Blocks(img,dom,[dom[1],subo[i]]);
+	    fi;
+	    if Length(bb)>1 and not (bb[1] in bp or Length(bb)>bestdeg) then
+	      Info(InfoFactor,3,"found block system ",Length(bb));
 	      # new nontriv. system found 
 	      AddSet(bp,bb[1]);
 	      # store action
-	      op:=ActionHomomorphism(img,bb,OnSets,"surjective");
-	      k:=KernelOfMultiplicativeGeneralMapping(op);
-	      op:=GroupHomomorphismByImagesNC(G,Range(op),
-                     GeneratorsOfGroup(G),
-		     List(gens,i->Image(op,i)));
-	      SetKernelOfMultiplicativeGeneralMapping(op,PreImages(oh,k));
-	      AddNaturalHomomorphismsPool(G,
-                  KernelOfMultiplicativeGeneralMapping(op),
-                                          op,Length(bb));
+	      op:=1;# remove old homomorphism to free memory
+	      if bdom<>fail then
+	        bb:=Set(List(bb,i->Immutable(Union(bdom{i}))));
+	      fi;
+
+	      op:=ActionHomomorphism(gimg,bb,OnSets,"surjective");
+	      if HasSize(gimg) and not HasStabChainMutable(gimg) then
+		sto:=StabChainOptions(Range(op));
+		sto.limit:=Size(gimg);
+		# try only with random (will exclude some chances, but is
+		# quicker. If the size is OK we have a proof anyhow).
+		sto.random:=100;
+#		if gimgbas<>false then
+#		  SetBaseOfGroup(Range(op),
+#		    List(gimgbas,i->PositionProperty(bb,j->i in j)));
+#		fi;
+		if Size(Range(op))=Size(gimg) then
+		  sto.random:=1000;
+		  k:=TrivialSubgroup(gimg);
+		  op:=oh*op;
+		  SetKernelOfMultiplicativeGeneralMapping(op,PreImage(oh,k));
+		  AddNaturalHomomorphismsPool(G,
+		      KernelOfMultiplicativeGeneralMapping(op),
+					      op,Length(bb));
+		else
+		  k:=[]; # do not trigger improvement
+		fi;
+	      else
+		k:=KernelOfMultiplicativeGeneralMapping(op);
+		SetSize(Range(op),Index(gimg,k));
+		op:=oh*op;
+		SetKernelOfMultiplicativeGeneralMapping(op,PreImage(oh,k));
+		AddNaturalHomomorphismsPool(G,
+		    KernelOfMultiplicativeGeneralMapping(op),
+					    op,Length(bb));
+
+	      fi;
 	      # and note whether we got better
-	      improve:=improve or (Size(k)=1);
+	      #improve:=improve or (Size(k)=1);
 	      if Size(k)=1 and Length(bb)<bestdeg then
-	        bestdeg:=Length(bb);
+		improve:=true;
+		bestdeg:=Length(bb);
+		bestblock:=bb;
+		bestop:=op;
 	      fi;
 	    fi;
 	    # break the test loop if we found a fairly small block system
@@ -543,21 +572,53 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg,subo,op;
 	  od;
 	else
 	  Info(InfoFactor,2,"try only one system");
-	  op:=ActionHomomorphism(img,b,OnSets,"surjective");
-	  k:=KernelOfMultiplicativeGeneralMapping(op);
-	  # keep action knowledge
-	  op:=GroupHomomorphismByImagesNC(G,Range(op),GeneratorsOfGroup(G),
-	     List(gens,i->Image(op,i)));
-	  SetKernelOfMultiplicativeGeneralMapping(op,PreImages(oh,k));
-	  AddNaturalHomomorphismsPool(G,
-              KernelOfMultiplicativeGeneralMapping(op),
-                                      op,Length(b));
-	  improve:=improve or (Size(k)=1);
+	  op:=1;# remove old homomorphism to free memory
+	  if bdom<>fail then
+	    b:=Set(List(b,i->Immutable(Union(bdom{i}))));
+	  fi;
+	  op:=ActionHomomorphism(gimg,b,OnSets,"surjective");
+	  if HasSize(gimg) and not HasStabChainMutable(gimg) then
+	    sto:=StabChainOptions(Range(op));
+	    sto.limit:=Size(gimg);
+	    # try only with random (will exclude some chances, but is
+	    # quicker. If the size is OK we have a proof anyhow).
+	    sto.random:=100;
+#	    if gimgbas<>false then
+#	      SetBaseOfGroup(Range(op),
+#	         List(gimgbas,i->PositionProperty(b,j->i in j)));
+#	    fi;
+	    if Size(Range(op))=Size(gimg) then
+	      sto.random:=1000;
+	      k:=TrivialSubgroup(gimg);
+	      op:=oh*op;
+	      SetKernelOfMultiplicativeGeneralMapping(op,PreImage(oh,k));
+	      AddNaturalHomomorphismsPool(G,
+		  KernelOfMultiplicativeGeneralMapping(op),
+					  op,Length(b));
+	    else
+	      k:=[]; # do not trigger improvement
+	    fi;
+	  else
+	    k:=KernelOfMultiplicativeGeneralMapping(op);
+	    SetSize(Range(op),Index(gimg,k));
+	    # keep action knowledge
+	    op:=oh*op;
+	    SetKernelOfMultiplicativeGeneralMapping(op,PreImage(oh,k));
+	    AddNaturalHomomorphismsPool(G,
+		KernelOfMultiplicativeGeneralMapping(op),
+					op,Length(b));
+	  fi;
+
+	  if Size(k)=1 then
+	    improve:=true;
+	    bestblock:=b;
+	    bestop:=op;
+	  fi;
 	fi;
 	if improve then
 	  # update mapping
-	  oh:=GetNaturalHomomorphismsPool(G,N);
-	  img:=Image(oh,G);
+	  bdom:=bestblock;
+	  img:=Image(bestop,G);
 	  dom:=MovedPoints(img);
 	fi;
       fi;
@@ -572,13 +633,41 @@ end);
 #F  SmallerDegreePermutationRepresentation( <G> )
 ##
 InstallGlobalFunction(SmallerDegreePermutationRepresentation,function(G)
-local H;
+local H,o,i,s;
   if not IsTransitive(G,MovedPoints(G)) then
-    Error("need transitive operation");
+    o:=ShallowCopy(OrbitsDomain(G,MovedPoints(G)));
+    Sort(o,function(a,b)return Length(a)<Length(b);end);
+    s:=[];
+    for i in [1..Length(o)] do
+      if HasSize(G) and not HasStabChainMutable(G) then
+	s:=ActionHomomorphism(G,o[i],OnPoints,"surjective");
+	if Size(Range(s))=Size(G) then
+	  return s*SmallerDegreePermutationRepresentation(Image(s));
+	fi;
+      else
+	s[i]:=Stabilizer(G,o[i],OnTuples);
+	if Size(s[i])=1 then
+	  s:=ActionHomomorphism(G,o[i],OnPoints,"surjective");
+	  return s*SmallerDegreePermutationRepresentation(Image(s));
+	fi;
+      fi;
+    od;
+    #T: Try subdirect product
+    return IdentityMapping(G);
   fi;
-  H:= GroupWithGenerators( GeneratorsOfGroup( G ) );
-  if HasSize(G) then
-    SetSize(H,Size(G));
+  # if the original group has no stabchain we probably do not want to keep
+  # it (or a homomorphisms pool) there -- make a copy for working
+  # intermediately with it.
+  if not HasStabChainMutable(G) then
+    H:= GroupWithGenerators( GeneratorsOfGroup( G ),One(G) );
+    if HasSize(G) then
+      SetSize(H,Size(G));
+    fi;
+    if HasBaseOfGroup(G) then
+      SetBaseOfGroup(H,BaseOfGroup(G));
+    fi;
+  else
+    H:=G;
   fi;
   ImproveActionDegreeByBlocks(H,TrivialSubgroup(H),IdentityMapping(H));
   return GetNaturalHomomorphismsPool(H,TrivialSubgroup(H));
@@ -695,7 +784,9 @@ local G,N,u,v,bv,cnt,zen,uc,nu,totalcnt,interupt,cor,badi;
   # will we need the coset operation?
   if (Length(arg)=2 and Index(G,u)<10000) 
      or(Length(arg)>2 and arg[3]>Index(G,u)) then
-    #FactorCosetAction(G,u,N);
+
+    u:=FactorCosetAction(G,u,N); #stores implicitely!
+    AddNaturalHomomorphismsPool(G,N,u);
     ImproveActionDegreeByBlocks(G,N,u); # computes and stores
     return GetNaturalHomomorphismsPool(G,N);
   else
@@ -751,7 +842,7 @@ local o,oo,s,i,u,m,v,cnt,comb,bestdeg,dom,blocksdone,pool;
     o:=BaseOfGroup(N);
     s:=Stabilizer(G,o,OnTuples);
     if Size(s)>1 then
-      cnt:=Filtered(Orbits(s,dom),i->Length(i)>1);
+      cnt:=Filtered(OrbitsDomain(s,dom),i->Length(i)>1);
       for i in cnt do
 	v:=ClosureGroup(N,Stabilizer(s,i[1]));
 	if Size(v)>Size(N) and Index(G,v)<2000 then
@@ -777,9 +868,9 @@ local o,oo,s,i,u,m,v,cnt,comb,bestdeg,dom,blocksdone,pool;
 
     # then we should look at the orbits of the normal subgroup to see,
     # whether anything stabilizing can be of use
-    o:=Filtered(Orbits(N,dom),i->Length(Orbit(G,i[1]))>Length(i));
+    o:=Filtered(OrbitsDomain(N,dom),i->Length(Orbit(G,i[1]))>Length(i));
     Apply(o,Set);
-    oo:=Orbits(G,o,OnSets);
+    oo:=OrbitsDomain(G,o,OnSets);
     s:=G;
     for i in oo do
       s:=StabilizerOfBlockNC(s,i[1]);

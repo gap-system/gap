@@ -52,6 +52,17 @@ InstallValue( TYPE_LIST_GF2VEC_IMM_LOCKED,
            and IsCopyable and IsGF2VectorRep and IsLockedRepresentationVector)
 );
 
+#############################################################################
+##
+#V  TYPE_LIST_GF2VEC_LOCKED  . . . . type of mutable locked GF2 vectors
+##
+InstallValue( TYPE_LIST_GF2VEC_LOCKED,
+  NewType( CollectionsFamily( FFEFamily(2) ),
+          IsHomogeneousList and IsListDefault and IsNoImmediateMethodsObject 
+           and IsCopyable and IsGF2VectorRep and
+          IsLockedRepresentationVector and IsMutable)
+);
+
 
 #############################################################################
 ##
@@ -268,13 +279,17 @@ InstallMethod( ZeroOp,
 ##
 #M  \=( <gf2vec>, <gf2vec> )  . . . . . . . . . . . . equality of GF2 vectors
 ##
-InstallMethod( \=,
-    "for GF2 vectors",
-    IsIdenticalObj,
+InstallMethod( \=,"for GF2 vectors",IsIdenticalObj,
     [ IsRowVector and IsGF2VectorRep,
-      IsRowVector and IsGF2VectorRep ],
-    0,
-    EQ_GF2VEC_GF2VEC );
+      IsRowVector and IsGF2VectorRep ], 0, EQ_GF2VEC_GF2VEC );
+
+#############################################################################
+##
+#M  \<( <gf2vec>, <gf2vec> )  . . . . . . . . . . . . equality of GF2 vectors
+##
+InstallMethod( \<,"for GF2 vectors",IsIdenticalObj,
+    [ IsRowVector and IsGF2VectorRep,
+      IsRowVector and IsGF2VectorRep ], 0, LT_GF2VEC_GF2VEC );
 
 
 #############################################################################
@@ -679,6 +694,18 @@ InstallMethod( InverseOp,
     0,
     INV_GF2MAT );
 
+#############################################################################
+##
+#M  InverseOp( <list of gf2 vectors> ) .  . . mutable inverse of a GF2 matrix
+##
+
+InstallMethod( InverseOp,
+    "for plain list of GF2 vectors",
+    true,
+    [ IsPlistRep and IsFFECollColl and IsMatrix],
+    0,
+    m->INV_PLIST_GF2VECS_DESTRUCTIVE(List(m, ShallowCopy)) );
+
 
 #############################################################################
 ##
@@ -805,6 +832,32 @@ InstallMethod( \+,
     0,
     SUM_GF2MAT_GF2MAT );
 
+#############################################################################
+##
+#M  \<( <gf2mat>, <gf2mat> )  . . . . . . . . . . .comparison of GF2 matrices
+##
+
+InstallMethod( \<,
+    "for GF2 matrix and GF2 matrix",
+    IsIdenticalObj,
+    [ IsMatrix and IsListDefault and IsGF2MatrixRep,
+      IsMatrix and IsListDefault and IsGF2MatrixRep ],
+    0,
+        LT_GF2MAT_GF2MAT);
+
+#############################################################################
+##
+#M  \=( <gf2mat>, <gf2mat> )  . . . . . . . . . . .comparison of GF2 matrices
+##
+
+InstallMethod( \=,
+    "for GF2 matrix and GF2 matrix",
+    IsIdenticalObj,
+    [ IsMatrix and IsListDefault and IsGF2MatrixRep,
+      IsMatrix and IsListDefault and IsGF2MatrixRep ],
+    0,
+        EQ_GF2MAT_GF2MAT);
+
 
 #############################################################################
 ##
@@ -878,12 +931,27 @@ InstallMethod( \*,
 #F  ConvertToVectorRep(<v>)
 ##
 
+LOCAL_COPY_GF2 := GF(2);
+
 InstallGlobalFunction(ConvertToVectorRep,function( arg )
     local x, gf2, gfq, char,deg,q,p,mindeg, v, field ;
     if Length(arg) < 1 then
         Error("ConvertToVectorRep: one or two arguments required");
     fi;
     v := arg[1];
+#
+# Handle fast, certain cases where there is no work. Microseconds count here
+#
+    if IsGF2VectorRep(v) and (Length(arg) = 1 or arg[2] = 2 or arg[2] = LOCAL_COPY_GF2) then
+        return 2;
+    fi;
+    
+    if Is8BitVectorRep(v) and (Length(arg) = 1 or 
+       arg[2] = Q_VEC8BIT(v) or (IsField(arg[2]) and Size(arg[2]) = Q_VEC8BIT(v))) then
+        return Q_VEC8BIT(v);
+    fi;
+    
+	
     if (not IsRowVector(v)) or Length(v)=0  then
         return fail;
     fi;
@@ -899,7 +967,15 @@ InstallGlobalFunction(ConvertToVectorRep,function( arg )
         else
             Error("vector is locked in an unknown representation");
         fi;
-        return q;    fi;
+        if not IsInt(arg[2]) then
+            arg[2] := Size(arg[2]);
+        fi;
+        if Length(arg) = 2 and q <> arg[2] then
+          Info(InfoWarning, 1, 
+          "ConvertToVectorRep: locked vector not converted to different field");
+        fi;
+        return q;    
+    fi;
     
     # otherwise, if there is a field, we go to work
     #
@@ -1028,9 +1104,12 @@ end);
 #F  ConvertedMatrix( <field>, <matrix> [,<imm>] ) 
 ##
 InstallGlobalFunction( ConvertedMatrix, function(arg)
-local field,matrix,i,sf,rep,ind,ind2;
+local field,matrix,i,sf,rep,ind,ind2,row;
   field:=arg[1];
   matrix:=arg[2];
+  if IsEmpty(matrix) then
+    return matrix;
+  fi;
   if IsInt(field) then
     sf:=field;
   else
@@ -1062,9 +1141,20 @@ local field,matrix,i,sf,rep,ind,ind2;
     if Length(ind2)>0 then
       # some rows don't want to change, rebuild the matrix
       matrix:=ShallowCopy(matrix);
-      for i in ind2 do
-        matrix[i]:=ShallowCopy(matrix[i]);
-      od;
+      # in case matrix is in 8BitRep the rows are now locked, so
+      # we do a conversion to bigger field right now
+      if sf <= 256 then
+        for i in ind2 do
+          row := ShallowCopy(matrix[i]);
+          ConvertToVectorRep(row, sf);
+          # this assignment locks the row
+          matrix[i] := row;
+        od;
+      else
+        for i in ind2 do
+          matrix[i]:=ShallowCopy(matrix[i]);
+        od;
+      fi;
     elif sf>256 then
       matrix:=ShallowCopy(matrix); # we will substitute rows
     fi;
@@ -1400,26 +1490,136 @@ end);
 ##
 #M  DomainForAction( <pnt>, <acts> )
 ##
-InstallMethod(DomainForAction,"vector/matrix",IsElmsCollColls,
-  # for technical reasuns a matrix list is not automatically
+InstallMethod(DomainForAction,"FFE vector/matrix",IsElmsCollCollsX,
+  # for technical reasons a matrix list is not automatically
   # IsMatrixCollection -- thus we cannot use this filter here. AH
-  [IsVector,IsList],0,
-function(pnt,acts)
+
+  #T this method is only installed for finite fields. There ought to be a
+  #T method for finite rings and there could be one for infinite fields. AH
+  [IsVector and IsFFECollection,IsList,IsFunction],0,
+function(pnt,acts,act)
 local l,f;
-  if not ForAll(acts,IsMatrix) then
-    TryNextMethod();
+  if (not ForAll(acts,IsMatrix)) or
+    (act<>OnPoints and act<>OnLines and act<>OnRight) or
+     CollectionsFamily(CollectionsFamily(FamilyObj(pnt)))<>FamilyObj(acts) then
+    TryNextMethod(); # strange operation, might extend the domain
   fi;
-  if Length(pnt)=0 or Length(acts)=0 then
-    return fail;
-  fi;
-  l:=Concatenation(acts);
-  Add(l,pnt);
-  f:=DefaultFieldOfMatrix(l);
-  if f = fail then
-    return fail;
-  fi;
-  return f^Length(pnt);
+  return NaturalActedSpace(acts,[pnt]);
+#  if Length(pnt)=0 or Length(acts)=0 then
+#    return fail;
+#  fi;
+#  l:=Concatenation(acts);
+#  Add(l,pnt);
+#  f:=DefaultFieldOfMatrix(l);
+#  if f = fail then
+#    return fail;
+#  fi;
+#  return f^Length(pnt);
 end);
+
+#############################################################################
+##
+#M  SemiEchelonMat( <GF2 matrix> )
+#M  SemiEchelonMatTransformation( <GF2 matrix> )
+#M  SemiEchelonMatDestructive( <plain list of GF2 vectors> )
+#M  SemiEchelonMatTransformationDestructive( <plain list of GF2 vectors> )
+##
+#
+
+#
+#  This is the rank by which we increase the GF2 kernel methods,
+#  so that they get tried before the 8bit ones, as they will fall
+#  through faster.
+#
+#
+BindGlobal("GF2_AHEAD_OF_8BIT_RANK", 10);
+
+#
+# If mat is in the GF2 special representation, then we do 
+# have to copy it, but we know that the rows of the result will
+# already be in GF2 special representation, so we skip the conversion
+# step in the generic method 
+#
+
+
+InstallMethod(SemiEchelonMat, "shortcut method for GF2 matrices",
+        true,
+        [ IsMatrix and IsGF2MatrixRep and IsFFECollColl ],
+        0,
+        mat -> SemiEchelonMatDestructive( List(mat, ShallowCopy) ) 
+        );
+
+InstallMethod(SemiEchelonMatTransformation, 
+        "kernel method for plain lists of GF2 vectors",
+        true,
+        [ IsMatrix and IsFFECollColl and IsGF2MatrixRep],
+        0, 
+        mat-> SemiEchelonMatTransformationDestructive( List( mat, ShallowCopy) )
+        );
+
+
+#
+# The real kernel methods, which are destructive and want plain lists
+# of GF2 vectors as their arguments, but will try next if they get other
+# plain lists
+#
+
+InstallMethod(SemiEchelonMatDestructive, 
+        "kernel method for plain lists of GF2 vectors",
+        true,
+        [ IsPlistRep and IsMatrix and IsMutable and IsFFECollColl ],
+        GF2_AHEAD_OF_8BIT_RANK, 
+        SEMIECHELON_LIST_GF2VECS);
+        
+
+InstallMethod(SemiEchelonMatTransformationDestructive, 
+        "kernel method for plain lists of GF2 vectors",
+        true,
+        [ IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
+        GF2_AHEAD_OF_8BIT_RANK, 
+        SEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS);
+
+
+
+#############################################################################
+##
+#M  TriangulizeMat( <plain list of GF2 vectors> )
+##
+##  The method will fall through if the matrix is not a plain list of
+##  GF2 vectors
+
+InstallMethod(TriangulizeMat,
+        "kernel method for plain list of GF2 vectors",
+        true,
+        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
+        GF2_AHEAD_OF_8BIT_RANK, 
+        TRIANGULIZE_LIST_GF2VECS);
+
+#############################################################################
+##
+#M  DeterminantMatDestructive ( <plain list of GF2 vectors> )
+##
+
+InstallMethod(DeterminantMatDestructive,
+        "kernel method for plain list of GF2 vectors",
+        true,
+        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
+        GF2_AHEAD_OF_8BIT_RANK, 
+        DETERMINANT_LIST_GF2VECS);
+
+#############################################################################
+##
+#M  RankMatDestructive ( <plain list of GF2 vectors> )
+##
+
+
+InstallMethod(RankMatDestructive,
+        "kernel method for plain list of GF2 vectors",
+        true,
+        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
+        GF2_AHEAD_OF_8BIT_RANK, 
+        RANK_LIST_GF2VECS);
+       
 
 #############################################################################
 ##

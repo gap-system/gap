@@ -87,7 +87,7 @@ InstallMethod( StabChainOp,"group and option", true,
         
         # For solvable groups, use the pcgs algorithm.
         pcgs := [  ];
-        if     options.tryPcgs
+        if     options.tryPcgs and (not IsBound(options.base))
            and (# the group is know to be solvable
 	     (HasIsSolvableGroup(G) and IsSolvableGroup(G))
 		# or the degree is small and the group is not known to be
@@ -98,13 +98,36 @@ InstallMethod( StabChainOp,"group and option", true,
             S := EmptyStabChain( [  ], One( G ) );
             if IsBound( options.base )  then  S.base := options.base;
                                         else  S.base := [  ];          fi;
-            pcgs := TryPcgsPermGroup( [ G, GroupStabChain( G, S, true ) ],
-                            false, false, false );
+	    if HasPcgs(G) and IsBound(Pcgs(G)!.stabChain) then
+	      # is there already a pcgs with a stabchain?
+	      # the translation to a record is  necessary to be able to copy
+	      # the stab chain.
+	      pcgs:=rec(stabChain:=CopyStabChain(Pcgs(G)!.stabChain));
+	    else
+	      pcgs := TryPcgsPermGroup( [ G, GroupStabChain( G, S, true ) ],
+			      # get the series elementary abelian -- its much
+			      # better
+                            false, false, true );
+	    fi;
         fi;
         if IsPcgs( pcgs )  then
-            options.random := 1000;
-            S := pcgs!.stabChain;
-            
+	  options.random := 1000;
+	  S := pcgs!.stabChain;
+
+	  if not HasPcgs(G) then
+	    # remember the pcgs
+	    SetPcgs(G,pcgs);
+	    SetPcgsElementaryAbelianSeries(G,pcgs);
+	    S := CopyStabChain(S); # keep the pcgs' pristine stabchain
+	    if IsBound(options.base) then
+	      ChangeStabChain( S, options.base, options.reduced );
+	    fi;
+	  fi;
+	elif IsRecord(pcgs) then
+	  S:=pcgs.stabChain;
+	  if IsBound(options.base) then
+	    ChangeStabChain( S, options.base, options.reduced );
+	  fi;
         else
             degree := LargestMovedPoint( G );
             if degree > 100  then
@@ -132,6 +155,8 @@ InstallMethod( StabChainOp,"group and option", true,
                     od;
                     T.generators := T.labels{ T.genlabels };
                     Unbind( T.cycles );
+		else
+		  S.generators:=[];
                 fi;
                 
             fi; # random / deterministic
@@ -259,17 +284,21 @@ InstallGlobalFunction(CopyOptionsDefaults,function( G, options )
 
     # See whether we know a base for <G>.
     if not IsBound( options.knownBase )  then
-        if   HasBaseOfGroup( G )  then
-            options.knownBase := BaseOfGroup( G );
+	if HasStabChainMutable(G) then
+	  options.knownBase := BaseStabChain(StabChainMutable(G));
+        elif   HasBaseOfGroup( G )  then
+	  options.knownBase := BaseOfGroup( G );
         else
-            P := Parent( G );
-            while     not HasBaseOfGroup( P )
-                  and not IsIdenticalObj( P, Parent( P ) )  do
-                P := Parent( P );
-            od;
-            if HasBaseOfGroup( P )  then
-                options.knownBase := BaseOfGroup( P );
-            fi;
+	  P := Parent( G );
+	  while     not HasBaseOfGroup( P )
+		and not IsIdenticalObj( P, Parent( P ) )  do
+	    P := Parent( P );
+	  od;
+	  if HasStabChainMutable(P) then
+	    options.knownBase := BaseStabChain(StabChainMutable(P));
+	  elif HasBaseOfGroup( P )  then
+	    options.knownBase := BaseOfGroup( P );
+	  fi;
         fi;
     fi;
     
@@ -349,18 +378,27 @@ end);
 #F  GroupStabChain( <arg> ) . . . . . . make (sub)group from stabilizer chain
 ##
 InstallGlobalFunction(GroupStabChain,function( arg )
-    local   S,  G,  P;
+local   S,  G,  P,L;
     
     if Length( arg ) = 1  then
         S := arg[ 1 ];
-        G := GroupByGenerators( S.generators, S.identity );
+	if not IsBound(S.generators) then
+	  G := GroupByGenerators( [], S.identity );
+	else
+	  G := GroupByGenerators( S.generators, S.identity );
+	fi;
     else
         P := arg[ 1 ];
         S := arg[ 2 ];
+	if not IsBound(S.generators) then
+	  L := [];
+	else
+	  L := S.generators;
+	fi;
         if Length( arg ) = 3  and  arg[ 3 ] = true  then
-            G := SubgroupNC( P, S.generators );
+            G := SubgroupNC( P, L );
         else
-            G := Subgroup( P, S.generators );
+            G := Subgroup( P, L );
         fi;
     fi;
     SetStabChainMutable( G, S );
@@ -1173,12 +1211,14 @@ end );
 #F  InverseRepresentative( <S>, <pnt> ) . .  perm mapping <pnt> to base point
 ##
 InstallGlobalFunction( InverseRepresentative, function( S, pnt )
-local   bpt,  rep;
+local   bpt,  rep,te;
     
     bpt := S.orbit[ 1 ];
     rep := S.identity;
-    while pnt ^ rep <> bpt  do
-        rep := rep * S.transversal[ pnt ^ rep ];
+    while pnt <> bpt  do
+	te:=S.transversal[pnt];
+	pnt:=pnt^te;
+        rep := rep * te;
     od;
     return rep;
 end );
@@ -1259,21 +1299,31 @@ end);
 ##  This function may be called with a generatorless <S>.
 ##
 InstallGlobalFunction(MinimalElementCosetStabChain,function( S, g )
-local   p,i,a;
+local   p,i,a,bp,pp;
     
     while not IsEmpty( S.genlabels )  do
 	
-        #p := Minimum( OnTuples( S.orbit, g ) );
-	p:=infinity;
-	for i in S.orbit do
-	  a:=i^g;
-	  if a<p then
-	    p:=a;
-	  fi;
-	od;
-        while S.orbit[ 1 ] ^ g <> p  do
-            g := LeftQuotient( S.transversal[ p / g ], g );
+	if IsPlistRep(S.orbit) and IsPosInt(S.orbit[1]) then
+	  p:=SMALLEST_IMG_TUP_PERM(S.orbit,g);
+	else
+	  p:=infinity;
+	  for i in S.orbit do
+	    a:=i^g;
+	    if a<p then
+	      p:=a;
+	    fi;
+	  od;
+	fi;
+
+	bp:=S.orbit[1];
+	pp:=p/g;
+        while bp<>pp  do
+            g:=LeftQuotient(S.transversal[pp],g);
+	    pp:=p/g;
         od;
+#        while S.orbit[ 1 ] ^ g <> p  do
+#            g := LeftQuotient( S.transversal[ p / g ], g );
+#        od;
         S := S.stabilizer;
     od;
     return g;
@@ -1471,7 +1521,7 @@ local   Sgens,      # smallest generating system of <S>, result
   Sgens:=S.generators;
   # handle the anchor case
   if Length(Sgens) = 0  then
-      return rec(gens:=[pre],span:=Subgroup(G,[pre]));
+      return rec(gens:=[pre],span:=SubgroupNC(Parent(G),[pre]));
   fi;
 
   # the new ``base'' point is the point to which the current level base
@@ -1545,6 +1595,7 @@ local   Sgens,      # smallest generating system of <S>, result
 
     # add this generator to the generators list 
     Add( gens, gen );
+    #NC is safe -- always use parent(G)
     span:=ClosureSubgroupNC(span,gen);
     stb:=Stabilizer(span,bas,OnTuples);
 
@@ -1639,6 +1690,26 @@ InstallGlobalFunction(ElementsStabChain,function ( S )
 
    # return the result
    return elms;
+end);
+
+InstallMethod( ViewObj,"stabilizer chain records", true,
+  [ IsRecord ], 0,
+function(r)
+local s,sz;
+  if not (IsBound(r.stabilizer) and IsBound(r.generators) and 
+          IsBound(r.orbit) and IsBound(r.identity) and
+          IsBound(r.transversal)) then
+    TryNextMethod();
+  fi;
+  s:=r;
+  sz:=1;
+  while IsBound(s.stabilizer) and Length(s.orbit)>1 do
+    sz:=sz*Length(s.orbit);
+    s:=s.stabilizer;
+  od;
+
+  Print("<stabilizer chain record, Base ",BaseStabChain(r),
+        ", Orbit length ",Length(r.orbit),", Size: ",sz,">");
 end);
 
 #############################################################################

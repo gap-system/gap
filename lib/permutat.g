@@ -474,6 +474,44 @@ InstallMethod( Order,
     [ IsPerm ], 0,
     OrderPerm );
 
+#############################################################################
+##
+#m  ViewObj( <perm> )  . . . . . . . . . . . . . . . . . . . for a permutation
+##
+InstallMethod( ViewObj, "for a permutation", true, [ IsPerm ], 0,
+function( perm )
+local dom,l,i,n,p,c;
+  dom:=[];
+  l:=LargestMovedPoint(perm);
+  i:=SmallestMovedPoint(perm);
+  n:=0;
+  while n<200 and i<l do
+    p:=i;
+    if p^perm<>p and not p in dom then
+      c:=false;
+      while not p in dom do
+	AddSet(dom,p);
+	n:=n+1;
+	# deliberately *no ugly blanks* printed!
+	if c then
+	  Print(",",p);
+	else
+	  Print(Concatenation("(",String(p)));
+	fi;
+	p:=p^perm;
+	c:=true;
+      od;
+      Print(")");
+    fi;
+    i:=i+1;
+  od;
+  if i<l and ForAny([i..l],j->j^perm<>j and not j in dom) then
+    Print("( [...] )");
+  elif i>l+1 then
+    Print("()");
+  fi;
+end );
+
 
 #############################################################################
 ##

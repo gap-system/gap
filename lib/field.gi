@@ -227,6 +227,13 @@ InstallMethod( ClosureDivisionRing,
     return D;
     end );
 
+InstallMethod( ClosureDivisionRing,
+    "for division ring and empty list",
+    [ IsDivisionRing, IsList and IsEmpty ],
+    function( D, empty )
+    return D;
+    end );
+
 
 #############################################################################
 ##
@@ -995,18 +1002,13 @@ InstallHandlingByNiceBasis( "IsFieldElementsSpace", rec(
       local lad, gens;
 
       # Compute the default field of the vector space generators,
-      # a basis of this field (over the left acting domain of `V'),
+      # and a basis of this field (over the left acting domain of `V').
       lad:= LeftActingDomain( V );
       if not IsIdenticalObj( FamilyObj( V ), FamilyObj( lad ) ) then
         TryNextMethod();
       fi;
-      gens:= GeneratorsOfLeftModule( V );
-
-      if IsEmpty( gens ) then
-        return Basis( AsField( lad, lad ) );
-      else
-        return Basis( AsField( lad, DefaultField( gens ) ) );
-      fi;
+      return Basis( AsField( lad,
+                        ClosureField( lad, GeneratorsOfLeftModule( V ) ) ) );
       end,
 
     NiceVector := function( V, v )

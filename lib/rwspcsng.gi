@@ -974,6 +974,7 @@ function( efam, gens, orders )
     gens := ShallowCopy(gens);
     for i  in [ 1 .. Length(gens) ]  do
         if not sc[SCP_IS_DEFAULT_TYPE](gens[i])  then
+	    # this generates words in syllable rep!
             gens[i] := AssocWord( sc[SCP_DEFAULT_TYPE],
                                   ExtRepOfObj(gens[i]) );
         fi;

@@ -1,6 +1,6 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
-#include "compiled.h"
+#include "src/compiled.h"
 
 /* global variables used in handlers */
 static GVar G_METHOD__0ARGS;
@@ -80,7 +80,6 @@ static Obj  HdlrFunc2 (
  Obj t_5 = 0;
  Obj t_6 = 0;
  Obj t_7 = 0;
- Obj t_8 = 0;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -95,39 +94,50 @@ static Obj  HdlrFunc2 (
  CHECK_FUNC_RESULT( t_1 )
  l_methods = t_1;
  
- /* for i in [ 1 .. LEN_LIST( methods ) / 4 ] do */
- t_4 = GF_LEN__LIST;
- t_3 = CALL_1ARGS( t_4, l_methods );
- CHECK_FUNC_RESULT( t_3 )
- t_2 = QUO( t_3, INTOBJ_INT(4) );
- CHECK_INT_SMALL( t_2 )
- for ( t_1 = INTOBJ_INT(1);
-       ((Int)t_1) <= ((Int)t_2);
-       t_1 = (Obj)(((UInt)t_1)+4) ) {
-  l_i = t_1;
-  
-  /* if methods[4 * (i - 1) + 1](  ) then */
-  C_DIFF_INTOBJS( t_8, l_i, INTOBJ_INT(1) )
-  C_PROD_FIA( t_7, INTOBJ_INT(4), t_8 )
-  C_SUM_FIA( t_6, t_7, INTOBJ_INT(1) )
-  CHECK_INT_POS( t_6 )
-  C_ELM_LIST_FPL( t_5, l_methods, t_6 )
-  CHECK_FUNC( t_5 )
-  t_4 = CALL_0ARGS( t_5 );
-  CHECK_FUNC_RESULT( t_4 )
-  CHECK_BOOL( t_4 )
-  t_3 = (Obj)(UInt)(t_4 != False);
+ /* for i in [ 1, 5 .. LEN_LIST( methods ) - 3 ] do */
+ t_7 = GF_LEN__LIST;
+ t_6 = CALL_1ARGS( t_7, l_methods );
+ CHECK_FUNC_RESULT( t_6 )
+ C_DIFF_FIA( t_5, t_6, INTOBJ_INT(3) )
+ t_4 = Range3Check( INTOBJ_INT(1), INTOBJ_INT(5), t_5 );
+ if ( IS_SMALL_LIST(t_4) ) {
+  t_3 = (Obj)(UInt)1;
+  t_1 = INTOBJ_INT(1);
+ }
+ else {
+  t_3 = (Obj)(UInt)0;
+  t_1 = CALL_1ARGS( GF_ITERATOR, t_4 );
+ }
+ while ( 1 ) {
   if ( t_3 ) {
+   if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
+   t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+   t_1 = (Obj)(((UInt)t_1)+4);
+   if ( t_2 == 0 )  continue;
+  }
+  else {
+   if ( CALL_1ARGS( GF_IS_DONE_ITER, t_1 ) != False )  break;
+   t_2 = CALL_1ARGS( GF_NEXT_ITER, t_1 );
+  }
+  l_i = t_2;
+  
+  /* if methods[i](  ) then */
+  CHECK_INT_POS( l_i )
+  C_ELM_LIST_FPL( t_7, l_methods, l_i )
+  CHECK_FUNC( t_7 )
+  t_6 = CALL_0ARGS( t_7 );
+  CHECK_FUNC_RESULT( t_6 )
+  CHECK_BOOL( t_6 )
+  t_5 = (Obj)(UInt)(t_6 != False);
+  if ( t_5 ) {
    
-   /* return methods[4 * (i - 1) + 2]; */
-   C_DIFF_INTOBJS( t_6, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_5, INTOBJ_INT(4), t_6 )
-   C_SUM_FIA( t_4, t_5, INTOBJ_INT(2) )
-   CHECK_INT_POS( t_4 )
-   C_ELM_LIST_FPL( t_3, l_methods, t_4 )
+   /* return methods[i + 1]; */
+   C_SUM_FIA( t_6, l_i, INTOBJ_INT(1) )
+   CHECK_INT_POS( t_6 )
+   C_ELM_LIST_FPL( t_5, l_methods, t_6 )
    RES_BRK_CURR_STAT();
    SWITCH_TO_OLD_FRAME(oldFrame);
-   return t_3;
+   return t_5;
    
   }
   /* fi */
@@ -181,55 +191,64 @@ static Obj  HdlrFunc3 (
  CHECK_FUNC_RESULT( t_1 )
  l_methods = t_1;
  
- /* for i in [ 1 .. LEN_LIST( methods ) / 5 ] do */
- t_4 = GF_LEN__LIST;
- t_3 = CALL_1ARGS( t_4, l_methods );
- CHECK_FUNC_RESULT( t_3 )
- t_2 = QUO( t_3, INTOBJ_INT(5) );
- CHECK_INT_SMALL( t_2 )
- for ( t_1 = INTOBJ_INT(1);
-       ((Int)t_1) <= ((Int)t_2);
-       t_1 = (Obj)(((UInt)t_1)+4) ) {
-  l_i = t_1;
-  
-  /* if IS_SUBSET_FLAGS( type1![2], methods[5 * (i - 1) + 2] ) and methods[5 * (i - 1) + 1]( type1![1] ) then */
-  t_6 = GF_IS__SUBSET__FLAGS;
-  C_ELM_POSOBJ_NLE( t_7, a_type1, 2 );
-  C_DIFF_INTOBJS( t_11, l_i, INTOBJ_INT(1) )
-  C_PROD_FIA( t_10, INTOBJ_INT(5), t_11 )
-  C_SUM_FIA( t_9, t_10, INTOBJ_INT(2) )
-  CHECK_INT_POS( t_9 )
-  C_ELM_LIST_FPL( t_8, l_methods, t_9 )
-  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
-  CHECK_FUNC_RESULT( t_5 )
-  CHECK_BOOL( t_5 )
-  t_4 = (Obj)(UInt)(t_5 != False);
-  t_3 = t_4;
+ /* for i in [ 1, 6 .. LEN_LIST( methods ) - 4 ] do */
+ t_7 = GF_LEN__LIST;
+ t_6 = CALL_1ARGS( t_7, l_methods );
+ CHECK_FUNC_RESULT( t_6 )
+ C_DIFF_FIA( t_5, t_6, INTOBJ_INT(4) )
+ t_4 = Range3Check( INTOBJ_INT(1), INTOBJ_INT(6), t_5 );
+ if ( IS_SMALL_LIST(t_4) ) {
+  t_3 = (Obj)(UInt)1;
+  t_1 = INTOBJ_INT(1);
+ }
+ else {
+  t_3 = (Obj)(UInt)0;
+  t_1 = CALL_1ARGS( GF_ITERATOR, t_4 );
+ }
+ while ( 1 ) {
   if ( t_3 ) {
-   C_DIFF_INTOBJS( t_10, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_9, INTOBJ_INT(5), t_10 )
-   C_SUM_FIA( t_8, t_9, INTOBJ_INT(1) )
-   CHECK_INT_POS( t_8 )
-   C_ELM_LIST_FPL( t_7, l_methods, t_8 )
-   CHECK_FUNC( t_7 )
-   C_ELM_POSOBJ_NLE( t_8, a_type1, 1 );
-   t_6 = CALL_1ARGS( t_7, t_8 );
-   CHECK_FUNC_RESULT( t_6 )
-   CHECK_BOOL( t_6 )
-   t_5 = (Obj)(UInt)(t_6 != False);
-   t_3 = t_5;
+   if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
+   t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+   t_1 = (Obj)(((UInt)t_1)+4);
+   if ( t_2 == 0 )  continue;
   }
-  if ( t_3 ) {
+  else {
+   if ( CALL_1ARGS( GF_IS_DONE_ITER, t_1 ) != False )  break;
+   t_2 = CALL_1ARGS( GF_NEXT_ITER, t_1 );
+  }
+  l_i = t_2;
+  
+  /* if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and methods[i]( type1![1] ) then */
+  t_8 = GF_IS__SUBSET__FLAGS;
+  C_ELM_POSOBJ_NLE( t_9, a_type1, 2 );
+  C_SUM_FIA( t_11, l_i, INTOBJ_INT(1) )
+  CHECK_INT_POS( t_11 )
+  C_ELM_LIST_FPL( t_10, l_methods, t_11 )
+  t_7 = CALL_2ARGS( t_8, t_9, t_10 );
+  CHECK_FUNC_RESULT( t_7 )
+  CHECK_BOOL( t_7 )
+  t_6 = (Obj)(UInt)(t_7 != False);
+  t_5 = t_6;
+  if ( t_5 ) {
+   CHECK_INT_POS( l_i )
+   C_ELM_LIST_FPL( t_9, l_methods, l_i )
+   CHECK_FUNC( t_9 )
+   C_ELM_POSOBJ_NLE( t_10, a_type1, 1 );
+   t_8 = CALL_1ARGS( t_9, t_10 );
+   CHECK_FUNC_RESULT( t_8 )
+   CHECK_BOOL( t_8 )
+   t_7 = (Obj)(UInt)(t_8 != False);
+   t_5 = t_7;
+  }
+  if ( t_5 ) {
    
-   /* return methods[5 * (i - 1) + 3]; */
-   C_DIFF_INTOBJS( t_6, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_5, INTOBJ_INT(5), t_6 )
-   C_SUM_FIA( t_4, t_5, INTOBJ_INT(3) )
-   CHECK_INT_POS( t_4 )
-   C_ELM_LIST_FPL( t_3, l_methods, t_4 )
+   /* return methods[i + 2]; */
+   C_SUM_FIA( t_6, l_i, INTOBJ_INT(2) )
+   CHECK_INT_POS( t_6 )
+   C_ELM_LIST_FPL( t_5, l_methods, t_6 )
    RES_BRK_CURR_STAT();
    SWITCH_TO_OLD_FRAME(oldFrame);
-   return t_3;
+   return t_5;
    
   }
   /* fi */
@@ -286,71 +305,78 @@ static Obj  HdlrFunc4 (
  CHECK_FUNC_RESULT( t_1 )
  l_methods = t_1;
  
- /* for i in [ 1 .. LEN_LIST( methods ) / 6 ] do */
- t_4 = GF_LEN__LIST;
- t_3 = CALL_1ARGS( t_4, l_methods );
- CHECK_FUNC_RESULT( t_3 )
- t_2 = QUO( t_3, INTOBJ_INT(6) );
- CHECK_INT_SMALL( t_2 )
- for ( t_1 = INTOBJ_INT(1);
-       ((Int)t_1) <= ((Int)t_2);
-       t_1 = (Obj)(((UInt)t_1)+4) ) {
-  l_i = t_1;
+ /* for i in [ 1, 7 .. LEN_LIST( methods ) - 5 ] do */
+ t_7 = GF_LEN__LIST;
+ t_6 = CALL_1ARGS( t_7, l_methods );
+ CHECK_FUNC_RESULT( t_6 )
+ C_DIFF_FIA( t_5, t_6, INTOBJ_INT(5) )
+ t_4 = Range3Check( INTOBJ_INT(1), INTOBJ_INT(7), t_5 );
+ if ( IS_SMALL_LIST(t_4) ) {
+  t_3 = (Obj)(UInt)1;
+  t_1 = INTOBJ_INT(1);
+ }
+ else {
+  t_3 = (Obj)(UInt)0;
+  t_1 = CALL_1ARGS( GF_ITERATOR, t_4 );
+ }
+ while ( 1 ) {
+  if ( t_3 ) {
+   if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
+   t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+   t_1 = (Obj)(((UInt)t_1)+4);
+   if ( t_2 == 0 )  continue;
+  }
+  else {
+   if ( CALL_1ARGS( GF_IS_DONE_ITER, t_1 ) != False )  break;
+   t_2 = CALL_1ARGS( GF_NEXT_ITER, t_1 );
+  }
+  l_i = t_2;
   
-  /* if IS_SUBSET_FLAGS( type1![2], methods[6 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[6 * (i - 1) + 3] ) and methods[6 * (i - 1) + 1]( type1![1], type2![1] ) then */
-  t_7 = GF_IS__SUBSET__FLAGS;
-  C_ELM_POSOBJ_NLE( t_8, a_type1, 2 );
-  C_DIFF_INTOBJS( t_12, l_i, INTOBJ_INT(1) )
-  C_PROD_FIA( t_11, INTOBJ_INT(6), t_12 )
-  C_SUM_FIA( t_10, t_11, INTOBJ_INT(2) )
-  CHECK_INT_POS( t_10 )
-  C_ELM_LIST_FPL( t_9, l_methods, t_10 )
-  t_6 = CALL_2ARGS( t_7, t_8, t_9 );
-  CHECK_FUNC_RESULT( t_6 )
-  CHECK_BOOL( t_6 )
-  t_5 = (Obj)(UInt)(t_6 != False);
-  t_4 = t_5;
-  if ( t_4 ) {
-   t_8 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_9, a_type2, 2 );
-   C_DIFF_INTOBJS( t_13, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_12, INTOBJ_INT(6), t_13 )
-   C_SUM_FIA( t_11, t_12, INTOBJ_INT(3) )
-   CHECK_INT_POS( t_11 )
-   C_ELM_LIST_FPL( t_10, l_methods, t_11 )
-   t_7 = CALL_2ARGS( t_8, t_9, t_10 );
-   CHECK_FUNC_RESULT( t_7 )
-   CHECK_BOOL( t_7 )
-   t_6 = (Obj)(UInt)(t_7 != False);
-   t_4 = t_6;
+  /* if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and methods[i]( type1![1], type2![1] ) then */
+  t_9 = GF_IS__SUBSET__FLAGS;
+  C_ELM_POSOBJ_NLE( t_10, a_type1, 2 );
+  C_SUM_FIA( t_12, l_i, INTOBJ_INT(1) )
+  CHECK_INT_POS( t_12 )
+  C_ELM_LIST_FPL( t_11, l_methods, t_12 )
+  t_8 = CALL_2ARGS( t_9, t_10, t_11 );
+  CHECK_FUNC_RESULT( t_8 )
+  CHECK_BOOL( t_8 )
+  t_7 = (Obj)(UInt)(t_8 != False);
+  t_6 = t_7;
+  if ( t_6 ) {
+   t_10 = GF_IS__SUBSET__FLAGS;
+   C_ELM_POSOBJ_NLE( t_11, a_type2, 2 );
+   C_SUM_FIA( t_13, l_i, INTOBJ_INT(2) )
+   CHECK_INT_POS( t_13 )
+   C_ELM_LIST_FPL( t_12, l_methods, t_13 )
+   t_9 = CALL_2ARGS( t_10, t_11, t_12 );
+   CHECK_FUNC_RESULT( t_9 )
+   CHECK_BOOL( t_9 )
+   t_8 = (Obj)(UInt)(t_9 != False);
+   t_6 = t_8;
   }
-  t_3 = t_4;
-  if ( t_3 ) {
-   C_DIFF_INTOBJS( t_10, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_9, INTOBJ_INT(6), t_10 )
-   C_SUM_FIA( t_8, t_9, INTOBJ_INT(1) )
-   CHECK_INT_POS( t_8 )
-   C_ELM_LIST_FPL( t_7, l_methods, t_8 )
-   CHECK_FUNC( t_7 )
-   C_ELM_POSOBJ_NLE( t_8, a_type1, 1 );
-   C_ELM_POSOBJ_NLE( t_9, a_type2, 1 );
-   t_6 = CALL_2ARGS( t_7, t_8, t_9 );
-   CHECK_FUNC_RESULT( t_6 )
-   CHECK_BOOL( t_6 )
-   t_5 = (Obj)(UInt)(t_6 != False);
-   t_3 = t_5;
+  t_5 = t_6;
+  if ( t_5 ) {
+   CHECK_INT_POS( l_i )
+   C_ELM_LIST_FPL( t_9, l_methods, l_i )
+   CHECK_FUNC( t_9 )
+   C_ELM_POSOBJ_NLE( t_10, a_type1, 1 );
+   C_ELM_POSOBJ_NLE( t_11, a_type2, 1 );
+   t_8 = CALL_2ARGS( t_9, t_10, t_11 );
+   CHECK_FUNC_RESULT( t_8 )
+   CHECK_BOOL( t_8 )
+   t_7 = (Obj)(UInt)(t_8 != False);
+   t_5 = t_7;
   }
-  if ( t_3 ) {
+  if ( t_5 ) {
    
-   /* return methods[6 * (i - 1) + 4]; */
-   C_DIFF_INTOBJS( t_6, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_5, INTOBJ_INT(6), t_6 )
-   C_SUM_FIA( t_4, t_5, INTOBJ_INT(4) )
-   CHECK_INT_POS( t_4 )
-   C_ELM_LIST_FPL( t_3, l_methods, t_4 )
+   /* return methods[i + 3]; */
+   C_SUM_FIA( t_6, l_i, INTOBJ_INT(3) )
+   CHECK_INT_POS( t_6 )
+   C_ELM_LIST_FPL( t_5, l_methods, t_6 )
    RES_BRK_CURR_STAT();
    SWITCH_TO_OLD_FRAME(oldFrame);
-   return t_3;
+   return t_5;
    
   }
   /* fi */
@@ -409,87 +435,92 @@ static Obj  HdlrFunc5 (
  CHECK_FUNC_RESULT( t_1 )
  l_methods = t_1;
  
- /* for i in [ 1 .. LEN_LIST( methods ) / 7 ] do */
- t_4 = GF_LEN__LIST;
- t_3 = CALL_1ARGS( t_4, l_methods );
- CHECK_FUNC_RESULT( t_3 )
- t_2 = QUO( t_3, INTOBJ_INT(7) );
- CHECK_INT_SMALL( t_2 )
- for ( t_1 = INTOBJ_INT(1);
-       ((Int)t_1) <= ((Int)t_2);
-       t_1 = (Obj)(((UInt)t_1)+4) ) {
-  l_i = t_1;
+ /* for i in [ 1, 8 .. LEN_LIST( methods ) - 6 ] do */
+ t_7 = GF_LEN__LIST;
+ t_6 = CALL_1ARGS( t_7, l_methods );
+ CHECK_FUNC_RESULT( t_6 )
+ C_DIFF_FIA( t_5, t_6, INTOBJ_INT(6) )
+ t_4 = Range3Check( INTOBJ_INT(1), INTOBJ_INT(8), t_5 );
+ if ( IS_SMALL_LIST(t_4) ) {
+  t_3 = (Obj)(UInt)1;
+  t_1 = INTOBJ_INT(1);
+ }
+ else {
+  t_3 = (Obj)(UInt)0;
+  t_1 = CALL_1ARGS( GF_ITERATOR, t_4 );
+ }
+ while ( 1 ) {
+  if ( t_3 ) {
+   if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
+   t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+   t_1 = (Obj)(((UInt)t_1)+4);
+   if ( t_2 == 0 )  continue;
+  }
+  else {
+   if ( CALL_1ARGS( GF_IS_DONE_ITER, t_1 ) != False )  break;
+   t_2 = CALL_1ARGS( GF_NEXT_ITER, t_1 );
+  }
+  l_i = t_2;
   
-  /* if IS_SUBSET_FLAGS( type1![2], methods[7 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) and methods[7 * (i - 1) + 1]( type1![1], type2![1], type3![1] ) then */
-  t_8 = GF_IS__SUBSET__FLAGS;
-  C_ELM_POSOBJ_NLE( t_9, a_type1, 2 );
-  C_DIFF_INTOBJS( t_13, l_i, INTOBJ_INT(1) )
-  C_PROD_FIA( t_12, INTOBJ_INT(7), t_13 )
-  C_SUM_FIA( t_11, t_12, INTOBJ_INT(2) )
-  CHECK_INT_POS( t_11 )
-  C_ELM_LIST_FPL( t_10, l_methods, t_11 )
-  t_7 = CALL_2ARGS( t_8, t_9, t_10 );
-  CHECK_FUNC_RESULT( t_7 )
-  CHECK_BOOL( t_7 )
-  t_6 = (Obj)(UInt)(t_7 != False);
+  /* if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and methods[i]( type1![1], type2![1], type3![1] ) then */
+  t_10 = GF_IS__SUBSET__FLAGS;
+  C_ELM_POSOBJ_NLE( t_11, a_type1, 2 );
+  C_SUM_FIA( t_13, l_i, INTOBJ_INT(1) )
+  CHECK_INT_POS( t_13 )
+  C_ELM_LIST_FPL( t_12, l_methods, t_13 )
+  t_9 = CALL_2ARGS( t_10, t_11, t_12 );
+  CHECK_FUNC_RESULT( t_9 )
+  CHECK_BOOL( t_9 )
+  t_8 = (Obj)(UInt)(t_9 != False);
+  t_7 = t_8;
+  if ( t_7 ) {
+   t_11 = GF_IS__SUBSET__FLAGS;
+   C_ELM_POSOBJ_NLE( t_12, a_type2, 2 );
+   C_SUM_FIA( t_14, l_i, INTOBJ_INT(2) )
+   CHECK_INT_POS( t_14 )
+   C_ELM_LIST_FPL( t_13, l_methods, t_14 )
+   t_10 = CALL_2ARGS( t_11, t_12, t_13 );
+   CHECK_FUNC_RESULT( t_10 )
+   CHECK_BOOL( t_10 )
+   t_9 = (Obj)(UInt)(t_10 != False);
+   t_7 = t_9;
+  }
+  t_6 = t_7;
+  if ( t_6 ) {
+   t_10 = GF_IS__SUBSET__FLAGS;
+   C_ELM_POSOBJ_NLE( t_11, a_type3, 2 );
+   C_SUM_FIA( t_13, l_i, INTOBJ_INT(3) )
+   CHECK_INT_POS( t_13 )
+   C_ELM_LIST_FPL( t_12, l_methods, t_13 )
+   t_9 = CALL_2ARGS( t_10, t_11, t_12 );
+   CHECK_FUNC_RESULT( t_9 )
+   CHECK_BOOL( t_9 )
+   t_8 = (Obj)(UInt)(t_9 != False);
+   t_6 = t_8;
+  }
   t_5 = t_6;
   if ( t_5 ) {
-   t_9 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_10, a_type2, 2 );
-   C_DIFF_INTOBJS( t_14, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_13, INTOBJ_INT(7), t_14 )
-   C_SUM_FIA( t_12, t_13, INTOBJ_INT(3) )
-   CHECK_INT_POS( t_12 )
-   C_ELM_LIST_FPL( t_11, l_methods, t_12 )
-   t_8 = CALL_2ARGS( t_9, t_10, t_11 );
+   CHECK_INT_POS( l_i )
+   C_ELM_LIST_FPL( t_9, l_methods, l_i )
+   CHECK_FUNC( t_9 )
+   C_ELM_POSOBJ_NLE( t_10, a_type1, 1 );
+   C_ELM_POSOBJ_NLE( t_11, a_type2, 1 );
+   C_ELM_POSOBJ_NLE( t_12, a_type3, 1 );
+   t_8 = CALL_3ARGS( t_9, t_10, t_11, t_12 );
    CHECK_FUNC_RESULT( t_8 )
    CHECK_BOOL( t_8 )
    t_7 = (Obj)(UInt)(t_8 != False);
    t_5 = t_7;
   }
-  t_4 = t_5;
-  if ( t_4 ) {
-   t_8 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_9, a_type3, 2 );
-   C_DIFF_INTOBJS( t_13, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_12, INTOBJ_INT(7), t_13 )
-   C_SUM_FIA( t_11, t_12, INTOBJ_INT(4) )
-   CHECK_INT_POS( t_11 )
-   C_ELM_LIST_FPL( t_10, l_methods, t_11 )
-   t_7 = CALL_2ARGS( t_8, t_9, t_10 );
-   CHECK_FUNC_RESULT( t_7 )
-   CHECK_BOOL( t_7 )
-   t_6 = (Obj)(UInt)(t_7 != False);
-   t_4 = t_6;
-  }
-  t_3 = t_4;
-  if ( t_3 ) {
-   C_DIFF_INTOBJS( t_10, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_9, INTOBJ_INT(7), t_10 )
-   C_SUM_FIA( t_8, t_9, INTOBJ_INT(1) )
-   CHECK_INT_POS( t_8 )
-   C_ELM_LIST_FPL( t_7, l_methods, t_8 )
-   CHECK_FUNC( t_7 )
-   C_ELM_POSOBJ_NLE( t_8, a_type1, 1 );
-   C_ELM_POSOBJ_NLE( t_9, a_type2, 1 );
-   C_ELM_POSOBJ_NLE( t_10, a_type3, 1 );
-   t_6 = CALL_3ARGS( t_7, t_8, t_9, t_10 );
-   CHECK_FUNC_RESULT( t_6 )
-   CHECK_BOOL( t_6 )
-   t_5 = (Obj)(UInt)(t_6 != False);
-   t_3 = t_5;
-  }
-  if ( t_3 ) {
+  if ( t_5 ) {
    
-   /* return methods[7 * (i - 1) + 5]; */
-   C_DIFF_INTOBJS( t_6, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_5, INTOBJ_INT(7), t_6 )
-   C_SUM_FIA( t_4, t_5, INTOBJ_INT(5) )
-   CHECK_INT_POS( t_4 )
-   C_ELM_LIST_FPL( t_3, l_methods, t_4 )
+   /* return methods[i + 4]; */
+   C_SUM_FIA( t_6, l_i, INTOBJ_INT(4) )
+   CHECK_INT_POS( t_6 )
+   C_ELM_LIST_FPL( t_5, l_methods, t_6 )
    RES_BRK_CURR_STAT();
    SWITCH_TO_OLD_FRAME(oldFrame);
-   return t_3;
+   return t_5;
    
   }
   /* fi */
@@ -550,37 +581,75 @@ static Obj  HdlrFunc6 (
  CHECK_FUNC_RESULT( t_1 )
  l_methods = t_1;
  
- /* for i in [ 1 .. LEN_LIST( methods ) / 8 ] do */
- t_4 = GF_LEN__LIST;
- t_3 = CALL_1ARGS( t_4, l_methods );
- CHECK_FUNC_RESULT( t_3 )
- t_2 = QUO( t_3, INTOBJ_INT(8) );
- CHECK_INT_SMALL( t_2 )
- for ( t_1 = INTOBJ_INT(1);
-       ((Int)t_1) <= ((Int)t_2);
-       t_1 = (Obj)(((UInt)t_1)+4) ) {
-  l_i = t_1;
+ /* for i in [ 1, 9 .. LEN_LIST( methods ) - 7 ] do */
+ t_7 = GF_LEN__LIST;
+ t_6 = CALL_1ARGS( t_7, l_methods );
+ CHECK_FUNC_RESULT( t_6 )
+ C_DIFF_FIA( t_5, t_6, INTOBJ_INT(7) )
+ t_4 = Range3Check( INTOBJ_INT(1), INTOBJ_INT(9), t_5 );
+ if ( IS_SMALL_LIST(t_4) ) {
+  t_3 = (Obj)(UInt)1;
+  t_1 = INTOBJ_INT(1);
+ }
+ else {
+  t_3 = (Obj)(UInt)0;
+  t_1 = CALL_1ARGS( GF_ITERATOR, t_4 );
+ }
+ while ( 1 ) {
+  if ( t_3 ) {
+   if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
+   t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+   t_1 = (Obj)(((UInt)t_1)+4);
+   if ( t_2 == 0 )  continue;
+  }
+  else {
+   if ( CALL_1ARGS( GF_IS_DONE_ITER, t_1 ) != False )  break;
+   t_2 = CALL_1ARGS( GF_NEXT_ITER, t_1 );
+  }
+  l_i = t_2;
   
-  /* if IS_SUBSET_FLAGS( type1![2], methods[8 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[8 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[8 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[8 * (i - 1) + 5] ) 
-and methods[8 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1] ) then */
-  t_9 = GF_IS__SUBSET__FLAGS;
-  C_ELM_POSOBJ_NLE( t_10, a_type1, 2 );
-  C_DIFF_INTOBJS( t_14, l_i, INTOBJ_INT(1) )
-  C_PROD_FIA( t_13, INTOBJ_INT(8), t_14 )
-  C_SUM_FIA( t_12, t_13, INTOBJ_INT(2) )
-  CHECK_INT_POS( t_12 )
-  C_ELM_LIST_FPL( t_11, l_methods, t_12 )
-  t_8 = CALL_2ARGS( t_9, t_10, t_11 );
-  CHECK_FUNC_RESULT( t_8 )
-  CHECK_BOOL( t_8 )
-  t_7 = (Obj)(UInt)(t_8 != False);
+  /* if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) and methods[i]( type1![1], type2![1], type3![1], 
+   type4![1] ) then */
+  t_11 = GF_IS__SUBSET__FLAGS;
+  C_ELM_POSOBJ_NLE( t_12, a_type1, 2 );
+  C_SUM_FIA( t_14, l_i, INTOBJ_INT(1) )
+  CHECK_INT_POS( t_14 )
+  C_ELM_LIST_FPL( t_13, l_methods, t_14 )
+  t_10 = CALL_2ARGS( t_11, t_12, t_13 );
+  CHECK_FUNC_RESULT( t_10 )
+  CHECK_BOOL( t_10 )
+  t_9 = (Obj)(UInt)(t_10 != False);
+  t_8 = t_9;
+  if ( t_8 ) {
+   t_12 = GF_IS__SUBSET__FLAGS;
+   C_ELM_POSOBJ_NLE( t_13, a_type2, 2 );
+   C_SUM_FIA( t_15, l_i, INTOBJ_INT(2) )
+   CHECK_INT_POS( t_15 )
+   C_ELM_LIST_FPL( t_14, l_methods, t_15 )
+   t_11 = CALL_2ARGS( t_12, t_13, t_14 );
+   CHECK_FUNC_RESULT( t_11 )
+   CHECK_BOOL( t_11 )
+   t_10 = (Obj)(UInt)(t_11 != False);
+   t_8 = t_10;
+  }
+  t_7 = t_8;
+  if ( t_7 ) {
+   t_11 = GF_IS__SUBSET__FLAGS;
+   C_ELM_POSOBJ_NLE( t_12, a_type3, 2 );
+   C_SUM_FIA( t_14, l_i, INTOBJ_INT(3) )
+   CHECK_INT_POS( t_14 )
+   C_ELM_LIST_FPL( t_13, l_methods, t_14 )
+   t_10 = CALL_2ARGS( t_11, t_12, t_13 );
+   CHECK_FUNC_RESULT( t_10 )
+   CHECK_BOOL( t_10 )
+   t_9 = (Obj)(UInt)(t_10 != False);
+   t_7 = t_9;
+  }
   t_6 = t_7;
   if ( t_6 ) {
    t_10 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_11, a_type2, 2 );
-   C_DIFF_INTOBJS( t_15, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_14, INTOBJ_INT(8), t_15 )
-   C_SUM_FIA( t_13, t_14, INTOBJ_INT(3) )
+   C_ELM_POSOBJ_NLE( t_11, a_type4, 2 );
+   C_SUM_FIA( t_13, l_i, INTOBJ_INT(4) )
    CHECK_INT_POS( t_13 )
    C_ELM_LIST_FPL( t_12, l_methods, t_13 )
    t_9 = CALL_2ARGS( t_10, t_11, t_12 );
@@ -591,63 +660,28 @@ and methods[8 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1] ) then 
   }
   t_5 = t_6;
   if ( t_5 ) {
-   t_9 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_10, a_type3, 2 );
-   C_DIFF_INTOBJS( t_14, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_13, INTOBJ_INT(8), t_14 )
-   C_SUM_FIA( t_12, t_13, INTOBJ_INT(4) )
-   CHECK_INT_POS( t_12 )
-   C_ELM_LIST_FPL( t_11, l_methods, t_12 )
-   t_8 = CALL_2ARGS( t_9, t_10, t_11 );
+   CHECK_INT_POS( l_i )
+   C_ELM_LIST_FPL( t_9, l_methods, l_i )
+   CHECK_FUNC( t_9 )
+   C_ELM_POSOBJ_NLE( t_10, a_type1, 1 );
+   C_ELM_POSOBJ_NLE( t_11, a_type2, 1 );
+   C_ELM_POSOBJ_NLE( t_12, a_type3, 1 );
+   C_ELM_POSOBJ_NLE( t_13, a_type4, 1 );
+   t_8 = CALL_4ARGS( t_9, t_10, t_11, t_12, t_13 );
    CHECK_FUNC_RESULT( t_8 )
    CHECK_BOOL( t_8 )
    t_7 = (Obj)(UInt)(t_8 != False);
    t_5 = t_7;
   }
-  t_4 = t_5;
-  if ( t_4 ) {
-   t_8 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_9, a_type4, 2 );
-   C_DIFF_INTOBJS( t_13, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_12, INTOBJ_INT(8), t_13 )
-   C_SUM_FIA( t_11, t_12, INTOBJ_INT(5) )
-   CHECK_INT_POS( t_11 )
-   C_ELM_LIST_FPL( t_10, l_methods, t_11 )
-   t_7 = CALL_2ARGS( t_8, t_9, t_10 );
-   CHECK_FUNC_RESULT( t_7 )
-   CHECK_BOOL( t_7 )
-   t_6 = (Obj)(UInt)(t_7 != False);
-   t_4 = t_6;
-  }
-  t_3 = t_4;
-  if ( t_3 ) {
-   C_DIFF_INTOBJS( t_10, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_9, INTOBJ_INT(8), t_10 )
-   C_SUM_FIA( t_8, t_9, INTOBJ_INT(1) )
-   CHECK_INT_POS( t_8 )
-   C_ELM_LIST_FPL( t_7, l_methods, t_8 )
-   CHECK_FUNC( t_7 )
-   C_ELM_POSOBJ_NLE( t_8, a_type1, 1 );
-   C_ELM_POSOBJ_NLE( t_9, a_type2, 1 );
-   C_ELM_POSOBJ_NLE( t_10, a_type3, 1 );
-   C_ELM_POSOBJ_NLE( t_11, a_type4, 1 );
-   t_6 = CALL_4ARGS( t_7, t_8, t_9, t_10, t_11 );
-   CHECK_FUNC_RESULT( t_6 )
-   CHECK_BOOL( t_6 )
-   t_5 = (Obj)(UInt)(t_6 != False);
-   t_3 = t_5;
-  }
-  if ( t_3 ) {
+  if ( t_5 ) {
    
-   /* return methods[8 * (i - 1) + 6]; */
-   C_DIFF_INTOBJS( t_6, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_5, INTOBJ_INT(8), t_6 )
-   C_SUM_FIA( t_4, t_5, INTOBJ_INT(6) )
-   CHECK_INT_POS( t_4 )
-   C_ELM_LIST_FPL( t_3, l_methods, t_4 )
+   /* return methods[i + 5]; */
+   C_SUM_FIA( t_6, l_i, INTOBJ_INT(5) )
+   CHECK_INT_POS( t_6 )
+   C_ELM_LIST_FPL( t_5, l_methods, t_6 )
    RES_BRK_CURR_STAT();
    SWITCH_TO_OLD_FRAME(oldFrame);
-   return t_3;
+   return t_5;
    
   }
   /* fi */
@@ -710,37 +744,75 @@ static Obj  HdlrFunc7 (
  CHECK_FUNC_RESULT( t_1 )
  l_methods = t_1;
  
- /* for i in [ 1 .. LEN_LIST( methods ) / 9 ] do */
- t_4 = GF_LEN__LIST;
- t_3 = CALL_1ARGS( t_4, l_methods );
- CHECK_FUNC_RESULT( t_3 )
- t_2 = QUO( t_3, INTOBJ_INT(9) );
- CHECK_INT_SMALL( t_2 )
- for ( t_1 = INTOBJ_INT(1);
-       ((Int)t_1) <= ((Int)t_2);
-       t_1 = (Obj)(((UInt)t_1)+4) ) {
-  l_i = t_1;
+ /* for i in [ 1, 10 .. LEN_LIST( methods ) - 8 ] do */
+ t_7 = GF_LEN__LIST;
+ t_6 = CALL_1ARGS( t_7, l_methods );
+ CHECK_FUNC_RESULT( t_6 )
+ C_DIFF_FIA( t_5, t_6, INTOBJ_INT(8) )
+ t_4 = Range3Check( INTOBJ_INT(1), INTOBJ_INT(10), t_5 );
+ if ( IS_SMALL_LIST(t_4) ) {
+  t_3 = (Obj)(UInt)1;
+  t_1 = INTOBJ_INT(1);
+ }
+ else {
+  t_3 = (Obj)(UInt)0;
+  t_1 = CALL_1ARGS( GF_ITERATOR, t_4 );
+ }
+ while ( 1 ) {
+  if ( t_3 ) {
+   if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
+   t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+   t_1 = (Obj)(((UInt)t_1)+4);
+   if ( t_2 == 0 )  continue;
+  }
+  else {
+   if ( CALL_1ARGS( GF_IS_DONE_ITER, t_1 ) != False )  break;
+   t_2 = CALL_1ARGS( GF_NEXT_ITER, t_1 );
+  }
+  l_i = t_2;
   
-  /* if IS_SUBSET_FLAGS( type1![2], methods[9 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[9 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[9 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[9 * (i - 1) + 5] ) 
-  and IS_SUBSET_FLAGS( type5![2], methods[9 * (i - 1) + 6] ) and methods[9 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1], type5![1] ) then */
-  t_10 = GF_IS__SUBSET__FLAGS;
-  C_ELM_POSOBJ_NLE( t_11, a_type1, 2 );
-  C_DIFF_INTOBJS( t_15, l_i, INTOBJ_INT(1) )
-  C_PROD_FIA( t_14, INTOBJ_INT(9), t_15 )
-  C_SUM_FIA( t_13, t_14, INTOBJ_INT(2) )
-  CHECK_INT_POS( t_13 )
-  C_ELM_LIST_FPL( t_12, l_methods, t_13 )
-  t_9 = CALL_2ARGS( t_10, t_11, t_12 );
-  CHECK_FUNC_RESULT( t_9 )
-  CHECK_BOOL( t_9 )
-  t_8 = (Obj)(UInt)(t_9 != False);
+  /* if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) and IS_SUBSET_FLAGS( type5![2], methods[i + 5] ) 
+and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1] ) then */
+  t_12 = GF_IS__SUBSET__FLAGS;
+  C_ELM_POSOBJ_NLE( t_13, a_type1, 2 );
+  C_SUM_FIA( t_15, l_i, INTOBJ_INT(1) )
+  CHECK_INT_POS( t_15 )
+  C_ELM_LIST_FPL( t_14, l_methods, t_15 )
+  t_11 = CALL_2ARGS( t_12, t_13, t_14 );
+  CHECK_FUNC_RESULT( t_11 )
+  CHECK_BOOL( t_11 )
+  t_10 = (Obj)(UInt)(t_11 != False);
+  t_9 = t_10;
+  if ( t_9 ) {
+   t_13 = GF_IS__SUBSET__FLAGS;
+   C_ELM_POSOBJ_NLE( t_14, a_type2, 2 );
+   C_SUM_FIA( t_16, l_i, INTOBJ_INT(2) )
+   CHECK_INT_POS( t_16 )
+   C_ELM_LIST_FPL( t_15, l_methods, t_16 )
+   t_12 = CALL_2ARGS( t_13, t_14, t_15 );
+   CHECK_FUNC_RESULT( t_12 )
+   CHECK_BOOL( t_12 )
+   t_11 = (Obj)(UInt)(t_12 != False);
+   t_9 = t_11;
+  }
+  t_8 = t_9;
+  if ( t_8 ) {
+   t_12 = GF_IS__SUBSET__FLAGS;
+   C_ELM_POSOBJ_NLE( t_13, a_type3, 2 );
+   C_SUM_FIA( t_15, l_i, INTOBJ_INT(3) )
+   CHECK_INT_POS( t_15 )
+   C_ELM_LIST_FPL( t_14, l_methods, t_15 )
+   t_11 = CALL_2ARGS( t_12, t_13, t_14 );
+   CHECK_FUNC_RESULT( t_11 )
+   CHECK_BOOL( t_11 )
+   t_10 = (Obj)(UInt)(t_11 != False);
+   t_8 = t_10;
+  }
   t_7 = t_8;
   if ( t_7 ) {
    t_11 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_12, a_type2, 2 );
-   C_DIFF_INTOBJS( t_16, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_15, INTOBJ_INT(9), t_16 )
-   C_SUM_FIA( t_14, t_15, INTOBJ_INT(3) )
+   C_ELM_POSOBJ_NLE( t_12, a_type4, 2 );
+   C_SUM_FIA( t_14, l_i, INTOBJ_INT(4) )
    CHECK_INT_POS( t_14 )
    C_ELM_LIST_FPL( t_13, l_methods, t_14 )
    t_10 = CALL_2ARGS( t_11, t_12, t_13 );
@@ -752,10 +824,8 @@ static Obj  HdlrFunc7 (
   t_6 = t_7;
   if ( t_6 ) {
    t_10 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_11, a_type3, 2 );
-   C_DIFF_INTOBJS( t_15, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_14, INTOBJ_INT(9), t_15 )
-   C_SUM_FIA( t_13, t_14, INTOBJ_INT(4) )
+   C_ELM_POSOBJ_NLE( t_11, a_type5, 2 );
+   C_SUM_FIA( t_13, l_i, INTOBJ_INT(5) )
    CHECK_INT_POS( t_13 )
    C_ELM_LIST_FPL( t_12, l_methods, t_13 )
    t_9 = CALL_2ARGS( t_10, t_11, t_12 );
@@ -766,64 +836,29 @@ static Obj  HdlrFunc7 (
   }
   t_5 = t_6;
   if ( t_5 ) {
-   t_9 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_10, a_type4, 2 );
-   C_DIFF_INTOBJS( t_14, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_13, INTOBJ_INT(9), t_14 )
-   C_SUM_FIA( t_12, t_13, INTOBJ_INT(5) )
-   CHECK_INT_POS( t_12 )
-   C_ELM_LIST_FPL( t_11, l_methods, t_12 )
-   t_8 = CALL_2ARGS( t_9, t_10, t_11 );
+   CHECK_INT_POS( l_i )
+   C_ELM_LIST_FPL( t_9, l_methods, l_i )
+   CHECK_FUNC( t_9 )
+   C_ELM_POSOBJ_NLE( t_10, a_type1, 1 );
+   C_ELM_POSOBJ_NLE( t_11, a_type2, 1 );
+   C_ELM_POSOBJ_NLE( t_12, a_type3, 1 );
+   C_ELM_POSOBJ_NLE( t_13, a_type4, 1 );
+   C_ELM_POSOBJ_NLE( t_14, a_type5, 1 );
+   t_8 = CALL_5ARGS( t_9, t_10, t_11, t_12, t_13, t_14 );
    CHECK_FUNC_RESULT( t_8 )
    CHECK_BOOL( t_8 )
    t_7 = (Obj)(UInt)(t_8 != False);
    t_5 = t_7;
   }
-  t_4 = t_5;
-  if ( t_4 ) {
-   t_8 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_9, a_type5, 2 );
-   C_DIFF_INTOBJS( t_13, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_12, INTOBJ_INT(9), t_13 )
-   C_SUM_FIA( t_11, t_12, INTOBJ_INT(6) )
-   CHECK_INT_POS( t_11 )
-   C_ELM_LIST_FPL( t_10, l_methods, t_11 )
-   t_7 = CALL_2ARGS( t_8, t_9, t_10 );
-   CHECK_FUNC_RESULT( t_7 )
-   CHECK_BOOL( t_7 )
-   t_6 = (Obj)(UInt)(t_7 != False);
-   t_4 = t_6;
-  }
-  t_3 = t_4;
-  if ( t_3 ) {
-   C_DIFF_INTOBJS( t_10, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_9, INTOBJ_INT(9), t_10 )
-   C_SUM_FIA( t_8, t_9, INTOBJ_INT(1) )
-   CHECK_INT_POS( t_8 )
-   C_ELM_LIST_FPL( t_7, l_methods, t_8 )
-   CHECK_FUNC( t_7 )
-   C_ELM_POSOBJ_NLE( t_8, a_type1, 1 );
-   C_ELM_POSOBJ_NLE( t_9, a_type2, 1 );
-   C_ELM_POSOBJ_NLE( t_10, a_type3, 1 );
-   C_ELM_POSOBJ_NLE( t_11, a_type4, 1 );
-   C_ELM_POSOBJ_NLE( t_12, a_type5, 1 );
-   t_6 = CALL_5ARGS( t_7, t_8, t_9, t_10, t_11, t_12 );
-   CHECK_FUNC_RESULT( t_6 )
-   CHECK_BOOL( t_6 )
-   t_5 = (Obj)(UInt)(t_6 != False);
-   t_3 = t_5;
-  }
-  if ( t_3 ) {
+  if ( t_5 ) {
    
-   /* return methods[9 * (i - 1) + 7]; */
-   C_DIFF_INTOBJS( t_6, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_5, INTOBJ_INT(9), t_6 )
-   C_SUM_FIA( t_4, t_5, INTOBJ_INT(7) )
-   CHECK_INT_POS( t_4 )
-   C_ELM_LIST_FPL( t_3, l_methods, t_4 )
+   /* return methods[i + 6]; */
+   C_SUM_FIA( t_6, l_i, INTOBJ_INT(6) )
+   CHECK_INT_POS( t_6 )
+   C_ELM_LIST_FPL( t_5, l_methods, t_6 )
    RES_BRK_CURR_STAT();
    SWITCH_TO_OLD_FRAME(oldFrame);
-   return t_3;
+   return t_5;
    
   }
   /* fi */
@@ -897,37 +932,75 @@ static Obj  HdlrFunc8 (
  CHECK_FUNC_RESULT( t_1 )
  l_methods = t_1;
  
- /* for i in [ 1 .. LEN_LIST( methods ) / 10 ] do */
- t_4 = GF_LEN__LIST;
- t_3 = CALL_1ARGS( t_4, l_methods );
- CHECK_FUNC_RESULT( t_3 )
- t_2 = QUO( t_3, INTOBJ_INT(10) );
- CHECK_INT_SMALL( t_2 )
- for ( t_1 = INTOBJ_INT(1);
-       ((Int)t_1) <= ((Int)t_2);
-       t_1 = (Obj)(((UInt)t_1)+4) ) {
-  l_i = t_1;
+ /* for i in [ 1, 11 .. LEN_LIST( methods ) - 9 ] do */
+ t_7 = GF_LEN__LIST;
+ t_6 = CALL_1ARGS( t_7, l_methods );
+ CHECK_FUNC_RESULT( t_6 )
+ C_DIFF_FIA( t_5, t_6, INTOBJ_INT(9) )
+ t_4 = Range3Check( INTOBJ_INT(1), INTOBJ_INT(11), t_5 );
+ if ( IS_SMALL_LIST(t_4) ) {
+  t_3 = (Obj)(UInt)1;
+  t_1 = INTOBJ_INT(1);
+ }
+ else {
+  t_3 = (Obj)(UInt)0;
+  t_1 = CALL_1ARGS( GF_ITERATOR, t_4 );
+ }
+ while ( 1 ) {
+  if ( t_3 ) {
+   if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
+   t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+   t_1 = (Obj)(((UInt)t_1)+4);
+   if ( t_2 == 0 )  continue;
+  }
+  else {
+   if ( CALL_1ARGS( GF_IS_DONE_ITER, t_1 ) != False )  break;
+   t_2 = CALL_1ARGS( GF_NEXT_ITER, t_1 );
+  }
+  l_i = t_2;
   
-  /* if IS_SUBSET_FLAGS( type1![2], methods[10 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[10 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[10 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[10 * (i - 1) + 5] ) 
-    and IS_SUBSET_FLAGS( type5![2], methods[10 * (i - 1) + 6] ) and IS_SUBSET_FLAGS( type6![2], methods[10 * (i - 1) + 7] ) and methods[10 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1], type5![1], type6![1] ) then */
-  t_11 = GF_IS__SUBSET__FLAGS;
-  C_ELM_POSOBJ_NLE( t_12, a_type1, 2 );
-  C_DIFF_INTOBJS( t_16, l_i, INTOBJ_INT(1) )
-  C_PROD_FIA( t_15, INTOBJ_INT(10), t_16 )
-  C_SUM_FIA( t_14, t_15, INTOBJ_INT(2) )
-  CHECK_INT_POS( t_14 )
-  C_ELM_LIST_FPL( t_13, l_methods, t_14 )
-  t_10 = CALL_2ARGS( t_11, t_12, t_13 );
-  CHECK_FUNC_RESULT( t_10 )
-  CHECK_BOOL( t_10 )
-  t_9 = (Obj)(UInt)(t_10 != False);
+  /* if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) and IS_SUBSET_FLAGS( type5![2], methods[i + 5] ) 
+  and IS_SUBSET_FLAGS( type6![2], methods[i + 6] ) and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1], type6![1] ) then */
+  t_13 = GF_IS__SUBSET__FLAGS;
+  C_ELM_POSOBJ_NLE( t_14, a_type1, 2 );
+  C_SUM_FIA( t_16, l_i, INTOBJ_INT(1) )
+  CHECK_INT_POS( t_16 )
+  C_ELM_LIST_FPL( t_15, l_methods, t_16 )
+  t_12 = CALL_2ARGS( t_13, t_14, t_15 );
+  CHECK_FUNC_RESULT( t_12 )
+  CHECK_BOOL( t_12 )
+  t_11 = (Obj)(UInt)(t_12 != False);
+  t_10 = t_11;
+  if ( t_10 ) {
+   t_14 = GF_IS__SUBSET__FLAGS;
+   C_ELM_POSOBJ_NLE( t_15, a_type2, 2 );
+   C_SUM_FIA( t_17, l_i, INTOBJ_INT(2) )
+   CHECK_INT_POS( t_17 )
+   C_ELM_LIST_FPL( t_16, l_methods, t_17 )
+   t_13 = CALL_2ARGS( t_14, t_15, t_16 );
+   CHECK_FUNC_RESULT( t_13 )
+   CHECK_BOOL( t_13 )
+   t_12 = (Obj)(UInt)(t_13 != False);
+   t_10 = t_12;
+  }
+  t_9 = t_10;
+  if ( t_9 ) {
+   t_13 = GF_IS__SUBSET__FLAGS;
+   C_ELM_POSOBJ_NLE( t_14, a_type3, 2 );
+   C_SUM_FIA( t_16, l_i, INTOBJ_INT(3) )
+   CHECK_INT_POS( t_16 )
+   C_ELM_LIST_FPL( t_15, l_methods, t_16 )
+   t_12 = CALL_2ARGS( t_13, t_14, t_15 );
+   CHECK_FUNC_RESULT( t_12 )
+   CHECK_BOOL( t_12 )
+   t_11 = (Obj)(UInt)(t_12 != False);
+   t_9 = t_11;
+  }
   t_8 = t_9;
   if ( t_8 ) {
    t_12 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_13, a_type2, 2 );
-   C_DIFF_INTOBJS( t_17, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_16, INTOBJ_INT(10), t_17 )
-   C_SUM_FIA( t_15, t_16, INTOBJ_INT(3) )
+   C_ELM_POSOBJ_NLE( t_13, a_type4, 2 );
+   C_SUM_FIA( t_15, l_i, INTOBJ_INT(4) )
    CHECK_INT_POS( t_15 )
    C_ELM_LIST_FPL( t_14, l_methods, t_15 )
    t_11 = CALL_2ARGS( t_12, t_13, t_14 );
@@ -939,10 +1012,8 @@ static Obj  HdlrFunc8 (
   t_7 = t_8;
   if ( t_7 ) {
    t_11 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_12, a_type3, 2 );
-   C_DIFF_INTOBJS( t_16, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_15, INTOBJ_INT(10), t_16 )
-   C_SUM_FIA( t_14, t_15, INTOBJ_INT(4) )
+   C_ELM_POSOBJ_NLE( t_12, a_type5, 2 );
+   C_SUM_FIA( t_14, l_i, INTOBJ_INT(5) )
    CHECK_INT_POS( t_14 )
    C_ELM_LIST_FPL( t_13, l_methods, t_14 )
    t_10 = CALL_2ARGS( t_11, t_12, t_13 );
@@ -954,10 +1025,8 @@ static Obj  HdlrFunc8 (
   t_6 = t_7;
   if ( t_6 ) {
    t_10 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_11, a_type4, 2 );
-   C_DIFF_INTOBJS( t_15, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_14, INTOBJ_INT(10), t_15 )
-   C_SUM_FIA( t_13, t_14, INTOBJ_INT(5) )
+   C_ELM_POSOBJ_NLE( t_11, a_type6, 2 );
+   C_SUM_FIA( t_13, l_i, INTOBJ_INT(6) )
    CHECK_INT_POS( t_13 )
    C_ELM_LIST_FPL( t_12, l_methods, t_13 )
    t_9 = CALL_2ARGS( t_10, t_11, t_12 );
@@ -968,65 +1037,30 @@ static Obj  HdlrFunc8 (
   }
   t_5 = t_6;
   if ( t_5 ) {
-   t_9 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_10, a_type5, 2 );
-   C_DIFF_INTOBJS( t_14, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_13, INTOBJ_INT(10), t_14 )
-   C_SUM_FIA( t_12, t_13, INTOBJ_INT(6) )
-   CHECK_INT_POS( t_12 )
-   C_ELM_LIST_FPL( t_11, l_methods, t_12 )
-   t_8 = CALL_2ARGS( t_9, t_10, t_11 );
+   CHECK_INT_POS( l_i )
+   C_ELM_LIST_FPL( t_9, l_methods, l_i )
+   CHECK_FUNC( t_9 )
+   C_ELM_POSOBJ_NLE( t_10, a_type1, 1 );
+   C_ELM_POSOBJ_NLE( t_11, a_type2, 1 );
+   C_ELM_POSOBJ_NLE( t_12, a_type3, 1 );
+   C_ELM_POSOBJ_NLE( t_13, a_type4, 1 );
+   C_ELM_POSOBJ_NLE( t_14, a_type5, 1 );
+   C_ELM_POSOBJ_NLE( t_15, a_type6, 1 );
+   t_8 = CALL_6ARGS( t_9, t_10, t_11, t_12, t_13, t_14, t_15 );
    CHECK_FUNC_RESULT( t_8 )
    CHECK_BOOL( t_8 )
    t_7 = (Obj)(UInt)(t_8 != False);
    t_5 = t_7;
   }
-  t_4 = t_5;
-  if ( t_4 ) {
-   t_8 = GF_IS__SUBSET__FLAGS;
-   C_ELM_POSOBJ_NLE( t_9, a_type6, 2 );
-   C_DIFF_INTOBJS( t_13, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_12, INTOBJ_INT(10), t_13 )
-   C_SUM_FIA( t_11, t_12, INTOBJ_INT(7) )
-   CHECK_INT_POS( t_11 )
-   C_ELM_LIST_FPL( t_10, l_methods, t_11 )
-   t_7 = CALL_2ARGS( t_8, t_9, t_10 );
-   CHECK_FUNC_RESULT( t_7 )
-   CHECK_BOOL( t_7 )
-   t_6 = (Obj)(UInt)(t_7 != False);
-   t_4 = t_6;
-  }
-  t_3 = t_4;
-  if ( t_3 ) {
-   C_DIFF_INTOBJS( t_10, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_9, INTOBJ_INT(10), t_10 )
-   C_SUM_FIA( t_8, t_9, INTOBJ_INT(1) )
-   CHECK_INT_POS( t_8 )
-   C_ELM_LIST_FPL( t_7, l_methods, t_8 )
-   CHECK_FUNC( t_7 )
-   C_ELM_POSOBJ_NLE( t_8, a_type1, 1 );
-   C_ELM_POSOBJ_NLE( t_9, a_type2, 1 );
-   C_ELM_POSOBJ_NLE( t_10, a_type3, 1 );
-   C_ELM_POSOBJ_NLE( t_11, a_type4, 1 );
-   C_ELM_POSOBJ_NLE( t_12, a_type5, 1 );
-   C_ELM_POSOBJ_NLE( t_13, a_type6, 1 );
-   t_6 = CALL_6ARGS( t_7, t_8, t_9, t_10, t_11, t_12, t_13 );
-   CHECK_FUNC_RESULT( t_6 )
-   CHECK_BOOL( t_6 )
-   t_5 = (Obj)(UInt)(t_6 != False);
-   t_3 = t_5;
-  }
-  if ( t_3 ) {
+  if ( t_5 ) {
    
-   /* return methods[10 * (i - 1) + 8]; */
-   C_DIFF_INTOBJS( t_6, l_i, INTOBJ_INT(1) )
-   C_PROD_FIA( t_5, INTOBJ_INT(10), t_6 )
-   C_SUM_FIA( t_4, t_5, INTOBJ_INT(8) )
-   CHECK_INT_POS( t_4 )
-   C_ELM_LIST_FPL( t_3, l_methods, t_4 )
+   /* return methods[i + 7]; */
+   C_SUM_FIA( t_6, l_i, INTOBJ_INT(7) )
+   CHECK_INT_POS( t_6 )
+   C_ELM_LIST_FPL( t_5, l_methods, t_6 )
    RES_BRK_CURR_STAT();
    SWITCH_TO_OLD_FRAME(oldFrame);
-   return t_3;
+   return t_5;
    
   }
   /* fi */
@@ -4612,18 +4646,18 @@ static Obj  HdlrFunc1 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
- /* Revision.methsel1_g := "@(#)$Id:"; */
+ /* Revision.methsel1_g := "@(#)$Id$"; */
  t_1 = GC_Revision;
  CHECK_BOUND( t_1, "Revision" )
- C_NEW_STRING( t_2, 8, "@(#)$Id:" )
+ C_NEW_STRING( t_2, 55, "@(#)$Id$" )
  ASS_REC( t_1, R_methsel1__g, t_2 );
  
  /* METHOD_0ARGS := function ( operation )
       local  methods, i;
       methods := METHODS_OPERATION( operation, 0 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 4 ]  do
-          if methods[4 * (i - 1) + 1](  )  then
-              return methods[4 * (i - 1) + 2];
+      for i  in [ 1, 5 .. LEN_LIST( methods ) - 3 ]  do
+          if methods[i](  )  then
+              return methods[i + 1];
           fi;
       od;
       return fail;
@@ -4638,9 +4672,9 @@ static Obj  HdlrFunc1 (
  /* METHOD_1ARGS := function ( operation, type1 )
       local  methods, i;
       methods := METHODS_OPERATION( operation, 1 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 5 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[5 * (i - 1) + 2] ) and methods[5 * (i - 1) + 1]( type1![1] )  then
-              return methods[5 * (i - 1) + 3];
+      for i  in [ 1, 6 .. LEN_LIST( methods ) - 4 ]  do
+          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and methods[i]( type1![1] )  then
+              return methods[i + 2];
           fi;
       od;
       return fail;
@@ -4655,9 +4689,9 @@ static Obj  HdlrFunc1 (
  /* METHOD_2ARGS := function ( operation, type1, type2 )
       local  methods, i;
       methods := METHODS_OPERATION( operation, 2 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 6 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[6 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[6 * (i - 1) + 3] ) and methods[6 * (i - 1) + 1]( type1![1], type2![1] )  then
-              return methods[6 * (i - 1) + 4];
+      for i  in [ 1, 7 .. LEN_LIST( methods ) - 5 ]  do
+          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and methods[i]( type1![1], type2![1] )  then
+              return methods[i + 3];
           fi;
       od;
       return fail;
@@ -4672,10 +4706,9 @@ static Obj  HdlrFunc1 (
  /* METHOD_3ARGS := function ( operation, type1, type2, type3 )
       local  methods, i;
       methods := METHODS_OPERATION( operation, 3 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 7 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[7 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[7 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[7 * (i - 1) + 4] ) and methods[7 * (i - 1) + 1]( type1![1], type2![1], type3![1] )
-               then
-              return methods[7 * (i - 1) + 5];
+      for i  in [ 1, 8 .. LEN_LIST( methods ) - 6 ]  do
+          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and methods[i]( type1![1], type2![1], type3![1] )  then
+              return methods[i + 4];
           fi;
       od;
       return fail;
@@ -4690,10 +4723,10 @@ static Obj  HdlrFunc1 (
  /* METHOD_4ARGS := function ( operation, type1, type2, type3, type4 )
       local  methods, i;
       methods := METHODS_OPERATION( operation, 4 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 8 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[8 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[8 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[8 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[8 * (i - 1) + 5] ) 
-              and methods[8 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1] )  then
-              return methods[8 * (i - 1) + 6];
+      for i  in [ 1, 9 .. LEN_LIST( methods ) - 7 ]  do
+          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) 
+              and methods[i]( type1![1], type2![1], type3![1], type4![1] )  then
+              return methods[i + 5];
           fi;
       od;
       return fail;
@@ -4708,10 +4741,10 @@ static Obj  HdlrFunc1 (
  /* METHOD_5ARGS := function ( operation, type1, type2, type3, type4, type5 )
       local  methods, i;
       methods := METHODS_OPERATION( operation, 5 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 9 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[9 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[9 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[9 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[9 * (i - 1) + 5] ) 
-                and IS_SUBSET_FLAGS( type5![2], methods[9 * (i - 1) + 6] ) and methods[9 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1], type5![1] )  then
-              return methods[9 * (i - 1) + 7];
+      for i  in [ 1, 10 .. LEN_LIST( methods ) - 8 ]  do
+          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) and IS_SUBSET_FLAGS( type5![2], methods[i + 5] )
+              and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1] )  then
+              return methods[i + 6];
           fi;
       od;
       return fail;
@@ -4726,10 +4759,10 @@ static Obj  HdlrFunc1 (
  /* METHOD_6ARGS := function ( operation, type1, type2, type3, type4, type5, type6 )
       local  methods, i;
       methods := METHODS_OPERATION( operation, 6 );
-      for i  in [ 1 .. LEN_LIST( methods ) / 10 ]  do
-          if IS_SUBSET_FLAGS( type1![2], methods[10 * (i - 1) + 2] ) and IS_SUBSET_FLAGS( type2![2], methods[10 * (i - 1) + 3] ) and IS_SUBSET_FLAGS( type3![2], methods[10 * (i - 1) + 4] ) and IS_SUBSET_FLAGS( type4![2], methods[10 * (i - 1) + 5] ) 
-                  and IS_SUBSET_FLAGS( type5![2], methods[10 * (i - 1) + 6] ) and IS_SUBSET_FLAGS( type6![2], methods[10 * (i - 1) + 7] ) and methods[10 * (i - 1) + 1]( type1![1], type2![1], type3![1], type4![1], type5![1], type6![1] )  then
-              return methods[10 * (i - 1) + 8];
+      for i  in [ 1, 11 .. LEN_LIST( methods ) - 9 ]  do
+          if IS_SUBSET_FLAGS( type1![2], methods[i + 1] ) and IS_SUBSET_FLAGS( type2![2], methods[i + 2] ) and IS_SUBSET_FLAGS( type3![2], methods[i + 3] ) and IS_SUBSET_FLAGS( type4![2], methods[i + 4] ) and IS_SUBSET_FLAGS( type5![2], methods[i + 5] )
+                and IS_SUBSET_FLAGS( type6![2], methods[i + 6] ) and methods[i]( type1![1], type2![1], type3![1], type4![1], type5![1], type6![1] )  then
+              return methods[i + 7];
           fi;
       od;
       return fail;
@@ -5279,75 +5312,75 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "FamilyObj", &GF_FamilyObj );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "methsel1.g:DefaultName(-91712653)" );
- InitHandlerFunc( HdlrFunc1, "methsel1.g:HdlrFunc1(-91712653)" );
- InitGlobalBag( &(NameFunc[1]), "methsel1.g:NameFunc[1](-91712653)" );
- InitHandlerFunc( HdlrFunc2, "methsel1.g:HdlrFunc2(-91712653)" );
- InitGlobalBag( &(NameFunc[2]), "methsel1.g:NameFunc[2](-91712653)" );
- InitHandlerFunc( HdlrFunc3, "methsel1.g:HdlrFunc3(-91712653)" );
- InitGlobalBag( &(NameFunc[3]), "methsel1.g:NameFunc[3](-91712653)" );
- InitHandlerFunc( HdlrFunc4, "methsel1.g:HdlrFunc4(-91712653)" );
- InitGlobalBag( &(NameFunc[4]), "methsel1.g:NameFunc[4](-91712653)" );
- InitHandlerFunc( HdlrFunc5, "methsel1.g:HdlrFunc5(-91712653)" );
- InitGlobalBag( &(NameFunc[5]), "methsel1.g:NameFunc[5](-91712653)" );
- InitHandlerFunc( HdlrFunc6, "methsel1.g:HdlrFunc6(-91712653)" );
- InitGlobalBag( &(NameFunc[6]), "methsel1.g:NameFunc[6](-91712653)" );
- InitHandlerFunc( HdlrFunc7, "methsel1.g:HdlrFunc7(-91712653)" );
- InitGlobalBag( &(NameFunc[7]), "methsel1.g:NameFunc[7](-91712653)" );
- InitHandlerFunc( HdlrFunc8, "methsel1.g:HdlrFunc8(-91712653)" );
- InitGlobalBag( &(NameFunc[8]), "methsel1.g:NameFunc[8](-91712653)" );
- InitHandlerFunc( HdlrFunc9, "methsel1.g:HdlrFunc9(-91712653)" );
- InitGlobalBag( &(NameFunc[9]), "methsel1.g:NameFunc[9](-91712653)" );
- InitHandlerFunc( HdlrFunc10, "methsel1.g:HdlrFunc10(-91712653)" );
- InitGlobalBag( &(NameFunc[10]), "methsel1.g:NameFunc[10](-91712653)" );
- InitHandlerFunc( HdlrFunc11, "methsel1.g:HdlrFunc11(-91712653)" );
- InitGlobalBag( &(NameFunc[11]), "methsel1.g:NameFunc[11](-91712653)" );
- InitHandlerFunc( HdlrFunc12, "methsel1.g:HdlrFunc12(-91712653)" );
- InitGlobalBag( &(NameFunc[12]), "methsel1.g:NameFunc[12](-91712653)" );
- InitHandlerFunc( HdlrFunc13, "methsel1.g:HdlrFunc13(-91712653)" );
- InitGlobalBag( &(NameFunc[13]), "methsel1.g:NameFunc[13](-91712653)" );
- InitHandlerFunc( HdlrFunc14, "methsel1.g:HdlrFunc14(-91712653)" );
- InitGlobalBag( &(NameFunc[14]), "methsel1.g:NameFunc[14](-91712653)" );
- InitHandlerFunc( HdlrFunc15, "methsel1.g:HdlrFunc15(-91712653)" );
- InitGlobalBag( &(NameFunc[15]), "methsel1.g:NameFunc[15](-91712653)" );
- InitHandlerFunc( HdlrFunc16, "methsel1.g:HdlrFunc16(-91712653)" );
- InitGlobalBag( &(NameFunc[16]), "methsel1.g:NameFunc[16](-91712653)" );
- InitHandlerFunc( HdlrFunc17, "methsel1.g:HdlrFunc17(-91712653)" );
- InitGlobalBag( &(NameFunc[17]), "methsel1.g:NameFunc[17](-91712653)" );
- InitHandlerFunc( HdlrFunc18, "methsel1.g:HdlrFunc18(-91712653)" );
- InitGlobalBag( &(NameFunc[18]), "methsel1.g:NameFunc[18](-91712653)" );
- InitHandlerFunc( HdlrFunc19, "methsel1.g:HdlrFunc19(-91712653)" );
- InitGlobalBag( &(NameFunc[19]), "methsel1.g:NameFunc[19](-91712653)" );
- InitHandlerFunc( HdlrFunc20, "methsel1.g:HdlrFunc20(-91712653)" );
- InitGlobalBag( &(NameFunc[20]), "methsel1.g:NameFunc[20](-91712653)" );
- InitHandlerFunc( HdlrFunc21, "methsel1.g:HdlrFunc21(-91712653)" );
- InitGlobalBag( &(NameFunc[21]), "methsel1.g:NameFunc[21](-91712653)" );
- InitHandlerFunc( HdlrFunc22, "methsel1.g:HdlrFunc22(-91712653)" );
- InitGlobalBag( &(NameFunc[22]), "methsel1.g:NameFunc[22](-91712653)" );
- InitHandlerFunc( HdlrFunc23, "methsel1.g:HdlrFunc23(-91712653)" );
- InitGlobalBag( &(NameFunc[23]), "methsel1.g:NameFunc[23](-91712653)" );
- InitHandlerFunc( HdlrFunc24, "methsel1.g:HdlrFunc24(-91712653)" );
- InitGlobalBag( &(NameFunc[24]), "methsel1.g:NameFunc[24](-91712653)" );
- InitHandlerFunc( HdlrFunc25, "methsel1.g:HdlrFunc25(-91712653)" );
- InitGlobalBag( &(NameFunc[25]), "methsel1.g:NameFunc[25](-91712653)" );
- InitHandlerFunc( HdlrFunc26, "methsel1.g:HdlrFunc26(-91712653)" );
- InitGlobalBag( &(NameFunc[26]), "methsel1.g:NameFunc[26](-91712653)" );
- InitHandlerFunc( HdlrFunc27, "methsel1.g:HdlrFunc27(-91712653)" );
- InitGlobalBag( &(NameFunc[27]), "methsel1.g:NameFunc[27](-91712653)" );
- InitHandlerFunc( HdlrFunc28, "methsel1.g:HdlrFunc28(-91712653)" );
- InitGlobalBag( &(NameFunc[28]), "methsel1.g:NameFunc[28](-91712653)" );
- InitHandlerFunc( HdlrFunc29, "methsel1.g:HdlrFunc29(-91712653)" );
- InitGlobalBag( &(NameFunc[29]), "methsel1.g:NameFunc[29](-91712653)" );
- InitHandlerFunc( HdlrFunc30, "methsel1.g:HdlrFunc30(-91712653)" );
- InitGlobalBag( &(NameFunc[30]), "methsel1.g:NameFunc[30](-91712653)" );
- InitHandlerFunc( HdlrFunc31, "methsel1.g:HdlrFunc31(-91712653)" );
- InitGlobalBag( &(NameFunc[31]), "methsel1.g:NameFunc[31](-91712653)" );
- InitHandlerFunc( HdlrFunc32, "methsel1.g:HdlrFunc32(-91712653)" );
- InitGlobalBag( &(NameFunc[32]), "methsel1.g:NameFunc[32](-91712653)" );
- InitHandlerFunc( HdlrFunc33, "methsel1.g:HdlrFunc33(-91712653)" );
- InitGlobalBag( &(NameFunc[33]), "methsel1.g:NameFunc[33](-91712653)" );
- InitHandlerFunc( HdlrFunc34, "methsel1.g:HdlrFunc34(-91712653)" );
- InitGlobalBag( &(NameFunc[34]), "methsel1.g:NameFunc[34](-91712653)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/methsel1.g:DefaultName(-30055988)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/methsel1.g:HdlrFunc1(-30055988)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/methsel1.g:NameFunc[1](-30055988)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/methsel1.g:HdlrFunc2(-30055988)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/methsel1.g:NameFunc[2](-30055988)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/methsel1.g:HdlrFunc3(-30055988)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/methsel1.g:NameFunc[3](-30055988)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/methsel1.g:HdlrFunc4(-30055988)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/methsel1.g:NameFunc[4](-30055988)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/methsel1.g:HdlrFunc5(-30055988)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/methsel1.g:NameFunc[5](-30055988)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/methsel1.g:HdlrFunc6(-30055988)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/methsel1.g:NameFunc[6](-30055988)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/methsel1.g:HdlrFunc7(-30055988)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/methsel1.g:NameFunc[7](-30055988)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/methsel1.g:HdlrFunc8(-30055988)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/methsel1.g:NameFunc[8](-30055988)" );
+ InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/methsel1.g:HdlrFunc9(-30055988)" );
+ InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/methsel1.g:NameFunc[9](-30055988)" );
+ InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/methsel1.g:HdlrFunc10(-30055988)" );
+ InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/methsel1.g:NameFunc[10](-30055988)" );
+ InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/methsel1.g:HdlrFunc11(-30055988)" );
+ InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/methsel1.g:NameFunc[11](-30055988)" );
+ InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/methsel1.g:HdlrFunc12(-30055988)" );
+ InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/methsel1.g:NameFunc[12](-30055988)" );
+ InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/methsel1.g:HdlrFunc13(-30055988)" );
+ InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/methsel1.g:NameFunc[13](-30055988)" );
+ InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/methsel1.g:HdlrFunc14(-30055988)" );
+ InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/methsel1.g:NameFunc[14](-30055988)" );
+ InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/methsel1.g:HdlrFunc15(-30055988)" );
+ InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/methsel1.g:NameFunc[15](-30055988)" );
+ InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/methsel1.g:HdlrFunc16(-30055988)" );
+ InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/methsel1.g:NameFunc[16](-30055988)" );
+ InitHandlerFunc( HdlrFunc17, "GAPROOT/lib/methsel1.g:HdlrFunc17(-30055988)" );
+ InitGlobalBag( &(NameFunc[17]), "GAPROOT/lib/methsel1.g:NameFunc[17](-30055988)" );
+ InitHandlerFunc( HdlrFunc18, "GAPROOT/lib/methsel1.g:HdlrFunc18(-30055988)" );
+ InitGlobalBag( &(NameFunc[18]), "GAPROOT/lib/methsel1.g:NameFunc[18](-30055988)" );
+ InitHandlerFunc( HdlrFunc19, "GAPROOT/lib/methsel1.g:HdlrFunc19(-30055988)" );
+ InitGlobalBag( &(NameFunc[19]), "GAPROOT/lib/methsel1.g:NameFunc[19](-30055988)" );
+ InitHandlerFunc( HdlrFunc20, "GAPROOT/lib/methsel1.g:HdlrFunc20(-30055988)" );
+ InitGlobalBag( &(NameFunc[20]), "GAPROOT/lib/methsel1.g:NameFunc[20](-30055988)" );
+ InitHandlerFunc( HdlrFunc21, "GAPROOT/lib/methsel1.g:HdlrFunc21(-30055988)" );
+ InitGlobalBag( &(NameFunc[21]), "GAPROOT/lib/methsel1.g:NameFunc[21](-30055988)" );
+ InitHandlerFunc( HdlrFunc22, "GAPROOT/lib/methsel1.g:HdlrFunc22(-30055988)" );
+ InitGlobalBag( &(NameFunc[22]), "GAPROOT/lib/methsel1.g:NameFunc[22](-30055988)" );
+ InitHandlerFunc( HdlrFunc23, "GAPROOT/lib/methsel1.g:HdlrFunc23(-30055988)" );
+ InitGlobalBag( &(NameFunc[23]), "GAPROOT/lib/methsel1.g:NameFunc[23](-30055988)" );
+ InitHandlerFunc( HdlrFunc24, "GAPROOT/lib/methsel1.g:HdlrFunc24(-30055988)" );
+ InitGlobalBag( &(NameFunc[24]), "GAPROOT/lib/methsel1.g:NameFunc[24](-30055988)" );
+ InitHandlerFunc( HdlrFunc25, "GAPROOT/lib/methsel1.g:HdlrFunc25(-30055988)" );
+ InitGlobalBag( &(NameFunc[25]), "GAPROOT/lib/methsel1.g:NameFunc[25](-30055988)" );
+ InitHandlerFunc( HdlrFunc26, "GAPROOT/lib/methsel1.g:HdlrFunc26(-30055988)" );
+ InitGlobalBag( &(NameFunc[26]), "GAPROOT/lib/methsel1.g:NameFunc[26](-30055988)" );
+ InitHandlerFunc( HdlrFunc27, "GAPROOT/lib/methsel1.g:HdlrFunc27(-30055988)" );
+ InitGlobalBag( &(NameFunc[27]), "GAPROOT/lib/methsel1.g:NameFunc[27](-30055988)" );
+ InitHandlerFunc( HdlrFunc28, "GAPROOT/lib/methsel1.g:HdlrFunc28(-30055988)" );
+ InitGlobalBag( &(NameFunc[28]), "GAPROOT/lib/methsel1.g:NameFunc[28](-30055988)" );
+ InitHandlerFunc( HdlrFunc29, "GAPROOT/lib/methsel1.g:HdlrFunc29(-30055988)" );
+ InitGlobalBag( &(NameFunc[29]), "GAPROOT/lib/methsel1.g:NameFunc[29](-30055988)" );
+ InitHandlerFunc( HdlrFunc30, "GAPROOT/lib/methsel1.g:HdlrFunc30(-30055988)" );
+ InitGlobalBag( &(NameFunc[30]), "GAPROOT/lib/methsel1.g:NameFunc[30](-30055988)" );
+ InitHandlerFunc( HdlrFunc31, "GAPROOT/lib/methsel1.g:HdlrFunc31(-30055988)" );
+ InitGlobalBag( &(NameFunc[31]), "GAPROOT/lib/methsel1.g:NameFunc[31](-30055988)" );
+ InitHandlerFunc( HdlrFunc32, "GAPROOT/lib/methsel1.g:HdlrFunc32(-30055988)" );
+ InitGlobalBag( &(NameFunc[32]), "GAPROOT/lib/methsel1.g:NameFunc[32](-30055988)" );
+ InitHandlerFunc( HdlrFunc33, "GAPROOT/lib/methsel1.g:HdlrFunc33(-30055988)" );
+ InitGlobalBag( &(NameFunc[33]), "GAPROOT/lib/methsel1.g:NameFunc[33](-30055988)" );
+ InitHandlerFunc( HdlrFunc34, "GAPROOT/lib/methsel1.g:HdlrFunc34(-30055988)" );
+ InitGlobalBag( &(NameFunc[34]), "GAPROOT/lib/methsel1.g:NameFunc[34](-30055988)" );
  
  /* return success */
  return 0;
@@ -5699,7 +5732,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ -91712653,
+ /* crc         = */ -30055988,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

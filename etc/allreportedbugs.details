@@ -2094,3 +2094,294 @@ testing: /scratch/4.0/tst/vspcrow.tst
 vspcrow.tst            75660           2720    (next ~ 6 sec)
 
 
+
+##########
+ 47 47 47 
+##########
+
+Subject: Bug
+From: Michael Leithold <leithold@extended.de>
+Date: 12 Feb 2000 16:22:18 +0100
+
+gap4r1 on linux with 7 bugfixes installed.
+
+gap> G:=CyclicGroup(3);;
+gap> kappa:=NaturalHomomorphismByNormalSubgroup(G, G);;
+gap> F:=ImagesSource(kappa);;
+gap> alpha:=Elements(F)[1];;
+gap> PIE:=PreImagesElm(kappa, alpha);;
+gap> PIR:=PreImagesRepresentative(kappa, alpha);;
+
+The last two commands both kill gap.
+
+
+
+##########
+ 48 48 48 
+##########
+
+Date: Mon, 14 Feb 2000 16:34:29 -0500 (EST)
+From: Gene Cooperman <gene@ccs.neu.edu>
+Subject: small bug in Print()
+
+I found a small bug in GAP's Print().  (More precisely, the referee
+for a paper of mine on ParGAP found this bug.)  Because ParGAP
+tries to read back in the result of a Print(), this affects the
+correctness of ParGAP.  I illustrate the bug in terms of GAP's Print():
+
+gap> Print(x -> (((x * x * x)^2)^2)^2 * x);
+function ( x )
+    return (x * x * x) ^ 2 ^ 2 ^ 2 * x;
+
+When ParGAP try to read back in what GAP displays, it gets:
+
+gap> Syntax error: '^' is not associative in stream line 11
+              return (x * x * x) ^ 2 ^ 2 ^ 2 * x;
+                                     ^
+
+This is the same error message as if I had typed at the terminal:
+gap> function ( x )
+>     return (x * x * x) ^ 2 ^ 2 ^ 2 * x;
+Syntax error: '^' is not associative
+    return (x * x * x) ^ 2 ^ 2 ^ 2 * x;
+                           ^
+
+
+##########
+ 49 49 49           ## sun specific??
+##########
+
+Date: Tue, 15 Feb 2000 13:01:55 -0600 (CST)
+From: Scott Murray <murray@math.uchicago.edu>
+Subject: Re: Problem with 'MinimalPolynomial'
+
+On Tue, 15 Feb 2000, alexander Hulpke wrote:
+
+> Thomas and Steve both reported they cannot reproduce the problem.
+> 
+> I tried it now on a Linux machine -- everything works fine there.
+> 
+> On the sun in my office I still get varying results, most of them wrong. 
+> (Scott: Do you use a sun as well?)
+> 
+> I will try to investigate this further. Should I add the problem to a
+> testfile as well?
+> 
+
+I am using a sun.  Here is another example of the
+bug.  It was the first thing I did in gap after
+doing a complete update and remake:
+
+GAP4, Version: 4.dev of today, sparc-sun-solaris2.7-gcc
+gap> A := [ [ Z(2^2)^2, 0*Z(2), Z(2^2), 0*Z(2), 0*Z(2), 0*Z(2) ], 
+>   [ Z(2^2)^2, 0*Z(2), Z(2^2)^2, Z(2)^0, Z(2^2)^2, Z(2)^0 ], 
+>   [ 0*Z(2), Z(2)^0, 0*Z(2), Z(2^2)^2, 0*Z(2), Z(2^2)^2 ], 
+>   [ 0*Z(2), Z(2^2), Z(2^2), Z(2^2), Z(2^2)^2, 0*Z(2) ], 
+>   [ Z(2^2)^2, Z(2^2)^2, Z(2^2)^2, 0*Z(2), 0*Z(2), 0*Z(2) ], 
+>   [ Z(2)^0, Z(2)^0, 0*Z(2), Z(2^2), 0*Z(2), Z(2^2)^2 ] ];
+[ [ Z(2^2)^2, 0*Z(2), Z(2^2), 0*Z(2), 0*Z(2), 0*Z(2) ], 
+  [ Z(2^2)^2, 0*Z(2), Z(2^2)^2, Z(2)^0, Z(2^2)^2, Z(2)^0 ], 
+  [ 0*Z(2), Z(2)^0, 0*Z(2), Z(2^2)^2, 0*Z(2), Z(2^2)^2 ], 
+  [ 0*Z(2), Z(2^2), Z(2^2), Z(2^2), Z(2^2)^2, 0*Z(2) ], 
+  [ Z(2^2)^2, Z(2^2)^2, Z(2^2)^2, 0*Z(2), 0*Z(2), 0*Z(2) ], 
+  [ Z(2)^0, Z(2)^0, 0*Z(2), Z(2^2), 0*Z(2), Z(2^2)^2 ] ]
+gap> F := GF(4);
+GF(2^2)
+gap> MinimalPolynomial(F, A);
+Z(2)^0+Z(2^2)*x_1+x_1^2+Z(2^2)^2*x_1^3+Z(2^2)^2*x_1^4+Z(2^2)*x_1^5+x_1^6
+gap> MinimalPolynomial(F, A);
+Z(2)^0+Z(2^2)*x_1+x_1^2+Z(2^2)^2*x_1^3+x_1^4+Z(2^2)*x_1^5+x_1^6
+gap> MinimalPolynomial(F, A);
+Z(2)^0+Z(2^2)*x_1+x_1^2+Z(2^2)^2*x_1^3+Z(2^2)*x_1^4+Z(2^2)*x_1^5+x_1^6
+gap> MinimalPolynomial(F, A);
+Z(2)^0+Z(2^2)*x_1+x_1^2+Z(2^2)^2*x_1^3+x_1^4+Z(2^2)*x_1^5+x_1^6
+gap> MinimalPolynomial(F, A);
+Z(2)^0+Z(2^2)*x_1+x_1^2+Z(2^2)^2*x_1^3+x_1^4+Z(2^2)*x_1^5+x_1^6
+
+I think this would be a good thing to add to the
+test file.
+
+
+
+##########
+ 50 50 50 
+##########
+
+From: Leonard Soicher <L.H.Soicher@qmw.ac.uk>
+Date: Tue, 15 Feb 2000 18:36:42 GMT
+Subject: trouble with GRAPE under 4.2pre1a
+
+I installed GAP 4.2 prerelease 1a, and had the following trouble using GRAPE:
+
+gap> AutGroupGraph(JohnsonGraph(4,2));
+Function: number of arguments must be 3 (not 2) at
+SetStabChainMutable( gp, StabChainBaseStrongGenerators( GRAPE_dr_base, 
+   GRAPE_dr_sgens ) );
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+or you can return a list of arguments to continue
+brk> 
+
+I am planning a few small changes to GRAPE to be released with GAP 4.2,
+so I won't mind making a few more if necessary.
+
+
+
+##########
+ 51 51 51 
+##########
+
+Date: Wed, 16 Feb 2000 11:53:24 +1100
+From: Andrew Solomon <andrews@dcs.st-and.ac.uk>
+Subject: last fix to 4.dev
+
+The following at the bottom will run without error in 4.dev after the 
+commit with the following message.
+
+Andrew
+
+===========
+Subject: 
+       committed 'GAP/4.0/lib mgmcong.gi'
+   Date: 
+       Wed, 16 Feb 2000 00:43:33 GMT
+  From: 
+       chron entry for GAP <gapchron@dcs.st-and.ac.uk>
+    To: 
+       gap-commit@dcs.st-and.ac.uk
+
+
+
+
+gapchron
+Wed Feb 16 00:43:33 GMT 2000
+
+Update of /gap/CVS/GAP/4.0/lib
+In directory chrystal:/tmp/cvs-serv5599
+
+Modified Files:
+        mgmcong.gi 
+Log Message:
+When creating a magma congruence, make sure it knows
+it is a semigroup congruence when it knows
+the magma is a semigroup.
+AS
+
+
+===================================
+
+
+
+f:=FreeMonoid("a","b");
+a:=GeneratorsOfMonoid(f)[1];
+b:=GeneratorsOfMonoid(f)[2];
+e:=Identity(f);
+m:=f/[[a*a,e],[b*b*b,e],[a*b*a*b*a*b,e]];
+k:=KnuthBendixRewritingSystem(m);
+MakeConfluent(k);
+a:=GeneratorsOfSemigroup(m)[2];
+b:=GeneratorsOfSemigroup(m)[3];
+e:=GeneratorsOfSemigroup(m)[1];
+ab:=MagmaCongruenceByGeneratingPairs(m,
+  [[a*b,b*a],[a*e,e*a],[b*e,e*b]]);
+h:=m/ab;
+
+
+
+##########
+ 52 52 52 
+##########
+
+Date: Wed, 16 Feb 2000 15:45:38 +0000
+From: "Isabel M. Araujo" <isabel@dcs.st-and.ac.uk>  ## Burkhard Hoefling
+To: jjm <jjm@dcs.st-and.ac.uk>
+Subject: [Fwd: committed 'GAP/4.0/lib wordass.gi']
+
+the file wordass.gi that I have just commited fixes the bug reported by
+Burkhard in IsBasicWreathLessThanOrEqual
+in gap4dev.
+
+He gives the following example
+
+
+F := FreeSemigroup (3, "d");
+d1 := GeneratorsOfSemigroup (F)[1];
+d2 := GeneratorsOfSemigroup (F)[2];
+d3 := GeneratorsOfSemigroup (F)[3];
+
+pairs := [
+        [ d1*d2*d3*d2*d1*d2*d1,
+          d1*d2*d3*d1*d2*d1^2*d2*d1^2 ],
+        [ d2*d3*d1^2*d2*d1^2*d2*d3*d2*d1,
+          d2*d3*d2*d1*d2*d1^2*d2*d3*d1*d2*d1 ],
+        [ d2*d1^2*d2*d3*d2*d1*d2*d3*d1^2*d2,
+          d2*d1^2*d2*d3*d1*d2*d1^2*d2*d3*d2 ],
+        [ d2*d1^2*d2*d3*d1,
+          d2*d1^2*d2*d3*d2*d1^2*d2*d1^2*d2 ] ];
+
+List (pairs, p -> [ IsBasicWreathLessThanOrEqual (p[1], p[2]),
+                                        IsBasicWreathLessThanOrEqual 
+(p[2], p[1])]);
+
+which returns 
+[ [ false, false ], [ false, false ], [ false, false ], [ false, false ]
+]
+
+which is wrong. With the fix the same code returns 
+
+[ [ true, false ], [ true, false ], [ true, false ], [ true, false ] ]
+
+
+
+##########
+ 53 53 53 
+##########
+
+Date: Thu, 17 Feb 2000 09:59:15 +0100 (CET)
+From: Thomas.Breuer@Math.RWTH-Aachen.De
+Subject: error in completion files
+
+Yesterday I checked in some data files which cannot be read when
+they are translated to completion files.
+The reason is that the completion file contains lines of the following form.
+
+    l:=[[1..4],[2.\
+    .5]];
+
+Breaking between the two dots in a range constructor seems to be forbidden.
+
+
+
+##########
+ 54 54 54 
+##########
+
+Date: Fri, 18 Feb 2000 12:01:49 +0100 (CET)
+From: Thomas.Breuer@Math.RWTH-Aachen.De
+Subject: bug in printing rational functions
+
+J"urgen M"uller observed that currently the following happens in GAP 4.
+
+    gap> x:= Indeterminate( Rationals, 1 );
+    x_1
+    gap> y:= Indeterminate( Rationals, 2 );
+    x_2
+    gap> 1/(x*y);
+    1/x_1*x_2
+
+The `PrintObj' and `String' methods for rational functions
+use the function `ExtRepOfPolynomial_String',
+which can be asked for putting brackets around the expression
+if sums occur;
+but for the denominator, one needs brackets also if products occur.
+(I am not sure what is the best way to fix this bug,
+perhaps add another optional boolean argument?)
+
+
+
+##########
+ 55 55 55 
+##########
+
+
+

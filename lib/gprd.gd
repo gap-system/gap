@@ -36,18 +36,32 @@ DeclareOperation( "DirectProductOp", [ IsList, IsGroup ] );
 ##  constructs the subdirect product of <G> and <H> with respect to the
 ##  epimorphisms <Ghom> from <G> onto a group <A> and <Hhom> from <H> onto
 ##  the same group <A>.
-DeclareOperation( "SubdirectProduct",
+DeclareGlobalFunction("SubdirectProduct");
+DeclareOperation( "SubdirectProductOp",
     [ IsGroup, IsGroup, IsGroupHomomorphism, IsGroupHomomorphism ] );
 
 #############################################################################
 ##
 #O  SemidirectProduct(<G>, <alpha>, <N> )
+#O  SemidirectProduct(<autgp>, <N> )
 ##
 ##  constructs the semidirect product of <N> with <G> acting via <alpha>.
 ##  <alpha> must be a homomorphism from <G> into a group of automorphisms of
 ##  <N>.
+##
+##  If <N> is a group, <alpha> must be a homomorphism from <G> into a group
+##  of automorphisms of <N>.
+##
+##  If <N> is a full row space over a field <F>, <alpha> must be a
+##  homomorphism from <G> into a matrix group of the right dimension over a
+##  subfield of <F>, or into a permutation group (in this case permutation
+##  matrices are taken).
+##
+##  In the second variant, <autgp> must be a group of automorphism of <N>,
+##  it is a shorthand for
+##  `SemidirectProduct(<autgp>,IdentityMapping(<autgp>),<N>)'.
 DeclareOperation( "SemidirectProduct",
-    [ IsGroup, IsGroupHomomorphism, IsGroup ] );
+    [ IsGroup, IsGroupHomomorphism, IsObject ] );
 
 
 #############################################################################
@@ -118,6 +132,37 @@ DeclareAttribute( "SemidirectProductInfo", IsGroup, "mutable" );
 #A  WreathProductInfo( <G> )
 ##
 DeclareAttribute( "WreathProductInfo", IsGroup, "mutable" );
+
+#############################################################################
+##
+#F  SubdirProdPcGroups( <G>,<gi>,<H>,<hi> )
+##
+##  Let <G> and <H> be two pc groups which are both projections of a
+##  subdirect product with generator images <gi> and <hi>. the function
+##  returns a list <l> with <l>[1] a new pc group and <l>[2] a corresponding
+##  generator images list.
+##
+##  No parameter checking is done.
+##  (This function is used in a variant of the SQ.)
+DeclareGlobalFunction( "SubdirProdPcGroups" );
+
+#############################################################################
+##
+#C  IsWreathProductElement
+#C  IsWreathProductElementCollection
+##
+##  categories for elements of generic wreath products: elements are stored
+##  as list of base components and permutation.
+DeclareCategory("IsWreathProductElement",
+  IsMultiplicativeElementWithInverse and IsAssociativeElement);
+DeclareCategoryCollections("IsWreathProductElement");
+
+InstallTrueMethod(IsGeneratorsOfMagmaWithInverses,
+  IsWreathProductElementCollection);
+
+DeclareRepresentation("IsWreathProductElementDefaultRep",
+  IsWreathProductElement and IsPositionalObjectRep,[]);
+
 
 #############################################################################
 ##

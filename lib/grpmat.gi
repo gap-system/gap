@@ -17,8 +17,8 @@ Revision.grpmat_gi :=
 ##
 #M  KnowsHowToDecompose( <mat-grp> )
 ##
-InstallMethod( KnowsHowToDecompose, "matrix groups", true,
-        [ IsMatrixGroup, IsList ], 0, ReturnFalse );
+InstallMethod( KnowsHowToDecompose, "matrix groups",
+        [ IsMatrixGroup, IsList ], ReturnFalse );
 
 
 #############################################################################
@@ -27,21 +27,27 @@ InstallMethod( KnowsHowToDecompose, "matrix groups", true,
 ##
 InstallMethod( DefaultFieldOfMatrixGroup,
     "using 'FieldOfMatrixGroup'",
-    true,
     [ IsMatrixGroup ],
-    0,
     FieldOfMatrixGroup );
 
 InstallMethod( DefaultFieldOfMatrixGroup,
     "for matrix group over the cyclotomics",
-    true,
-    [ IsMatrixGroup and IsCyclotomicCollCollColl ], 0,
+    [ IsMatrixGroup and IsCyclotomicCollCollColl ],
     grp -> Cyclotomics );
 
-InstallOtherMethod( DefaultFieldOfMatrixGroup,
-        "from source of nice monomorphism", true,
-        [ IsMatrixGroup and HasNiceMonomorphism ], 0,
-    grp -> DefaultFieldOfMatrixGroup( Source( NiceMonomorphism( grp ) ) ) );
+InstallMethod( DefaultFieldOfMatrixGroup,
+    "for a matrix group over an s.c. algebra",
+    [ IsMatrixGroup and IsSCAlgebraObjCollCollColl ],
+    grp -> ElementsFamily( ElementsFamily( ElementsFamily(
+               FamilyObj( grp ) ) ) )!.fullSCAlgebra );
+
+# InstallOtherMethod( DefaultFieldOfMatrixGroup,
+#         "from source of nice monomorphism",
+#         [ IsMatrixGroup and HasNiceMonomorphism ],
+#     grp -> DefaultFieldOfMatrixGroup( Source( NiceMonomorphism( grp ) ) ) );
+#T this was illegal,
+#T since it assumes that the source is a different object than the
+#T original group; if this fails then we run into an infinite recursion!
 
 
 #############################################################################
@@ -50,9 +56,7 @@ InstallOtherMethod( DefaultFieldOfMatrixGroup,
 ##
 InstallMethod( FieldOfMatrixGroup,
     "for a matrix group",
-    true,
     [ IsMatrixGroup ],
-    0,
     function( grp )
     local gens;
 
@@ -69,8 +73,8 @@ end );
 ##
 #M  DimensionOfMatrixGroup( <mat-grp> )
 ##
-InstallMethod( DimensionOfMatrixGroup, "from generators", true,
-    [ IsMatrixGroup and HasGeneratorsOfGroup ], 0,
+InstallMethod( DimensionOfMatrixGroup, "from generators",
+    [ IsMatrixGroup and HasGeneratorsOfGroup ],
     function( grp )
     if not IsEmpty( GeneratorsOfGroup( grp ) )  then
         return Length( GeneratorsOfGroup( grp )[ 1 ] );
@@ -79,15 +83,20 @@ InstallMethod( DimensionOfMatrixGroup, "from generators", true,
     fi;
 end );
 
-InstallMethod( DimensionOfMatrixGroup, "from one", true,
+InstallMethod( DimensionOfMatrixGroup, "from one",
     [ IsMatrixGroup and HasOne ], 1,
     grp -> Length( One( grp ) ) );
 
-InstallOtherMethod( DimensionOfMatrixGroup,
-        "from source of nice monomorphism", true,
-        [ IsMatrixGroup and HasNiceMonomorphism ], 0,
-    grp -> DimensionOfMatrixGroup( Source( NiceMonomorphism( grp ) ) ) );
+# InstallOtherMethod( DimensionOfMatrixGroup,
+#         "from source of nice monomorphism",
+#         [ IsMatrixGroup and HasNiceMonomorphism ],
+#     grp -> DimensionOfMatrixGroup( Source( NiceMonomorphism( grp ) ) ) );
+#T this was illegal,
+#T since it assumes that the source is a different object than the
+#T original group; if this fails then we run into an infinite recursion!
 
+#T why not delegate to `Representative' instead of installing
+#T different methods?
 
 #############################################################################
 ##
@@ -95,19 +104,22 @@ InstallOtherMethod( DimensionOfMatrixGroup,
 ##
 InstallOtherMethod( One,
     "for matrix group, call `IdentityMat'",
-    true, [ IsMatrixGroup ], 0,
-    grp -> IdentityMat( DimensionOfMatrixGroup( grp ),
-                        DefaultFieldOfMatrixGroup( grp ) ) );
+    [ IsMatrixGroup ],
+    grp -> ImmutableMatrix(DefaultFieldOfMatrixGroup(grp),
+             IdentityMat( DimensionOfMatrixGroup( grp ),
+	     DefaultFieldOfMatrixGroup( grp ) ) ));
 
 #############################################################################
 ##
 #M  TransposedMatrixGroup( <G> ) . . . . . . . . .transpose of a matrix group
 ##
-InstallMethod( TransposedMatrixGroup, 
-    true, [ IsMatrixGroup ], 0,
+InstallMethod( TransposedMatrixGroup,
+    [ IsMatrixGroup ],
 function( G )
     local T;
-    T := Group( List( GeneratorsOfGroup( G ), TransposedMat ), One( G ) );
+    T := GroupByGenerators( List( GeneratorsOfGroup( G ), TransposedMat ),
+                            One( G ) );
+#T avoid calling `One'!
     UseIsomorphismRelation( G, T );
     SetTransposedMatrixGroup( T, G );
     return T;
@@ -158,8 +170,10 @@ local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
 
   if Length(acts)=0 then
     start:=One(G);
-  else
+  elif act=OnRight then
     start:=acts[1];
+  elif act=OnLines then
+    start:=One(G);
   fi;
 
   zerov:=Zero(start[1]);
@@ -248,7 +262,20 @@ local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
       permimg[i]:=OnTuples(permimg[i],imgs);
     od;
   fi;
-  
+
+#check routine
+#  Print("check!\n");
+#  for p in [1..Length(orb)] do
+#    for i in [1..Length(acts)] do
+#      img:=act(orb[p],acts[i]);
+#      v:=LookupDictionary(dict,img);
+#      if v<>permimg[i][p] then
+#        Error("wrong!");
+#      fi;
+#    od;
+#  od;
+#  Error("hier");
+
   for i in [1..Length(permimg)] do
     permimg[i]:=PermList(permimg[i]);
   od;
@@ -263,24 +290,27 @@ local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
   # this to get images quickly, using a stabilizer chain in the permutation
   # group
   SetBaseOfGroup( xset, base );
+  xset!.basePermImage:=List(base,b->PositionCanonical(orb,b));
 
   hom := ActionHomomorphism( xset,"surjective" );
   SetIsInjective(hom,true); # we know by construction that its injective.
   R:=Group(permimg,());
+  SetBaseOfGroup(R,xset!.basePermImage);
 
-  if HasSize(G) then
+  if HasSize(G) and act=OnRight then
     SetSize(R,Size(G)); # faithful action
   fi;
 
   SetRange(hom,R);
   SetImagesSource(hom,R);
-  p:=RUN_IN_GGMBI; # no niceomorphism translation here
-  RUN_IN_GGMBI:=true;
-  SetAsGroupGeneralMappingByImages( hom, GroupHomomorphismByImagesNC
-            ( G, R, acts, permimg ) );
-
-  SetFilterObj( hom, IsActionHomomorphismByBase );
-  RUN_IN_GGMBI:=p;
+  SetMappingGeneratorsImages(hom,[acts,permimg]);
+#  p:=RUN_IN_GGMBI; # no niceomorphism translation here
+#  RUN_IN_GGMBI:=true;
+#  SetAsGroupGeneralMappingByImages( hom, GroupHomomorphismByImagesNC
+#            ( G, R, acts, permimg ) );
+#
+#  SetFilterObj( hom, IsActionHomomorphismByBase );
+#  RUN_IN_GGMBI:=p;
   SetLinearActionBasis(hom,base);
 
   return hom;
@@ -296,22 +326,34 @@ BindGlobal( "NicomorphismOfGeneralMatrixGroup", function( grp,canon,sort )
   # groups
   if canon then
     nice:=SortedSparseActionHomomorphism( grp, One( grp ) );
+    SetIsInjective( nice, true ); # surjectivity is ensured by `SortedSparse..
+    SetIsCanonicalNiceMonomorphism(nice,true);
   else
     nice:=DoSparseLinearActionOnFaithfulSubset( grp, OnRight, sort);
+    SetIsInjective( nice, true );
+    SetIsSurjective( nice, true );
+    if not ( (HasIsNaturalGL(grp) and IsNaturalGL(grp)) or
+             (HasIsNaturalSL(grp) and IsNaturalSL(grp)) ) then
+      # improve via blocks
+#      StabChainMutable(Image(nice)); # this stabilizer chain would be forced
+#				    # anyhow by the following command
+      nice:=nice*SmallerDegreePermutationRepresentation(Image(nice));
+    fi;
   fi;
-  SetIsInjective( nice, true ); # surjectivity is ensured by `SortedSparse...'
 
-  if canon then
-    SetIsCanonicalNiceMonomorphism(nice,true);
-  fi;
   return nice;
 end );
 
-InstallMethod( IsomorphismPermGroup, true, [ IsMatrixGroup and IsFinite ], 0,
+InstallMethod( IsomorphismPermGroup,"matrix group", true,
+  [ IsMatrixGroup ], 10,
 function(G)
   if HasNiceMonomorphism(G) and IsPermGroup(Range(NiceMonomorphism(G))) then
-    return NiceMonomorphism(G);
+    return RestrictedMapping(NiceMonomorphism(G),G);
   else
+    if not HasIsFinite(G) then
+      Info(InfoWarning,1,
+           "IsomorphismPermGroup: The group is not known to be finite");
+    fi;
     return NicomorphismOfGeneralMatrixGroup(G,false,false);
   fi;
 end);
@@ -320,14 +362,14 @@ end);
 ##
 #M  NiceMonomorphism( <mat-grp> )
 ##
-InstallMethod( NiceMonomorphism, true, [ IsMatrixGroup and IsFinite ], 0,
+InstallMethod( NiceMonomorphism, [ IsMatrixGroup and IsFinite ],
   G->NicomorphismOfGeneralMatrixGroup(G,false,true));
 
 #############################################################################
 ##
 #M  CanonicalNiceMonomorphism( <mat-grp> )
 ##
-InstallMethod( CanonicalNiceMonomorphism,true,[ IsMatrixGroup and IsFinite ],0,
+InstallMethod( CanonicalNiceMonomorphism, [ IsMatrixGroup and IsFinite ],
   G->NicomorphismOfGeneralMatrixGroup(G,true,true));
 
 #############################################################################
@@ -346,8 +388,8 @@ InstallGlobalFunction(ProjectiveActionHomomorphismMatrixGroup,
 ##  wrt. this base <bas>. As lexicographical comparison of matrices is
 ##  compatible with comparison of base images wrt. the standard base this
 ##  also is the smallest (irredundant) generating set of the matrix group!
-InstallMethod(GeneratorsSmallest,"matrix group via niceo",true,
-  [IsMatrixGroup and IsFinite],0,
+InstallMethod(GeneratorsSmallest,"matrix group via niceo",
+  [IsMatrixGroup and IsFinite],
 function(G)
 local gens,s,dom,mon,no;
   mon:=CanonicalNiceMonomorphism(G);
@@ -366,8 +408,8 @@ end);
 #M  MinimalStabChain(<finite matrix group>)
 ##
 ##  used for cosets where we probably won't need the smallest generators
-InstallOtherMethod(MinimalStabChain,"matrix group via niceo",true,
-  [IsMatrixGroup and IsFinite],0,
+InstallOtherMethod(MinimalStabChain,"matrix group via niceo",
+  [IsMatrixGroup and IsFinite],
 function(G)
 local s,dom,mon,no;
   mon:=CanonicalNiceMonomorphism(G);
@@ -384,8 +426,8 @@ end);
 ##
 #M  LargestElementGroup(<finite matrix group>)
 ##
-InstallOtherMethod(LargestElementGroup,"matrix group via niceo",true,
-  [IsMatrixGroup and IsFinite],0,
+InstallOtherMethod(LargestElementGroup,"matrix group via niceo",
+  [IsMatrixGroup and IsFinite],
 function(G)
 local s,dom,mon;
   mon:=CanonicalNiceMonomorphism(G);
@@ -402,7 +444,7 @@ end);
 #M  CanonicalRightCosetElement(<finite matrix group>,<rep>)
 ##
 InstallMethod(CanonicalRightCosetElement,"finite matric group",IsCollsElms,
-  [IsMatrixGroup and IsFinite,IsMatrix],0,
+  [IsMatrixGroup and IsFinite,IsMatrix],
 function(U,e)
 local mon,dom,S,o,oimgs,p,i,g;
   mon:=CanonicalNiceMonomorphism(U);
@@ -505,9 +547,9 @@ end);
 ##
 #M  IsGeneralLinearGroup(<G>)
 ##
-InstallMethod(IsGeneralLinearGroup,"try natural",true,[IsMatrixGroup],0,
+InstallMethod(IsGeneralLinearGroup,"try natural",[IsMatrixGroup],
 function(G)
-  if IsNaturalGL(G) then 
+  if IsNaturalGL(G) then
     return true;
   else
     TryNextMethod();
@@ -518,32 +560,36 @@ end);
 ##
 #M  IsSubgroupSL
 ##
-InstallMethod(IsSubgroupSL,"determinant test for generators",true,
-  [IsMatrixGroup and HasGeneratorsOfGroup],0,
-function(G)
-  return ForAll(GeneratorsOfGroup(G),i->IsOne(DeterminantMat(i)));
-end);
+InstallMethod(IsSubgroupSL,"determinant test for generators",
+  [IsMatrixGroup and HasGeneratorsOfGroup],
+    G -> ForAll(GeneratorsOfGroup(G),i->IsOne(DeterminantMat(i))) );
 
 #############################################################################
 ##
 #M  <mat> in <G>  . . . . . . . . . . . . . . . . . . . .  is form invariant?
 ##
 InstallMethod( \in, "respecting bilinear form", IsElmsColls,
-        [ IsMatrix, IsFullSubgroupGLorSLRespectingBilinearForm ], 0,
+        [ IsMatrix, IsFullSubgroupGLorSLRespectingBilinearForm ],
 function( mat, G )
-  if IsSubgroupSL(G) and not IsOne(DeterminantMat(mat)) then return false;fi;
-  return mat * InvariantBilinearForm(G).matrix * TransposedMat( mat ) =
-	       InvariantBilinearForm(G).matrix;
+    local inv;
+    if IsSubgroupSL(G) and not IsOne(DeterminantMat(mat)) then
+      return false;
+    fi;
+    inv:= InvariantBilinearForm(G).matrix;
+    return mat * inv * TransposedMat( mat ) = inv;
 end );
 
 InstallMethod( \in, "respecting sesquilinear form", IsElmsColls,
-        [ IsMatrix, IsFullSubgroupGLorSLRespectingSesquilinearForm ], 0,
+        [ IsMatrix, IsFullSubgroupGLorSLRespectingSesquilinearForm ],
 function( mat, G )
-local   f;
-  if IsSubgroupSL(G) and not IsOne(DeterminantMat(mat)) then return false;fi;
-  f := FrobeniusAutomorphism( FieldOfMatrixGroup( G ) );
-  return mat * InvariantSesquilinearForm(G).matrix * List( TransposedMat( mat ),
-		  row -> OnTuples(row,f)) = InvariantSesquilinearForm(G).matrix;
+    local f, inv;
+    if IsSubgroupSL(G) and not IsOne(DeterminantMat(mat)) then
+      return false;
+    fi;
+    f:= FrobeniusAutomorphism( FieldOfMatrixGroup( G ) );
+    inv:= InvariantSesquilinearForm(G).matrix;
+    return mat * inv * List( TransposedMat( mat ), row -> OnTuples(row,f))
+           = inv;
 end );
 
 
@@ -556,8 +602,7 @@ end );
 ##
 InstallMethod( IsGeneratorsOfMagmaWithInverses,
     "for a list of matrices",
-    true,
-    [ IsRingElementCollCollColl ], 0,
+    [ IsRingElementCollCollColl ],
     function( matlist )
     local dims;
     if ForAll( matlist, IsMatrix ) then
@@ -569,6 +614,7 @@ InstallMethod( IsGeneratorsOfMagmaWithInverses,
     return false;
     end );
 
+
 #############################################################################
 ##
 #M  GroupWithGenerators( <mats> )
@@ -576,7 +622,8 @@ InstallMethod( IsGeneratorsOfMagmaWithInverses,
 ##
 InstallMethod( GroupWithGenerators,
     "list of matrices",
-    true, [ IsFFECollCollColl ] , 0,
+    [ IsFFECollCollColl ],
+#T ???
     function( gens )
     local G,fam,typ,f;
 
@@ -602,8 +649,8 @@ InstallMethod( GroupWithGenerators,
     end );
 
 InstallMethod( GroupWithGenerators,
-  "list of matrices with identity", IsCollsElms, 
-  [ IsFFECollCollColl,IsMultiplicativeElementWithInverse and IsFFECollColl],0,
+  "list of matrices with identity", IsCollsElms,
+  [ IsFFECollCollColl,IsMultiplicativeElementWithInverse and IsFFECollColl],
 function( gens, id )
 local G,fam,typ,f;
 
@@ -637,7 +684,6 @@ end );
 ##
 InstallMethod( IsConjugatorIsomorphism,
     "for a matrix group general mapping",
-    true,
     [ IsGroupGeneralMapping ], 1,
     # There is no filter to test whether source and range of a homomorphism
     # are matrix groups.
@@ -690,19 +736,20 @@ InstallMethod( IsConjugatorIsomorphism,
     fi;
     end );
 
+
 #############################################################################
 ##
 #F  AffineActionByMatrixGroup( <M> )
 ##
 InstallGlobalFunction( AffineActionByMatrixGroup, function(M)
 local   gens,V,  G, A;
-  
+
   # build the vector space
   V := FieldOfMatrixGroup( M ) ^ DimensionOfMatrixGroup( M );
-  
+
   # the linear part
   G := Action( M, V );
-  
+
   # the translation part
   gens:=List( Basis( V ), b -> Permutation( b, V, \+ ) );
 
@@ -716,10 +763,138 @@ local   gens,V,  G, A;
 	      Name( M ) ) );
   fi;
   # the !.matrixGroup component is not documented!
-  A!.matrixGroup := M; 
+  A!.matrixGroup := M;
+#T what the hell shall this misuse be good for?
   return A;
 
 end );
+
+
+#############################################################################
+##
+##  n. Code needed for ``blow up isomorphisms'' of matrix groups
+##
+
+
+#############################################################################
+##
+#F  IsBlowUpIsomorphism
+##
+##  We define this filter for additive as well as for multiplicative
+##  general mappings,
+##  so the ``respectings'' of the mappings must be set explicitly.
+##
+DeclareFilter( "IsBlowUpIsomorphism", IsSPGeneralMapping and IsBijective );
+
+
+#############################################################################
+##
+#M  ImagesRepresentative( <iso>, <mat> ) . . . . .  for a blow up isomorphism
+##
+InstallMethod( ImagesRepresentative,
+    "for a blow up isomorphism, and a matrix in the source",
+    FamSourceEqFamElm,
+    [ IsBlowUpIsomorphism, IsMatrix ],
+    function( iso, mat )
+    return BlownUpMat( Basis( iso ), mat );
+    end );
+
+
+#############################################################################
+##
+#M  PreImagesRepresentative( <iso>, <mat> )  . . .  for a blow up isomorphism
+##
+InstallMethod( PreImagesRepresentative,
+    "for a blow up isomorphism, and a matrix in the range",
+    FamRangeEqFamElm,
+    [ IsBlowUpIsomorphism, IsMatrix ],
+    function( iso, mat )
+
+    local B,
+          d,
+          n,
+          Binv,
+          preim,
+          i,
+          row,
+          j,
+          submat,
+          elm,
+          k;
+
+    B:= Basis( iso );
+    d:= Length( B );
+    n:= Length( mat ) / d;
+
+    if not IsInt( n ) then
+      return fail;
+    fi;
+
+    Binv:= List( B, Inverse );
+    preim:= [];
+
+    for i in [ 1 .. n ] do
+      row:= [];
+      for j in [ 1 .. n ] do
+
+        # Compute the entry in the `i'-th row in the `j'-th column.
+        submat:= mat{ [ 1 .. d ] + (i-1)*d }{ [ 1 .. d ] + (j-1)*d };
+        elm:= Binv[1] * LinearCombination( B, submat[1] );
+
+        # Check that the matrix is in the image of the isomorphism.
+        for k in [ 2 .. d ] do
+          if B[k] * elm <> LinearCombination( B, submat[k] ) then
+            return fail;
+          fi;
+        od;
+
+        row[j]:= elm;
+
+      od;
+      preim[i]:= row;
+    od;
+
+    return preim;
+    end );
+
+
+#############################################################################
+##
+#F  BlowUpIsomorphism( <matgrp>, <B> )
+##
+InstallGlobalFunction( "BlowUpIsomorphism", function( matgrp, B )
+
+    local gens,
+          preimgs,
+          imgs,
+          range,
+          iso;
+
+    gens:= GeneratorsOfGroup( matgrp );
+    if IsEmpty( gens ) then
+      preimgs:= [ One( matgrp ) ];
+      imgs:= [ IdentityMat( Length( preimgs[1] ) * Length( B ),
+                   LeftActingDomain( UnderlyingLeftModule( B ) ) ) ];
+      range:= GroupByGenerators( [], imgs[1] );
+    else
+      preimgs:= gens;
+      imgs:= List( gens, mat -> BlownUpMat( B, mat ) );
+      range:= GroupByGenerators( imgs );
+    fi;
+
+    iso:= rec();
+    ObjectifyWithAttributes( iso,
+        NewType( GeneralMappingsFamily( FamilyObj( preimgs[1] ),
+                                        FamilyObj( imgs[1] ) ),
+                     IsBlowUpIsomorphism
+                 and IsGroupGeneralMapping
+                 and IsAttributeStoringRep ),
+        Source, matgrp,
+        Range, range,
+        Basis, B );
+
+    return iso;
+    end );
 
 
 #############################################################################

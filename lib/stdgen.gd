@@ -13,15 +13,6 @@ Revision.stdgen_gd :=
     "@(#)$Id$";
 
 
-#############################################################################
-##
-#C  IsIsomorphismTypeOfGroup( <obj> )
-##
-#T to be moved to another file!
-##
-DeclareCategory( "IsIsomorphismTypeOfGroup", IsObject );
-
-
 #T TO DO:
 #T - a function that can be used to *define* standard generators,
 #T   using the character table with underlying group (perhaps also the
@@ -50,14 +41,14 @@ DeclareCategory( "IsIsomorphismTypeOfGroup", IsObject );
 
 #############################################################################
 ##
-#A  StandardGeneratorsInfo( <isotype> )
+#A  StandardGeneratorsInfo( <G> )
 ##
-##  When called with the group isomorphism type <isotype>,
+##  When called with the group <G>,
 ##  `StandardGeneratorsInfo' returns a list of records with at least one of
 ##  the components `script' and `description'.
-##  Each such record defines *standard generators* of groups of isomorphism
-##  type <isotype>, the $i$-th record is referred to as the $i$-th set of
-##  standard generators for groups of type <isotype>.
+##  Each such record defines *standard generators* of groups isomorphic
+##  to <G>, the $i$-th record is referred to as the $i$-th set of
+##  standard generators for such groups.
 ##  The value of `script' is a dense list of lists, each encoding a command
 ##  that has one of the following forms.
 ##  \beginitems
@@ -81,7 +72,7 @@ DeclareCategory( "IsIsomorphismTypeOfGroup", IsObject );
 ##
 ##  a *condition* $[ [ i_1, k_1, i_2, k_2, \ldots, i_m, k_m ], f, v ]$ &
 ##      means a check whether the {\GAP} function in the global list
-##      `StandardGeneratorsFunctions' (see~"StandardGeneratorsFunctions")
+##      `StandardGeneratorsFunctions' (see "StandardGeneratorsFunctions")
 ##      that is followed by the list $f$ of strings returns the value $v$
 ##      when it is called with $G$ and
 ##      $g_{i_1}^{k_1} g_{i_2}^{k_2} \cdots g_{i_m}^{k_m}$.
@@ -115,13 +106,13 @@ DeclareCategory( "IsIsomorphismTypeOfGroup", IsObject );
 ##
 ##  The function `StandardGeneratorsOfGroup'
 ##  (see~"StandardGeneratorsOfGroup")
-##  can be used to find standard generators of a given group of isomorphism
-##  type <isotype>.
+##  can be used to find standard generators of a given group isomorphic
+##  to <G>.
 ##
 ##  The `generators' and `description' values, if not known, can be computed
 ##  by `HumanReadableDefinition' (see~"HumanReadableDefinition").
 ##
-DeclareAttribute( "StandardGeneratorsInfo", IsIsomorphismTypeOfGroup );
+DeclareAttribute( "StandardGeneratorsInfo", IsGroup );
 #T make this an operation also for strings?
 
 
@@ -131,7 +122,7 @@ DeclareAttribute( "StandardGeneratorsInfo", IsIsomorphismTypeOfGroup );
 #F  ScriptFromString( <string> )
 ##
 ##  Let <info> be a record that is valid as value of `StandardGeneratorsInfo'
-##  (see~"StandardGeneratorsInfo.stdgen").
+##  (see~"StandardGeneratorsInfo!for groups").
 ##  `HumanReadableDefinition' returns a string that describes the definition
 ##  of standard generators given by the `script' component of <info> in
 ##  human readable form.
@@ -144,7 +135,7 @@ DeclareAttribute( "StandardGeneratorsInfo", IsIsomorphismTypeOfGroup );
 ##  and returns a corresponding `script' list.
 ##
 ##  If ``condition'' lines occur in the script
-##  (see~"StandardGeneratorsInfo.stdgen")
+##  (see~"StandardGeneratorsInfo!for groups")
 ##  then the functions that occur must be contained in
 ##  `StandardGeneratorsFunctions' (see~"StandardGeneratorsFunctions").
 ##
@@ -167,7 +158,7 @@ DeclareGlobalFunction( "ScriptFromString" );
 ##  and `)'.
 ##
 ##  This list is used by the functions `StandardGeneratorsInfo'
-##  (see~"StandardGeneratorsInfo.stdgen"), `HumanReadableDefinition', and
+##  (see~"StandardGeneratorsInfo!for groups"), `HumanReadableDefinition', and
 ##  `ScriptFromString' (see~"HumanReadableDefinition").
 ##  Note that the lists at even positions must be pairwise different.
 ##
@@ -180,8 +171,8 @@ DeclareGlobalVariable( "StandardGeneratorsFunctions",
 #F  IsStandardGeneratorsOfGroup( <info>, <G>, <gens> )
 ##
 ##  Let <info> be a record that is valid as value of `StandardGeneratorsInfo'
-##  (see~"StandardGeneratorsInfo.stdgen"), <G> a group, and <gens> a list of
-##  generators for <G>.
+##  (see~"StandardGeneratorsInfo!for groups"), <G> a group, and <gens> a list
+##  of generators for <G>.
 ##  In this case, `IsStandardGeneratorsOfGroup' returns `true' if <gens>
 ##  satisfies the conditions of the `script' component of <info>,
 ##  and `false' otherwise.
@@ -198,7 +189,7 @@ DeclareGlobalFunction( "IsStandardGeneratorsOfGroup" );
 #F  StandardGeneratorsOfGroup( <info>, <G>[, <randfunc>] )
 ##
 ##  Let <info> be a record that is valid as value of `StandardGeneratorsInfo'
-##  (see~"StandardGeneratorsInfo.stdgen"),
+##  (see~"StandardGeneratorsInfo!for groups"),
 ##  and <G> a group of the isomorphism type for which <info> describes
 ##  standard generators.
 ##  In this case, `StandardGeneratorsOfGroup' returns a list of standard

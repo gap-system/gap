@@ -103,7 +103,7 @@ typedef Obj (* ObjFunc) (/*arguments*/);
 #define NAME_FUNC(func)         (*            (ADDR_OBJ(func) + 8     ) )
 #define NARG_FUNC(func)         (* (Int*)     (ADDR_OBJ(func) + 9     ) )
 #define NAMS_FUNC(func)         (*            (ADDR_OBJ(func) +10     ) )
-#define NAMI_FUNC(func,i)       ((Char*)ADDR_OBJ(ELM_LIST(NAMS_FUNC(func),i)))
+#define NAMI_FUNC(func,i)       ((Char *)CHARS_STRING(ELM_LIST(NAMS_FUNC(func),i)))
 #define PROF_FUNC(func)         (*            (ADDR_OBJ(func) +11     ) )
 #define NLOC_FUNC(func)         (* (UInt*)    (ADDR_OBJ(func) +12     ) )
 #define BODY_FUNC(func)         (*            (ADDR_OBJ(func) +13     ) )
@@ -233,11 +233,11 @@ typedef Obj (* ObjFunc) (/*arguments*/);
 #define STOR_WITH_PROF(prof)        (INT_INTOBJ(ELM_PLIST(prof,4)))
 #define STOR_WOUT_PROF(prof)        (INT_INTOBJ(ELM_PLIST(prof,5)))
 
-#define SET_COUNT_PROF(prof,n)      (SET_ELM_PLIST(prof,1,INTOBJ_INT(n)))
-#define SET_TIME_WITH_PROF(prof,n)  (SET_ELM_PLIST(prof,2,INTOBJ_INT(n)))
-#define SET_TIME_WOUT_PROF(prof,n)  (SET_ELM_PLIST(prof,3,INTOBJ_INT(n)))
-#define SET_STOR_WITH_PROF(prof,n)  (SET_ELM_PLIST(prof,4,INTOBJ_INT(n)))
-#define SET_STOR_WOUT_PROF(prof,n)  (SET_ELM_PLIST(prof,5,INTOBJ_INT(n)))
+#define SET_COUNT_PROF(prof,n)      SET_ELM_PLIST(prof,1,INTOBJ_INT(n))
+#define SET_TIME_WITH_PROF(prof,n)  SET_ELM_PLIST(prof,2,INTOBJ_INT(n))
+#define SET_TIME_WOUT_PROF(prof,n)  SET_ELM_PLIST(prof,3,INTOBJ_INT(n))
+#define SET_STOR_WITH_PROF(prof,n)  SET_ELM_PLIST(prof,4,INTOBJ_INT(n))
+#define SET_STOR_WOUT_PROF(prof,n)  SET_ELM_PLIST(prof,5,INTOBJ_INT(n))
 
 #define LEN_PROF                    5
 

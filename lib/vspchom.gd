@@ -38,8 +38,8 @@ Revision.vspchom_gd :=
 #O  LeftModuleGeneralMappingByImages( <V>, <W>, <gens>, <imgs> )
 ##
 ##  Let <V> and <W> be two left modules over the same left acting domain
-##  $R$, say, and <gens> and <imgs> lists of elements in <V> and <W>,
-##  respectively.
+##  $R$, say, and <gens> and <imgs> lists (of the same length)
+##  of elements in <V> and <W>, respectively.
 ##  `LeftModuleGeneralMappingByImages' returns the general mapping
 ##  with source <V> and range <W> that is defined by mapping the elements in
 ##  <gens> to the corresponding elements in <imgs>,
@@ -59,8 +59,8 @@ DeclareOperation( "LeftModuleGeneralMappingByImages",
 #O  LeftModuleHomomorphismByImagesNC( <V>, <W>, <gens>, <imgs> )
 ##
 ##  Let <V> and <W> be two left modules over the same left acting domain
-##  $R$, say, and <gens> and <imgs> lists of elements in <V> and <W>,
-##  respectively.
+##  $R$, say, and <gens> and <imgs> lists (of the same length)
+##  of elements in <V> and <W>, respectively.
 ##  `LeftModuleHomomorphismByImages' returns the left $R$-module homomorphism
 ##  with source <V> and range <W> that is defined by mapping the elements in
 ##  <gens> to the corresponding elements in <imgs>.
@@ -68,12 +68,12 @@ DeclareOperation( "LeftModuleGeneralMappingByImages",
 ##  If <gens> does not generate <V> or if the homomorphism does not exist
 ##  (i.e., if mapping the generators describes only a multi-valued mapping)
 ##  then `fail' is returned.
-##  `LeftModuleHomomorphismByImagesNC' does the same, except that these
-##  checks are omitted.
-##
 ##  For creating a possibly multi-valued mapping from <V> to <W> that
 ##  respects addition, multiplication, and scalar multiplication,
 ##  `LeftModuleGeneralMappingByImages' can be used.
+##
+##  `LeftModuleHomomorphismByImagesNC' does the same as
+##  `LeftModuleHomomorphismByImages', except that it omits all checks.
 ##
 DeclareGlobalFunction( "LeftModuleHomomorphismByImages" );
 

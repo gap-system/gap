@@ -9,11 +9,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Method Selection}
 
+\index{operation}\index{method}
 This chapter explains how {\GAP} decides which function to call for which
 types of objects.
 It assumes that you have read the chapters about objects
-("ref:Objects and Elements") and types ("ref:Types of Objects") in the
-Reference Manual.
+(Chapter~"ref:Objects and Elements") and types (Chapter~"ref:Types of Objects")
+in the Reference Manual.
 
 An *operation* is a special {\GAP} function that bundles a set of
 functions, its *methods*.
@@ -30,7 +31,8 @@ and logical implications.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operations and Methods}
 
-Operations are functions in the category `IsOperation'.
+Operations are functions in the category `IsOperation'
+(see~"ref:IsOperation" in the Reference Manual).
 
 So on the one hand, *operations* are {\GAP} functions, that is,
 they can be applied to arguments and return a result or cause a
@@ -70,14 +72,13 @@ and then set the attribute tester for the object to `true'.
 In order to describe what it means to select a method of an operation,
 we must describe how the methods are connected to their operations.
 
-A function <method> is installed as a method for the operation <opr> by
+\>InstallMethod( <opr>[,<info>][,<famp>],<args-filts>[,<val>],<method> ) F
 
-\>InstallMethod( <opr>[,<text>][,<famp>],<args-filts>[,<val>],<method> )
-
-where <text> is a short but informative string that describes for what
-situation the method is installed,
-<famp> is a function to be applied to the families of the arguments,
-<args-filts> is a list of requirements for the arguments,
+installs a function method <method> for the operation <opr>; 
+<args-filts> should be a list of requirements for the arguments;
+if supplied <info> should be a short but informative string that describes 
+for what situation the method is installed,
+<famp> should be a function to be applied to the families of the arguments,
 each entry being a filter,
 and <val> is an integer that measures the priority of the method.
 
@@ -85,17 +86,30 @@ The default values for <info>, <famp>, and <val> are the empty string,
 the function `ReturnTrue', and the integer zero, respectively.
 
 The exact meaning of the arguments <famp>, <args-filts>,
-and <val> is explained below.
+and <val> is explained in Section~"Applicable Methods and Method Selection".
 
 <opr> expects its methods to require certain filters for their arguments.
 For example, the argument of a method for the operation `Zero' must be
 in the category `IsAdditiveElementWithZero'.
 It is not possible to use `InstallMethod' to install a method for which
-the entries of <args-filt> do not imply the respective requirements of
+the entries of <args-filts> do not imply the respective requirements of
 the operation <opr>.
 If one wants to override this restriction,
 one has to use `InstallOtherMethod' instead.
 
+\>InstallOtherMethod( <opr>[,<info>][,<famp>],<args-filts>[,<val>],<method> ) F
+
+installs a function method <method> for the operation <opr>, in the same
+way as for `InstallMethod' (see~"InstallMethod"), but without the restriction
+that the number of arguments must match the declaration of <opr> and without
+the restriction that <args-filts> imply the respective requirements of
+the operation <opr>.
+
+For attributes and properties there is `InstallImmediateMethod' 
+(see~"InstallImmediateMethod").
+
+For declaring that a filter is implied by other filters there is
+`InstallTrueMethod' (see~"InstallTrueMethod").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Applicable Methods and Method Selection}
@@ -113,15 +127,16 @@ and <famp> describes a relation between the arguments.
 For unary operations such as attributes and properties,
 there is no such relation to postulate,
 <famp> is `ReturnTrue' for these operations,
-a function that does always return `true'.
-For binary operations, the usual value of <famp> is `IsIdenticalObj',
+a function that always returns `true'.
+For binary operations, the usual value of <famp> is `IsIdenticalObj'
+(see~"ref:IsIdenticalObj" in the Reference Manual),
 which means that both arguments must lie in the same family.
 
 Note that any properties which occur among the filters in the filter list
 will *not* be tested by the method selection if they are not yet known.
 (More exact: if <prop> is a property then the filter implicitly uses not
 <prop> but `Has<prop> and <prop>'.) If this is desired you must explicitly
-enfore a test (see section~"Redispatching") below.
+enforce a test (see section~"Redispatching") below.
 
 If no method is applicable,
 the error message `no method found' is signaled.
@@ -140,7 +155,7 @@ an efficient one shall be selected.
 This is a method that needs only little time and storage for the
 computations.
 
-It seems to be impossible to achieve that {\GAP} will select an optimal
+It seems to be impossible for {\GAP} to select an optimal
 method in all cases.
 The present ranking of methods is based on the assumption
 that a method installed for a special situation shall be preferred
@@ -163,8 +178,10 @@ nilpotent.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Partial Methods}
 
+\>TryNextMethod()
+
 After a method has been selected and called,
-this method may recognize that it cannot compute the desired result,
+the method may recognize that it cannot compute the desired result,
 and give up by calling `TryNextMethod()'.
 
 In effect, the execution of the method is terminated,
@@ -198,7 +215,7 @@ certain conditions, however such a test might be actually desired.
 
 One way to achieve this would be to install the method under weaker
 conditions and explicitly test the properties first, exiting via
-`TryNextMethod' if some of them are not fulfilled.
+`TryNextMethod' (see~"TryNextMethod") if some of them are not fulfilled.
 A problem of this approach however is that such methods then automatically
 are ranked lower and that the code does not look nice.
 
@@ -208,7 +225,7 @@ the method selection is started anew (and will then find a method).
 
 This can be achieved via the following function:
 
-\>RedispatchOnCondition( <oper>, <fampred>, <reqs>, <cond>, <val> )
+\>RedispatchOnCondition( <oper>, <fampred>, <reqs>, <cond>, <val> ) F
 
 This function installs a method for the operation <oper> under the
 conditions <fampred> and <reqs> which has absolute value <val>;
@@ -218,7 +235,7 @@ If not all the values of properties involved in these filters are already
 known for actual arguments of the method,
 they are explicitly tested and if they are fulfilled *and* stored after     
 this test, the operation is dispatched again.                               
-Otherwise the method exits with `TryNextMethod'.                            
+Otherwise the method exits with `TryNextMethod' (see~"TryNextMethod").
 This can be used to enforce tests like `IsFinite' in situations when all    
 existing methods require this property.                                     
 The list <cond> may have unbound entries in which case the corresponding    
@@ -251,7 +268,8 @@ with requirement <req> is installed via
 where <val> is an integer value that measures the priority of <method>
 among the immediate methods for <attr>.
 
-Note the difference to `InstallMethod' that no family predicate occurs
+Note the difference to `InstallMethod' (see~"InstallMethod")
+that no family predicate occurs
 because <attr> expects only one argument,
 and that <req> is not a list of requirements but the argument requirement
 itself.
@@ -267,7 +285,8 @@ every finite group of prime power order is nilpotent.
 This could be done by installing an immediate method for the attribute
 `IsNilpotentGroup' with requirement `IsGroup and Tester( Size )'.
 This method would then check whether the size is a finite prime power,
-return `true' in this case and otherwise call `TryNextMethod()'.
+return `true' in this case and otherwise call `TryNextMethod()'
+(see~"TryNextMethod").
 But this requires factoring of an integer,
 which cannot be guaranteed to be very cheap,
 so one should not install this method as an immediate method.
@@ -282,16 +301,16 @@ invalidated.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Logical Implications}
 
-It may happen that a property <prop> shall be implied by another filter
+It may happen that a filter <newfil> shall be implied by another filter
 <filt>, which is usually a meet of other properties,
 or the meet of some properties and some categories.
 Such a logical implication can be installed as an immediate method for
-<prop> that requires <filt> and that always returns `true'.
+<newfil> that requires <filt> and that always returns `true'.
 It should be installed via
 
-\>InstallTrueMethod( <prop>, <filt> )
+\>InstallTrueMethod( <newfil>, <filt> )
 
-This has the effect that <prop> becomes an implied filter of <filt>,
+This has the effect that <newfil> becomes an implied filter of <filt>,
 see~"ref:Filters" in the Reference Manual.
 
 For example, each cyclic group is abelian,
@@ -300,7 +319,7 @@ and each division ring is integral.
 The first of these implications is installed as follows.
 
 \begintt
-    InstallTrueMethod( IsCommutative, IsGroup and IsCyclic )
+InstallTrueMethod( IsCommutative, IsGroup and IsCyclic );
 \endtt
 
 Contrary to other immediate methods,
@@ -313,7 +332,6 @@ one can rely on the fact that every object in the filter
 \Section{Operations and Mathematical Terms}
 
 \index{overload}
-
 Usually an operation stands for a mathematical concept,
 and the name of the operation describes this uniquely.
 Examples are the property `IsFinite' and the attribute `Size'.

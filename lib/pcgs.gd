@@ -122,12 +122,22 @@ DeclareAttribute( "PcSeries", IsPcgs );
 ##
 #A  IndicesNormalSteps( <pcgs> )
 ##
-##  Let <G> be the group defined by <pcgs> and let <pcgs> = $(g_1, \ldots, 
-##  g_n)$.  This function returns a sorted list of integers indicating
-##  the tails of <pcgs> which generate a normal subgroup of <G>. That
-##  is, whenever $(g_i, \ldots, g_n)$ is a normal subgroup of <G>,
-##  then $i$ is an element of the list. In particular, the list always
-##  starts with 1 and ends with n+1.
+##  Let <pcgs> be a pcgs obtained as corresponding to a series of normal
+##  subgroups with elementary abelian factors (for example
+##  `PcgsElementaryAbelianSeries', `PcgsChiefSeries' or
+##  `PcgsCentralSeries'). Then `IndicesNormalSteps' returns a sorted list of
+##  integers, indicating the tails of <pcgs> which generate these normal
+##  subgroup of <G>. If $i$ is an element of this list, $(g_i, \ldots, g_n)$
+##  is a normal subgroup of <G>.  The list always starts with 1 and ends
+##  with n+1. (These indices form *one* series with elementary abelian
+##  subfactors, not necessarily the most refined one.)
+##
+##  For arbitrary pcgs not obtained as belonging to a special series such a
+##  set of indices not necessarily exists, and `IndicesNormalSteps' is not
+##  guaranteed to work in this situation.
+##
+##  Typically, `IndicesNormalSteps' is set by calls to opreations that
+##  compute a particular pcgs such as `PcgsElementaryAbelianSeries'.
 DeclareAttribute( "IndicesNormalSteps", IsPcgs );
 
 #############################################################################
@@ -273,10 +283,12 @@ DeclareOperation( "PcElementByExponentsNC",
 
 #############################################################################
 ##
-#O  LinearCombinationPcgs( <pcgs>, <list> )
+#O  LinearCombinationPcgs( <pcgs>, <list> [,<one>] )
 ##
 ##  returns the product $\prod_i<pcgs>[i]^{<list>[i]}$. In contrast to
 ##  `PcElementByExponents' this permits negative exponents.
+##  <pcgs> might be an list of group elements, in this case, an appropriate
+##  <one> must be given. if <list> can be empty.
 DeclareGlobalFunction("LinearCombinationPcgs");
 
 #############################################################################
@@ -452,8 +464,8 @@ DeclareOperation( "ExtendedPcgs", [ IsModuloPcgs, IsList ] );
 #P  IsPcgsElementaryAbelianSeries( <pcgs> )
 ##
 ##  returns `true' if the pcgs <pcgs> refines an elementary abelian series.
-##  `IndicesNormalSteps' gives the indices in the Pcgs, at which normal
-##  subgroups start.
+##  `IndicesNormalSteps' gives the indices in the Pcgs, at which the normal
+##  subgroups of this series start.
 DeclareProperty( "IsPcgsElementaryAbelianSeries", IsPcgs );
 
 #############################################################################
@@ -461,8 +473,8 @@ DeclareProperty( "IsPcgsElementaryAbelianSeries", IsPcgs );
 #P  IsPcgsCentralSeries( <pcgs> )
 ##
 ##  returns `true' if the pcgs <pcgs> refines a central series.
-##  `IndicesNormalSteps' gives the indices in the Pcgs, at which normal
-##  subgroups start.
+##  `IndicesNormalSteps' gives the indices in the Pcgs, at which the normal
+##  subgroups of this series start.
 DeclareProperty( "IsPcgsCentralSeries", IsPcgs );
 
 

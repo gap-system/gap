@@ -50,10 +50,13 @@ DeclareGlobalFunction( "CompatiblePairs" );
 #############################################################################
 ##
 #O  Extension( <G>, <M>, <c> )
+#O  ExtensionNC( <G>, <M>, <c> )
 ##
 ##  returns the extension of <G> by the <G>-module <M> via the cocycle <c>
-##  as pc groups.
+##  as pc groups. The `NC' version does not check the resulting group for
+##  consistence.
 DeclareOperation( "Extension", [ CanEasilyComputePcgs, IsObject, IsVector ] );
+DeclareOperation( "ExtensionNC", [ CanEasilyComputePcgs, IsObject, IsVector ] );
 
 #############################################################################
 ##

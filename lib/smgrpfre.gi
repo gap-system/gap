@@ -424,36 +424,59 @@ InstallMethod( MagmaGeneratorsOfFamily,
 #F  FreeSemigroup( infinity, <name>, <init> )
 ##
 InstallGlobalFunction( FreeSemigroup, function( arg )
+local   names,      # list of generators names
+	F,          # family of free semigroup element objects
+	zarg,
+	lesy,	    # filter for letter or syllable words family
+	S;          # free semigroup, result
 
-    local   names,      # list of generators names
-            F,          # family of free semigroup element objects
-            S;          # free semigroup, result
+  lesy:=IsLetterWordsFamily; # default:
+  if IsFilter(arg[1]) then
+    lesy:=arg[1];
+    zarg:=arg{[2..Length(arg)]};
+  else
+    zarg:=arg;
+  fi;
 
     # Get and check the argument list, and construct names if necessary.
-    if   Length( arg ) = 1 and arg[1] = infinity then
+    if   Length( zarg ) = 1 and zarg[1] = infinity then
       names:= InfiniteListOfNames( "s" );
-    elif Length( arg ) = 2 and arg[1] = infinity then
-      names:= InfiniteListOfNames( arg[2] );
-    elif Length( arg ) = 3 and arg[1] = infinity then
-      names:= InfiniteListOfNames( arg[2], arg[3] );
-    elif Length( arg ) = 1 and IsInt( arg[1] ) and 0 < arg[1] then
-      names:= List( [ 1 .. arg[1] ],
+    elif Length( zarg ) = 2 and zarg[1] = infinity then
+      names:= InfiniteListOfNames( zarg[2] );
+    elif Length( zarg ) = 3 and zarg[1] = infinity then
+      names:= InfiniteListOfNames( zarg[2], zarg[3] );
+    elif Length( zarg ) = 1 and IsInt( zarg[1] ) and 0 < zarg[1] then
+      names:= List( [ 1 .. zarg[1] ],
                     i -> Concatenation( "s", String(i) ) );
       MakeImmutable( names );
-    elif Length( arg ) = 2 and IsInt( arg[1] ) and 0 < arg[1] then
-      names:= List( [ 1 .. arg[1] ],
-                    i -> Concatenation( arg[2], String(i) ) );
+    elif Length( zarg ) = 2 and IsInt( zarg[1] ) and 0 < zarg[1] then
+      names:= List( [ 1 .. zarg[1] ],
+                    i -> Concatenation( zarg[2], String(i) ) );
       MakeImmutable( names );
-    elif 1 <= Length( arg ) and ForAll( arg, IsString ) then
-      names:= arg;
-    elif Length( arg ) = 1 and IsList( arg[1] ) and not IsEmpty( arg[1]) then
-      names:= arg[1];
+    elif 1 <= Length( zarg ) and ForAll( zarg, IsString ) then
+      names:= zarg;
+    elif Length( zarg ) = 1 and IsList( zarg[1] ) and not IsEmpty( zarg[1]) then
+      names:= zarg[1];
     else
       Error("usage: FreeSemigroup(<name1>,<name2>..),FreeSemigroup(<rank>)");
     fi;
 
+    # deal with letter words family types
+    if lesy=IsLetterWordsFamily then
+      if Length(names)>127 then
+	lesy:=IsWLetterWordsFamily;
+      else
+	lesy:=IsBLetterWordsFamily;
+      fi;
+    elif lesy=IsBLetterWordsFamily and Length(names)>127 then
+      lesy:=IsWLetterWordsFamily;
+    fi;
+
     # Construct the family of element objects of our semigroup.
-    F:= NewFamily( "FreeSemigroupElementsFamily", IsAssocWord );
+    F:= NewFamily( "FreeSemigroupElementsFamily", IsAssocWord,
+			  CanEasilySortElements, # the free group can.
+			  CanEasilySortElements # the free group can.
+			  and lesy);
 
     # Install the data (names, no. of bits available for exponents, types).
     StoreInfoFreeMagma( F, names, IsAssocWord );
@@ -464,6 +487,11 @@ InstallGlobalFunction( FreeSemigroup, function( arg )
     else
       S:= SemigroupByGenerators( InfiniteListOfGenerators( F ) );
     fi;
+
+		# store the whole semigroup in the family
+		FamilyObj(S)!.wholeSemigroup:= S;
+    F!.freeSemigroup:=S;
+
 
 		SetIsFreeSemigroup(S,true);
     SetIsWholeFamily( S, true );

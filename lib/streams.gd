@@ -1,4 +1,4 @@
-#############################################################################
+############################################################################
 ##
 #W  streams.gd                  GAP Library                      Frank Celler
 ##
@@ -13,45 +13,56 @@ Revision.streams_gd :=
     "@(#)$Id$";
 
 #1
-## *Streams* provide flexible access to {\GAP}'s input and output
-## processing. An *input stream* takes characters from some source and
-## delivers them to {\GAP} which *reads* them from the stream.  When an
-## input stream has delivered all characters it is at `end-of-stream'.  An
-## *output stream* receives characters from {\GAP} which *writes* them to
-## the stream, and delivers them to some destination.
+##  *Streams* provide flexible access to {\GAP}'s input and output
+##  processing. An *input stream* takes characters from some source and
+##  delivers them to {\GAP} which *reads* them from the stream.  When an
+##  input stream has delivered all characters it is at `end-of-stream'.  An
+##  *output stream* receives characters from {\GAP} which *writes* them to
+##  the stream, and delivers them to some destination.
 ## 
-## A major use of streams is to provide efficient and flexible access to
-## files.  Files can be read and written using `Read' and `AppendTo',
-## however the former only allows a complete file to be read as {\GAP}
-## input and the latter imposes a high time penalty if many small pieces of
-## output are written to a large file. Streams allow input files in other
-## formats to be read and processed, and files to be built up efficiently
-## from small pieces of output. Streams may also be used for other purposes, 
-## for example to read from and print to {\GAP} strings, or to read input
-## directly from the user.
+##  A major use of streams is to provide efficient and flexible access to
+##  files.  Files can be read and written using `Read' and `AppendTo',
+##  however the former only allows a complete file to be read as {\GAP}
+##  input and the latter imposes a high time penalty if many small pieces of
+##  output are written to a large file. Streams allow input files in other
+##  formats to be read and processed, and files to be built up efficiently
+##  from small pieces of output. Streams may also be used for other purposes, 
+##  for example to read from and print to {\GAP} strings, or to read input
+##  directly from the user.
 ## 
-## Any stream is either a *text stream*, which translates the `end-of-line'
-## character (`{'\\n'}') to or from the system's representation of
-## `end-of-line' (e.g., <new-line> under UNIX, <carriage-return> under
-## MacOS, <carriage-return>-<new-line> under DOS), or a *binary stream*,
-## which does not translate the `end-of-line' character. The processing of
-## other unprintable characters by text streams is undefined. Binary streams
-## pass them unchanged.
+##  Any stream is either a *text stream*, which translates the `end-of-line'
+##  character (`{'\\n'}') to or from the system's representation of
+##  `end-of-line' (e.g., <new-line> under UNIX, <carriage-return> under
+##  MacOS, <carriage-return>-<new-line> under DOS), or a *binary stream*,
+##  which does not translate the `end-of-line' character. The processing of
+##  other unprintable characters by text streams is undefined. Binary streams
+##  pass them unchanged.
 ## 
-## Note that binary streams are *@not yet implemented@*.
+##  Note that binary streams are *@not yet implemented@*.
 ## 
-## Whereas it is  cheap  to append  to a  stream, streams do  consume system
-## resources, and only a  limited number can  be open at any time, therefore
-## it is   necessary   to close   a  stream  as   soon as   possible  using
-## `CloseStream' described in Section~"CloseStream".   If creating  a stream
-## failed then `LastSystemError' (see "LastSystemError")  can be used to get
-## information about the failure. 
+##  Whereas it is  cheap  to append  to a  stream, streams do  consume system
+##  resources, and only a  limited number can  be open at any time, therefore
+##  it is   necessary   to close   a  stream  as   soon as   possible  using
+##  `CloseStream' described in Section~"CloseStream".   If creating  a stream
+##  failed then `LastSystemError' (see "LastSystemError")  can be used to get
+##  information about the failure. 
 ## 
 ## 
 
 #############################################################################
 ##
-#C  IsClosedStream  . . . . . . . . . . . . . . .  category of closed streams
+
+#R  IsInputTextStringRep   (used in kernel)
+##
+DeclareRepresentation(
+    "IsInputTextStringRep",
+    IsPositionalObjectRep,
+    [] );
+
+
+#############################################################################
+##
+#C  IsClosedStream( <obj> ) . . . . . . . . . . .  category of closed streams
 ##
 ##  When a stream is closed, its type changes to lie in
 ##  'IsClosedStream'. This category is used to install methods that trap
@@ -62,7 +73,7 @@ DeclareCategory( "IsClosedStream", IsObject );
 
 #############################################################################
 ##
-#C  IsStream  . . . . . . . . . . . . . . . . . . . . . . category of streams
+#C  IsStream( <obj> ) . . . . . . . . . . . . . . . . . . category of streams
 ##
 ##  Streams are GAP objects and all open streams, input, output, text
 ##  and binary, lie in this category.
@@ -72,7 +83,7 @@ DeclareCategory( "IsStream", IsObject );
 
 #############################################################################
 ##
-#C  IsInputStream . . . . . . . . . . . . . . . . . category of input streams
+#C  IsInputStream( <obj> )  . . . . . . . . . . . . category of input streams
 ##
 ##  All input streams lie in this category, and support input
 ##  operations such as `ReadByte' (see "Operations for Input Streams")
@@ -82,7 +93,7 @@ DeclareCategory( "IsInputStream", IsStream );
 
 #############################################################################
 ##
-#C  IsInputTextStream . . . . . . . . . . . .  category of input text streams
+#C  IsInputTextStream( <obj> )  . . . . . . .  category of input text streams
 ##
 ##  All *text* input streams lie in this category. They translate new-line
 ##  characters read.
@@ -92,7 +103,7 @@ DeclareCategory( "IsInputTextStream", IsInputStream );
 
 #############################################################################
 ##
-#C  IsInputTextNone . . . . . . . . . . . category of input text none streams
+#C  IsInputTextNone( <obj> )  . . . . . . category of input text none streams
 ##
 ##  It is convenient to use a category to distinguish dummy streams
 ##  (see "Dummy Streams") from others. Other distinctions are usually
@@ -103,7 +114,7 @@ DeclareCategory( "IsInputTextNone", IsInputTextStream );
 
 #############################################################################
 ##
-#C  IsOutputStream  . . . . . . . . . . . . . . .  category of output streams
+#C  IsOutputStream( <obj> ) . . . . . . . . . . .  category of output streams
 ##
 ##  All output streams lie in this category and support basic
 ##  operations such as `WriteByte' (see "Operations for Output Streams")
@@ -113,17 +124,17 @@ DeclareCategory( "IsOutputStream", IsStream );
 
 #############################################################################
 ##
-#C  IsOutputTextStream	. . . . . . . . . . . category of output text streams
+#C  IsOutputTextStream( <obj> ) . . . . . . . category of output text streams
 ##
-## All *text* output streams lie in this category and translate
-## new-line characters on output.
+##  All *text* output streams lie in this category and translate
+##  new-line characters on output.
 ##
 DeclareCategory( "IsOutputTextStream", IsOutputStream );
 
 
 #############################################################################
 ##
-#C  IsOutputTextNone  . . . . . . . . .  category of output text none streams
+#C  IsOutputTextNone( <obj> ) . . . . .  category of output text none streams
 ##
 ##  It is convenient to use a category to distinguish dummy streams
 ##  (see "Dummy Streams") from others. Other distinctions are usually
@@ -210,13 +221,13 @@ DeclareOperation( "ReadByte", [ IsInputStream ] );
 
 #############################################################################
 ##
-#O  ReadLine( <input-stream> ) . . . . . . . . read whole line as string
+#O  ReadLine( <input-stream> ) . read whole line (or what's there) as string
 ##
 ##  `ReadLine' returns one line (returned as string *with* the newline) from
-##  the input stream <stream-in>.  `ReadLine' reads in the input until a
-##  newline is read or the end-of-stream. is encountered.
+##  the input stream <input-stream>.  `ReadLine' reads in the input until  a
+##  newline is read or the end-of-stream is encountered.
 ##
-##  If <stream-in> is the input stream of a input/output process, `ReadLine'
+##  If <input-stream> is the input stream of a input/output process, `ReadLine'
 ##  may also return `fail' or return an incomplete line if the other
 ##  process has not yet written any more.
 ##
@@ -225,6 +236,39 @@ DeclareOperation( "ReadByte", [ IsInputStream ] );
 ##  parser when reading from a stream.
 ##
 DeclareOperation( "ReadLine", [ IsInputStream ] );
+
+
+#############################################################################
+##
+#O  ReadAllLine( <iostream>[, <nofail>][, <IsAllLine>] ) . .  read whole line
+##
+##  For an input/output stream <iostream> `ReadAllLine' reads until a newline
+##  character if any input is found or returns `fail' if no input  is  found,
+##  i.e.~if any input is found `ReadAllLine' is non-blocking.
+##
+##  If the argument <nofail> (which must be `false' or  `true')  is  provided
+##  and it is set to `true' then `ReadAllLine' will wait, if  necessary,  for
+##  input and never return `fail'.
+##
+##  If the argument <IsAllLine> (which must be a function that takes a string
+##  argument and returns either  `true'  or  `false')  then  it  is  used  to
+##  determine what  constitutes  a  whole  line.  The  default  behaviour  is
+##  equivalent to passing the function
+##
+##  \begintt
+##  line -> 0 < Length(line) and line[Length(line)] = '\n'
+##  \endtt
+##
+##  for the <IsAllLine> argument. The purpose of the <IsAllLine> argument  is
+##  to cater for the case where the input being  read  is  from  an  external
+##  process that writes a ``prompt'' for data that does not terminate with  a
+##  newline.
+##
+##  If the first argument is an input stream but not an  input/output  stream
+##  then `ReadAllLine' behaves as if `ReadLine'  was  called  with  just  the
+##  first argument and any additional arguments are ignored.
+##
+DeclareOperation( "ReadAllLine", [ IsInputStream, IsBool, IsFunction ] );
 
 
 #############################################################################
@@ -255,15 +299,15 @@ DeclareOperation( "SeekPositionStream", [ IsInputStream, IsInt ] );
 ##
 #O  WriteAll( <output-stream>, <string> )  .  write whole string to file
 ##
-## appends  <string> to <output-stream>.   No final  newline is written.
-## The function returns `true' if the write succeeds and `fail' otherwise.
+##  appends  <string> to <output-stream>.   No final  newline is written.
+##  The function returns `true' if the write succeeds and `fail' otherwise.
 ##
-## A default method is installed which implements `WriteAll' by repreated
-## calls to `WriteByte'.
+##  A default method is installed which implements `WriteAll' by repreated
+##  calls to `WriteByte'.
 ##
-## When Printing or appending to a stream (using `PrintTo', or `AppendTo' or
-## when logging to a stream), the kernel generates a call to `WriteAll' for
-## each line output.
+##  When Printing or appending to a stream (using `PrintTo', or `AppendTo' or
+##  when logging to a stream), the kernel generates a call to `WriteAll' for
+##  each line output.
 ##
 
 DeclareOperation( "WriteAll", [ IsOutputStream, IsList ] );
@@ -273,17 +317,15 @@ DeclareOperation( "WriteAll", [ IsOutputStream, IsList ] );
 ##
 #O  WriteByte( <output-stream>, <byte> )  . . . . . . . . . write single byte
 ##
-## writes the  next  character  (given  as *integer*)  to the  output stream
-## <output-stream>.  The function  returns `true' if  the write succeeds and
-## `fail' otherwise.
+##  writes the  next  character  (given  as *integer*)  to the  output stream
+##  <output-stream>.  The function  returns `true' if  the write succeeds and
+##  `fail' otherwise.
 ## 
 ##  `WriteByte' is the basic operation for input streams. If a `WriteByte'
 ##  method is installed for a user-defined type of stream, then all the other
 ##  output stream operations will work (although possibly not at peak
 ##  efficiency).
 ##
-
-
 DeclareOperation( "WriteByte", [ IsOutputStream, IsInt ] );
                     
 
@@ -291,11 +333,11 @@ DeclareOperation( "WriteByte", [ IsOutputStream, IsInt ] );
 ##
 #O  WriteLine( <output-stream>, <string> ) .   write string plus newline
 ##
-## appends  <string> to <output-stream>.   A  final newline is written.
-## The function returns `true' if the write succeeds and `fail' otherwise.
+##  appends  <string> to <output-stream>.   A  final newline is written.
+##  The function returns `true' if the write succeeds and `fail' otherwise.
 ##
-## A default method is installed which implements `WriteLine' by repreated
-## calls to `WriteByte'.
+##  A default method is installed which implements `WriteLine' by repreated
+##  calls to `WriteByte'.
 ##
 DeclareOperation( "WriteLine", [ IsOutputStream, IsList ] );
                     
@@ -305,15 +347,15 @@ DeclareOperation( "WriteLine", [ IsOutputStream, IsList ] );
 #O  CloseStream( <stream> ) . . . . . . . . . . . . . . . . .  close a stream
 ##
 ##  In order  to preserve system resources  and to flush output streams every
-## stream should  be  closed  as soon   as  it is   no longer   used using
-## `CloseStream'.
+##  stream should  be  closed  as soon   as  it is   no longer   used using
+##  `CloseStream'.
 ## 
-## It is an error to  try to read  characters from or  write characters to a
-## closed  stream.   Closing a  stream tells  the {\GAP}   kernel and/or the
-## operating system kernel  that the file is  no longer needed.  This may be
-## necessary  because  the {\GAP} kernel  and/or  the  operating  system may
-## impose a limit on how many streams may be open simultaneously.
-
+##  It is an error to  try to read  characters from or  write characters to a
+##  closed  stream.   Closing a  stream tells  the {\GAP}   kernel and/or the
+##  operating system kernel  that the file is  no longer needed.  This may be
+##  necessary  because  the {\GAP} kernel  and/or  the  operating  system may
+##  impose a limit on how many streams may be open simultaneously.
+##
 DeclareOperation( "CloseStream", [ IsStream ] );
 
 
@@ -396,9 +438,9 @@ DeclareOperation( "OutputTextFile", [ IsList, IsBool ] );
 ##
 #F  OutputTextNone()  . . . . . . . . . . . . . . .  dummy output text stream
 ##
-##  returns a dummy output stream, which discards all received characters. ts
-##  main use is for calls to `Process' when the started program does not
-##  write anything.
+##  returns a dummy output stream, which discards all received characters. 
+##  Its main use is for calls to `Process' (see~"Process") when the started
+##  program does not write anything.
 ##
   
 UNBIND_GLOBAL( "OutputTextNone" );
@@ -421,7 +463,7 @@ DeclareGlobalFunction( "OutputTextUser" );
 #2
 ##  Input-output streams capture bidirectional 
 ##  communications between {\GAP} and another process, either locally
-##  or (@as yet unimplemented@) remotely
+##  or (@as yet unimplemented@) remotely.
 ##
 ##  Such streams support the basic operations of both input and output 
 ##  streams. They should provide some buffering, allowing output date to be 
@@ -435,9 +477,10 @@ DeclareGlobalFunction( "OutputTextUser" );
 
 #############################################################################
 ##
-#C  IsInputOutputStream . . . . . . . . . . . . . category of two-way streams 
+#C  IsInputOutputStream( <obj> )  . . . . . . . . category of two-way streams 
 ##
-##  `IsInputOutputStream' is the Category of Input-Output Streams,
+##  `IsInputOutputStream' is the Category of Input-Output Streams; it returns
+##  `true' if the <obj> is an input-output stream and `false' otherwise.
 ##
 
 DeclareCategory( "IsInputOutputStream", IsInputStream and
@@ -465,7 +508,8 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 ##  to, or read from the stream, and no control characters have special
 ##  effects, but the details of particular pseudo-tty implementations 
 ##  may effect this. The stream may try to read more characters from
-##  the child than the user requests in a `ReadByte' or `ReadLine' call, and
+##  the child than the user requests in a `ReadByte' or `ReadLine' call
+##  (see Section~"Operations for input streams"), and
 ##  store them up to handle subsequent reads more quickly, but will not
 ##  block waiting for such characters. All characters written are
 ##  delivered immediately to the pseudo-tty.
@@ -473,23 +517,50 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 
 #############################################################################
 ##
-#F  InputOutputLocalProcess(<current-dir>, <executable>, <args>)
+#F  InputOutputLocalProcess(<dir>, <executable>, <args>) %
 ##   . . .input/output stream to a process run as a "slave" on the local host
 ##
-##
-##  Calling `InputOutputLocalProcess( <current-dir>, <executable>, <args> )
 ##  starts up a slave process, whose executable file is <executable>, with
-##  `command line' arguments <args> and current directory
-##  <current-dir>. It returns an InputOutputStream object. Bytes
+##  ``command line'' arguments <args> in the directory <dir>. (Suitable 
+##  choices for <dir> are `DirectoryCurrent()' or `DirectoryTemporary()'
+##  (see Section~"Directories"); `DirectoryTemporary()' may be a good choice
+##  when <executable> generates output files that it doesn't itself remove
+##  afterwards.) 
+##  `InputOutputLocalProcess' returns an InputOutputStream object. Bytes
 ##  written to this stream are received by the slave process as if typed
 ##  at a terminal on standard input. Bytes written to standard output
-##  by the slave process can be read from the stream (some buffering
+##  by the slave process can be read from the stream. (Some buffering
 ##  of reads, but not writes may be done by the stream).
 ##
 ##  When the stream if closed, the signal SIGTERM is delivered to the child
 ##  process, which is expected to exit.
 ##
 DeclareGlobalFunction( "InputOutputLocalProcess" );
+
+#############################################################################
+##
+#O  PrintFormattingStatus( <stream> ) . . . . . . . . is stream line-breaking
+##
+##  returns  `true'  if  output  sent  to  the  output  stream  <stream>  via
+##  `PrintTo',  `AppendTo',  etc.  (but  not  `WriteByte',   `WriteLine'   or
+##  `WriteAll') will be formatted  with  line  breaks  and  indentation,  and
+##  `false' otherwise (see~"SetPrintFormattingStatus").
+##
+
+DeclareOperation( "PrintFormattingStatus", [IsOutputTextStream] );
+
+#############################################################################
+##
+#O  SetPrintFormattingStatus( <stream>, <newstatus> )
+##
+##  sets whether output sent to the output  stream  <stream>  via  `PrintTo',
+##  `AppendTo', etc. (but not `WriteByte', `WriteLine' or `WriteAll') will be
+##  formatted with line  breaks  and  indentation.  If  the  second  argument
+##  <newstatus> is `true' then output will be so formatted,  and  if  `false'
+##  then it will not.
+##
+
+DeclareOperation( "SetPrintFormattingStatus", [IsOutputTextStream, IsBool] );
 
 #############################################################################
 ##
@@ -504,9 +575,18 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##
 BIND_GLOBAL( "AppendTo", function( arg )
     if IsString(arg[1])  then
+        arg := ShallowCopy(arg);
+        arg[1] := USER_HOME_EXPAND(arg[1]);
         CallFuncList( APPEND_TO, arg );
     elif IsOutputStream(arg[1])  then
-        CallFuncList( APPEND_TO_STREAM, arg );
+        # direct call to `WriteAll' if arg is one string and formatting
+        # is switched off
+        if Length(arg) = 2 and PrintFormattingStatus(arg[1]) = false and 
+           IsStringRep(arg[2]) then
+           WriteAll(arg[1], arg[2]);
+        else
+          CallFuncList( APPEND_TO_STREAM, arg );
+        fi;
     else
         Error( "first argument must be a filename or output stream" );
     fi;
@@ -524,9 +604,18 @@ end );
 ##
 BIND_GLOBAL( "PrintTo", function( arg )    
     if IsString(arg[1])  then
+        arg := ShallowCopy(arg);
+        arg[1] := USER_HOME_EXPAND(arg[1]);
         CallFuncList( PRINT_TO, arg );
     elif IsOutputStream(arg[1])  then
-        CallFuncList( PRINT_TO_STREAM, arg );
+        # direct call to `WriteAll' if arg is one string and formatting
+        # is switched off
+        if Length(arg) = 2 and PrintFormattingStatus(arg[1]) = false and 
+           IsStringRep(arg[2]) then
+           WriteAll(arg[1], arg[2]);
+        else
+          CallFuncList( PRINT_TO_STREAM, arg );
+        fi;
     else
         Error( "first argument must be a filename or output stream" );
     fi;
@@ -535,11 +624,12 @@ end );
 
 #############################################################################
 ##
-#F  LogTo( <stream> ) . . . . . . . . . . . . . . . . . . . . log to a stream
+#O  LogTo( <stream> ) . . . . . . . . . . . . . . . . . . . . log to a stream
 ##
-##  `LogTo' may be used with a stream, just as with a file. See "File
-##   Operations" for details
-##  
+##  causes the subsequent interaction to  be  logged  to  the  output  stream
+##  <stream>. It works in precisely  the  same  way  as  it  does  for  files
+##  (see~"LogTo").
+##
 DeclareOperation( "LogTo", [ IsOutputStream ] );
 
 
@@ -547,46 +637,149 @@ DeclareOperation( "LogTo", [ IsOutputStream ] );
 ##
 #O  InputLogTo( <stream> )  . . . . . . . . . . . . . . log input to a stream
 ##
-##  `InputLogTo' may be used with a stream, just as with a file. See "File
-##   Operations" for details
+##  causes the subsequent input to be logged to the output  stream  <stream>.
+##  It works just like it does for files (see~"InputLogTo").
 ##
 DeclareOperation( "InputLogTo", [ IsOutputStream ] );
+DeclareSynonym( "LogInputTo",InputLogTo);
 
 
 #############################################################################
 ##
 #O  OutputLogTo( <stream> ) . . . . . . . . . . . . .  log output to a stream
 ##
-##  `OutputLogTo' may be used with a stream, just as with a file. See "File
-##   Operations" for details
+##  causes the subsequent output to be logged to the output stream  <stream>.
+##  It works just like it does for files (see~"OutputLogTo").
 ##
 DeclareOperation( "OutputLogTo", [ IsOutputStream ] );
+DeclareSynonym( "LogOutputTo",OutputLogTo);
 
 #############################################################################
 ##
-#O  PrintFormattingStatus( <stream> ) . . . . . . . . is stream line-breaking
+#O  FileDescriptorOfStream( <stream> )
 ##
-##  `PrintFormattingStatus( <stream> )' returns 'true' if output sent to 
-##   the stream via `PrintTo', `AppendTo', etc. (but not `WriteByte',
-##   `WriteLine' or `WriteAll') will be formatted with 
-##   line breaks and indentation, and `false' otherwise.
+##  returns the UNIX file descriptor of the underlying file. This is mainly
+##  useful for the `UNIXSelect' function call (see~"UNIXSelect"). This is
+##  as of now only available on UNIX-like operating systems and only for
+##  streams to local processes and local files.
 ##
 
-DeclareOperation( "PrintFormattingStatus", [IsOutputTextStream] );
+DeclareOperation("FileDescriptorOfStream", [IsStream] );
+
 
 #############################################################################
 ##
-#O  SetPrintFormattingStatus( <stream>, <newstatus> )
+#V  OnCharReadHookInFuncs . . . . . . . installed handler functions for input
 ##
-##  `SetPrintFormattingStatus( <stream>, <newstatus> )' sets whether 
-##   output sent to 
-##   the stream via `PrintTo', `AppendTo', etc. (but not `WriteByte',
-##   `WriteLine' or `WriteAll') will be formatted with 
-##   line breaks and indentation. If the second argument is `true'
-##  then output will be so formatted, if `false' then it will not.
+##  contains a list of functions that are installed as reading handlers for
+##  streams.
 ##
+DeclareGlobalVariable( "OnCharReadHookInFuncs",
+                       "installed input handlers for streams" );
+#############################################################################
+##
+#V  OnCharReadHookInFds . . . . . . . . file descriptors for reading handlers
+##
+##  contains a list of file descriptors of streams for which reading handlers
+##  are installed.
+##
+DeclareGlobalVariable( "OnCharReadHookInFds",
+                       "UNIX file descriptors of input streams" );
+#############################################################################
+##
+#V  OnCharReadHookInStreams . . . . . . . . . . streams with reading handlers
+##
+##  contains a list of streams for which reading handlers are installed.
+##
+DeclareGlobalVariable( "OnCharReadHookInStreams",
+                       "input streams for which handlers are installed" );
+#############################################################################
+##
+#V  OnCharReadHookOutFuncs . . . . . . installed handler functions for output
+##
+##  contains a list of functions that are installed as reading handlers for
+##  streams.
+##
+DeclareGlobalVariable( "OnCharReadHookOutFuncs",
+                       "installed output handlers for streams" );
+#############################################################################
+##
+#V  OnCharReadHookOutFds . . . . . . .  file descriptors for writing handlers
+##
+##  contains a list of file descriptors of streams for which writing handlers
+##  are installed.
+##
+DeclareGlobalVariable( "OnCharReadHookOutFds",
+                       "UNIX file descriptors of output streams" );
+#############################################################################
+##
+#V  OnCharReadHookOutStreams . . . . . . . . . . streams with writing handlers
+##
+##  contains a list of streams for which writing handlers are installed.
+##
+DeclareGlobalVariable( "OnCharReadHookOutStreams",
+                       "output streams for which handlers are installed" );
+#############################################################################
+##
+#V  OnCharReadHookExcFuncs . . . . installed handler functions for exceptions
+##
+##  contains a list of functions that are installed as exception handlers
+##  for streams.
+##
+DeclareGlobalVariable( "OnCharReadHookExcFuncs",
+                       "installed exception handlers for streams" );
+#############################################################################
+##
+#V  OnCharReadHookExcFds  . . . . . . file descriptors for exception handlers
+##
+##  contains a list of file descriptors of streams for which exception 
+##  handlers are installed.
+##
+DeclareGlobalVariable( "OnCharReadHookExcFds",
+                       "UNIX file descriptors of streams" );
+#############################################################################
+##
+#V  OnCharReadHookExcStreams . . . . . . . .  streams with exception handlers
+##
+##  contains a list of streams for which exception handlers are installed.
+##
+DeclareGlobalVariable( "OnCharReadHookExcStreams",
+                       "streams for which handlers are installed" );
 
-DeclareOperation( "SetPrintFormattingStatus", [IsOutputTextStream, IsBool] );
+
+#############################################################################
+##
+#F  InstallCharReadHookFunc( <stream>, <mode>, <func> )
+##
+##  installs the function <func> as a handler function for the stream
+##  <stream>. The argument <mode> decides, for what operations on the
+##  stream this function is installed. <mode> must be a string, in which
+##  a letter `r' means ``read'', `w' means ``write'' and `x' means
+##  ``exception'', according to the `select' function call in the UNIX
+##  C-library (see `man select' and "UNIXSelect"). More than one letter 
+##  is allowed in <mode>. As described above the function is called
+##  in a situation when {\GAP} is reading a character from the keyboard.
+##  Handler functions should not use much time to complete.
+##
+##  This functionality does not work on the Macintosh architecture and
+##  only works if the operating system has a `select' function.
+##
+DeclareGlobalFunction( "InstallCharReadHookFunc" );
+
+
+#############################################################################
+##
+#F  UnInstallCharReadHookFunc( <stream>, <func> )
+##
+##  uninstalls the function <func> as a handler function for the stream
+##  <stream>. All instances are deinstalled, regardless of the mode
+##  of operation (read, write, exception).
+##
+##  This functionality does not work on the Macintosh architecture and
+##  only works if the operating system has a `select' function.
+##
+DeclareGlobalFunction( "UnInstallCharReadHookFunc" );
+
 
 
 #############################################################################

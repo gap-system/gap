@@ -53,7 +53,8 @@ END{if (di==0 && quiet == 0) {
 function unblank (a) {
   # first ignore trailing comments
   match(a,/\#/);
-  if (RSTART>0)
+  # unless #I comment, discard
+  if (RSTART>0 && substr(a,RSTART+1,1)!="I")
     a=substr(a,1,RSTART-1);
 
   # remove blanks

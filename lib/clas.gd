@@ -141,6 +141,10 @@ DeclareGlobalFunction( "ConjugacyClassesByRandomSearch" );
 ##  `ConjugacyClass'.
 DeclareGlobalFunction( "ConjugacyClassesByOrbits" );
 
+# This function computes the classes by orbits if the group is small and the
+# `noaction' option is not set, otherwise it returns `fail'.
+DeclareGlobalFunction( "ConjugacyClassesForSmallGroup" );
+
 DeclareGlobalFunction( "DecomposedRationalClass" );
 DeclareGlobalFunction( "GroupByPrimeResidues" );
 
@@ -192,13 +196,16 @@ DeclareGlobalFunction( "GeneralStepClEANS" );
 ##  such that
 ##  (<candidate> `^' <operator>) =<representative>.
 ##
-##  %`consider'&is a function <consider>(<rep>,<cen>,<K>,<L>). Here <rep> is
-##  %an element of <G> and <cen>/<K> is the centralizer of <rep><K> modulo
-##  %<K>. In mode 0 when lifting from <G>/<K> to <G>/<L> this function is
-##  %called before performing the actual lifting and only those
-##  %representatives for which it returns `true' are passed to the next
-##  %level. This permits the calculation of only those classes with say small
-##  %centralizers or classes of restricted orders.
+##  `consider'&is a function <consider>(<fhome>,<rep>,<cenp>,<K>,<L>). Here
+##  <fhome> is a home pcgs for the factor group <F> in which the calculation
+##  currently takes place, <rep> is an element of the factor and <cenp> is a
+##  pcgs for the centralizer of <rep> modulo <K>. In mode 0, when lifting
+##  from <F>/<K> to <F>/<L> (note: for efficiency reasons, <F> can be
+##  different from <G> or <L> might be not trivial) this function is called
+##  before performing the actual lifting and only those representatives for
+##  which it returns `true' are passed to the next level. This permits for
+##  example the calculation of only those classes with small centralizers or
+##  classes of restricted orders.
 ##  \enditems
 DeclareGlobalFunction( "ClassesSolvableGroup" );
 
@@ -251,9 +258,11 @@ DeclareGlobalFunction( "RationalClassesSolvableGroup" );
 ##
 #F  CentralizerSizeLimitConsiderFunction(<sz>)
 ##
-##  returns a function <consider>(<rep>,<cen>,<K>,<L>) that can be used in
-##  `ClassesSolvableGroup' as the <consider> component of the options record
-##  to limit the lifting to centralizers of size at most <sz>.
+##  returns a function  (of the form func(<fhome>,<rep>,<cen>,<K>,<L>)
+##  )that can be used in `ClassesSolvableGroup' as the <consider> component
+##  of the options record. It will restrict the lifting to those classes,
+##  for which the size of the centralizer (in the factor) is at most <sz>.
+
 DeclareGlobalFunction( "CentralizerSizeLimitConsiderFunction" );
 
 DeclareGlobalFunction( "CompleteGaloisGroupPElement" );

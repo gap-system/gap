@@ -17,7 +17,7 @@ Revision.mgmadj_gd:=
 #C  IsMultiplicativeElementWithZero( <elt>)
 ##
 ##  Elements in a family which can be the operands of the 
-##  \* and the operation MultiplicativeZero.
+##  `\*' and the operation MultiplicativeZero.
 ##
 DeclareCategory("IsMultiplicativeElementWithZero",IsMultiplicativeElement);
 DeclareCategoryCollections("IsMultiplicativeElementWithZero");
@@ -44,7 +44,7 @@ DeclareOperation( "MultiplicativeZeroOp", [IsMultiplicativeElementWithZero] );
 #A  MultiplicativeZero( <M> ) 
 ##
 ##  Returns the multiplicative zero of the magma which is the element
-##  <z> such that for all <m> in <M>, <z>*<m>=<m>*<z>=<z>.
+##  <z> such that for all <m> in <M>, `<z> \* <m> = <m> \* <z> = <z>'.
 ##
 ##
 DeclareAttribute( "MultiplicativeZero", IsMultiplicativeElementWithZero );
@@ -54,7 +54,7 @@ DeclareAttribute( "MultiplicativeZero", IsMultiplicativeElementWithZero );
 ##
 #O  IsMultiplicativeZero( <M>, <z> ) 
 ##
-##  returns true iff <z>*<m> = <m>*<z> = <z> for all <m> in <M>
+##  returns true iff `<z> \* <m> = <m> \* <z> = <z>' for all <m> in <M>.
 ##
 DeclareOperation( "IsMultiplicativeZero", [ IsMagma, IsMultiplicativeElement ] );
 

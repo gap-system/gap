@@ -1071,6 +1071,31 @@ void            IntrBreak ( void )
 
 /****************************************************************************
 **
+*F  IntrContinue() . . . . . . . . . . . . . . . . . . interpret continue-statement
+**
+**  'IntrContinue'  is the action to interpret  a continue-statement.  It is called
+**  when the reader encounters a 'continue;'.
+**
+**  Continue-statements are  always coded (if  they are not ignored), since they
+**  can only appear in loops.
+*/
+void            IntrContinue ( void )
+{
+    /* ignore                                                              */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+
+    /* otherwise must be coding                                            */
+    if ( IntrCoding == 0 )
+      ErrorQuit("A continue statement can only appear inside a loop",0L,0L);
+    else
+      CodeContinue();
+    return;
+}
+
+
+/****************************************************************************
+**
 *F  IntrReturnObj() . . . . . . . . . . . .  interpret return-value-statement
 **
 **  'IntrReturnObj' is the action  to interpret a return-value-statement.  It
@@ -1799,6 +1824,72 @@ void            IntrIntExpr (
 
 /****************************************************************************
 **
+*F  IntrLongIntExpr(<str>)   .  .  interpret literal long integer expression
+**
+**  'IntrLongIntExpr' is the action to  interpret a long literal integer
+**  expression whose digits are stored in a string GAP object.
+*/
+void            IntrLongIntExpr (
+    Obj               string )
+{
+    Obj                 val;            /* value = <upp> * <pow> + <low>   */
+    Obj                 upp;            /* upper part                      */
+    Int                 pow;            /* power                           */
+    Int                 low;            /* lower part                      */
+    Int                 sign;           /* is the integer negative         */
+    UInt                i;              /* loop variable                   */
+    UChar *              str;            /* temp pointer                    */
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { CodeLongIntExpr( string ); return; }
+    if ( CompNowFuncs != 0 ) { return; }
+
+    /* get the signs, if any                                                */
+    str = CHARS_STRING(string);
+    sign = 1;
+    i = 0;
+    while ( str[i] == '-' ) {
+        sign = - sign;
+        i++;
+    }
+
+    /* collect the digits in groups of 8                                   */
+    low = 0;
+    pow = 1;
+    upp = INTOBJ_INT(0);
+    while ( str[i] != '\0' ) {
+        low = 10 * low + str[i] - '0';
+        pow = 10 * pow;
+        if ( pow == 100000000L ) {
+	  upp = PROD(upp,INTOBJ_INT(pow) );
+            upp = SUM(upp  , INTOBJ_INT(sign*low) );
+            str = CHARS_STRING(string);
+            pow = 1;
+            low = 0;
+        }
+        i++;
+    }
+
+    /* compose the integer value                                           */
+    val = 0;
+    if ( upp == INTOBJ_INT(0) ) {
+        val = INTOBJ_INT(sign*low);
+    }
+    else if ( pow == 1 ) {
+        val = upp;
+    }
+    else {
+        upp =  PROD( upp, INTOBJ_INT(pow) );
+        val = SUM( upp , INTOBJ_INT(sign*low) );
+    }
+
+    /* push the integer value                                              */
+    PushObj( val );
+}
+
+/****************************************************************************
+**
 *F  IntrTrueExpr()  . . . . . . . . . . . . interpret literal true expression
 **
 **  'IntrTrueExpr' is the action to interpret a literal true expression.
@@ -2181,25 +2272,18 @@ void            IntrListExprEnd (
 **
 *F  IntrStringExpr(<str>) . . . . . . . . interpret literal string expression
 */
-void            IntrStringExpr (
-    Char *              str )
+void           IntrStringExpr (
+    Obj               string )
 {
-    Obj                 val;            /* string value, result            */
-
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeStringExpr( str ); return; }
+    if ( IntrCoding    > 0 ) { CodeStringExpr( string ); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
-    /* create the string and copy the stuff                                */
-    val = NEW_STRING( SyStrlen(str) );
-    SyStrncat( CSTR_STRING(val), str, SyStrlen(str) );
-
-    /* push the string                                                     */
-    PushObj( val );
+    /* push the string, already newly created                              */
+    PushObj( string );
 }
-
 
 /****************************************************************************
 **
@@ -2512,7 +2596,7 @@ void            IntrRefLVar (
 	    ErrorReturnVoid(
 			    "Variable: '%s' must have an assigned value",
 			    (Int)NAME_LVAR( (UInt)( lvar )), 0L,
-			    "you can return after assigning a value" );
+			    "you can 'return;' after assigning a value" );
 	    
 	  }
 	PushObj(val);
@@ -2531,6 +2615,7 @@ void            IntrIsbLVar (
     if( IntrCoding > 0 )
       CodeIsbLVar( lvar );
 
+    /* or debugging */
     else
       {
 	PushObj(OBJ_LVAR(lvar) != (Obj)0 ? True : False);
@@ -2572,6 +2657,7 @@ void            IntrUnbHVar (
     /* otherwise must be coding                                            */
     if ( IntrCoding > 0 ) 
       CodeUnbHVar( hvar );
+    /* or debugging */
     else
       {
 	ASS_HVAR(hvar, 0);
@@ -2602,7 +2688,7 @@ void            IntrRefHVar (
 	    ErrorReturnVoid(
 			    "Variable: '%s' must have an assigned value",
 			    (Int)NAME_HVAR( (UInt)( hvar )), 0L,
-			    "you can return after assigning a value" );
+			    "you can 'return;' after assigning a value" );
 
 	  }
 	PushObj(val);
@@ -2645,6 +2731,12 @@ void            IntrAssDVar (
     /* if ( IntrCoding    > 0 ) { CodeAssDVar( gvar ); return; } */
     if ( CompNowFuncs != 0 ) { return; }
 
+    if ( IntrCoding > 0 ) {
+        ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
+                   dvar >> 10, dvar & 0x3FF );
+    }
+
+    
     /* get the right hand side                                             */
     rhs = PopObj();
 
@@ -2675,6 +2767,11 @@ void            IntrUnbDVar (
     if ( IntrIgnoring  > 0 ) { return; }
     /* if ( IntrCoding    > 0 ) { CodeUnbGVar( gvar ); return; } */
     if ( CompNowFuncs != 0 ) { return; }
+
+    if ( IntrCoding > 0 ) {
+        ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
+                   dvar >> 10, dvar & 0x3FF );
+    }
 
     /* assign the right hand side                                          */
     currLVars = CurrLVars;
@@ -2823,7 +2920,7 @@ void            IntrRefGVar (
     /* get and check the value                                             */
     if ( (val = ValAutoGVar( gvar )) == 0 ) {
         ErrorQuit(
-            "Variable: '%s' must have a value",
+            "Variable: '%s' must have a value\n",
             (Int)NameGVar(gvar), 0L );
     }
 
@@ -4303,8 +4400,13 @@ void             IntrAssertEnd3Args ( void )
   if ( IntrIgnoring  == 0 )
     {
       message = PopVoidObj();
-      if (message != (Obj) 0)
-        PrintObj(message);
+      if (message != (Obj) 0 )
+	{
+	  if (IS_STRING_REP( message ))
+	    PrintString1(message);
+	  else
+	    PrintObj(message);
+	}
     }
   else
     IntrIgnoring -= 2;

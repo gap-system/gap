@@ -840,12 +840,12 @@ InstallGlobalFunction( Permut, function( tbl, arec )
        suche:= function(s)
           local unten, oben, i, j, char, fail,
                 maxu, mino, c;
-   
+
           unten:= [];
           oben:= [];
-   
+
           maxu:= 0;
-   
+
           for i in [1..Length(Conditor[s].u)] do
             unten:= 0;
             for j in [1..s-1] do
@@ -856,7 +856,7 @@ InstallGlobalFunction( Permut, function( tbl, arec )
             else
               unten:= QuoInt(unten-1, Conditor[s].u[i][s]) + 1;
             fi;
-   
+
             maxu:= Maximum(maxu, unten);
           od;
           for i in [1..Length(Conditor[s].o)] do
@@ -875,7 +875,7 @@ InstallGlobalFunction( Permut, function( tbl, arec )
               mino:= Minimum(mino, oben);
             fi;
           od;
-   
+
           for i in [maxu..mino] do
             a[s]:= i;
             if s < ncha then
@@ -892,7 +892,7 @@ InstallGlobalFunction( Permut, function( tbl, arec )
           od;
           a[s]:= 0;
        end;
-   
+
        Conditor:= [];
        for i in [1..ncha] do
          Conditor[i]:= rec(o:= Filtered(permel.Conditor[i], x->x[i] < 0),
@@ -1215,7 +1215,7 @@ InstallGlobalFunction( PermCandidates,
     tbl_classes:= SizesConjugacyClasses( tbl );
     tbl_size:= Size( tbl );
 
-    if all = true then 
+    if all = true then
       ratchars:= characters;
     else
       ratchars:= RationalizedMat( Irr( tbl ) );
@@ -2466,7 +2466,7 @@ InstallGlobalFunction( PermChars, function( arg )
    elif IsSubset( names, [ "normalsubgroup", "nonfaithful", "torso" ] ) then
 
       # Search for faithful candidates only, using Gaussian elimination.
-      if "chars" in names then 
+      if "chars" in names then
         chars:= arec.chars;
       else
         chars:= RationalizedMat( List( Irr( tbl ), ValuesOfClassFunction ) );
@@ -2487,7 +2487,7 @@ InstallGlobalFunction( PermChars, function( arg )
    elif "torso" in names then
 
       # Use Gaussian elimination.
-      if "chars" in names then 
+      if "chars" in names then
         chars:= arec.chars;
       else
         chars:= RationalizedMat( List( Irr( tbl ), ValuesOfClassFunction ) );
@@ -2614,6 +2614,256 @@ InstallGlobalFunction( PermCharInfo, function( tbl, permchars )
                                letter:= "I"                               ),
                 ATLAS:= ATLAS );
 end );
+
+
+#############################################################################
+##
+#F  PermCharInfoRelative( <tbl>, <tbl2>, <permchars> )
+##
+InstallGlobalFunction( PermCharInfoRelative, function( tbl, tbl2, permchars )
+
+    local tblfustbl2,     # fusion of `tbl' in `tbl2'
+          size2,          # order of `tbl2'
+          cont,
+          bound,
+          ATL,
+          chars,
+          centralizers2,  # centralizer orders of `tbl2'
+          char,           # loop over `permchars'
+          cont1,
+          bound1,
+          order,          # order of the subgroup $U$
+          i,              # loop variable
+          irr,
+          irr2,
+          nccl2,
+          alp,
+          degreeset,
+          irreds,
+          chi,
+          irreds2,
+          irrnam2,
+          rest,
+          j,
+          chi2,
+          k,
+          pos,
+          ATLAS,
+          error,
+          scprs,
+          nam,
+          mult;
+
+    tblfustbl2:= GetFusionMap( tbl, tbl2 );
+    size2:= Size( tbl2 );
+    if tblfustbl2 = fail or size2 <> 2 * Size( tbl ) then
+      Error( "<tbl> must be of index 2 in <tbl2>, with stored fusion" );
+    fi;
+
+    cont  := [];
+    bound := [];
+    ATL   := [];
+    chars := [];
+
+    centralizers2:= SizesCentralizers( tbl2 );
+
+    if not IsEmpty( permchars ) and not IsList( permchars[1] ) then
+      permchars:= [ permchars ];
+    fi;
+    permchars:= List( permchars, ValuesOfClassFunction );
+
+    # Compute the info about the number of elements in the subgroup etc.
+    for char in permchars do
+      cont1  := [];
+      bound1 := [];
+      order  := size2 / char[1];
+      for i in [ 1 .. Length( char ) ] do
+        cont1[i]  := char[i] * order / centralizers2[i];
+        bound1[i] := order / GcdInt( order, centralizers2[i] );
+      od;
+      Add( cont, cont1 );
+      Add( bound, bound1 );
+      Append( chars, [ char, cont1, bound1 ] );
+    od;
+
+    # The remaining code deals with the `ATLAS' component.
+    if HasIrr( tbl ) and HasIrr( tbl2 ) then
+
+      irr  := Irr( tbl );
+      irr2 := Irr( tbl2 );
+      nccl2:= Length( irr2 );
+
+      alp:= [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k",
+              "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
+              "w", "x", "y", "z" ];
+
+      # `irreds[i]' contains all irreducibles of `tbl' of the `i'--th degree.
+      degreeset:= Set( List( irr, x -> x[1] ) );
+      irreds:= List( degreeset, x -> [] );
+      for chi in irr do
+        Add( irreds[ Position( degreeset, chi[1] ) ],
+             ValuesOfClassFunction( chi ) );
+      od;
+
+      # Extend the alphabet if necessary.
+      while Length( alp ) < Maximum( List( irreds, Length ) ) do
+        Append( alp,
+                List( alp, x -> Concatenation( "(", x, "')" ) ) );
+      od;
+
+      # Construct relative names for the irreducibles of `tbl2'.
+      irreds2:= [];
+      irrnam2:= [];
+      rest:= List( irr2, x -> x{ tblfustbl2 } );
+      for i in [ 1 .. Length( irreds ) ] do
+
+        irreds2[i]:= [];
+        irrnam2[i]:= [];
+
+        for j in [ 1 .. Length( irreds[i] ) ] do
+
+          chi2:= [];
+          for k in [ 1 .. nccl2 ] do
+            if rest[k] = irreds[i][j] then
+              Add( chi2, irr2[k] );
+            fi;
+          od;
+          if Length( chi2 ) = 2 then
+
+            # The `j'-th character of the `i'-th degree of `tbl' extends.
+            Append( irreds2[i], chi2 );
+            Add( irrnam2[i], Concatenation( alp[j], "^+" ) );
+            Add( irrnam2[i], Concatenation( alp[j], "^-" ) );
+
+          else
+
+            # The `j'-th character of the `i'-th degree of `tbl' fuses
+            # with another character of `tbl', of the same degree.
+            for k in [ 1 .. nccl2 ] do
+              if     rest[k][1] = 2 * irreds[i][j][1]
+                 and ScalarProduct( tbl, rest[k], irreds[i][j] ) <> 0 then
+                pos:= Position( irreds2[i], irr2[k] );
+                if pos = fail then
+                  Add( irreds2[i], irr2[k] );
+                  Add( irrnam2[i], ShallowCopy( alp[j] ) );
+                else
+                  Append( irrnam2[i][ pos ], alp[j] );
+                fi;
+              fi;
+            od;
+
+          fi;
+
+        od;
+
+      od;
+
+      ATLAS:= [];
+      for char in permchars do
+
+        ATL:= "";
+        error:= false;
+        for i in [ 1 .. Length( degreeset ) ] do
+
+          scprs:= List( irreds2[i], x -> ScalarProduct( tbl2, char, x ) );
+
+          if ForAny( scprs, x -> x < 0 ) then
+
+            # The decomposition into irreducibles has negative coefficients.
+            Info( InfoCharacterTable, 1,
+                  "PermCharInfoRelative: negative scalar product(s) with X",
+                  List( Filtered( [ 1 .. Length( scprs ) ],
+                                  x -> scprs[x] < 0 ),
+                        y -> Position( irr2, irreds2[i][y] ) ) );
+            error:= true;
+
+          elif ForAny( scprs, x -> x > 0 ) then
+
+            # There are constituents of the `i'-th degree.
+            if ATL <> "" then
+              Add( ATL, '+' );
+            fi;
+            Append( ATL, String( degreeset[i] ) );
+            for j in [ 1 .. Length( scprs ) ] do
+              nam:= false;
+              if scprs[j] <> 0 then
+
+                # The `j'-th character of the `i'-th degree occurs.
+                # If this is a `+' character then check whether also the
+                # corresponding `-' character occurs, and if yes then
+                # form constituents of the form `\pm'.
+                if irrnam2[i][j][ Length( irrnam2[i][j] ) ] = '+' then
+                  pos:= ShallowCopy( irrnam2[i][j] );
+                  pos[ Length( pos ) ]:= '-';
+                  pos:= Position( irrnam2[i], pos );
+                  if   scprs[ pos ] <= scprs[j] and 0 < scprs[ pos ] then
+                    mult:= scprs[ pos ];
+                    scprs[j]:= scprs[j] - mult;
+                    scprs[ pos ]:= 0;
+                    nam:= Concatenation( irrnam2[i][ pos ]{ [
+                          1 .. Length( irrnam2[i][ pos ] ) -1 ]}, "{\\pm}" );
+                  elif scprs[j] < scprs[ pos ] then
+                    mult:= scprs[j];
+                    scprs[ pos ]:= scprs[ pos ] - mult;
+                    scprs[j]:= 0;
+                    nam:= Concatenation( irrnam2[i][j]{ [
+                          1 .. Length( irrnam2[i][j] ) -1 ]}, "{\\pm}" );
+                  fi;
+
+                fi;
+
+              fi;
+
+              # Deal with the `\pm' constituents.
+              if nam <> false then
+                if mult = 1 then
+                  Append( ATL, nam );
+                else
+                  Add( ATL, '(' );
+                  Append( ATL, nam );
+                  Append( ATL, ")^{" );
+                  Append( ATL, String( mult ) );
+                  Add( ATL, '}' );
+                fi;
+              fi;
+
+              # Deal with the ordinary constituents.
+              if   scprs[j] = 1 then
+                Append( ATL, irrnam2[i][j] );
+              elif scprs[j] > 1 then
+                Add( ATL, '(' );
+                Append( ATL, irrnam2[i][j] );
+                Append( ATL, ")^{" );
+                Append( ATL, String( scprs[j] ) );
+                Add( ATL, '}' );
+              fi;
+
+            od;
+
+          fi;
+
+        od;
+
+        if error then
+          ATL:= "Error";
+        fi;
+        Add( ATLAS, ATL );
+
+      od;
+
+    else
+      ATLAS:= "error, no irreducibles bound";
+    fi;
+
+    # Return the result.
+    return rec( contained := cont,
+                bound     := bound,
+                display   := rec( classes:= Filtered( [ 1 .. nccl2 ],
+                                  x -> ForAny( permchars, y -> y[x]<>0 ) ),
+                                  chars:= chars,
+                                  letter:= "I" ),
+                ATLAS     := ATLAS );
+    end );
 
 
 #############################################################################

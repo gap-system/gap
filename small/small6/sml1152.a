@@ -4,7 +4,7 @@
 ##                                               Bettina Eick, Eamonn O'Brien
 ##
 Revision.sml1152_a :=
-    "@(#)$ $";
+    "@(#)$Id$";
 
 SMALL_GROUP_LIB[ 1152 ].2nil.codes :=
 [ 32772, 32784, 32832, 33024, 33792, 36864, 49152, 327700, 327748, 327760, 

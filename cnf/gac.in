@@ -7,20 +7,28 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-##  gac [-c|-d] [-o <output>] {-f<option>} <input>...
+##  gac [-d] [-c|-C] [-o <output>] {-f<option>} <input>...
 ##
 ##  'gac'  compiles the input files.   Input files  must be  GAP  source code
 ##  (suffix '.g' or '.gap'),  C source code (suffix '.c'),  or compiled  code
 ##  files (suffix '.o').
 ##
-##  If  neither '-c'  nor '-d' is given,  then 'gac'  produces a  new kernel,
-##  which contains the compiled code for all the input files.
+##  If '-d' is given then the code is compiled for dynamic loading
+##  
+##  If  neither '-c' nor '-C'  is given,  then 'gac'  compiles the code completely,
+##  producing a  new kernel for static compilation or a dynamically loadable '.so'
+##  file for dynamic compilation.
 ##
-##  If '-c' is given,  then 'gac' only compiles the input files to statically
-##  loadable object files, which must be linked together to a new kernel.
+##  If '-c' is given,  then 'gac' only compiles the input files to 
+##  '.o' object files, which must be further linked to make a static kernel or
+##  dynamically loadable module
 ##
-##  If '-d' is given, then 'gac' only compiles the input files to dynamically
-##  loadable object files, which can be loaded by a kernel at runtime.
+##  If '-C is given, then 'gac' only compiles the input files to C code, which 
+##  will require compilation and linking to be usable.
+##
+##  If '-r' is given, then statically compiled files will be assumed to be given
+##  by pathnames relative to the GAP root, and will be compiled for automatic loading
+##  when files are sought relative to the GAP root.
 ##
 ##  The option '-o <output>' tells 'gac' to name the output file <output>.
 ##
@@ -63,6 +71,7 @@ c_linker="@CC@"
 c_dyn_options="@CDYNOPTIONS@"
 c_dyn_linker="@CDYNLINKER@"
 c_dyn_linking="@CDYNLINKING@"
+c_dynlibs="@C_DYNLIBS@"
 
 # hardwire this for now. There is probably a nicer way 
 
@@ -78,7 +87,7 @@ OBJECTS="\
     saveload.o  scanner.o   sctable.o   set.o        stats.o     \
     streams.o   string.o    sysfiles.o  system.o     tietze.o    \
     vars.o      vecgf2.o    vecffe.o    vec8bit.o    vector.o    \
-    weakptr.o"
+    weakptr.o   iostream.o  float.o "
 
 #############################################################################
 ##
@@ -92,31 +101,23 @@ gap_compile () {
 
 #############################################################################
 ##
-#F  c_compile   <output> <input>
+#F  c_compile   <output> <input> <options>
 ##
 c_compile () {
-    echo ${c_compiler} ${c_options} -o $1 -I${gap_include} \
+    echo ${c_compiler}  $3 -o $1 -I${gap_dir} \
          -I${gap_bin} -DCONFIG_H -c $2
-    ${c_compiler} ${c_options} -o $1 -I${gap_include} \
+    ${c_compiler} $3 -o $1 -I${gap_dir} \
          -I${gap_bin} -DCONFIG_H -c $2
 }
 
 
 #############################################################################
 ##
-#F  c_compile_dyn <output> <input>
+#F  c_link_dyn <output> <input>
 ##
-c_compile_dyn () {
-    xxx=`basename $1 .so`
-    tmp=/tmp/$$_${xxx}.o
-    echo ${c_compiler} ${c_dyn_options} -o ${tmp} -I${gap_include}\
-	-I${gap_bin} -DCONFIG_H -c $2
-    ${c_compiler} ${c_dyn_options} -o ${tmp} -I${gap_include} \
-	-I${gap_bin} -DCONFIG_H -c $2
-    echo ${c_dyn_linker} ${c_dyn_linking} -o $1 ${tmp}
-    ${c_dyn_linker} ${c_dyn_linking} -o $1 ${tmp}
-    echo rm -f ${tmp}
-    rm -f ${tmp}
+c_link_dyn () {
+    echo ${c_dyn_linker} ${c_dyn_linking} -o $1 $2
+    ${c_dyn_linker} ${c_dyn_linking} -o $1 $2
 }
 
 
@@ -125,10 +126,112 @@ c_compile_dyn () {
 #F  c_link <output> <inputs_o>
 ##
 c_link () {
-    echo ${c_linker} -ldl -o $1 $2
-    ${c_linker} -ldl -o $1 $2
+    echo ${c_linker} $c_dynlibs -o $1 $2
+    ${c_linker} $c_dynlibs -o $1 $2
 }
 
+#############################################################################
+##
+#F process_o_file <basename> <filename> 
+##
+## Compile according to comp_mode and comp_howfar
+## 
+## This does everything except the final link phase in the static case
+## in that case it adds the basename and object file path of $names and $objects
+##
+
+process_o_file () {
+  name=$1
+  o_file=$2
+  if [ $comp_mode = comp_static ]; then
+    # just remember for the linking stage later
+    names="${names} ${name}"
+    objects="${objects} $o_file"
+  else
+     if [ "X$output" != "X" ]; then
+	so_file=$output
+     else
+	so_file=${name}.so
+     fi
+     c_link_dyn $so_file $o_file
+  fi
+}
+
+#############################################################################
+##
+#F process_c_file <basename> <filename> 
+##
+## Compile according to comp_mode and comp_howfar
+## 
+## This does everything except the final link phase in the static case
+## in that case it adds the basename and object file path of $names and $objects
+##
+
+process_c_file () {
+    name=$1
+    c_file=$2
+    if [ $comp_howfar != "object" ]; then
+       o_file=/tmp/$$_${name}.o
+        temps_o="${temps_o} ${o_file}"
+    elif [ "X$output" != "X" ]; then
+       o_file=$output
+    else 
+       o_file=${name}.o
+    fi
+    if [ $comp_mode = "comp_static" ]; then
+       c_compile_opts=$c_options
+    else
+       c_compile_opts=$c_dyn_options
+    fi
+    c_compile $o_file $c_file "$c_compile_opts"
+    if [ $comp_howfar = "link" ]; then
+      process_o_file $name $o_file
+      if [ $comp_mode != "comp_static" ]; then
+	echo rm -f $o_file
+	rm -f $o_file
+      fi
+    fi 
+}
+
+#############################################################################
+##
+#F process_gap_file <filename> <ext>
+##
+## Compile according to comp_mode and comp_howfar
+## 
+## This does everything except the final link phase in the static case
+## in that case it adds the basename and object file path of $names and $objects
+##
+
+process_gap_file () {
+  name=`basename $1 $2`
+
+  if [ $comp_howfar != "c_code" ]; then
+    c_file=/tmp/$$_${name}.c
+    temps_c="${temps_c} $gap_compile_to"
+  elif [ "X$output" = "X" ]; then
+     c_file=${name}.c
+  else
+     c_file=$output
+  fi
+  gap_compile_in=$input
+  gap_compile_name=$input  
+  if [ $comp_mode = "comp_static" ]; then
+    gap_compile_id=Init_${name}
+    if [ $comp_static_root_relative = "yes" ]; then
+	gap_compile_in=${gap_dir}/$input;
+        gap_compile_name=GAPROOT/$input;
+    fi
+  else
+    gap_compile_id=Init_Dynamic
+  fi
+  gap_compile $c_file ${gap_compile_in} $gap_compile_id ${gap_compile_name}
+  if [ $comp_howfar != "c_code" ]; then
+    process_c_file $name $c_file
+    echo rm -f $c_file
+    rm -f $c_file
+  fi
+}
 
 #############################################################################
 ##
@@ -146,24 +249,28 @@ trap "clean_up" 2 3
 ##  parse the arguments
 ##
 if [ $# = 0 ]; then
-    echo "usage: $0 [-c|-d|-e] [-o <output>] [-l <gap_binary>] <input>..."
+    echo "usage: $0 [-d|-r] [-c|-C] [-o <output>] [-l <gap_binary>] <input>..."
     exit 1
 fi
 
-comp_mode="comp_link"
+comp_mode="comp_static"
+comp_howfar="link"
+comp_static_root_relative="no"
 output=""
 inputs=""
 
 while [ $# -gt 0 ]; do
     case $1 in
 
-    -c|--compile)         comp_mode="comp_stat";;
+    -c|--compile)         comp_howfar="object";;
 
     -d|--dynamic)         comp_mode="comp_dyna";;
 
-    -C|--create-c)	  comp_mode="comp_to_c";;
+    -C|--create-c)	  comp_howfar="c_code";;
 
     -o|--output)          shift; output="$1";;
+  
+    -r)                   comp_static_root_relative="yes";;
 
     -ffast-int-arith)     if [ "X${gap_options}" = "X" ]; then
                               gap_options="-U FAST_INT_ARITH"
@@ -225,86 +332,26 @@ if [ "X${inputs}" = "X" ]; then
 fi
 
 
+
+
 #############################################################################
 ##
-##  compile and/or link
+#F  make_compstat 
 ##
-if [ ${comp_mode} = "comp_link" ]; then
 
-    # loop over the input files
-    for input in ${inputs}; do
-        case $input in
-
-        *.g) # compile '.g' source files
-            name=`basename ${input} .g`
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
-            temps_o="${temps_o} /tmp/$$_${name}.o"
-            c_compile /tmp/$$_${name}.o /tmp/$$_${name}.c
-            echo rm -f /tmp/$$_${name}.c
-            rm -f /tmp/$$_${name}.c
-            names="${names} ${name}"
-            objects="${objects} /tmp/$$_${name}.o";;
-
-        *.gap) # compile '.gap' source files
-            name=`basename ${input} .gap`
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
-            temps_o="${temps_o} /tmp/$$_${name}.o"            
-            c_compile /tmp/$$_${name}.o /tmp/$$_${name}.c
-            echo rm -f /tmp/$$_${name}.c
-            rm -f /tmp/$$_${name}.c
-            names="${names} ${name}"
-            objects="${objects} /tmp/$$_${name}.o";;
-
-        *.gd) # compile '.gd' source files
-            name=`basename ${input} .gd`
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
-            temps_o="${temps_o} /tmp/$$_${name}.o"            
-            c_compile /tmp/$$_${name}.o /tmp/$$_${name}.c
-            echo rm -f /tmp/$$_${name}.c
-            rm -f /tmp/$$_${name}.c
-            names="${names} ${name}"
-            objects="${objects} /tmp/$$_${name}.o";;
-
-        *.gi) # compile '.gi' source files
-            name=`basename ${input} .gi`
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
-            temps_o="${temps_o} /tmp/$$_${name}.o"            
-            c_compile /tmp/$$_${name}.o /tmp/$$_${name}.c
-            echo rm -f /tmp/$$_${name}.c
-            rm -f /tmp/$$_${name}.c
-            names="${names} ${name}"
-            objects="${objects} /tmp/$$_${name}.o";;
-
-        *.c) # compile '.c' source files
-            name=`basename ${input} .c`
-            temps_o="${temps_o} /tmp/$$_${name}.o"
-            c_compile /tmp/$$_${name}.o ${input}
-            names="${names} ${name}"
-            objects="${objects} /tmp/$$_${name}.o";;
-
-        *.o) # look over '.o' source files
-            name=`basename ${input} .o`
-            names="${names} ${name}"
-            objects="${objects} ${input}";;
-
-        esac
-    done
-
+make_compstat () {
     # make 'compstat.c' and compile it
     temps_c="${temps_c} /tmp/$$compstat.c"
     echo     "/* made by 'gac', can be thrown away */"   >  /tmp/$$compstat.c
-    echo     "#include \"compiled.h\""                   >> /tmp/$$compstat.c
+    echo     "#include \"src/compiled.h\""                   >> /tmp/$$compstat.c
 
-    echo     "#ifndef AVOID_PRECOMPILED"                 >> /tmp/$$compstat.c
-    echo     "extern StructInitInfo * Init__methsel ( void );" \
-                                                         >> /tmp/$$compstat.c
-    echo     "extern StructInitInfo * Init__type ( void );"    \
-                                                         >> /tmp/$$compstat.c
-    echo     "#endif"                                    >> /tmp/$$compstat.c
+    echo     "#ifndef AVOID_PRECOMPILED"                         >> /tmp/$$compstat.c
+    echo     "extern StructInitInfo * Init__methsel1 ( void );"  >> /tmp/$$compstat.c
+    echo     "extern StructInitInfo * Init__type1 ( void );"     >> /tmp/$$compstat.c
+    echo     "extern StructInitInfo * Init__filter1 ( void );"   >> /tmp/$$compstat.c
+    echo     "extern StructInitInfo * Init__oper1( void );"      >> /tmp/$$compstat.c
+    echo     "extern StructInitInfo * Init__random( void );"     >> /tmp/$$compstat.c
+    echo     "#endif"                                            >> /tmp/$$compstat.c
 
     for name in ${names}; do
         echo "extern StructInitInfo * Init__${name} ( void );" \
@@ -313,8 +360,11 @@ if [ ${comp_mode} = "comp_link" ]; then
 
     echo     "InitInfoFunc CompInitFuncs [] = {"         >> /tmp/$$compstat.c
     echo     "#ifndef AVOID_PRECOMPILED"                 >> /tmp/$$compstat.c
-    echo     "    Init__methsel,"                        >> /tmp/$$compstat.c
-    echo     "    Init__type,"                           >> /tmp/$$compstat.c
+    echo     "    Init__methsel1,"                       >> /tmp/$$compstat.c
+    echo     "    Init__type1,"                          >> /tmp/$$compstat.c
+    echo     "    Init__oper1,"                          >> /tmp/$$compstat.c
+    echo     "    Init__filter1,"                        >> /tmp/$$compstat.c
+    echo     "    Init__random,"                         >> /tmp/$$compstat.c
     echo     "#endif"                                    >> /tmp/$$compstat.c
 
     for name in ${names}; do
@@ -327,6 +377,37 @@ if [ ${comp_mode} = "comp_link" ]; then
     echo rm -f /tmp/$$compstat.c
     rm -f /tmp/$$compstat.c
     objects="/tmp/$$compstat.o ${objects}"
+}
+
+
+#############################################################################
+##
+##  main loop
+##
+
+# loop over the input files
+for input in ${inputs}; do
+  case $input in
+
+        *.g) process_gap_file $input .g;;
+        *.gap) process_gap_file $input .gap;;
+        *.gd) process_gap_file $input .gd;;
+        *.gi) process_gap_file $input .gi;;
+
+        *.c) # compile '.c' source files
+            name=`basename ${input} .c`
+            process_c_file $name $input;;
+
+        *.o) # look over '.o' source files
+            name=`basename ${input} .o`
+	    process_o_file $name $input;;
+        esac
+    done
+
+
+#  static link phase
+if [ $comp_mode = "comp_static" -a $comp_howfar = "link" ]; then
+    make_compstat
 
     # link everything together
     if [ "X${output}" = "X" ]; then output="gacout"; fi
@@ -336,175 +417,5 @@ if [ ${comp_mode} = "comp_link" ]; then
     c_link ${output} "${objects}"
     echo rm -f ${temps_o}
     rm -f ${temps_o}
-
-
-#############################################################################
-##
-##  compile only
-##
-elif [ ${comp_mode} = "comp_stat" ]; then
-
-    # loop over the input files
-    for input in ${inputs}; do
-        case $input in
-
-        *.g) # compile '.g' source files
-            name=`basename ${input} .g`
-            if [ "X${output}" = "X" ]; then output=${name}.o; fi
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
-            c_compile ${output} /tmp/$$_${name}.c
-            echo rm -f /tmp/$$_${name}.c
-            rm -f /tmp/$$_${name}.c
-            output="";;
-
-        *.gap) # compile '.gap' source files
-            name=`basename ${input} .gap`
-            if [ "X${output}" = "X" ]; then output=${name}.o; fi
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
-            c_compile ${output} /tmp/$$_${name}.c
-            echo rm -f /tmp/$$_${name}.c
-            rm -f /tmp/$$_${name}.c
-            output="";;
-
-        *.gd) # compile '.gd' source files
-            name=`basename ${input} .gd`
-            if [ "X${output}" = "X" ]; then output=${name}.o; fi
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
-            c_compile ${output} /tmp/$$_${name}.c
-            echo rm -f /tmp/$$_${name}.c
-            rm -f /tmp/$$_${name}.c
-            output="";;
-
-        *.gi) # compile '.gi' source files
-            name=`basename ${input} .gi`
-            if [ "X${output}" = "X" ]; then output=${name}.o; fi
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
-            c_compile ${output} /tmp/$$_${name}.c
-            echo rm -f /tmp/$$_${name}.c
-            rm -f /tmp/$$_${name}.c
-            output="";;
-
-        *.c) # compile '.c' source files
-            name=`basename ${input} .c`
-            if [ "X${output}" = "X" ]; then output=${name}.o; fi
-            c_compile ${output} ${input}
-            output="";;
-
-        esac
-    done
-
-
-#############################################################################
-##
-##  compile dynamically loaded
-##
-elif [ ${comp_mode} = "comp_dyna" ]; then
-
-    # loop over the input files
-    for input in ${inputs}; do
-        case $input in
-
-        *.g) # compile '.g' source files
-            name=`basename ${input} .g`
-            if [ "X${output}" = "X" ]; then output=${name}.so; fi
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic" ${input}
-            c_compile_dyn ${output} /tmp/$$_${name}.c
-            echo rm -f /tmp/$$_${name}.c
-            rm -f /tmp/$$_${name}.c
-            output="";;
-
-        *.gap) # compile '.gap' source files
-            name=`basename ${input} .gap`
-            if [ "X${output}" = "X" ]; then output=${name}.so; fi
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic" ${input}
-            c_compile_dyn ${output} /tmp/$$_${name}.c
-            echo rm -f /tmp/$$_${name}.c
-            rm -f /tmp/$$_${name}.c
-            output="";;
-
-        *.gd) # compile '.gd' source files
-            name=`basename ${input} .gd`
-            if [ "X${output}" = "X" ]; then output=${name}.so; fi
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic" ${input}
-            c_compile_dyn ${output} /tmp/$$_${name}.c
-            echo rm -f /tmp/$$_${name}.c
-            rm -f /tmp/$$_${name}.c
-            output="";;
-
-        *.gi) # compile '.gi' source files
-            name=`basename ${input} .gi`
-            if [ "X${output}" = "X" ]; then output=${name}.so; fi
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic" ${input}
-            c_compile_dyn ${output} /tmp/$$_${name}.c
-            echo rm -f /tmp/$$_${name}.c
-            rm -f /tmp/$$_${name}.c
-            output="";;
-
-        *.c) # compile '.c' source files
-            name=`basename ${input} .c`
-            if [ "X${output}" = "X" ]; then output=${name}.so; fi
-            c_compile_dyn ${output} ${input}
-            output="";;
-
-        esac
-    done
-
-
-#############################################################################
-##
-##  compile to c only
-##
-elif [ ${comp_mode} = "comp_to_c" ]; then
-
-    # loop over the input files
-    for input in ${inputs}; do
-        case $input in
-
-        *.g) # compile '.g' source files
-            name=`basename ${input} .g`
-            if [ "X${output}" = "X" ]; then output=${name}.c; fi
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
-	    mv /tmp/$$_${name}.c ${output}
-            output="";;
-
-        *.gap) # compile '.gap' source files
-            name=`basename ${input} .gap`
-            if [ "X${output}" = "X" ]; then output=${name}.c; fi
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
-	    mv /tmp/$$_${name}.c ${output}
-            output="";;
-
-        *.gd) # compile '.gd' source files
-            name=`basename ${input} .gd`
-            if [ "X${output}" = "X" ]; then output=${name}.c; fi
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
-	    mv /tmp/$$_${name}.c ${output}
-            output="";;
-
-        *.gi) # compile '.gi' source files
-            name=`basename ${input} .gi`
-            if [ "X${output}" = "X" ]; then output=${name}.c; fi
-            temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
-	    mv /tmp/$$_${name}.c ${output}
-            output="";;
-
-        *.c) # compile '.c' source files
-	    echo "cannot compile '${input}' to C"
-            output="";;
-
-        esac
-    done
-
 fi
+

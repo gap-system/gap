@@ -593,7 +593,7 @@ end );
 
 
 #############################################################################
-InstallMethod( SetCommutator,
+InstallMethod( SetCommutator,"elements",
     IsIdenticalObjFamiliesColObjObjObj,
     [ IsPolycyclicCollector and IsMutable,
       IsMultiplicativeElementWithInverse,
@@ -609,7 +609,7 @@ end );
 
 
 #############################################################################
-InstallMethod( SetCommutatorNC, 
+InstallMethod( SetCommutatorNC,"elements", 
     IsIdenticalObjFamiliesColObjObjObj,
     [ IsPowerConjugateCollector and IsMutable,
       IsMultiplicativeElementWithInverse,
@@ -625,7 +625,7 @@ end );
 
 
 #############################################################################
-InstallMethod( SetCommutatorNC,
+InstallMethod( SetCommutatorNC,"integers",
     IsIdenticalObjFamiliesColXXXXXXObj,
     [ IsPowerConjugateCollector and IsMutable,
       IsInt,
@@ -639,7 +639,7 @@ end );
 
 
 #############################################################################
-InstallMethod( SetCommutator,
+InstallMethod( SetCommutator,"integers",
     IsIdenticalObjFamiliesColXXXXXXObj,
     [ IsPowerConjugateCollector and IsMutable,
       IsInt,

@@ -99,7 +99,7 @@ local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
     D.enum:=enum;
     D.ClassElement:=ClassElementSmallGroup;
     
-    D.classMap:=List([1..Size(G)],i->D.klanz);
+    D.classMap:=ListWithIdenticalEntries(Size(G),D.klanz);
     for j in [1..D.klanz-1] do
       for i in Orbit(G,D.classreps[j]) do
         D.classMap[Position(enum,i)]:=j;
@@ -187,7 +187,7 @@ local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
         D.p2:=fos[2]; 
 
         fs  := Stabilizer(G,D.p1);
-        fos := First(Orbits(fs,[1..D.permdegree]),o->D.p2 in o);
+        fos := First(OrbitsDomain(fs,[1..D.permdegree]),o->D.p2 in o);
         fr  := List([1..D.permdegree],x->RepresentativeAction(G,x,D.p1));
         fc:=[];
         for s in ambiguousStructures do

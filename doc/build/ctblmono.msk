@@ -60,14 +60,16 @@ gap> List( Irr( Sl23 ), Degree );
 \beginexample
 gap> n:= DerivedSubgroup( Sl23 );;
 gap> chi:= Irr( Sl23 )[7];
-Character(CharacterTable(SL(2,3)), [ 3, -1, 0, 0, 0, 0, 3 ] )
+Character( CharacterTable( SL(2,3) ), [ 3, 3, 0, 0, 0, 0, -1 ] )
 gap> TestHomogeneous( chi, n );
-rec( isHomogeneous:=false, comment := "restriction checked",
-   character:=Character(CharacterTable(
-     Group([[[0*Z(3),Z(3)^0],[Z(3),0*Z(3)]],[[Z(3)^0,Z(3)],[Z(3),Z(3)]]])),
-   [1,-1,-1,1,1]), multiplicity:=1 )
+rec( isHomogeneous := false, comment := "restriction checked", 
+  character := Character( CharacterTable( Group(
+    [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 
+      [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
+      [ [ Z(3), Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ]) ), [ 1, -1, -1, 1, 1 ] ), 
+  multiplicity := 1 )
 gap> chi:= Irr( Sl23 )[4];
-Character(CharacterTable(SL(2,3)), [ 2, 0, 1, -1, 1, -1, -2 ] )
+Character( CharacterTable( SL(2,3) ), [ 2, -2, 1, 1, -1, -1, 0 ] )
 gap> cln:= ClassPositionsOfNormalSubgroup( CharacterTable( Sl23 ), n );
 [ 1, 2, 7 ]
 gap> TestHomogeneous( chi, cln );
@@ -85,16 +87,17 @@ false
 \Declaration{TestQuasiPrimitive}
 \beginexample
 gap> chi:= Irr( Sl23 )[4];
-Character(CharacterTable(SL(2,3)), [ 2, 0, 1, -1, 1, -1, -2 ] )
+Character( CharacterTable( SL(2,3) ), [ 2, -2, 1, 1, -1, -1, 0 ] )
 gap> TestQuasiPrimitive( chi );
 rec( isQuasiPrimitive := true, comment := "all restrictions checked" )
 gap> chi:= Irr( Sl23 )[7];
-Character(CharacterTable(SL(2,3)), [ 3, -1, 0, 0, 0, 0, 3 ] )
+Character( CharacterTable( SL(2,3) ), [ 3, 3, 0, 0, 0, 0, -1 ] )
 gap> TestQuasiPrimitive( chi );
-rec( isQuasiPrimitive := false, comment := "restriction checked",
+rec( isQuasiPrimitive := false, comment := "restriction checked", 
   character := Character( CharacterTable( Group(
-    [ [[0*Z(3),Z(3)^0],[Z(3),0*Z(3)]],
-      [[Z(3)^0,Z(3)],[Z(3),Z(3)]] ])), [ 1, -1, -1, 1, 1 ] ) )
+    [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 
+      [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
+      [ [ Z(3), Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ]) ), [ 1, -1, -1, 1, 1 ] ) )
 \endexample
 
 \Declaration{TestInducedFromNormalSubgroup}
@@ -103,11 +106,11 @@ gap> List( Irr( Sl23 ), IsInducedFromNormalSubgroup );
 [ false, false, false, false, false, false, true ]
 gap> List( Irr( S4 ){ [ 1, 3, 4 ] },
 >          TestInducedFromNormalSubgroup );
-[ rec( isInduced := false, comment := "linear character" ),
-  rec( isInduced := true, comment := "induced from component '.character'",
-      character := Character( CharacterTable(Alt( [ 1 .. 4 ] )),
-  [ 1, 1, E(3), E(3)^2 ] ) ),
-  rec( isInduced := false, comment := "all maximal normal subgroups checked"
+[ rec( isInduced := false, comment := "linear character" ), 
+  rec( isInduced := true, comment := "induced from component '.character'", 
+      character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), 
+        [ 1, 1, E(3), E(3)^2 ] ) ), 
+  rec( isInduced := false, comment := "all maximal normal subgroups checked" 
      ) ]
 \endexample
 
@@ -124,6 +127,8 @@ rec( isMonomial := true, comment := "abelian by supersolvable group" )
 gap> TestMonomial( Sl23 );
 rec( isMonomial := false, comment := "list Delta( G ) contains entry > 1" )
 \endexample
+
+\Declaration{TestMonomialUseLattice}
 
 \Declaration{IsMonomialNumber}
 \beginexample
@@ -144,11 +149,11 @@ rec( isMonomial := "?", comment := "no decision by cheap tests" )
 \Declaration{TestSubnormallyMonomial}
 \beginexample
 gap> TestSubnormallyMonomial( S4 );
-rec( isSubnormallyMonomial := false,
-  character := Character(CharacterTable(S4), [ 3, -1, -1, 0, 1 ] ),
+rec( isSubnormallyMonomial := false, 
+  character := Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ), 
   comment := "found non-SM character" )
 gap> TestSubnormallyMonomial( Irr( S4 )[4] );
-rec( isSubnormallyMonomial := false,
+rec( isSubnormallyMonomial := false, 
   comment := "all subnormal subgroups checked" )
 gap> TestSubnormallyMonomial( DerivedSubgroup( S4 ) );
 rec( isSubnormallyMonomial := true, comment := "all irreducibles checked" )
@@ -159,7 +164,7 @@ rec( isSubnormallyMonomial := true, comment := "all irreducibles checked" )
 gap> IsSubnormallyMonomial( DerivedSubgroup( S4 ) );
 true
 gap> TestRelativelySM( DerivedSubgroup( S4 ) );
-rec( isRelativelySM := true,
+rec( isRelativelySM := true, 
   comment := "normal subgroups are abelian or have nilpotent factor group" )
 \endexample
 

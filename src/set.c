@@ -225,7 +225,7 @@ Obj FuncLIST_SORTED_LIST (
         list = ErrorReturnObj(
             "Set: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
-            "you can return a small list for <list>" );
+            "you can replace <list> via 'return <list>;'" );
     }
 
     /* if the list is empty create a new empty list                        */
@@ -301,14 +301,14 @@ Obj             FuncIS_EQUAL_SET (
         list1 = ErrorReturnObj(
             "IsEqualSet: <list1> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list1), 0L,
-            "you can return a small list for <list1>" );
+            "you can replace <list1> via 'return <list1>;'" );
     }
     if ( ! IsSet( list1 ) )  list1 = SetList( list1 );
     while ( ! IS_SMALL_LIST(list2) ) {
         list2 = ErrorReturnObj(
             "IsEqualSet: <list2> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list2), 0L,
-            "you can return a small list for <list2>" );
+            "you can replace <list2> via 'return <list2>;'" );
     }
     if ( ! IsSet( list2 ) )  list2 = SetList( list2 );
 
@@ -348,13 +348,13 @@ Obj             FuncIS_SUBSET_SET (
         set1 = ErrorReturnObj(
             "IsSubsetSet: <set1> must be a small list (not a %s)",
             (Int)TNAM_OBJ(set1), 0L,
-            "you can return a small list for <set1>" );
+            "you can replace <set1> via 'return <set1>;'" );
     }
     while ( ! IS_SMALL_LIST(set2) ) {
         set2 = ErrorReturnObj(
             "IsSubsetSet: <set2> must be a small list (not a %s)",
             (Int)TNAM_OBJ(set2), 0L,
-            "you can return a small list for <set2>" );
+            "you can replace <set2> via 'return <set2>;'" );
     }
     if ( ! IsSet( set1 ) )  set1 = SetList( set1 );
 
@@ -456,13 +456,14 @@ Obj FuncADD_SET (
 					 (not the new one)               */
   UInt                wasHom;
   UInt                wasNHom;
+  UInt                wasTab;
     
   /* check the arguments                                                 */
   while ( ! IsSet(set) || ! IS_MUTABLE_OBJ(set) ) {
     set = ErrorReturnObj(
 			 "AddSet: <set> must be a mutable proper set (not a %s)",
 			 (Int)TNAM_OBJ(set), 0L,
-			 "you can return a set for <set>" );
+			 "you can replace <set> via 'return <set>;'" );
   }
   len = LEN_LIST(set);
 
@@ -489,6 +490,7 @@ Obj FuncADD_SET (
     if ( HAS_FILT_LIST( set, FN_IS_SSORT ) ) {
       isCyc = (TNUM_OBJ(set) == T_PLIST_CYC_SSORT);
       wasHom = HAS_FILT_LIST(set, FN_IS_HOMOG);
+      wasTab = HAS_FILT_LIST(set, FN_IS_TABLE);
       wasNHom = HAS_FILT_LIST(set, FN_IS_NHOMOG);
       CLEAR_FILTS_LIST(set);
       /* the result of addset is always dense */
@@ -499,13 +501,18 @@ Obj FuncADD_SET (
                                    conclude more */
       if ( ! IS_MUTABLE_OBJ(obj) ) {
 				/* a one element list is automatically
-                                   homogenous */
+                                   homogenous  and ssorted */
 	if (len == 0 )
 	  {
 	    if (TNUM_OBJ(obj) <= T_CYC)
 	      RetypeBag( set, T_PLIST_CYC_SSORT);
 	    else
-	      SET_FILT_LIST( set, FN_IS_HOMOG );
+	      {
+		SET_FILT_LIST( set, FN_IS_HOMOG );
+		SET_FILT_LIST( set, FN_IS_SSORT );
+		if (IS_HOMOG_LIST(obj))	/* it might be a table */
+		  SET_FILT_LIST( set, FN_IS_TABLE );
+	      }
 	  }
 	else
 	  {
@@ -523,7 +530,14 @@ Obj FuncADD_SET (
 		if (!SyInitializing) {
 		  notpos = (pos == 1) ? 2 : 1;
 		  if (FAMILY_OBJ(ELM_PLIST(set,notpos)) == FAMILY_OBJ(obj))
-		    SET_FILT_LIST(set, FN_IS_HOMOG);
+		    {
+		      SET_FILT_LIST(set, FN_IS_HOMOG);
+		      if (wasTab) {
+			if (IS_HOMOG_LIST( obj ))
+			  SET_FILT_LIST(set, FN_IS_TABLE);
+		      }
+		    }
+
 		  else
 		    SET_FILT_LIST(set, FN_IS_NHOMOG);
 		}
@@ -577,7 +591,7 @@ Obj FuncREM_SET (
         set = ErrorReturnObj(
             "RemoveSet: <set> must be a mutable proper set (not a %s)",
             (Int)TNAM_OBJ(set), 0L,
-            "you can return a set for <set>" );
+            "you can replace <set> via 'return <set>;'" );
     }
     len = LEN_LIST(set);
 
@@ -652,13 +666,13 @@ Obj FuncUNITE_SET (
         set1 = ErrorReturnObj(
             "UniteSet: <set1> must be a mutable proper set (not a %s)",
             (Int)TNAM_OBJ(set1), 0L,
-            "you can return a set for <set1>" );
+            "you can replace <set1> via 'return <set1>;'" );
     }
     while ( ! IS_SMALL_LIST(set2) ) {
         set2 = ErrorReturnObj(
             "UniteSet: <set2> must be a small list (not a %s)",
             (Int)TNAM_OBJ(set2), 0L,
-            "you can return a small list for <set2>" );
+            "you can replace <set2> via 'return <set2>;'" );
     }
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 
@@ -771,13 +785,13 @@ Obj FuncINTER_SET (
         set1 = ErrorReturnObj(
             "IntersectSet: <set1> must be a mutable proper set (not a %s)",
             (Int)TNAM_OBJ(set1), 0L,
-            "you can return a set for <set1>" );
+            "you can replace <set1> via 'return <set1>;'" );
     }
     while ( ! IS_SMALL_LIST(set2) ) {
         set2 = ErrorReturnObj(
             "IntersectSet: <set2> must be a small list (not a %s)",
             (Int)TNAM_OBJ(set2), 0L,
-            "you can return a small list for <set2>" );
+            "you can replace <set2> via 'return <set2>;'" );
     }
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 
@@ -871,13 +885,13 @@ Obj FuncSUBTR_SET (
         set1 = ErrorReturnObj(
             "SubtractSet: <set1> must be a mutable proper set (not a %s)",
             (Int)TNAM_OBJ(set1), 0L,
-            "you can return a set for <set1>" );
+            "you can replace <set1> via 'return <set1>;'" );
     }
     while ( ! IS_SMALL_LIST(set2) ) {
         set2 = ErrorReturnObj(
             "SubtractSet: <set2> must be a small list (not a %s)",
             (Int)TNAM_OBJ(set2), 0L,
-            "you can return a small list for <set2>" );
+            "you can replace <set2> via 'return <set2>;'" );
     }
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 

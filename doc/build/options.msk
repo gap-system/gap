@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%A  options.msk                    GAP documentation           Steve Linton
+%A  options.msk                    GAP documentation             Steve Linton
 %%
 %A  @(#)$Id$
 %%
@@ -14,6 +14,8 @@
 
 \Declaration{PopOptions}
 
+\Declaration{ResetOptionsStack}
+
 \Declaration{ValueOption}
 
 \Declaration{DisplayOptionsStack}
@@ -22,13 +24,13 @@
 
 
 The example below shows simple manipulation of the Options Stack,
-first using 'PushOptions' and 'PopOptions' and then using the special
+first using `PushOptions' and `PopOptions' and then using the special
 function calling syntax. 
 
 \beginexample
-gap> foo := function()                                                         
-> Print("myopt1 = ", ValueOption("myopt1"),                                    
->       " myopt2 = ",ValueOption("myopt2"),"\n");                              
+gap> foo := function()
+> Print("myopt1 = ", ValueOption("myopt1"),
+>       " myopt2 = ",ValueOption("myopt2"),"\n");
 > end;
 function(  ) ... end
 gap> foo();

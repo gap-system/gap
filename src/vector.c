@@ -48,148 +48,9 @@ const char * Revision_vector_c =
 
 #include        "range.h"               /* ranges                          */
 
+#include <assert.h>
 
-/****************************************************************************
-**
-
-*F  IsXTNumEmpty(<list>)  . test if a list is an empty list (almost a vector)
-*/
-Int             IsXTNumEmpty (
-    Obj                 list )
-{
-    return (LEN_LIST( list ) == 0);
-}
-
-
-/****************************************************************************
-**
-*F  IsXTNumPlistCyc(<list>) . . . . . . . . . . .  test if a list is a vector
-**
-**  'IsXTNumPlistCyc'  returns 1  if   the list <list>  is   a vector  and  0
-**  otherwise.    As a  sideeffect    the type of  the   list  is  changed to
-**  'T_VECTOR'.
-**
-**  'IsXTNumPlistCyc' is the function in 'IsXTNumListFuncs' for vectors.
-*/
 #define IS_IMM_PLIST(list)  ((TNUM_OBJ(list) - T_PLIST) % 2)
-
-Int             IsXTNumPlistCyc (
-    Obj                 list )
-{
-    Int                 isVector;       /* result                          */
-    UInt                len;            /* length of the list              */
-    Obj                 elm;            /* one element of the list         */
-    UInt                i;              /* loop variable                   */
-
-    /* if we already know that the list is a vector, very good             */
-    if      ( T_PLIST_CYC    <= TNUM_OBJ(list)
-           && TNUM_OBJ(list) <= T_PLIST_CYC_SSORT +IMMUTABLE ) {
-        isVector = 1;
-    }
-
-    /* if it is a nonempty plain list, check the entries                   */
-    else if ( (TNUM_OBJ(list) == T_PLIST
-            || TNUM_OBJ(list) == T_PLIST +IMMUTABLE
-            || TNUM_OBJ(list) == T_PLIST_DENSE
-            || TNUM_OBJ(list) == T_PLIST_DENSE +IMMUTABLE
-            || (T_PLIST_HOM <= TNUM_OBJ(list)
-             && TNUM_OBJ(list) <= T_PLIST_HOM_SSORT +IMMUTABLE))
-           && LEN_PLIST(list) != 0
-           && ELM_PLIST(list,1) != 0
-           && TNUM_OBJ( ELM_PLIST(list,1) ) <= T_CYC ) {
-        len = LEN_PLIST(list);
-        for ( i = 2; i <= len; i++ ) {
-            elm = ELM_PLIST( list, i );
-            if ( elm == 0
-              || ! (TNUM_OBJ(elm) <= T_CYC) )
-                break;
-        }
-        isVector = (len < i) ? 1 : 0;
-        if ( isVector )  RetypeBag( list, T_PLIST_CYC + IS_IMM_PLIST(list) );
-    }
-
-    /* a range is a vector, but we have to convert it                      */
-    /*N 1993/01/30 martin finds it nasty that vector knows about ranges    */
-    else if ( TNUM_OBJ(list) == T_RANGE_NSORT ) {
-        PLAIN_LIST( list );
-        RetypeBag( list, T_PLIST_CYC_NSORT + IS_IMM_PLIST(list) );
-        isVector = 1;
-    }
-    else if ( TNUM_OBJ(list) == T_RANGE_SSORT ) {
-        PLAIN_LIST( list );
-        RetypeBag( list, T_PLIST_CYC_SSORT + IS_IMM_PLIST(list) );
-        isVector = 1;
-    }
-
-    /* otherwise the list is certainly not a vector                        */
-    else {
-        isVector = 0;
-    }
-
-    /* return the result                                                   */
-    return isVector;
-}
-
-
-/****************************************************************************
-**
-*F  IsXTNumMatCyc(<list>) . . . . . . . . . . . .  test if a list is a matrix
-**
-**  'IsXTNumMatCyc' returns 1 if the list <list> is a matrix and 0 otherwise.
-**  As a sideeffect the type of the rows is changed to 'T_VECTOR'.
-**
-**  'IsXTNumMatCyc' is the function in 'IsXTNumListFuncs' for matrices.
-*/
-Int             IsXTNumMatCyc (
-    Obj                 list )
-{
-    Int                 isMatrix;       /* result                          */
-    UInt                cols;           /* length of the rows              */
-    UInt                len;            /* length of the list              */
-    Obj                 elm;            /* one element of the list         */
-    UInt                i;              /* loop variable                   */
-
-    /* if it is a nonempty plain list, check the entries                   */
-    if ( (TNUM_OBJ(list) == T_PLIST
-       || TNUM_OBJ(list) == T_PLIST +IMMUTABLE
-       || TNUM_OBJ(list) == T_PLIST_DENSE
-       || TNUM_OBJ(list) == T_PLIST_DENSE +IMMUTABLE
-       || (T_PLIST_HOM <= TNUM_OBJ(list)
-        && TNUM_OBJ(list) <= T_PLIST_HOM_SSORT +IMMUTABLE))
-      && LEN_PLIST( list ) != 0
-      && ELM_PLIST( list, 1 ) != 0
-      && IsXTNumPlistCyc( ELM_PLIST( list, 1 ) ) ) {
-        len = LEN_PLIST( list );
-        elm = ELM_PLIST( list, 1 );
-        cols = LEN_PLIST( elm );
-        for ( i = 2; i <= len; i++ ) {
-            elm = ELM_PLIST( list, i );
-            if ( elm == 0
-              || ! IsXTNumPlistCyc( elm )
-              || LEN_PLIST( elm ) != cols )
-                break;
-        }
-        isMatrix = (len < i) ? 1 : 0;
-    }
-
-    else if (T_PLIST_TAB <= TNUM_OBJ(list) &&
-	     TNUM_OBJ(list) <= T_PLIST_TAB_SSORT + IMMUTABLE)
-      {
-	/* now we know it is homogenous and rectangular */
-	/* just have to check if the first entry is a list of cyclotomics */
-	isMatrix = IsXTNumPlistCyc( ELM_PLIST( list, 1 ) );
-      }
-    
-    /* otherwise the list is certainly not a matrix                        */
-    else
-      {      
-        isMatrix = 0;
-      }
-
-    /* return the result                                                   */
-    return isMatrix;
-}
-
 
 /****************************************************************************
 **
@@ -216,8 +77,7 @@ Obj             SumIntVector (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecR );
-    vecS = NEW_PLIST( IS_MUTABLE_OBJ(vecR) ?
-		      T_PLIST_CYC :T_PLIST_CYC+IMMUTABLE, len );
+    vecS = NEW_PLIST( TNUM_OBJ(vecR), len );
     SET_LEN_PLIST( vecS, len );
 
     /* loop over the elements and add                                      */
@@ -265,8 +125,7 @@ Obj             SumVectorInt (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecL );
-    vecS = NEW_PLIST( IS_MUTABLE_OBJ(vecL) ?
-		      T_PLIST_CYC :T_PLIST_CYC+IMMUTABLE, len );
+    vecS = NEW_PLIST( TNUM_OBJ(vecL), len );
     SET_LEN_PLIST( vecS, len );
 
     /* loop over the elements and add                                      */
@@ -311,18 +170,20 @@ Obj             SumVectorVector (
     Obj                 elmL;           /* one element of left operand     */
     Obj *               ptrR;           /* pointer into the right operand  */
     Obj                 elmR;           /* one element of right operand    */
-    UInt                len;            /* length                          */
+    UInt                lenL, lenR, len, lenmin; /* lengths                          */
     UInt                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    len = LEN_PLIST( vecL );
-    if ( len != LEN_PLIST( vecR ) ) {
-        vecR = ErrorReturnObj(
-             "Vector +: <right> must have the same length as <left> (%d)",
-             (Int)len, 0L,
-             "you can return a new vector for <right>" );
-        return SUM( vecL, vecR );
-    }
+    lenL = LEN_PLIST( vecL );
+    lenR = LEN_PLIST( vecR );
+    if (lenL < lenR)
+      {
+	lenmin = lenL;
+	len = lenR;
+      } else {
+	lenmin = lenR;
+	len = lenL;
+      }
     vecS = NEW_PLIST( (IS_IMM_PLIST(vecL) && IS_IMM_PLIST(vecR)) ?
 		      T_PLIST_CYC+IMMUTABLE : T_PLIST_CYC, len );
     SET_LEN_PLIST( vecS, len );
@@ -331,7 +192,7 @@ Obj             SumVectorVector (
     ptrL = ADDR_OBJ( vecL );
     ptrR = ADDR_OBJ( vecR );
     ptrS = ADDR_OBJ( vecS );
-    for ( i = 1; i <= len; i++ ) {
+    for ( i = 1; i <= lenmin; i++ ) {
         elmL = ptrL[i];
         elmR = ptrR[i];
         if ( ! ARE_INTOBJS(elmL,elmR) || ! SUM_INTOBJS(elmS,elmL,elmR) ) {
@@ -343,7 +204,14 @@ Obj             SumVectorVector (
         }
         ptrS[i] = elmS;
     }
-
+    if (lenL < lenR)
+      for (;i <= lenR; i++) {
+	ptrS[i] = ptrR[i];
+      }
+    else
+      for (;i <= lenL; i++) {
+	ptrS[i] = ptrL[i];
+      }
     /* return the result                                                   */
     CHANGED_BAG( vecS );
     return vecS;
@@ -424,8 +292,7 @@ Obj             DiffVectorInt (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecL );
-    vecD = NEW_PLIST( IS_MUTABLE_OBJ(vecL) ?
-		      T_PLIST_CYC :T_PLIST_CYC+IMMUTABLE, len );
+    vecD = NEW_PLIST( TNUM_OBJ(vecL), len );
     SET_LEN_PLIST( vecD, len );
 
     /* loop over the elements and subtract                                 */
@@ -463,34 +330,36 @@ Obj             DiffVectorVector (
     Obj                 vecL,
     Obj                 vecR )
 {
-    Obj                 vecD;           /* handle of the difference        */
-    Obj *               ptrD;           /* pointer into the difference     */
-    Obj                 elmD;           /* one element of difference list  */
+    Obj                 vecD;           /* handle of the sum               */
+    Obj *               ptrD;           /* pointer into the sum            */
+    Obj                 elmD;           /* one element of sum list         */
     Obj *               ptrL;           /* pointer into the left operand   */
     Obj                 elmL;           /* one element of left operand     */
     Obj *               ptrR;           /* pointer into the right operand  */
     Obj                 elmR;           /* one element of right operand    */
-    UInt                len;            /* length                          */
+    UInt                lenL, lenR, len, lenmin; /* lengths                          */
     UInt                i;              /* loop variable                   */
 
     /* make the result list                                                */
-    len = LEN_PLIST( vecL );
-    if ( len != LEN_PLIST( vecR ) ) {
-        vecR = ErrorReturnObj(
-             "Vector -: <right> must have the same length as <left> (%d)",
-             (Int)len, 0L,
-             "you can return a new vector for <right>" );
-        return DIFF( vecL, vecR );
-    }
-    vecD = NEW_PLIST(  (IS_IMM_PLIST(vecL) && IS_IMM_PLIST(vecR)) ?
+    lenL = LEN_PLIST( vecL );
+    lenR = LEN_PLIST( vecR );
+    if (lenL < lenR)
+      {
+	lenmin = lenL;
+	len = lenR;
+      } else {
+	lenmin = lenR;
+	len = lenL;
+      }
+    vecD = NEW_PLIST( (IS_IMM_PLIST(vecL) && IS_IMM_PLIST(vecR)) ?
 		      T_PLIST_CYC+IMMUTABLE : T_PLIST_CYC, len );
     SET_LEN_PLIST( vecD, len );
 
-    /* loop over the elements and subtract                                 */
+    /* loop over the elements and subtract                                   */
     ptrL = ADDR_OBJ( vecL );
     ptrR = ADDR_OBJ( vecR );
     ptrD = ADDR_OBJ( vecD );
-    for ( i = 1; i <= len; i++ ) {
+    for ( i = 1; i <= lenmin; i++ ) {
         elmL = ptrL[i];
         elmR = ptrR[i];
         if ( ! ARE_INTOBJS(elmL,elmR) || ! DIFF_INTOBJS(elmD,elmL,elmR) ) {
@@ -502,7 +371,21 @@ Obj             DiffVectorVector (
         }
         ptrD[i] = elmD;
     }
-
+    if (lenL < lenR)
+      for (;i <= lenR; i++) {
+        elmR = ptrR[i];
+        if ( ! IS_INTOBJ(elmR) || ! DIFF_INTOBJS(elmD,INTOBJ_INT(0),elmR) ) {
+            CHANGED_BAG( vecD );
+            elmD = AINV( elmR );
+            ptrR = ADDR_OBJ( vecR );
+            ptrD = ADDR_OBJ( vecD );
+        }
+        ptrD[i] = elmD;
+      }
+    else
+      for (;i <= lenL; i++) {
+	ptrD[i] = ptrL[i];
+      }
     /* return the result                                                   */
     CHANGED_BAG( vecD );
     return vecD;
@@ -629,18 +512,13 @@ Obj             ProdVectorVector (
     Obj                 elmL;           /* one element of left operand     */
     Obj *               ptrR;           /* pointer into the right operand  */
     Obj                 elmR;           /* one element of right operand    */
-    UInt                len;            /* length                          */
+    UInt                lenL,lenR,len;  /* length                          */
     UInt                i;              /* loop variable                   */
 
     /* check that the lengths agree                                        */
-    len = LEN_PLIST( vecL );
-    if ( len != LEN_PLIST( vecR ) ) {
-        vecR = ErrorReturnObj(
-             "Vector *: <right> must have the same length as <left> (%d)",
-             (Int)len, 0L,
-             "you can return a new vector for <right>" );
-        return PROD( vecL, vecR );
-    }
+    lenL = LEN_PLIST( vecL );
+    lenR = LEN_PLIST( vecR );
+    len = (lenL < lenR) ? lenL : lenR;
 
     /* loop over the entries and multiply                                  */
     ptrL = ADDR_OBJ( vecL );
@@ -705,14 +583,9 @@ Obj             ProdVectorMatrix (
 
     /* check the lengths                                                   */
     len = LEN_PLIST( vecL );
+    if (len < LEN_PLIST( matR))
+      len = LEN_PLIST( matR );
     col = LEN_PLIST( ELM_PLIST( matR, 1 ) );
-    if ( len != LEN_PLIST( matR ) ) {
-        vecR = ErrorReturnObj(
-             "Vector *: <right> must have the same length as <left> (%d)",
-             (Int)len, 0L,
-             "you can return a new matrix for <right>" );
-        return PROD( vecL, vecR );
-    }
 
     /* make the result list */
     
@@ -790,7 +663,29 @@ Obj             ProdVectorMatrix (
     return vecP;
 }
 
+/****************************************************************************
+**
+*F  ZeroVector(<vec>) . . . .  zero of a cyclotomicVector
+**
+**  'ZeroVector' returns the zero of the vector <vec>.
+**
+**  It is a better version of ZeroListDefault for the case of cyclotomic
+**  vectors, becuase it knows what the cyclotomic zero is.
+*/
 
+Obj ZeroVector( Obj vec )
+{
+  UInt i, len;
+  Obj res;
+  assert(TNUM_OBJ(vec) >= T_PLIST_CYC && \
+	 TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT+IMMUTABLE);
+  len = LEN_PLIST(vec);
+  res = NEW_PLIST( T_PLIST_CYC, len);
+  SET_LEN_PLIST(res, len);
+  for (i = 1; i <= len; i++)
+    SET_ELM_PLIST(res, i, INTOBJ_INT(0));
+  return res;
+}
 
 
 /****************************************************************************
@@ -810,13 +705,11 @@ static Int InitKernel (
     Int                 t1;
     Int                 t2;
 
-    IsXTNumListFuncs[ T_PLIST_EMPTY  ] = IsXTNumEmpty;
-    IsXTNumListFuncs[ T_PLIST_CYC    ] = IsXTNumPlistCyc;
-    IsXTNumListFuncs[ T_MAT_CYC      ] = IsXTNumMatCyc;
 
     /* install the arithmetic operation methods                            */
-    for ( t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT; t1++ ) {
-        for ( t2 = T_PLIST_CYC; t2 <= T_PLIST_CYC_SSORT; t2++ ) {
+    for ( t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT+IMMUTABLE; t1++ ) {
+      ZeroFuncs[ t1 ] = ZeroVector;
+        for ( t2 = T_PLIST_CYC; t2 <= T_PLIST_CYC_SSORT+IMMUTABLE; t2++ ) {
             SumFuncs [ T_INT     ][ t2        ] = SumIntVector;
             SumFuncs [ t1        ][ T_INT     ] = SumVectorInt;
             SumFuncs [ t1        ][ t2        ] = SumVectorVector;
@@ -826,7 +719,6 @@ static Int InitKernel (
             ProdFuncs[ T_INT     ][ t2        ] = ProdIntVector;
             ProdFuncs[ t1        ][ T_INT     ] = ProdVectorInt;
             ProdFuncs[ t1        ][ t2        ] = ProdVectorVector;
-            ProdFuncs[ t1        ][ T_MAT_CYC ] = ProdVectorMatrix;
         }
     }
 

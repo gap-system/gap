@@ -95,12 +95,6 @@ DeclareProperty("IsSemigroupCongruence", IsMagmaCongruence);
 InstallTrueMethod(IsLeftSemigroupCongruence,IsSemigroupCongruence);
 InstallTrueMethod(IsRightSemigroupCongruence,IsSemigroupCongruence);
 
-#############################################################################
-##
-#C  IsSemigroupCongruenceClassEnumerator(<S>)
-##
-DeclareCategory("IsSemigroupCongruenceClassEnumerator", IsDomainEnumerator);
-
 ###########################################################################
 ##
 #P  IsReesCongruence(<c>)

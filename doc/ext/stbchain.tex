@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%W  stabchain.tex             GAP documentation            Heiko Thei\3en
+%W  stbchain.tex              GAP documentation            Heiko Thei\3en
 %%
 %H  @(#)$Id$
 %%
@@ -9,77 +9,78 @@
 \PreliminaryChapter{Stabilizer Chains}
 
 This  chapter contains some rather  technical complements to the material
-handled in the chapters~"ref:Permutations" and "ref:Permutation Groups"  of
+handled in the chapters~"ref:Permutations" and "ref:Permutation Groups" of
 the reference manual.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Generalized Conjugation Technique}
 
-The  command  `ConjugateGroup( <G>,  <p>  )' (see~"ref:ConjugateGroup!for
-permutation groups" in the reference  manual) for a permutation group <G>
-with  stabilizer chain equips its  result  also with  a stabilizer chain,
-namely with the  chain of <G>  conjugate by <p>. Conjugating a stabilizer
-chain by a permutation <p> means replacing all the points which appear in
-the `orbit' components  by their  images  under <p>  and replacing  every
-permutation <g> which appears in a `labels' or `transversal' component by
-its  conjugate $g^p$. The conjugate   $g^p$  acts  on the mapped   points
-exactly  as  <g>  did  on  the original points,    i.e.,  $(pnt.p). g^p =
-(pnt.g).p$.  Since  the  entries   in  the  `translabels' components  are
-integers pointing to  positions  of the `labels' list,  the `translabels'
-lists just have to be permuted by <p> for the conjugated stabilizer. Then
-`generators' is  reconstructed     as   `labels\{ genlabels   \}'     and
-`transversal\{ orbit \}' as `labels\{ translabels\{ orbit \} \}'.
+The command `ConjugateGroup( <G>, <p> )' (see~"ref:ConjugateGroup" in the
+reference manual) for a  permutation  group  <G>  with  stabilizer  chain
+equips its result also with a stabilizer chain, namely with the chain  of
+<G> conjugate by <p>. Conjugating a stabilizer chain by a permutation <p>
+means replacing all the points which appear in the `orbit' components  by
+their images under <p> and replacing every permutation <g> which  appears
+in a `labels' or `transversal' component  by  its  conjugate  $g^p$.  The
+conjugate $g^p$ acts on the mapped points  exactly  as  <g>  did  on  the
+original points, i.e., $(pnt.p). g^p = (pnt.g).p$. Since the  entries  in
+the `translabels' components are integers pointing to  positions  of  the
+`labels' list, the `translabels' lists just have to be  permuted  by  <p>
+for the conjugated stabilizer.  Then  `generators'  is  reconstructed  as
+`labels\{  genlabels  \}'  and  `transversal\{  orbit  \}'  as  `labels\{
+translabels\{ orbit \} \}'.
 
-This    conjugation technique    can be    generalized.\index{generalized
-conjugation technique}  Instead of mapping  points and permutations under
-the same permutation <p>, it is sometimes desirable (e.g., in the context
-of permutation  group homomorphisms) to  map the points with an arbitrary
-mapping <map>  and the permutations with  a homomorphism <hom>  such that
-the  compatibility  of the actions is  still   valid: $map(pnt). hom(g) =
-map(pnt.g)$. (Of course   the ordinary conjugation is  a  special case of
-this, with $map(pnt) = pnt.p$ and $hom(g) = g^p$.)
+\index{generalized conjugation technique}
+This conjugation technique can be generalized. Instead of mapping  points
+and  permutations  under  the  same  permutation  <p>,  it  is  sometimes
+desirable (e.g., in the context of permutation  group  homomorphisms)  to
+map the points with an arbitrary mapping <map> and the permutations  with
+a homomorphism <hom> such that the compatibility of the actions is  still
+valid:   $map(pnt).hom(g) = map(pnt.g)$.   (Of   course    the   ordinary
+conjugation is a special case  of  this,  with   $map(pnt) = pnt.p$   and
+$hom(g) = g^p$.)
 
-In   the generalized  case,  the  ``conjugated''  chain  need  not   be a
-stabilizer chain for the image  of <hom>, since  the ``preimage'' of  the
-stabilizer of $map(b)$ (where <b> is a base point) need  not fix <b>, but
-only fixes the  preimage $map^{-1}(map(b))$ setwise. Therefore the method
+In  the  generalized  case,  the  ``conjugated''  chain  need  not  be  a
+stabilizer chain for the image of <hom>, since the  ``preimage''  of  the
+stabilizer of $map(b)$ (where <b> is a base point) need not fix <b>,  but
+only fixes the preimage $map^{-1}(map(b))$ setwise. Therefore the  method
 can be applied only to one level and the next stabilizer must be computed
 explicitly. But if <map> is injective, we have $map(b).hom(g)=map(b) \iff
-b.g=b$, and  if this holds, then  $g=w(g_1,\ldots,g_n)$ is  a word in the
-generators  $g_1,\ldots,g_n$ of  the   stabilizer   of~<b>  and   $hom(g)
-\buildrel\*\over =  w(hom(g_1),\ldots,hom(g_n))$ is in the ``conjugated''
-stabilizer. If,     more generally,  <hom>   is a   right inverse   to  a
-homomorphism~$\varphi$     (i.e.,    $\varphi(hom(g))=g\,\forall     g$),
-equality~$\*$ holds modulo   ${\rm   Ker}\,\varphi$; in this   case   the
-``conjugated'' chain    can be  made  into  a  real  stabilizer  chain by
-extending  each  level  with   the  generators ${\rm   Ker}\,\varphi$ and
-appending a proper stabilizer chain  of~${\rm Ker}\,\varphi$ at the  end.
-These special cases will occur   in the algorithms for permutation  group
-homomorphisms  (see~"ref:Homomorphisms!for     permutation groups" in the
-reference manual).
+b.g=b$, and if this holds, then $g=w(g_1,\ldots,g_n)$ is a  word  in  the
+generators $g_1,\ldots,g_n$ of the stabilizer of~<b> and
+% replaced \buildrel *\over= by {$*$}{$=$} ... easiest compromise for HTML
+$hom(g) =^\*    w(hom(g_1),\ldots,hom(g_n))$    is    in    the
+``conjugated'' stabilizer. If, more generally, <hom> is a  right  inverse
+to  a  homomorphism~$\varphi$  (i.e.,  $\varphi(hom(g))=g\,\forall   g$),
+equality $\*$ holds modulo ${\rm Ker}\,\varphi$; in this  case  the
+``conjugated'' chain  can  be  made  into  a  real  stabilizer  chain  by
+extending  each  level  with  the  generators  ${\rm  Ker}\,\varphi$  and
+appending a proper stabilizer chain of~${\rm Ker}\,\varphi$ at  the  end.
+These special cases will occur in the algorithms  for  permutation  group
+homomorphisms (see~"ref:Group Homomorphisms" in the reference manual).
 
-To ``conjugate''  the  points  (i.e., `orbit')  and  permutations  (i.e.,
-`labels') of the Schreier  tree, a loop is  set up over the `orbit'  list
-constructed  during the  orbit algorithm,  and for each  vertex  <b> with
-unique edge $a(l)b$ ending at  <b>, the label  <l> is mapped with
-<hom> and <b> with   <map>. We assume  that  the `orbit' list   was built
-w.r.t.~a  certain ordering of the  labels, where $l'\<l$ means that every
-point in the  orbit was mapped with  $l'$ before it  was mapped with <l>.
-This shape of the  `orbit'  list is guaranteed if   the Schreier tree  is
-extended only by  `AddGeneratorsExtendSchreierTree', and it  is then also
-guaranteed  for the ``conjugated''  Schreier  tree. (The  ordering of the
-labels cannot be read from the Schreier tree, however.)
+To ``conjugate'' the  points  (i.e.,  `orbit')  and  permutations  (i.e.,
+`labels') of the Schreier tree, a loop is set up over  the  `orbit'  list
+constructed during the orbit algorithm, and  for  each  vertex  <b>  with
+unique edge $a(l)b$ ending at <b>, the label <l> is mapped with <hom> and
+<b> with <map>. We assume  that  the  `orbit'  list  was  built  w.r.t.~a
+certain ordering of the labels, where $l'\<l$ means that every  point  in
+the orbit was mapped with $l'$ before it was mapped with <l>. This  shape
+of the `orbit' list is guaranteed if the Schreier tree is  extended  only
+by `AddGeneratorsExtendSchreierTree', and it is then also guaranteed  for
+the ``conjugated'' Schreier tree. (The ordering of the labels  cannot  be
+read from the Schreier tree, however.)
 
-In the generalized case, it   can happen that the   edge $a(l)b$
-bears a label <l> whose image is ``old'', i.e.,  equal to the image of an
-earlier label  $l'\<l$. Because of  the  compatibility of the  actions we
-then have   $map(b)    = map(a).  hom(l)^{-1}   =   map(a).hom(l')^{-1} =
-map(a{l'}^{-1})$, so $map(b)$ is already equal to the image of the vertex
-$a{l'}^{-1}$. This vertex must have been encountered before $b = al^{-1}$
-because $l'\<l$. We  conclude that the image of   a label can  be ``old''
-only if the vertex at  the end of  the corresponding edge has an  ``old''
-image,  too, but then  it need  not be  ``conjugated''  at all. A similar
-remark applies to labels which map under <hom> to the identity.
+In the generalized case, it can happen that  the  edge  $a(l)b$  bears  a
+label <l> whose image is ``old'', i.e., equal to the image of an  earlier
+label $l'\<l$. Because of the compatibility of the actions we  then  have
+$map(b) = map(a). hom(l)^{-1} = map(a).hom(l')^{-1}  =  map(a{l'}^{-1})$,
+so $map(b)$ is already equal to the image  of  the  vertex  $a{l'}^{-1}$.
+This vertex must have been  encountered  before  $b  =  al^{-1}$  because
+$l'\<l$. We conclude that the image of a label can be ``old'' only if the
+vertex at the end of the corresponding edge has an  ``old''  image,  too,
+but then it need not be ``conjugated'' at all. A similar  remark  applies
+to labels which map under <hom> to the identity.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The General Backtrack Algorithm with Ordered Partitions}
@@ -94,9 +95,9 @@ implemented in {\GAP} and which  parts you have to modify  if you want to
 write your own backtrack routines.
 
 \medskip
-\atindex{ordered partitions!internal representation}{|indexit}%
-{\bsf   Internal   representation  of  ordered  partitions.}\quad  {\GAP}
-represents an   ordered   partition  as a  record    with   the following
+\atindex{ordered partitions!internal representation}{|indexit}
+{\bsf Internal   representation  of  ordered   partitions.}\quad   {\GAP}
+represents  an  ordered  partition  as  a  record  with   the   following
 components.
 \beginitems
 `points' &
@@ -146,16 +147,17 @@ above. The list `<P>.points' need not be rearranged.
 
 \medskip
 {\bsf Functions for setting up  an R-base.}\quad This subsection explains
-some  {\GAP}    functions  which   are  local  to    the    library  file
-``lib/stbcbckt.gi'' which    contains   the code for      backtracking in
-permutation groups.  They are mentioned here  because you might find them
-helpful when you want to implement you own backtracking function based on
-the partition concept. An important argument  to most of the functions is
-the R-base $\R$, which you should regard as a black box. We will tell you
-how to  set it up,  how to maintain it and  where to pass it as argument,
-but  it is not  necessary  for you  to know its  internal representation.
-However,  if you insist to  learn  the whole  story:  Here are the record
-components from which an R-base is made up:
+some  {\GAP}  functions   which   are   local   to   the   library   file
+`lib/stbcbckt.gi' which contains the code for backtracking in permutation
+groups. They are mentioned here because you might find them helpful  when
+you want  to  implement  you  own  backtracking  function  based  on  the
+partition concept. An important argument to most of the functions is  the
+R-base $\R$, which you should regard as a black box. We will tell you how
+to set it up, how to maintain it and where to pass it as argument, but it
+is not necessary for you to know its internal representation. However, if
+you insist to learn the whole story: Here are the record components  from
+which an R-base is made up:
+
 \beginitems
 `domain' &
     the set $\Omega$ on which the group $G$ operates
@@ -248,10 +250,10 @@ real code is more general and has a few more subtleties.)
 }%
 1.\enspace $\Omega$ is the set on which $G$ acts and $\Pi_0$ is the first
 member   of   the  decreasing   sequence   of  partitions    mentioned in
-"ref:Backtrack  searching"     in    the  reference   manual.    We   set
-$\Pi_0=(\Omega)$,  which is  constructed  as `TrivialPartition(  $\Omega$
-)'), but we could have started with  a finer partition, e.g., into unions
-of $g$-cycles of the same length.
+"ref:Backtrack" in the reference manual. We set  $\Pi_0=(\Omega)$,  which
+is constructed as `TrivialPartition( $\Omega$  )'),  but  we  could  have
+started with a finer partition, e.g., into unions of  $g$-cycles  of  the
+same length.
 
 2.\enspace This statement sets up the R-base in the variable $\R$.
 
@@ -326,12 +328,12 @@ be the centralizer as a subgroup of $G$. Its arguments are
   \item{25.} the R-base,
   \item{26.} a list  of data, to be stored  in `$\I$.data', which has
     in position~1 the first member $\Sigma_0$  of the decreasing sequence
-    of ``image partitions'' mentioned in "ref:Backtrack searching" in the
+    of ``image partitions'' mentioned in "ref:Backtrack" in the
     reference manual. In the centralizer example, position~2 contains the
     element that is  to be centralized. In the  case of  a representative
-    search,  i.e.,  a conjugacy test  `$g$  ^ $c \buildrel?\over= h$', we
+    search,  i.e.,  a conjugacy test  `$g$  ^ $c$ ?= $h$', we
     would  have $h$   instead of  $g$   here, and   possibly a $\Sigma_0$
-    different from $\Pi_0$ (e.g., a  partition into unions of  $h$=cycles
+    different from $\Pi_0$ (e.g., a  partition into unions of  $h$-cycles
     of same length).
   \item{27.} two subgroups  $L\le  C_G(g)$  and  $R\le  C_G(h)$ known  in
     advance (we have $L=R$ in the centralizer case).
@@ -449,7 +451,7 @@ efficiently, {\GAP} uses the following two functions.
 \>StratMeetPartition( $\R$, $\Pi$, $\Lambda$ \[, $g$ \] )
 \>MeetPartitionStrat( $\R$, $\I$, {$\Lambda'$} \[, {$g'$} \], $strat$ )
 
-\index{meet strategy}%
+\index{meet strategy}
 Such a  `StratMeetPartition'   command would   typically appear in    the
 function call `$\R$.nextLevel(  $\Pi$, $\R$ )'  (during the refinement of
 $\Pi_i$  to  $\Pi_{i+1}$). This   command  replaces  $\Pi$  by $\Pi\wedge
@@ -525,15 +527,15 @@ rather stores  all the factors of the   product in a  list. Specifically,
 instead of carrying out  the multiplication in $c\mapsto c'.c$  mentioned
 in  the   comment  to  line~5 of  the   above  program   --- where $c'\in
 G_{a_1\ldots  a_{i+1}}$ is a  product  of factorized inverse  transversal
-elements, see "Stabilizer  chain records" ---  {\GAP} appends the list of
-these factorized inverse  transversal elements (giving  $c'$) to the list
-of factors already  collected for $c$. Here $c'$  is multiplied from  the
-left and is itself a  product of *inverses*  of strong generators of $G$,
-but {\GAP} simply spares itself   all the work of inverting  permutations
-and stores  only  a    ``list  of  inverses'',  whose product    is  then
-$(c'.c)^{-1}$  (which is  the  new  value of  $c^{-1}$).  The ``list   of
-inverses'' is  extended this way  whenever `ProcessFixpoint' is called to
-improve~$c$.
+elements, see "ref:Stabilizer chain records" in the reference manual  ---
+{\GAP} appends the list of these factorized inverse transversal  elements
+(giving $c'$) to the list of factors already collected for $c$. Here $c'$
+is multiplied from the left and is itself  a  product  of  *inverses*  of
+strong generators of $G$, but {\GAP} simply spares itself all the work of
+inverting permutations and stores only  a  ``list  of  inverses'',  whose
+product is then $(c'.c)^{-1}$ (which is the new value of  $c^{-1}$).  The
+``list of inverses'' is extended this way whenever  `ProcessFixpoint'  is
+called to improve~$c$.
 
 The  product has to be multiplied  out only when  the property is finally
 tested  for  the  element $c$. But  it  is  often possible  to  delay the
@@ -611,15 +613,14 @@ EmptyStabChain( [   ],  One( $A$ ) ),   GroupGenerators(  $A$ ) )'  where
 `StabChainStrong'  is a function as the  one described in the pseudo-code
 below:
 
-\)StabChainStrong := function( $S$, $newgens$ )
-\)\quad{\rm Extend the Schreier tree of $S$ with $newgens$.}
-\)\quad for $sch$  in {\rm Schreier generators}  do
-\)\qquad if $sch \notin S$.stabilizer  then
-\)\qquad\quad StabChainStrong( $S$.stabilizer, [ $sch$ ] );
-\)\qquad fi;
-\)\quad od;
-\)end;
-  \vadjust{\allowbreak}%
+\){\kernttindent}StabChainStrong := function( $S$, $newgens$ )
+\){\kernttindent}\quad{\rm Extend the Schreier tree of $S$ with $newgens$.}
+\){\kernttindent}\quad for $sch$  in {\rm Schreier generators}  do
+\){\kernttindent}\qquad if $sch \notin S$.stabilizer  then
+\){\kernttindent}\qquad\quad StabChainStrong( $S$.stabilizer, [ $sch$ ] );
+\){\kernttindent}\qquad fi;
+\){\kernttindent}\quad od;
+\){\kernttindent}end;
 
 The membership test `$sch  \notin S$.stabilizer' can be performed because
 the  stabilizer chain  of `$S$.stabilizer'  is   already correct at  that
@@ -641,13 +642,13 @@ elementary abelian factors. For the sake of  simplicity we assume that $N
 abelian factor group $G/N$. Since $N$ is characteristic, $A$ also acts as
 a group of automorphisms  on the factor  group $G/N$,  but of course  not
 necessarily  faithfully. To retain  a faithful action,  we let $A$ act on
-the disjoint  union  $G/N   \mathbin{\dot\cup} G$  and  choose  as   base
-$(g_1N,\ldots,g_dN,g_1,\ldots,g_d)$.  Now the first  $d$ basic orbits lie
-inside $G/N$ and can have length at  most $[G\mathbin:N]$. Since the base
-points  $g_1N,\ldots,  g_dN$  form a  generating   set  for  $G/N$, their
+the   disjoint   union   $G/N$   with   $G$,   and   choose    as    base
+$(g_1N,\ldots,g_dN,g_1,\ldots,g_d)$. Now the first $d$ basic  orbits  lie
+inside $G/N$ and can have length at most $[G\mathbin:N]$. Since the  base
+points $g_1N,\ldots,  g_dN$  form  a  generating  set  for  $G/N$,  their
 iterated stabilizer $A^{(d+1)}$ acts trivially on the factor group $G/N$,
-i.e., it leaves  the cosets $g_iN$  invariant. Accordingly,  the next $d$
-basic orbits lie inside  $g_iN$ (for $i=1,\ldots,d$)  and can have length
+i.e., it leaves the cosets $g_iN$ invariant. Accordingly,  the  next  $d$
+basic orbits lie inside $g_iN$ (for $i=1,\ldots,d$) and can  have  length
 at most~$|N|$.
 
 Generalizing this method to a characteristic series $G=N_0 > N_1 > \ldots
@@ -663,12 +664,13 @@ would    like to    translate each such     action  into  an  action   on
 $\{1,\ldots,[N_{j-1}\mathbin: N_j]\}$, because then we need not enumerate
 the operation domain
 $$
-   G/N_1 \mathbin{\dot\cup} G/N_2 \mathbin{\dot\cup} \ldots
-         \mathbin{\dot\cup} G/N_l $$
+   G/N_1 \mathbin{\dot\cup} G/N_2 \mathbin{\dot\cup} \ldots %
+         \mathbin{\dot\cup} G/N_l 
+$$
 as a whole. Enumerating it  as a whole would result  in basic orbits like
 $`orbit'\subseteq \{1001,\ldots,1100\}$  with a  `transversal' list whose
 first 1000 entries would be unbound, but  still require 4~bytes of memory
-each (see~"Stabilizer chain records").
+each (see~"ref:Stabilizer chain records" in the reference manual).
 
 Identifying   each  coset   $g_iN_{j-1}/N_j$ into   $\{1,\ldots, [N_{j-1}
 \mathbin: N_j]\}$ of  course means that we have  to change the action  of
@@ -680,9 +682,9 @@ operations for automorphisms.
 {\bsf Enumerators for cosets of  characteristic factors.}\quad So far  we
 have  not used the  fact that  the characteristic  factors are elementary
 abelian, but we will do so from  here on. Our  first task is to implement
-an enumerator (see "ref:AsList and  Enumerators" in the reference manual)
-for a coset of a characteristic factor in a solvable group $G$. We assume
-that such a coset $gN/M$ is given by
+an enumerator (see "ref:AsList" and "ref:Enumerators"  in  the  reference
+manual) for a coset of a characteristic factor in a solvable  group  $G$.
+We assume that such a coset $gN/M$ is given by
 \beginlist
 \item{(1)}  a pcgs for  the group  $G$ (see  "ref:Pcgs" in the  reference
   manual), let `$n$ = Length( $pcgs$ )';
@@ -832,18 +834,18 @@ $(range,g)$ characterizing an enumerator  (as  described above). We  also
 assume that  the `identity'  element at each  level already  has the kind
 corresponding to that level.
 
-\)StabChainStrong := function( $S$, $newgens$ )
-\)\quad for $i$  in [ 1 .. Length( $newgens$ ) ]  do
-\)\qquad $newgens$[ $i$ ] := AutomorphismOnEnumerator( $S$.identity, %
-         $newgens$[ $i$ ] );
-\)\quad od;
-\)\quad {\rm Extend the Schreier tree of $S$ with $newgens$.}
-\)\quad for $sch$  in {\rm Schreier generators}  do
-\)\qquad if $sch \notin S$.stabilizer  then
-\)\qquad\quad StabChainStrong( $S$.stabilizer, [ $sch$ ] );
-\)\qquad fi;
-\)\quad od;
-\)end;
+\){\kernttindent}StabChainStrong := function( $S$, $newgens$ )
+\){\kernttindent}\quad for $i$  in [ 1 .. Length( $newgens$ ) ]  do
+\){\kernttindent}\qquad $newgens$[ $i$ ] := %
+  AutomorphismOnEnumerator( $S$.identity, $newgens$[ $i$ ] );
+\){\kernttindent}\quad od;
+\){\kernttindent}\quad {\rm Extend the Schreier tree of $S$ with $newgens$.}
+\){\kernttindent}\quad for $sch$  in {\rm Schreier generators}  do
+\){\kernttindent}\qquad if $sch \notin S$.stabilizer  then
+\){\kernttindent}\qquad\quad StabChainStrong( $S$.stabilizer, [ $sch$ ] );
+\){\kernttindent}\qquad fi;
+\){\kernttindent}\quad od;
+\){\kernttindent}end;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

@@ -1,7 +1,8 @@
 #############################################################################
 ##
-#W  ratfun1.gi                   GAP Library                      Frank Celler
+#W  ratfun1.gi                   GAP Library                     Frank Celler
 #W                                                             Andrew Solomon
+#W                                                            Juergen Mueller
 #W                                                           Alexander Hulpke
 ##
 #H  @(#)$Id$
@@ -54,7 +55,7 @@ local f,typ,lc;
 
   # note that `IndNum.LaurentPol. is IndnumUnivRatFun !
   f := rec(IndeterminateNumberOfUnivariateRationalFunction:=inum,
-           CoefficientsOfLaurentPolynomial:=[coeff,val]);
+           CoefficientsOfLaurentPolynomial:=Immutable([coeff,val]));
   Objectify(typ,f);
 
 #  ObjectifyWithAttributes(f,typ,
@@ -88,7 +89,7 @@ local coefs, ind, extrep, i, shift,fam;
 end;
 
 UNIVARTEST_RATFUN:=function(f)
-local fam,notuniv,cannot,num,den,hasden,indn,col,val,i,j,nud,pos;
+local fam,notuniv,cannot,num,den,hasden,indn,col,dcol,val,i,j,nud,pos;
   fam:=FamilyObj(f);
 
   notuniv:=[false,fail,false,fail];  # answer if know to be not univariate
@@ -131,13 +132,13 @@ local fam,notuniv,cannot,num,den,hasden,indn,col,val,i,j,nud,pos;
     val:=0;
 
   elif Length(den)=2 then
-    # this is the only case in which we can spot a laurent polynomial
+    # this is the case in which we can spot a laurent polynomial
 
     # We assume that the cancellation test will have dealt properly with
     # denominators which are monomials. So what we need here is only one
     # indeterminate, otherwise we must fail
     if Length(den[1])>2 then
-      return notuniv;
+      return cannot; # or: notuniv?
     fi;
 
     indn:=den[1][1]; # this is the indeterminate number we need to have
@@ -197,13 +198,14 @@ local fam,notuniv,cannot,num,den,hasden,indn,col,val,i,j,nud,pos;
 
     col[pos]:=num[i];
     nud:=pos+1;
-    
 
   od;
 
   if hasden then
-    # because we have a special hook above for laurent polynomials, we
-    # cannot be a laurent polynomial any longer.
+    dcol:=[];
+    nud:=1; # last position isto which we can assign without holes
+    # because we have a special hook above for laurent polynomials, we know
+    # it cannot be a laurent polynomial any longer.
 
     # now process the denominator
     for i in [2,4..Length(den)] do
@@ -222,11 +224,32 @@ local fam,notuniv,cannot,num,den,hasden,indn,col,val,i,j,nud,pos;
 	return cannot;
       fi;
 
+      # now we know the monomial to be [indn,exp]
+
+      # set the coefficient
+      if Length(den[i-1])=0 then
+	# exp=0
+	pos:=1;
+      else
+	pos:=den[i-1][2]+1;
+      fi;
+
+      # fill zeroes in the coefficient list
+      for j in [nud..pos-1] do
+	dcol[j]:=fam!.zeroCoefficient;
+      od;
+
+      dcol[pos]:=den[i];
+      nud:=pos+1;
+
     od;
+
+    val:=RemoveOuterCoeffs(col,fam!.zeroCoefficient);
+    val:=val-RemoveOuterCoeffs(dcol,fam!.zeroCoefficient);
 
     # the indeterminate number must be set, we have a nonvanishing
     # denominator
-    return [true,indn,false,fail];
+    return [true,indn,false,Immutable([col,dcol,val])];
 
   else
     # no denominator to deal with: We are univariate laurent
@@ -238,40 +261,61 @@ local fam,notuniv,cannot,num,den,hasden,indn,col,val,i,j,nud,pos;
       indn:=1; #default value
     fi;
 
-    return [true,indn,true,[col,val]];
+    return [true,indn,true,Immutable([col,val])];
   fi;
 
 end;
 
-EXTREP_NUMERATOR_LAURENT:=function( obj )
-    local   zero,  cofs,  val,  ind,  ext,  i,  j;
+EXTREP_COEFFS_LAURENT:=function(cofs,val,ind,zero)
+local   ext,  i,  j;
 
-    zero := FamilyObj(obj)!.zeroCoefficient;
-    cofs := CoefficientsOfLaurentPolynomial(obj);
-    if Length(cofs) = 0 then
-      return [];
-    fi;
-    val  := Maximum(0,cofs[2]); # negagive will go into denominator
-    cofs := cofs[1];
+  ext := [];
 
-    ind  := IndeterminateNumberOfUnivariateRationalFunction(obj);
+  for i  in [ 0 .. Length(cofs)-1 ]  do
+    if cofs[i+1] <> zero  then
+      j := val + i;
+      if j <> 0  then
+	Add( ext, [ ind, j ] );
+	Add( ext, cofs[i+1] );
+      else
+	Add( ext, [] );
+	Add( ext, cofs[i+1] );
+      fi; 
+    fi; 
+  od; 
+  
+  return ext;
+  
+end;
 
-    ext := [];
-    for i  in [ 0 .. Length(cofs)-1 ]  do
-        if cofs[i+1] <> zero  then
-            j := val + i;
-            if j <> 0  then
-                Add( ext, [ ind, j ] );
-                Add( ext, cofs[i+1] );
-            else
-                Add( ext, [] );
-                Add( ext, cofs[i+1] );
-            fi; 
-        fi; 
-    od; 
-    
-    return ext;
-    
+UNIV_FUNC_BY_EXTREP:=function(rfam,ncof,dcof,val,inum)
+local f;
+
+  # constand denominator -> ratfun
+  if Length(dcof)=1 then
+    return LAUR_POL_BY_EXTREP(rfam,ncof/dcof[1],val,inum);
+  fi;
+
+  # slightly better to do this after the Length id determined 
+  if IsFFECollection(ncof) and IS_PLIST_REP(ncof) then
+    ConvertToVectorRep(ncof);
+  fi;
+  if IsFFECollection(dcof) and IS_PLIST_REP(dcof) then
+    ConvertToVectorRep(dcof);
+  fi;
+  
+  # objectify. We have to be *fast*. Thus we don't even call
+  # `ObjectifyWithAttributes' but `Objectify' itself.
+
+  # note that `IndNum.LaurentPol. is IndnumUnivRatFun !
+  f := rec(IndeterminateNumberOfUnivariateRationalFunction:=inum,
+	  CoefficientsOfUnivariateRationalFunction:=Immutable([ncof,dcof,val]));
+  Objectify(rfam!.univariateRatfunType,f);
+
+#  ObjectifyWithAttributes(f,typ,...
+
+  # and return the polynomial
+  return f;
 end;
 
 #############################################################################
@@ -374,46 +418,65 @@ end;
 
 ##  ZippedProduct( <z1>, <z2>, <czero>, <funcs> )
 ZIPPED_PRODUCT_LISTS:=function( z1, z2, zero, f )
-    local   mons,  cofs,  i,  j,  c,  prd;
+local   mons,  cofs,  i,  j,  c,  prd;
 
-    # fold the product
-    mons := [];
-    cofs := [];
-    for i  in [ 1, 3 .. Length(z1)-1 ]  do
-        for j  in [ 1, 3 .. Length(z2)-1 ]  do
-            ## product of the coefficients.
-            c := f[4]( z1[i+1], z2[j+1] );
-            if c <> zero  then
-                ##  add the product of the monomials
-                Add( mons, f[1]( z1[i], z2[j] ) );
-                ##  and the coefficient
-                Add( cofs, c );
-            fi;
-        od;
-    od;
-
-    # sort monomials
-    SortParallel( mons, cofs, f[2] );
-
-    # sum coeffs
-    prd := [];
-    i   := 1;
-    while i <= Length(mons)  do
-        c := cofs[i];
-        while i < Length(mons) and mons[i] = mons[i+1]  do
-            i := i+1;
-            c := f[3]( c, cofs[i] );    ##  add coefficients
-        od;
-        if c <> zero  then
-            ## add the term to the product
-            Add( prd, mons[i] );
-            Add( prd, c );
-        fi;
-        i := i+1;
-    od;
-
-    # and return the product
+  # check for constant factors
+  if Length(z1)=2 and IsList(z1[1]) and Length(z1[1])=0 then
+    c:=z1[2];
+    prd:=ShallowCopy(z2);
+    cofs:=[2,4..Length(prd)];
+    if not IsOne(c) then
+      prd{cofs}:=c*prd{cofs};
+    fi;
     return prd;
+  elif Length(z2)=2 and IsList(z2[1]) and Length(z2[1])=0 then
+    c:=z2[2];
+    prd:=ShallowCopy(z1);
+    cofs:=[2,4..Length(prd)];
+    if not IsOne(c) then
+      prd{cofs}:=c*prd{cofs};
+    fi;
+    return prd;
+  fi;
+
+  # fold the product
+  mons := [];
+  cofs := [];
+  for i  in [ 1, 3 .. Length(z1)-1 ]  do
+      for j  in [ 1, 3 .. Length(z2)-1 ]  do
+	  ## product of the coefficients.
+	  c := f[4]( z1[i+1], z2[j+1] );
+	  if c <> zero  then
+	      ##  add the product of the monomials
+	      Add( mons, f[1]( z1[i], z2[j] ) );
+	      ##  and the coefficient
+	      Add( cofs, c );
+	  fi;
+      od;
+  od;
+
+  # sort monomials
+  SortParallel( mons, cofs, f[2] );
+
+  # sum coeffs
+  prd := [];
+  i   := 1;
+  while i <= Length(mons)  do
+      c := cofs[i];
+      while i < Length(mons) and mons[i] = mons[i+1]  do
+	  i := i+1;
+	  c := f[3]( c, cofs[i] );    ##  add coefficients
+      od;
+      if c <> zero  then
+	  ## add the term to the product
+	  Add( prd, mons[i] );
+	  Add( prd, c );
+      fi;
+      i := i+1;
+  od;
+
+  # and return the product
+  return prd;
 
 end;
 
@@ -604,16 +667,16 @@ local   indn,  fam,  zero,  l,  r,  val,  sum;
     AddCoeffs(sum,r[1]);
     # only in this case the initial coefficient might be cancelled out
     # (assuming that f and g are proper)
-    val:=l[2]+RemoveOuterCoeffs(sum,fam!.zeroCoefficient);
+    val:=l[2]+RemoveOuterCoeffs(sum,zero);
   elif l[2]<r[2] then
     sum:=ShallowCopy(r[1]);
-    RightShiftRowVector(sum,r[2]-l[2],fam!.zeroCoefficient);
+    RightShiftRowVector(sum,r[2]-l[2],zero);
     AddCoeffs(sum,l[1]);
     ShrinkCoeffs(sum);
     val:=l[2];
   else #l[2]>r[2]
     sum:=ShallowCopy(l[1]);
-    RightShiftRowVector(sum,l[2]-r[2],fam!.zeroCoefficient);
+    RightShiftRowVector(sum,l[2]-r[2],zero);
     AddCoeffs(sum,r[1]);
     ShrinkCoeffs(sum);
     val:=r[2];
@@ -661,17 +724,18 @@ local   indn,  fam,  zero,  l,  r,  val,  sum;
     AddCoeffs(sum,r[1],-fam!.oneCoefficient);
     # only in this case the initial coefficient might be cancelled out
     # (assuming that f and g are proper)
-    val:=l[2]+RemoveOuterCoeffs(sum,fam!.zeroCoefficient);
+    val:=l[2]+RemoveOuterCoeffs(sum,zero);
   elif l[2]<r[2] then
     sum:=AdditiveInverseOp(r[1]);
-    RightShiftRowVector(sum,r[2]-l[2],fam!.zeroCoefficient);
+    RightShiftRowVector(sum,r[2]-l[2],zero);
     AddCoeffs(sum,l[1]);
     ShrinkCoeffs(sum);
     val:=l[2];
   else #l[2]>r[2]
     sum:=ShallowCopy(l[1]);
-    RightShiftRowVector(sum,l[2]-r[2],fam!.zeroCoefficient);
-    AddCoeffs(sum,AdditiveInverseOp(r[1]));
+    RightShiftRowVector(sum,l[2]-r[2],zero);
+    # was: AddCoeffs(sum,AdditiveInverseOp(r[1]));
+    AddCoeffs(sum,r[1],-fam!.oneCoefficient);
     ShrinkCoeffs(sum);
     val:=r[2];
   fi;
@@ -723,6 +787,23 @@ local   indn,  fam,  prd,  l,  r,  m,  n, val;
   return LaurentPolynomialByExtRep(fam,prd, val, indn );
 end;
 
+GCD_COEFFS:=function(u,v)
+local w;
+
+  # perform a Euclidean algorithm
+  u:=ShallowCopy(u);
+  v:=ShallowCopy(v);
+  while 0<Length(v) do
+    w:=v;
+    ReduceCoeffs(u,v);
+    ShrinkCoeffs(u);
+    v:=u;
+    u:=w;
+  od;
+  return u*u[Length(u)]^-1;
+end;
+
+# This function is destructive on the first argument!
 QUOTREM_LAURPOLS_LISTS:=function(fc,gc)
 local q,m,n,i,c,k;
   # try to divide
@@ -793,35 +874,6 @@ local i,j,p,z,s,u,o;
 end;
 
 ##  RemoveOuterCoeffs( <list>, <coef> )
-REMOVE_OUTER_COEFFS_GENERIC:=function( l, c )
-local   n,  m,  i;
-
-  if 0 = Length(l)  then
-      return 0;
-  fi;
-  n := Length(l);
-  while 0 < n and l[n] = c  do
-      Unbind(l[n]);
-      n := n-1;
-  od;
-  if n = 0  then
-      return 0;
-  fi;
-  m := 0;
-  while m < n and l[m+1] = c  do
-      m := m+1;
-  od;
-  if 0 = m  then
-      return 0;
-  fi;
-  for i  in [ m+1 .. n ]  do
-      l[i-m] := l[i];
-  od;
-  for i  in [ 1 .. m ]  do
-      Unbind(l[n-i+1]);
-  od;
-  return m;
-end;
 
 REMOVE_OUTER_COEFFS_GENERIC:=function( l, c )
 local   n,  m,  i;
@@ -853,64 +905,193 @@ local   n,  m,  i;
   return m;
 end;
 
-REMOVE_OUTER_COEFFS_GENERIC:=function( l, c )
-local   n,  m,  i;
+PRODUCT_UNIVFUNCS:=function(left,right)
+local indn,l,r,ln,ld,rn,rd,g,m,n;
 
-  if 0 = Length(l)  then
-      return 0;
+  # this method only works for the same indeterminate
+  # to be *Fast* we don't even call `CIUnivPols' but work directly.
+  if HasIndeterminateNumberOfUnivariateRationalFunction(left) and
+    HasIndeterminateNumberOfUnivariateRationalFunction(right) then
+    indn:=IndeterminateNumberOfUnivariateRationalFunction(left);
+    if indn<>IndeterminateNumberOfUnivariateRationalFunction(right) then
+      TryNextMethod();
+    fi;
+  else
+    indn:=CIUnivPols(left,right);
+    if indn=fail then 
+      TryNextMethod();
+    fi;
   fi;
-  n := Length(l);
-  while 0 < n and l[n] = c  do
-      Unbind(l[n]);
-      n := n-1;
-  od;
-  if n = 0  then
-      return 0;
+
+  l:=CoefficientsOfUnivariateRationalFunction(left);
+  r:=CoefficientsOfUnivariateRationalFunction(right);
+  ln:=l[1];
+  rd:=r[2];
+  g:=GcdCoeffs(ln,rd);
+  if Length(g)>1 then
+    ln:=QUOTREM_LAURPOLS_LISTS(ShallowCopy(ln),g)[1];
+    rd:=QUOTREM_LAURPOLS_LISTS(ShallowCopy(rd),g)[1];
   fi;
-  m := 0;
-  while m < n and l[m+1] = c  do
-      m := m+1;
-  od;
-  if 0 = m  then
-      return 0;
+
+  rn:=r[1];
+  ld:=l[2];
+  g:=GcdCoeffs(rn,ld);
+  if Length(g)>1 then
+    rn:=QUOTREM_LAURPOLS_LISTS(ShallowCopy(rn),g)[1];
+    ld:=QUOTREM_LAURPOLS_LISTS(ShallowCopy(ld),g)[1];
   fi;
-  for i  in [ m+1 .. n ]  do
-      l[i-m] := l[i];
-  od;
-  for i  in [ 1 .. m ]  do
-      Unbind(l[n-i+1]);
-  od;
-  return m;
+
+  m  := Length(ln);
+  if m=0 then
+    return left;
+  fi;
+
+  n:=Length(rn);
+  if n=0 then
+    return right;
+  fi;
+
+  # product
+  ln:=ProductCoeffs(ln,m,rn,n);
+  ld:=ProductCoeffs(ld,rd);
+  return UnivariateRationalFunctionByExtRep(FamilyObj(left),
+           ln,ld,l[3]+r[3],indn);
 end;
 
-REMOVE_OUTER_COEFFS_GENERIC:=function( l, c )
-local   n,  m,  i;
+QUOT_UNIVFUNCS:=function(left,right)
+local indn,l,r,ln,ld,rn,rd,g,m,n;
 
-  if 0 = Length(l)  then
-      return 0;
+  # this method only works for the same indeterminate
+  # to be *Fast* we don't even call `CIUnivPols' but work directly.
+  if HasIndeterminateNumberOfUnivariateRationalFunction(left) and
+    HasIndeterminateNumberOfUnivariateRationalFunction(right) then
+    indn:=IndeterminateNumberOfUnivariateRationalFunction(left);
+    if indn<>IndeterminateNumberOfUnivariateRationalFunction(right) then
+      TryNextMethod();
+    fi;
+  else
+    indn:=CIUnivPols(left,right);
+    if indn=fail then 
+      TryNextMethod();
+    fi;
   fi;
-  n := Length(l);
-  while 0 < n and l[n] = c  do
-      Unbind(l[n]);
-      n := n-1;
-  od;
-  if n = 0  then
-      return 0;
+
+  l:=CoefficientsOfUnivariateRationalFunction(left);
+  r:=CoefficientsOfUnivariateRationalFunction(right);
+  ln:=l[1];
+  rd:=r[1];
+  g:=GcdCoeffs(ln,rd);
+  if Length(g)>1 then
+    ln:=QUOTREM_LAURPOLS_LISTS(ShallowCopy(ln),g)[1];
+    rd:=QUOTREM_LAURPOLS_LISTS(ShallowCopy(rd),g)[1];
   fi;
-  m := 0;
-  while m < n and l[m+1] = c  do
-      m := m+1;
-  od;
-  if 0 = m  then
-      return 0;
+
+  rn:=r[2];
+  ld:=l[2];
+  g:=GcdCoeffs(rn,ld);
+  if Length(g)>1 then
+    rn:=QUOTREM_LAURPOLS_LISTS(ShallowCopy(rn),g)[1];
+    ld:=QUOTREM_LAURPOLS_LISTS(ShallowCopy(ld),g)[1];
   fi;
-  for i  in [ m+1 .. n ]  do
-      l[i-m] := l[i];
-  od;
-  for i  in [ 1 .. m ]  do
-      Unbind(l[n-i+1]);
-  od;
-  return m;
+
+  m  := Length(ln);
+  if m=0 then
+    return left;
+  fi;
+
+  n:=Length(rn); #cannot be zero since former denominator
+
+  # product
+  ln:=ProductCoeffs(ln,m,rn,n);
+  ld:=ProductCoeffs(ld,rd);
+  return UnivariateRationalFunctionByExtRep(FamilyObj(left),
+           ln,ld,l[3]-r[3],indn);
+end;
+
+SUM_UNIVFUNCS:=function(left,right)
+local l,r,indn,ld,rd,ln,rn,g,fam,zero,val;
+
+  # this method only works for the same indeterminate
+  # to be *Fast* we don't even call `CIUnivPols' but work directly.
+  if HasIndeterminateNumberOfUnivariateRationalFunction(left) and
+    HasIndeterminateNumberOfUnivariateRationalFunction(right) then
+    indn:=IndeterminateNumberOfUnivariateRationalFunction(left);
+    if indn<>IndeterminateNumberOfUnivariateRationalFunction(right) then
+      TryNextMethod();
+    fi;
+  else
+    indn:=CIUnivPols(left,right);
+    if indn=fail then 
+      TryNextMethod();
+    fi;
+  fi;
+
+  fam  := FamilyObj(left);
+  zero := fam!.zeroCoefficient;
+  l:=CoefficientsOfUnivariateRationalFunction(left);
+  r:=CoefficientsOfUnivariateRationalFunction(right);
+
+  # catch zero cases
+  if Length(l[1])=0 then
+    return right;
+  elif Length(r[1])=0 then
+    return left;
+  fi;
+
+  ln:=l[1];
+  ld:=l[2];
+  rn:=r[1];
+  rd:=r[2];
+
+  # take care of valuation
+  if l[3]<r[3] then
+    val:=l[3];
+    rn:=ShallowCopy(rn);
+    RightShiftRowVector(rn,r[3]-l[3],zero);
+  elif l[3]>r[3] then
+    val:=r[3];
+    ln:=ShallowCopy(ln);
+    RightShiftRowVector(ln,l[3]-r[3],zero);
+  else
+    val:=l[3];
+  fi;
+
+  if ld=rd then
+    ln:=ShallowCopy(ln);
+    AddCoeffs(ln,rn);
+  else
+    # different denominators
+    g:=GcdCoeffs(ld,rd);
+    if Length(g)=1 then
+      # coprime
+      ln:=ProductCoeffs(ln,rd);
+      rn:=ProductCoeffs(rn,ld);
+      # new denominator
+      ld:=ProductCoeffs(ld,rd);
+    else
+      rd:=QUOTREM_LAURPOLS_LISTS(ShallowCopy(rd),g)[1];
+      ln:=ProductCoeffs(ln,rd);
+      # left divided denominator
+      g:=QUOTREM_LAURPOLS_LISTS(ShallowCopy(ld),g)[1];
+      rn:=ProductCoeffs(rn,g);
+      # new denominator
+      ld:=ProductCoeffs(ld,rd);
+    fi;
+    AddCoeffs(ln,rn);
+  fi;
+  val:=val+RemoveOuterCoeffs(ln,zero);
+  g:=GcdCoeffs(ln,ld);
+  if Length(g)>1 then
+    ln:=QUOTREM_LAURPOLS_LISTS(ln,g)[1];
+    ld:=QUOTREM_LAURPOLS_LISTS(ShallowCopy(ld),g)[1];
+  fi;
+
+  return UnivariateRationalFunctionByExtRep(fam,ln,ld,val,indn);
+
+end;
+
+DIFF_UNIVFUNCS:=function(f,g)
+  TryNextMethod();
 end;
 
 #############################################################################
@@ -939,11 +1120,17 @@ end;
 
 TRY_GCD_CANCEL_EXTREP_POL:=
 function(fam,num,den)
-local q,p,e,i,j,cnt;
+local q,p,e,i,j,cnt,sel,si;
   q:=QuotientPolynomialsExtRep(fam,num,den);
   if q<>fail then
     # true quotient
     return [q,[[],fam!.oneCoefficient]];
+  fi;
+
+  q:=QuotientPolynomialsExtRep(fam,den,num);
+  if q<>fail then
+    # true quotient
+    return [[[],fam!.oneCoefficient],q,num];
   fi;
   
   q:=HeuristicCancelPolynomialsExtRep(fam,num,den);
@@ -958,7 +1145,7 @@ local q,p,e,i,j,cnt;
     # is the denominator a constant?
     if Length(den[1])>0 then
       q:=den[1];
-      e:=q{[2,4..Length(q)]}; # the indeterminants exponents
+      e:=q{[2,4..Length(q)]}; # the exponents exponents
       q:=q{[1,3..Length(q)-1]}; # the indeterminant occuring
       IsSSortedList(q);
       i:=1;
@@ -983,13 +1170,38 @@ local q,p,e,i,j,cnt;
 	  num[i]:=ShallowCopy(num[i]);
 	  for j in [1,3..Length(num[i])-1] do
 	    p:=Position(q,num[i][j]); # uses PositionSorted
-	    num[i][j+1]:=num[i][j+1]-e[p]; #reduce
+	    # is this an indeterminate, which gets reduced?
+	    if p<>fail then
+	      num[i][j+1]:=num[i][j+1]-e[p]; #reduce
+	    fi;
 	  od;
+	
+	  # remove indeterminates with exponent zero
+	  sel:=[];
+	  for si in [2,4..Length(num[i])] do
+	    if num[i][si]>0 then
+	      Add(sel,si-1);
+	      Add(sel,si);
+	    fi;
+	  od;
+	  num[i]:=num[i]{sel};
+
 	od;
 
 	p:=ShallowCopy(den[1]);
 	i:=[2,4..Length(p)];
 	p{i}:=p{i}-e; # reduce exponents
+	
+	# remove indeterminates with exponent zero
+	sel:=[];
+	for si in i do
+	  if p[si]>0 then
+	    Add(sel,si-1);
+	    Add(sel,si);
+	  fi;
+	od;
+	p:=p{sel};
+
 	den:=[p,den[2]]; #new denominator
       fi;
     fi;

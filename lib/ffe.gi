@@ -179,7 +179,8 @@ InstallGlobalFunction( FFEFamily, function( p )
 
         # Store the type for the representation of prime field elements
         # via residues.
-        F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge and IsModulusRep );
+        F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge 
+	  and IsModulusRep and IsZDFRE);
         SetDataType( F!.typeOfZmodnZObj, p );
         F!.typeOfZmodnZObj![ ZNZ_PURE_TYPE ]:= F!.typeOfZmodnZObj;
         F!.modulus:= p;
@@ -825,6 +826,27 @@ InstallMethod( SquareRoots,
 
     fi;
     end );
+
+
+#############################################################################
+##
+#M  NthRoot( <F>, <z>, <n> )
+##
+InstallMethod( NthRoot, "for a field of FFEs, and a FFE", IsCollsElmsX,
+    [ IsField, IsFFE,IsPosInt ], 0,
+function( F, a,n )
+local z,qm;
+  if IsOne(a) or IsZero(a) or n=1 then
+    return a;
+  fi;
+  z:=PrimitiveRoot(F);
+  qm:=Size(F)-1;
+  a:=LogFFE(a,z)/n;
+  if 1<GcdInt(DenominatorRat(a),qm) then
+    return fail;
+  fi;
+  return z^(a mod qm);
+end);
 
 
 #############################################################################

@@ -1896,7 +1896,7 @@ end;
 
 #############################################################################
 ##
-#F  HeuGcdIntPolsExtRep(<a>,<b>)
+#F  HeuGcdIntPolsExtRep(<fam>,<a>,<b>)
 ##
 ##  takes two polynomials ext reps, primitivizes them with integer
 ##  coefficients and tries to
@@ -1980,7 +1980,11 @@ local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add;
 	    g:=g-xi; # symmetric rep.
 	  fi;
 	  gamma:=(gamma-g)/xi;
-	  add:=[[x,i],g];
+	  if i=0 then
+	    add:=[[],g];
+	  else
+	    add:=[[x,i],g];
+	  fi;
 	else
 	  # gamma is an ext rep 
 	  g:=[];
@@ -2007,7 +2011,8 @@ local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add;
 	i:=i+1;
       od;
 
-      if QuotientPolynomialsExtRep(fam,d,G)<>fail and 
+      if Length(G)>0 and Length(G[1])>0 and
+         QuotientPolynomialsExtRep(fam,d,G)<>fail and 
          QuotientPolynomialsExtRep(fam,e,G)<>fail then
 	return G;
       fi;

@@ -67,7 +67,7 @@ Revision.word_gd :=
 ##  The main reason for this setup is that we are interested in different
 ##  external representations for associative and nonassociative words
 ##  (see~"External Representation for Nonassociative Words" and
-##  "External Representation for Associative Words").
+##  "The External Representation for Associative Words").
 ##
 ##  Note that elements in finitely presented groups and also elements in
 ##  polycyclic groups in {\GAP} are *not* in `IsWord' although they are
@@ -163,7 +163,7 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  Two words are equal if and only if they are words over the same alphabet
 ##  and with equal external representations
 ##  (see~"External Representation for Nonassociative Words" and
-##  "External Representation for Associative Words").
+##  "The External Representation for Associative Words").
 ##  For nonassociative words, the latter means that the words arise from the
 ##  letters of the alphabet by the same sequence of multiplications.
 ##
@@ -174,8 +174,8 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  alphabet, and the word with smaller external representation is smaller.
 ##  For nonassociative words, the ordering is defined
 ##  in~"External Representation for Nonassociative Words";
-##  associative words are ordered lexicographically via `\<'
-##  (see~"External Representation for Associative Words").
+##  associative words are ordered by the shortlex ordering via `\<'
+##  (see~"The External Representation for Associative Words").
 ##
 ##  Note that the alphabet of a word is determined by its family
 ##  (see~"Families"),
@@ -204,14 +204,18 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  by the corresponding object in the list <imgs>.
 ##  The lists <gens> and <imgs> must of course have the same length.
 ##
-##  If the elements in <imgs> are all *associative words*
+##  `MappedWord' needs to do some preprocessing to get internal generator
+##  numbers etc. When mapping many (several thousand) words, an
+##  explicit loop over the words syllables might be faster.
+##
+##  (For example, If the elements in <imgs> are all *associative words*
 ##  (see Chapter~"Associative Words")
 ##  in the same family as the elements in <gens>,
 ##  and some of them are equal to the corresponding generators in <gens>,
 ##  then those may be omitted from <gens> and <imgs>.
 ##  In this situation, the special case that the lists <gens>
 ##  and <imgs> have only length $1$ is handled more efficiently by
-##  `EliminatedWord' (see~"EliminatedWord").
+##  `EliminatedWord' (see~"EliminatedWord").)
 ##
 DeclareOperation( "MappedWord", [ IsWord, IsWordCollection, IsList ] );
 

@@ -79,6 +79,8 @@ DeclareCategory( "IsFamilyOverFullCoefficientsFamily", IsFamily );
 ##
 DeclareCategory( "IsSCAlgebraObj", IsScalar );
 DeclareCategoryCollections( "IsSCAlgebraObj" );
+DeclareCategoryCollections( "IsSCAlgebraObjCollection" );
+DeclareCategoryCollections( "IsSCAlgebraObjCollColl" );
 DeclareCategoryFamily( "IsSCAlgebraObj" );
 
 
@@ -125,15 +127,11 @@ InstallTrueMethod( IsCanonicalBasis, IsCanonicalBasisFullSCAlgebra );
 ##
 ##  If an $F$-vector space <V> is in the filter `IsSCAlgebraObjSpace' then
 ##  this expresses that <V> consists of elements in a s.c. algebra,
-##  and that <V> is handled via the mechanism of nice bases (see~"...")
-##  in the following way.
+##  and that <V> can be handled via the mechanism of nice bases
+##  (see~"Vector Spaces Handled By Nice Bases"), in the following way.
 ##  The `NiceFreeLeftModuleInfo' value of <V> is irrelevant,
 ##  and the `NiceVector' value of $v \in <V>$ is defined as
 ##  $`ExtRepOfObj'( v )$.
-##
-##  (So the right way to replace the handling of the module by a better one
-##  is to overlay those methods to compute bases that use the flag
-##  `IsHandledByNiceBasis'.)
 ##
 DeclareHandlingByNiceBasis( "IsSCAlgebraObjSpace",
     "for free left modules of s.c. algebra elements" );

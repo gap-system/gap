@@ -30,7 +30,7 @@ Revision.cyclotom_g :=
 ##
 DeclareCategory( "IsCyclotomic",
     IsScalar and IsAssociativeElement and IsCommutativeElement
-    and IsAdditivelyCommutativeElement );
+    and IsAdditivelyCommutativeElement and IsZDFRE);
 
 DeclareCategoryKernel( "IsCyc", IsCyclotomic, IS_CYC );
 
@@ -80,7 +80,7 @@ DeclareCategory( "IsPosRat", IsRat );
 #C  IsPosInt( <obj> )
 ##
 ##  Every positive integer lies in the category `IsPosInt'.
-## 
+##
 DeclareSynonym( "IsPosInt", IsInt and IsPosRat );
 
 
@@ -91,6 +91,15 @@ DeclareSynonym( "IsPosInt", IsInt and IsPosRat );
 ##  Every negative rational number lies in the category `IsNegRat'.
 ##
 DeclareCategory( "IsNegRat", IsRat );
+
+
+#############################################################################
+##
+#C  IsNegInt( <obj> )
+##
+##  Every negative integer lies in the category `IsNegInt'.
+##
+DeclareSynonym( "IsNegInt", IsInt and IsNegRat );
 
 
 #############################################################################
@@ -297,7 +306,7 @@ InstallMethod( \<,
 ##  (see~"ATLAS irrationalities"), any root of unity is a cyclotomic integer,
 ##  character values are always cyclotomic integers,
 ##  but all rationals which are not integers are not cyclotomic integers.
-##  
+##
 DeclareProperty( "IsIntegralCyclotomic", IsObject );
 
 DeclareSynonym( "IsCycInt", IsIntegralCyclotomic );
@@ -340,7 +349,7 @@ DeclareAttribute( "Conductor", IsCyclotomicCollection );
 ##  `GaloisCyc( ., <k> )' acts as a Galois automorphism of the $n$-th
 ##  cyclotomic field (see~"Galois Groups of Abelian Number Fields");
 ##  to get the Galois automorphisms themselves,
-##  use `GaloisGroup' (see~"GaloisGroup.field").
+##  use `GaloisGroup' (see~"GaloisGroup!of field").
 ##
 ##  The *complex conjugate* of <cyc> is `GaloisCyc( <cyc>, -1 )',
 ##  which can also be computed using `ComplexConjugate'
@@ -442,9 +451,13 @@ BIND_GLOBAL( "RemInt", REM_INT );
 
 #############################################################################
 ##
-#F  GcdInt( <a>, <b> )  . . . . . . . . . . . . . .  gcd of internal integers
+#F  GcdInt( <m>, <n> )  . . . . . . . . . . . . . .  gcd of internal integers
 ##
-##  `GcdInt' returns the greatest common divisor of its two integer operands.
+##  `GcdInt' returns the greatest common divisor of its two integer operands
+##  <m> and <n>, i.e., the greatest integer that divides both <m> and <n>.
+##  The greatest common divisor is never negative, even if the arguments are.
+##  We define `GcdInt( <m>, 0 ) = GcdInt( 0, <m> ) = AbsInt( <m> )' and
+##  `GcdInt( 0, 0 ) = 0'.
 ##
 ##  `GcdInt' is a method used by the general function `Gcd' (see~"Gcd").
 ##

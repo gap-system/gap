@@ -229,7 +229,6 @@ void ReadCallVarAss (
     volatile UInt       level = 0;      /* number of '{}' selectors        */
     volatile UInt       rnam  = 0;      /* record component name           */
     volatile UInt       narg  = 0;      /* number of arguments             */
-    volatile Obj        func;
     extern   UInt       IntrIgnoring;
     
 
@@ -636,6 +635,87 @@ void ReadPerm (
     if ( ! READ_ERROR() ) { IntrPerm( nrc ); }
 }
 
+/****************************************************************************
+**
+*F  ReadLongInt( <follow> )  . . . . . . . . . . . . . . . read a long integer
+** 
+**  A `long integer' here means one whose digits don't fit into `Value',
+**  see scanner.c.  This function copies repeatedly  digits from `Value'
+**  into a GAP string until the full integer is read.
+**
+*/
+void ReadLongInt( 
+      TypSymbolSet        follow )
+{
+     Obj  string;   
+     UInt count;
+
+     /* string for digits of first part */
+     string = NEW_STRING(sizeof(Value) - 1);
+     count = 1;
+     memcpy(CHARS_STRING(string), (void *)Value, sizeof(Value));
+
+     Match(S_PARTIALINT, "", follow);
+     while (Symbol == S_PARTIALINT) {
+         /* grow for next chunk, this should be cheap since no
+            other objects were allocated in between   */
+         GROW_STRING(string, (count+1) * (sizeof(Value)-1));
+         memcpy(CHARS_STRING(string) + count*(sizeof(Value)-1), (void *)Value,
+                                        sizeof(Value));
+         count++;
+         Match(S_PARTIALINT, "", follow);
+     }
+
+     if (Symbol == S_INT) {
+         /* last chunk must not fill `Value' completely      */
+         GROW_STRING(string, (count+1) * (sizeof(Value)-1));
+         memcpy(CHARS_STRING(string) + count*(sizeof(Value)-1), (void *)Value, 
+                                        sizeof(Value));
+         Match(S_INT, "", follow);
+         IntrLongIntExpr( string );
+     }
+     else if (Symbol == S_IDENT)
+         SyntaxError("Identifiers only allowed with length smaller 1024");
+     else
+         /* next symbol found, have been just at the end in last step of
+            while loop  */
+         IntrLongIntExpr( string );
+}
+
+/****************************************************************************
+**
+*F  ReadString( <follow> )  . . . . . . . . . . . . . . read a (long) string
+** 
+**  A string is  read by copying parts of `Value'  (see scanner.c) given
+**  by `ValueLen' into  a string GAP object. This is  repeated until the
+**  end of the string is reached.
+**
+*/
+void ReadString( 
+      TypSymbolSet        follow )
+{
+     Obj  string;   
+     UInt count;
+
+     string = NEW_STRING(ValueLen);
+     count = 1;
+     memcpy(CHARS_STRING(string), (void *)Value, ValueLen);
+
+     while (Symbol == S_PARTIALSTRING) {
+         Match(S_PARTIALSTRING, "", follow);
+         GROW_STRING(string, (count) * (sizeof(Value)-1) + ValueLen);
+         memcpy(CHARS_STRING(string) + count*(sizeof(Value)-1), (void *)Value,
+                                        ValueLen);
+         count++;
+     }
+
+     Match(S_STRING, "", follow);
+     count = (count-1) * (sizeof(Value)-1) + ValueLen;
+     SET_LEN_STRING(string, count);
+     /* ensure trailing zero for interpretation as C-string */
+     *(CHARS_STRING(string) + count) = 0;
+     IntrStringExpr( string );
+}
 
 /****************************************************************************
 **
@@ -1019,6 +1099,11 @@ void ReadLiteral (
         Match( S_INT, "integer", follow );
     }
 
+    /* partial Int */
+    else if ( Symbol == S_PARTIALINT ) {
+         ReadLongInt( follow );
+    } 
+
     /* 'true'                                                              */
     else if ( Symbol == S_TRUE ) {
         Match( S_TRUE, "true", follow );
@@ -1037,10 +1122,9 @@ void ReadLiteral (
         Match( S_CHAR, "character", follow );
     }
 
-    /* <String>                                                            */
-    else if ( Symbol == S_STRING ) {
-        if ( ! READ_ERROR() ) { IntrStringExpr( Value ); }
-        Match( S_STRING, "string", follow );
+    /* (partial) string */
+    else if ( Symbol == S_STRING || Symbol == S_PARTIALSTRING ) {
+        ReadString( follow );
     }
 
     /* <List>                                                              */
@@ -1711,6 +1795,25 @@ void ReadBreak (
     if ( ! READ_ERROR() ) { IntrBreak(); }
 }
 
+/****************************************************************************
+**
+*F  ReadContinue(<follow>) . . . . . . . . . . . . . . .  read a continue statement
+**
+**  'ReadContinue' reads a  continue-statement.  In case  of an error  it skips all
+**  symbols up to one contained in <follow>.
+**
+**  <Statement> := 'continue' ';'
+*/
+void ReadContinue (
+    TypSymbolSet        follow )
+{
+    /* skip the continue symbol                                               */
+    Match( S_CONTINUE, "continue", follow );
+
+    /* interpret the continue statement                                       */
+    if ( ! READ_ERROR() ) { IntrContinue(); }
+}
+
 
 /****************************************************************************
 **
@@ -1846,6 +1949,7 @@ UInt ReadStats (
         else if ( Symbol == S_WHILE  ) ReadWhile(     follow    ); 
         else if ( Symbol == S_REPEAT ) ReadRepeat(    follow    );
         else if ( Symbol == S_BREAK  ) ReadBreak(     follow    );
+        else if ( Symbol == S_CONTINUE  ) ReadContinue(     follow    );
         else if ( Symbol == S_RETURN ) ReadReturn(    follow    );
         else if ( Symbol == S_TRYNEXT) ReadTryNext(   follow    );
 	else if ( Symbol == S_QUIT   ) ReadQuit(      follow    );
@@ -1933,6 +2037,7 @@ ExecStatus ReadEvalCommand ( void )
     else if (Symbol==S_WHILE     ) { ReadWhile(  S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_REPEAT    ) { ReadRepeat( S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_BREAK     ) { ReadBreak(  S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_CONTINUE     ) { ReadContinue(  S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_RETURN    ) { ReadReturn( S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_TRYNEXT   ) { ReadTryNext(S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_QUIT      ) { ReadQuit(   S_SEMICOLON|S_EOF      ); }
@@ -2073,6 +2178,7 @@ ExecStatus ReadEvalDebug ( void )
     else if (Symbol==S_WHILE     ) { ReadWhile(  S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_REPEAT    ) { ReadRepeat( S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_BREAK     ) { ReadBreak(  S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_CONTINUE  ) { ReadContinue(  S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_RETURN    ) { ReadReturn( S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_TRYNEXT   ) { ReadTryNext(S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_QUIT      ) { ReadQuit(   S_SEMICOLON|S_EOF      ); }
@@ -2259,6 +2365,113 @@ void            ReadEvalError ( void )
     PtrBody  = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC));
     PtrLVars = PTR_BAG(CurrLVars);
     longjmp( ReadJmpError, 1 );
+}
+
+
+/****************************************************************************
+**
+*F  Call0ArgsInNewReader(Obj f)  . . . . . . . . . . . . call a GAP function
+**
+**  The current reader context is saved and a new one is started.
+*/
+void Call0ArgsInNewReader(Obj f)
+
+{
+  /* for the new interpreter context: */
+  ExecStatus          type;
+  Obj                 stackNams;
+  UInt                countNams;
+  UInt                readTop;
+  UInt                readTilde;
+  UInt                currLHSGVar;
+  jmp_buf             readJmpError;
+
+  /* remember the old reader context                                     */
+  stackNams   = StackNams;
+  countNams   = CountNams;
+  readTop     = ReadTop;
+  readTilde   = ReadTilde;
+  currLHSGVar = CurrLHSGVar;
+  memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+
+  /* intialize everything and begin an interpreter                       */
+  StackNams   = NEW_PLIST( T_PLIST, 16 );
+  CountNams   = 0;
+  ReadTop     = 0;
+  ReadTilde   = 0;
+  CurrLHSGVar = 0;
+  IntrBegin( BottomLVars );
+
+  if (!READ_ERROR()) {
+    CALL_0ARGS(f);
+    PushVoidObj();
+    /* end the interpreter                                                 */
+    IntrEnd( 0UL );
+  } else {
+    IntrEnd( 1UL );
+    ClearError();
+  } 
+  
+  /* switch back to the old reader context                               */
+  memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+  StackNams   = stackNams;
+  CountNams   = countNams;
+  ReadTop     = readTop;
+  ReadTilde   = readTilde;
+  CurrLHSGVar = currLHSGVar;
+}
+
+/****************************************************************************
+**
+*F  Call1ArgsInNewReader(Obj f,Obj a) . . . . . . . . . . call a GAP function
+**
+**  The current reader context is saved and a new one is started.
+*/
+void Call1ArgsInNewReader(Obj f,Obj a)
+
+{
+  /* for the new interpreter context: */
+  ExecStatus          type;
+  Obj                 stackNams;
+  UInt                countNams;
+  UInt                readTop;
+  UInt                readTilde;
+  UInt                currLHSGVar;
+  jmp_buf             readJmpError;
+
+  /* remember the old reader context                                     */
+  stackNams   = StackNams;
+  countNams   = CountNams;
+  readTop     = ReadTop;
+  readTilde   = ReadTilde;
+  currLHSGVar = CurrLHSGVar;
+  memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+
+  /* intialize everything and begin an interpreter                       */
+  StackNams   = NEW_PLIST( T_PLIST, 16 );
+  CountNams   = 0;
+  ReadTop     = 0;
+  ReadTilde   = 0;
+  CurrLHSGVar = 0;
+  IntrBegin( BottomLVars );
+
+  if (!READ_ERROR()) {
+    CALL_1ARGS(f,a);
+    PushVoidObj();
+    /* end the interpreter                                                 */
+    IntrEnd( 0UL );
+  } else {
+    IntrEnd( 1UL );
+    ClearError();
+  } 
+  
+  /* switch back to the old reader context                               */
+  memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+  StackNams   = stackNams;
+  CountNams   = countNams;
+  ReadTop     = readTop;
+  ReadTilde   = readTilde;
+  CurrLHSGVar = currLHSGVar;
 }
 
 

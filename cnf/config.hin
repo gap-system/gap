@@ -3,8 +3,8 @@
 *D  user edit-able defines
 */
 
-/* initial amount of memory if '-m' is not given                           */
-#define SY_STOR_MIN		8 * 1024 * 1024L
+/* initial amount of memory if '-m' is not given in KB                          */
+#define SY_STOR_MIN		(24 * 1024)
 
 
 /****************************************************************************
@@ -112,7 +112,24 @@
 /* define as 1 if you have the include file "unistd.h"                     */
 #define HAVE_UNISTD_H		0
 
+/* define as 1 if you have `getpseudotty'                                  */
+#define HAVE_GETPSEUDOTTY	0
 
+/* define as 1 if you have `_getpty'                                       */
+#define HAVE__GETPTY		0
+
+/* define as 1 if you have the include file "fcntl.h"                      */
+#define HAVE_FCNTL_H            0
+
+#define HAVE_SYS_STAT_H         0
+#define HAVE_SYS_SYSMACROS_H    0
+#define HAVE_ERRNO_H            0
+#define HAVE_ASSERT_H           0
+#define HAVE_STDLIB_H            0
+#define HAVE_STRING_H           0
+#define HAVE_MATH_H             0
+#define HAVE_GETPT              0
+#define HAVE_PTSNAME_R         0
 /****************************************************************************
 **
 *D  define if and how dynamic loading is supported
@@ -214,6 +231,8 @@
 /* define as 1 if you have `strerror'                                      */
 #define HAVE_STRERROR		0
 
+/* define as 1 if you have `select'                                        */
+#define HAVE_SELECT             0
 
 /****************************************************************************
 **
@@ -245,4 +264,7 @@
 
 /* define if this is the Cygwin32 port */
 #define SYS_IS_CYGWIN32          0
+
+/* define if this is the Darwin port */
+#define SYS_IS_DARWIN          0
 

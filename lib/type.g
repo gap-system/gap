@@ -237,7 +237,11 @@ FamilyOfFamilies!.IMP_FLAGS     := EMPTY_FLAGS;
 FamilyOfFamilies!.TYPES         := [];
 FamilyOfFamilies!.nTYPES          := 0;
 FamilyOfFamilies!.HASH_SIZE       := 100;
-FamilyOfFamilies!.TYPES_LIST_FAM:= [,,,,,,,,,,,,,,,,,,,,,,,,,,false]; # list with 26 holes
+
+# for chaching types of homogeneous lists, assigned in kernel when needed 
+FamilyOfFamilies!.TYPES_LIST_FAM  := [];
+# for efficiency
+FamilyOfFamilies!.TYPES_LIST_FAM[27] := 0;
 
 NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID+1;
 BIND_GLOBAL( "TypeOfFamilyOfFamilies", [
@@ -263,8 +267,11 @@ FamilyOfTypes!.IMP_FLAGS        := EMPTY_FLAGS;
 FamilyOfTypes!.TYPES            := [];
 FamilyOfTypes!.nTYPES          := 0;
 FamilyOfTypes!.HASH_SIZE       := 100;
-FamilyOfTypes!.TYPES_LIST_FAM   :=
-  [,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,false]; # list with 26 holes
+
+# for chaching types of homogeneous lists, assigned in kernel when needed 
+FamilyOfTypes!.TYPES_LIST_FAM  := [];
+# for efficiency
+FamilyOfTypes!.TYPES_LIST_FAM[27] := 0;
 
 NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID+1;
 TypeOfFamilyOfTypes     := [

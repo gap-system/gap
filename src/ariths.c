@@ -66,7 +66,7 @@ Obj ZeroObject (
   val = DoOperation1Args( ZeroOp, obj );
   while (val == 0)
     val = ErrorReturnObj("ZeroOp: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -83,7 +83,7 @@ Obj VerboseZeroObject (
   val = DoVerboseOperation1Args( ZeroOp, obj );
   while (val == 0)
     val = ErrorReturnObj("ZeroOp: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -101,7 +101,9 @@ void InstallZeroObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         ZeroFuncs[t1] = func;
     }
+#ifdef XTNUMS
     ZeroFuncs[ T_OBJECT          ] = func;
+#endif
     ZeroFuncs[ T_PREC            ] = func;
     ZeroFuncs[ T_PREC +IMMUTABLE ] = func;
 }
@@ -140,7 +142,7 @@ Obj AInvObject (
   val = DoOperation1Args( AInvOp, obj );
   while (val == 0)
     val = ErrorReturnObj("AInvOp: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -156,7 +158,7 @@ Obj VerboseAInvObject (
   val = DoVerboseOperation1Args( AInvOp, obj );
   while (val == 0)
     val = ErrorReturnObj("AInvOp: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -174,7 +176,9 @@ void InstallAinvObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         AInvFuncs[t1] = func;
     }
+#ifdef XTNUMS
     AInvFuncs[ T_OBJECT          ] = func;
+#endif
     AInvFuncs[ T_PREC            ] = func;
     AInvFuncs[ T_PREC +IMMUTABLE ] = func;
 }
@@ -213,7 +217,7 @@ Obj OneObject (
   val = DoOperation1Args( OneOp, obj );
   while (val == 0)
     val = ErrorReturnObj("OneOp: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -229,7 +233,7 @@ Obj VerboseOneObject (
   val = DoVerboseOperation1Args( OneOp, obj );
   while (val == 0)
     val = ErrorReturnObj("OneOp: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -247,7 +251,9 @@ void InstallOneObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         OneFuncs[t1] = func;
     }
+#ifdef XTNUMS
     OneFuncs[ T_OBJECT          ] = func;
+#endif
     OneFuncs[ T_PREC            ] = func;
     OneFuncs[ T_PREC +IMMUTABLE ] = func;
 }
@@ -286,7 +292,7 @@ Obj InvObject (
   val = DoOperation1Args( InvOp, obj );
   while (val == 0)
     val = ErrorReturnObj("InvOp: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -302,7 +308,7 @@ Obj VerboseInvObject (
   val = DoVerboseOperation1Args( InvOp, obj );
   while (val == 0)
     val = ErrorReturnObj("InvOp: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -320,7 +326,9 @@ void InstallInvObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         InvFuncs[t1] = func;
     }
+#ifdef XTNUMS
     InvFuncs[ T_OBJECT          ] = func;
+#endif
     InvFuncs[ T_PREC            ] = func;
     InvFuncs[ T_PREC +IMMUTABLE ] = func;
 }
@@ -408,8 +416,10 @@ void InstallEqObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+#ifdef XTNUMS
         EqFuncs[ t2 ][ T_OBJECT ] = func;
         EqFuncs[ T_OBJECT ][ t2 ] = func;
+#endif
 
         EqFuncs[ t2 ][ T_PREC            ] = func;
         EqFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -484,8 +494,10 @@ void InstallLtObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+#ifdef XTNUMS
         LtFuncs[ t2 ][ T_OBJECT ] = func;
         LtFuncs[ T_OBJECT ][ t2 ] = func;
+#endif
 
         LtFuncs[ t2 ][ T_PREC            ] = func;
         LtFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -528,7 +540,7 @@ Int InUndefined (
         "operations: IN of %s and %s is not defined",
         (Int)TNAM_OBJ(opL),
         (Int)TNAM_OBJ(opR),
-        "you can return a value for the result" ) == True);
+        "you can 'return <boolean>;' to give a value for the result" ) == True);
 }
 
 
@@ -576,8 +588,10 @@ void InstallInObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+#ifdef XTNUMS
         InFuncs[ t2 ][ T_OBJECT ] = func;
         InFuncs[ T_OBJECT ][ t2 ] = func;
+#endif
 
         InFuncs[ t2 ][ T_PREC            ] = func;
         InFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -626,7 +640,7 @@ Obj SumObject (
   val = DoOperation2Args( SumOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("SUM: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -643,7 +657,7 @@ Obj VerboseSumObject (
   val = DoVerboseOperation2Args( SumOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("SUM: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -666,8 +680,10 @@ void InstallSumObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+#ifdef XTNUMS
         SumFuncs[ t2 ][ T_OBJECT ] = func;
         SumFuncs[ T_OBJECT ][ t2 ] = func;
+#endif
 
         SumFuncs[ t2 ][ T_PREC            ] = func;
         SumFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -727,7 +743,7 @@ Obj DiffObject (
   val = DoOperation2Args( DiffOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("DIFF: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -744,7 +760,7 @@ Obj VerboseDiffObject (
   val = DoVerboseOperation2Args( DiffOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("DIFF: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -767,8 +783,10 @@ void InstallDiffObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+#ifdef XTNUMS
         DiffFuncs[ t2 ][ T_OBJECT ] = func;
         DiffFuncs[ T_OBJECT ][ t2 ] = func;
+#endif
 
         DiffFuncs[ t2 ][ T_PREC            ] = func;
         DiffFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -828,7 +846,7 @@ Obj ProdObject (
   val = DoOperation2Args( ProdOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("PROD: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -845,7 +863,7 @@ Obj VerboseProdObject (
   val = DoVerboseOperation2Args( ProdOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("PROD: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -868,8 +886,10 @@ void InstallProdObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+#ifdef XTNUMS
         ProdFuncs[ t2 ][ T_OBJECT ] = func;
         ProdFuncs[ T_OBJECT ][ t2 ] = func;
+#endif
 
         ProdFuncs[ t2 ][ T_PREC            ] = func;
         ProdFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -930,7 +950,7 @@ Obj QuoObject (
   val = DoOperation2Args( QuoOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("QUO: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -947,7 +967,7 @@ Obj VerboseQuoObject (
   val = DoVerboseOperation2Args( QuoOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("QUO: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -970,8 +990,10 @@ void InstallQuoObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+#ifdef XTNUMS
         QuoFuncs[ t2 ][ T_OBJECT ] = func;
         QuoFuncs[ T_OBJECT ][ t2 ] = func;
+#endif
 
         QuoFuncs[ t2 ][ T_PREC            ] = func;
         QuoFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -1047,7 +1069,7 @@ Obj LQuoObject (
   val = DoOperation2Args( LQuoOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("LeftQuotient: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1064,7 +1086,7 @@ Obj VerboseLQuoObject (
   val = DoOperation2Args( LQuoOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("LeftQuotient: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1087,9 +1109,11 @@ void InstallLQuoObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+#ifdef XTNUMS
         LQuoFuncs[ t2 ][ T_OBJECT ] = func;
         LQuoFuncs[ T_OBJECT ][ t2 ] = func;
-
+#endif
+	
         LQuoFuncs[ t2 ][ T_PREC            ] = func;
         LQuoFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
         LQuoFuncs[ T_PREC            ][ t2 ] = func;
@@ -1162,7 +1186,7 @@ Obj PowObject (
   val = DoOperation2Args( PowOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("POW: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1180,7 +1204,7 @@ Obj VerbosePowObject (
   val = DoVerboseOperation2Args( PowOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("POW: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1203,8 +1227,10 @@ void InstallPowObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+#ifdef XTNUMS
         PowFuncs[ t2 ][ T_OBJECT ] = func;
         PowFuncs[ T_OBJECT ][ t2 ] = func;
+#endif
 
         PowFuncs[ t2 ][ T_PREC            ] = func;
         PowFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -1280,7 +1306,7 @@ Obj CommObject (
   val = DoOperation2Args( CommOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("Comm: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1297,7 +1323,7 @@ Obj VerboseCommObject (
   val = DoVerboseOperation2Args( CommOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("Comm: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1320,8 +1346,10 @@ void InstallCommObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
+#ifdef XTNUMS
         CommFuncs[ t2 ][ T_OBJECT ] = func;
         CommFuncs[ T_OBJECT ][ t2 ] = func;
+#endif
 
         CommFuncs[ t2 ][ T_PREC            ] = func;
         CommFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
@@ -1382,7 +1410,7 @@ Obj ModObject (
   val = DoOperation2Args( ModOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("mod: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1399,7 +1427,7 @@ Obj VerboseModObject (
   val = DoVerboseOperation2Args( ModOper, opL, opR );
   while (val == 0)
     val = ErrorReturnObj("mod: method should have returned a value", 0L, 0L,
-			 "you can supply a result to continue");
+			 "you can supply one by 'return <value>;'");
   return val;
 }
 
@@ -1422,8 +1450,10 @@ void InstallModObject ( Int verb )
         }
     }
     for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_VIRTUAL_TNUM; t2++ ) {
+#ifdef XTNUMS
         ModFuncs[ t2 ][ T_OBJECT ] = func;
         ModFuncs[ T_OBJECT ][ t2 ] = func;
+#endif
 
         ModFuncs[ t2 ][ T_PREC            ] = func;
         ModFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;

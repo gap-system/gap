@@ -16,6 +16,10 @@ IsFamFamX := function(a,b,c)
   return IsIdenticalObj(a,b);
 end;
 
+IsFamXFam := function(a,b,c)
+  return IsIdenticalObj(a,c);
+end;
+
 IsFamFamXY := function(a,b,c,d)
   return IsIdenticalObj(a,b);
 end;
@@ -60,6 +64,12 @@ end;
 IsElmsCollsX := function( F1, F2, F3 )
     return     HasElementsFamily( F2 )
            and IsIdenticalObj( F1, ElementsFamily( F2 ) );
+end;
+
+IsElmsCollCollsX := function ( F1, F2, F3 )
+    return HasElementsFamily( F2 )
+       and HasElementsFamily( ElementsFamily( F2 ) )
+       and IsIdenticalObj( F1, ElementsFamily( ElementsFamily( F2 ) ) );
 end;
 
 

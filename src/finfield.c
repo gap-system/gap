@@ -1393,9 +1393,9 @@ Obj             InvFFE (
     v = VAL_FFE( op );
     if ( v == 0 ) {
         op = ErrorReturnObj(
-            "FFE operations: divisor must not be zero",
+            "FFE operations: <divisor> must not be zero",
             0L, 0L,
-            "you can return a new divisor" );
+            "you can replace <divisor> via 'return <divisor>;'" );
         return INV( op );
     }
 
@@ -1465,9 +1465,9 @@ Obj             QuoFFEFFE (
     /* compute and return the result                                       */
     if ( vR == 0 ) {
         opR = ErrorReturnObj(
-            "FFE operations: divisor must not be zero",
+            "FFE operations: <divisor> must not be zero",
             0L, 0L,
-            "you can return a new divisor" );
+            "you can replace <divisor> via 'return <divisor>;'" );
         return QUO( opL, opR );
     }
     vX = QUO_FFV( vL, vR, SUCC_FF(fX) );
@@ -1504,9 +1504,9 @@ Obj             QuoFFEInt (
     /* compute and return the result                                       */
     if ( vR == 0 ) {
         opR = ErrorReturnObj(
-            "FFE operations: divisor must not be zero",
+            "FFE operations: <divisor> must not be zero",
             0L, 0L,
-            "you can return a new divisor" );
+            "you can replace <divisor> via 'return <divisor>;'" );
         return QUO( opL, opR );
     }
     vX = QUO_FFV( vL, vR, sX );
@@ -1543,9 +1543,9 @@ Obj             QuoIntFFE (
     /* compute and return the result                                       */
     if ( vR == 0 ) {
         opR = ErrorReturnObj(
-            "FFE operations: divisor must not be zero",
+            "FFE operations: <divisor> must not be zero",
             0L, 0L,
-            "you can return a new divisor" );
+            "you can replace <divisor> via 'return <divisor>;'" );
         return QUO( opL, opR );
     }
     vX = QUO_FFV( vL, vR, sX );
@@ -1589,9 +1589,9 @@ Obj             PowFFEInt (
     if ( vR < 0 ) {
         if ( vL == 0 ) {
             opL = ErrorReturnObj(
-                "FFE operations: divisor must not be zero",
+                "FFE operations: <divisor> must not be zero",
                 0L, 0L,
-                "you can return a new divisor" );
+                "you can replace <divisor> via 'return <divisor>;'" );
             return POW( opL, opR );
         }
         vL = QUO_FFV( 1, vL, sX );
@@ -1623,7 +1623,7 @@ Obj PowFFEFFE (
         opR = ErrorReturnObj(
           "FFE operations: characteristic of conjugating element must be %d",
           (Int)CHAR_FF(FLD_FFE(opL)), 0L,
-          "you can return a conjugating element" );
+          "you can replace conjugating element <elt> via 'return <elt>;'" );
         return POW( opL, opR );
     }
 
@@ -1687,14 +1687,14 @@ Obj FuncLOG_FFE_DEFAULT (
         opZ = ErrorReturnObj(
             "LogFFE: <z> must be a nonzero finite field element",
              0L, 0L,
-             "you can return a new <z>" );
+             "you can replace <z> via 'return <z>;'" );
         return FuncLOG_FFE_DEFAULT( self, opZ, opR );
     }
     if ( ! IS_FFE(opR) || VAL_FFE(opR) == 0 ) {
         opR = ErrorReturnObj(
             "LogFFE: <r> must be a nonzero finite field element",
              0L, 0L,
-             "you can return a new <r>" );
+             "you can replace <r> via 'return <r>;'" );
         return FuncLOG_FFE_DEFAULT( self, opZ, opR );
     }
 
@@ -1745,7 +1745,7 @@ Obj FuncLOG_FFE_DEFAULT (
         opZ = ErrorReturnObj(
             "LogFFE: <z> must be a power of <r>",
              0L, 0L,
-             "you can return a new <z>" );
+             "you can replace <z> via 'return <z>;'" );
         return FuncLOG_FFE_DEFAULT( self, opZ, opR );
     }
 
@@ -1781,8 +1781,8 @@ Obj INT_FF (
     if ( LEN_PLIST(IntFF) < ff || ELM_PLIST(IntFF,ff) == 0 ) {
         q = SIZE_FF( ff );
         p = CHAR_FF( ff );
-        succ = SUCC_FF( ff );
         conv = NEW_PLIST( T_PLIST, p-1 );
+        succ = SUCC_FF( ff );
         SET_LEN_PLIST( conv, p-1 );
         z = 1;
         for ( i = 1; i < p; i++ ) {
@@ -1830,7 +1830,7 @@ Obj FuncINT_FFE_DEFAULT (
         z = ErrorReturnObj(
             "IntFFE: <z> must lie in prime field",
             0L, 0L,
-            "you can return a new <z>" );
+            "you can replace <z> via 'return <z>;'" );
         return FuncINT_FFE_DEFAULT( self, z );
     }
 
@@ -1851,6 +1851,8 @@ Obj FuncINT_FFE_DEFAULT (
 **  'Z' returns the generators  of the small finite  field with <q> elements.
 **  <q> must be a positive prime power.
 */
+static Obj ZOp;
+
 Obj FuncZ (
     Obj                 self,
     Obj                 q )
@@ -1861,11 +1863,15 @@ Obj FuncZ (
     UInt                r;              /* temporary                       */
 
     /* check the argument                                                  */
-    if ( TNUM_OBJ(q)!=T_INT || INT_INTOBJ(q)<=1 || 65536<INT_INTOBJ(q) ) {
+    if ( TNUM_OBJ(q) == T_INT && (INT_INTOBJ(q) > 65536) ||
+	 TNUM_OBJ(q) == T_INTPOS)
+      return CALL_1ARGS(ZOp, q);
+    
+    if ( TNUM_OBJ(q)!=T_INT || INT_INTOBJ(q)<=1 ) {
         q = ErrorReturnObj(
             "Z: <q> must be a positive prime power (not a %s)",
             (Int)TNAM_OBJ(q), 0L,
-            "you can return a positive integer for <q>" );
+            "you can replace <q> via 'return <q>;'" );
         return FuncZ( self, q );
     }
 
@@ -1889,7 +1895,7 @@ Obj FuncZ (
         q = ErrorReturnObj(
             "Z: <q> must be a positive prime power (not a %s)",
             (Int)TNAM_OBJ(q), 0L,
-            "you can return a positive integer for <q>" );
+            "you can replace <q> via 'return <q>;'" );
         return FuncZ( self, q );
     }
 
@@ -1964,6 +1970,7 @@ static Int InitKernel (
     /* install the kind function                                           */
     ImportFuncFromLibrary( "TYPE_FFE", &TYPE_FFE );
     ImportFuncFromLibrary( "TYPE_FFE0", &TYPE_FFE0 );
+    ImportFuncFromLibrary( "ZOp", &ZOp );
     TypeObjFuncs[ T_FFE ] = TypeFFE;
 
     /* create the fields and integer conversion bags                       */

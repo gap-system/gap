@@ -673,6 +673,10 @@ local l;
   return InducedPcgsByPcSequenceAndGenerators( pcgs, [], gens );
 end );
 
+RedispatchOnCondition( InducedPcgsByGeneratorsNC, true,
+    [ IsPcgs,IsCollection ], [ IsPrimeOrdersPcgs ], 0 );
+
+
 
 #############################################################################
 ##
@@ -860,6 +864,9 @@ function( pcgs )
     return cgs;
 
 end );
+
+RedispatchOnCondition( CanonicalPcgs, true,
+    [ IsInducedPcgs],[IsPrimeOrdersPcgs ], 0 );
 
 
 #############################################################################

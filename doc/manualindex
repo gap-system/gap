@@ -1,15 +1,18 @@
 
+# lowercase all lines without an @ symbol
 awk '$0 !~ /@/ {$0=tolower($0)} {print}' $1.idx >$1.idl
+
+# call makeindex to sort indexentries and produce an index
+# ... this *needs* manual.mst to be in place, otherwise we'll end
+# up with a LaTeX style index with \begin{index} .. \end{index}
 makeindex -l $1.idl
 
 # put hyphenation help into long commands
 echo "Hyphenating long index entries"
-echo '{match($0,"`");\
-    a=RSTART;\
+echo '{a=index($0,"`");\
     if (a==0) {print $0;}\
     else {\
-      match($0,"'"'"'");\
-      b=RSTART;\
+      b=index($0,"'"'"'");\
       if (b-a>40) {\
 	anf=substr($0,1,a);\
 	mid=substr($0,a+1,b-a-1);\
@@ -35,4 +38,6 @@ echo '{match($0,"`");\
   }' >mh.awk
 cp $1.ind $1.idl
 awk -f mh.awk $1.idl >$1.ind
+
+# clean up
 rm $1.idl mh.awk

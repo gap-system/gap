@@ -561,7 +561,7 @@ Obj             ElmRange (
         ErrorReturnVoid(
             "List Element: <list>[%d] must have an assigned value",
             (Int)pos, 0L,
-            "you can return after assigning a value" );
+            "you can 'return;' after assigning a value" );
         return ELM_LIST( list, pos );
     }
 
@@ -623,7 +623,7 @@ Obj             ElmsRange (
                 ErrorReturnVoid(
                     "List Elements: <list>[%d] must have an assigned value",
                     (Int)pos, 0L,
-                    "you can return after assigning a value" );
+                    "you can 'return;' after assigning a value" );
                 return ELMS_LIST( list, poss );
             }
 
@@ -653,14 +653,14 @@ Obj             ElmsRange (
             ErrorReturnVoid(
                 "List Elements: <list>[%d] must have an assigned value",
                 (Int)pos, 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
             return ELMS_LIST( list, poss );
         }
         if ( lenList < pos + (lenPoss-1) * inc ) {
             ErrorReturnVoid(
                 "List Elements: <list>[%d] must have an assigned value",
                 (Int)(pos + (lenPoss-1) * inc), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
             return ELMS_LIST( list, poss );
         }
 
@@ -722,7 +722,7 @@ void            AssRangeImm (
     ErrorReturnVoid(
         "Lists Assignment: <list> must be a mutable list",
         0L, 0L,
-        "you can return and ignore the assignment" );
+        "you can 'return;' and ignore the assignment" );
 }
 
 
@@ -763,7 +763,7 @@ void            AsssRangeImm (
     ErrorReturnVoid(
         "Lists Assignments: <list> must be a mutable list",
         0L, 0L,
-        "you can return and ignore the assignment" );
+        "you can 'return;' and ignore the assignment" );
 }
 
 

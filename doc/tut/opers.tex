@@ -28,8 +28,8 @@ associated  with the object  <G> when `Size( <G>  )'  is executed for the
 first time, and if this function  call is executed  again later, the size
 is simply looked up and returned, without further computation.
 
-\index{getter!of an attribute}\index{setter!of an attribute}%
-\index{tester!of an attribute}\index{methods}%
+\index{getter!of an attribute}\index{setter!of an attribute}
+\index{tester!of an attribute}\index{methods}
 This means that the  behavior  of the  function  `Size' has to  depend on
 whether the size for the argument <G> is already known,  and if not, that
 the size  must be  stored after it  has been  calculated. These two extra
@@ -120,7 +120,7 @@ gap> SetSize( G, 0 ); Size( G );
 %mean  that   additional information cannot    be entered. Such additional
 %information does not change the mathematical identity of the object.
 
-{\bf  Summary.} In this section  we have introduced attributes as triples
+*Summary.* In this section  we have introduced attributes as triples
 of getter, setter   and tester and    we have explained how  these  three
 functions work together behind  the  scene to provide automatic  storage
 and look-up of  values that have once been  calculated. We have seen that
@@ -130,8 +130,8 @@ automatically selects an appropriate one.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Properties and Filters}\null
 
-\atindex{properties}{|indexit}\atindex{filters}{|indexit}%
-\index{methods!selection}%
+\atindex{properties}{|indexit}\atindex{filters}{|indexit}
+\index{methods!selection}
 Certain attributes, like `IsAbelian', are boolean-valued. Such attributes
 are known to {\GAP} as *properties*, because their values are stored in a
 slightly different way.   A property also  has a  getter, a  setter and a
@@ -177,7 +177,7 @@ would be preferred to the one with required filter `IsPermGroup'.
 It may happen that a method is applicable for a given argument
 but cannot compute the desired value.
 In such cases, the method will execute the statement `TryNextMethod();',
-\indextt{TryNextMethod}%
+\indextt{TryNextMethod}
 and {\GAP} calls the next applicable method.
 For example, \cite{Sims90b} describes an algorithm to compute the size
 of a solvable permutation group, which can be used also to decide
@@ -202,8 +202,9 @@ test.
 If no applicable method  (or no next applicable  method) is found, {\GAP}
 stops with an error message of the form 
 \begintt
-For debugging hints type ?Recovery from NoMethodFound
-Error no 1st choice method found for `Size' on 1 arguments at....
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `Size' on 1 arguments called from
+... lines deleted here ...
 \endtt
 
 You would get an error message as above if you asked for `Size( 1 )'. 
@@ -212,7 +213,7 @@ the size of `1'. Section "ref:Recovery from NoMethodFound-Errors" of
 the reference manual contains more information on how to deal with 
 these messages.
 
-{\bf Summary.} In this section we have introduced properties as special
+*Summary.* In this section we have introduced properties as special
 attributes, and filters as the general concept behind property getters
 and attribute testers.
 The values of the filters of an object govern how the object is treated
@@ -221,7 +222,7 @@ in the selection of methods for operations.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Immediate and True Methods}\null
 
-\index{methods!immediate}\index{methods!true}%
+\index{methods!immediate}\index{methods!true}
 In the example in Section~"Properties and Filters",
 we have mentioned that the operation `Size' has a
 method  for solvable permutation  groups that is  so  far superior to the
@@ -256,7 +257,7 @@ in ``Programming in GAP''.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operations and Method Selection}\null
 
-\index{operations}%
+\index{operations}
 The method selection  is not only  used to  select  methods for attribute
 getters but also for arbitrary *operations*, which can have more than one
 argument.  In this case,   there is a   required filter for each argument
@@ -286,8 +287,8 @@ and no method is installed for this case.
 For further information on family relations,
 see "ref:Families" in the reference manual.
 
-\indextt{KnownPropertiesOfObject}\indextt{KnownTruePropertiesOfObject}%
-\indextt{KnownAttributesOfObject}%
+\indextt{KnownPropertiesOfObject}\indextt{KnownTruePropertiesOfObject}
+\indextt{KnownAttributesOfObject}
 If you want to know  which properties are already known for an object
 <obj>, or which properties are known to be true, you can use the
 functions `KnownPropertiesOfObject(<obj>)' resp.
@@ -298,7 +299,7 @@ confirm that they are really `true'). Analogously, there is the function
 `KnownAttributesOfObject' which lists the names of the known attributes,
 leaving out the properties.
 
-\indextt{ApplicableMethod}%
+\indextt{ApplicableMethod}
 Since {\GAP} lets you know what it already  knows about an object, it is
 only natural  that   it also  lets   you know what  methods  it considers
 applicable for a certain method, and in  what order it  will try them (in
@@ -311,14 +312,14 @@ the one  that would be  chosen  after  $<nr>-1$ `TryNextMethod's) and  if
 For  details,  see "prg:Applicable Methods  and  Method Selection" in
 ``Programming in GAP''.
 
-\indextt{TraceMethods}%
+\indextt{TraceMethods}
 If you want to see which methods  are chosen for certain operations while
 {\GAP}  code is being executed,  you can call the function `TraceMethods'
 with a list of these operations as arguments.
 \beginexample
 gap> TraceMethods( [ Size ] );
 gap> g:= Group( (1,2,3), (1,2) );;  Size( g );
-#I  Size: method for a permutation group
+#I  Size: for a permutation group
 #I  Setter(Size): system setter
 #I  Size: system getter
 #I  Size: system getter
@@ -332,13 +333,16 @@ saying `TraceImmediateMethods( true )'.
 gap> TraceImmediateMethods( true );
 gap> g:= Group( (1,2,3), (1,2) );;
 #I  immediate: Size
-#I  immediate: IsCyclic
 #I  immediate: IsCommutative
 #I  immediate: IsTrivial
+#I  immediate: IsStabChainViaChainSubgroup
+#I  immediate: IsChainTypeGroup
 gap> Size( g );
 #I  Size: for a permutation group
 #I  immediate: IsNonTrivial
 #I  immediate: Size
+#I  immediate: IsStabChainViaChainSubgroup
+#I  immediate: IsChainTypeGroup
 #I  immediate: IsNonTrivial
 #I  Setter(Size): system setter
 #I  Size: system getter
@@ -356,7 +360,7 @@ was not used because the solvability of `g'  was already found out during
 the size calculation
 (cf.~the example in Section~"Properties and Filters").
 
-{\bf Summary.}  In this section  and the  last we have  looked some  more
+*Summary.*  In this section  and the  last we have  looked some  more
 behind the  scenes and seen  that {\GAP} automatically executes immediate
 and true  methods  to deduce  information about  objects  that is cheaply
 available.  We  have seen how   this  can be  supervised  by tracing  the

@@ -158,7 +158,7 @@ function( G )
 
     # gdc - This needs to be cleaned up.
     origG!.ChainSubgroup := G!.ChainSubgroup;
-    SetSize(origG, Size(G));
+#    SetSize(origG, Size(G));
     return origG;
 end );
 

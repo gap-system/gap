@@ -291,55 +291,52 @@ BindGlobal( "InstallAccessToGenerators",
 ##
 #F  InParentFOA( <name>, <super>, <sub>, <AorP> ) . dispatcher, oper and attr
 ##
-BindGlobal( "InParentFOA", function( name, superreq, subreq, NewAorP )
-    local str, nname, oper, attr, func;
+##  see~"ext:In Parent Attributes" in ``Extending {\GAP}''
+##
+BindGlobal( "InParentFOA", function( name, superreq, subreq, DeclareAorP )
+    local str, oper, attr, func;
 
     # Create the two-argument operation.
     str:= SHALLOW_COPY_OBJ( name );
     APPEND_LIST_INTR( str, "Op" );
-    oper:= NewOperation( str, [ superreq, subreq ] );
-    BIND_GLOBAL( str, oper );
+    DeclareOperation( str, [ superreq, subreq ] );
+    oper:= VALUE_GLOBAL( str );
 
-    # Create the attribute or property
+    # Declare the attribute or property
     # (for cases where the first argument is the parent of the second).
     str:= SHALLOW_COPY_OBJ( name );
     APPEND_LIST_INTR( str, "InParent" );
-    attr:= NewAorP( str, subreq );
-    BIND_GLOBAL( str, attr );
-    nname:= "Set"; APPEND_LIST_INTR( nname, str );
-    BIND_GLOBAL( nname, SETTER_FILTER( attr ) );
-    nname:= "Has"; APPEND_LIST_INTR( nname, str );
-    BIND_GLOBAL( nname, TESTER_FILTER( attr ) );
+    DeclareAorP( str, subreq );
+    attr:= VALUE_GLOBAL( str );
 
-    # Create the function that mainly calls the operation,
+    # Create the wrapper operation that mainly calls the operation,
     # but also checks resp. sets the attribute if the first argument
     # is identical with the parent of the second.
-    func:= function( arg )
-        local   super,  sub,  value;
-        if Length( arg ) <> 2  then
-            return CallFuncList( oper, arg );
-        fi;
-        super := arg[1];
-        sub   := arg[2];
+    DeclareOperation( name, [ superreq, subreq ] );
+    func:= VALUE_GLOBAL( name );
+
+    # Install the methods for the wrapper that calls the operation.
+    str:= "try to exploit the in-parent attribute ";
+    APPEND_LIST_INTR( str, name );
+    APPEND_LIST_INTR( str, "InParent" );
+    InstallMethod( func,
+        str,
+        [ superreq, subreq ],
+        function( super, sub )
+        local value;
         if HasParent( sub ) and IsIdenticalObj( super, Parent( sub ) ) then
-          if Tester( attr )( sub ) then
-            value:= attr( sub );
-          else
-            value:= oper( super, sub );
-            Setter( attr )( sub, value );
-          fi;
+          value:= attr( sub );
         else
           value:= oper( super, sub );
         fi;
         return value;
-    end;
-    BIND_GLOBAL( name, func );
+        end );
 
     # Install the method for the attribute that calls the operation.
     str:= "method that calls the two-argument operation ";
     APPEND_LIST_INTR( str, name );
     APPEND_LIST_INTR( str, "Op" );
-    InstallMethod( attr, str, true, [ subreq ], 0,
+    InstallMethod( attr, str, [ subreq and HasParent ],
             D -> oper( Parent( D ), D ) );
 end );
 

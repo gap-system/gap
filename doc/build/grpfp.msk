@@ -24,17 +24,9 @@ Then a list of relators is constructed as words in the generators of the
 free group and is factored out to obtain the finitely presented group. Its
 generators *are* the images of the free generators. So for example to create
 the group
-%display{tex}
 $$
-\langle a,b\mid a^2,b^3,(a\cdot b)^5 \rangle
+\langle a, b \mid a^2, b^3, (a.b)^5 \rangle
 $$
-%display{html}
-%<BLOCKQUOTE>
-%&lt; a,b | a^2 b^3 (a*b)^5 &gt;
-%</BLOCKQUOTE>
-%display{text}
-%     < a,b  |  a^2,b^3 (a*b)^5 >
-%enddisplay
 you can use the following commands:
 \beginexample
 gap> f := FreeGroup( "a", "b" );;
@@ -52,6 +44,7 @@ gap> GeneratorsOfGroup( g );
 [ a, b ]
 gap> a;
 Variable: 'a' must have a value
+
 gap> a := g.1;; b := g.2;; # assign variables
 gap> GeneratorsOfGroup( g );
 [ a, b ]
@@ -60,6 +53,10 @@ false
 gap> a in g;
 true
 \endexample
+
+To relieve you of the tedium of typing the above assignments, *when working
+interactively*, there is the function `AssignGeneratorVariables'
+(see~"AssignGeneratorVariables").
 
 Note that the generators of the free group are different from the
 generators of the FpGroup (even though they are displayed by the same
@@ -84,7 +81,8 @@ presented groups may run into warning errors, run out of memory or run
 forever. If the FpGroup is (by theory) known to be finite the
 algorithms are guaranteed to terminate (if there is sufficient memory
 available), but the time needed for the calculation cannot be bounded a
-priori. See "Coset Tables and Coset Enumeration".
+priori. See "Coset Tables and Coset Enumeration" and 
+"Testing Finiteness of Finitely Presented Groups".
 
 \beginexample
 gap> (b^2*a*b)^2;
@@ -218,7 +216,7 @@ true
 Finitely presented groups are groups and so all operations for groups should
 be applicable to them (though not necessarily efficient methods are
 available.) Most methods for finitely presented groups rely on coset
-enumeration. See "Coset Tables and Coset Enumeration" for details.
+enumeration. See~"Coset Tables and Coset Enumeration" for details.
 
 The command `IsomorphismPermGroup' can be used to obtain a faithful
 permutation representation.
@@ -229,6 +227,11 @@ gap> g := f / [ f.1^2, f.2^3, (f.1*f.2)^5 ];
 <fp group on the generators [ a, b ]>
 gap> h := IsomorphismPermGroup( g );
 [ a, b ] -> [ (1,2)(4,5), (2,3,4) ]
+gap> u:=Subgroup(g,[g.1*g.2]);;rt:=RightTransversal(g,u);
+RightTransversal(<fp group of size 60 on the generators [ a, b ]>,Group(
+[ a*b ]))
+gap> Image(ActionHomomorphism(g,rt,OnRight));
+Group([ (1,2)(3,4)(5,7)(6,8)(9,10)(11,12), (1,3,2)(4,5,6)(7,8,9)(10,11,12) ])
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -239,27 +242,48 @@ fundamental tools for the examination of finitely presented groups. This
 section describes {\GAP} functions that can be used to invoke a coset
 enumeration.
 
+Note that in addition to the built-in coset enumerator there is the share
+package `ACE'. Moreover, {\GAP} provides an interactive Todd-Coxeter in the
+`XGAP' share package `ITC'.
+
 \Declaration{CosetTable}
+
+The coset table is standard (see below).
 
 For finitely presented groups, a coset table is computed by a Todd-Coxeter
 coset enumeration. Note that
 you may influence the performance of that enumeration by changing the values
 of the global variables `CosetTableFpGroupDefaultLimit' and
 `CosetTableFpGroupDefaultMaxLimit' described below and that the options
-described under `CosetTableFromGensAndRels' are recognized. 
+described under `CosetTableFromGensAndRels' are recognized.
 
 \beginexample
-gap> CosetTable( g, Subgroup( g, [ g.1, g.2*g.1*g.2*g.1*g.2^-1 ] ) );
-[ [ 1, 3, 2, 5, 4 ], [ 1, 3, 2, 5, 4 ], [ 2, 4, 3, 1, 5 ], [ 4, 1, 3, 2, 5 ] ]
+gap> tab := CosetTable( g, Subgroup( g, [ g.1, g.2*g.1*g.2*g.1*g.2^-1 ] ) );
+[ [ 1, 4, 5, 2, 3 ], [ 1, 4, 5, 2, 3 ], [ 2, 3, 1, 4, 5 ], [ 3, 1, 2, 4, 5 ] ]
 gap> List( last, PermList );
-[ (2,3)(4,5), (2,3)(4,5), (1,2,4), (1,4,2) ]
+[ (2,4)(3,5), (2,4)(3,5), (1,2,3), (1,3,2) ]
+gap> PrintArray( TransposedMat( tab ) );
+[ [  1,  1,  2,  3 ],
+  [  4,  4,  3,  1 ],
+  [  5,  5,  1,  2 ],
+  [  2,  2,  4,  4 ],
+  [  3,  3,  5,  5 ] ]
 \endexample
 
-\Declaration{CosetTableInWholeGroup}
+The last printout in the preceding example provides the coset table in the
+form in which it is usually used in hand calculations: The rows correspond to
+the cosets, the columns correspond to the generators and their inverses in
+the ordering $g_1, g_1^{-1}, g_2, g_2^{-1}$. (See section~"Standardization
+of coset tables" for a description on the way the numbers are assigned.)
 
-\index{OperationCosetsFpGroup}
-\index{FactorCosetOperation}
+\Declaration{TracedCosetFpGroup}
+\beginexample
+gap> TracedCosetFpGroup(tab,UnderlyingElement(g.1),2);
+4
+\endexample
+
 \>FactorCosetAction( <G>, <H> )!{for fp groups}
+\>FactorCosetOperation( <G>, <H> )
 
 returns the action of <G> on the cosets of the subgroup <H> of <G>.
 
@@ -267,7 +291,7 @@ returns the action of <G> on the cosets of the subgroup <H> of <G>.
 gap> u := Subgroup( g, [ g.1, g.1^g.2 ] );
 Group([ a, b^-1*a*b ])
 gap> FactorCosetAction( g, u );
-[ a, b ] -> [ (2,3)(5,6), (1,2,4)(3,5,6) ]
+[ a, b ] -> [ (2,4)(5,6), (1,2,3)(4,5,6) ]
 \endexample
 
 \Declaration{CosetTableBySubgroup}
@@ -280,27 +304,129 @@ gap> f := FreeGroup( "a", "b" );;
 gap> u := Subgroup( f, [ f.2 ] );
 Group([ b ])
 gap> Index( f, u );
-Error the coset enumeration has defined more than 256000 cosets:
+Error, the coset enumeration has defined more than 256000 cosets
+ called from
+TCENUM.CosetTableFromGensAndRels( fgens, grels, fsgens ) called from
+CosetTableFromGensAndRels( fgens, grels, fsgens ) called from
+TryCosetTableInWholeGroup( H ) called from
+CosetTableInWholeGroup( H ) called from
+IndexInWholeGroup( H ) called from
+...
+Entering break read-eval-print loop ...
 type 'return;' if you want to continue with a new limit of 512000 cosets,
 type 'quit;' if you want to quit the coset enumeration,
-type 'maxlimit := 0; return;' in order to continue without a limit,
+type 'maxlimit := 0; return;' in order to continue without a limit
+brk> quit;
 \endtt
 
-At this point you can either continue the calculation with a larger
-number of permitted cosets or stop the calculation if you don{\pif}t
-expect the enumeration to finish (like in the example above).
+At this point, a `break'-loop (see Section~"Break Loops") has been entered. 
+The line beginning `Error' tells you why this occurred. The next seven lines,
+occur if `OnBreak' has its default value of `Where' (see~"OnBreak") and
+explains, in this case, how {\GAP} came to be doing a coset enumeration. 
+Then you are give a number of options of how to escape the `break'-loop:
+you can either continue the calculation with a larger
+number of permitted cosets, stop the calculation if you don{\pif}t
+expect the enumeration to finish (like in the example above), or continue
+without a limit on the number of cosets. (Choosing the first option will,
+of course, land you back in a `break'-loop. Try it!)
 
-Setting `CosetTableDefaultMaxLimit' (or the `max' option value) to
-`infinity' (or to 0) will enforce all coset enumerations to continue until
+Setting `CosetTableDefaultMaxLimit' (or the `max' option value, for any
+function that invokes a coset enumeration) to
+`infinity' (or to 0) will force all coset enumerations to continue until
 they either get a result or exhaust the whole available space.
+For example, each of
+
+\begintt
+gap> CosetTableDefaultMaxLimit := 0;
+gap> Index( f, u );
+\endtt
+
+or
+
+\begintt
+gap> Index( f, u : max := 0 );
+\endtt
+
+have essentially the same effect as choosing the third option 
+(typing: `maxlimit := 0; return;') at the `brk>' prompt above (instead of
+`quit;').
 
 \Declaration{CosetTableDefaultLimit}
+
+\Declaration{MostFrequentGeneratorFpGroup}
+\Declaration{IndicesInvolutaryGenerators}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Standardization of coset tables}
+
+For any two coset numbers $i$ and $j$ with $i \< j$ the first occurrence of
+$i$ in a coset table precedes the first occurrence of $j$ with respect to
+the usual row-wise ordering of the table entries. Following the notation of
+Charles Sims' book on computation with finitely presented groups
+\cite{Sims94} we call such a table a *standard coset table*.
+
+The table entries which contain the first occurrences of the coset numbers
+$i>1$ recursively provide for each $i$ a representative of the
+corresponding coset in form of a unique word $w_i$ in the generators and
+inverse generators of $G$. The first coset (which is $H$ itself) can be
+represented by the empty word $w_1$. A coset table is standard if and only
+if the words $w_1$, $w_2$, ... are length-plus-lexicographic ordered (as
+defined in \cite{Sims94}), for short: *lenlex*.
+
+We would like to warn you that this standardization of coset tables is
+different from the concept that we have used in earlier {\GAP} versions. That
+old concept ignored the columns that correspond to inverse generators and
+hence only considered words in the generators of $G$. We will call the old
+standard the *semilenlex* standard as it would also work in the case of
+semigroups where no inverses of the generators are known.
+
+We have changed the convention from the semilenlex standard to the lenlex
+standard because the definiton of a standard coset table in Sims' book tends
+to become a kind of international standard. However, for reasons of upward
+compatibility {\GAP} still offers the possibility to switch back to the old
+convention by just changing the value of the global variable
+`CosetTableStandard' from its default value `"lenlex"' to `"semilenlex"'.
+Then all implicit standardizations of coset tables will follow the old
+convention. Setting the value of `CosetTableStandard' back to `"lenlex"'
+again means switching back to the new convention.
+
+\Declaration{CosetTableStandard}
+
+Independent of the current value of `CosetTableStandard' there is the
+possibility to standardize (or restandardize) a coset table at any time using
+the following function.
+
+\Declaration{StandardizeTable}
+
+\beginexample
+gap> StandardizeTable( tab, "semilenlex" );
+gap> PrintArray( TransposedMat( tab ) );
+[ [  1,  1,  2,  4 ],
+  [  3,  3,  4,  1 ],
+  [  2,  2,  3,  3 ],
+  [  5,  5,  1,  2 ],
+  [  4,  4,  5,  5 ] ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Coset tables for subgroups in the whole group}
+
+\Declaration{CosetTableInWholeGroup}
+
+\Declaration{SubgroupOfWholeGroupByCosetTable}
+See also~`CosetTableBySubgroup' ("CosetTableBySubgroup").
+
+\Declaration{CosetTableInWholeGroup}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Augmented Coset Tables and Rewriting}
+
+\Declaration{AugmentedCosetTableInWholeGroup}
 
 \Declaration{AugmentedCosetTableMtc}
 \Declaration{AugmentedCosetTableRrs}
 
-\Declaration{MostFrequentGeneratorFpGroup}
-\Declaration{IndicesInvolutaryGenerators}
+\Declaration{RewriteWord}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Low Index Subgroups}
@@ -308,9 +434,16 @@ they either get a result or exhaust the whole available space.
 \Declaration{LowIndexSubgroupsFpGroup}
 
 \beginexample
-gap> LowIndexSubgroupsFpGroup( g, TrivialSubgroup( g ), 10 );
-[ Group([ a, b ]), Group([ a, b*a*b^-1 ]), Group([ a, b*a*b*a^-1*b^-1 ]),
-  Group([ a, b*a*b*a*b^-1*a^-1*b^-1 ]) ]
+gap> li:=LowIndexSubgroupsFpGroup( g, TrivialSubgroup( g ), 10 );
+[ Group(<fp, no generators known>), Group(<fp, no generators known>), 
+  Group(<fp, no generators known>), Group(<fp, no generators known>) ]
+\endexample
+
+By default, the algorithm computes no generating sets for the subgroups.
+This can be enforced with `GeneratorsOfGroup':
+\beginexample
+gap> GeneratorsOfGroup(li[2]);
+[ a, b*a*b^-1 ]
 \endexample
 
 As an example for an application of the optional parameter <excluded>, we
@@ -334,62 +467,222 @@ gap> lis := LowIndexSubgroupsFpGroup( G, TrivialSubgroup( G ), 24, torsion );;
 #I   class 5 of index 24 and length 24
 #I  LowIndexSubgroupsFpGroup returns 5 classes
 gap> SetInfoLevel( InfoFpGroup, 0 );
-gap> lis;
-[ Group([ x*y*z^-1, z*x*z^-1*y^-1, x*z*x*y^-1*z^-1, y*x*z*y^-1*z^-1 ]),
-  Group([ x*y*z^-1, z^2*x^-1*y^-1, x*z*y*x^-1*z^-1 ]),
-  Group([ x*y*z^-1, x*z^2*x^-1*y^-1, y^2*x*y^-1*z^-1*x^-1 ]),
-  Group([ x*y*z^-1, y^3*x^-1*z^-1*x^-1, y^2*z*x^-1*y^-1 ]),
-  Group([ y*x*z^-1, x*y*z*y^-1*z^-1, y^2*z*x^-1*z^-1*x^-1 ]) ]
 \endexample
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Abelian Invariants for Subgroups}
-
-Using variations of coset enumeration it is possible to compute the abelian
-invariants of a subgroup of a finitely presented group without computing a
-complete presentation for the subgroup in the first place.
-
-\Declaration{AbelianInvariantsSubgroupFpGroup}
-\Declaration{AbelianInvariantsSubgroupFpGroupMtc}
-\Declaration{AbelianInvariantsSubgroupFpGroupRrs}
-
-\Declaration{AbelianInvariantsNormalClosureFpGroup}
-\Declaration{AbelianInvariantsNormalClosureFpGroupRrs}
-See "Subgroup Presentations" for details on the different strategies.
+If a particular image group is desired, the operation `GQuotients'
+(see~"Quotient Methods") can be useful as well.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Converting Finite Groups to Finitely Presented Groups}
+\Section{Converting Groups to Finitely Presented Groups}
 
 \Declaration{IsomorphismFpGroup}
+
 \beginexample
-gap> g := Group( (1,2,3,4), (1,2) );;
+gap> g := Group( (2,3,4,5), (1,2,5) );;
 gap> iso := IsomorphismFpGroup( g );
-[ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ] -> [ F1, F2, F3, F4 ]
+[ (2,5,4,3), (1,2,3,4,5), (1,3,2,4,5) ] -> [ F1, F2, F3 ]
 gap> fp := Image( iso );
-<fp group on the generators [ F1, F2, F3, F4 ]>
+<fp group of size 120 on the generators [ F1, F2, F3 ]>
 gap> RelatorsOfFpGroup( fp );
-[ F1^2, F2^-1*F1^-1*F2*F1*F2^-1, F3^-1*F1^-1*F3*F1*F4^-1*F3^-1,
-  F4^-1*F1^-1*F4*F1*F4^-1*F3^-1, F2^3, F3^-1*F2^-1*F3*F2*F4^-1*F3^-1,
-  F4^-1*F2^-1*F4*F2*F3^-1, F3^2, F4^-1*F3^-1*F4*F3, F4^2 ]
+[ F1^2*F2*F3*F2^3*F3*F2^2*F3^3*F2^3*F3*F2^2, F2^-1*F1^-1*F2*F1*F3*F2^3*F3*F2^2
+    , F3^-1*F1^-1*F3*F1*F3^-1, F2^5*F3^-5, F2^5*F3^-1*F2^-1*F3^-1*F2^-1, 
+  F2^-2*F3^2*F2^-2*F3^2 ]
 \endexample
 
 \Declaration{IsomorphismFpGroupByGenerators}
+
 \beginexample
-gap> iso := IsomorphismFpGroupByGenerators( g, [ (1,2,3,4), (1,2) ] );
-[ (1,2,3,4), (1,2) ] -> [ F1, F2 ]
+gap> SetInfoLevel( InfoFpGroup, 1 );
+gap> iso := IsomorphismFpGroupByGenerators( g, [ (1,2), (1,2,3,4,5) ] );
+#I  the image group has 2 gens and 5 rels of total length 42
+[ (1,2), (1,2,3,4,5) ] -> [ F1, F2 ]
 gap> fp := Image( iso );
-<fp group on the generators [ F1, F2 ]>
+<fp group of size 120 on the generators [ F1, F2 ]>
 gap> RelatorsOfFpGroup( fp );
-[ F1*F2*F1*F2*F1*F2, F2^2, F1^-1*F2*F1^2*F2*F1*F2*F1^2*F2*F1^2, 
-  F2^-1*F1^4*F2, F1^-2*F2*F1^4*F2*F1^2, F1^2*F2*F1^4*F2*F1^2, 
-  F2^-1*F1*F2*F1^3*F2*F1*F2*F1^2*F2*F1^2, F2^-1*F1^-1*F2^-1*F1*F2*F1^3*F2*F1^
-    2*F2*F1^2 ]
+[ F1^2, F2^5, F2^-1*F1*F2^-1*F1*F2^-1*F1*F2^-1*F1, 
+  F2^-1*F1*F2*F1*F2^-1*F1*F2*F1*F2^-1*F1*F2*F1, 
+  F1*F2*F1*F2^-2*F1*F2*F1*F2^-2*F1*F2*F1*F2^-2 ]
 \endexample
 
-If you are only interested in a finitely presented group isomorphic to <G>,
+The main task of the function `IsomorphismFpGroupByGenerators' is to find a
+presentation of <G> in the provided generators <gens>. In the case of a
+permutation group <G> it does this by first constructing a stabilizer chain
+of <G> and then it works through that chain from the bottom to the top,
+recursively computing a presentation for each of the involved stabilizers.
+The method used is essentially an implementation of John Cannon's multi-stage
+relations-finding algorithm as described in \cite{Neu82} (see also
+\cite{Can73} for a more graph theoretical description). Moreover, it makes
+heavy use of Tietze transformations in each stage to avoid an explosion of
+the total length of the relators.
+
+Note that because of the random methods involved in the construction of the
+stabilizer chain the resulting presentations of <G> will in general be
+different for repeated calls with the same arguments.
+
+\beginexample
+gap> M12 := MathieuGroup( 12 );
+Group([ (1,2,3,4,5,6,7,8,9,10,11), (3,7,11,8)(4,10,5,6), 
+  (1,12)(2,11)(3,6)(4,8)(5,9)(7,10) ])
+gap> gens := GeneratorsOfGroup( M12 );;
+gap> iso := IsomorphismFpGroupByGenerators( M12, gens );;
+#I  the image group has 3 gens and 26 rels of total length 952
+gap> iso := IsomorphismFpGroupByGenerators( M12, gens );;
+#I  the image group has 3 gens and 29 rels of total length 1221
+\endexample
+
+Also in the case of a permutation group <G>, the function
+`IsomorphismFpGroupByGenerators' supports the option `method' that can be
+used to modify the strategy. The option `method' may take the following
+values.
+
+\beginitems
+`method := "regular"' &
+  This may be specified for groups of small size, up to $10^5$ say. It
+  implies that the function first constructs a regular representation <R>
+  of <G> and then a presentation of <R>. In general, this presentation will
+  be much more concise than the default one, but the price is the time needed
+  for the construction of <R>.
+
+`method := [ "regular", <bound> ]' &
+  This is a refinement of the previous possibility. In this case, <bound>
+  should be an integer, and if so the method `"regular"' as described above
+  is applied to the largest stabilizer in the stabilizer chain of <G> whose
+  size does not exceed the given bound and then the multi-stage algorithm is
+  used to work through the chain from that subgroup to the top.
+
+`method := "fast"' &
+  This chooses an alternative method which essentially is a kind of
+  multi-stage algorithm for a stabilizer chain of <G> but does not make any
+  attempt do reduce the number of relators as it is done in Cannon's
+  algorithm or to reduce their total length. Hence it is often much faster
+  than the default method, but the total length of the resulting presentation
+  may be huge.
+
+`method := "default"' &
+  This simply means that the default method shall be used, which is the case
+  if the option `method' is not given a value.
+\enditems
+
+\beginexample
+gap> iso := IsomorphismFpGroupByGenerators( M12, gens : method := "regular" );;
+#I  the image group has 3 gens and 11 rels of total length 92
+gap> iso := IsomorphismFpGroupByGenerators( M12, gens : method := "fast" );;
+#I  the image group has 3 gens and 175 rels of total length 8149
+\endexample
+
+Though the option `method := "regular"' is only checked in the case of a
+permutation group it also affects the performance and the results of the
+function `IsomorphismFpGroupByGenerators' for other groups, e. g. for matrix
+groups. This happens because, for these groups, the function first calls the
+function `NiceMonomorphism' to get a bijective action homomorphism from <G>
+to a suitable permutation group, <P> say, and then, recursively, calls itself
+for the group <P> so that now the option becomes relevant.
+
+\beginexample
+gap> G := ImfMatrixGroup( 5, 1, 3 );
+ImfMatrixGroup(5,1,3)
+gap> gens := GeneratorsOfGroup( G );
+[ [ [ -1, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ], [ 0, 0, 0, 1, 0 ], 
+      [ -1, -1, -1, -1, 2 ], [ -1, 0, 0, 0, 1 ] ], 
+  [ [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], 
+      [ 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1 ] ] ]
+gap> iso := IsomorphismFpGroupByGenerators( G, gens );;
+#I  the image group has 2 gens and 13 rels of total length 168
+gap> iso := IsomorphismFpGroupByGenerators( G, gens : method := "regular" );;
+#I  the image group has 2 gens and 6 rels of total length 56
+gap> SetInfoLevel( InfoFpGroup, 0 );
+gap> iso;
+<composed isomorphism:[ [ [ -1, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ], [ 0, 0, 0, 1,\
+ 0 ], [ -1, -1, -1, -1, 2 ], [ -1, 0, 0, 0, 1 ] ], [ [ 0, 1, 0, 0, 0 ], [ 0, 0\
+, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], [ 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1 ] ] ]->[ F1\
+, F2 ]>
+gap> ConstituentsCompositionMapping(iso);
+[ <action isomorphism>, [ (1,7,6)(2,9)(4,5,10), (2,3,4,5)(6,9,8,7) ] -> 
+    [ F1, F2 ] ]
+\endexample
+
+Since {\GAP} cannot decompose elements of a matrix group into generators,
+the resulting isomorphism is stored as a composition of a (faithful)
+permutation action on vectors and a homomorphism from the permutation image
+to the finitely presented group. In such a situation the constituent
+mappings can be obtained via `ConstituentsCompositionMapping' as
+separate {\GAP} objects.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{New Presentations and Presentations for Subgroups}
+
+\indextt{IsomorphismFpGroup!for subgroups of fp groups}
+`IsomorphismFpGroup' is also used to compute a new finitely presented group
+that is isomorphic to the subgroup of a given finitely presented group.
+(This is typically the only method to compute with subgroups of a finitely
+presented group.)
+
+\beginexample
+gap> f:=FreeGroup(2);;
+gap> g:=f/[f.1^2,f.2^3,(f.1*f.2)^5];
+<fp group on the generators [ f1, f2 ]>
+gap> u:=Subgroup(g,[g.1*g.2]);
+Group([ f1*f2 ])
+gap> hom:=IsomorphismFpGroup(u);
+[ <[ [ 1, 1 ] ]||f2^-1*f1^-1> ] -> [ F1 ]
+gap> new:=Range(hom);
+<fp group on the generators [ F1 ]>
+gap> List(GeneratorsOfGroup(new),i->PreImagesRepresentative(hom,i));
+[ <[ [ 1, 1 ] ]||f2^-1*f1^-1> ]
+\endexample
+
+When working with such homomorphisms, some subgroup elements are expressed
+as extremely long words in the group generators. Therefore the underlying
+words of subgroup
+generators stored in the isomorphism (as obtained by
+`MappingGeneratorImages' and displayed when `View'ing the homomorphism) as
+well as preimages under the homomorphism are stored in the form of straight
+line program elements (see~"Straight Line Program Elements"). These will
+behave like ordinary words and no extra treatment should be necessary.
+
+\beginexample
+gap> r:=Range(hom).1^10;
+F1^10
+gap> p:=PreImagesRepresentative(hom,r);
+< [ [ 1, 10 ] ]||f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^
+-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1>
+\endexample
+If desired, it also is possible to convert these underlying words using
+`EvalStraightLineProgElm':
+\beginexample
+gap> r:=EvalStraightLineProgElm(UnderlyingElement(p));
+f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^
+-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1
+gap> p:=ElementOfFpGroup(FamilyObj(p),r);
+f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^
+-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1
+\endexample
+
+(If you are only interested in a finitely presented group isomorphic to <U>,
 but not in the isomorphism, you may also use the functions
 `PresentationViaCosetTable' and `FpGroupPresentation' (see "Creating
-Presentations").
+Presentations").)
+
+Homomorphisms can also be used to obtain an isomorphic finitely presented
+group with a (hopefully) simpler presentation.
+
+\Declaration{IsomorphismSimplifiedFpGroup}
+\beginexample
+gap> f:=FreeGroup(3);;
+gap> g:=f/[f.1^2,f.2^3,(f.1*f.2)^5,f.1/f.3];
+<fp group on the generators [ f1, f2, f3 ]>
+gap> hom:=IsomorphismSimplifiedFpGroup(g);
+[ f1, f2, f3 ] -> [ f1, f2, f1 ]
+gap> Range(hom);
+<fp group on the generators [ f1, f2 ]>
+gap> RelatorsOfFpGroup(Range(hom));
+[ f1^2, f2^3, f1*f2*f1*f2*f1*f2*f1*f2*f1*f2 ]
+gap> RelatorsOfFpGroup(g);
+[ f1^2, f2^3, f1*f2*f1*f2*f1*f2*f1*f2*f1*f2, f1*f3^-1 ]
+\endexample
+
+(`IsomorphismSimplifiedFpGroup' uses Tietze transformations to simplify the
+presentation, see "SimplifiedFpGroup".)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Preimages under Homomorphisms from an FpGroup}
@@ -403,12 +696,13 @@ calculate normalizers, closures, intersections and so forth.
 The same applies for subgroups that are obtained as preimages under
 homomorphisms.
 
-\Declaration{SubgroupOfWholeGroupByCosetTable}
-See also~"CosetTableBySubgroup".
-
 \Declaration{SubgroupOfWholeGroupByQuotientSubgroup}
 \Declaration{IsSubgroupOfWholeGroupByQuotientRep}
 \Declaration{AsSubgroupOfWholeGroupByQuotient}
+
+See also~`SubgroupOfWholeGroupByCosetTable'
+("SubgroupOfWholeGroupByCosetTable") and~`CosetTableBySubgroup'
+("CosetTableBySubgroup").
 
 This technique is used by {\GAP} for example to represent the derived
 subgroup, which is obtained from the quotient $G/G'$.
@@ -420,6 +714,8 @@ gap> Index(g,d);
 36
 \endexample
 
+\Declaration{DefiningQuotientHomomorphism}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Quotient Methods}
 
@@ -427,7 +723,10 @@ An important class of algorithms for finitely presented groups are the
 *quotient algorithms* which compute quotient groups of a given finitely
 presented group.
 
-\Declaration{MaximalAbelianQuotient}
+\){\fmark MaximalAbelianQuotient(<fpgroup>)} 
+
+as defined for general groups, this attribute returns the largest abelian
+quotient of <fpgroup>.
 \beginexample
 gap> f:=FreeGroup(2);;fp:=f/[f.1^6,f.2^6,(f.1*f.2)^12];
 <fp group on the generators [ f1, f2 ]>
@@ -439,11 +738,11 @@ gap> Size(Image(hom));
 
 \Declaration{EpimorphismPGroup}
 \beginexample
-gap> hom:=EpimorphismPGroup(fp,2);  
+gap> hom:=EpimorphismPGroup(fp,2);
 [ f1, f2 ] -> [ a1, a2 ]
 gap> Size(Image(hom));
 8
-gap> hom:=EpimorphismPGroup(fp,3,7);         
+gap> hom:=EpimorphismPGroup(fp,3,7);
 [ f1, f2 ] -> [ a1, a2 ]
 gap> Size(Image(hom));
 6561
@@ -462,8 +761,117 @@ A related operation which is also applicable to finitely presented groups is
 group <F> onto a given (finite) group <G>, see~"GQuotients".
 \beginexample
 gap> GQuotients(fp,Group((1,2,3),(1,2)));
-[ [ f1, f2 ] -> [ (1,2,3), (2,3) ],[ f1, f2 ] -> [ (2,3), (1,2,3) ],
-  [ f1, f2 ] -> [ (1,3), (2,3) ] ]
+[ [ f1, f2 ] -> [ (2,3), (1,2) ], [ f1, f2 ] -> [ (1,2), (1,2,3) ], 
+  [ f1, f2 ] -> [ (1,2,3), (1,2) ] ]
 \endexample
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Abelian Invariants for Subgroups}
+
+Using variations of coset enumeration it is possible to compute the abelian
+invariants of a subgroup of a finitely presented group without computing a
+complete presentation for the subgroup in the first place. Typically, the
+operation `AbelianInvariants' when called for subgroups should automatically
+take care of this, but in case you what to have further control about the
+methods used, the following operations might be of use.
+
+\Declaration{AbelianInvariantsSubgroupFpGroup}
+\Declaration{AbelianInvariantsSubgroupFpGroupMtc}
+\Declaration{AbelianInvariantsSubgroupFpGroupRrs}
+
+\Declaration{AbelianInvariantsNormalClosureFpGroup}
+\Declaration{AbelianInvariantsNormalClosureFpGroupRrs}
+See "Subgroup Presentations" for details on the different strategies.
+
+The following example shows a calculation for the Coxeter group $B_1$.
+This calculation and a similar one for $B_0$ have been used to prove that
+$B_1^\prime / B_1^{\prime \prime} \cong Z_2^9 \times Z^3$ and $B_0^\prime /
+B_0^{\prime \prime} \cong Z_2^{91} \times Z^{27}$ as stated in Proposition 5
+in \cite{FJNT95}.
+
+\beginexample
+gap> # Define the Coxeter group E1.
+gap> F := FreeGroup( "x1", "x2", "x3", "x4", "x5" );
+<free group on the generators [ x1, x2, x3, x4, x5 ]>
+gap> x1 := F.1;; x2 := F.2;; x3 := F.3;; x4 := F.4;; x5 := F.5;;
+gap> rels := [ x1^2, x2^2, x3^2, x4^2, x5^2,
+>  ( x1 * x3 )^2, ( x2 * x4 )^2, ( x1 * x2 )^3, ( x2 * x3 )^3, ( x3 * x4 )^3,
+>  ( x4 * x1 )^3, ( x1 * x5 )^3, ( x2 * x5 )^2, ( x3 * x5 )^3, ( x4 * x5 )^2,
+>  ( x1 * x2 * x3 * x4 * x3 * x2 )^2 ];;
+gap> E1 := F / rels;
+<fp group on the generators [ x1, x2, x3, x4, x5 ]>
+gap> x1 := E1.1;; x2 := E1.2;; x3 := E1.3;; x4 := E1.4;; x5 := E1.5;;
+gap> # Get normal subgroup generators for B1.
+gap> H := Subgroup( E1, [ x5 * x2^-1, x5 * x4^-1 ] );;
+gap> # Compute the abelian invariants of B1/B1'.
+gap> A := AbelianInvariantsNormalClosureFpGroup( E1, H );
+[ 2, 2, 2, 2, 2, 2, 2, 2 ]
+gap> # Compute a presentation for B1.
+gap> P := PresentationNormalClosure( E1, H );
+<presentation with 18 gens and 46 rels of total length 132>
+gap> SimplifyPresentation( P );
+#I  there are 8 generators and 30 relators of total length 148
+gap> B1 := FpGroupPresentation( P );
+<fp group on the generators [ _x1, _x2, _x3, _x4, _x6, _x7, _x8, _x11 ]>
+gap> # Compute normal subgroup generators for B1'.
+gap> gens := GeneratorsOfGroup( B1 );;
+gap> numgens := Length( gens );;
+gap> comms := [ ];;
+gap> for i in [ 1 .. numgens - 1 ] do
+>     for j in [i+1 .. numgens ] do
+>         Add( comms, Comm( gens[i], gens[j] ) );
+>     od;
+> od;
+gap> # Compute the abelian invariants of B1'/B1".
+gap> K := Subgroup( B1, comms );;
+gap> A := AbelianInvariantsNormalClosureFpGroup( B1, K );
+[ 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2 ]
+gap> quit;
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Testing Finiteness of Finitely Presented Groups}
+
+As a consequence of the algorithmic insolvabilities mentioned in the
+introduction to this chapter, there cannot be a general method that will
+test whether a given finitely presented group is actually finite. 
+
+Therefore testing a finitely presented group for `IsFinite' can be
+problematic. What {\GAP} actually does upon a call of `IsFinite' (or if it
+is -- probably implicitly -- asked for a faithful permutation
+representation) is to test whether it can find (via coset enumeration) a
+cyclic subgroup of finite index. If it can, it rewrites the presentation to
+this subgroup. Since the subgroup is cyclic, its size can be checked easily
+from the resulting presentation, the size of the whole group is the product
+of the index and the subgroup size.  Since however no bound for the index of
+such a subgroup (if any exist) is known, such a test might continue
+unsuccesfully until memory is exhausted.
+
+On the other hand, a couple of methods exist, that might prove that a group
+is infinite. Again, none is guaranteed to work in every case:
+
+The first method is to find (for example via the low index algorithm,
+see~`LowIndexSubgroupsFpGroup') a subgroup $U$ such that $[U:U']$ is
+infinite. If $U$ has finite index, this can be checked by the operation
+`AbelianInvariants' (see section~"Abelian Invariants for Subgroups" for an
+example).
+
+Another method is based on $p$-group quotients:
+\Declaration{NewmanInfinityCriterion}
+
+\beginexample
+gap> g:=FibonacciGroup(2,9);
+<fp group on the generators [ f1, f2, f3, f4, f5, f6, f7, f8, f9 ]>
+gap> hom:=EpimorphismNilpotentQuotient(g,2);;
+gap> k:=Kernel(hom);;
+gap> Index(g,k);
+152
+gap> AbelianInvariants(k);
+[ 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 ]
+gap> NewmanInfinityCriterion(Kernel(hom),5);
+true
+\endexample
+
+This proves that the subgroup <k> (and thus the whole group <g>) is
+infinite. (This is the original example from~\cite{New90}.)
 

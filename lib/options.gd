@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  options.gd                     GAP library                      Steve Linton
+#W  options.gd                     GAP library                   Steve Linton
 ##
 #H  @(#)$Id$
 ##
@@ -16,7 +16,7 @@
 ##  example is the selection of a strategy for the Todd-Coxeter coset
 ##  enumeration procedure. An example of something not suited to the
 ##  options mechanism is the imposition of exponent laws in the
-##  p-Quotient algorithm.
+##  $p$-Quotient algorithm.
 ##
 ##  The basis of this system is a global stack of records. All the
 ##  entries of each record are thought of as options settings, and the 
@@ -63,7 +63,7 @@ Revision.options_gd :=
 ##  resetting option <opt>, since an option that has never been set
 ##  has the value `fail' returned by `ValueOptions'.
 ##
-##  Note that there is no check for misspelt or undefined options
+##  Note that there is no check for misspelt or undefined options.
 
 DeclareGlobalFunction( "PushOptions");
 
@@ -71,17 +71,32 @@ DeclareGlobalFunction( "PushOptions");
 ##
 #F  PopOptions( )                                              remove options
 ##
-##  This function removes the top-most options record from the options stack
+##  This function removes the top-most options record from the options stack.
 ##
 DeclareGlobalFunction( "PopOptions");
 
 #############################################################################
 ##
+#F  ResetOptionsStack( )                                   remove all options
+##
+##  unbinds (i.e. removes) all the options records from the options stack.
+##
+##  *Note:*
+##  `ResetOptionsStack' should *not* be used within a function. Its  intended
+##  use is to clean up the options stack in  the  event  that  the  user  has
+##  `quit' from a `break'  loop,  so  leaving  a  stack  of  no-longer-needed
+##  options (see~"quit").
+##
+DeclareGlobalFunction( "ResetOptionsStack");
+
+#############################################################################
+##
 #F  ValueOption( <opt> )                                       access options
 ##
-##  This function is the main method of accessing the Options Stack. A 
-##  function which makes decisions which might be effected by options should
-##  examine the result of ValueOption( <opt> ). If <opt> has never
+##  This function is the main method of accessing the Options Stack;
+##  <opt> should be the name of an option, i.e.~a string. A 
+##  function which makes decisions which might be affected by options should
+##  examine the result of `ValueOption( <opt> )'. If <opt> has never
 ##  been set then `fail' is returned.
 ##
 
@@ -92,7 +107,7 @@ DeclareGlobalFunction( "ValueOption");
 #F  DisplayOptionsStack( )                          display the options stack
 ##
 ##  This function prints a human-readable display of the complete
-##  options stack
+##  options stack.
 ##  
 ##
 
@@ -103,7 +118,12 @@ DeclareGlobalFunction( "DisplayOptionsStack");
 #V  InfoOptions                                        info class for options
 ##
 ##  This info class can be used to enable messages about options being 
-##  changed (level 1) or accessed (level 2)
+##  changed (level 1) or accessed (level 2).
 ##
 
 DeclareInfoClass("InfoOptions");
+
+#############################################################################
+##
+#E  options.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##

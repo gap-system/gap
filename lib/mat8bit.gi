@@ -21,7 +21,7 @@ Revision.mat8bit_gi :=
 ##
 ##  A length 2 list of length 257 lists. TYPES_MAT8BIT[0][q] will be the type
 ##  of mutable matrices over GF(q), TYPES_MAT8BIT[1][q] is the type of 
-##  immutable vectors. The 257th position is bound to 1 to stop the lists
+##  immutable matrices. The 257th position is bound to 1 to stop the lists
 ##  shrinking.
 ##
 ##  It may later accessed directly by the kernel, so the format cannot be changed
@@ -288,11 +288,11 @@ InstallGlobalFunction(ConvertToMatrixRep,
     if Length(arg) > 1 then
         q1 := arg[2];
         if not IsInt(q1) then
-            if IsField(q1) then
-                q1 := Size(q1);
-            else
-                q1 := Size(Field(q1));
-            fi;
+	  if IsField(q1) then
+	      q1 := Size(q1);
+	  else
+	    return; # not a field -- exit
+	  fi;
         fi;
         givenq := true;
         Add(qs,q1);
@@ -435,9 +435,71 @@ InstallMethod( \*, "8 bit matrix * 8 bit matrix", IsIdenticalObj,
 ##
 
 InstallMethod( InverseOp, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse ],
+        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse 
+	# the following are banalities, but they are required to get the
+	# ranking right
+        and IsOrdinaryMatrix and IsSmallList and
+	IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
+	],
         0,
         INV_MAT8BIT);
+
+#############################################################################
+##
+#M <mat>^0
+##
+
+InstallMethod( OneOp, "8 bit matrix", true,
+        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse 
+	# the following are banalities, but they are required to get the
+	# ranking right
+        and IsOrdinaryMatrix and IsSmallList and
+	IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
+	],
+        0,
+        function(m)
+    local   v,  o,  one,  i,  w;
+    v := ZeroOp(m![2]);
+    o := [];
+    one := Z(Q_VEC8BIT(v))^0;
+    for i in [1..m![1]] do
+        w := ShallowCopy(v);
+        w[i] := one;
+        Add(o,w);
+    od;
+    if not IsMutable(v) then
+        for i in [1..m![1]] do
+            MakeImmutable(o[i]);
+        od;
+        ConvertToMatrixRep(o, Q_VEC8BIT(v));
+    fi;
+    if not IsMutable(m) then
+        MakeImmutable(o);
+    fi;
+    return o;
+end);
+    
+
+#############################################################################
+##
+#M One(<mat>) -- always immutable
+##
+
+InstallMethod( One, "8 bit matrix", true,
+        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse 
+	# the following are banalities, but they are required to get the
+	# ranking right
+        and IsOrdinaryMatrix and IsSmallList and
+	IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
+	],
+        0,
+        function(m)
+    local   o;
+    o := OneOp(m);
+    MakeImmutable(o);
+    ConvertToMatrixRep(o, Q_VEC8BIT(m![2]));
+    return o;
+    end );
 
 #############################################################################
 ##
@@ -549,7 +611,37 @@ InstallGlobalFunction( RepresentationsOfMatrix,
 #        Objectify(TYPE_MAT8BIT(Q_VEC8BIT(v), true), l);
 #   fi;
 #end);
+    
+            
+#############################################################################
+##
+#M  DefaultFieldOfMatrix( <ffe-mat> )
+##
+InstallMethod( DefaultFieldOfMatrix,
+    "method for a compressed matrix over GF(q)", true,
+    [ IsMatrix and IsFFECollColl and Is8BitMatrixRep ], 0,
+function( mat )
+    return GF(Q_VEC8BIT(mat![2]));
+end );
 
+#############################################################################
+##
+#M  <mat> < <mat>
+##
+
+InstallMethod( \<, "for two compressed 8 bit matrices", IsIdenticalObj,
+        [ IsMatrix and IsFFECollColl and Is8BitMatrixRep, IsMatrix and IsFFECollColl and Is8BitMatrixRep ], 0,
+        LT_MAT8BIT_MAT8BIT);
+
+#############################################################################
+##
+#M  <mat> = <mat>
+##
+
+InstallMethod( \=, "for two compressed 8 bit matrices", IsIdenticalObj,
+        [ IsMatrix and IsFFECollColl and Is8BitMatrixRep, IsMatrix and IsFFECollColl and Is8BitMatrixRep ], 0,
+        EQ_MAT8BIT_MAT8BIT);
+    
 #############################################################################
 ##
 #E

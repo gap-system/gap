@@ -235,8 +235,8 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define T_FUNCTION              (FIRST_CONSTANT_TNUM+10)
 #define T_FLAGS                 (FIRST_CONSTANT_TNUM+11)
 #define T_FLOAT                 (FIRST_CONSTANT_TNUM+12)
-#define T_RESERVED              (FIRST_CONSTANT_TNUM+13)   
-#define LAST_CONSTANT_TNUM      T_RESERVED 
+#define T_RESERVED_BY_GAP       (FIRST_CONSTANT_TNUM+13)   
+#define LAST_CONSTANT_TNUM      T_RESERVED_BY_GAP 
 
 #define IMMUTABLE               1
 
@@ -290,11 +290,15 @@ static inline Obj prod_intobjs(Int l, Int r)
 #define LAST_EXTERNAL_TNUM      T_WPOBJ
 #define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
 
+#ifdef XTNUMS
 #define FIRST_VIRTUAL_TNUM      (LAST_EXTERNAL_TNUM+1)
 #define T_OBJECT                (FIRST_VIRTUAL_TNUM+ 0)
 #define T_MAT_CYC               (FIRST_VIRTUAL_TNUM+ 1)
 #define T_MAT_FFE               (FIRST_VIRTUAL_TNUM+ 2)
 #define LAST_VIRTUAL_TNUM       T_MAT_FFE
+#else
+#define LAST_VIRTUAL_TNUM       LAST_REAL_TNUM
+#endif
 
 #define FIRST_COPYING_TNUM      (LAST_REAL_TNUM + 1)
 #define COPYING                 (FIRST_COPYING_TNUM - FIRST_RECORD_TNUM)
@@ -476,6 +480,11 @@ extern Obj (*TypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
        ( LAST_IMM_MUT_TNUM < (type) ? (type) : \
         ( ((((type)-T_PLIST)|IMMUTABLE)+T_PLIST) ) ) ) )
 
+/****************************************************************************
+**
+*F  MakeImmutable( <obj> ) . . . . . . . . . . . . . make an object immutable
+*/
+extern void MakeImmutable( Obj obj );
 
 /****************************************************************************
 **

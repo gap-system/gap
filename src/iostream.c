@@ -95,17 +95,64 @@ Obj FuncIS_BLOCKED_IOSTREAM( Obj self, Obj stream )
   return Fail;
 }
 
+Obj FuncFD_OF_IOSTREAM( Obj self, Obj stream )
+{
+  ErrorQuit("IOStreams are not available on this architecture", (Int)0L, (Int) 0L);
+  return Fail;
+}
+
 
 #else
 
+#if HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+
+#if HAVE_ERRNO_H
 #include <errno.h>
+#endif
+
+#if HAVE_SIGNAL_H
 #include <signal.h>
+#endif
+
+#if HAVE_FCNTL_H
 #include <fcntl.h>
+#endif
+
+#if HAVE_TERMIOS_H
 #include <termios.h>
+#endif
+
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+
+#if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
+#endif
+
+#if HAVE_ASSERT_H
 #include <assert.h>
+#else
+#ifdef NDEBUG
+#define assert( a )
+#else
+#define assert( a ) do if (!(a)) {fprintf(stderr,"Assertion failed at line %d file %s\n",__LINE__,__FILE__); abort();} while (0)
+#endif
+#endif
+
+#if HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+
+#if HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+
+#if HAVE_STRING_H
+#include <string.h>
+#endif
 
 typedef struct {
   int childPID;    /* Also used as a link to make a linked free list */
@@ -127,9 +174,9 @@ typedef struct {
 static PtyIOStream PtyIOStreams[MAX_PTYS];
 static UInt FreePtyIOStreams;
 
-UInt NewStream( void )
+Int NewStream( void )
 {
-  UInt stream  = -1;
+  Int stream;
   if (FreePtyIOStreams != -1)
     {
       stream = FreePtyIOStreams;
@@ -260,6 +307,16 @@ void KillChild (UInt stream)
 
 static UInt GetMasterPty ( int * pty, Char * ttyname, Char *ptyname )
 {
+#if HAVE_GETPT && HAVE_PTSNAME_R
+  if ((*pty = getpt()) > 0 )
+    {
+      if (grantpt(*pty) || unlockpt(*pty))
+	return 1;
+      ptsname_r(*pty, ttyname, 32); 
+      return 0;
+    }
+  return 1;
+#else
 #   ifdef att
         if ( (*pty = open( "/dev/ptmx", O_RDWR )) < 0 )
             return 1;
@@ -328,6 +385,7 @@ static UInt GetMasterPty ( int * pty, Char * ttyname, Char *ptyname )
 #   endif
 #   endif
 #   endif
+#endif
 }
 
 
@@ -348,12 +406,7 @@ RETSIGTYPE ChildStatusChanged( int whichsig )
       if (PtyIOStreams[i].inuse)
 	{
 	  retcode = waitpid( PtyIOStreams[i].childPID, &status, WNOHANG | WUNTRACED );
-	  if (retcode == -1)
-	    {
-	      PtyIOStreams[i].changed = 1;
-	      PtyIOStreams[i].alive  = 1;
-	    }
-	  if (WIFEXITED(status) || WIFSIGNALED(status))
+	  if (retcode != -1 && retcode != 0 && (WIFEXITED(status) || WIFSIGNALED(status)) )
 	    {
 	      PtyIOStreams[i].changed = 1;
 	      PtyIOStreams[i].status = status;
@@ -361,6 +414,17 @@ RETSIGTYPE ChildStatusChanged( int whichsig )
 	    }
 	}
     }
+  /* Collect up any other zombie children */
+  do {
+   retcode = waitpid( -1, &status, WNOHANG);
+   if (retcode == -1 && errno != ECHILD)
+     Pr("#E Unexpected waitpid error %d\n",errno, 0);
+#if 0
+   else if (retcode != 0)
+     Pr"Reaped unexpected child %d\n",retcode, 0L);
+#endif
+ } while (retcode != 0 && retcode != -1);
+  
   signal(SIGCHLD, ChildStatusChanged);
 }
 
@@ -370,7 +434,7 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
     char            c[8];    /* buffer for communication        */
     int             n;       /* return value of 'select'        */
     int             slave;   /* pipe to child                   */
-    UInt            stream;
+    Int            stream;
 
 #   if HAVE_TERMIOS_H
         struct termios  tst; /* old and new terminal state      */
@@ -482,7 +546,7 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 	if ( PtyIOStreams[stream].childPID == 0 )
 	  {
 	    /* Set up the child */
-	    
+            close(PtyIOStreams[stream].ptyFD);
 	    if ( dup2( slave, 0 ) == -1)
 	      _exit(-1);
 	    fcntl( 0, F_SETFD, 0 );
@@ -494,7 +558,7 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 	    if ( chdir(dir) == -1 ) {
 	      _exit(-1);
 	    }
-	    
+	   setpgrp(); 
 #       ifdef SYS_HAS_EXECV_CCHARPP
             execv( prg, (const char**) args );
 #       else
@@ -513,7 +577,7 @@ Int StartChildProcess ( Char *dir, Char *prg, Char *args[] )
 	    Pr( "Panic: cannot fork to subprocess.\n", 0, 0);
 	    goto cleanup;
 	  }
-
+        close(slave);
 	
 	
 	return stream;
@@ -589,7 +653,8 @@ Obj FuncWRITE_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
   UInt pty = INT_INTOBJ(stream);
   ConvString(string);
   while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,"You can return another stream number to continue"));
+    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
+                                    "you can replace stream number <num> via 'return <num>;'"));
   HandleChildStatusChanges(pty);
   return INTOBJ_INT(WriteToPty(pty, CSTR_STRING(string), INT_INTOBJ(len)));
 }
@@ -599,7 +664,8 @@ Obj FuncREAD_IOSTREAM( Obj self, Obj stream, Obj string, Obj len )
   UInt pty = INT_INTOBJ(stream);
   ConvString(string);
   while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,"You can return another stream number to continue"));
+    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
+                                    "you can replace stream number <num> via 'return <num>;'"));
   HandleChildStatusChanges(pty);
   return INTOBJ_INT(ReadFromPty(pty, CSTR_STRING(string), INT_INTOBJ(len)));
 }
@@ -608,7 +674,8 @@ Obj FuncKILL_CHILD_IOSTREAM( Obj self, Obj stream )
 {
   UInt pty = INT_INTOBJ(stream);
   while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,"You can return another stream number to continue"));
+    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
+                                    "you can replace stream number <num> via 'return <num>;'"));
   /* Don't check for child having changes status */
   KillChild( pty );
   return 0;
@@ -618,7 +685,8 @@ Obj FuncSIGNAL_CHILD_IOSTREAM( Obj self, Obj stream , Obj signal)
 {
   UInt pty = INT_INTOBJ(stream);
   while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,"You can return another stream number to continue"));
+    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
+                                    "you can replace stream number <num> via 'return <num>;'"));
   /* Don't check for child having changes status */
   SignalChild( pty, INT_INTOBJ(signal) );
   return 0;
@@ -631,13 +699,16 @@ Obj FuncCLOSE_PTY_IOSTREAM( Obj self, Obj stream )
   int retcode;
   UInt count;
   while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,"You can return another stream number to continue"));
+    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
+                                    "you can replace stream number <num> via 'return <num>;'"));
 
   PtyIOStreams[pty].inuse = 0;
   
   /* Close down the child */
+  retcode = close(PtyIOStreams[pty].ptyFD);
+  if (retcode)
+    Pr("Strange close return code %d\n",retcode, 0);
   kill(PtyIOStreams[pty].childPID, SIGTERM);
-  close(PtyIOStreams[pty].ptyFD);
   retcode = waitpid(PtyIOStreams[pty].childPID, &status, 0);
   FreeStream(pty);
   return 0;
@@ -647,8 +718,18 @@ Obj FuncIS_BLOCKED_IOSTREAM( Obj self, Obj stream )
 {
   UInt pty = INT_INTOBJ(stream);
   while (!PtyIOStreams[pty].inuse)
-    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,"You can return another stream number to continue"));
+    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
+                                    "you can replace stream number <num> via 'return <num>;'"));
   return (PtyIOStreams[pty].blocked || PtyIOStreams[pty].changed || !PtyIOStreams[pty].alive) ? True : False;
+}
+
+Obj FuncFD_OF_IOSTREAM( Obj self, Obj stream )
+{
+  UInt pty = INT_INTOBJ(stream);
+  while (!PtyIOStreams[pty].inuse)
+    pty = INT_INTOBJ(ErrorReturnObj("IOSTREAM %d is not in use",pty,0L,
+                                    "you can replace stream number <num> via 'return <num>;'"));
+  return INTOBJ_INT(PtyIOStreams[pty].ptyFD);
 }
 
 #endif
@@ -686,6 +767,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "IS_BLOCKED_IOSTREAM", 1, "stream",
       FuncIS_BLOCKED_IOSTREAM, "src/iostream.c:IS_BLOCKED_IOSTREAM" },
     
+    { "FD_OF_IOSTREAM", 1, "stream",
+      FuncFD_OF_IOSTREAM, "src/iostream.c:FD_OF_IOSTREAM" },
+
     0 };
   
 /* NB Should probably do some checks preSave for open files etc and refuse to save
@@ -712,12 +796,18 @@ static Int InitKernel(
       StructInitInfo * module )
 {
 #if SYS_MAC_MWC || SYS_MAC_MPW
+
+  InitHdlrFuncsFromTable( GVarFuncs );
+
 #else
 
   UInt i;
   PtyIOStreams[0].childPID = -1;
   for (i = 1; i < MAX_PTYS; i++)
-    PtyIOStreams[i].childPID = i-1;
+    {
+      PtyIOStreams[i].childPID = i-1;
+      PtyIOStreams[i].inuse = 0;
+    }
   FreePtyIOStreams = MAX_PTYS-1;
 
   /* init filters and functions                                          */

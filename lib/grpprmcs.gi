@@ -37,7 +37,6 @@ end;
 
 #############################################################################
 ##
-
 #F  DisplayCompositionSeries( <S> ) . . . . . . . . . . . .  display function
 ##
 InstallGlobalFunction( DisplayCompositionSeries, function( S )
@@ -51,17 +50,13 @@ InstallGlobalFunction( DisplayCompositionSeries, function( S )
     # display the composition series
     Print( GroupString( S[1], "G" ), "\n" );
     for i  in [2..Length(S)]  do
-	#if Parent(S[i])=S[i-1] then
-	#  f:=Image( NaturalHomomorphismByNormalSubgroupInParent( S[ i ] ) );
-	#else
-	f:=Image(NaturalHomomorphismByNormalSubgroup(S[i-1],S[i]));
-        #fi;
-        Print( " | ",IsomorphismTypeFiniteSimpleGroup(f).name,"\n");
-        if i < Length(S)  then
-            Print( GroupString( S[i], "S" ), "\n" );
-        else
-            Print( GroupString( S[i], "1" ), "\n" );
-        fi;
+      f:=Image(NaturalHomomorphismByNormalSubgroup(S[i-1],S[i]));
+      Print( " | ",IsomorphismTypeInfoFiniteSimpleGroup(f).name,"\n");
+      if i < Length(S)  then
+	Print( GroupString( S[i], "S" ), "\n" );
+      else
+	Print( GroupString( S[i], "1" ), "\n" );
+      fi;
     od;
 end );
 
@@ -162,7 +157,8 @@ InstallMethod( CompositionSeries,
             # if workgroup is not transitive
             workgrouporbit:= StabChainMutable( workgroup ).orbit;
             if Length(workgrouporbit) < lastpt   then
-                tchom := ActionHomomorphism(workgroup,workgrouporbit);
+                tchom :=
+		ActionHomomorphism(workgroup,workgrouporbit,"surjective");
                 Add(homlist,tchom);
                 workgroup := Image(tchom,workgroup);
             else
@@ -170,7 +166,7 @@ InstallMethod( CompositionSeries,
 
                 # if workgroup is not primitive
                 if Length(bl) > 1  then
-                    bhom := ActionHomomorphism(workgroup,bl,OnSets);
+                    bhom:=ActionHomomorphism(workgroup,bl,OnSets,"surjective");
                     workgroup := Image(bhom,workgroup);
                     Add(homlist,bhom);
                 else
@@ -403,19 +399,10 @@ InstallGlobalFunction( PerfectCSPG,
                # a perfect Frobenius group must have SL(2,5) as
                # one-point stabilizer; 1/120 chance to hit socle
                prime := FactorsInt(whichcase[2])[1];
-               stab1 := chainK.stabilizer;
-               i := 0;
-               y := stab1.orbit[1];
-               repeat
-                  i := i+1;
-                  x := chainK.orbit[1];
-                  word := CosetRepAsWord(y,stab1.orbit[i],stab1.transversal);
-                  Add( word, chainK.transversal[ chainK.orbit[2] ] );
-                  for j in [1..prime] do
-                      x := ImageInWord(x, word);
-                  od;
-               until x = chainK.orbit[1];
-               kerelement := Product(word);
+	       repeat
+	         kerelement:=Random(K);
+	       until (not IsOne(kerelement)) and IsOne(kerelement^prime);
+
                N := NormalClosure(K, SubgroupNC(K,[kerelement]));
             else
                list := NormalizerStabCSPG(K);
@@ -428,13 +415,11 @@ InstallGlobalFunction( PerfectCSPG,
                   H := CentralizerNormalCSPG( H, stab2 );
                else
                   L := Orbit( H, StabChainMutable( H ).orbit[1] );
-                  tchom := ActionHomomorphism(H,L);
+                  tchom := ActionHomomorphism(H,L,"surjective");
                   op := Image( tchom );
                   H := PreImages(tchom,PCore(op,FactorsInt(whichcase[2])[1]));
                   H := Centre(H);
-                  SetIsNilpotentGroup( H, true );
-#T what is this good for?
-#T The centre is abelian and not only nilpotent ...
+                  SetIsAbelian( H, true );
               fi;
               N := FindRegularNormalCSPG(K,H,whichcase);
            fi;
@@ -539,7 +524,7 @@ InstallGlobalFunction( CasesCSPG, function(G)
     else
         tab1 := [ ,,,,[60],,[168,2520],[168,20160],[504,181440],,
                   [660,7920,19958400],,[5616,3113510400]];
-        tab2 := [ ,,,,[60],[60,360],[168,2520],[168,8168,20160]];
+        tab2 := [ ,,,,[60],[60,360],[168,2520],[168,1344,20160]];
         for n in [5,7,8,9,11,13] do
             for m in [5..8] do
                 for o in [1..Length(tab1[n])] do
@@ -600,7 +585,7 @@ InstallGlobalFunction( FindNormalCSPG, function ( G, whichcase )
     # centralizer or we cannot determine this fact from Size(G)
     n := LargestMovedPoint(G);
     stabgroup := Stabilizer(G, StabChainMutable( G ).orbit[1],OnPoints);
-    orbits := Orbits(stabgroup,[1..n]);
+    orbits := OrbitsDomain(stabgroup,[1..n]);
 
     # find shortest orbit of stabgroup
     len := n; where := 1;
@@ -615,13 +600,13 @@ InstallGlobalFunction( FindNormalCSPG, function ( G, whichcase )
     if len mod whichcase[3] = 0 and len <= whichcase[3]*(whichcase[2]-1) then
 
         # take action of stabgroup on shortest orbit
-        tchom := ActionHomomorphism(stabgroup,orbits[where]);
+        tchom := ActionHomomorphism(stabgroup,orbits[where],"surjective");
         K := Image(tchom,stabgroup);
         bl := MaximalBlocks(K,[1..len]);
 
         # take action on blocks
         if Length(bl) > 1  then
-            bhom := ActionHomomorphism(K,bl,OnSets);
+            bhom := ActionHomomorphism(K,bl,OnSets,"surjective");
             K := Image(bhom,K);
             kernel := KernelOfMultiplicativeGeneralMapping(
                           CompositionMapping(bhom,tchom));
@@ -759,11 +744,11 @@ InstallGlobalFunction( NinKernelCSPG,
     # find primitive action on images of block
     newrep := MaximalBlocks( G, StabChainMutable( G ).orbit, block );
     if Length(newrep) > 1 then
-        bhom := ActionHomomorphism(G,newrep,OnSets);
+        bhom := ActionHomomorphism(G,newrep,OnSets,"surjective");
         Add(homlist,bhom);
         G := Image(bhom,G);
     else
-        tchom:=ActionHomomorphism(G, StabChainMutable( G ).orbit);
+        tchom:=ActionHomomorphism(G, StabChainMutable( G ).orbit,"surjective");
         Add(homlist,tchom);
         G := Image(tchom,G);
     fi;
@@ -1282,6 +1267,7 @@ end );
 ##
 InstallGlobalFunction( InverseAsWord, function(word,list,inverselist)
     local   i,          # loop variable
+	    p,		# position
             inverse;    # the inverse of word
 
     if word = [ () ]  then
@@ -1289,7 +1275,13 @@ InstallGlobalFunction( InverseAsWord, function(word,list,inverselist)
     fi;
     inverse := [];
     for i in [1..Length(word)] do
-        inverse[i] := inverselist[Position(list,word[Length(word)+1-i])];
+      # identity tests are cheaper if the degree gets bigger.
+      p:=PositionProperty(list,j->IsIdenticalObj(j,word[Length(word)+1-i]));
+      if p=fail then
+	# this is very unlikely to happen.
+	p:=Position(list,word[Length(word)+1-i]);
+      fi;
+      inverse[i] := inverselist[p];
     od;
     return inverse;
 end );
@@ -1683,8 +1675,7 @@ end );
 ##
 InstallMethod( Centre,
     "for a permutation group",
-    true,
-    [ IsPermGroup ], 0,
+    [ IsPermGroup ],
     function(G)
     local   n,          # degree of G
             orbits,     # list of orbits of G
@@ -1717,7 +1708,7 @@ InstallMethod( Centre,
 
     base := BaseStabChain(StabChainMutable(G));
     n := Maximum( Maximum( base ), LargestMovedPoint(G) );
-    orbits := Orbits(G,[1..n]);
+    orbits := OrbitsDomain(G,[1..n]);
     # orbits := List( orbits, Set );
 
     # handle case of transitive G directly
@@ -1728,6 +1719,8 @@ InstallMethod( Centre,
         else
            order := Size(centr);
            cent := IntersectionNormalClosurePermGroup(G,centr,order*Size(G));
+           Assert( 1, IsAbelian( cent ) );
+           SetIsAbelian( cent, true );
            return cent;
         fi;
     fi;
@@ -1758,7 +1751,7 @@ InstallMethod( Centre,
     if n = len then
        GG := G;
     else
-       tchom := ActionHomomorphism(G,domain);
+       tchom := ActionHomomorphism(G,domain,"surjective");
        GG := Image(tchom,G);
     fi;
 
@@ -1770,7 +1763,10 @@ InstallMethod( Centre,
         else
            order := Size( centr );
            cent := IntersectionNormalClosurePermGroup(GG,centr,order*Size(GG));
-           return PreImages(tchom,cent);
+           cent:= PreImages(tchom,cent);
+           Assert( 1, IsAbelian( cent ) );
+           SetIsAbelian( cent, true );
+           return cent;
         fi;
     fi;
 
@@ -1787,7 +1783,7 @@ InstallMethod( Centre,
         else
            orbit := OnTuples(orbits[i],tchom!.conperm);
         fi;
-        tchom2 := ActionHomomorphism(GG,orbit);
+        tchom2 := ActionHomomorphism(GG,orbit,"surjective");
         GGG := Image(tchom2,GG);
         chainGG:= StabChainOp( GG, [ orbit[1] ] );
         chainGGG:= StabChainMutable( GGG );
@@ -1810,15 +1806,14 @@ InstallMethod( Centre,
     else
         cent := IntersectionNormalClosurePermGroup
                  ( GG, GroupByGenerators(hgens,()), order*Size(GG) );
-        if n = len then
-          return cent;
-        else
-          return PreImages(tchom,cent);
+        if n <> len then
+          cent:= PreImages( tchom, cent );
         fi;
+        Assert( 1, IsAbelian( cent ) );
+        SetIsAbelian( cent, true );
+        return cent;
     fi;
 end );
-
-
 
 
 #############################################################################
@@ -1864,7 +1859,7 @@ InstallGlobalFunction( CentralizerNormalCSPG, function(G,N)
     fi;
 
     n := LargestMovedPoint(G);
-    orbits := Orbits(G,[1..n]);
+    orbits := OrbitsDomain(G,[1..n]);
     #orbits := List( orbits, Set );
 
     # handle case of transitive G directly
@@ -1903,7 +1898,7 @@ InstallGlobalFunction( CentralizerNormalCSPG, function(G,N)
        GG := G;
        NN := N;
     else
-       tchom := ActionHomomorphism(G,domain);
+       tchom := ActionHomomorphism(G,domain,"surjective");
        GG := Image(tchom,G);
        NN := Image(tchom,N);
     fi;
@@ -1928,7 +1923,7 @@ InstallGlobalFunction( CentralizerNormalCSPG, function(G,N)
             orbit := OnTuples(orbits[i],tchom!.conperm);
         fi;
         # restrict GG, NN to orbit
-        tchom2 := ActionHomomorphism(GG,orbit);
+        tchom2 := ActionHomomorphism(GG,orbit,"surjective");
         GGG := Image(tchom2,GG);
         NNN := Image(tchom2,NN);
 
@@ -2042,7 +2037,7 @@ InstallGlobalFunction( CentralizerNormalTransCSPG, function(G,N)
 
     # orbits contains the orbits of the centralizer of N in S_n;
     # so C_G(N) must fix setwise the elements of orbits
-    bhom := ActionHomomorphism(G,orbits,OnSets);
+    bhom := ActionHomomorphism(G,orbits,OnSets,"surjective");
     GG := KernelOfMultiplicativeGeneralMapping( bhom );
     if IsTrivial(GG)  then
         return TrivialSubgroup( Parent(G) );
@@ -2108,7 +2103,7 @@ InstallGlobalFunction( CentralizerNormalTransCSPG, function(G,N)
 
     # compute centralizer of N in first orbit; centralizer in other orbits
     # is obtained from identification between orbits
-    tchom := ActionHomomorphism( N, chainN.orbit );
+    tchom := ActionHomomorphism( N, chainN.orbit,"surjective" );
     inverse := tchom!.conperm^(-1);
     img:= Image( tchom, N );
     centr := CentralizerTransSymmCSPG( img, StabChainMutable( img ) );
@@ -2321,7 +2316,7 @@ InstallGlobalFunction( ActionAbelianCSPG, function(H,n)
                         # cumulativelength[i] is the sum of lengths of first
                         # i-1 elements of orbits. 7th element of output
 
-    orbits := Orbits(H,[1..n]);
+    orbits := OrbitsDomain(H,[1..n]);
     cumulativelength := [0];
     for i in [1..Length(orbits)-1] do
         cumulativelength[i+1] := cumulativelength[i]+Length(orbits[i]);

@@ -39,6 +39,9 @@ DeclareCategory( "IsListDefault", IsList );
 
 InstallTrueMethod( IsListDefault, IsInternalRep and IsList );
 
+
+InstallTrueMethod( IsMultiplicativeGeneralizedRowVector, IsListDefault );
+
 #############################################################################
 ##
 #P  IsRectangularTable( <list> )  . . . . table with all rows the same length
@@ -363,7 +366,8 @@ InstallMethod( ASS_LIST,
 ##
 #C  IsRange( <obj> )
 ##
-##  tests if <obj> is a range.
+##  tests if the object <obj> is a range, i.e. is a dense list of integers
+##  that is also a range (see~"Ranges" for a definition of ``range'').
 #T shouldn't this better be a property?
 ##
 
@@ -528,6 +532,16 @@ DeclareRepresentationKernel( "IsBlistRep",
 ##
 DeclareSynonym( "BlistList", BLIST_LIST );
 
+#############################################################################
+##
+#F  UniteBlistList( <list>, <blist>,<sub> )
+##
+##  works like `UniteBlist(<blist>,BlistList(<list>,<sub>))'. As no
+##  intermediate blist is created, the performance is better than the
+##  separate function calls.
+##
+DeclareSynonym( "UniteBlistList", UNITE_BLIST_LIST );
+
 
 #############################################################################
 ##
@@ -577,7 +591,6 @@ DeclareSynonym( "IsSubsetBlist", IS_SUB_BLIST );
 ##  called to change <blist1>.
 ##
 DeclareSynonym( "UniteBlist", UNITE_BLIST );
-
 
 #############################################################################
 ##

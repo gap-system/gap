@@ -140,6 +140,16 @@ DeclareSynonymAttr( "GeneratorsOfVectorSpace",
 ##  Canonical bases are defined for example for Gaussian row and matrix
 ##  spaces (see~"Row and Matrix Spaces").
 ##
+##  If one designs a new kind of vector spaces
+##  (see~"How to Implement New Kinds of Vector Spaces") and defines a
+##  canonical basis for these spaces then the `CanonicalBasis' method
+##  one installs (see~"prg:InstallMethod" in ``Programming in {\GAP}'')
+##  must *not* call `Basis'.  On the other hand, one probably should install
+##  a `Basis' method that simply calls `CanonicalBasis', the value of the
+##  method (see~"prg:Method Installation"
+##  and~"prg:Applicable Methods and Method Selection" in ``Programming in
+##  {\GAP}'') being `CANONICAL_BASIS_FLAGS'.
+##
 DeclareAttribute( "CanonicalBasis", IsFreeLeftModule );
 
 
@@ -276,8 +286,9 @@ DeclareSynonymAttr( "TrivialSubspace", TrivialSubmodule );
 ##
 ##  The optional argument <zero> can be used to specify the zero element of
 ##  the space; <zero> *must* be given if <gens> is empty.
-##  The optional argument `\"basis\"' indicates that <gens> is known to be
-##  linearly independent over <F>;
+##  The optional string `\"basis\"' indicates that <gens> is known to be
+##  linearly independent over <F>, in particular the dimension of the vector
+##  space is immediately set;
 ##  note that `Basis' (see~"Basis") need *not* return the basis formed by
 ##  <gens> if the argument `\"basis\"' is given.
 #T crossref. to `FreeLeftModule' as soon as the modules chapter is reliable!
@@ -299,11 +310,11 @@ DeclareSynonym( "VectorSpace", FreeLeftModule );
 ##  `SubspaceNC' does the same as `Subspace', except that it omits the check
 ##  whether <gens> is a subset of <V>.
 ##
-##  The optional argument `\"basis\"' indicates that <gens> is known to be
+##  The optional string `\"basis\"' indicates that <gens> is known to be
 ##  linearly independent over $F$.
 ##  In this case the dimension of the subspace is immediately set,
-##  and it is *not* checked (also by `Subspace') whether <gens> really is
-##  linearly independent and whether <gens> is a subset of <V>.
+##  and both `Subspace' and `SubspaceNC' do *not* check whether <gens> really
+##  is linearly independent and whether <gens> is a subset of <V>.
 #T crossref. to `Submodule' as soon as the modules chapter is reliable!
 ##
 DeclareSynonym( "Subspace", Submodule );

@@ -191,6 +191,11 @@ DeclareGlobalFunction("DxSplitDegree");
 ##  best (cost/earning ration) split. This matrix then will be the next one
 ##  computed and used.
 ##
+##  The global option `maxclasslen' (defaulting to `infinity') is recognized
+##  by `BestSplittingMatrix': Only classes whose length is limited by the
+##  value of this option will be considered for splitting. If no usable class
+##  remains, `fail' is returned.
+##
 DeclareGlobalFunction("BestSplittingMatrix");
 
 
@@ -217,8 +222,14 @@ DeclareGlobalFunction( "DixonInit" );
 ##  uses it to split character spaces and stores all the irreducible
 ##  characters obtained that way.
 ##
+##  The class to use for splitting is chosen via `BestSplittingMatrix' and
+##  the options described for this function apply here.
+##
+##  `DixonSplit' returns `true' if a split was performed and `fail'
+##  otherwise.
+##
 DeclareGlobalFunction( "DixonSplit" );
-
+DeclareGlobalFunction( "SplitStep" );
 
 #############################################################################
 ##
@@ -247,6 +258,31 @@ DeclareGlobalFunction( "DixontinI" );
 ##
 DeclareAttribute( "IrrDixonSchneider", IsGroup );
 DeclareOperation( "IrrDixonSchneider", [ IsGroup, IsRecord ] );
+
+#############################################################################
+##
+#F  IrreducibleRepresentationsDixon(<G>)
+#F  IrreducibleRepresentationsDixon(<G>,<chi>)
+#F  IrreducibleRepresentationsDixon(<G>,<chilist>)
+##
+##  computes (reresentatives of) all irreducible complex representations for
+##  the finite group <G>, using the method of~\cite{Dix93}, which computes
+##  the character table and computes the representation as constituent of an
+##  induced monomial representation of a subgroup.
+##
+##  This method can be quite expensive for larger groups, for example it
+##  might involve calculation of the subgroup lattice of <G>.
+##
+##  If given, <chi> must be a character, in this case only a representation
+##  for <chi> is returned.
+##
+##  If given, <chilist> must be a list of characters, in this case only
+##  representations for characters in <chilist> are computed.
+##
+##  Note that this method might fail if for an irreducible representation
+##  there is no subgroup in which its reduction has a linear constituent
+##  with multiplicity one.
+DeclareGlobalFunction("IrreducibleRepresentationsDixon");
 
 
 #############################################################################

@@ -3,7 +3,6 @@
 ##
 #X  files dealing with character tables and class functions
 ##
-ReadLib( "ctbl.gd"     );
 ReadLib( "ctblfuns.gd" );
 ReadLib( "ctblmaps.gd" );
 ReadLib( "ctblauto.gd" );
@@ -42,7 +41,6 @@ ReadLib( "ctblothe.gi" );
 #X  files dealing with tables of marks
 ##
 ReadLib( "tom.gd");
-ReadLib( "straight.gd");
 ReadLib( "stdgen.gd");
 
 ReadLib( "tom.gi");

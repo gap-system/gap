@@ -467,7 +467,8 @@ extern  void            IntrPow ( void );
 */
 extern  void            IntrIntExpr (
             Char *              str );
-
+extern  void            IntrLongIntExpr (
+            Obj                 string );
 
 /****************************************************************************
 **
@@ -538,7 +539,7 @@ extern  void            IntrListExprEnd (
 *F  IntrStringExpr(<str>) . . . . . . . . interpret literal string expression
 */
 extern  void            IntrStringExpr (
-            Char *              str );
+            Obj                 string );
 
 
 /****************************************************************************

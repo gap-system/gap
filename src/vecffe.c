@@ -1,3 +1,4 @@
+
 /****************************************************************************
 **
 *W  vecffe.c                    GAP source                      Werner Nickel
@@ -43,120 +44,7 @@ const char * Revision_vecffe_c =
 #include        "calls.h"               /* needed for opers.h              */
 #include        "opers.h"               /* for TRY_NEXT_METHOD             */
 
-/****************************************************************************
-**
-
-*F  IsXTNumPlistFFE(<list>) . . . . . . . . . . .  test if a list is a vector
-**
-**  'IsXTNumPlistFFE'  returns 1  if   the list <list>  is   a vector of
-**  elements in the same finite field and  0 otherwise.    As a  sideeffect
-**  the type of  the   list  is  changed to 'T_PLIST_FFE'.
-**
-**  'IsXTNumPlistFFE' is the function in 'IsXTNumListFuncs' for finite field
-**  vectors.
-*/
-#define IS_IMM_PLIST(list)  ((TNUM_OBJ(list) - T_PLIST) % 2)
-
-Int             IsXTNumPlistFFE (
-    Obj                 list )
-{
-    Int                 isVector;       /* result                          */
-    UInt                len;            /* length of the list              */
-    Obj                 elm;            /* one element of the list         */
-    UInt                i;              /* loop variable                   */
-    FF                  fld;            /* the common (?) field            */
-
-    /* if we already know that the list is a vector, very good             */
-    if      ( T_PLIST_FFE    <= TNUM_OBJ(list)
-           && TNUM_OBJ(list) <= T_PLIST_FFE + IMMUTABLE ) {
-        isVector = 1;
-    }
-
-    /* if it is a nonempty plain list, check the entries                   */
-    else if ( (TNUM_OBJ(list) == T_PLIST
-            || TNUM_OBJ(list) == T_PLIST + IMMUTABLE
-            || TNUM_OBJ(list) == T_PLIST_DENSE
-            || TNUM_OBJ(list) == T_PLIST_DENSE + IMMUTABLE
-            || (T_PLIST_HOM <= TNUM_OBJ(list)
-             && TNUM_OBJ(list) <= T_PLIST_HOM_SSORT + IMMUTABLE))
-           && LEN_PLIST(list) != 0
-           && ELM_PLIST(list,1) != 0
-           && TNUM_OBJ( ELM_PLIST(list,1) ) == T_FFE ) {
-        fld = FLD_FFE( ELM_PLIST(list,1) );
-        len = LEN_PLIST(list);
-        for ( i = 2; i <= len; i++ ) {
-            elm = ELM_PLIST( list, i );
-            if ( elm == 0
-              || TNUM_OBJ(elm) != T_FFE
-              || FLD_FFE(elm) != fld )
-                break;
-        }
-        isVector = (len < i) ? 1 : 0;
-        if ( isVector )  RetypeBag( list, T_PLIST_FFE + IS_IMM_PLIST(list) );
-    }
-
-    /* otherwise the list is certainly not a vector                        */
-    else {
-        isVector = 0;
-    }
-
-    /* return the result                                                   */
-    return isVector;
-}
-
-
-/****************************************************************************
-**
-*F  IsXTNumMatFFE(<list>) . . . . . . . . . . . .  test if a list is a matrix
-**
-**  'IsXTNumMatFFE' returns 1 if the list <list> is a matrix and 0 otherwise.
-**  As a sideeffect the type of the rows is changed to 'T_VECTOR'.
-**
-**  'IsXTNumMatFFE' is the function in 'IsXTNumListFuncs' for matrices.
-*/
-Int             IsXTNumMatFFE (
-    Obj                 list )
-{
-    Int                 isMatrix;       /* result                          */
-    UInt                cols;           /* length of the rows              */
-    UInt                len;            /* length of the list              */
-    Obj                 elm;            /* one element of the list         */
-    UInt                i;              /* loop variable                   */
-    FF                  fld;            /* the common (?) field            */
-
-     /* if it is a nonempty plain list, check the entries                   */
-    if ( (TNUM_OBJ(list) == T_PLIST
-       || TNUM_OBJ(list) == T_PLIST +IMMUTABLE
-       || TNUM_OBJ(list) == T_PLIST_DENSE
-       || TNUM_OBJ(list) == T_PLIST_DENSE +IMMUTABLE
-       || (T_PLIST_HOM <= TNUM_OBJ(list)
-        && TNUM_OBJ(list) <= T_PLIST_TAB_SSORT +IMMUTABLE))
-      && LEN_PLIST( list ) != 0
-      && ELM_PLIST( list, 1 ) != 0
-      && IsXTNumPlistFFE( ELM_PLIST( list, 1 ) ) ) {
-        len = LEN_PLIST( list );
-        elm = ELM_PLIST( list, 1 );
-        cols = LEN_PLIST( elm );
-        fld = FLD_FFE( ELM_PLIST(elm,1) );
-        for ( i = 2; i <= len; i++ ) {
-            elm = ELM_PLIST( list, i );
-            if ( elm == 0
-              || ! IsXTNumPlistFFE( elm )
-              || LEN_PLIST( elm ) != cols
-              || FLD_FFE( ELM_PLIST(elm, 1) ) != fld )
-                break;
-        }
-        isMatrix = (len < i) ? 1 : 0;
-    }
-
-    /* otherwise the list is certainly not a matrix                        */
-    else {
-        isMatrix = 0;
-    }
-
-    /* return the result                                                   */
-    return isMatrix;
-}
+#include <assert.h>
 
 
 /****************************************************************************
@@ -196,7 +84,7 @@ Obj             SumFFEVecFFE (
 
         elmL = ErrorReturnObj(
          "<elm>+<vec>: <elm> and <vec> must belong to the same finite field",
-         0L, 0L, "you can return a new <elm>" );
+         0L, 0L, "you can replace <elm> via 'return <elm>;'" );
         return SUM( elmL, vecR );
     }
 
@@ -261,7 +149,7 @@ Obj             SumVecFFEFFE (
 
         elmR = ErrorReturnObj(
          "<vec>+<elm>: <elm> and <vec> must belong to the same finite field",
-         0L, 0L, "you can return a new <elm>" );
+         0L, 0L, "you can replace <elm> via 'return <elm>;'" );
         return SUM( vecL, elmR );
     }
 
@@ -310,7 +198,8 @@ Obj             SumVecFFEVecFFE (
     FFV                 valL;           /* one element of left operand     */
     Obj *               ptrR;           /* pointer into the right operand  */
     FFV                 valR;           /* one element of right operand    */
-    UInt                len;            /* length                          */
+    UInt                lenL,lenR,len;  /* length                          */
+    UInt                lenmin;
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
     FF *                succ;           /* successor table                 */
@@ -318,15 +207,19 @@ Obj             SumVecFFEVecFFE (
     extern Obj          SumListList( Obj, Obj );  /* generic method        */
 
     /* check the lengths                                                   */
-    len = LEN_PLIST( vecL );
-    if ( len != LEN_PLIST( vecR ) ) {
-        vecR = ErrorReturnObj(
-             "Vector +: lenghts differ <left> %d,  <right> %d",
-             (Int)len, (Int)LEN_PLIST( vecR ), 
-             "you can return a new vector for <right>" );
-        return SUM( vecL, vecR );
-    }
-
+    lenL = LEN_PLIST( vecL );
+    lenR = LEN_PLIST( vecR );
+    if (lenR > lenL)
+      {
+	len = lenR;
+	lenmin = lenL;
+      }
+    else
+      {
+	len = lenL;
+	lenmin = lenR;
+      }
+      
     /* check the fields                                                    */
     fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
     if( FLD_FFE( ELM_PLIST( vecR, 1 ) ) != fld ) {
@@ -336,7 +229,7 @@ Obj             SumVecFFEVecFFE (
 
         vecR = ErrorReturnObj(
              "Vector +: vectors have different fields",
-              0L, 0L, "you can return a new vector for <right>" );
+              0L, 0L, "you can replace vector <right> via 'return <right>;'" );
         return SUM( vecL, vecR );
     }
 
@@ -352,12 +245,18 @@ Obj             SumVecFFEVecFFE (
     ptrL = ADDR_OBJ( vecL );
     ptrR = ADDR_OBJ( vecR );
     ptrS = ADDR_OBJ( vecS );
-    for ( i = 1; i <= len; i++ ) {
+    for ( i = 1; i <= lenmin; i++ ) {
         valL = VAL_FFE( ptrL[i] );
         valR = VAL_FFE( ptrR[i] );
         valS = SUM_FFV( valL, valR, succ );
         ptrS[i] = NEW_FFE( fld, valS );
     }
+    if (lenL < lenR)
+      for (;i <= len; i++)
+	ptrS[i] = ptrR[i];
+    else
+      for (; i <= len; i++)
+	ptrS[i] = ptrL[i];
 
     /* return the result                                                   */
     return vecS;
@@ -403,7 +302,7 @@ Obj             DiffFFEVecFFE (
 
         elmL = ErrorReturnObj(
          "<elm>-<vec>: <elm> and <vec> must belong to the same finite field",
-         0L, 0L, "you can return a new <elm>" );
+         0L, 0L, "you can replace <elm> via 'return <elm>;'" );
         return DIFF( elmL, vecR );
     }
 
@@ -426,7 +325,6 @@ Obj             DiffFFEVecFFE (
         valD = SUM_FFV( valL, valR, succ );
         ptrD[i] = NEW_FFE( fld, valD );
     }
-
     /* return the result                                                   */
     return vecD;
 }
@@ -470,7 +368,7 @@ Obj             DiffVecFFEFFE (
 
         elmR = ErrorReturnObj(
          "<vec>-<elm>: <elm> and <vec> must belong to the same finite field",
-         0L, 0L, "you can return a new <elm>" );
+         0L, 0L, "you can replace <elm> via 'return <elm>;'" );
         return DIFF( vecL, elmR );
     }
 
@@ -521,7 +419,8 @@ Obj             DiffVecFFEVecFFE (
     FFV                 valL;           /* one element of left operand     */
     Obj *               ptrR;           /* pointer into the right operand  */
     FFV                 valR;           /* one element of right operand    */
-    UInt                len;            /* length                          */
+    UInt                len,lenL,lenR;  /* length                          */
+    UInt                lenmin;         
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
     FF *                succ;           /* successor table                 */
@@ -529,14 +428,18 @@ Obj             DiffVecFFEVecFFE (
     extern Obj          DiffListList( Obj, Obj );  /* generic method       */
 
     /* check the lengths                                                   */
-    len = LEN_PLIST( vecL );
-    if ( len != LEN_PLIST( vecR ) ) {
-        vecR = ErrorReturnObj(
-             "Vector -: lenghts differ <left> %d,  <right> %d",
-             (Int)len, (Int)LEN_PLIST( vecR ), 
-             "you can return a new vector for <right>" );
-        return DIFF( vecL, vecR );
-    }
+    lenL = LEN_PLIST( vecL );
+    lenR = LEN_PLIST( vecR );
+    if (lenR > lenL)
+      {
+	len = lenR;
+	lenmin = lenL;
+      }
+    else
+      {
+	len = lenL;
+	lenmin = lenR;
+      }
 
     /* check the fields                                                    */
     fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
@@ -547,7 +450,7 @@ Obj             DiffVecFFEVecFFE (
 
         vecR = ErrorReturnObj(
              "Vector -: vectors have different fields",
-              0L, 0L, "you can return a new vector for <right>" );
+              0L, 0L, "you can replace vector <right> via 'return <right>;'" );
         return DIFF( vecL, vecR );
     }
 
@@ -563,13 +466,24 @@ Obj             DiffVecFFEVecFFE (
     ptrL = ADDR_OBJ( vecL );
     ptrR = ADDR_OBJ( vecR );
     ptrD = ADDR_OBJ( vecD );
-    for ( i = 1; i <= len; i++ ) {
+    for ( i = 1; i <= lenmin; i++ ) {
         valL = VAL_FFE( ptrL[i] );
         valR = VAL_FFE( ptrR[i] );
         valR = NEG_FFV( valR, succ );
         valD = SUM_FFV( valL, valR, succ );
         ptrD[i] = NEW_FFE( fld, valD );
     }
+
+    if (lenL < lenR)
+      for (;i <= len; i++)
+	{
+	  valR = VAL_FFE( ptrR[i] );
+	  valD = NEG_FFV( valR, succ );
+	  ptrD[i] = NEW_FFE( fld, valD );
+	}
+    else
+      for (; i <= len; i++)
+	ptrD[i] = ptrL[i];
 
     /* return the result                                                   */
     return vecD;
@@ -613,7 +527,7 @@ Obj             ProdFFEVecFFE (
 
         elmL = ErrorReturnObj(
          "<elm>*<vec>: <elm> and <vec> must belong to the same finite field",
-         0L, 0L, "you can return a new <elm>" );
+         0L, 0L, "you can replace <elm> via 'return <elm>;'" );
         return PROD( elmL, vecR );
     }
 
@@ -677,7 +591,7 @@ Obj             ProdVecFFEFFE (
 
         elmR = ErrorReturnObj(
          "<vec>*<elm>: <elm> and <vec> must belong to the same finite field",
-         0L, 0L, "you can return a new <elm>" );
+         0L, 0L, "you can replace <elm> via 'return <elm>;'" );
         return PROD( vecL, elmR );
     }
 
@@ -726,7 +640,7 @@ Obj             ProdVecFFEVecFFE (
     FFV                 valL;           /* one element of left operand     */
     Obj *               ptrR;           /* pointer into the right operand  */
     FFV                 valR;           /* one element of right operand    */
-    UInt                len;            /* length                          */
+    UInt                lenL,lenR,len; /* length                          */
     UInt                i;              /* loop variable                   */
     FF                  fld;            /* finite field                    */
     FF *                succ;           /* successor table                 */
@@ -734,14 +648,9 @@ Obj             ProdVecFFEVecFFE (
     extern Obj          ProdListList( Obj, Obj );  /* generic method       */
 
     /* check the lengths                                                   */
-    len = LEN_PLIST( vecL );
-    if ( len != LEN_PLIST( vecR ) ) {
-        vecR = ErrorReturnObj(
-             "Vector *: lenghts differ <left> %d,  <right> %d",
-             (Int)len, (Int)LEN_PLIST( vecR ), 
-             "you can return a new vector for <right>" );
-        return PROD( vecL, vecR );
-    }
+    lenL = LEN_PLIST( vecL );
+    lenR = LEN_PLIST( vecR );
+    len = (lenL < lenR) ? lenL : lenR;
 
     /* check the fields                                                    */
     fld = FLD_FFE( ELM_PLIST( vecL, 1 ) );
@@ -752,7 +661,8 @@ Obj             ProdVecFFEVecFFE (
 
         vecR = ErrorReturnObj(
              "Vector *: vectors have different fields",
-              0L, 0L, "you can return a new vector for <right>" );
+              0L, 0L, 
+              "you can replace vector <right> via 'return <right>;'" );
         return PROD( vecL, vecR );
     }
 
@@ -799,11 +709,11 @@ Obj FuncAddRowVectorVecFFEsMult( Obj self, Obj vecL, Obj vecR, Obj mult )
    if (VAL_FFE(mult) == 0)
      return (Obj) 0;
 
-   xtype = XTNum(vecL);
+   xtype = KTNumPlist(vecL, (Obj *) 0);
    if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE+IMMUTABLE)
      return TRY_NEXT_METHOD;
 
-   xtype = XTNum(vecR);
+   xtype = KTNumPlist(vecR, (Obj *) 0);
    if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE+IMMUTABLE)
      return TRY_NEXT_METHOD;
 
@@ -812,9 +722,9 @@ Obj FuncAddRowVectorVecFFEsMult( Obj self, Obj vecL, Obj vecR, Obj mult )
   len = LEN_PLIST( vecL );
   if ( len != LEN_PLIST( vecR ) ) {
     vecR = ErrorReturnObj(
-			  "AddRowVector: lenghts differ <left> %d,  <right> %d",
+			  "AddRowVector: vector lengths differ <left> %d,  <right> %d",
 			  (Int)len, (Int)LEN_PLIST( vecR ), 
-			  "you can return a new vector for <right>" );
+			  "you can replace vector <right> via 'return <right>;'" );
     return CALL_3ARGS(AddRowVectorOp, vecL, vecR, mult);
   }
 
@@ -827,18 +737,20 @@ Obj FuncAddRowVectorVecFFEsMult( Obj self, Obj vecL, Obj vecR, Obj mult )
     
     vecR = ErrorReturnObj(
 			  "AddRowVector: vectors have different fields",
-			  0L, 0L, "you can return a new vector for <right>" );
+			  0L, 0L, 
+                          "you can replace vector <right> via 'return <right>;'" );
     return CALL_3ARGS(AddRowVectorOp, vecL, vecR, mult);
   }
 
-  /* Now check the multplier field */
+  /* Now check the multiplier field */
   if( FLD_FFE( mult ) != fld ) {
     /* check the characteristic                                        */
     if( CHAR_FF( fld ) != CHAR_FF( FLD_FFE( mult ) ) )
       {
 	mult = ErrorReturnObj(
-			      "AddRowVector: multiplier has different field",
-			      0L, 0L, "you can return a new multiplier" );
+			      "AddRowVector: <multiplier> has different field",
+			      0L, 0L, 
+                              "you can replace <multiplier> via 'return <multiplier>;'" );
 	return CALL_3ARGS(AddRowVectorOp, vecL, vecR, mult);
       }
 
@@ -902,7 +814,7 @@ Obj FuncMultRowVectorVecFFEs( Obj self, Obj vec, Obj mult )
    if (VAL_FFE(mult) == 1)
      return (Obj) 0;
 
-   xtype = XTNum(vec);
+   xtype = KTNumPlist(vec, (Obj *) 0);
    if (xtype != T_PLIST_FFE &&
        xtype != T_PLIST_FFE+IMMUTABLE)
      return TRY_NEXT_METHOD;
@@ -911,14 +823,15 @@ Obj FuncMultRowVectorVecFFEs( Obj self, Obj vec, Obj mult )
   len = LEN_PLIST( vec );
 
   fld = FLD_FFE( ELM_PLIST(vec,1));
-  /* Now check the multplier field */
+  /* Now check the multiplier field */
   if( FLD_FFE( mult ) != fld ) {
     /* check the characteristic                                        */
     if( CHAR_FF( fld ) != CHAR_FF( FLD_FFE( mult ) ) )
       {
 	mult = ErrorReturnObj(
-			      "MultRowVector: multiplier has different field",
-			      0L, 0L, "you can return a new multiplier" );
+			      "MultRowVector: <multiplier> has different field",
+			      0L, 0L, 
+                              "you can replace <multiplier> via 'return <multiplier>;'" );
 	return CALL_2ARGS(MultRowVectorOp, vec, mult);
       }
 
@@ -978,11 +891,11 @@ Obj FuncAddRowVectorVecFFEs( Obj self, Obj vecL, Obj vecR )
   UInt xtype;
   UInt i;
 
-  xtype = XTNum(vecL);
+  xtype = KTNumPlist(vecL, (Obj *) 0);
    if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE+IMMUTABLE)
      return TRY_NEXT_METHOD;
 
-   xtype = XTNum(vecR);
+   xtype = KTNumPlist(vecR, (Obj *) 0);
    if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE+IMMUTABLE)
      return TRY_NEXT_METHOD;
 
@@ -990,9 +903,9 @@ Obj FuncAddRowVectorVecFFEs( Obj self, Obj vecL, Obj vecR )
   len = LEN_PLIST( vecL );
   if ( len != LEN_PLIST( vecR ) ) {
     vecR = ErrorReturnObj(
-			  "Vector *: lenghts differ <left> %d,  <right> %d",
+			  "Vector *: vector lengths differ <left> %d,  <right> %d",
 			  (Int)len, (Int)LEN_PLIST( vecR ), 
-			  "you can return a new vector for <right>" );
+			  "you can replace vector <right> via 'return <right>;'" );
     return CALL_2ARGS(AddRowVectorOp, vecL, vecR);
   }
 
@@ -1005,7 +918,8 @@ Obj FuncAddRowVectorVecFFEs( Obj self, Obj vecL, Obj vecR )
     
     vecR = ErrorReturnObj(
 			  "AddRowVector: vectors have different fields",
-			  0L, 0L, "you can return a new vector for <right>" );
+			  0L, 0L, 
+                          "you can replace vector <right> via 'return <right>;'" );
     return CALL_2ARGS(AddRowVectorOp, vecL, vecR);
   }
 
@@ -1065,7 +979,7 @@ Obj             ProdVecFFEMatFFE (
     matR = ErrorReturnObj(
 			  "<vec>*<mat>: <vec> (%d) must have the same length as <mat> (%d)",
 			  (Int)len, (Int)col,
-			  "you can return a new matrix for <mat>" );
+			  "you can replace matrix <mat> via 'return <mat>;'" );
     return PROD( vecL, matR );
   }
 
@@ -1079,7 +993,8 @@ Obj             ProdVecFFEMatFFE (
 
     matR = ErrorReturnObj(
 			  "<vec>*<mat>: <vec> and <mat> have different fields",
-			  0L, 0L, "you can return a new matrix for <matR>" );
+			  0L, 0L, 
+                          "you can replace matrix <mat> via 'return <mat>;'" );
     return PROD( vecL, matR );
   }
 
@@ -1130,6 +1045,33 @@ Obj             ProdVecFFEMatFFE (
 }
 
 
+/****************************************************************************
+**
+*F  ZeroVecFFE(<vec>) . . . .  zero of an FFE Vector
+**
+**  'ZeroVecFEE' returns the zero of the vector <vec>.
+**
+**  It is a better version of ZeroListDefault for the case of vecffes
+**  becuase it knows tha the zero is common and the result a vecffe
+*/
+
+Obj ZeroVecFFE( Obj vec )
+{
+  UInt i, len;
+  Obj res;
+  Obj z;
+  assert(TNUM_OBJ(vec) >= T_PLIST_FFE && \
+	 TNUM_OBJ(vec) <= T_PLIST_FFE + IMMUTABLE);
+  len = LEN_PLIST(vec);
+  assert(len);
+  res  = NEW_PLIST( T_PLIST_FFE, len);
+  SET_LEN_PLIST(res, len);
+  z = ZERO(ELM_PLIST(vec,1));
+    for (i = 1; i <= len; i++)
+      SET_ELM_PLIST(res, i, z);
+  return res;
+}
+
 
 
 /****************************************************************************
@@ -1167,8 +1109,10 @@ static Int InitKernel (
     Int                 t1;
     Int                 t2;
 
+#ifdef XTNUMS
     IsXTNumListFuncs[ T_PLIST_FFE    ] = IsXTNumPlistFFE;
     IsXTNumListFuncs[ T_MAT_FFE      ] = IsXTNumMatFFE;
+#endif
 
     /* install the arithmetic operation methods                            */
     for ( t1 = T_PLIST_FFE; t1 <= T_PLIST_FFE + IMMUTABLE; t1++ ) {
@@ -1178,6 +1122,7 @@ static Int InitKernel (
         DiffFuncs[  t1   ][ T_FFE ] = DiffVecFFEFFE;
         ProdFuncs[ T_FFE ][  t1   ] = ProdFFEVecFFE;
         ProdFuncs[  t1   ][ T_FFE ] = ProdVecFFEFFE;
+	ZeroFuncs[  t1   ] = ZeroVecFFE;
     }
 
     for ( t1 = T_PLIST_FFE; t1 <= T_PLIST_FFE + IMMUTABLE; t1++ ) {
@@ -1188,9 +1133,11 @@ static Int InitKernel (
         }
     }
 
+#ifdef XTNUMS
     for ( t1 = T_PLIST_FFE; t1 <= T_PLIST_FFE + IMMUTABLE; t1++ ) {
         ProdFuncs[ t1        ][ T_MAT_FFE ] = ProdVecFFEMatFFE;
     }
+#endif
     
     InitHdlrFuncsFromTable( GVarFuncs );
 

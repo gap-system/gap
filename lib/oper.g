@@ -249,7 +249,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       
       # push the other functions back
       if not REREADING or not replace then
-          IMMEDIATES[j]{[i+1..LEN_LIST(IMMEDIATES[j])]+7}
+          IMMEDIATES[j]{[i+8..7+LEN_LIST(IMMEDIATES[j])]}
             := IMMEDIATES[j]{[i+1..LEN_LIST(IMMEDIATES[j])]};
       fi;
 
@@ -400,7 +400,7 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
 
       fi;
 
-      # Add the new requirements.
+      # Add the new requirements if they differ from known ones.
       filt := [];
       for filter  in filters  do
         if not IS_OPERATION( filter ) then
@@ -410,7 +410,14 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
       od;
 
       pos:= POS_LIST_DEFAULT( OPERATIONS, gvar, 0 );
-      ADD_LIST( OPERATIONS[ pos+1 ], filt );
+      if filt in OPERATIONS[ pos+1 ] then
+        if not REREADING then
+          Print( "#W  equal requirements in multiple declarations ",
+                 "for operation `", name, "'\n" );
+        fi;
+      else
+        ADD_LIST( OPERATIONS[ pos+1 ], filt );
+      fi;
 
     else
 

@@ -21,21 +21,15 @@ DeclareGlobalFunction( "AbelianPQuotient" );
 ##
 DeclareGlobalFunction( "PQuotient" );
 
-
-#############################################################################
-##
-#O  MaximalAbelianQuotient(<fpgrp>)  . . . . Max abelian quotient of an fpgrp
-##
-DeclareOperation( "MaximalAbelianQuotient",[IsGroup]);
-
 #############################################################################
 ##
 #O  EpimorphismPGroup( <fpgrp>, <p> ) .  factor p-group of a fin. pres. group
 #O  EpimorphismPGroup( <fpgrp>, <p>, <cl> )                    factor p-group
 ##
 ##  computes an epimorphism from the finitely presented group <fpgrp> to the
-##  largest $p$-group of class <cl> which is a quotient of <fpgrp>. If <cl>
-##  is omitted, the largest finite $p$-group quotient is determined.
+##  largest $p$-group of $p$-class <cl> which is a quotient of <fpgrp>. If <cl>
+##  is omitted, the largest finite $p$-group quotient (of $p$-class up to
+##  1000) is determined.
 DeclareOperation( "EpimorphismPGroup", [IsGroup, IsPosInt ] );
 DeclareOperation( "EpimorphismPGroup", [IsGroup, IsPosInt, IsPosInt] );
 
@@ -60,9 +54,10 @@ DeclareOperation( "EpimorphismQuotientSystem", [IsQuotientSystem] );
 ##
 ##  returns an epimorphism on the class <n> finite nilpotent quotient of the
 ##  finitely presented group <fpgrp>. If <n> is omitted, the largest
-##  finite nilpotent quotient is taken.
+##  finite nilpotent quotient (of $p$-class up to 1000) is taken.
 ##
-DeclareGlobalFunction( "EpimorphismNilpotentQuotient" );
+DeclareOperation("EpimorphismNilpotentQuotientOp",[IsGroup,IsObject]);
+DeclareGlobalFunction("EpimorphismNilpotentQuotient");
 
 #############################################################################
 ##

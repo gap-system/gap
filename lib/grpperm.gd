@@ -215,13 +215,22 @@ DeclareAttribute( "ONanScottType", IsPermGroup );
 ##  returns the socle type of a primitive permutation group. The socle of a
 ##  primitive group is the direct product of isomorphic simple groups,
 ##  therefore the type is indicated by a record with components `series',
-##  `parameter' (both as described under `IsomorphismTypeFiniteSimpleGroup',
-##  see~"IsomorphismTypeFiniteSimpleGroup") and `width' for the number of
+##  `parameter' (both as described under
+##  `IsomorphismTypeInfoFiniteSimpleGroup',
+##  see~"IsomorphismTypeInfoFiniteSimpleGroup") and `width' for the number of
 ##  direct factors.
 ##
 ##  If <G> does not have a faithful primitive action, the result is undefined.
 ##
 DeclareAttribute( "SocleTypePrimitiveGroup", IsPermGroup );
+
+#############################################################################
+##
+#F  DiagonalSocleAction( <grp>,<n> )
+##
+##  returns the direct product of <n> copied of <grp> in diagonal action.
+##
+DeclareGlobalFunction( "DiagonalSocleAction" );
 
 
 #############################################################################

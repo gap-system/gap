@@ -653,27 +653,28 @@ end );
 DxEigenbase := function(M,f)
   local dim,i,k,eigenvalues,base,minpol,bases;
   k:=Length(M);
-  repeat
 
-    minpol:=MinimalPolynomial(f,M);
-
-    eigenvalues:=Set(RootsOfUPol(minpol));
-    dim:=0;
-    bases:=[];
-    for i in eigenvalues do
-      base:=NullspaceMat(M-i*M^0);
-      if base=[] then
-        Error("This can`t happen: Wrong Eigenvalue ???");
-      else
-        #TriangulizeMat(base);
-        dim:=dim+Length(base);
-        Add(bases,base);
-      fi;
-    od;
-    if dim<k then
-      Info(InfoCharacterTable,2,"Failed to calculate eigenspaces.");
+  minpol:=MinimalPolynomial(f,M);
+  
+  Assert(2,IsDuplicateFree(RootsOfUPol(minpol)));
+  eigenvalues:=Set(RootsOfUPol(minpol));
+  dim:=0;
+  bases:=[];
+  for i in eigenvalues do
+    base:=NullspaceMat(M-i*M^0);
+    if base=[] then
+      Error("This can`t happen: Wrong Eigenvalue ???");
+    else
+      #TriangulizeMat(base);
+      dim:=dim+Length(base);
+      Add(bases,base);
     fi;
-  until dim=k;
+  od;
+  if dim<>Length(M) then
+    Error("Failed to calculate eigenspaces.");
+  fi;
+  
+  Assert(3, ForAll([1..Length(bases)],j->bases[j]*M = bases[j]*eigenvalues[j]));
   return rec(base:=bases,
              values:=eigenvalues);
 end;
@@ -684,12 +685,16 @@ end;
 #F  SplitStep(<D>,<bestMat>)  . . . . . .  calculate matrix bestMat as far as
 #F                                                    needed and split spaces
 ##
-SplitStep := function(D,bestMat)
+InstallGlobalFunction(SplitStep,function(D,bestMat)
   local raeume,base,M,bestMatCol,bestMatSplit,i,j,k,N,row,col,Row,o,dim,
         newRaeume,raum,ra,f,activeCols,eigenbase,eigen,v,vo;
 
   if not bestMat in D.matrices then
     Error("matrix <bestMat> not indicated for splitting");
+  fi;
+
+  if D.classiz[bestMat]>10^6 then
+    Info(InfoWarning,1,"computing class matrix for class of size >10^6");
   fi;
 
   k:=D.klanz;
@@ -805,7 +810,8 @@ SplitStep := function(D,bestMat)
 
   Info(InfoCharacterTable,1,"Dimensions: ",List(raeume,i->i.dim));
   D.raeume:=raeume;
-end;
+  return true;
+end);
 
 
 #############################################################################
@@ -830,8 +836,10 @@ CharacterMorphismOrbits := function(D,space)
     a:=DxActiveCols(D,space);
     # calculate invariant space as intersection of E.S to E.V. 1
     for gen in GeneratorsOfGroup(s) do
-      b:=NullspaceMat(List(b,i->D.asCharacterMorphism(i,gen){a})
-                       -IdentityMat(Length(b),o))*b;
+        if Length(b)>0 then
+	b:=NullspaceMat(List(b,i->D.asCharacterMorphism(i,gen){a})
+                -IdentityMat(Length(b),o))*b;
+      fi;
 #T cheaper!
       b:=rec(base:=b,dim:=Length(b));
       a:=DxActiveCols(D,b);
@@ -924,7 +932,7 @@ SplitTwoSpace := function(D,raum)
   v2v2:=DxModProduct(D,v2,v2);
   char:=[];
   char2:=[];
-  NotFailed:=true;
+  NotFailed:=not IsZero(v2v2);
   di:=1;
   while di<=Length(ol) and NotFailed do
     d:=ol[di];
@@ -1320,7 +1328,7 @@ end;
 ##
 InstallGlobalFunction( BestSplittingMatrix, function(D)
 local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
-      orb,os;
+      orb,os,lim;
 
   nu:=Zero(D.field);
   requiredCols:=[];
@@ -1332,12 +1340,20 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
     Error("nothing left to split!");
   fi;
 
+  lim:=ValueOption("maxclasslen");
+  if lim=fail then
+    lim:=infinity;
+  fi;
+
   for n in D.matrices do
     requiredCols[n]:=[];
     splitBases[n]:=[];
     wert[n]:=0;
+
+    # only take classes small enough
+    if D.classiz[n]<=lim and
     # dont start with central classes in small groups!
-    if D.classiz[n]>1 or IsBound(D.maycent) then
+     (D.classiz[n]>1 or IsBound(D.maycent)) then
       for i in [1..Length(D.raeume)] do
         r:=D.raeume[i];
         if IsBound(r.splits) then
@@ -1406,7 +1422,7 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
   od;
 
   for r in D.raeume do
-    if Number(r.splits)=1 then
+    if IsBound(r.splits) and Number(r.splits)=1 then
       # is room split by only ONE matrix?(then we need this sooner or later)
       # simulate: n:=PositionProperty(r.splits,IsBound);
       n:=1;
@@ -1417,18 +1433,20 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
     fi;
   od;
 
-  bn:=D.matrices[1];
+  bn:=fail;
   bw:=0;
   # run through them in pl sequence
   for n in Filtered(D.permlist,i->i in D.matrices) do
     Info(InfoCharacterTable,3,n,":",Int(wert[n]));
-    if wert[n]>=bw then
+    if wert[n]>bw then
       bn:=n;
       bw:=wert[n];
     fi;
   od;
-  D.requiredCols:=requiredCols;
-  D.splitBases:=splitBases;
+  if bn<>fail then
+    D.requiredCols:=requiredCols;
+    D.splitBases:=splitBases;
+  fi;
 
   return bn;
 end );
@@ -1518,7 +1536,7 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,hom,pow,pos,i,j,k,gen,
   od;
   l2:=Length(ord)-l;
 
-  f:=FreeGroup(Length(ord));
+  f:=FreeGroup(IsSyllableWordsFamily,Length(ord));
   fgens:=GeneratorsOfGroup(f);
   rws:=SingleCollector(f,ord);
 
@@ -1715,17 +1733,19 @@ StandardClassMatrixColumn := function(D,M,r,t)
     M[D.inversemap[r]][t]:=D.classiz[r];
   else
     orb:=DxGaloisOrbits(D,r);
-    z:=D.classreps[t];
+    z:=D.classreps[t]; 
     c:=orb.orbits[t][1];
     if c<>t then
-      p:=RepresentativeAction(orb.group,c,t);
-      # was the first column of the galois class active?
-      if ForAny(M,i->i[c]>0) then
-	for i in D.classrange do
-	  M[i^p][t]:=M[i][c];
-	od;
-	Info(InfoCharacterTable,2,"by GaloisImage");
-	return;
+      p:=RepresentativeAction(Stabilizer(orb.group,r),c,t);
+      if p<>fail then
+	# was the first column of the galois class active?
+	if ForAny(M,i->i[c]>0) then
+	  for i in D.classrange do
+	    M[i^p][t]:=M[i][c];
+	  od;
+	  Info(InfoCharacterTable,2,"by GaloisImage");
+	  return;
+	fi;
       fi;
     fi;
 
@@ -1735,7 +1755,7 @@ StandardClassMatrixColumn := function(D,M,r,t)
     if IsDxLargeGroup(D.group) then
       # if r and t are unique,the conjugation test can be weak (i.e. up to
       # galois automorphisms)
-      w:=Length(orb.orbits[t])=1;
+      w:=Length(orb.orbits[t])=1 and Length(orb.orbits[r])=1;
       for i in [1..Length(T[1])] do
 	e:=T[1][i]*z;
         if w then
@@ -1755,7 +1775,7 @@ StandardClassMatrixColumn := function(D,M,r,t)
         gt:=Set(Filtered(orb.orbits,i->Length(i)>1));
         for i in gt do
           if i[1] in orb.identifees then
-            # were these classes detected weak ?
+            # were these classes detected weakly ?
             e:=M[i[1]][t];
             if e>0 then
               Info(InfoCharacterTable,2,"GaloisIdentification ",i,": ",e);
@@ -2012,10 +2032,13 @@ end );
 #F  DixonSplit(<D>) . .  calculate matrix,split spaces and obtain characters
 ##
 InstallGlobalFunction( DixonSplit, function(D)
-local r,i,j,ch,ra,
+local r,i,j,ch,ra,bsm,
       gens;
 
-  SplitStep(D,BestSplittingMatrix(D));
+  bsm:=BestSplittingMatrix(D);
+  if bsm<>fail then
+    SplitStep(D,bsm);
+  fi;
 
   for i in [1..Length(D.raeume)] do
     r:=D.raeume[i];
@@ -2047,6 +2070,7 @@ local r,i,j,ch,ra,
   od;
   D.raeume:=ra;
   CombinatoricSplit(D);
+  return bsm;
 end );
 
 
@@ -2108,7 +2132,7 @@ InstallMethod( IrrDixonSchneider,
     [ IsGroup, IsRecord ], 0,
     function( G, opt )
 
-local k,C,D;
+local k,C,D,dsp;
 
   D:=DixonInit(G,opt);
   k:=D.klanz;
@@ -2116,9 +2140,10 @@ local k,C,D;
 
   # iterierte Schleife
 
-  while k>Length(D.irreducibles) do
+  dsp:=true;
+  while k>Length(D.irreducibles) and dsp<>fail do
 
-    DixonSplit(D);
+    dsp:=DixonSplit(D);
     OrbitSplit(D);
 
   od;
@@ -2138,10 +2163,12 @@ end );
 ##
 InstallMethod( Irr,
     "Dixon/Schneider",
-    true,
-    [ IsGroup, IsZeroCyc ], 0,
+    [ IsGroup, IsZeroCyc ],
     function( G, zero )
-    return IrrDixonSchneider( G );
+    local irr;
+    irr:= IrrDixonSchneider( G );
+    SetIrr( OrdinaryCharacterTable( G ), irr );
+    return irr;
     end );
 
 
@@ -2154,8 +2181,7 @@ InstallMethod( Irr,
 ##
 InstallMethod( Irr,
     "via niceomorphism",
-    true,
-    [ IsGroup and IsHandledByNiceMonomorphism, IsZeroCyc ], 0,
+    [ IsGroup and IsHandledByNiceMonomorphism, IsZeroCyc ],
     function( G, zero )
     local tbl, ccl, nice, cclnice, monom, imgs, bijection, i, j, irr;
 
@@ -2191,8 +2217,216 @@ InstallMethod( Irr,
     for i in irr do
       MakeImmutable( i );
     od;
-    return List( irr, x -> Character( tbl, x ) );
+    irr:= List( irr, x -> Character( tbl, x ) );
+    SetIrr( tbl, irr );
+    return irr;
+end );
+
+
+# The following code implements a naive version of
+# Dixon, John D.
+# Constructing representations of finite groups.
+# Groups and computation (New Brunswick, NJ, 1991), 105--112, 
+# DIMACS Ser. Discrete Math. Theoret. Comput. Sci., 11, 
+# Amer. Math. Soc., Providence, RI, 1993. 
+
+BindGlobal("DixonRepGHchi",function(G,H,chi)
+local cg,ch,d,i,j,pos,theta,hl,alpha,A,x,ra,l,r,res,mats,alonin,hom,rt,rti,
+      rtl,wert,bw,bx,AF,cnt,sum,sp;
+  cg:=ConjugacyClasses(G);
+  d:=chi[1];
+
+  Irr(H);
+  FusionConjugacyClasses(H,G);
+  res:=Restricted(chi,H);
+  pos:=1;
+  theta:=fail;
+  hl:=Filtered(Irr(H),i->i[1]=1);
+  while theta=fail and pos<=Length(hl) do
+    sp:=ScalarProduct(res,hl[pos]);
+    if sp=1 then
+      theta:=hl[pos];
+    elif not IsInt(sp) then
+      Error("wrong restriction!");
+    else
+      pos:=pos+1;
+    fi;
+  od;
+  if theta=fail then
+    return fail; # did not work
+  fi;
+
+  Info(InfoCharacterTable,2,"DixonRepGHchi ",Size(G),",",Size(H),":\n",chi);
+
+  ch:=ConjugacyClasses(H);
+
+  alpha:=function(t)
+  local ti,s,hi,z,elm,pos;
+    ti:=t^-1;
+    s:=0;
+    for hi in [1..Length(ch)] do
+      for z in ch[hi] do
+	elm:=LeftQuotient(z,ti);
+	pos:=1;
+	while pos<=Length(cg) and not elm in cg[pos] do
+	  pos:=pos+1;
+	od;
+	s:=s+theta[hi]*chi[pos];
+      od;
+    od;
+    return s;
+  end;
+
+  AF:=function(elm)
+  local elmi,mat,i,j;
+    elmi:=elm^-1;
+    mat:=[];
+    for i in [1..d] do
+      mat[i]:=[];
+      for j in [1..d] do
+	mat[i][j]:=alpha(x[j]*elmi/x[i]);
+      od;
+    od;
+    return mat;
+  end;
+
+  bw:=infinity;
+  cnt:=0;
+  sum:=0;
+  repeat
+    A:=[];
+    x:=[];
+    ra:=0;
+    l:=0;
+    rt:=RightTransversal(G,H);
+    rti:=1;
+    rtl:=BlistList([1..Length(rt)],[]);
+    while ra<d do
+      if SizeBlist(rtl)=Length(rt) then
+        Error("could not find suitable elements?");
+      fi;
+      repeat
+	rti:=Random([1..Length(rt)]);
+      until rtl[rti]=false;
+      rtl[rti]:=true;
+      r:=rt[rti];
+      r:=Random(H)*r;
+      rti:=rti+1;
+      for i in [1..l] do
+	A[i][l+1]:=alpha(r/x[i]);
+      od;
+      l:=l+1;
+      x[l]:=r;
+      A[l]:=[];
+      for i in [1..l] do
+	A[l][i]:=alpha(x[i]/r);
+      od;
+      if RankMat(A)>ra then
+	ra:=ra+1;
+      else
+        l:=l-1; #overwrite last
+      fi;
+    od;
+    Unbind(rt);
+
+    alonin:=AF(One(G))^-1;
+    wert:=Lcm(List(Flat(alonin),DenominatorCyc));
+    cnt:=cnt+1;
+    sum:=sum+wert;
+    Info(InfoCharacterTable,2,"denominator lcm=",wert,
+         " average=",Int(sum/cnt));
+    if wert<bw then
+      bx:=x;
+      bw:=wert;
+    fi;
+  until bw<Size(G) or cnt>30 
+	# bw*1000<average
+        or bw*1000*cnt<sum;
+  x:=bx;
+
+  mats:=List(GeneratorsOfGroup(G),i->AF(i)*alonin);
+
+  hom:=GroupHomomorphismByImagesNC(G,Group(mats),
+    GeneratorsOfGroup(G),mats);
+
+  SetIsBijective(hom,true);
+  return hom;
 end);
+
+BindGlobal("DixonRepChi",function(G,chi)
+local i,H,r;
+  # find a suitable H
+  # try first cyclic
+  for i in ConjugacyClasses(G) do
+    if Order(Representative(i))>1 then
+      H:=Subgroup(G,[Representative(i)]);
+      r:=DixonRepGHchi(G,H,chi);
+      if r<>fail then
+        return r;
+      fi;
+    fi;
+  od;
+  # now all subgroups
+  Info(InfoWarning,1,"need to compute subgroup lattice");
+  for i in ConjugacyClassesSubgroups(G) do
+    if Size(Representative(i))>1 then
+      H:=Subgroup(G,GeneratorsOfGroup(Representative(i)));
+      UseIsomorphismRelation(Representative(i),H);
+      r:=DixonRepGHchi(G,H,chi);
+      if r<>fail then
+        return r;
+      fi;
+    fi;
+  od;
+  return fail;
+end);
+
+InstallGlobalFunction(IrreducibleRepresentationsDixon,function(arg)
+local G,chi,reps,r,i,gensp;
+  G:=arg[1];
+  if Length(arg)=1 then
+    chi:=Irr(G);
+  elif IsClassFunction(arg[2]) and IsCharacter(arg[2]) then
+    chi:=[arg[2]];
+  elif IsList(arg[2]) and ForAll(arg[2],IsCharacter) then
+    chi:=arg[2];
+  else
+    Error("second argument must be ordinary character or character list");
+  fi;
+
+  gensp:=fail;
+  reps:=[];
+  for i in chi do
+    Info(InfoCharacterTable,1,"Character ",i);
+    if i[1]=1 then
+      # linear
+      if gensp=fail then
+        gensp:=List(GeneratorsOfGroup(G),
+	  i->PositionProperty(ConjugacyClasses(G),j->i in j));
+      fi;
+      r:=List(i{gensp},i->[[i]]);
+      r:=GroupHomomorphismByImagesNC(G,Group(r),GeneratorsOfGroup(G),r);
+    else
+      r:=DixonRepChi(G,i);
+      if r=fail then
+	Info(InfoWarning,1,"Dixon's method does not work for ",chi);
+      fi;
+    fi;
+    Add(reps,r);
+  od;
+  if Length(reps)=1 and Length(arg)>1 and IsCharacter(arg[2]) then
+    return r;
+  fi;
+  return reps;
+end);
+
+#############################################################################
+##
+#M  IrreducibleRepresentations( <G> )
+##
+##
+InstallMethod( IrreducibleRepresentations, "Dixon's method",
+    true, [ IsGroup and IsFinite], 0,IrreducibleRepresentationsDixon);
 
 
 #############################################################################

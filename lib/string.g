@@ -33,13 +33,21 @@ DeclareCategoryCollections( "IsChar" );
 ##
 #C  IsString( <obj> ) . . . . . . . . . . . . . . . . . . category of strings
 ##
-##  A *string* is simply a dense list (see~"IsList", "IsDenseList")
+##  A *string* is  a dense list (see~"IsList", "IsDenseList")
 ##  of characters (see~"IsChar"); thus strings are always homogeneous
 ##  (see~"IsHomogeneousList").
-##  Strings are used mainly in filenames and error messages.
-##  A string literal can either be entered simply as the list of characters
+##  
+##  A string literal can either be entered  as the list of characters
 ##  or by writing the characters between *doublequotes* `\"'.
 ##  {\GAP} will always output strings in the latter format.
+##  However, the input via the double quote syntax enables {\GAP} to store
+##  the string in an efficient compact internal representation. See
+##  "IsStringRep" below for more details.
+##  
+##  Each character, in particular those which cannot be typed directly from the
+##  keyboard, can also be typed in three digit octal notation. And for some
+##  special characters (like the newline character) there is a further
+##  possibility to type them, see section "Special Characters".
 ##
 DeclareCategoryKernel( "IsString", IsHomogeneousList, IS_STRING );
 
@@ -91,6 +99,36 @@ BIND_GLOBAL( "CharsFamily", NewFamily( "CharsFamily", IsChar ) );
 ##
 BIND_GLOBAL( "TYPE_CHAR", NewType( CharsFamily, IsChar and IsInternalRep ) );
 
+#############################################################################
+##
+#V  TYPES_STRING . . . . . . . . . . . . . . . . . . . . . types of strings
+##
+BIND_GLOBAL( "StringFamily", NewFamily( "StringsFamily", IsCharCollection ) );
+
+BIND_GLOBAL( "TYPES_STRING", 
+        [ NewType( StringFamily, IsString and IsStringRep and
+                IsMutable ), # T_STRING
+          
+          NewType( StringFamily, IsString and IsStringRep ), 
+          # T_STRING + IMMUTABLE
+          
+          ~[1], # T_STRING_NSORT
+          
+          ~[2], # T_STRING_NSORT + IMMUTABLE
+          
+          NewType (StringFamily, IsString and IsStringRep and
+                  IsSSortedList and IsMutable ),
+          # T_STRING_SSORT 
+          
+          NewType (StringFamily, IsString and IsStringRep and
+                  IsSSortedList )
+          # T_STRING_SSORT +IMMUTABLE
+          ]);
+
+
+          
+
+
 
 #############################################################################
 ##
@@ -134,7 +172,9 @@ InstallMethod( String,
 InstallMethod( String,
     "for a character",
     [ IsChar ],
-    ch -> [ '\'', ch, '\'' ] );
+    function(ch) 
+      local res; res := "\'"; Add(res, ch); Add(res, '\''); return res; 
+    end);
 
 
 #############################################################################

@@ -9,16 +9,7 @@
 %%
 \PreliminaryChapter{Quotient groups by homomorphisms}
 
-Given a group homomorphism, the cosets of its kernel correspond to
-elements in the image.  Our hom coset representation
-stores the homomorphism and the element in the source group.  The 
-image is an attribute which is computed as necessary.  Two cosets
-are equal if their images are the same.  Where ever practical a coset 
-is identified with its image.  For example, if the homomorphism maps
-into a permutation group, the cosets are considered to be permutations.
-Since cosets can be multiplied, we can use them to form
-a quotient group.  Any computation in this quotient group will be 
-"shadowed" in the source group.
+\FileHeader[1]{quogphom}
 
 *The functions and operations described in this chapter have been added
 very recently and are still undergoing development. It is conceivable that
@@ -26,9 +17,6 @@ names of variants of the functionality might change in future versions. If
 you plan to use these functions in your own code, please contact us.*
 
 \Declaration{IsHomCoset}
-
-IsHomCoset has one category for each kind of image (and corresponding
-representations).
 \Declaration{IsHomCosetToPerm}
 \Declaration{IsHomCosetToPermRep}
 \Declaration{IsHomCosetToMatrix}
@@ -62,7 +50,7 @@ It also has one property for each kind of source.
 \Section{Operations on hom cosets}
 
 \Declaration{IsTrivialHomCosetRep}
-\Declaration{Homomorphism}[quogphom]
+\Declaration{Homomorphism}[quogphom]!{for quotient groups by homomorphisms}
 \Declaration{SourceElt}
 \Declaration{ImageElt}
 \Declaration{CanonicalElt}

@@ -34,11 +34,16 @@ InstallMethod( \=,
 ##  representation.
 ##
 InstallMethod( \<,
-    "for two words",
+    "nonassoc words",
     IsIdenticalObj,
     [ IsWord, IsWord ], 0,
     function( x, y )
     local n;
+
+    # thsi method does not work for assoc words!
+    if IsAssocWord(x) and IsAssocWord(y) then
+      TryNextMethod();
+    fi;
 
     x:= ExtRepOfObj( x );
     y:= ExtRepOfObj( y );
@@ -138,6 +143,15 @@ InstallMethod( MappedWord,
     return mapped( ExtRepOfObj( x ) );
     end );
 
+#############################################################################
+##
+#M  MappedWord( <x>, <empty>, <empty> )
+##
+InstallOtherMethod( MappedWord, "empty generators list", true,
+    [ IsWord, IsEmpty, IsList ], 0,
+function( x, gens1, gens2 )
+  return x;
+end);
 
 #############################################################################
 ##

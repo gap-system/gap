@@ -13,9 +13,10 @@ Revision.grppcaut_gi :=
 #F CheckAuto( auto )
 ##
 CheckAuto := function( auto )
-    local new;
+    local new,mapi;
+    mapi:=MappingGeneratorsImages(auto);
     new := GroupGeneralMappingByImages( Source(auto), Range(auto),
-           auto!.generators, auto!.genimages );
+           mapi[1], mapi[2] );
     if Source( auto ) <> Range( auto ) then 
         Print("source and range differ \n");
         return false;
@@ -269,7 +270,7 @@ FingerprintMedium := function( G, U )
     id := [w, Size( CommutatorSubgroup( G, U ) )];
 
     # about conjugacy classes
-    cl := Orbits( U, AsList( U ), OnPoints );
+    cl := OrbitsDomain( U, AsList( U ), OnPoints );
     cl := List( cl, x -> [Length(x), Order( x[1] ) ] );
     Sort( cl );
     Add( id, cl );
@@ -377,7 +378,7 @@ NormalizingReducedGL := function( spec, s, n, M )
     Info( InfoOverGr, 1, "found partition ",part );
 
     # use operation of G on norm
-    orb := Orbits( U, norm, f );
+    orb := OrbitsDomain( U, norm, f );
     part := List( orb, x -> List( x, y -> Position( norm, y ) ) );
 
     # was: L := BlockStabilizer( L, part );

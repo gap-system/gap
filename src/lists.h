@@ -416,6 +416,7 @@ extern void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 extern void             (*UnbbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj pos );
 
+extern void  UnbListDefault ( Obj list, Int  pos );
 
 /****************************************************************************
 **
@@ -814,6 +815,7 @@ extern  void            AsssListLevel (
 extern  void            (*PlainListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 
+#ifdef XTNUMS
 /****************************************************************************
 **
 *F  XTNum(<obj>)  . . . . . . . . . . . . . . . .  extended type of an object
@@ -849,6 +851,7 @@ extern  Int             XTNum (
             Obj                 obj );
 
 
+#endif
 /****************************************************************************
 **
 *F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of kinds of lists over a family

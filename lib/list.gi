@@ -112,7 +112,7 @@ function(list1, list2)
     return EQ_LIST_LIST_DEFAULT(list1, list2);
   fi;
 
-  if IsInfinity(Length(list1)) or IsInfinity(Length(list2)) then
+  if IsInfinity(Length(list1)) then
     ## warning - trying to compare infinite lists
     Info(InfoWarning, 1, "EQ: Attempting EQ on infinite lists");
   fi;
@@ -129,18 +129,30 @@ function(list1, list2)
 
   # just compare elementwise
   i := 1;
-  while IsBound(list1[i]) and IsBound(list2[i]) do
-    if list1[i] <> list2[i] then
-      return false;
-    fi;
-    i := i + 1;
+  while true do
+      while IsBound(list1[i]) and IsBound(list2[i]) do
+          if list1[i] <> list2[i] then
+              return false;
+          fi;
+          i := i + 1;
+      od;
+      
+      if IsBound(list1[i]) or IsBound(list2[i]) then
+          return false;
+      fi;
+      
+        #
+        # Now we've found an unbound spot on both lists
+        # maybe we know enough to stop now
+      # anyway at this stage we really must check the Lengths and hope
+      # that they are computable now.
+      
+      if Length(list1) <= i then
+          return Length(list2) <= i;
+      elif Length(list2) <= i then
+          return false;
+      fi;
   od;
-
-  if IsBound(list1[i]) or IsBound(list2[i]) then
-    return false;
-  fi;
-
-  return true;
 end);
 
 
@@ -217,6 +229,14 @@ InstallMethod( IN,
     SUM_FLAGS, # can't do better
     RETURN_TRUE );
 
+#############################################################################
+##
+#M  Display( <list> )
+##
+InstallMethod( Display, "for a (finite) list", true, [ IsList ], 0,
+function ( list )
+  Print(list,"\n");
+end);
 
 #############################################################################
 ##
@@ -332,9 +352,7 @@ InstallOtherMethod( RepresentativeSmallest,
     return list[1];
     end );
 
-InstallOtherMethod( RepresentativeSmallest,
-    "for a homogeneous list",
-    true, [ IsHomogeneousList ], 0,
+InstallOtherMethod(RepresentativeSmallest,"for a list",true,[IsList],0,
     MinimumList );
 
 
@@ -568,21 +586,21 @@ end);
 #M  ListOp( <list> )
 #M  ListOp( <list>, <func> )
 ##
-InstallOtherMethod( ListOp,
+InstallMethod( ListOp,
     "for a list",
     true,
     [ IsList ], 0,
     ShallowCopy );
 
-InstallOtherMethod( ListOp,
+InstallMethod( ListOp,
     "for a dense list",
     true,
     [ IsList and IsDenseList ], 0,
     list -> list{ [ 1 .. Length( list ) ] } );
 
-InstallOtherMethod( ListOp,
-    "for a list, and a function",
-    true, [ IsList, IsFunction ], 0,
+InstallMethod( ListOp,
+    "for a dense list, and a function",
+    true, [ IsDenseList, IsFunction ], 0,
     function ( list, func )
     local   res, i;
     res := [];
@@ -591,6 +609,20 @@ InstallOtherMethod( ListOp,
     od;
     return res;
     end );
+    
+InstallMethod( ListOp,
+    "for any list, and a function",
+    true, [ IsList, IsFunction ], 0,
+    function ( list, func )
+    local   res, i;
+    res := [];
+    for i  in [ 1 .. Length( list ) ] do
+        if IsBound(list[i]) then
+            Add(res,func( list[i] ));
+        fi;
+    od;
+    return res;
+end );
 
 
 #############################################################################
@@ -704,7 +736,8 @@ InstallGlobalFunction( IteratorList, function ( list )
     );
 
     if IsDenseList( list ) and not IsMutable( list ) then
-      return Objectify( NewType( IteratorsFamily,
+        
+        return Objectify( NewType( IteratorsFamily,
                                  IsMutable and IsDenseListIteratorRep ),
                         iter );
     else
@@ -977,9 +1010,21 @@ InstallMethod( ASSS_LIST,
     else
       TryNextMethod();
     fi;
-    end );
+end );
 
-
+InstallOtherMethod( ASS_LIST, 
+        "error message for immutable list",
+        true,
+        [IsList, IsPosInt, IsObject], -100,
+        function(list, pos, v)
+    if not IsMutable( list ) then
+        Error("The list you are trying to assign to is immutable");
+    else
+        TryNextMethod();
+    fi;
+end );
+    
+    
 #############################################################################
 ##
 #M  IsSSortedList( <non-list> )
@@ -1031,51 +1076,42 @@ InstallMethod( IsSSortedList,
 ##
 #M  IsSortedList(<list>)
 ##
-InstallMethod( IsSortedList,
-    "for a finite homogeneous list", true,
-    [ IsHomogeneousList and IsFinite ], 0,
+InstallMethod( IsSortedList, "for a finite list", true,
+    [ IsList and IsFinite ], 0,
     function(l)
     local i;
     # shortcut: strictly sorted is stored for internally represented lists
     if IsInternalRep( l ) and IsSSortedList( l ) then
       return true;
     fi;
-
+    
+    if not IsBound(l[1]) then
+        return false;
+    fi;
     for i in [1..Length(l)-1] do
-      if l[i+1] < l[i] then
+      if not IsBound(l[i+1]) or l[i+1] < l[i] then
         return false;
       fi;
     od;
     return true;
 end);
 
-InstallMethod( IsSortedList,
-    "for a homogeneous list (not nec. finite)",
-    true,
-    [ IsHomogeneousList ], 0,
+InstallMethod( IsSortedList, "for a list (not nec. finite)", true,
+    [ IsList ], 0,
     function( list )
     local i;
     i:= 1;
+    if not IsBound(list[1]) then
+        return false;
+    fi;
     while i+1 <= Length( list ) do
-      if list[ i+1 ] < list[i] then
+      if not IsBound(list[i+1]) or list[ i+1 ] < list[i] then
         return false;
       fi;
       i:= i+1;
     od;
     return true;
-    end );
-
-InstallOtherMethod( IsSortedList,
-    "for a (nonhomogeneous) list",
-    true,
-    [ IsList ], 0,
-    function( list )
-    if not IsHomogeneousList( list ) then
-      return false;
-    else
-      TryNextMethod();
-    fi;
-    end );
+end );
 
 
 #############################################################################
@@ -1297,6 +1333,11 @@ InstallMethod( PositionCanonical,
     return Position( list, obj, 0 );
 end );
 
+InstallMethod( PositionCanonical,
+    "for internally represented small sorted lists, fall back on `Position'",
+    true, # the list may be non-homogeneous.
+    [ IsList and IsInternalRep and IsSSortedList and IsSmallList, IsObject ], 0,
+    POSITION_SORTED_LIST);
 
 #############################################################################
 ##
@@ -1463,7 +1504,7 @@ local m,n,i,j,next;
     next[i]:=j;
   od;
 
-  i:=Maximum(1,start); # to catch index 0
+  i:=Maximum(1,start+1); # to catch index 0
   j:=1;
   while i<=n do
     if sub[j]=list[i] then
@@ -1483,11 +1524,51 @@ local m,n,i,j,next;
   return fail;
 end);
 
-InstallOtherMethod( PositionSublist,"list, sub",IsIdenticalObj,
-  [IsList,IsList], 0,
+# no installation restrictions to avoid extra installations for empty list
+InstallOtherMethod( PositionSublist,"list, sub",true,
+  [IsObject,IsObject], 0,
 function( list,sub )
   return PositionSublist(list,sub,0);
 end);
+
+InstallOtherMethod( PositionSublist,"empty list,sub,pos",true,
+  [IsEmpty,IsList,IS_INT], 0, ReturnFail);
+
+InstallOtherMethod( PositionSublist,"list,empty,pos",true,
+  [IsList,IsEmpty,IS_INT], 0,
+function(a,b,c)
+  return Maximum(c+1,1);
+end);
+
+
+#############################################################################
+##
+#M  IsMatchingSublist( <list>,<sub>[,<ind>] )
+##
+InstallMethod( IsMatchingSublist,"list,sub,pos",IsFamFamX,
+  [IsList,IsList,IS_INT], 0,
+function( list,sub,first )
+local last;
+
+  last:=first+Length(sub)-1;
+  return Length(list) >= last and list{[first..last]} = sub;
+end);
+
+# no installation restrictions to avoid extra installations for empty list
+InstallOtherMethod( IsMatchingSublist,"list, sub",true,
+  [IsObject,IsObject], 0,
+function( list,sub )
+  return IsMatchingSublist(list,sub,1);
+end);
+
+InstallOtherMethod( IsMatchingSublist,"empty list,sub,pos",true,
+  [IsEmpty,IsList,IS_INT], 0, 
+function(list,sub,first )
+  return not IsEmpty(sub);
+end);
+
+InstallOtherMethod( IsMatchingSublist,"list,empty,pos",true,
+  [IsList,IsEmpty,IS_INT], 0, ReturnTrue);
 
 
 #############################################################################
@@ -1509,6 +1590,12 @@ APPEND_LIST_DEFAULT := function ( list1, list2 )
     local  len1, len2, i;
     len1 := Length(list1);
     len2 := Length(list2);
+    if len1 = infinity then
+        Error("Append: can't append to an infinite list");
+    fi;
+    if len2 = infinity then
+        Error("Append: Default method can't append an infinite list");
+    fi;
     for i  in [1..len2]  do
         if IsBound(list2[i])  then
             list1[len1+i] := list2[i];
@@ -1519,7 +1606,7 @@ end;
 InstallMethod( Append,
     "for mutable list and list",
     true,
-    [ IsList and IsMutable, IsList ],
+    [ IsList and IsMutable , IsList ],
     0,
     APPEND_LIST_DEFAULT );
 
@@ -1527,7 +1614,7 @@ InstallMethod( Append,
 InstallMethod( Append,
     "for mutable list in plist representation and list",
     true,
-    [ IsList and IsPlistRep and IsMutable, IsList ],
+    [ IsList and IsPlistRep and IsMutable, IsList  ],
     0,
     APPEND_LIST_INTR );
 
@@ -1539,7 +1626,9 @@ InstallMethod( Append,
 InstallGlobalFunction( Apply, function( list, func )
     local i;
     for i in [1..Length( list )] do
-        list[i] := func( list[i] );
+        if IsBound(list[i]) then
+            list[i] := func( list[i] );
+        fi;
     od;
 end );
 
@@ -1550,20 +1639,18 @@ end );
 #F  Concatenation( <list> )
 ##
 InstallGlobalFunction( Concatenation, function ( arg )
-    local  cat, lst;
-
-    cat := [];
-    if Length(arg) = 1  and IsList(arg[1])  then
-        for lst  in arg[1]  do
-            Append( cat, lst );
-        od;
-    else
-        for lst  in arg  do
-            Append( cat, lst );
-        od;
+    local  res, i;
+    if Length( arg ) = 1 and IsList( arg[1] )  then
+        arg := arg[1];
     fi;
-
-    return cat;
+    if Length( arg ) = 0  then
+        return [  ];
+    fi;
+    res := ShallowCopy( arg[1] );
+    for i  in [ 2 .. Length( arg ) ]  do
+        Append( res, arg[i] );
+    od;
+    return res;
 end );
 
 
@@ -1682,27 +1769,46 @@ InstallMethod( Flat,
 
 #############################################################################
 ##
-#M  Reversed( <list> )  . . . . . . . . . . .  reverse the elements in a list
+#F  Reversed( <list> )  . . . . . . . . . . .  reverse the elements in a list
 ##
-InstallMethod( Reversed,
-    "for a dense list",
-    true,
-    [ IsDenseList ], 0,
-    function ( list )
-    local len;
+##  Note that the special case that <list> is a range is dealt with by the
+##  `{}' implementation, we need not introduce a special treatment for this.
+##
+InstallGlobalFunction( Reversed,
+    function( list )
+    local tnum, len;
+    tnum:= TNUM_OBJ_INT( list );
+    if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
+      len:= Length( list );
+      return list{ [ len, len-1 .. 1 ] };
+    else
+      return ReversedOp( list );
+    fi;
+end );
 
+
+#############################################################################
+##
+#M  ReversedOp( <list> )  . . . . . . . . . .  reverse the elements in a list
+##
+##  We install just two generic methods;
+##  they deal with (non-internal) finite lists only.
+##
+InstallMethod( ReversedOp,
+    "for a dense list",
+    [ IsDenseList ],
+    function( list )
+    local len;
     if not IsFinite( list ) then
       TryNextMethod();
     fi;
-
     len:= Length( list );
     return list{ [ len, len-1 .. 1 ] };
     end );
 
-InstallMethod( Reversed,
+InstallMethod( ReversedOp,
     "for a range",
-    true,
-    [ IsRange ], 0,
+    [ IsRange ],
     function ( list )
     local len;
     len := Length( list );
@@ -1812,10 +1918,8 @@ end );
 ##
 #M  Sortex( <list> ) . . sort a list (stable), return the applied permutation
 ##
-InstallMethod( Sortex,
-    "for a mutable homogeneous list",
-    true,
-    [ IsHomogeneousList and IsMutable ], 0,
+InstallMethod( Sortex, "for a mutable list", true,
+    [ IsList and IsMutable ], 0,
     function ( list )
     local   both, perm, i;
 
@@ -2056,10 +2160,8 @@ end );
 ##
 #M  MaximumList( <list> )
 ##
-InstallMethod( MaximumList,
-    "for a homomgeneous list",
-    true,
-    [ IsHomogeneousList ], 0,
+InstallMethod( MaximumList, "for a list", true,
+    [ IsList ], 0,
     function ( list )
     local max, elm;
     if Length( list ) = 0 then
@@ -2090,6 +2192,15 @@ InstallMethod( MaximumList,
     return max;
     end );
 
+InstallMethod( MaximumList,"for a sorted list",true, [ IsSSortedList ], 0,
+function ( l )
+local min;
+  if Length( l ) = 0 then
+      Error( "MaximumList: <list> must contain at least one element" );
+  fi;
+  return l[Length(l)];
+end );
+
 
 #############################################################################
 ##
@@ -2116,10 +2227,8 @@ end );
 ##
 #M  MinimumList( <list> )
 ##
-InstallMethod( MinimumList,
-    "for a homogeneous list",
-    true,
-    [ IsHomogeneousList ], 0,
+InstallMethod( MinimumList, "for a list", true,
+    [ IsList ], 0,
     function ( list )
     local min, elm;
     if Length( list ) = 0 then
@@ -2149,6 +2258,15 @@ InstallMethod( MinimumList,
     fi;
     return min;
     end );
+
+InstallMethod( MinimumList,"for a sorted list",true, [ IsSSortedList ], 0,
+function ( l )
+local min;
+  if Length( l ) = 0 then
+      Error( "MinimumList: <list> must contain at least one element" );
+  fi;
+  return l[1];
+end );
 
 
 #############################################################################
@@ -2255,6 +2373,28 @@ InstallMethod( Iterated,
     return res;
     end );
 
+#############################################################################
+##
+#M  ListN( <list1>, <list2>, ..., <listn>, <f> )
+##
+InstallGlobalFunction( ListN, function ( arg )
+    local num, func, len;
+
+    num := Length(arg) -1;
+    func := arg[num+1];
+    Unbind( arg[num+1] );
+    len := Length(arg[1]);
+
+    if not IsFunction(func) then 
+	Error("Last argument must be a function");
+    elif ForAny( arg, a -> not IsList(a) or Length(a) <> len ) then
+	Error("<arg1>, ..., <argn> must be lists of the same length");
+    fi;
+
+    return List( [1..len],
+                 i -> CallFuncList( func,  List( [1..num], 
+                                                  j -> arg[j][i] ) ) );
+end );
 
 #############################################################################
 ##
@@ -2305,7 +2445,8 @@ InstallOtherMethod( ZeroOp,
       TryNextMethod();
      fi; end	);
 
-
+     
+     
 #############################################################################
 ##
 #M  AdditiveInverseOp( <list> )  . . . for internal list of add-elm-with-inv.
@@ -2371,7 +2512,7 @@ InstallOtherMethod( \-,
       fi;
     od;
     if not IsMutable( list ) then
-      diff:= Immutable( diff );
+      MakeImmutable( diff );
     fi;
     return diff;
     end );
@@ -2392,7 +2533,7 @@ InstallOtherMethod( \-,
       fi;
     od;
     if not IsMutable( list ) then
-      diff:= Immutable( diff );
+      MakeImmutable( diff );
     fi;
     return diff;
     end );
@@ -2566,7 +2707,6 @@ end );
 ##  use AddRowVector, etc.
 ##
     
-    
 InstallOtherMethod( InverseOp,
     "default for small matrix whose rows are vectors of FFEs",
     true,
@@ -2578,7 +2718,7 @@ InstallOtherMethod( InverseOp,
 InstallOtherMethod( InverseOp,
     "default for ordinary matrix whose rows are vectors of FFEs",
     true,
-        [ IsOrdinaryMatrix and IsCommutativeElementCollColl and IsRingElementTable 
+    [ IsOrdinaryMatrix and IsCommutativeElementCollColl and IsRingElementTable 
           and IsFFECollColl], 0,
     function( mat )
     if IsSmallList( mat ) then
@@ -2592,13 +2732,13 @@ InstallOtherMethod( InverseOp,
 InstallOtherMethod( InverseOp,
     "default for small ordinary matrix",
     true,
-    [ IsOrdinaryMatrix and IsSmallList ], 0,
+    [ IsOrdinaryMatrix and IsSmallList and IsZDFRECollColl], 0,
     INV_MATRIX );
 
 InstallOtherMethod( InverseOp,
     "default for ordinary matrix",
     true,
-    [ IsOrdinaryMatrix ], 0,
+    [ IsOrdinaryMatrix and IsZDFRECollColl ], 0,
     function( mat )
     if IsSmallList( mat ) then
       return INV_MATRIX( mat );
@@ -3181,7 +3321,8 @@ end );
 ##
 InstallGlobalFunction( UnionBlist, function( arg )
 local   union,  blist,blists;
-    if Length(arg)=1 and not IsBlist(arg[1]) then
+if Length(arg)=1 and not IsBlist(arg[1]) then
+    
       blists:=arg[1];
     else
       blists:=arg;
@@ -3222,15 +3363,11 @@ end );
 ##
 InstallGlobalFunction( ListWithIdenticalEntries, function( n, obj )
     local list, i, c;
-    if (n > 0 and IS_FFE(obj) and IsZero(obj)) then
-       c := Characteristic(obj);
-        if c = 2 then
-            return ZERO_GF2VEC_2(n);
-        elif c <= 256 then
-            return ZERO_VEC8BIT_2(c,n);
-        fi;
+    if IsChar(obj) then
+      list := "";
+    else  
+      list:= [];
     fi;
-    list:= [];
     for i in [ 1 .. n ] do
       list[i]:= obj;
     od;
@@ -3456,6 +3593,136 @@ InstallMethod( IsRectangularTable, "generic", true,
     od;
     return true;
 end);
+
+#
+# Stuff for better storage of blists (trans grp. library)
+#
+
+BLISTBYTES:=[];
+HEXBYTES:=[];
+BLISTBYTES1:=[];
+HEXBYTES1:=[];
+BindGlobal("HexBlistSetup",function()
+local BLISTFT,BLISTIND;
+  if Length(BLISTBYTES)>0 then return;fi;
+  BLISTFT:=[false,true];
+  for BLISTIND in [0..255] do
+    BLISTBYTES[BLISTIND+1]:=
+      BLISTFT{1+Reversed(CoefficientsQadic(256+BLISTIND,2){[1..8]})};
+    IsBlist(BLISTBYTES[BLISTIND+1]);
+    MakeImmutable(BLISTBYTES[BLISTIND+1]);
+    HEXBYTES[BLISTIND+1]:=HexStringInt(256+BLISTIND){[2,3]};
+    MakeImmutable(HEXBYTES[BLISTIND+1]);
+  od;
+  SortParallel(BLISTBYTES,HEXBYTES);
+  HEXBYTES1:=ShallowCopy(HEXBYTES);
+  BLISTBYTES1:=ShallowCopy(BLISTBYTES);
+  SortParallel(HEXBYTES1,BLISTBYTES1);
+end);
+
+InstallGlobalFunction(HexStringBlist,function(b)
+local i,n,s;
+  HexBlistSetup();
+  n:=Length(b);
+  i:=1;
+  s:="";
+  while i+7<=n do
+    Append(s,HEXBYTES[PositionSorted(BLISTBYTES,b{[i..i+7]})]);
+    i:=i+8;
+  od;
+  b:=b{[i..n]};
+  while Length(b)<8 do
+    Add(b,false);
+  od;
+  Append(s,HEXBYTES[PositionSorted(BLISTBYTES,b)]);
+  return s;
+end);
+
+InstallGlobalFunction(HexStringBlistEncode,function(b)
+local i,n,s,t,u,zero;
+  HexBlistSetup();
+  zero:="00";
+  n:=Length(b);
+  i:=1;
+  s:="";
+  u:=0;
+  while i+7<=n do
+    t:=HEXBYTES[PositionSorted(BLISTBYTES,b{[i..i+7]})];
+    if t<>zero then
+      if u>0 then
+	if u=1 then
+	  Append(s,zero);
+	else
+	  Add(s,'s');
+	  Append(s,HexStringInt(256+u){[2,3]});
+	fi;
+	u:=0;
+      fi;
+      Append(s,t);
+    else
+      u:=u+1;
+      if u=255 then
+        Add(s,'s');
+	Append(s,HexStringInt(256+u){[2,3]});
+	u:=0;
+      fi;
+    fi;
+    i:=i+8;
+  od;
+  b:=b{[i..n]};
+  while Length(b)<8 do
+    Add(b,false);
+  od;
+  b:=HEXBYTES[PositionSorted(BLISTBYTES,b)];
+  if b<>zero then
+    if u>0 then
+      if u=1 then
+	Append(s,zero);
+      else
+	Add(s,'s');
+	Append(s,HexStringInt(256+u){[2,3]});
+      fi;
+      u:=0;
+    fi;
+    Append(s,b);
+  fi;
+  return s;
+end);
+
+InstallGlobalFunction(BlistStringDecode,function(arg)
+local s,b,i,j,zero,l;
+  HexBlistSetup();
+  zero:=BLISTBYTES1[PositionSorted(HEXBYTES1,"00")];
+  s:=arg[1];
+  b:=[];
+  i:=1;
+  while i<=Length(s) do
+    if s[i]='s' then
+      for j in [1..IntHexString(s{[i+1,i+2]})] do
+        Append(b,zero);
+      od;
+      i:=i+3;
+    else
+      Append(b,BLISTBYTES1[PositionSorted(HEXBYTES1,s{[i,i+1]})]);
+      i:=i+2;
+    fi;
+  od;
+  if Length(arg)>1 then
+    l:=arg[2];
+    while Length(b)<l do
+      Append(b,zero);
+    od;
+    if Length(b)>l then
+      b:=b{[1..l]};
+    fi;
+  fi;
+  IsBlist(b);
+  return b;
+end);
+
+
+
+
 
 #############################################################################
 ##

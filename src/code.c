@@ -1107,6 +1107,24 @@ void            CodeBreak ( void )
     PushStat( stat );
 }
 
+/****************************************************************************
+**
+*F  CodeContinue() . . . . . . . . . . . . . . . . . . . .  code continue-statement
+**
+**  'CodeContinue' is the  action to code a  continue-statement.  It is called when
+**  the reader encounters a 'continue;'.
+*/
+void            CodeContinue ( void )
+{
+    Stat                stat;           /* continue-statement, result         */
+
+    /* allocate the continue-statement                                        */
+    stat = NewStat( T_CONTINUE, 0 * sizeof(Expr) );
+
+    /* push the continue-statement                                            */
+    PushStat( stat );
+}
+
 
 /****************************************************************************
 **
@@ -1361,6 +1379,81 @@ void CodeIntExpr (
     PushExpr( expr );
 }
 
+/****************************************************************************
+**
+*F  CodeLongIntExpr( <str> )   . . . code literal long integer expression
+**
+**  'CodeIntExpr'  is  the  action  to   code  a  long  literal  integer
+**  expression whose digits are stored in a string GAP object.
+*/
+void CodeLongIntExpr (
+    Obj              string )
+{
+    Expr                expr;           /* expression, result              */
+    Obj                 val;            /* value = <upp> * <pow> + <low>    */
+    Obj                 upp;            /* upper part                       */
+    Int                 pow;            /* power                            */
+    Int                 low;            /* lower part                       */
+    Int                 sign;           /* is the integer negative          */
+    UInt                i;              /* loop variable                    */
+    UChar *              str;
+
+    /* get the signs, if any                                                */
+    str = CHARS_STRING(string);
+    sign = 1;
+    i = 0;
+    while ( str[i] == '-' ) {
+        sign = - sign;
+        i++;
+    }
+
+    /* collect the digits in groups of 8                                    */
+    low = 0;
+    pow = 1;
+    upp = INTOBJ_INT(0);
+    while ( str[i] != '\0' ) {
+        low = 10 * low + str[i] - '0';
+        pow = 10 * pow;
+        if ( pow == 100000000L ) {
+            upp = SumInt( ProdInt( upp, INTOBJ_INT(pow) ),
+                          INTOBJ_INT(sign*low) );
+            str = CHARS_STRING(string);
+            pow = 1;
+            low = 0;
+        }
+        i++;
+    }
+
+    /* compose the integer value (set <val> first to silence 'lint')       */
+    val = 0;
+    if ( upp == INTOBJ_INT(0) ) {
+        val = INTOBJ_INT(sign*low);
+    }
+    else if ( pow == 1 ) {
+        val = upp;
+    }
+    else {
+        val = SumInt( ProdInt( upp, INTOBJ_INT(pow) ),
+                      INTOBJ_INT(sign*low) );
+    }
+
+    /* if it is small enough code it immediately                           */
+    if ( IS_INTOBJ(val) ) {
+        expr = INTEXPR_INT( INT_INTOBJ(val) );
+    }
+
+    /* otherwise stuff the value into the values list                      */
+    else {
+        expr = NewExpr( T_INT_EXPR, sizeof(UInt2) + SIZE_OBJ(val) );
+        ((UInt2*)ADDR_EXPR(expr))[0] = (Expr)sign;
+        for ( i = 1; i < SIZE_EXPR(expr)/sizeof(UInt2); i++ ) {
+            ((UInt2*)ADDR_EXPR(expr))[i] = ((UInt2*)ADDR_OBJ(val))[i-1];
+        }
+    }
+
+    /* push the expression                                                 */
+    PushExpr( expr );
+}
 
 /****************************************************************************
 **
@@ -1534,18 +1627,19 @@ void CodeListExprEnd (
 
 /****************************************************************************
 **
-*F  CodeStringExpr( <str> ) . . . . . . . . .  code literal string expression
+*F  CodeStringExpr( <str> ) . . . . . . . .  code literal string expression
 */
 void CodeStringExpr (
-    Char *              str )
+    Obj              str )
 {
     Expr                string;         /* string, result                  */
 
     /* allocate the string expression                                      */
-    string = NewExpr( T_STRING_EXPR, SyStrlen(str)+1 );
+    string = NewExpr( T_STRING_EXPR, SIZEBAG_STRINGLEN(GET_LEN_STRING(str)) );
 
     /* copy the string                                                     */
-    SyStrncat( (Char*)ADDR_EXPR(string), str, SIZE_EXPR(string)-1 );
+    memcpy( (void *)ADDR_EXPR(string), ADDR_OBJ(str), 
+                        SIZEBAG_STRINGLEN(GET_LEN_STRING(str)) );
 
     /* push the string                                                     */
     PushExpr( string );

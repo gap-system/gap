@@ -107,7 +107,7 @@ UInt            ExecProccall0args (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* call the function                                                   */
@@ -131,7 +131,7 @@ UInt            ExecProccall1args (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* evaluate the arguments                                              */
@@ -159,7 +159,7 @@ UInt            ExecProccall2args (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* evaluate the arguments                                              */
@@ -189,7 +189,7 @@ UInt            ExecProccall3args (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* evaluate the arguments                                              */
@@ -221,7 +221,7 @@ UInt            ExecProccall4args (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* evaluate the arguments                                              */
@@ -255,7 +255,7 @@ UInt            ExecProccall5args (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* evaluate the arguments                                              */
@@ -291,7 +291,7 @@ UInt            ExecProccall6args (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* evaluate the arguments                                              */
@@ -325,7 +325,7 @@ UInt            ExecProccallXargs (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* evaluate the arguments                                              */
@@ -398,7 +398,7 @@ Obj             EvalFunccall0args (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* call the function and return the result                             */
@@ -408,7 +408,7 @@ Obj             EvalFunccall0args (
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
             0L, 0L,
-            "you can return a value for the result" );
+            "you can supply one by 'return <value>;'" );
     }
     return result;
 }
@@ -426,7 +426,7 @@ Obj             EvalFunccall1args (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* evaluate the arguments                                              */
@@ -439,7 +439,7 @@ Obj             EvalFunccall1args (
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
             0L, 0L,
-            "you can return a value for the result" );
+            "you can supply one by 'return <value>;'" );
     }
     return result;
 }
@@ -458,7 +458,7 @@ Obj             EvalFunccall2args (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* evaluate the arguments                                              */
@@ -472,7 +472,7 @@ Obj             EvalFunccall2args (
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
             0L, 0L,
-            "you can return a value for the result" );
+            "you can supply one by 'return <value>;'" );
     }
     return result;
 }
@@ -492,7 +492,7 @@ Obj             EvalFunccall3args (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* evaluate the arguments                                              */
@@ -507,7 +507,7 @@ Obj             EvalFunccall3args (
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
             0L, 0L,
-            "you can return a value for the result" );
+            "you can supply one by 'return <value>;'" );
     }
     return result;
 }
@@ -528,7 +528,7 @@ Obj             EvalFunccall4args (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* evaluate the arguments                                              */
@@ -544,7 +544,7 @@ Obj             EvalFunccall4args (
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
             0L, 0L,
-            "you can return a value for the result" );
+            "you can supply one by 'return <value>;'" );
     }
     return result;
 }
@@ -566,7 +566,7 @@ Obj             EvalFunccall5args (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* evaluate the arguments                                              */
@@ -583,7 +583,7 @@ Obj             EvalFunccall5args (
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
             0L, 0L,
-            "you can return a value for the result" );
+            "you can supply one by 'return <value>;'" );
     }
     return result;
 }
@@ -606,7 +606,7 @@ Obj             EvalFunccall6args (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* evaluate the arguments                                              */
@@ -624,7 +624,7 @@ Obj             EvalFunccall6args (
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
             0L, 0L,
-            "you can return a value for the result" );
+            "you can supply one by 'return <value>;'" );
     }
     return result;
 }
@@ -644,7 +644,7 @@ Obj             EvalFunccallXargs (
         func = ErrorReturnObj(
             "Function Calls: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* evaluate the arguments                                              */
@@ -663,7 +663,7 @@ Obj             EvalFunccallXargs (
         result = ErrorReturnObj(
             "Function Calls: <func> must return a value",
             0L, 0L,
-            "you can return a value for the result" );
+            "you can supply one by 'return <value>;'" );
     }
     return result;
 }
@@ -711,7 +711,7 @@ static void RecursionDepthTrap( void )
     RecursionDepth = 0;
     ErrorReturnVoid( "recursion depth trap (%d)\n",         
 		     (Int)recursionDepth, 0L,               
-		     "you may return" );
+		     "you may 'return;'" );
     RecursionDepth = recursionDepth;
 }
      
@@ -1010,7 +1010,7 @@ Obj             DoExecFuncXargs (
         args = ErrorReturnObj(
             "Function Calls: number of arguments must be %d (not %d)",
             len, LEN_PLIST( args ),
-            "you can return a list of arguments" );
+            "you can replace the <list> of arguments via 'return <list>;'" );
         PLAIN_LIST( args );
     }
 
@@ -1262,8 +1262,8 @@ Obj FuncSetRecursionTrapInterval( Obj self,  Obj interval )
   while (!IS_INTOBJ(interval) || INT_INTOBJ(interval) < 0)
     interval = ErrorReturnObj( "SetRecursionTrapInterval( <interval> ): "
 			       "<interval> must be a non-negative small integer",
-			       0L,
-			       0L, "You can return a non-negative small integer");
+			       0L, 0L, 
+                               "you can replace <interval> via 'return <interval>;'");
   RecursionTrapInterval = INT_INTOBJ( interval);
   return 0;
 }

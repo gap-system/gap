@@ -201,21 +201,21 @@ DeclareGlobalFunction( "MAKElb11" );
 ##      the tensor product information of a cyclic subgroup in {\MOC}
 ##      (as computed by `fct') is either 1 (for rational classes)
 ##      or a sequence
-##      $$
-##      n x_{1,1} y_{1,1} z_{1,1} x_{1,2} y_{1,2} z_{1,2}
-##      \ldots x_{1,m_1} y_{1,m_1} z_{1,m_1} 0 x_{2,1} y_{2,1}
-##      z_{2,1} x_{2,2} y_{2,2} z_{2,2} \ldots x_{2,m_2}
-##      y_{2,m_2} z_{2,m_2} 0 \ldots z_{n,m_n} 0
-##      $$
+##  $$
+##  n x_{1,1} y_{1,1} z_{1,1} x_{1,2} y_{1,2} z_{1,2}
+##  \ldots x_{1,m_1} y_{1,m_1} z_{1,m_1} 0 x_{2,1} y_{2,1}
+##  z_{2,1} x_{2,2} y_{2,2} z_{2,2} \ldots x_{2,m_2}
+##  y_{2,m_2} z_{2,m_2} 0 \ldots z_{n,m_n} 0
+##  $$
 ##      which means that the coefficient of $v_k$ in the product
-##      $$
-##      \left( \sum_{i=1}^{n} a_i v_i \right)
-##      \left( \sum_{j=1}^{n} b_j v_j \right)
-##      $$
+##  $$
+##  \left( \sum_{i=1}^{n} a_i v_i \right) %
+##  \left( \sum_{j=1}^{n} b_j v_j \right)
+##  $$
 ##      is equal to
-##      $$
-##      \sum_{i=1}^{m_k} x_{k,i} a_{y_{k,i}} b_{z_{k,i}}\ .
-##      $$
+##  $$
+##  \sum_{i=1}^{m_k} x_{k,i} a_{y_{k,i}} b_{z_{k,i}}\.
+##  $$
 ##      On a {\MOC} table in {\GAP} the `tensinfo' component is
 ##      a list of lists, each containing exactly the sequence mentioned
 ##      above.

@@ -178,8 +178,7 @@ DeclareRepresentation(
 ##
 #M  PrintObj( <IsNBitsPcWordRep> )
 ##
-InstallMethod( PrintObj,
-    true,
+InstallMethod( PrintObj,"pcword", true,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep ],
     0,
@@ -207,6 +206,42 @@ function( obj )
             Print( "^", word[ i+1 ] );
         fi;
     fi;
+end );
+
+#############################################################################
+##
+#M  String( <IsNBitsPcWordRep> )
+##
+InstallMethod( String,"pcword",true,
+    [ IsMultiplicativeElementWithInverseByPolycyclicCollector
+        and IsNBitsPcWordRep ], 0,
+function( obj )
+local   names,  word,  len,  i,s;
+
+    names := TypeObj(obj)![PCWP_NAMES];
+    word  := ExtRepOfObj(obj);
+    len   := Length(word) - 1;
+    if len < 0 then
+        return "<identity> of ...";
+    else
+	s:="";
+        i := 1;
+        while i < len do
+	    Append(s,names[ word[i] ]);
+            if word[i+1] <> 1 then
+                Add(s,'^');
+                Append(s, String(word[i+1]) );
+            fi;
+	    Add(s,'*');
+            i := i+2;
+        od;
+	Append(s,names[word[i]] );
+        if word[i+1] <> 1 then
+	    Add(s,'^');
+	    Append(s,String(word[ i+1 ]));
+        fi;
+    fi;
+    return s;
 end );
 
 
@@ -836,7 +871,8 @@ InstallMethod( \<,
 #F  SingleCollector_GroupRelators( ... )
 ##
 SingleCollector_GroupRelators := function(
-    gens, rods, powersp, powersn, commpp, commpn, commnp, commnn, conjpp,
+    efam, gens, rods, powersp, powersn, 
+    commpp, commpn, commnp, commnn, conjpp,
     conjpn, conjnp, conjnn, conflicts )
 
     local   col,  i,  j,  rhs;
@@ -850,7 +886,7 @@ SingleCollector_GroupRelators := function(
     #        Length(Flat(conjnn)), " ", Length(conflicts), "\n" );
 
     # start with an empty single collector
-    col := SingleCollector( gens, rods );
+    col := SingleCollectorByGenerators( efam, gens, rods );
 
     # we want to use positive powers first
     for i  in [ 1 .. Length(rods) ]  do
@@ -902,18 +938,11 @@ end;
 ##
 #M  PolycyclicFactorGroupByRelators( <efam>, <gens>, <rels> )
 ##
-InstallMethod( PolycyclicFactorGroupByRelators,
-    "generic method for family, generators, relators",
-    true,
-    [ IsFamily,
-      IsList,
-      IsList ],
-    0,
-
-function( efam, gens, rels )
+InstallGlobalFunction( "SingleCollectorByRelators",
+function( efam, gens, rels, conflicts )
     local   i,  r,  rel,  powersp,  powersn,  powlst,  commpp,
             commpn,  commnp,  commnn,  conjpp,  conjpn,  conjnp,
-            conjnn,  conflicts,  n,  g1,  e1,  g2,  e2,  g3,  e3,  g4,
+            conjnn,  n,  g1,  e1,  g2,  e2,  g3,  e3,  g4,
             e4,  rods,  col;
 
     # check the generators
@@ -970,8 +999,9 @@ function( efam, gens, rels )
     # conjugate neg, neg
     conjnn := List( gens, x -> [] );
 
+    # conflicts is passed already as argument and is changed!
     # conflicts are collected in this list and tested later
-    conflicts := [];
+    #conflicts := [];
 
     # sort relators into power and commutator/conjugate relators
     for rel  in rels  do
@@ -1108,12 +1138,38 @@ function( efam, gens, rels )
     if ForAny( rods, x -> x = 0 )  then
         Error( "not ready yet, only finite polycyclic groups are allowed" );
     else
-        col := SingleCollector_GroupRelators( gens, rods, powersp, powersn,
+        col := SingleCollector_GroupRelators( efam, gens, 
+                   rods, powersp, powersn,
                    commpp, commpn, commnp, commnn, conjpp, conjpn,
                    conjnp, conjnn, conflicts );
     fi;
 
-    # check that the system is confluent
+    return col;
+end );
+
+InstallMethod( PolycyclicFactorGroupByRelatorsNC,
+    "generic method for family, generators, relators",
+    true,
+    [ IsFamily, IsList, IsList ], 0,
+function( efam, gens, rels )
+    local col;
+
+    col := SingleCollectorByRelators( efam, gens, rels, [] );
+    return GroupByRwsNC(col);
+end );
+
+
+InstallMethod( PolycyclicFactorGroupByRelators,
+    "generic method for family, generators, relators",
+    true,
+    [ IsFamily, IsList, IsList ], 0,
+function( efam, gens, rels )
+    local  col,  conflicts,  e1,  rel;
+
+    conflicts := [];
+    col := SingleCollectorByRelators( efam, gens, rels, conflicts );
+
+    # check that there are no conflicts between the relations
     e1 := ReducedOne(col);
     for rel  in conflicts  do
         if ReducedForm( col, rel ) <> e1  then
@@ -1121,9 +1177,8 @@ function( efam, gens, rels )
         fi;
     od;
 
-    # return the group described by this system
+    # check consistency & return the group described by this system
     return GroupByRws(col);
-
 end );
 
 
@@ -1143,6 +1198,20 @@ InstallMethod( PolycyclicFactorGroup,
 
 function( fgrp, rels )
     return PolycyclicFactorGroupByRelators(
+        ElementsFamily(FamilyObj(fgrp)),
+        GeneratorsOfGroup(fgrp),
+        rels );
+end );
+
+InstallMethod( PolycyclicFactorGroupNC,
+    "for free group, list using ' PolycyclicFactorGroupByRelators'",
+    IsIdenticalObj,
+    [ IsFreeGroup,
+      IsHomogeneousList ],
+    0,
+
+function( fgrp, rels )
+    return PolycyclicFactorGroupByRelatorsNC(
         ElementsFamily(FamilyObj(fgrp)),
         GeneratorsOfGroup(fgrp),
         rels );

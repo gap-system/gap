@@ -562,11 +562,133 @@ Obj FuncMakeConsequences (
 
 /****************************************************************************
 **
-*F  FuncStandardizeTable( <self>, <list> )  . . . . standardize a coset table
+*F  FuncMakeConsequencesPres( <self>, <list> )  . . . . . . find consequences
+**
+**  This  is a  special version  of  `FuncMakeConsequences'  for the subgroup
+**  presentation routines.
 */
-Obj FuncStandardizeTable (
+Obj FuncMakeConsequencesPres (
     Obj                 self,
     Obj                 list )
+{
+    Obj                 objDefs1;       /* handle of defs list part 1      */
+    Obj *               ptDefs1;        /* pointer to this list            */
+    Obj                 objDefs2;       /* handle of defs list part 2      */
+    Obj *               ptDefs2;        /* pointer to this list            */
+    Obj                 objRels;        /*                                 */
+    Obj *               ptRel;          /* pointer to the relator bag      */
+    Obj *               ptNums;         /* pointer to this list            */
+    Int                 ndefs;          /* number of defs done so far      */
+    Int                 undefined;      /* maximal of undefined entreis    */
+    Int                 apply;          /* num of next def to be applied   */
+    Int                 ndefsMax;       /* maximal number of definitons    */
+    Int                 cos;            /* coset involved in current def   */
+    Int                 gen;            /* gen involved in current def     */
+    Int                 lp;             /* left pointer into relator       */
+    Int                 lc;             /* left coset to apply to          */
+    Int                 rp;             /* right pointer into relator      */
+    Int                 rc;             /* right coset to apply to         */
+    Int                 tc;             /* temporary coset                 */
+    Int                 i;              /* loop variable                   */
+
+    /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
+    if ( ! IS_PLIST(list) ) {
+        ErrorQuit( "<list> must be a plain list (not a %s)",
+                   (Int)TNAM_OBJ(list), 0L );
+        return 0;
+    }
+
+    objTable  = ELM_PLIST( list, 1 );
+    objDefs1  = ELM_PLIST( list, 2 );
+    objDefs2  = ELM_PLIST( list, 3 );
+    ptDefs1   = &(ELM_PLIST(objDefs1,1)) - 1;
+    ptDefs2   = &(ELM_PLIST(objDefs2,1)) - 1;
+
+    undefined = INT_INTOBJ( ELM_PLIST( list, 4 ) );
+    ndefs     = INT_INTOBJ( ELM_PLIST( list, 5 ) );
+
+    /* check the definitions lists                                         */
+    if ( ! ( IS_PLIST(objDefs1) && IS_PLIST(objDefs2) &&
+        LEN_PLIST(objDefs1) == LEN_PLIST(objDefs2) ) ) {
+        ErrorQuit( "inconsistent definitions lists", 0L, 0L );
+        return 0;
+    }
+    ndefsMax = LEN_PLIST(objDefs1);
+    apply = 1;
+
+    /* while the deduction queue is not worked off                         */
+    while ( apply <= ndefs ) {
+
+        /* apply all relators that start with this generator               */
+        cos = INT_INTOBJ( ELM_PLIST( objDefs1, apply ) );
+        gen = INT_INTOBJ( ELM_PLIST( objDefs2, apply ) );
+        objRels = ELM_PLIST( ELM_PLIST( list, 6 ), gen );
+        for ( i = 1; i <= LEN_LIST( objRels ); i++ ) {
+            objNums = ELM_PLIST( ELM_PLIST(objRels,i), 1 );
+            ptNums  = &(ELM_PLIST(objNums,1)) - 1;
+            objRel  = ELM_PLIST( ELM_PLIST(objRels,i), 2 );
+            ptRel   = &(ELM_PLIST(objRel,1)) - 1;
+
+            lp = INT_INTOBJ( ELM_PLIST( ELM_PLIST(objRels,i), 3 ) );
+            lc = cos;
+            rp = lp + INT_INTOBJ( ptRel[1] );
+            rc = lc;
+
+            /* scan as long as possible from the right to the left         */
+            while ( lp<rp && 0 < (tc=INT_INTOBJ(ELM_PLIST(ptRel[rp],rc))) ) {
+                rc = tc;  rp = rp - 2;
+            }
+
+            /* scan as long as possible from the left to the right         */
+            while ( lp<rp && 0 < (tc=INT_INTOBJ(ELM_PLIST(ptRel[lp],lc))) ) {
+                lc = tc;  lp = lp + 2;
+            }
+
+            /* if a deduction has been found, handle it     */
+            if ( lp == rp+1 && INT_INTOBJ(ELM_PLIST(ptRel[rp],rc)) <= 0 ) {
+                SET_ELM_PLIST( ptRel[lp], lc, INTOBJ_INT( rc ) );
+                undefined--;
+                if ( INT_INTOBJ(ELM_PLIST(ptRel[rp],rc)) <= 0 ) {
+                    SET_ELM_PLIST( ptRel[rp], rc, INTOBJ_INT( lc ) );
+                    undefined--;
+		}
+                ndefs++;
+		if ( ndefs > ndefsMax ) {
+                    ErrorQuit( "inconsistent definitions lists", 0L, 0L );
+                    return 0;
+                }
+                SET_ELM_PLIST( objDefs1, ndefs, INTOBJ_INT( lc ) );
+                SET_ELM_PLIST( objDefs2, ndefs, ptNums[lp] );
+                if ( undefined == 0 ) {
+                    return INTOBJ_INT( 0 );
+                }
+            }
+        }
+
+        apply++;
+    }
+
+    return INTOBJ_INT( undefined );
+}
+
+
+/****************************************************************************
+**
+*F  FuncStandardizeTableC(<self>,<table>,<stan>)  . . . . . .  standardize CT
+**
+**  This is the kernel routine for standardizing a coset table.  It is called
+**  by the  GAP routine  'StandardizeTable'.  The user  should  not  call the
+**  kernel routine but only the GAP routine.
+**
+**  If  <stan> = 1  the table  is standardized  using  the  (old)  semilenlex
+**  standard.
+**  If  not  <stan> = 1  the table  is standardized  using the  (new)  lenlex
+**  standard (this is the default).
+*/
+Obj FuncStandardizeTableC (
+    Obj                 self,
+    Obj                 list,
+    Obj                 stan )
 {
     Obj *               ptTable;        /* pointer to table                */
     UInt                nrgen;          /* number of rows of the table / 2 */
@@ -578,7 +700,7 @@ Obj FuncStandardizeTable (
     UInt                mcos;           /*                                 */
     UInt                c1, c2;         /* coset temporaries               */
     Obj                 tmp;            /* temporary for swap              */
-    UInt                j, k;           /* loop variables                  */
+    UInt                j, k, nloop;    /* loop variables                  */
 
     /* get the arguments                                                   */
     objTable = list;
@@ -598,6 +720,14 @@ Obj FuncStandardizeTable (
             return 0;
         }
     }
+    if ( IS_INTOBJ(stan) && INT_INTOBJ(stan) == 1 ) {
+       /* use semilenlex standard                                          */
+       nloop = nrgen;
+    }
+    else {
+       /* use lenlex standard                                              */
+       nloop = nrgen*2;
+    }
 
     /* run over all cosets                                                 */
     acos = 1;
@@ -605,8 +735,9 @@ Obj FuncStandardizeTable (
     while ( acos <= lcos ) {
 
         /* scan through all columns of acos                                */
-        for ( j = 1;  j <= nrgen;  j++ ) {
-            g = &(ELM_PLIST(ptTable[2*j-1],1)) - 1;
+        for ( j = 1;  j <= nloop;  j++ ) {
+            k = ( nloop == nrgen ) ? 2*j - 1 : j;
+            g = &(ELM_PLIST(ptTable[k],1)) - 1;
 
             /* if we haven't seen this coset yet                           */
             if ( lcos+1 < INT_INTOBJ( g[acos] ) ) {
@@ -1298,7 +1429,7 @@ Obj FuncCopyRel (
 **
 *F  FuncMakeCanonical( <self>, <rel> ) . . . . . . . make a relator canonical
 **
-**  'FunMcakeCanonical' is a subroutine  of the Reduced Reidemeister-Schreier
+**  'FuncMakeCanonical' is a subroutine  of the Reduced Reidemeister-Schreier
 **  routines.  It replaces the given relator by its canonical representative.
 **  It does not return anything.
 */
@@ -1766,7 +1897,7 @@ static void SubtractCosetFactor (
 **
 *F  HandleCoinc2( <cos1>, <cos2>, <factor> ) .  handle coincidences in an MTC
 **
-**  'HandleCoinc2'  is a subroutine of 'FunMakeConsequences2' and handles the
+**  'HandleCoinc2' is a subroutine of 'FuncMakeConsequences2' and handles the
 **  coincidence  cos2 = factor * cos1.
 */
 static void HandleCoinc2 (
@@ -2629,14 +2760,22 @@ Obj FuncMakeConsequences2 (
 
 /****************************************************************************
 **
-*F  FuncStandardizeTable2( <self>, <table>, <table2> )  .  standardize aug CT
+*F  FuncStandardizeTable2C(<self>,<table>,<table2>,<stan>)  . standardize ACT
 **
-**  'FuncStandardizeTable2' standardizes an augmented coset table.
+**  This is the kernel routine for standardizing an augmented coset table. It
+**  is called by the  GAP routine  'StandardizeTable2'.  The user should  not
+**  call the kernel routine but only the GAP routine.
+**
+**  If  <stan> = 1  the table  is standardized  using  the  (old)  semilenlex
+**  standard.
+**  If  not  <stan> = 1  the table  is standardized  using the  (new)  lenlex
+**  standard (this is the default).
 */
-Obj FuncStandardizeTable2 (
+Obj FuncStandardizeTable2C (
     Obj                 self,
     Obj                 list,
-    Obj                 list2 )
+    Obj                 list2,
+    Obj                 stan )
 {
     Obj *               ptTable;        /* pointer to table                */
     Obj *               ptTabl2;        /* pointer to coset factor table   */
@@ -2651,7 +2790,7 @@ Obj FuncStandardizeTable2 (
     UInt                mcos;           /*                                 */
     UInt                c1, c2;         /* coset temporaries               */
     Obj                 tmp;            /* temporary for swap              */
-    UInt                j, k;           /* loop variables                  */
+    UInt                j, k, nloop;    /* loop variables                  */
 
     /* get the arguments                                                   */
     objTable = list;
@@ -2678,6 +2817,14 @@ Obj FuncStandardizeTable2 (
         return 0;
     }
     ptTabl2 = &(ELM_PLIST(objTable2,1)) - 1;
+    if ( IS_INTOBJ(stan) && INT_INTOBJ(stan) == 1 ) {
+       /* use semilenlex standard                                          */
+       nloop = nrgen;
+    }
+    else {
+       /* use lenlex standard                                              */
+       nloop = nrgen*2;
+    }
 
     /* run over all cosets                                                 */
     acos = 1;
@@ -2685,8 +2832,9 @@ Obj FuncStandardizeTable2 (
     while ( acos <= lcos ) {
 
         /* scan through all columns of acos                                */
-        for ( j = 1;  j <= nrgen;  j++ ) {
-            g = &(ELM_PLIST(ptTable[2*j-1],1)) - 1;
+        for ( j = 1;  j <= nloop;  j++ ) {
+            k = ( nloop == nrgen ) ? 2*j - 1 : j;
+            g = &(ELM_PLIST(ptTable[k],1)) - 1;
 
             /* if we haven't seen this coset yet                           */
             if ( lcos+1 < INT_INTOBJ( g[acos] ) ) {
@@ -2855,8 +3003,11 @@ static StructGVarFunc GVarFuncs [] = {
     { "MakeConsequences", 1, "list",
       FuncMakeConsequences, "src/costab.c:MakeConsequences" },
 
-    { "StandardizeTable", 1, "table",
-      FuncStandardizeTable, "src/costab.c:StandardizeTable" },
+    { "MakeConsequencesPres", 1, "list",
+      FuncMakeConsequencesPres, "src/costab.c:MakeConsequencesPres" },
+
+    { "StandardizeTableC", 2, "table, standard",
+      FuncStandardizeTableC, "src/costab.c:StandardizeTableC" },
 
     { "ApplyRel2", 3, "app, relators, nums",
       FuncApplyRel2, "src/costab.c:ApplyRel2" },
@@ -2873,8 +3024,8 @@ static StructGVarFunc GVarFuncs [] = {
     { "MakeConsequences2", 1, "list",
       FuncMakeConsequences2, "src/costab.c:MakeConsequences2" },
 
-    { "StandardizeTable2", 2, "table, table",
-      FuncStandardizeTable2, "src/costab.c:StandardizeTable2" },
+    { "StandardizeTable2C", 3, "table, table, standard",
+      FuncStandardizeTable2C, "src/costab.c:StandardizeTable2C" },
 
     { "AddAbelianRelator", 2, "rels, number",
       FuncAddAbelianRelator, "src/costab.c:AddAbelianRelator" },

@@ -105,7 +105,7 @@ For several operational structures (see~"Operational Structure of Domains"),
 {\GAP} provides functions to construct domains with this structure.
 For example, `Group' returns groups, `VectorSpace' returns vector spaces etc.
 
-\>`<Struct>( <arg1>, <arg2>, ... )'{Struct} F
+\>`<Struct>( <arg1>, <arg2>, ... )'{Struct}@{\noexpand<Struct>} F
 
 The syntax of these functions may vary, dependent on the structure in
 question.
@@ -130,7 +130,8 @@ The function <Struct> first checks whether the arguments admit
 the construction of a domain with the desired structure.
 This is done by calling the operation
 
-\>`IsGeneratorsOf<Struct>( [<info>, ]<gens> )'{IsGeneratorsOfStruct} O
+\>`IsGeneratorsOf<Struct>( [<info>, ]<gens>)'{IsGeneratorsOfStruct}%
+@{`IsGeneratorsOf\noexpand<Struct>'} O
 
 where <arglist> is the list of given generators and <info> an argument
 of <Struct>, for example the field of scalars in the case that a
@@ -140,7 +141,8 @@ otherwise it returns the result of `<Struct>ByGenerators' (see below).
 (So if one wants to omit the check then one should call
 `<Struct>ByGenerators' directly.)
 
-\>`GeneratorsOf<Struct>( <D> )'{GeneratorsOfStruct} A
+\>`GeneratorsOf<Struct>( <D>)'{GeneratorsOfStruct}%
+@{`GeneratorsOf\noexpand<Struct>'} A
 
 For a domain <D> with operational structure corresponding to <Struct>,
 the attribute `GeneratorsOf<Struct>' returns a list of corresponding
@@ -158,7 +160,8 @@ of scalars; the vector space generators of a vector space over the field
 with four elements need not generate the same vector space when this is
 viewed as a space over the field with two elements.
 
-\>`<Struct>ByGenerators( [<info>, ]<gens> )'{StructByGenerators} O
+\>`<Struct>ByGenerators( [<info>, ]<gens> )'{StructByGenerators}%
+@{`\noexpand<Struct>ByGenerators'} O
 
 Domain construction from generators <gens> is implemented by operations
 `<Struct>ByGenerators',
@@ -175,14 +178,15 @@ there is an attribute `GeneratorsOf<Struct>' then the list
 `GeneratorsOf<Struct>( <D> )' is guaranteed to be equal to
 `[ <a>, <b>, ... ]'.
 
-\>`<Struct>WithGenerators( [<info>, ]<gens> )'{StructWithGenerators} O
+\>`<Struct>WithGenerators( [<info>, ]<gens> )'{StructWithGenerators}%
+@{`\noexpand<Struct>WithGenerators'} O
 
 The only difference between `<Struct>ByGenerators' and
 `<Struct>WithGenerators' is that the latter guarantees that the
 `GeneratorsOf<Struct>' value of the result is equal to the given
 generators <gens>.
 
-\>`Closure<Struct>( <D>, <obj> )'{ClosureStruct} O
+\>`Closure<Struct>( <D>, <obj> )'{ClosureStruct}@{`Closure\noexpand<Struct>'} O
 
 For constructing a domain as the closure of a given domain with an
 element or another domain, one can use the operation `Closure<Struct>'.
@@ -199,7 +203,7 @@ the inverses of all of its elements;
 if $M$ has not been constructed as a group (see~"Domain Categories")
 then it is reasonable to ask for the group that is equal to $M$.
 
-\>`As<Struct>( [<info>, ]<D> )'{AsStruct} O
+\>`As<Struct>( [<info>, ]<D> )'{AsStruct}@{`As\noexpand<Struct>'} O
 
 If <D> is a domain that is closed under the operational structure
 given by <Struct> then `As<Struct>' returns a domain <E> that consists
@@ -220,7 +224,53 @@ additional information then `fail' is returned.
 
 In the case that no additional information <info> is related to the
 structure given by <Struct>,
-the operation `As<Struct>' is in fact an attribute.
+the operation `As<Struct>' is in fact an attribute (see~"Attributes").
+
+See the index of the {\GAP} Reference Manual for an overview of the available
+`As<Struct>' functions.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Changing the Representation}
+
+Often it is useful to answer questions about a domain via computations in
+a different but isomorphic domain.
+In the sense that this approach keeps the structure and changes the
+underlying set of elements, it can be viewed as a counterpart of keeping the
+set of elements and changing its structure (see~"Changing the Structure").
+
+One reason for doing so can be that computations with the elements in the
+given domain are not very efficient.
+For example, if one is given a solvable matrix group
+(see Chapter~"Matrix Groups") then one can compute an isomorphism to a
+polycyclicly presented group $G$, say (see Chapter~"Polycyclic Groups");
+the multiplication of two matrices --which is essentially determined by
+the dimension of the matrices-- is much more expensive than the
+multiplication of two elements in $G$ --which is essentially determined by
+the composition length of $G$.
+
+\>`Isomorphism<Rep><Struct>( <D> )'{IsomorphismRepStruct}%
+@{`Isomorphism\noexpand<Rep>\noexpand<Struct>'} A
+
+If <D> is a domain that is closed under the operational structure
+given by <Struct> then `Isomorphism<Rep><Struct>' returns a mapping <hom>
+from <D> to a domain $E$ having structure given by <Struct>,
+such that <hom> respects the structure <Struct>
+and <Rep> describes the representation of the elements in $E$.
+If no domain $E$ with the required properties exists then `fail' is
+returned.
+
+For example, `IsomorphismPermGroup' (see~"IsomorphismPermGroup") takes a
+group as its argument and returns a group homomorphism
+(see~"Group Homomorphisms") onto an isomorphic permutation group
+(see Chapter~"Permutation Groups") provided the original
+group is finite; for infinite groups, `IsomorphismPermGroup' returns `fail'.
+Similarly, `IsomorphismPcGroup' (see~"IsomorphismPcGroup") returns a group
+homomorphism from its argument to a polycyclicly presented group
+(see~"Pc Groups") if the argument is polycyclic, and `fail' otherwise.
+
+See the index of the {\GAP} Reference Manual for an overview of the available
+`Isomorphism<Rep><Struct>' functions.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -237,7 +287,7 @@ The operational structure determines which operations are applicable for
 a domain, so for example `SylowSubgroup' is not defined for <D>
 and therefore will signal an error.
 
-\>`Is<Struct>( <D> )'{IsStruct}
+\>`Is<Struct>( <D> )'{IsStruct}@{`Is\noexpand<Struct>'}
 
 The functions `Is<Struct>' implement the tests whether a domain <D> has the
 respective operational structure (upon construction).
@@ -251,35 +301,37 @@ the first being a category and the second being a property.
 Implications between domain categories describe the hierarchy of
 operational structures available in {\GAP}.
 Here are some typical examples.
+
 \beginlist
-\item{-}
+\item{--}
     `IsDomain' is implied by each domain category,
-\item{-}
+\item{--}
     `IsMagma' is implied by each category that describes the closure under
     multiplication `\*',
-\item{-}
+\item{--}
     `IsAdditiveMagma' is implied by each category that describes the closure
     under addition `+',
-\item{-}
+\item{--}
     `IsMagmaWithOne' implies `IsMagma';
     a *magma-with-one* is a magma such that each element
     (and thus also the magma itself) can be asked for its zeroth power,
-\item{-}
+\item{--}
     `IsMagmaWithInverses' implies `IsMagmaWithOne';
     a *magma-with-inverses* is a magma such that each element
     can be asked for its inverse;
     important special cases are *groups*,
     which in addition are associative,
-\item{-}
+\item{--}
     a *ring* is a magma that is also an additive group,
-\item{-}
+\item{--}
     a *ring-with-one* is a ring that is also a magma-with-one,
-\item{-}
+\item{--}
     a *division ring* is a ring-with-one that is also closed under taking
     inverses of nonzero elements,
-\item{-}
+\item{--}
     a *field* is a commutative division ring.
 \endlist
+
 For each operational structure <struct>,
 there are the domain category `Is<Struct>',
 the operations `<Struct>ByGenerators' for constructing a domain from
@@ -330,7 +382,7 @@ For example, if <G> is a group that contains the elements in the list <gens>
 then `Subgroup( <G>, <gens> )' returns a group <S> that is generated by the
 elements in <gens> and with `Parent( <S> ) = <G>'.
 
-\>`Sub<struct>( <D>, <gens> )'{Substruct} F
+\>`Sub<struct>( <D>, <gens> )'{Substruct}@{`Sub\noexpand<struct>'} F
 
 More general, if <D> is a domain whose algebraic structure is given by the
 function <Struct> (for example `Group', `Algebra', `Field')
@@ -338,20 +390,20 @@ then the function `Sub<struct>' (for example `Subgroup', `Subalgebra',
 `Subfield') returns domains with structure <Struct> and parent set to
 the first argument.
 
-\>`Sub<struct>NC( <D>, <gens> )'{SubstructNC} F
+\>`Sub<struct>NC( <D>, <gens> )'{SubstructNC}@{`Sub\noexpand<struct>NC'} F
 
 Each function `Sub<struct>' checks that the <Struct> generated by
 <gens> is in fact a subset of <D>.
 If one wants to omit this check then one can call `Sub<struct>NC' instead;
 the suffix `NC' stands for ``no  check''.
 
-\>`AsSub<struct>( <D>, <S> )'{AsSubstruct} F
+\>`AsSub<struct>( <D>, <S> )'{AsSubstruct}@{`AsSub\noexpand<struct>'} F
 
 first constructs `As<struct>( [<info>, ]<S> )',
 where <info> depends on <D> and <S>,
 and then sets the parent (see~"Parents") of this new domain to <D>.
 
-\>`IsSub<struct>( <D>, <S> )'{IsSubstruct} F
+\>`IsSub<struct>( <D>, <S> )'{IsSubstruct}@{`IsSub\noexpand<struct>'} F
 
 There is no real need for functions that check whether a domain <S> is a
 `Sub<struct>' of a domain <D>,
@@ -396,14 +448,12 @@ correspond to the operational structure.
 
 \Declaration{IsOne}
 \Declaration{IsZero}
+\Declaration{IsIdempotent}
 
 \Declaration{Inverse}
 \Declaration{AdditiveInverse}
 
 \Declaration{Order}
-
-\Declaration{LieObject}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Comparison Operations for Elements}
@@ -463,6 +513,7 @@ The multiplication `\\\*' is *not* assumed to be commutative or associative
 (see~"IsCommutative", "IsAssociative").
 
 \Declaration{Sqrt}
+
 
 % missing facts about the others ...
 

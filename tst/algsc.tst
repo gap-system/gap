@@ -53,7 +53,7 @@ gap> AdditiveInverse( v ); -v;
 (-1)*v.2+(-1)*v.4
 
 gap> b:= Basis( a );
-Basis( <algebra of dimension 4 over Rationals>, ... )
+CanonicalBasis( <algebra of dimension 4 over Rationals> )
 gap> Coefficients( b, v );
 [ 0, 1, 0, 1 ]
 gap> w:= LinearCombination( b, [ 1, 2, 3, 4 ] );
@@ -193,8 +193,7 @@ gap> KappaPerp( l1, ps );
 <vector space of dimension 6 over Rationals>
 
 gap> b:= Basis( l1 );
-Basis( <Lie algebra of dimension 10 over Rationals>, 
-[ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10 ] )
+CanonicalBasis( <Lie algebra of dimension 10 over Rationals> )
 gap> Print(AdjointMatrix( b, gens[1] ),"\n");
 [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, -2, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 ], 
@@ -498,9 +497,7 @@ VectorSpace( Rationals, [ v.1, v.3, (-3)*v.5+v.6, v.5+(3)*v.7+v.8, v.9, v.10,
   (-1)*v.5+(-6)*v.7+v.15 ] )
 
 gap> b:= Basis( l2 );
-Basis( <Lie algebra of dimension 15 over Rationals>, 
-[ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14, 
-  v.15 ] )
+CanonicalBasis( <Lie algebra of dimension 15 over Rationals> )
 gap> Print(AdjointMatrix( b, gens[1] ),"\n");
 [ [ 0, 0, 0, 0, -2, -6, 0, 0, 0, 0, 0, 0, 8, 4, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
@@ -647,19 +644,16 @@ gap> ps:= ProductSpace( l3, s3 );;
 gap> Print( ps, "\n" );
 VectorSpace( Rationals, [ v.2, v.3, v.4, v.1 ] )
 gap> LieCentralizer( l3, ps );
-<two-sided ideal in <Lie algebra of dimension 14 over Rationals>, (dimension 4
- )>
+<Lie algebra of dimension 4 over Rationals>
 
 gap> LieNormalizer( l3, ps );
 <Lie algebra of dimension 14 over Rationals>
 
 gap> KappaPerp( l3, ps );
-<Lie algebra of dimension 14 over Rationals>
+<vector space of dimension 14 over Rationals>
 
 gap> b:= Basis( l3 );
-Basis( <Lie algebra of dimension 14 over Rationals>, 
-[ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14 
- ] )
+CanonicalBasis( <Lie algebra of dimension 14 over Rationals> )
 gap> Print(AdjointMatrix( b, gens[1] ),"\n");
 [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, -1, -1, -1 ], 
   [ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
@@ -722,10 +716,10 @@ gap> z:= Zero( t );
 <zero of trivial s.c. algebra>
 gap> Random( t );
 <zero of trivial s.c. algebra>
-gap> b:= Basis( t );
-Basis( <algebra of dimension 0 over Rationals>, [  ] )
+gap> b:=Basis( t );
+CanonicalBasis( <algebra of dimension 0 over Rationals> )
 gap> coeff:= Coefficients( b, z );
-[  ]
+<empty row vector>
 gap> LinearCombination( b, coeff );
 <zero of trivial s.c. algebra>
 gap> LinearCombination( b, [] );

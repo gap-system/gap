@@ -13,6 +13,29 @@ Revision.smgideal_gd :=
     "@(#)$Id$";
 
 
+
+
+#############################################################################
+##
+#R  IsSemigroupIdealEnumRep( <R> )
+##
+##  Representation for semigroup ideal enumerators.
+##  Note: this *does not* imply that the UnderlyingDomain of the enumerator
+##  is a semigroup ideal, only that the object being enumerated is
+##  being enumerated as a semigroup ideal. In particular, semigroups
+##  are generally enumerated as a right or left ideal of themselves.
+##
+##  currentlist : the list of elements calculated so far
+##  gens : the list of acting generators (generators of the acting domain)
+##  nextelm : the index in currentlist of the next element whose
+##    images under the action of the generators has not yet been computed.
+##  orderedlist : currentlist AsSSortedList - to speed decision of whether
+##    an element has already been computed.
+##
+DeclareRepresentation("IsSemigroupIdealEnumRep",
+  IsDomainEnumerator and IsAttributeStoringRep,
+  ["currentlist", "gens", "nextelm", "orderedlist"]);
+
 #############################################################################
 ##
 #O  SemigroupIdealByGenerators(<S>, <gens>)
@@ -36,11 +59,15 @@ DeclareProperty("IsSemigroupIdeal", IsMagmaIdeal );
 
 #############################################################################
 ##
-#C  IsRightSemigroupIdealEnumerator
-#C  IsLeftSemigroupIdealEnumerator
-#C  IsSemigroupIdealEnumerator
+#C  IsRightSemigroupIdealEnumerator( <obj> )
+#C  IsLeftSemigroupIdealEnumerator( <obj> )
+#C  IsSemigroupIdealEnumerator( <obj> )
 ##
-##	Categories for generic semigroup ideal enumerators. 
+##  Categories for generic *semigroup ideal enumerators*. 
+##  Note: this *does not* imply that the UnderlyingDomain of the enumerator
+##  is a semigroup ideal, only that the object being enumerated is
+##  being enumerated as a semigroup ideal. In particular, semigroups
+##  are generally enumerated as a right or left ideal of themselves.
 ##
 DeclareCategory("IsRightSemigroupIdealEnumerator", IsDomainEnumerator);
 DeclareCategory("IsLeftSemigroupIdealEnumerator", IsDomainEnumerator);
@@ -59,10 +86,7 @@ DeclareAttribute("ReesCongruenceOfSemigroupIdeal", IsMagmaIdeal);
 
 
 
-
-
-
-
 #############################################################################
 ##
-#E
+#E  smgideal.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##

@@ -124,6 +124,15 @@ DeclareOperation("InfoLevel", [IsInfoClass]);
 
 ##  DeclareGlobalFunction("Info");
 
+#############################################################################
+##
+#O  CompletionBar( <class>, <level>, <string>, <value> )
+##
+##  if the info level of <class> is at least <level>, this displays a bar
+##  graph showing progress of <value> (a number between 0 and 1).
+##
+##  If <value> is not a number, the bar graph display is terminated.
+DeclareGlobalFunction("CompletionBar");
 
 #############################################################################
 ##

@@ -19,17 +19,26 @@ Revision.grppclat_gi:=
 ##           find <morph> invariant EAS of G (through N)
 ##
 InstallGlobalFunction(InvariantElementaryAbelianSeries,function(arg)
-local G,morph,N,s,p,e,i,j,k,ise;
+local G,morph,N,s,p,e,i,j,k,ise,fine;
   G:=arg[1];
   morph:=arg[2];
+  fine:=false;
   if Length(arg)>2 then
     N:=arg[3];
     e:=[G,N];
+    if Length(arg)>3 then
+      fine:=arg[4];
+    fi;
+    if fine then
+      e:=ElementaryAbelianSeries(e);
+    else
+      e:=ElementaryAbelianSeriesLargeSteps(e);
+    fi;
   else
     N:=TrivialSubgroup(G);
     e:=DerivedSeriesOfGroup(G);
+    e:=ElementaryAbelianSeriesLargeSteps(e);
   fi;
-  e:=ElementaryAbelianSeriesLargeSteps(e);
   s:=[G];
   i:=2;
   while i<=Length(e) do
@@ -49,11 +58,14 @@ local G,morph,N,s,p,e,i,j,k,ise;
     p:=Position(e,ise);
     if p<>fail then
       i:=p+1;
+    elif fine then
+      e:=ElementaryAbelianSeries([G,ise,TrivialSubgroup(G)]);
+      i:=Position(e,ise)+1;
     else
       e:=ElementaryAbelianSeriesLargeSteps([G,ise,TrivialSubgroup(G)]);
-      Assert(1,ise in e);
       i:=Position(e,ise)+1;
     fi;
+    Assert(1,ise in e);
   od;
   return s;
 end);
@@ -282,7 +294,7 @@ local P,g,op,act,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,
       i:=Random(P);
     until not i in Pu;
     Add(Pgens,i);
-    Pu:=ClosureSubgroupNC(Pu,i);
+    Pu:=ClosureSubgroup(Pu,i);
   od;
   if Length(Pgens)>2 and Length(Pgens)>Length(SmallGeneratingSet(P)) then
     Pgens:=SmallGeneratingSet(P);
@@ -409,7 +421,7 @@ local P,g,op,act,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,
     if kersz=1 then
       a:=SubgroupNC(par,List(i,j->PcElementByExponentsNC(pcgs,j)));
     else
-      a:=ClosureSubgroupNC(ker,List(i,j->PcElementByExponentsNC(pcgs,j)));
+      a:=ClosureSubgroup(ker,List(i,j->PcElementByExponentsNC(pcgs,j)));
     fi;
     SetSize(a,kersz*p^Length(i));
     Add(new,a);
@@ -590,11 +602,15 @@ local g,	# group
     e:=ElementaryAbelianSeriesLargeSteps(g);
   fi;
 
-  f:=DerivedSeriesOfGroup(g);
-  if Length(e)>Length(f) and
-    ForAll([1..Length(f)-1],i->IsElementaryAbelian(f[i]/f[i+1])) then
-    Info(InfoPcSubgroup,1,"  Preferring Derived Series");
-    e:=f;
+  if IsBound(opt.series) then
+    e:=opt.series;
+  else
+    f:=DerivedSeriesOfGroup(g);
+    if Length(e)>Length(f) and
+      ForAll([1..Length(f)-1],i->IsElementaryAbelian(f[i]/f[i+1])) then
+      Info(InfoPcSubgroup,1,"  Preferring Derived Series");
+      e:=f;
+    fi;
   fi;
 
 #  # check, if the series is compatible with the AgSeries and if g is a
@@ -620,27 +636,42 @@ local g,	# group
 #  fi;
 
   len:=Length(e);
-  # search the largest elementary abelian quotient
-  start:=2;
-  while start<len and IsElementaryAbelian(g/e[start+1]) do
-    start:=start+1;
-  od;
 
-  # compute all subgroups there
-  if start<len then
-    # form only factor groups if necessary
+  if IsBound(opt.groups) then
+    start:=1;
+    while ForAll(opt.groups,i->IsSubgroup(e[start],i)) do
+      start:=start+1;
+    od;
+    Info(InfoPcSubgroup,1,"starting index ",start);
     epi:=NaturalHomomorphismByNormalSubgroup(g,e[start]);
-    LockNaturalHomomorphismsPool(g,e[start]);
+    lastepi:=epi;
     f:=Image(epi,g);
+    grps:=List(opt.groups,i->Image(epi,i));
+    grpsnorms:=List(opt.grpsnorms,i->Image(epi,i));
   else
-    f:=g;
-    epi:=IdentityMapping(f);
+    # search the largest elementary abelian quotient
+    start:=2;
+    while start<len and IsElementaryAbelian(g/e[start+1]) do
+      start:=start+1;
+    od;
+
+    # compute all subgroups there
+    if start<len then
+      # form only factor groups if necessary
+      epi:=NaturalHomomorphismByNormalSubgroup(g,e[start]);
+      LockNaturalHomomorphismsPool(g,e[start]);
+      f:=Image(epi,g);
+    else
+      f:=g;
+      epi:=IdentityMapping(f);
+    fi;
+    lastepi:=epi;
+    efunc:=List(func,i->InducedAutomorphism(epi,i));
+    grps:=InvariantSubgroupsElementaryAbelianGroup(f,efunc);
+    Assert(1,ForAll(grps,i->ForAll(efunc,j->Image(j,i)=i)));
+    grpsnorms:=List(grps,i->f);
+
   fi;
-  lastepi:=epi;
-  efunc:=List(func,i->InducedAutomorphism(epi,i));
-  grps:=InvariantSubgroupsElementaryAbelianGroup(f,efunc);
-  Assert(1,ForAll(grps,i->ForAll(efunc,j->Image(j,i)=i)));
-  grpsnorms:=List(grps,i->f);
 
   for i in [start+1..len] do
     Info(InfoPcSubgroup,1," step ",i,": ",Index(e[i-1],e[i]),", ",
@@ -903,7 +934,7 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
 		  comnorms:=List(com,i->z.cocycleToComplement(i));
 		  isTrueComnorm:=true;
 		  comnorms:=List(comnorms,
-			      i->ClosureSubgroupNC(CentralizerModulo(n,b,i),i));
+			      i->ClosureSubgroup(CentralizerModulo(n,b,i),i));
 	        else
 		  isTrueComnorm:=false;
 		  comnorms:=List(com,i->bsnorms[bpos]);
@@ -951,7 +982,7 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
 		    # the projection on the complement
 		    comproj:= GroupHomomorphismByImagesNC(a,a,fghom,
 			       Concatenation(GeneratorsOfGroup(k),bgids));
-		    k:=ClosureSubgroupNC(b,k);
+		    k:=ClosureSubgroup(b,k);
 		    
 		    # now run through the conjugating elements
 		    conjnr:=1;
@@ -1025,7 +1056,7 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
 		    # there is an invariant complement?
 		    if found<>false then
 		      found:=found[2]*found[1];
-		      l:=ConjugateSubgroup(ClosureSubgroupNC(b,k),found);
+		      l:=ConjugateSubgroup(ClosureSubgroup(b,k),found);
 		      Assert(1,ForAll(efunc,i->Image(i,l)=l));
 		      l:=rec(representative:=l);
 		      if comnorms<>fail then
@@ -1034,7 +1065,7 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
 			else
 			  l.normalizer:=ConjugateSubgroup(
 			                  Normalizer(bsnorms[bpos],
-				  ClosureSubgroupNC(b,k)), found);
+				  ClosureSubgroup(b,k)), found);
 			fi;
 		      fi;
 		      Add(ncom,l);
@@ -1058,7 +1089,7 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
 		ncom:=[];
 		for kp in l do
 		  m:=rec(representative:=
-			  ClosureSubgroupNC(b,z.cocycleToComplement(com[kp])));
+			  ClosureSubgroup(b,z.cocycleToComplement(com[kp])));
 		  if comnorms<>fail then
 		    m.normalizer:=comnorms[kp];
 		  fi;
@@ -1113,9 +1144,15 @@ end);
 #M  LatticeSubgroups(<G>)  . . . . . . . . . .  lattice of subgroups
 ##
 InstallMethod(LatticeSubgroups,"elementary abelian extension",true,
-  [CanEasilyComputePcgs],0,
+  [IsGroup],
+  # want to be better than cyclic extension.
+  1,
 function(G)
 local s,i,c,classes, lattice;
+
+  if not IsSolvableGroup(G) or not CanEasilyComputePcgs(G) then
+    TryNextMethod();
+  fi;
   s:=SubgroupsSolvableGroup(G,rec(retnorm:=true));
   classes:=[];
   for i in [1..Length(s[1])] do

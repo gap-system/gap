@@ -50,7 +50,7 @@ gap> GeneratorsOfSemigroup(t);
 [ Transformation( [ 2, 3, 4, 1 ] ) ]
 \endexample
 
-\Declaration{FreeSemigroup}
+\Declaration{FreeSemigroup}!{with examples}
 
 \beginexample
 gap> f1 := FreeSemigroup( 3 );
@@ -93,7 +93,7 @@ semigroups.
 
 Ideals of semigroups are the same as ideals of the semigroup when 
 considered as a magma.
-For documentation on ideals for magmas see "Magma".
+For documentation on ideals for magmas, see `Magma' ("Magma").
 
 \Declaration{SemigroupIdealByGenerators}
 \Declaration{ReesCongruenceOfSemigroupIdeal}
@@ -101,13 +101,14 @@ For documentation on ideals for magmas see "Magma".
 \Declaration{IsRightSemigroupIdealEnumerator}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Congruences}
+\Section{Congruences for semigroups}
 
 An equivalence or a congruence on a semigroup is the
 equivalence or congruence on the semigroup considered as a magma.
 So, to deal with equivalences and congruences on semigroups,
 magma funtions are used.
-For documentation on equivalences and congruences for magmas see "Magma".
+For documentation on equivalences and congruences for magmas,
+see `Magma' ("Magma").
 
 \Declaration{IsSemigroupCongruence}
 \Declaration{IsReesCongruence}
@@ -129,25 +130,7 @@ The following funtions deal with quotient semigroups in {\GAP}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Green's Relations}
 
-Green's equivalence relations play a very important role in semigroup
-theory. In this section we describe how they can be used in {\GAP}.
-
-The five green's relations are <R>, <L>, <J>, <H>, <D>:
-two elements <x>, <y> from <S> are <R>-related if and only if
-$xS^1 = yS^1$, <L>-related if and only if $S^1x=S^1y$ and <J>-related
-if and only if $S^1xS^1=S^1yS^1$; finally, $H = R \wedge L$, and
-<D = R o L>.
-
-Recall that relations <R>, <L> and <J> induce a partial order among
-the elements of the semigroup: for two elements <x>, <y> from <S>,
-we say that <x> is  less than or equal to <y> in the order on <R>
-if $xS^1 \subseteq yS^1$;
-similarly, $x$ is less than or equal to $y$ under $L$ if
-$S^1x\subseteq S^1y$;
-finally <x> is less than or equal to <y> under <J> if
-$S^1xS^1 \subseteq S^1tS^1$.
-We extend this preorder to a partial order on equivalence classes in
-the natural way.
+\FileHeader{semirel}[1]
 
 \Declaration{GreensRRelation}
 \Declaration{IsGreensRelation}

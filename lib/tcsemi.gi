@@ -110,6 +110,7 @@ function(cong)
    local i, r, d, la,             # loop variables,
 		 M,                     # the semigroup,
          gens, rels,            # generators |[1..n]| and relations,
+         semirels,              # the rels of the semigroup plus x=x, x\in gens
          table, inver, occur,   # the coset table and its inverse,
          forwd, bckwd,          # for- and backward references,
          active,                # number of active cosets,
@@ -437,7 +438,13 @@ function(cong)
 		 Error("right congruence of an fp-semigroup expected");
 	 fi;
    gens:= [1..Length(GeneratorsOfSemigroup(M))];
-   rels:= List(RelationsOfFpSemigroup(M), x-> List(x, repLaced));
+   # we add trivial relations to the semigroup relations to
+   # make sure that if the semigroup has a free generator
+   # then it does not stop 
+   semirels := Concatenation(RelationsOfFpSemigroup(M),
+								List(gens,i-> [FreeGeneratorsOfFpSemigroup(M)[i],
+															FreeGeneratorsOfFpSemigroup(M)[i]]));
+   rels:= List(semirels, x-> List(x, repLaced));
    cong:= List(GeneratingPairsOfRightMagmaCongruence(cong), 
 		x-> List(x, y->repLaced(UnderlyingElement(y))));
 

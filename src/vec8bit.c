@@ -72,11 +72,12 @@ const char * Revision_vec8bit_c =
 /****************************************************************************
 **
 *F  IS_VEC8BIT_REP( <obj> )  . . . . . . check that <obj> is in 8bit GFQ vector rep
+**
+** #define IS_VEC8BIT_REP(obj) \
+**  (TNUM_OBJ(obj)==T_DATOBJ && True == DoFilter(IsVec8bitRep,obj))
 */
-static Obj IsVec8bitRep;
+Obj IsVec8bitRep;
 
-#define IS_VEC8BIT_REP(obj) \
-  (TNUM_OBJ(obj)==T_DATOBJ && True == DoFilter(IsVec8bitRep,obj))
 
 
 
@@ -221,13 +222,13 @@ Obj TypeVec8Bit( UInt q, UInt mut)
     return type;
 }
 
-Obj TypeVec8BitLocked( UInt q)
+Obj TypeVec8BitLocked( UInt q, UInt mut)
 {
-  UInt col = 3;
+  UInt col = mut ? 3 : 4;
   Obj type;
   type = ELM_PLIST(ELM_PLIST(TYPES_VEC8BIT, col),q);
   if (type == 0)
-    return CALL_1ARGS(TYPE_VEC8BIT_LOCKED, INTOBJ_INT(q));
+    return CALL_2ARGS(TYPE_VEC8BIT_LOCKED, INTOBJ_INT(q), mut ? True : False);
   else
     return type;
 }
@@ -623,6 +624,9 @@ static inline Obj GetFieldInfo8Bit( UInt q)
 ** characteristic 
 */
 
+static Obj IsLockedRepresentationVector;
+
+
 void RewriteVec8Bit( Obj vec, UInt q)
 {
   UInt q1 = FIELD_VEC8BIT(vec);
@@ -644,6 +648,12 @@ void RewriteVec8Bit( Obj vec, UInt q)
     return;
   assert(q > q1);
 
+  if (DoFilter(IsLockedRepresentationVector,vec) == True)
+    {
+      ErrorReturnVoid("You cannot convert a locked vector compressed over GF(%i) to GF(%i)",
+		      q1, q, "You can `return;' to ignore the conversion");
+      return;
+    }
   
   /* extract the required info */
   len = LEN_VEC8BIT(vec);
@@ -696,7 +706,6 @@ void RewriteVec8Bit( Obj vec, UInt q)
 ** This function uses the interface in vecgf2.h
 */
 
-static Obj IsLockedRepresentationVector;
 
 void RewriteGF2Vec( Obj vec, UInt q )
 {
@@ -711,13 +720,18 @@ void RewriteGF2Vec( Obj vec, UInt q )
   UInt1 zero, one;
   Int i;
 
-  if (DoFilter(IsLockedRepresentationVector,vec) == True)
-    return;
   
   assert(q % 2 == 0);
   
+  if (DoFilter(IsLockedRepresentationVector,vec) == True)
+    {
+      ErrorReturnVoid("You cannot convert a locked vector compressed over GF(2) to GF(%i)",
+		      q, 0, "You can `return;' to ignore the conversion");
+      return;
+    }
+  
   /* extract the required info */
-  len = LEN_VEC8BIT(vec);
+  len = LEN_GF2VEC(vec);
   info = GetFieldInfo8Bit(q);
   els = ELS_BYTE_FIELDINFO_8BIT(info);
 
@@ -746,7 +760,7 @@ void RewriteGF2Vec( Obj vec, UInt q )
 	block = *--ptr1;
       i--;
     }
-  SET_FIELD_VEC8BIT(vec,q);
+  SET_FIELD_VEC8BIT(vec, q);
   SET_LEN_VEC8BIT(vec,len);
   SET_TYPE_POSOBJ(vec, TypeVec8Bit( q, mut));
 }
@@ -938,6 +952,8 @@ void PlainVec8Bit (
     Obj                 info;
     UInt1              *gettab;
 
+
+
     /* resize the list and retype it, in this order                        */
     len = LEN_VEC8BIT(list);
     q = FIELD_VEC8BIT(list);
@@ -992,7 +1008,13 @@ Obj FuncPLAIN_VEC8BIT (
         list = ErrorReturnObj(
             "CONV_BLIST: <list> must be an 8bit vector (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
-            "you can return an 8bit vector for <list>" );
+            "you can replace <list> via 'return <list>;'" );
+    }
+    if (DoFilter(IsLockedRepresentationVector,list) == True)
+    {
+      ErrorReturnVoid("You cannot convert a locked vector compressed over GF(%i) to a plain list",
+		      FIELD_VEC8BIT(list) , 0, "You can `return;' to ignore the conversion");
+      return;
     }
     PlainVec8Bit(list);
 
@@ -1053,12 +1075,33 @@ void  AddVec8BitVec8BitInner( Obj sum,
       UInt *ptrR2;
       UInt *ptrS2;
       UInt *endS2;
+      UInt x;
       ptrL2 = BLOCKS_VEC8BIT(vl) + start/(sizeof(UInt)*elts);
       ptrR2 = BLOCKS_VEC8BIT(vr) + start/(sizeof(UInt)*elts);
       ptrS2 = BLOCKS_VEC8BIT(sum) + start/(sizeof(UInt)*elts);
       endS2 = BLOCKS_VEC8BIT(sum) + stop/(sizeof(UInt)*elts)+1;
-      while (ptrS2 < endS2)
-	*ptrS2++ = *ptrL2++ ^ *ptrR2++;
+      if (sum == vl)
+	{
+	  while (ptrL2 < endS2)
+	    {
+	      if ((x = *ptrR2) != 0)
+		*ptrL2 = *ptrL2 ^ x;
+	      ptrL2++; ptrR2++; 
+	    }
+	}
+      else if (sum == vr)
+	{
+	  while (ptrR2 < endS2)
+	    {
+	      if ((x = *ptrL2) != 0)
+		*ptrR2 = *ptrR2 ^ x;
+	      ptrL2++; ptrR2++;
+	    }
+	  
+	}
+      else
+	while (ptrS2 < endS2)
+	  *ptrS2++ = *ptrL2++ ^ *ptrR2++;
     }
   else
     {
@@ -1066,14 +1109,33 @@ void  AddVec8BitVec8BitInner( Obj sum,
       UInt1 *ptrR;
       UInt1 *ptrS;
       UInt1 *endS;
-      UInt1 *addtab;
-      addtab = ADD_FIELDINFO_8BIT(info);
+      UInt x;
+      const UInt1 *addtab = ADD_FIELDINFO_8BIT(info);
       ptrL = BYTES_VEC8BIT(vl) + start/elts;
       ptrR = BYTES_VEC8BIT(vr) + start/elts;
       ptrS = BYTES_VEC8BIT(sum) + start/elts;
       endS = BYTES_VEC8BIT(sum) + stop/elts + 1;
-      while (ptrS < endS)
-	*ptrS++ = addtab[256* (*ptrL++) + *ptrR++];
+      if (vl == sum)
+	{
+	  while (ptrL < endS)
+	    {
+	      if ((x = *ptrR) != 0)
+		*ptrL = addtab[256* (*ptrL) + x];
+	      ptrR++; ptrL++;
+	    }
+	}
+      else if (vr == sum)
+	{
+	  while (ptrR < endS)
+	    {
+	      if ((x = *ptrL) != 0)
+		*ptrR = addtab[256* (x) + *ptrR];
+	      ptrR++; ptrL++;
+	    }
+	}
+      else
+	while (ptrS < endS)
+	  *ptrS++ = addtab[256* (*ptrL++) + *ptrR++];
     }
   return;
 }
@@ -1127,8 +1189,9 @@ Obj FuncSUM_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
   Obj sum;
   if (LEN_VEC8BIT(vl) != LEN_VEC8BIT(vr))
     {
-      vr = ErrorReturnObj( "SUM: <left> and <right> must be the same length",
-			 0L,0L,"You can return a new vector for <right>");
+      vr = ErrorReturnObj( "SUM: <left> and <right> must be vectors of the same length",
+			    0L,0L,
+                            "you can replace <right> via 'return <right>;'");
 
       /* Now redispatch, because vr could be anything */
       return SUM(vl,vr);
@@ -1467,6 +1530,7 @@ void  AddVec8BitVec8BitMultInner( Obj sum,
   UInt1 *endS;
   UInt1 *addtab;
   UInt1 *multab;
+  UInt x;
 
   /* Handle special cases of <mult> */
   if (VAL_FFE(mult) == 0)
@@ -1508,12 +1572,34 @@ void  AddVec8BitVec8BitMultInner( Obj sum,
   ptrS = BYTES_VEC8BIT(sum) + start/elts;
   endS = BYTES_VEC8BIT(sum) + stop/elts + 1;
   if (p != 2)
-    while (ptrS < endS)
-      *ptrS++ = addtab[256* (*ptrL++) + multab[*ptrR++]];
+    if (sum == vl)
+      {
+	const UInt1* endS1 = endS;
+	const UInt1* addtab1 = addtab;
+	const UInt1* multab1 = multab;
+	while (ptrL < endS1)
+	  {
+	    if ((x = *ptrR) != 0)
+	      *ptrL = addtab1[256* (*ptrL) + multab1[x]];
+	    ptrL++; ptrR++; 
+	  }
+      }
+    else
+      while (ptrS < endS)
+	*ptrS++ = addtab[256* (*ptrL++) + multab[*ptrR++]];
   else
-    while (ptrS < endS)
-      *ptrS++ = *ptrL++ ^ multab[*ptrR++];
-
+    if (sum == vl)
+      {
+	while (ptrL < endS)
+	  {
+	    if ((x = *ptrR) != 0)
+	      *ptrL = *ptrL ^ multab[x];
+	    ptrR++; ptrL++;
+	  }
+      }
+    else
+      while (ptrS < endS)
+	*ptrS++ = *ptrL++ ^ multab[*ptrR++];
   return;
 }
 
@@ -1574,17 +1660,18 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_5( Obj self, Obj vl, Obj vr, Obj mul, Obj from, O
   
   if (len != LEN_VEC8BIT(vr))
     {
-      vr = ErrorReturnObj( "AddRowVector  : <left> and <right> must be the same length",
-			   0L,0L,"You can return a new vector for <right>");
+      vr = ErrorReturnObj( "AddRowVector: <left> and <right> must be vectors of the same length",
+			   0L,0L,
+                           "you can replace <right> via 'return <right>;'");
       
       /* Now redispatch, because vr could be anything */
       return CALL_3ARGS(AddRowVector, vl, vr, mul);
     }
   while (LT(INTOBJ_INT(len),to))
     {
-      to = ErrorReturnObj( "AddRowVector : <to> (%d)is greater than the length of the vectors (%d)",
+      to = ErrorReturnObj( "AddRowVector: <to> (%d) is greater than the length of the vectors (%d)",
 			   INT_INTOBJ(to), len,
-			   "You can return a new value for <to>");
+			   "you can replace <to> via 'return <to>;'");
     }
   if (LT(to,from))
     return (Obj) 0;
@@ -1616,8 +1703,8 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_5( Obj self, Obj vl, Obj vr, Obj mul, Obj from, O
 	q0 *= p;
       if (q0 > 256)
 	return TRY_NEXT_METHOD;
-      if ( (q0 > q && CALL_1ARGS(IsLockedRepresentationVector, vl) == True) ||
-	   (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vr) == True))
+      if ( (q0 > q && DoFilter(IsLockedRepresentationVector, vl) == True) ||
+	   (q0 > q1 && DoFilter(IsLockedRepresentationVector, vr) == True))
 	return TRY_NEXT_METHOD;
       RewriteVec8Bit(vl,q0);
       RewriteVec8Bit(vr,q0);
@@ -1646,8 +1733,9 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_3( Obj self, Obj vl, Obj vr, Obj mul)
   UInt q;
   if (LEN_VEC8BIT(vl) != LEN_VEC8BIT(vr))
     {
-      vr = ErrorReturnObj( "SUM: <left> and <right> must be the same length",
-			   0L,0L,"You can return a new vector for <right>");
+      vr = ErrorReturnObj( "SUM: <left> and <right> must be vectors of the same length",
+			   0L,0L,
+                           "you can replace <right> via 'return <right>;'");
       
       /* Now redispatch, because vr could be anything */
       return CALL_3ARGS(AddRowVector, vl, vr, mul);
@@ -1707,8 +1795,9 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_2( Obj self, Obj vl, Obj vr)
   UInt q;
   if (LEN_VEC8BIT(vl) != LEN_VEC8BIT(vr))
     {
-      vr = ErrorReturnObj( "SUM: <left> and <right> must be the same length",
-			   0L,0L,"You can return a new vector for <right>");
+      vr = ErrorReturnObj( "SUM: <left> and <right> must be vectors of the same length",
+			   0L,0L,
+                           "you can replace <right> via 'return <right>;'");
       
       /* Now redispatch, because vr could be anything */
       return CALL_2ARGS(AddRowVector, vl, vr);
@@ -1821,8 +1910,9 @@ Obj FuncDIFF_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
   
   if (LEN_VEC8BIT(vl) != LEN_VEC8BIT(vr))
     {
-      vr = ErrorReturnObj( "SUM: <left> and <right> must be the same length",
-			 0L,0L,"You can return a new vector for <right>");
+      vr = ErrorReturnObj( "SUM: <left> and <right> must be vectors of the same length",
+			   0L,0L,
+                           "you can replace <right> via 'return <right>;'");
 
       /* Now redispatch, because vr could be anything */
       return DIFF(vl,vr);
@@ -2464,6 +2554,9 @@ Obj FuncEQ_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr )
 {
   if (FIELD_VEC8BIT(vl) != FIELD_VEC8BIT(vr))
     return EqListList(vl,vr) ? True : False;
+
+  if (LEN_VEC8BIT(vl) != LEN_VEC8BIT(vr))
+    return False;
   
   return (CmpVec8BitVec8Bit(vl,vr) == 0) ? True : False;
 }
@@ -2577,7 +2670,7 @@ Obj FuncELM_VEC8BIT (
     if ( LEN_VEC8BIT(list) < p ) {
         ErrorReturnVoid(
             "List Element: <list>[%d] must have an assigned value",
-            p, 0L, "you can return after assigning a value" );
+            p, 0L, "you can 'return;' after assigning a value" );
         return ELM_LIST( list, p );
     }
     else {
@@ -2778,7 +2871,7 @@ Obj FuncASS_VEC8BIT (
         ErrorReturnVoid(
             "Lists Assignment: <list> must be a mutable list",
             0L, 0L,
-            "you can return and ignore the assignment" );
+            "you can 'return;' and ignore the assignment" );
         return 0;
     }
 
@@ -2793,8 +2886,15 @@ Obj FuncASS_VEC8BIT (
 
     if ( p <= LEN_VEC8BIT(list)+1 ) {
       if ( LEN_VEC8BIT(list)+1 == p ) {
+	if (True == DoFilter(IsLockedRepresentationVector, list))
+	  {
+	    ErrorReturnVoid("List assignment would increase length of locked compressed vector",0,0,
+			    "You can `return;' to ignore the assignment");
+	    return 0;
+	  }
 	ResizeBag( list, SIZE_VEC8BIT(p,elts));
 	SET_LEN_VEC8BIT( list, p);
+	/* 	Pr("Extending 8 bit vector by 1",0,0); */
       }
       if (IS_FFE(elm) &&
 	  chr == CharFFE(elm))
@@ -2803,6 +2903,7 @@ Obj FuncASS_VEC8BIT (
 	  /* We may need to rewrite the vector over a larger field */
 	  if (d % DegreeFFE(elm) !=  0)
 	    {
+	      /* 	      Pr("Rewriting over larger field",0,0);*/
 	      f = CommonFF(FiniteField(chr,d),d,
 			   FLD_FFE(elm),DegreeFFE(elm));
 	      if (f && SIZE_FF(f) <= 256)
@@ -2845,6 +2946,9 @@ Obj FuncASS_VEC8BIT (
     /* We fall through here if the assignment position is so large
        as to leave a hole, or if the object to be assigned is
        not of the right characteristic, or would create too large a field */
+
+    /*     Pr("Random assignment (8 bit)",0,0);*/
+
     PlainVec8Bit(list);
     AssPlistFfe( list, p, elm );
     return 0;
@@ -2875,9 +2979,15 @@ Obj FuncUNB_VEC8BIT (
         ErrorReturnVoid(
             "Lists Assignment: <list> must be a mutable list",
             0L, 0L,
-            "you can return and ignore the assignment" );
+            "you can 'return;' and ignore the assignment" );
         return 0;
     }
+    if (True == DoFilter(IsLockedRepresentationVector, list))
+      {
+	ErrorReturnVoid("Unbind of entry of locked compressed vector is forbidden",0,0,
+			"You can `return;' to ignore the assignment");
+	return 0;
+      }
 
     /* get the position                                                    */
     p = INT_INTOBJ(pos);
@@ -2969,6 +3079,12 @@ Obj FuncAPPEND_VEC8BIT (
     
     lenl = LEN_VEC8BIT(vecl);
     lenr = LEN_VEC8BIT(vecr);
+    if (True == DoFilter(IsLockedRepresentationVector, vecl) && lenr > 0)
+      {
+	ErrorReturnVoid("Append to locked compressed vector is forbidden", 0, 0,
+			"You can `return;' to ignore the operation");
+	return 0;
+      }
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(vecl));
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     ResizeBag( vecl, SIZE_VEC8BIT(lenl+lenr,elts));
@@ -3040,7 +3156,7 @@ Obj FuncPROD_VEC8BIT_MATRIX( Obj self, Obj vec, Obj mat)
   if (LEN_PLIST(mat) != len)
     {
       mat = ErrorReturnObj("<vec> * <mat>: vector and matrix must have same length", 0L, 0L,
-			   "you can return a new matrix to continue");
+			   "you can replace matrix <mat> via 'return <mat>;'");
       return PROD(vec,mat);
     }
   q = FIELD_VEC8BIT(vec);
@@ -3125,7 +3241,7 @@ Obj FuncPLAIN_MAT8BIT( Obj self, Obj mat)
 **
 *F  FuncCONV_MAT8BT( <self>, <list> , <q> )
 **
-**  The library should have taken care of <list> containing only immutable
+**  The library should have taken care of <list> containing only locked
 ** 8 bit vectors, written over the correct field
 */
 
@@ -3140,7 +3256,7 @@ Obj FuncCONV_MAT8BIT( Obj self, Obj list, Obj q )
   for (i = len; i >= 1; i--)
     {
       tmp = ELM_PLIST(list, i);
-      TYPE_DATOBJ(tmp) = TypeVec8BitLocked(INT_INTOBJ(q));
+      TYPE_DATOBJ(tmp) = TypeVec8BitLocked( INT_INTOBJ(q), IS_MUTABLE_OBJ(tmp));
       SET_ELM_MAT8BIT( list, i, tmp);
     }
  SET_LEN_MAT8BIT(list, len);
@@ -3161,7 +3277,10 @@ Obj FuncCONV_MAT8BIT( Obj self, Obj list, Obj q )
 Obj ProdVec8BitMat8Bit( Obj vec, Obj mat )
 {
   UInt q, len, len1, elts;
-  UInt i;
+  UInt i,j;
+  UInt1 byte;
+  UInt1 *bptr;
+  UInt1 y;
   Obj row1;
   Obj res;
   Obj info;
@@ -3182,16 +3301,33 @@ Obj ProdVec8BitMat8Bit( Obj vec, Obj mat )
   elts = ELS_BYTE_FIELDINFO_8BIT(info);
   gettab = GETELT_FIELDINFO_8BIT(info);
   ffefelt = FFE_FELT_FIELDINFO_8BIT(info);
-  
-  for (i = 0; i < len; i++)
+
+  bptr = BYTES_VEC8BIT(vec);
+  for (i = 0; i +elts < len; i += elts, bptr++)
     {
-      x = ffefelt[gettab[BYTES_VEC8BIT(vec)[i/elts] + 256*(i % elts)]];
-      if (VAL_FFE(x) != 0)
-	{
-	  row1 = ELM_MAT8BIT(mat,i+1);  
-	  AddVec8BitVec8BitMultInner( res, res, row1, x, 1, len1);
-	}
+      if (byte = *bptr)
+	for (j = 0; j < elts ; j++)
+	  {
+	    y = gettab[byte + 256*j];
+	    if (y)
+	      {
+		x = ffefelt[y];
+		row1 = ELM_MAT8BIT(mat,i+j+1);  
+		AddVec8BitVec8BitMultInner( res, res, row1, x, 1, len1);
+	      }
+	  }
     }
+  if (byte = *bptr)
+    for (j = 0; i+j < len  ; j++)
+      {
+	y = gettab[byte + 256*j];
+	if (y)
+	  {
+	    x = ffefelt[y];
+	    row1 = ELM_MAT8BIT(mat,i+j+1);  
+	    AddVec8BitVec8BitMultInner( res, res, row1, x, 1, len1);
+	  }
+      }
   return res;
  }
 
@@ -3212,10 +3348,10 @@ Obj FuncPROD_VEC8BIT_MAT8BIT( Obj self, Obj vec, Obj mat)
   len = LEN_VEC8BIT(vec);
   if (len != LEN_MAT8BIT(mat))
     {
-      mat = ErrorReturnObj("<vec> * <mat> : the lengths of <vec> and <mat> must be the same, not %d and %d",
+      mat = ErrorReturnObj("<vec> * <mat>: the lengths of <vec> and <mat> must be the same, not %d and %d",
 			   len,
 			   LEN_MAT8BIT(mat),
-			   "you can return a new matrix to continue");
+			   "you can replace matrix <mat> via 'return <mat>;'");
       return PROD(vec,mat);
     }
     
@@ -3305,10 +3441,10 @@ Obj FuncPROD_MAT8BIT_VEC8BIT( Obj self, Obj mat, Obj vec)
   row = ELM_MAT8BIT(mat, 1);
   if (len != LEN_VEC8BIT(row))
     {
-      mat = ErrorReturnObj("<mat> * <vec> : the lengths of <vec> and <mat>[1] must be the same, not %d and %d",
+      mat = ErrorReturnObj("<mat> * <vec>: the lengths of <vec> and <mat>[1] must be the same, not %d and %d",
 			   len,
 			   LEN_MAT8BIT(row),
-			   "you can return a new matrix to continue");
+			   "you can replace matrix <mat> via 'return <mat>;'");
       return PROD(mat,vec);
     }
     
@@ -3359,7 +3495,7 @@ Obj ProdMat8BitMat8Bit( Obj matl, Obj matr)
   prod = NewBag(T_POSOBJ, sizeof(Obj)*(len+2));
   SET_LEN_MAT8BIT(prod,len);
   TYPE_POSOBJ(prod) = TypeMat8Bit(q, IS_MUTABLE_OBJ(matl) || IS_MUTABLE_OBJ(matr));
-  locked_type  = TypeVec8BitLocked(q);
+  locked_type  = TypeVec8BitLocked(q, IS_MUTABLE_OBJ(ELM_MAT8BIT(matl,1)) || IS_MUTABLE_OBJ(ELM_MAT8BIT(matr,1)));
   for (i = 1; i <= len; i++)
     {
       row = ProdVec8BitMat8Bit(ELM_MAT8BIT(matl,i),matr);
@@ -3394,8 +3530,8 @@ Obj FuncPROD_MAT8BIT_MAT8BIT( Obj self, Obj matl, Obj matr)
 
   if (LEN_MAT8BIT(matr) != LEN_VEC8BIT(rowl))
     {
-      matr = ErrorReturnObj("<mat> * <mat>: matrix shapes must be compatible", 0L, 0L,
-			    "You may return a new right matrix to continue");
+      matr = ErrorReturnObj("<matl> * <matr>: matrix shapes must be compatible", 0L, 0L,
+			    "you may replace <matr> via 'return <matr>;'");
       return PROD(matl, matr);
     }
 
@@ -3426,6 +3562,7 @@ Obj InverseMat8Bit( Obj mat)
   UInt1 *feltffe;
   UInt pos;
   UInt1 x;
+  UInt o;
   Obj xi;
   Obj xn;
   Obj type;
@@ -3447,7 +3584,7 @@ Obj InverseMat8Bit( Obj mat)
 	return Fail;
       xi = INV(ffefelt[x]);
       row1 = NewBag(T_DATOBJ, SIZE_VEC8BIT(1, elts));
-      TYPE_DATOBJ(row1) = TypeVec8BitLocked(q);
+      TYPE_DATOBJ(row1) = TypeVec8BitLocked(q, 1);
       settab = SETELT_FIELDINFO_8BIT(info);
       feltffe = FELT_FFE_FIELDINFO_8BIT(info);
       BYTES_VEC8BIT(row1)[0] = settab[256*elts*feltffe[VAL_FFE(xi)]];
@@ -3465,6 +3602,7 @@ Obj InverseMat8Bit( Obj mat)
   /* set up cmat and inv. Note that the row numbering is offset */
   cmat = NEW_PLIST(T_PLIST, len); 
   zero = ZeroVec8Bit(q, len, 1);
+  o = FELT_FFE_FIELDINFO_8BIT(info)[1];
   for (i = 1; i <= len; i++)
     {
       row = ELM_MAT8BIT(mat, i);
@@ -3476,9 +3614,8 @@ Obj InverseMat8Bit( Obj mat)
 
       /* we can't retain this pointer, because of garbage collections */
       settab = SETELT_FIELDINFO_8BIT(info);
-      /* we know we are replacing a zero by a one, which lets us
-	 sinplify this line a bit */
-      *ptr = settab[256*((i-1)%elts + elts)];
+      /* we know we are replacing a zero  */
+      *ptr = settab[256*((i-1)%elts + o*elts)];
       SET_ELM_PLIST( inv, i+1, row);
       CHANGED_BAG(inv);
     }
@@ -3514,7 +3651,7 @@ Obj InverseMat8Bit( Obj mat)
 	  SET_ELM_PLIST(inv, j+1, ELM_PLIST(inv, i+1));
 	  SET_ELM_PLIST(inv,i+1, row1);
 	}
-      if (x != 1)
+      if (x != o)
 	{
 	  xi = INV(ffefelt[x]);
 	  MultVec8BitFFEInner( row, row, xi, i, len);
@@ -3541,7 +3678,7 @@ Obj InverseMat8Bit( Obj mat)
 
   /* Now clean up inv and return it */
   SET_ELM_PLIST(inv,1,INTOBJ_INT(len));
-  type = TypeVec8BitLocked(q);
+  type = TypeVec8BitLocked(q, IS_MUTABLE_OBJ(ELM_MAT8BIT(mat,1)));
   for (i =2 ; i <= len+1; i++)
     {
       row = ELM_PLIST(inv, i);
@@ -3566,7 +3703,7 @@ Obj FuncINV_MAT8BIT( Obj self, Obj mat)
       mat = ErrorReturnObj("Inverse: matrix must be square, not %d by %d",
 			   LEN_MAT8BIT(mat),
 			   LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)),
-			   "You can return a square matrix to continue");
+			   "you can replace matrix <inv> via 'return <inv>;'");
       return INV(mat);
     }
   
@@ -3593,8 +3730,6 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
   len = LEN_MAT8BIT(mat);
   if (!IS_VEC8BIT_REP(obj) && !IS_GF2VEC_REP(obj))
     goto cantdo;
-  if (IS_MUTABLE_OBJ(obj))
-    goto cantdo;
 
   if (pos > len + 1)
     goto cantdo;
@@ -3609,7 +3744,7 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
       else
 	{
 	  TYPE_POSOBJ(mat) = IS_MUTABLE_OBJ(mat) ? TYPE_LIST_GF2MAT : TYPE_LIST_GF2MAT_IMM;
-	  TYPE_DATOBJ(obj) = TYPE_LIST_GF2VEC_IMM_LOCKED;
+	  TYPE_DATOBJ(obj) = IS_MUTABLE_OBJ(obj) ? TYPE_LIST_GF2VEC_LOCKED : TYPE_LIST_GF2VEC_IMM_LOCKED;
 	  SET_ELM_GF2MAT(mat, 1, obj);
 	  return (Obj) 0;
 	}
@@ -3662,7 +3797,7 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
       ResizeBag(mat, sizeof(Obj)*(pos+2));
       SET_LEN_MAT8BIT(mat, pos);
     }
-  TYPE_DATOBJ(obj) = TypeVec8BitLocked(q);
+  TYPE_DATOBJ(obj) = TypeVec8BitLocked(q, IS_MUTABLE_OBJ(obj));
   SET_ELM_MAT8BIT(mat, pos, obj);
   return (Obj) 0;
   
@@ -3693,7 +3828,7 @@ Obj SumMat8BitMat8Bit( Obj ml, Obj mr)
   sum = NewBag(T_POSOBJ, sizeof(Obj)*(len+2));
   TYPE_POSOBJ(sum) = TypeMat8Bit( q, IS_MUTABLE_OBJ(ml) || IS_MUTABLE_OBJ(mr));
   SET_LEN_MAT8BIT(sum, len);
-  type = TypeVec8BitLocked(q);
+  type = TypeVec8BitLocked(q, IS_MUTABLE_OBJ(ELM_MAT8BIT(ml,1)) || IS_MUTABLE_OBJ(ELM_MAT8BIT(mr,1)));
   for (i = 1; i <= len; i++)
     {
       rowl = ELM_MAT8BIT(ml, i);
@@ -3720,8 +3855,8 @@ Obj FuncSUM_MAT8BIT_MAT8BIT( Obj self, Obj ml, Obj mr)
   len = LEN_MAT8BIT(ml);
   if (len != LEN_MAT8BIT(mr))
     {
-      mr = ErrorReturnObj("<mat> + <mat>: matrices must be the same shape", 0L, 0L,
-			  "You may return a new right matrix to continue");
+      mr = ErrorReturnObj("<matl> + <matr>: matrices must be the same shape", 0L, 0L,
+			  "you may replace <matr> via 'return <matr>;'");
       return SUM(ml,mr);
     }
   rowl = ELM_MAT8BIT(ml, 1);
@@ -3729,8 +3864,8 @@ Obj FuncSUM_MAT8BIT_MAT8BIT( Obj self, Obj ml, Obj mr)
   len1 = LEN_VEC8BIT(rowl);
   if (len1 != LEN_VEC8BIT(rowr))
     {
-      mr = ErrorReturnObj("<mat> + <mat>: matrices must be the same shape", 0L, 0L,
-			  "You may return a new right matrix to continue");
+      mr = ErrorReturnObj("<matl> + <matr>: matrices must be the same shape", 0L, 0L,
+			  "you may replace <matr> via 'return <matr>;'");
       return SUM(ml, mr);
     }
 
@@ -3766,7 +3901,7 @@ Obj DiffMat8BitMat8Bit( Obj ml, Obj mr)
   diff = NewBag(T_POSOBJ, sizeof(Obj)*(len+2));
   TYPE_POSOBJ(diff) = TypeMat8Bit( q, IS_MUTABLE_OBJ(ml) || IS_MUTABLE_OBJ(mr));
   SET_LEN_MAT8BIT(diff, len);
-  type = TypeVec8BitLocked(q);
+  type = TypeVec8BitLocked(q,IS_MUTABLE_OBJ(ELM_MAT8BIT(ml,1)) || IS_MUTABLE_OBJ(ELM_MAT8BIT(mr,1)) );
   info = GetFieldInfo8Bit(q);
   f = FiniteField( P_FIELDINFO_8BIT(info), D_FIELDINFO_8BIT(info));
   minusOne = NEG_FFV( 1,SUCC_FF(f) );
@@ -3798,8 +3933,8 @@ Obj FuncDIFF_MAT8BIT_MAT8BIT( Obj self, Obj ml, Obj mr)
   len = LEN_MAT8BIT(ml);
   if (len != LEN_MAT8BIT(mr))
     {
-      mr = ErrorReturnObj("<mat> - <mat>: matrices must be the same shape", 0L, 0L,
-			  "You may return a new right matrix to continue");
+      mr = ErrorReturnObj("<matl> - <matr>: matrices must be the same shape", 0L, 0L,
+			  "you may replace <matr> via 'return <matr>;'");
       return DIFF(ml,mr);
     }
   rowl = ELM_MAT8BIT(ml, 1);
@@ -3807,8 +3942,8 @@ Obj FuncDIFF_MAT8BIT_MAT8BIT( Obj self, Obj ml, Obj mr)
   len1 = LEN_VEC8BIT(rowl);
   if (len1 != LEN_VEC8BIT(rowr))
     {
-      mr = ErrorReturnObj("<mat> - <mat>: matrices must be the same shape", 0L, 0L,
-			  "You may return a new right matrix to continue");
+      mr = ErrorReturnObj("<matl> - <matr>: matrices must be the same shape", 0L, 0L,
+			  "you may replace <matr> via 'return <matr>;'");
       return DIFF(ml, mr);
     }
 
@@ -3891,6 +4026,14 @@ void ResizeVec8Bit( Obj vec, UInt newlen, UInt knownclean )
   if (len == newlen)
     return;
 
+  if (True == DoFilter(IsLockedRepresentationVector, vec ))
+    {
+      ErrorReturnVoid("Resize of locked compressed vector is forbidden", 0, 0,
+		      "You can `return;' to ignore the operation");
+      return;
+    }
+
+  
   if (newlen == 0)
     {
       RetypeBag(vec, T_PLIST_EMPTY);
@@ -4175,8 +4318,8 @@ Obj FuncSHIFT_VEC8BIT_LEFT( Obj self, Obj vec, Obj amount)
   assert(IS_MUTABLE_OBJ(vec));
   while (INT_INTOBJ(amount) < 0)
     {
-      amount = ErrorReturnObj("SHIFT_VEC8BIT_LEFT: <amount> must be non-negative, not %d",INT_INTOBJ(amount),0,
-			      "You can return a non-negative amount to continue");
+      amount = ErrorReturnObj("SHIFT_VEC8BIT_LEFT: <amount> must be a non-negative integer, not %d",INT_INTOBJ(amount),0,
+			      "you can replace <amount> via 'return <amount>;'");
     }
   ShiftLeftVec8Bit( vec, INT_INTOBJ(amount));
   return (Obj) 0;
@@ -4193,8 +4336,8 @@ Obj FuncSHIFT_VEC8BIT_RIGHT( Obj self, Obj vec, Obj amount, Obj zero)
   assert(IS_MUTABLE_OBJ(vec));
   while (INT_INTOBJ(amount) < 0)
     {
-      amount = ErrorReturnObj("SHIFT_VEC8BIT_RIGHT: <amount> must be non-negative, not %d",INT_INTOBJ(amount),0,
-			      "You can return a non-negative amount to continue");
+      amount = ErrorReturnObj("SHIFT_VEC8BIT_RIGHT: <amount> must be a non-negative integer, not %d",INT_INTOBJ(amount),0,
+			      "you can replace <amount> via 'return <amount>;'");
     }
   ShiftRightVec8Bit( vec, INT_INTOBJ(amount));
   return (Obj) 0;
@@ -4209,11 +4352,12 @@ Obj FuncSHIFT_VEC8BIT_RIGHT( Obj self, Obj vec, Obj amount, Obj zero)
 Obj FuncRESIZE_VEC8BIT( Obj self, Obj vec, Obj newsize )
 {
   if (!IS_MUTABLE_OBJ(vec))
-    ErrorReturnVoid("RESIZE_VEC8BIT: vector must be mutable", 0, 0, "");
+    ErrorReturnVoid("RESIZE_VEC8BIT: vector must be mutable", 0, 0, 
+                    "you can 'return;'");
   while (INT_INTOBJ(newsize) < 0)
     {
-      newsize = ErrorReturnObj("SHIFT_VEC8BIT_RIGHT: <amount> must be non-negative, not %d",INT_INTOBJ(newsize),0,
-			      "You can return a non-negative amount to continue");
+      newsize = ErrorReturnObj("SHIFT_VEC8BIT_RIGHT: <amount> must be a non-negative integer, not %d",INT_INTOBJ(newsize),0,
+			       "you can replace <amount> via 'return <amount>;'");
     }
   ResizeVec8Bit( vec, INT_INTOBJ(newsize), 0);
   return (Obj) 0;
@@ -4436,13 +4580,15 @@ Obj FuncPROD_COEFFS_VEC8BIT( Obj self, Obj vl, Obj ll, Obj vr, Obj lr  )
     }
   while (INT_INTOBJ(ll) > LEN_VEC8BIT(vl))
     {
-      ll = ErrorReturnObj("ProdCoeffs: given length of left argt (%d) is longer than the argt (%d)",
-			  INT_INTOBJ(ll), LEN_VEC8BIT(vl), "You can return a new length");
+      ll = ErrorReturnObj("ProdCoeffs: given length <ll> of left argt (%d)\n is longer than the argt (%d)",
+			  INT_INTOBJ(ll), LEN_VEC8BIT(vl), 
+                          "you can replace <ll> via 'return <ll>;'");
     }
   while (INT_INTOBJ(lr) > LEN_VEC8BIT(vr))
     {
-      lr = ErrorReturnObj("ProdCoeffs: given length of right argt (%d) is longer than the argt (%d)",
-			  INT_INTOBJ(lr), LEN_VEC8BIT(vr), "You can return a new length");
+      lr = ErrorReturnObj("ProdCoeffs: given length <lr> of right argt (%d)\n is longer than the argt (%d)",
+			  INT_INTOBJ(lr), LEN_VEC8BIT(vr), 
+                          "you can replace <lr> via 'return <lr>;'");
     }
   info = GetFieldInfo8Bit(q);
   elts = ELS_BYTE_FIELDINFO_8BIT(info);
@@ -4493,7 +4639,8 @@ Obj MakeShiftedVecs( Obj v, UInt len)
   ResizeVec8Bit(vn, len, 0);
   len1 = (len == 0) ? 0 : RightMostNonZeroVec8Bit(vn);
   if (len1 == 0)
-    ErrorReturnVoid("Zero coefficient vector for reduction",0,0,"");
+    ErrorReturnVoid("Zero coefficient vector for reduction",0,0,
+                    "you can 'return;'");
   if (len1 != len)
     {
       ResizeVec8Bit(vn, len1, 1);
@@ -4622,9 +4769,9 @@ Obj FuncMAKE_SHIFTED_COEFFS_VEC8BIT( Obj self, Obj vr, Obj lr)
   while (INT_INTOBJ(lr) > LEN_VEC8BIT(vr))
     {
       lr = ErrorReturnObj(
-  "ReduceCoeffs: given length of right argt (%d) is longer than the argt (%d)",
+  "ReduceCoeffs: given length <lr> of right argt (%d)\n is longer than the argt (%d)",
 			  INT_INTOBJ(lr), LEN_VEC8BIT(vr), 
-                                "You can return a new length");
+                                "you can replace <lr> via 'return <lr>;'");
     }
   return MakeShiftedVecs(vr, INT_INTOBJ(lr));
 }
@@ -4640,9 +4787,9 @@ Obj FuncREDUCE_COEFFS_VEC8BIT( Obj self, Obj vl, Obj ll, Obj vrshifted)
   while (INT_INTOBJ(ll) > LEN_VEC8BIT(vl))
     {
       ll = ErrorReturnObj(
-   "ReduceCoeffs: given length of left argt (%d) is longer than the argt (%d)",
+   "ReduceCoeffs: given length <ll> of left argt (%d)\n is longer than the argt (%d)",
 			  INT_INTOBJ(ll), LEN_VEC8BIT(vl), 
-			  "You can return a new length");
+			  "you can replace <ll> via 'return <ll>;'");
     }
   ResizeVec8Bit(vl, INT_INTOBJ(ll), 0);
   ReduceCoeffsVec8Bit( vl,  vrshifted);
@@ -4650,6 +4797,505 @@ Obj FuncREDUCE_COEFFS_VEC8BIT( Obj self, Obj vl, Obj ll, Obj vrshifted)
   ResizeVec8Bit(vl, last, 1);
   return INTOBJ_INT(last);
 }
+
+/****************************************************************************
+**
+*F  Obj SemiechelonListVec8Bits( <mat>, <transformationneeded> )
+**
+**
+** This is essentially a method for SemiEchelonMat or SemiEchelonMatTransformation
+**
+** <mat> is assumed by this point to be a list of mutable 8 bit vectors over
+** the same field, which can be overwritten if necessary
+*/
+
+static UInt RNheads = 0, RNvectors = 0, RNcoeffs = 0, RNrelns = 0;
+
+
+Obj SemiEchelonListVec8Bits( Obj mat, UInt TransformationsNeeded )
+{
+  UInt nrows, ncols;
+  UInt i,j,h;
+  UInt block;
+  Obj heads,vectors, coeffs, relns;
+  UInt nvecs, nrels;
+  Obj coeffrow;
+  Obj row;
+  Obj res;
+  UInt q, elts;
+  Obj info;
+  UInt1 *settab, *convtab, *gettab;
+  Obj *convtab1;
+  UInt1 zero, one;
+  UInt1 x;
+  FF f;
+  FFV *sf;
+  UInt1 *rowp;
+  UInt1 byte;
+  Obj y;
+ 
+  nrows = LEN_PLIST(mat);
+  ncols = LEN_VEC8BIT(ELM_PLIST(mat,1));
+
+  /* Find the field info */
+  q = FIELD_VEC8BIT(ELM_PLIST(mat, 1));
+  info = GetFieldInfo8Bit(q);
+  elts = ELS_BYTE_FIELDINFO_8BIT(info);
+  f = FLD_FFE( FFE_FELT_FIELDINFO_8BIT(info)[0]);
+
+  /* Get the Felt numbers for zero and one */
+  convtab = FELT_FFE_FIELDINFO_8BIT(info);
+  zero = convtab[0];
+  one = convtab[1];
+
+  /* Set up the lists for the results */
+  heads = NEW_PLIST(T_PLIST_CYC, ncols);
+  SET_LEN_PLIST(heads, ncols);
+  vectors = NEW_PLIST(T_PLIST_TAB_RECT, nrows);
+  SET_LEN_PLIST(vectors, 0);
+  nvecs = 0;
+  if (TransformationsNeeded)
+    {
+      coeffs = NEW_PLIST(T_PLIST_TAB_RECT, nrows);
+      SET_LEN_PLIST(coeffs, 0);
+      relns  = NEW_PLIST(T_PLIST_TAB_RECT, nrows);
+      SET_LEN_PLIST(relns, 0);
+      nrels = 0;
+    }
+  for (i = 1; i <= ncols; i++)
+    SET_ELM_PLIST(heads, i, INTOBJ_INT(0));
+
+  /* Main loop starts here */
+  for (i = 1; i <= nrows; i++)
+    {
+      row = ELM_PLIST(mat, i);
+      if (TransformationsNeeded)
+	{
+	    coeffrow = NewBag(T_DATOBJ, SIZE_VEC8BIT(nrows,elts));
+	    SET_LEN_VEC8BIT(coeffrow, nrows);
+	    TYPE_DATOBJ(coeffrow) =
+	      TypeVec8Bit(q, 1);
+	    SET_FIELD_VEC8BIT(coeffrow, q);
+	    CHANGED_BAG(coeffrow);
+	    
+	    /* No garbage collection risk from here */
+	    settab = SETELT_FIELDINFO_8BIT(info);
+	    BYTES_VEC8BIT(coeffrow)[(i-1)/elts] = settab[256*((i-1) % elts + elts*one)];
+	}
+      sf = SUCC_FF(f);
+      /* No garbage collection risk from here */
+      gettab = GETELT_FIELDINFO_8BIT(info);
+      convtab1 = FFE_FELT_FIELDINFO_8BIT(info);
+      
+      /* Clear out the current row */
+      for (j = 1; j <= ncols; j++)
+	{
+	  h = INT_INTOBJ(ELM_PLIST(heads, j));
+	  if (h != 0)
+	    {
+	      byte = BYTES_VEC8BIT(row)[(j-1)/elts];
+	      if (byte && zero != (x = gettab[ byte+256*((j-1) % elts)]))
+		{
+		  y = AINV(convtab1[x]);
+		  AddVec8BitVec8BitMultInner(row, row, ELM_PLIST(vectors,h),y,1,ncols);
+		  if (TransformationsNeeded)
+		    AddVec8BitVec8BitMultInner(coeffrow, coeffrow, ELM_PLIST(coeffs,h),y,1,nrows);
+		}
+	    }
+	}
+      j = 1;
+      rowp = BYTES_VEC8BIT(row);
+      while (j <= ncols && !*rowp )
+	{
+	  j += elts;
+	  rowp++;
+	}
+      while ( j <= ncols && (zero == (x = gettab[ *rowp + 256*((j-1) % elts)])))
+	j++;
+
+      if (j <= ncols)
+	{
+	  y = INV(convtab1[x]);
+	  MultVec8BitFFEInner(row,row,y,1,ncols);
+	  SET_ELM_PLIST(vectors, ++nvecs, row);
+	  SET_LEN_PLIST(vectors, nvecs);
+	  SET_ELM_PLIST( heads, j, INTOBJ_INT(nvecs));
+	  if (TransformationsNeeded)
+	    {
+	      MultVec8BitFFEInner(coeffrow,coeffrow,y,1,nrows);
+	      SET_ELM_PLIST(coeffs, nvecs, coeffrow);
+	      SET_LEN_PLIST(coeffs, nvecs);
+	    }
+	  /* garbage collection OK again after here */
+	}
+      else if (TransformationsNeeded)
+	{
+	  SET_ELM_PLIST(relns, ++nrels, coeffrow);
+	  SET_LEN_PLIST(relns, nrels);
+	}
+    }
+  if (RNheads == 0)
+    {
+      RNheads = RNamName("heads");
+      RNvectors = RNamName("vectors");
+    }
+  res = NEW_PREC( TransformationsNeeded ? 4 : 2);
+  SET_RNAM_PREC( res, 1, RNheads);
+  SET_ELM_PREC(  res, 1, heads);
+  SET_RNAM_PREC( res, 2, RNvectors);
+  SET_ELM_PREC(  res, 2, vectors);
+  if (LEN_PLIST(vectors) == 0)
+    RetypeBag(vectors, T_PLIST_EMPTY);
+  if (TransformationsNeeded)
+    {
+      if (RNcoeffs == 0)
+	{
+	  RNcoeffs = RNamName("coeffs");
+	  RNrelns = RNamName("relations");
+	}
+      SET_RNAM_PREC( res, 3, RNcoeffs);
+      SET_ELM_PREC ( res, 3, coeffs);
+      if (LEN_PLIST(coeffs) == 0)
+	RetypeBag(coeffs, T_PLIST_EMPTY);
+      SET_RNAM_PREC( res, 4, RNrelns);
+      SET_ELM_PREC ( res, 4, relns);
+      if (LEN_PLIST(relns) == 0)
+	RetypeBag(relns, T_PLIST_EMPTY);
+    }
+  return res;
+}
+
+
+/****************************************************************************
+**
+*F  UInt TriangulizeListVec8Bits( <mat>, <clearup>, <deterp> ) -- returns the rank
+**
+*/
+
+UInt TriangulizeListVec8Bits( Obj mat, UInt clearup, Obj *deterp)
+{
+  UInt nrows;
+  UInt ncols;
+  UInt workcol;
+  UInt workrow;
+  UInt rank;
+  Obj row, row2;
+  UInt byte;
+  UInt j;
+  Obj info;
+  UInt elts;
+  UInt1 x;
+  UInt1 *gettab, *getcol;
+  Obj deter;
+  UInt sign;
+  Obj *convtab;
+  Obj y;
+  UInt1 x2;
+
+  nrows = LEN_PLIST( mat );
+  row = ELM_PLIST(mat, 1);
+  ncols = LEN_VEC8BIT( row);
+  rank = 0;
+  info = GetFieldInfo8Bit(FIELD_VEC8BIT(row));
+  elts = ELS_BYTE_FIELDINFO_8BIT(info);
+
+  /* Nothing here can cause a garbage collection */
+
+  gettab = GETELT_FIELDINFO_8BIT(info);
+  convtab = FFE_FELT_FIELDINFO_8BIT(info);
+
+  if (deterp != (Obj *) 0)
+    {
+      deter = ONE(convtab[1]);
+      sign = 1;
+    }
+  for (workcol = 1; workcol <= ncols; workcol++)
+    {
+      byte = (workcol-1)/elts;
+      getcol = gettab + 256*((workcol - 1) % elts);
+      
+      for (workrow = rank+1; workrow <= nrows; workrow ++)
+	{
+	  row = ELM_PLIST( mat, workrow);
+	  x = getcol[BYTES_VEC8BIT(row)[byte]];
+	  if (x)
+	    break;
+	}
+      if (workrow <= nrows)
+	{
+	  rank++;
+	  y = convtab[x];
+	  MultVec8BitFFEInner(row, row, INV(y), workcol, ncols);
+	  if (deterp)
+	    deter = PROD(deter, y);
+	  
+	  if (workrow != rank)
+	    {
+	      if (deterp)
+		sign = -sign;
+	      SET_ELM_PLIST(mat, workrow, ELM_PLIST(mat, rank));
+	      SET_ELM_PLIST(mat, rank, row);
+	    }
+	  if (clearup)
+	    for (j = 1; j < rank; j ++)
+	      {
+		row2 = ELM_PLIST(mat, j);
+		if (x2 =  getcol[BYTES_VEC8BIT(row2)[byte]])
+		  AddVec8BitVec8BitMultInner(row2,row2,row,AINV(convtab[x2]),workcol,ncols);
+	      }
+	  for (j = workrow+1; j <= nrows; j++)
+	    {
+	      row2 = ELM_PLIST(mat, j);
+	      if (x2 =  getcol[BYTES_VEC8BIT(row2)[byte]])
+		AddVec8BitVec8BitMultInner(row2,row2,row,AINV(convtab[x2]),workcol,ncols);
+	    }
+	}
+      
+    }
+  if (deterp)
+    {
+      if (rank < nrows)
+	deter = ZERO(deter);
+      else if (sign == -1)
+	deter = AINV(deter);
+      *deterp = deter;
+    }
+  return rank;
+}
+
+
+/****************************************************************************
+**
+*F  FuncSEMIECHELON_LIST_VEC8BITS( <self>, <mat> )
+**
+**  Method for SemiEchelonMat for plain lists of 8 bit vectors
+**
+** Method selection can guarantee us a plain list of vectors in same char
+*/
+
+Obj FuncSEMIECHELON_LIST_VEC8BITS( Obj self, Obj mat )
+{
+  UInt i,len;
+  Obj row;
+  UInt q;
+  /* check argts */
+  len = LEN_PLIST(mat);
+  if (!len)
+    return TRY_NEXT_METHOD;
+  row = ELM_PLIST(mat,1);
+  if (!IS_VEC8BIT_REP(row))
+    return TRY_NEXT_METHOD;
+  q = FIELD_VEC8BIT(row);
+  for (i = 2; i <= len; i++)
+    {
+      row = ELM_PLIST(mat, i);
+      if (!IS_VEC8BIT_REP(row) || FIELD_VEC8BIT(row) != q)
+      {
+	return TRY_NEXT_METHOD;
+      }
+    }
+  return SemiEchelonListVec8Bits( mat, 0);
+}
+
+/****************************************************************************
+**
+*F  FuncSEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS( <self>, <mat> )
+**
+**  Method for SemiEchelonMatTransformations for plain lists of 8 bit vectors
+**
+** Method selection can guarantee us a plain list of vectors in same characteristic
+*/
+
+Obj FuncSEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS( Obj self, Obj mat )
+{
+  UInt i,len;
+  Obj row;
+  UInt q;
+  /* check argts */
+  len = LEN_PLIST(mat);
+  if (!len)
+    return TRY_NEXT_METHOD;
+  row = ELM_PLIST(mat,1);
+  if (!IS_VEC8BIT_REP(row))
+    return TRY_NEXT_METHOD;
+  q = FIELD_VEC8BIT(row);
+  for (i = 2; i <= len; i++)
+    {
+      row = ELM_PLIST(mat, i);
+      if (!IS_VEC8BIT_REP(row) || FIELD_VEC8BIT(row) != q)
+      {
+	return TRY_NEXT_METHOD;
+      }
+    }
+  return SemiEchelonListVec8Bits( mat, 1);
+}
+
+
+/****************************************************************************
+**
+*F  FuncTRIANGULIZE_LIST_VEC8BITS( <self>, <mat> )
+**
+**  Method for TriangulizeMat for plain lists of 8 bit vectors
+**
+** Method selection can guarantee us a plain list of vectors in same characteristic
+*/
+
+Obj FuncTRIANGULIZE_LIST_VEC8BITS( Obj self, Obj mat )
+{
+  UInt i,len;
+  Obj row;
+  UInt q;
+  /* check argts */
+  len = LEN_PLIST(mat);
+  if (!len)
+    return TRY_NEXT_METHOD;
+  row = ELM_PLIST(mat,1);
+  if (!IS_VEC8BIT_REP(row))
+    return TRY_NEXT_METHOD;
+  q = FIELD_VEC8BIT(row);
+  for (i = 2; i <= len; i++)
+    {
+      row = ELM_PLIST(mat, i);
+      if (!IS_VEC8BIT_REP(row) || FIELD_VEC8BIT(row) != q)
+      {
+	return TRY_NEXT_METHOD;
+      }
+    }
+  TriangulizeListVec8Bits( mat, 1, (Obj *) 0);
+  return (Obj) 0;
+}
+
+/****************************************************************************
+**
+*F  FuncRANK_LIST_VEC8BITS( <self>, <mat> )
+**
+**  Method for RankMatDestructive for plain lists of 8 bit vectors
+**
+** Method selection can guarantee us a plain list of vectors in same characteristic
+*/
+
+Obj FuncRANK_LIST_VEC8BITS( Obj self, Obj mat )
+{
+  UInt i,len;
+  Obj row;
+  UInt q;
+  /* check argts */
+  len = LEN_PLIST(mat);
+  if (!len)
+    return TRY_NEXT_METHOD;
+  row = ELM_PLIST(mat,1);
+  if (!IS_VEC8BIT_REP(row))
+    return TRY_NEXT_METHOD;
+  q = FIELD_VEC8BIT(row);
+  for (i = 2; i <= len; i++)
+    {
+      row = ELM_PLIST(mat, i);
+      if (!IS_VEC8BIT_REP(row) || FIELD_VEC8BIT(row) != q)
+      {
+	return TRY_NEXT_METHOD;
+      }
+    }
+  return INTOBJ_INT(TriangulizeListVec8Bits( mat, 0, (Obj *) 0));
+}
+
+/****************************************************************************
+**
+*F  FuncDETERMINANT_LIST_VEC8BITS( <self>, <mat> )
+**
+**  Method for DeterminantMatDestructive for plain lists of 8 bit vectors
+**
+** Method selection can guarantee us a plain list of vectors in same characteristic
+*/
+
+Obj FuncDETERMINANT_LIST_VEC8BITS( Obj self, Obj mat )
+{
+  UInt i,len;
+  Obj row;
+  UInt q;
+  Obj det;
+  /* check argts */
+  len = LEN_PLIST(mat);
+  if (!len)
+    return TRY_NEXT_METHOD;
+  row = ELM_PLIST(mat,1);
+  if (!IS_VEC8BIT_REP(row))
+    return TRY_NEXT_METHOD;
+  q = FIELD_VEC8BIT(row);
+  for (i = 2; i <= len; i++)
+    {
+      row = ELM_PLIST(mat, i);
+      if (!IS_VEC8BIT_REP(row) || FIELD_VEC8BIT(row) != q)
+      {
+	return TRY_NEXT_METHOD;
+      }
+    }
+  TriangulizeListVec8Bits( mat, 0, &det);
+  return det;
+}
+
+
+
+
+/****************************************************************************
+**
+*F  Cmp_MAT8BIT_MAT8BIT( <ml>, <mr> )   compare matrices
+**
+**  Assumes the matrices are over compatible fields
+*/
+
+Int Cmp_MAT8BIT_MAT8BIT( Obj ml, Obj mr)
+{
+  UInt l1, l2,l, i;
+  Int c;
+  l1 = LEN_MAT8BIT(ml);
+  l2 = LEN_MAT8BIT(mr);
+  l = (l1 < l2) ? l1 : l2;
+  for (i = 1; i <= l; i++)
+    {
+      c = CmpVec8BitVec8Bit(ELM_MAT8BIT(ml,i), ELM_MAT8BIT(mr,i));
+      if (c != 0)
+	return c;
+    }
+  if (l1 < l2)
+    return -1;
+  if (l1 > l2)
+    return 1;
+  return 0;
+  
+}
+
+/****************************************************************************
+**
+*F  FuncEQ_MAT8BIT_MAT8BIT( <ml>, <mr> )   compare matrices
+*/
+
+Obj FuncEQ_MAT8BIT_MAT8BIT( Obj self, Obj ml, Obj mr)
+{
+  if (LEN_MAT8BIT(ml) != LEN_MAT8BIT(mr))
+    return False;
+  if (LEN_MAT8BIT(ml) == 0)
+    return True;
+  if (FIELD_VEC8BIT(ELM_MAT8BIT(ml,1)) != FIELD_VEC8BIT(ELM_MAT8BIT(mr,1)))
+    return EqListList(ml,mr) ? True : False;
+  return (0 == Cmp_MAT8BIT_MAT8BIT(ml,mr)) ? True : False;
+}
+
+/****************************************************************************
+**
+*F  FuncLT_MAT8BIT_MAT8BIT( <ml>, <mr> )   compare matrices
+*/
+
+Obj FuncLT_MAT8BIT_MAT8BIT( Obj self, Obj ml, Obj mr)
+{
+  if (LEN_MAT8BIT(ml) == 0)
+    return (LEN_MAT8BIT(mr) != 0) ? True : False;
+  if (LEN_MAT8BIT(mr) == 0)
+    return False;
+  if (FIELD_VEC8BIT(ELM_MAT8BIT(ml,1)) != FIELD_VEC8BIT(ELM_MAT8BIT(mr,1)))
+    return LtListList(ml,mr) ? True : False;
+  return (Cmp_MAT8BIT_MAT8BIT(ml,mr) < 0) ? True : False;
+}
+
 
 
 /****************************************************************************
@@ -4818,6 +5464,27 @@ static StructGVarFunc GVarFuncs [] = {
     {"COSET_LEADERS_INNER_8BITS", 5, " veclis, weight, tofind, leaders, felts",
        FuncCOSET_LEADERS_INNER_8BITS, "src/vec8bit.c:COSET_LEADERS_INNER_8BITS" },
     
+    { "SEMIECHELON_LIST_VEC8BITS", 1, "mat",
+      FuncSEMIECHELON_LIST_VEC8BITS, "sec/vec8bit.c:SEMIECHELON_LIST_VEC8BITS" },
+
+    { "SEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS", 1, "mat",
+      FuncSEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS, "sec/vec8bit.c:SEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS" },
+
+    { "TRIANGULIZE_LIST_VEC8BITS", 1, "mat",
+      FuncTRIANGULIZE_LIST_VEC8BITS, "sec/vec8bit.c:TRIANGULIZE_LIST_VEC8BITS" },
+    
+    { "RANK_LIST_VEC8BITS", 1, "mat",
+      FuncRANK_LIST_VEC8BITS, "sec/vec8bit.c:RANK_LIST_VEC8BITS" },
+    
+    { "DETERMINANT_LIST_VEC8BITS", 1, "mat",
+      FuncDETERMINANT_LIST_VEC8BITS, "sec/vec8bit.c:DETERMINANT_LIST_VEC8BITS" },
+
+    { "EQ_MAT8BIT_MAT8BIT", 2, "mat8bit, mat8bit",
+      FuncEQ_MAT8BIT_MAT8BIT, "src/vec8bit.c:EQ_MAT8BIT_MAT8BIT" },
+
+    { "LT_MAT8BIT_MAT8BIT", 2, "mat8bit, mat8bit",
+      FuncLT_MAT8BIT_MAT8BIT, "src/vec8bit.c:LT_MAT8BIT_MAT8BIT" },
+
     { 0 }
 
 };

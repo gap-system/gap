@@ -2,6 +2,7 @@
 ##
 #W  wordass.gi                  GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
+#W                                                         & Alexander Hulpke
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -12,6 +13,147 @@
 ##
 Revision.wordass_gi :=
     "@(#)$Id$";
+
+#############################################################################
+##
+#F  AssignGeneratorVariables(<G>)
+##
+InstallGlobalFunction("AssignGeneratorVariables", function(G)
+local gens, g, s;
+  gens := GeneratorsOfGroup(G);
+  # test whether the variable name would be a proper identifier
+  for g in gens do
+     s := String(g);
+     if not IsValidIdentifier(s) then
+       Error("Variable `", s, "' would not be a proper identifier");
+     fi;
+     if IS_READ_ONLY_GLOBAL(s) then
+       Error("Variable `", s, "' is write protected.");
+     fi;
+  od;
+  for g in gens do
+    s := String(g);
+    if ISBOUND_GLOBAL(s) then
+      Info(InfoWarning + InfoGlobal, 1, "Global variable `", s,
+           "' is already defined and will be overwritten");
+    fi;
+    UNBIND_GLOBAL(s);
+    ASS_GVAR(s, g);
+  od;
+  Info(InfoWarning + InfoGlobal, 1, "Assigned the global variables ", gens);
+end);
+
+# functions for syllable representation
+
+InstallGlobalFunction(ERepAssWorProd,function(x,y)
+local l,p,len,e;
+  if IsEmpty(y) then
+    return x;
+  elif IsEmpty(x) then
+    return y;
+  fi;
+  len:=Length(y);
+  l:=Length(x)-1;
+  p:=1;
+  while 0<l and p<len
+    and x[l]=y[p] and x[l+1]=-y[p+1] do
+    l:=l-2;
+    p:=p+2;
+  od;
+
+  if l<0 then 
+    # first argument is gone
+    return y{[p..len]};
+  elif len<p then
+    # the second is gone
+    return x{[1..l+1]};
+  else
+    if x[l]=y[p] then
+      e:=x[l+1]+y[p+1];
+      if e=0 then
+	return Concatenation(x{[1..l-1]},y{[p+2..len]});
+      else
+	return Concatenation(x{[1..l-1]},[x[l],e],y{[p+2..len]});
+      fi;
+    else
+      return Concatenation(x{[1..l+1]},y{[p..len]});
+    fi;
+  fi;
+end);
+
+InstallGlobalFunction(ERepAssWorInv,function(w)
+local i,e;
+  e:=[];
+  # invert
+  for i in [Length(w),Length(w)-2..2] do
+    Add(e,w[i-1]);
+    Add(e,-w[i]);
+  od;
+  return e;
+end);
+
+#############################################################################
+##
+#M  \<( <w1>, <w2> )  . . . . . . . . . . . . . . . . . . . . . . . for words
+##
+##  Associative words are ordered by the shortlex order of their external
+##  representation.
+##
+InstallMethod(\<,"assoc words",IsIdenticalObj,[IsAssocWord,IsAssocWord],0,
+function( x, y )
+local n,m;
+
+  x:= ExtRepOfObj( x );
+  y:= ExtRepOfObj( y );
+  n:=Sum([2,4..Length(x)],i->AbsInt(x[i]));
+  m:=Sum([2,4..Length(y)],i->AbsInt(y[i]));
+  # first length
+  if n<m then 
+    return true;
+  elif n>m then 
+    return false;
+  fi;
+  # then lex
+  m:= Minimum( Length( x ), Length( y ) );
+  n:=1;
+  while n<=m and x[n]=y[n] do # common prefix
+    n:=n+1;
+  od;
+
+
+  if n>Length(x) then
+    return x<y; # x is a prefix of y. They could be same
+  elif n>Length(y) then
+    return false; # y is a prefix of x
+  elif not IsInt(n/2) then
+    # discrepancy at generator
+    return x[n]<y[n];
+  fi;
+
+  # so the exponents disagree.
+  if SignInt(x[n])<>SignInt(y[n]) then
+    #they have different sign: The smaller wins
+    return x[n]<y[n];
+  fi;
+  # but have the same sign. We need to compare the generators with the next
+  # one
+  if AbsInt(x[n])<AbsInt(y[n]) then
+    # x runs out first
+    if Length(x)<=n then
+      return true;
+    else
+      return x[n+1]<y[n-1];
+    fi;
+  else
+    # y runs out first
+    if Length(y)<=n then
+      return false;
+    else
+      return x[n-1]<y[n+1];
+    fi;
+  fi;
+
+end );
 
 
 #############################################################################
@@ -99,7 +241,7 @@ BindGlobal( "AssocWord_Product", function( x, y )
         # of 'x' and 'y'.
         # So the bigger of the two types will be sufficient.
         Append( xx, yy );
-        if    TypeObj( x )![ AWP_NR_BITS_EXP ] <= TypeObj( y )![ AWP_NR_BITS_EXP ] then
+        if TypeObj( x )![ AWP_NR_BITS_EXP ] <= TypeObj( y )![ AWP_NR_BITS_EXP ] then
           return AssocWord( TypeObj( y )![ AWP_PURE_TYPE ], xx );
         else
           return AssocWord( TypeObj( x )![ AWP_PURE_TYPE ], xx );
@@ -110,12 +252,15 @@ BindGlobal( "AssocWord_Product", function( x, y )
     fi;
 end );
 
-InstallMethod( \*,
-    "for two assoc. words",
-    IsIdenticalObj,
-    [ IsAssocWord, IsAssocWord ], 0,
-    AssocWord_Product );
+InstallMethod( \*, "for two assoc. words in syllable rep", IsIdenticalObj,
+    [ IsAssocWord and IsSyllableAssocWordRep, 
+      IsAssocWord and IsSyllableAssocWordRep], 0, AssocWord_Product );
 
+InstallMethod( \*, "for two assoc. words: force syllable rep", IsIdenticalObj,
+    [ IsAssocWord, IsAssocWord], 0,
+function(a,b)
+  return SyllableRepAssocWord(a)*SyllableRepAssocWord(b);
+end);
 
 #############################################################################
 ##
@@ -127,9 +272,9 @@ InstallMethod( \*,
 ##  the case of cancellation.
 ##
 InstallMethod( \^,
-    "for an assoc. word, and a positive integer",
+    "for an assoc. word in syllable rep, and a positive integer",
     true,
-    [ IsAssocWord, IsPosInt ], 0,
+    [ IsAssocWord and IsSyllableAssocWordRep, IsPosInt ], 0,
     function( x, n )
 
     local xx,      # external representation of 'x'
@@ -312,9 +457,9 @@ BindGlobal( "AssocWordWithInverse_Power", function( x, n )
 end );
 
 InstallMethod( \^,
-    "for an assoc. word with inverse, and an integer",
+    "for an assoc. word with inverse in syllable rep, and an integer",
     true,
-    [ IsAssocWordWithInverse, IsInt ], 0,
+    [ IsAssocWordWithInverse and IsSyllableAssocWordRep, IsInt ], 0,
     AssocWordWithInverse_Power );
 
 
@@ -351,149 +496,116 @@ BindGlobal( "AssocWordWithInverse_Inverse", function( x )
     return AssocWord( TypeObj( x )![ AWP_PURE_TYPE ], cxx );
 end );
 
-InstallMethod( Inverse,
-    "for an assoc. word with inverse",
+InstallMethod( InverseOp,
+    "for an assoc. word with inverse in syllable rep",
     true,
-    [ IsAssocWordWithInverse ], 0,
+    [ IsAssocWordWithInverse  and IsSyllableAssocWordRep], 0,
     AssocWordWithInverse_Inverse );
 
-
 #############################################################################
 ##
-
-#M  Length( <w> )
+#M  ReversedOp( <word> )
 ##
-InstallOtherMethod( Length,
-    "for an assoc. word",
-    true,
-    [ IsAssocWord ], 0,
-    function( w )
-    local len, i;
-    w:= ExtRepOfObj( w );
-    len:= 0;
-    for i in [ 2, 4 .. Length( w ) ] do
-      len:= len + AbsInt( w[i] );
-    od;
-    return len;
-    end );
+InstallOtherMethod( ReversedOp, "for an assoc. word in syllable rep", true,
+    [ IsAssocWord and IsSyllableAssocWordRep], 0,
+function( word )
+local extrep, len, rev, i;
+
+  extrep:= ExtRepOfObj( word );
+  if IsEmpty( extrep ) then
+    return word;
+  fi;
+  len:= Length( extrep );
+  rev:= [];
+  for i in [ len-1, len-3 .. 1 ] do
+    Add( rev, extrep[  i  ] );
+    Add( rev, extrep[ i+1 ] );
+  od;
+
+  return AssocWord( TypeObj( word )![ AWP_PURE_TYPE ], rev );
+end );
 
 
-#############################################################################
-##
-#M  ExponentSyllable( <w>, <n> )
-##
-InstallMethod( ExponentSyllable,
-    "for an assoc. word, and a positive integer",
-    true,
-    [ IsAssocWord, IsPosInt ],
-    0,
-    function( w, n )
-    return ExtRepOfObj( w )[ 2*n ];
-    end );
-
-
-#############################################################################
-##
-#M  GeneratorSyllable( <w>, <n> )
-##
-InstallMethod( GeneratorSyllable,
-    "for an assoc. word, and a positive integer",
-    true,
-    [ IsAssocWord, IsPosInt ],
-    0,
-    function( w, n )
-    return ExtRepOfObj( w )[ 2*n-1 ];
-    end );
-
-
-#############################################################################
-##
-#M  NumberSyllables( <w> )
-##
-InstallMethod( NumberSyllables,
-    "for an assoc. word",
-    true,
-    [ IsAssocWord ], 0,
-    w -> Length( ExtRepOfObj( w ) ) / 2 );
-
-
-#############################################################################
-##
-#M  ExponentSumWord( <w>, <gen> )
-##
-InstallMethod( ExponentSumWord,
-    "for associative word and generator",
-    IsIdenticalObj,
-    [ IsAssocWord, IsAssocWord ],
-    0,
-    function( w, gen )
-    local n, g, i;
-    w:= ExtRepOfObj( w );
-    gen:= ExtRepOfObj( gen );
-    if Length( gen ) <> 2 or ( gen[2] <> 1 and gen[2] <> -1 ) then
-      Error( "<gen> must be a generator" );
-    fi;
-    n:= 0;
-    g:= gen[1];
-    for i in [ 1, 3 .. Length( w ) - 1 ] do
-      if w[i] = g then
-        n:= n + w[ i+1 ];
-      fi;
-    od;
-    if gen[2] = -1 then
-      n:= -n;
-    fi;
-    return n;
-    end );
-
-
-#############################################################################
-##
-#M  ExponentSums( <f>,<w> )
-##
-InstallOtherMethod( ExponentSums,
-    "for a group and an assoc. word",
-    true,
-    [ IsGroup, IsAssocWord ], 0,
-    function( f, w )
-    local l,gens,g,i,p;
-    
-    gens:=List(FreeGeneratorsOfFpGroup(f),x->ExtRepOfObj(x));
-    g:=gens{[1..Length(gens)]}[1];
-    l:=List(gens,x->0);
-    w:= ExtRepOfObj( w );
-    for i in [ 1, 3 .. Length( w ) - 1 ] do
-      p:=Position(g,w[i]);
-      l[p]:=l[p]+w[i+1];
-    od;
-  
-    for i in [1..Length(l)] do
-      if gens[i][2]=-1 then l[i]:=-l[i];fi;
-    od;
-
-    return l;
-
-    end );
-
+# #############################################################################
+# ##
+# #M  CyclicReducedWordList( <word>, <gens> )
+# ##
+# InstallMethod( CyclicReducedWordList, "for syllable word and generators list",
+#   IsElmsColls,[IsAssocWord and IsSyllableAssocWordRep,IsHomogeneousList],0,
+# function( w, gens )
+# local   posg,  invg,  i,  s,  e,  str,  j;
+# 
+#   gens := List( gens, ExtRepOfObj );
+#   posg := [];
+#   invg := [];
+#   for i  in [ 1 .. Length(gens) ]  do
+#       if 2 <> Length(gens[i]) or not gens[i][2] in [-1,1]  then
+# 	  Error( gens[i], " is not a generator" );
+#       fi;
+#       if gens[i][2] = 1  then
+# 	  posg[gens[i][1]] := i;
+# 	  invg[gens[i][1]] := -i;
+#       else
+# 	  posg[gens[i][1]] := -i;
+# 	  invg[gens[i][1]] := i;
+#       fi;
+#   od;
+#   w := ExtRepOfObj(w);
+#   s := 1;
+#   e := Length(w)-1;
+#   while s < e and w[s] = w[e] and w[s+1] = -w[e+1]  do
+#       if not IsBound(posg[w[s]])  then
+# 	  return fail;
+#       fi;
+#       s := s + 2;
+#       e := e - 2;
+#   od;
+#   if s < e and w[s] = w[e]  then
+#       w[s+1] := w[s+1] + w[e+1];
+#       e := e - 2;
+#   fi;
+#   str := [];
+#   for i  in [ s, s+2 .. e ]  do
+#       if not IsBound(posg[w[i]])  then
+# 	  return fail;
+#       fi;
+#       if 0 < w[i+1]  then
+# 	  for j  in [ 1 .. w[i+1] ]  do
+# 	      Add( str, posg[w[i]] );
+# 	  od;
+#       else
+# 	  for j  in [ 1 .. -w[i+1] ]  do
+# 	      Add( str, invg[w[i]] );
+# 	  od;
+#       fi;
+#   od;
+#   return str;
+# end );
+#
+# InstallMethod( CyclicReducedWordList, "for word and empty generators list",
+#     true, [ IsAssocWord, IsEmpty and IsList ], 0,
+# function( word, gens )
+#     if One(word) <> word  then
+#         return fail;
+#     else
+#         return [];
+#     fi;
+# end );
 
 #############################################################################
 ##
 #M  Subword( <w>, <from>, <to> )
 ##
-InstallOtherMethod( Subword,
-    "for associative word and two positions",
-    true,
-    [ IsAssocWord, IsPosInt, IsInt ],
-    0,
-    function( w, from, to )
-    local extw, pos, nextexp, firstexp, sub;
-
+InstallOtherMethod( Subword,"for syllable associative word and two positions",
+    true, [ IsAssocWord and IsSyllableAssocWordRep, IsPosInt, IsInt ], 0,
+function( w, from, to )
+local extw, pos, nextexp, firstexp, sub;
     if to<from then
-			if IsMultiplicativeElementWithOne(w) then
-				return One(FamilyObj(w)); 
-			else
-	 			Error("<from> must be less than or equal to <to>");
-			fi;
+      if IsMultiplicativeElementWithOne(w) then
+	  return One(FamilyObj(w)); 
+      else
+	Error("<from> must be less than or equal to <to>");
+      fi;
     fi;
 
     extw:= ExtRepOfObj( w );
@@ -544,14 +656,13 @@ InstallOtherMethod( Subword,
     return ObjByExtRep( FamilyObj( w ), sub );
 end );
 
-
 #############################################################################
 ##
 #M  SubSyllables( <w>, <from>, <to> )
 ##
 InstallMethod( SubSyllables,
   "for associative word and two positions, using ext rep.",true,
-    [ IsAssocWord, IsPosInt, IsPosInt ], 0,
+    [ IsAssocWord, IsPosInt, IsInt ], 0,
 function( w, from, to )
 local e;
   e:=ExtRepOfObj(w);
@@ -567,9 +678,15 @@ end);
 ##
 #M  PositionWord( <w>, <sub>, <from> )
 ##
+InstallOtherMethod( PositionWord,"for two associative words,start at 1",
+  IsIdenticalObj,[IsAssocWord ,IsAssocWord], 0,
+function( w, sub )
+  return PositionWord(w,sub,1);
+end);
+
 InstallMethod( PositionWord,
   "for two associative words and a positive integer, using syllables",
-  IsFamFamX, [ IsAssocWord, IsAssocWord, IsPosInt ], 0,
+  IsFamFamX,[IsAssocWord and IsSyllableAssocWordRep,IsAssocWord,IsPosInt], 0,
 function( w, sub, from )
 local i,j,m,n,l,s,e,f,li,nomatch;
 
@@ -681,31 +798,29 @@ InstallMethod( SubstitutedWord,
     "for assoc. word, two positive integers, and assoc. word", true,
     [ IsAssocWord, IsPosInt, IsPosInt, IsAssocWord ], 0,
 function( w, from, to, by )
+local lw;
 
-	# if from>to or from>|w| or to>|w| then this does not make sense
-	if from>to or from>Length(w) or to>Length(w) then
-		Error("illegal values for <from> and <to>");	
-	fi;
-	
-	# otherwise there are four possibilities 
+  lw:=Length(w);
+  # if from>to or from>|w| or to>|w| then this does not make sense
+  if from>to or from>lw or to>lw then
+    Error("illegal values for <from> and <to>");	
+  fi;
+  
+  # otherwise there are four possibilities 
 
-	# first if from=1 and to=Length(w) then
-	if from=1 and to=Length(w) then
-		return by;
-	fi;
+  # first if from=1 and to=Length(w) then
+  if from=1 and to=lw then
+    return by;
+  # second if from=1 (and to<Length(w))  then
+  elif from=1 then 	
+      return by*Subword(w,to+1,lw);
+  # third if to=1 (and from>1) then
+  elif to=lw then
+    return Subword(w,1,from-1)*by;
+  fi;
 
-	# second if from=1 (and to<Length(w))  then
-	if from=1 then 	
-		return by*Subword(w,to+1,Length(w));
-	fi;
-
-	# third if to=1 (and from>1) then
-	if to=Length(w) then
-		return Subword(w,1,from-1)*by;
-	fi;
-
-	# finally 
-  return Subword(w,1,from-1)*by*Subword(w,to+1,Length(w));
+  # finally 
+  return Subword(w,1,from-1)*by*Subword(w,to+1,lw);
 
 end );
 
@@ -722,16 +837,13 @@ InstallOtherMethod(SubstitutedWord,
  "for three associate words",true,
 	[IsAssocWord, IsAssocWord, IsPosInt, IsAssocWord], 0, 
 function(u,v,k,z)
-	local i;
-
-	i := PositionWord(u,v,k);
-	
-	# if i= fail then it means that v is not a subword of u after position k
-	if i= fail then
-		return fail;
-	fi;
-
-	return SubstitutedWord(u,i,i+Length(v)-1,z);
+local i;
+  i := PositionWord(u,v,k);
+  # if i= fail then it means that v is not a subword of u after position k
+  if i= fail then
+    return fail;
+  fi;
+  return SubstitutedWord(u,i,i+Length(v)-1,z);
 end);
 
 #############################################################################
@@ -777,22 +889,20 @@ end );
 
 #############################################################################
 ##
-#M  RenumberWord( <word>, <renumber> )  . . . . . . . . .  for an assoc. word
+#M  RenumberedWord( <word>, <renumber> )
 ##
-InstallMethod( RenumberedWord,
-    "associative words",
-    true,
-    [IsAssocWord, IsList], 0,
+InstallMethod( RenumberedWord, "associative words in syllable rep", true,
+    [IsAssocWord and IsSyllableAssocWordRep, IsList], 0,
 function( w, renumber )
-    local   t,  i;
+local   t,  i;
 
-    t := TypeObj( w );
-    w := ExtRepOfObj( w );
+  t := TypeObj( w );
+  w := ShallowCopy(ExtRepOfObj( w ));
 
-    for i in [1,3..Length(w)-1] do
-        w[i] := renumber[ w[i] ];
-    od;
-    return AssocWord( t, w );
+  for i in [1,3..Length(w)-1] do
+    w[i] := renumber[ w[i] ];
+  od;
+  return AssocWord( t, w );
 end );
 
 
@@ -813,9 +923,9 @@ end );
 ##  In the case of the above special treatment, the external representation
 ##  of the image word is constructed without multiplications.
 ##
-BindGlobal( "MappedWordForAssocWord", function( x, gens1, gens2 )
+BindGlobal( "MappedWordSyllableAssocWord", function( x, gens1, gens2 )
 
-local i, mapped, exp,ex2,p;
+local i, mapped, exp,ex2,p,fameq;
 
     x:= ExtRepOfObj( x );
 
@@ -825,286 +935,132 @@ local i, mapped, exp,ex2,p;
       return gens2[1] ^ 0;
     fi;
 
-    if     FamilyObj( gens1 ) = FamilyObj( gens2 )
-       and IsAssocWordWithInverseCollection( gens2 ) then
+    # are the genimages simple generators themselves?
+    if IsAssocWordWithInverseCollection( gens2 ) 
+      and ForAll(gens2,i->Length(i)=1) then
       ex2:= List( gens2, ExtRepOfObj );
     else
       # not words, forget special treatment
       ex2:=fail;
     fi;
 
+    fameq:=FamilyObj(gens1[1])=FamilyObj(gens2[1]);
+
     gens1:= List( gens1, ExtRepOfObj );
     if not ForAll( gens1, i -> Length( i ) = 2 and i[2] = 1 ) then
       Error( "<gens1> must be proper generators" );
     fi;
     gens1:= List( gens1, x -> x[1] );
+    IsSSortedList(gens1);
 
-    if     ex2 <> fail
-       and ForAll( ex2, i -> Length( i ) = 2 and AbsInt( i[2] ) = 1 )
-       and Set( List( ex2, i -> i[1] ) ) = Set( gens1 ) then
+    if ex2 <> fail then
 
       # special treatment
       exp:= List( ex2, i -> i[2] );
       ex2:= List( ex2, i -> i[1] );
       mapped:= [];
-      for i in [ 2, 4 .. Length( x ) ] do
-        p:= Position( gens1, x[ i-1 ] );
-        if p = fail then
-          Add( mapped, x[ i-1 ] );
-          Add( mapped, x[  i  ] );
-        else
-          Add( mapped, ex2[p] );
-          Add( mapped, exp[p] * x[i] );
-        fi;
-      od;
-      mapped:= ObjByExtRep( FamilyObj( gens2[1] ), mapped );
-
-    else
-
-      p:= Position( gens1, x[1] );
-      if p = fail then
-        mapped:= ObjByExtRep( FamilyObj( gens2[1] ), [ x[1], x[2] ] );
+      # to be quick, we need there are no duplications among the images:
+      if Length(ex2)=Length(Set(ex2)) and not fameq then
+	for i in [ 2, 4 .. Length( x ) ] do
+	  p:= Position( gens1, x[ i-1 ] );
+	  Add( mapped, ex2[p] );
+	  Add( mapped, exp[p] * x[i] );
+	od;
       else
-        mapped:= gens2[p] ^ x[2];
-      fi;
-      for i in [ 4,6 .. Length( x ) ] do
-        exp:= x[ i ];
-        if exp <> 0 then
-          p:= Position( gens1, x[ i-1 ] );
-          if p = fail then
-            mapped:= mapped * ObjByExtRep( FamilyObj( gens2[1] ),
-                                           [ x[ i-1 ], x[i] ] );
-          else
-            mapped:= mapped * gens2[p] ^ exp;
-          fi;
-        fi;
-      od;
+	for i in [ 2, 4 .. Length( x ) ] do
+	  p:= Position( gens1, x[ i-1 ] );
+	  if p = fail then
+	    if fameq then
+	      mapped:=ERepAssWorProd(mapped,[x[i-1],x[i]]);
+	    else
+	      Error("generator image not defined");
+	    fi;
+	  else
+	    mapped:=ERepAssWorProd(mapped,[ex2[p],exp[p]*x[i]]);
+	  fi;
+	od;
 
+      fi;
+
+      mapped:= ObjByExtRep( FamilyObj( gens2[1] ), mapped );
+      return mapped;
     fi;
+
+    # the hard case
+    p:= Position( gens1, x[1] );
+    if p = fail then
+      mapped:= ObjByExtRep( FamilyObj( gens2[1] ), [ x[1], x[2] ] );
+    else
+      mapped:= gens2[p] ^ x[2];
+    fi;
+    for i in [ 4,6 .. Length( x ) ] do
+      exp:= x[ i ];
+      if exp <> 0 then
+	p:= Position( gens1, x[ i-1 ] );
+	if p = fail then
+	  mapped:= mapped * ObjByExtRep( FamilyObj( gens2[1] ),
+					  [ x[ i-1 ], x[i] ] );
+	else
+	  mapped:= mapped * gens2[p] ^ exp;
+	fi;
+      fi;
+    od;
 
     return mapped;
 end );
 
 InstallMethod( MappedWord,
-    "for an assoc. word, a homogeneous list, and a list",
-    IsElmsCollsX,
-    [ IsAssocWord, IsAssocWordCollection, IsList ],
-    MappedWordForAssocWord );
+  "for a syllable assoc. word, a homogeneous list, and a list",IsElmsCollsX,
+  [ IsAssocWord and IsSyllableAssocWordRep, IsAssocWordCollection, IsList ],
+  MappedWordSyllableAssocWord );
 
 
 #############################################################################
 ##
-#M  Reversed( <word> )  . . . . . . . . . . . . . . . . .  for an assoc. word
+#B  LengthOfLongestCommonPrefixOfTwoAssocWords(<a>,<b>)
 ##
-InstallOtherMethod( Reversed,
-    "for an assoc. word",
-    true,
-    [ IsAssocWord ], 0,
-    function( word )
+##  returns the length of the longest common prefix of two
+##  assoc words.
+##  This is here because will be used by both
+##  the BasicWreathProductOrdering and the
+##  WreathProductOrdering
+BindGlobal("LengthOfLongestCommonPrefixOfTwoAssocWords",
+function(a,b)
 
-    local extrep, len, rev, i;
+  local l,i,ea,eb;
 
-    extrep:= ExtRepOfObj( word );
-    if IsEmpty( extrep ) then
-      return word;
+  #it runs through the words until finding a different letter
+  #and returns the length of that common prefix (or zero)
+
+  l:=0;
+
+  # this is code which presumably has to be very fast. `Subword' is very
+  # slow. So better run over syllables. (ahulpke 4/17/00)
+
+  for i in [1..Minimum(NrSyllables(a),NrSyllables(b))] do
+    ea:=ExponentSyllable(a,i);
+    eb:=ExponentSyllable(b,i);
+    if GeneratorSyllable(a,i)<>GeneratorSyllable(b,i) 
+     or SignInt(ea)<>SignInt(eb) then
+      return l;
+    elif ea<>eb then
+      # the difference of the exponents (both have the same sign) is the
+      # largest common prefix.
+      return l+AbsInt(ea-eb);
     fi;
-    len:= Length( extrep );
-    rev:= [];
-    for i in [ len-1, len-3 .. 1 ] do
-      Add( rev, extrep[  i  ] );
-      Add( rev, extrep[ i+1 ] );
-    od;
+    # now generators and exponents are the same
+    l:=l+ea;
+  od;
 
-    return AssocWord( TypeObj( word )![ AWP_PURE_TYPE ], rev );
-    end );
+  #here we know that the smallest word is a subword of the other
+  #Hence the smallest word is a prefix of the other
+  #and that the length is l
+  return l;
 
-
-#############################################################################
-##
-#M  CyclicReducedWordList( <word>, <gens> )
-##
-InstallMethod( CyclicReducedWordList,
-    "for word and generators list",
-    IsElmsColls,
-    [ IsAssocWord,
-      IsHomogeneousList ],
-    0,
-
-function( w, gens )
-    local   posg,  invg,  i,  s,  e,  str,  j;
-
-    gens := List( gens, ExtRepOfObj );
-    posg := [];
-    invg := [];
-    for i  in [ 1 .. Length(gens) ]  do
-        if 2 <> Length(gens[i]) or not gens[i][2] in [-1,1]  then
-            Error( gens[i], " is not a generator" );
-        fi;
-        if gens[i][2] = 1  then
-            posg[gens[i][1]] := i;
-            invg[gens[i][1]] := -i;
-        else
-            posg[gens[i][1]] := -i;
-            invg[gens[i][1]] := i;
-        fi;
-    od;
-    w := ExtRepOfObj(w);
-    s := 1;
-    e := Length(w)-1;
-    while s < e and w[s] = w[e] and w[s+1] = -w[e+1]  do
-        if not IsBound(posg[w[s]])  then
-            return fail;
-        fi;
-        s := s + 2;
-        e := e + 2;
-    od;
-    if s < e and w[s] = w[e]  then
-        w[s+1] := w[s+1] + w[e+1];
-        e := e - 2;
-    fi;
-    str := [];
-    for i  in [ s, s+2 .. e ]  do
-        if not IsBound(posg[w[i]])  then
-            return fail;
-        fi;
-        if 0 < w[i+1]  then
-            for j  in [ 1 .. w[i+1] ]  do
-                Add( str, posg[w[i]] );
-            od;
-        else
-            for j  in [ 1 .. -w[i+1] ]  do
-                Add( str, invg[w[i]] );
-            od;
-        fi;
-    od;
-    return str;
-
-end );
-
-
-InstallMethod( CyclicReducedWordList,
-    "for word and empty generators list",
-    true,
-    [ IsAssocWord,
-      IsEmpty and IsList ],
-    0,
-
-function( word, gens )
-    if One(word) <> word  then
-        return fail;
-    else
-        return [];
-    fi;
-end );
-
-#############################################################################
-##
-#F  IsBasicWreathLessThanOrEqual( <u>, <v> )
-##
-##  for two associative words <u> and <v>.
-##  It returns true if <u> is less than or equal to <v>, with
-##  respect to the basic wreath product ordering.
-##
-##	An ordering is assumed in the alphabet.
-##	Plus, u<v if u'<v' where u=xu'y and v=xv'y
-##	So, if u and v have no common prefix, u is less than v wrt this ordering if
-##	  (i) maxletter(v) > maxletter(u); or	
-##	 (ii) maxletter(u) = maxletter(v) and
-##			 	#maxletter(u) < #maxletter(v); or
-##	(iii)	maxletter(u) = maxletter(v) =b and
-##				#maxletter(u) = #maxletter(v) and
-##				if u = u1 * b * u2 * b ... b * uk
-##					 v = v1 * b * v2 * b ... b * vk
-##				then u1<v1 in the basic wreath product ordering.
-##
-InstallGlobalFunction( IsBasicWreathLessThanOrEqual,
-function( u, v )
-
-	local i,n,m,l,length_of_longest_common_prefix;
-
-	#######################################################
-	# returns 0 if the words have no common prefix
-	# or returns the length of the longest common prefix 
-	length_of_longest_common_prefix:=function(a,b)
- 
-  	local l;
-
-	  #it runs through the words until finding a different letter
-  	#and returns the length of that common prefix (or zero)
-	  for l in [1..Minimum(Length(a),Length(b))] do
-			if Subword(a,l,l)<>Subword(b,l,l) then
-    	  return l-1; 
-	    fi;
-  	od;
-
-	  #here we know that the smallest word is a subword of the other
-  	#Hence the smallest word is a prefix of the other
-		#and that the length is l
-		return l;
-
-	end;
-
-	# start by looking for a common prefix
-	l := length_of_longest_common_prefix( u, v);
-
-	if l<>0 then
-		# if u is a prefix of v (ie l=|u|) then u<=v
-		# but if v is a proper prefix of u then u>v
-		if l=Length(u) then 	
-			return true;
-		elif l=Length(v) then
-			return false;
-		fi;
-			
-		# at this stage none of the words is a proper prefix of the other one
-		# so remove the common prefix from both words
-		u := Subword( u, l+1, Length(u) );
-		v := Subword( v, l+1, Length(v) );
-	fi;
-
-	m := Length( u );
-  n := Length( v );
-
-	# so now u and v have no common prefixes 
-	# (in particular they are not equal)
-	while m>0 and n>0 do
-		
-		if Subword( u, m, m) > Subword( v, n, n) then
-			n := n - 1;
-		elif Subword( v, n, n) > Subword( u, m, m) then
-			m := m - 1;
-		else 
-			m := m - 1;
-			n := n - 1;
-		fi;
-
-	od;
-
-	if m =0 and n<>0 then
-		return true;
-	else
-		return false;
-	fi;
-
-end);
-
-#############################################################################
-##
-#F  IsShortLexLessThanOrEqual( <u>, <v> )
-##
-##  for two associative words <u> and <v>.
-##  It returns true if <u> is less than or equal to <v>, with
-##  respect to the shortlex ordering.
-##	(the shortlex ordering is the default one given by u<=v)
-##
-InstallGlobalFunction( IsShortLexLessThanOrEqual,
-function( u, v )
-	return u<=v;
 end);
 
 
 #############################################################################
 ##
-
 #E
 

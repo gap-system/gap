@@ -63,11 +63,8 @@ Group([ (1,2), (3,4) ])
 gap> H := GL(2,2);
 SL(2,2)
 gap> Q := QuotientGroupByImages( G, H, [(1,2), (3,4)], [One(H), One(H)] );
-Group(
-[ ( [ <an immutable GF2 vector of length 2>, <an immutable GF2 vector of lengt\
-h 2> ] <- (1,2) ), 
-  ( [ <an immutable GF2 vector of length 2>, <an immutable GF2 vector of lengt\
-h 2> ] <- (3,4) ) ])
+Group([ ( <an immutable 2x2 matrix over GF2> <- (1,2) ), 
+  ( <an immutable 2x2 matrix over GF2> <- (3,4) ) ])
 gap> IsMatrix(Q.1); IsMatrixGroup(Q);
 true
 true

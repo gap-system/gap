@@ -96,9 +96,11 @@ DeclareOperation( "GroupHomomorphismByImagesNC",
 ##
 ##  Representation for mappings from one group to another that are defined
 ##  by extending a mapping of group generators homomorphically.
+##  Instead of record components, the attribute `MappingGeneratorImages' is
+##  used to store generators and their images.
 DeclareRepresentation( "IsGroupGeneralMappingByImages",
       IsGroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep,
-      [ "generators", "genimages" ] );
+      [] );
 
 #############################################################################
 ##
@@ -179,7 +181,7 @@ end;
 ##  The `NC' variant does not check whether <N> is normal in <G>.
 ##
 InParentFOA( "NaturalHomomorphismByNormalSubgroupNC", IsGroup, IsGroup,
-              NewAttribute );
+             DeclareAttribute );
 
 DeclareSynonym( "NaturalHomomorphismByNormalSubgroupInParent",
     NaturalHomomorphismByNormalSubgroupNCInParent );
@@ -357,6 +359,7 @@ DeclareGlobalFunction( "MakeMapping" );
 ##
 #F  GroupHomomorphismByFunction( <S>, <R>, <fun> )
 #F  GroupHomomorphismByFunction( <S>, <R>, <fun>, <invfun> )
+#F  GroupHomomorphismByFunction( <S>, <R>, <fun>, `false', <prefun> )
 ##
 ##  `GroupHomomorphismByFunction' returns a group homomorphism <hom> with
 ##  source <S> and range <R>, such that each element <s> of <S> is mapped to
@@ -365,6 +368,10 @@ DeclareGlobalFunction( "MakeMapping" );
 ##  If the argument <invfun> is bound then <hom> is a bijection between <S>
 ##  and <R>, and the preimage of each element <r> of <R> is given by
 ##  `<invfun>( <r> )', where <invfun> is a {\GAP}  function.
+##
+##  In the third variant, a function <prefun> is given that can be used to
+##  compute a single preimage. In this case, the third entry must be
+##  `false'.
 ##
 ##  No test is performed on whether the functions actually give an
 ##  homomorphism between both groups because this would require testing the
@@ -396,6 +403,15 @@ DeclareGlobalFunction("ImagesRepresentativeGMBIByElementsList");
 ##   this on the images of the smallest generators.)
 DeclareAttribute( "ImagesSmallestGenerators",
     IsGroupGeneralMapping );
+
+
+#############################################################################
+##
+#A  RegularActionHomomorphism( <G> )
+##
+##  returns an isomorphism from <G> onto the regular permutation
+##  representation of <G>.
+DeclareAttribute( "RegularActionHomomorphism", IsGroup );
 
 
 #############################################################################

@@ -1,4 +1,4 @@
 @msfiles = ("tom");
-@gdfiles = ("stdgen","tom","../tom/tmadmin.tmd");
+@gdfiles = ("stdgen","tom","../pkg/tomlib/gap/tmadmin.tmd");
 $DIR = "../ref";
 $LIB = "../../lib"; 

@@ -82,7 +82,7 @@ CocGroup := function( g )
 
    # compute the conjugacy classes of G as lists of elements and
    # classify them according to representative order and length
-   orbs  := Orbits( g, AsList( g ) );
+   orbs  := OrbitsDomain( g, AsList( g ) );
    typs  := List( orbs, x -> [ Order( x[ 1 ] ), Length( x ) ] );
    styps := Set( typs );
    coc   := List( styps, x-> [ ] );

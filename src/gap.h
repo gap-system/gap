@@ -149,6 +149,15 @@ extern void ErrorQuitNrArgs (
     Int                 narg,
     Obj                 args );
 
+/****************************************************************************
+**
+*F  ErrorQuitRange3( <first>, <second>, <last> ) . . .divisibility rules
+*/
+extern void ErrorQuitRange3 (
+    Obj                 first,
+    Obj                 second,
+    Obj                 last);
+
 
 /****************************************************************************
 **

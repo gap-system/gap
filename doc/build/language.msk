@@ -16,8 +16,8 @@ to know what we are talking about, we first have to look more closely at
 the process of interpretation and the various representations of data
 involved.
 
-%%  The {\GAP} language and its interpreter in the kernel were designed by Martin
-%%  Sch{\"o}nert.
+%%  The {\GAP} language and its interpreter in the kernel were designed by 
+%%  Martin Sch{\"o}nert.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Language Overview}
@@ -108,7 +108,7 @@ sections "Lexical Structure",  "Symbols", "Whitespaces", "Keywords",
 "Identifiers", and "The Syntax in BNF", the semantic rules are given in
 sections "Expressions", "Variables", "Function Calls", "Comparisons",
 "Arithmetic Operators",  "Statements", "Assignments", "Procedure Calls",
-"If", "While", "Repeat", "For", "Functions", and the chapters describing
+"If", "While", "Repeat", "For", "Function", and the chapters describing
 the individual data types.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -277,6 +277,8 @@ The length of identifiers is not limited,  however only the first 1023
 characters are significant. The escape sequence `\\'<newline> is ignored,
 making it possible to split long identifiers over multiple lines.
 
+\Declaration{IsValidIdentifier}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Expressions}
 
@@ -297,13 +299,13 @@ value of an expression is done by the interpreter and is called the
 
 Variables, function calls, and integer, permutation, string, function,
 list, and record literals (see "Variables", "Function Calls", "Integers",
-"Permutations",  "Strings  and  Characters",  "Functions",  "Lists",
+"Permutations",  "Strings  and  Characters",  "Function"s,  "Lists",
 "Records"), are the simplest cases of expressions.
 
 Expressions, for example the simple expressions mentioned above, can be
 combined with the operators to form more complex expressions. Of course
 those expressions can then be combined further with the operators to form
-even more complex expressions. The *operators* fall into three classes.%
+even more complex expressions. The *operators* fall into three classes.
 \index{operators}
 The *comparisons* are `=', `\<>', `\<', `\<=', `>',  `>=', and `in' (see
 "Comparisons" and "Membership Test for Collections").
@@ -350,7 +352,7 @@ local scopes that range from the `function' keyword, denoting the
 beginning of a function definition, to the corresponding `end' keyword.
 A *local scope* introduces new variables, whose identifiers are given in
 the formal argument list and the `local' declaration of the function (see
-"Functions"). Usage of an identifier in a program text refers to the
+"Function"). Usage of an identifier in a program text refers to the
 variable in the innermost scope that has this identifier as its name.
 Because this mapping from identifiers to variables is done when the
 program is read, not when it is executed, {\GAP} is said to have *lexical
@@ -420,26 +422,23 @@ First, such variables may be marked *read-only*. In which case
 attempts to change them will fail. Most of the global variables
 defined in the {\GAP} library are so marked.
 
-\>IsReadOnlyGlobal ( <name> ) F
+\>IsReadOnlyGlobal( <name> ) F
 
-`IsReadOnlyGlobal ( <name> )' returns true if the global variable
-named by the string <name> is read-only and false otherwise (the
-default). 
+returns `true' if the global variable named by the string <name> is 
+read-only and `false' otherwise (the default). 
 
-\>MakeReadOnlyGlobal ( <name> ) F
+\>MakeReadOnlyGlobal( <name> ) F
 
-`MakeReadOnlyGlobal ( <name> )' marks the global variable named
-by the string <name> as read-only. 
+marks the global variable named by the string <name> as read-only. 
 
 A warning is given if <name> has no value bound to it or if it is
-already read-only
+already read-only.
 
-\>MakeReadWriteGlobal ( <name> )  F
+\>MakeReadWriteGlobal( <name> )  F
 
-`MakeReadWriteGlobal ( <name> )' marks the global variable named
-by the string <name> as read-write
+marks the global variable named by the string <name> as read-write.
 
-A warning is given if <name> is already read-write
+A warning is given if <name> is already read-write.
 
 \begintt
 gap> xx := 17;
@@ -452,15 +451,16 @@ gap> MakeReadOnlyGlobal("xx");
 gap> xx := 16;
 Variable: 'xx' is read only
 not in any function
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or you can return after making it writable to continue
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can return after making it writable to continue
 brk> quit;
 gap> IsReadOnlyGlobal("xx");
 true
 gap> MakeReadWriteGlobal("xx");
 gap> xx := 16;
 16
-gap> IsReadOnlyGlobal("xx");   
+gap> IsReadOnlyGlobal("xx");
 false
 \endtt
 
@@ -473,28 +473,27 @@ local variables of the same names exist.
 Second, the variable names are passed as strings,
 rather than being written directly into the statements. 
 
-\>ValueGlobal ( <name> ) F
+\>ValueGlobal( <name> ) F
  
-`ValueGlobal ( <name> )' returns the value currently bound to the global
-variable named by the string <name>. An error is raised if no value
-is currently bound.
+returns the value currently bound to the global variable named by the 
+string <name>. An error is raised if no value is currently bound.
 
-\>IsBoundGlobal ( <name> ) F
+\>IsBoundGlobal( <name> ) F
 
-`IsBoundGlobal ( <name> )' returns true if a value currently bound
-to the global variable named by the string <name> and false otherwise.
+returns `true' if a value currently bound
+to the global variable named by the string <name> and `false' otherwise.
 
-\>UnbindGlobal ( <name> ) F
+\>UnbindGlobal( <name> ) F
 
-`UnbindGlobal ( <name> )' removes any value currently bound
+removes any value currently bound
 to the global variable named by the string <name>. Nothing is returned.
 
 A warning is given if <name> was not bound. The global variable named
 by <name> must be writable, otherwise an error is raised.
 
-\>BindGlobal ( <name>, <val> )  F
+\>BindGlobal( <name>, <val> )  F
 
-`BindGlobal ( <name>, <val> )' sets the global variable named by the
+sets the global variable named by the
 string <name> to the value <val>, provided it is writable, and makes
 it read-only. If <name> already has a value, a warning message is
 printed.  
@@ -696,7 +695,7 @@ Comparison operators, including the operator `in'
 are not associative,
 Hence it is not allowed to write `<a> = <b> \<> <c> = <d>',
 you must use `(<a> = <b>) \<> (<c> = <d>)' instead.
-The comparison operators have  higher precedence than the logical operators%
+The comparison operators have  higher precedence than the logical operators
 \index{operators!precedence}
 (see~"Operations for Booleans"), but lower precedence than the arithmetic
 operators (see~"Arithmetic Operators").
@@ -714,7 +713,10 @@ see~"Comparison Operations for Elements".
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Arithmetic Operators}
 
-\index{precedence}\index{associativity}
+\index{precedence}\index{associativity}\index{operators!arithmetic}
+\indextt{+}\indextt{-}\indextt{\*}\indextt{/}\indextt{\^{}}
+\indextt{mod!arithmetic operators}
+\index{modulo}\index{modulo!arithmetic operators}
 
 \>`+ <right-expr>'{positive number}
 \>`- <right-expr>'{negative number}
@@ -722,27 +724,61 @@ see~"Comparison Operations for Elements".
 \>`<left-expr> - <right-expr>'{subtraction}
 \>`<left-expr> * <right-expr>'{multiplication}
 \>`<left-expr> / <right-expr>'{division}
-\>`<left-expr> mod <right-expr>'{modulo}
+\>`<left-expr> mod <right-expr>'{mod}@{`mod'}
 \>`<left-expr> ^ <right-expr>'{power}
 
 The arithmetic operators are `+', `-', `*', `/', `mod', and `^'.
 The meanings (semantics) of those operators generally depend on the types
-of the operands involved, and they are defined in the various chapters
-describing the types. However basically the meanings are as follows.
+of the operands involved, and, except for `mod', they are defined in the 
+various chapters describing the types. However basically the meanings are
+as follows.
 
-`+' denotes the addition, and `-' the subtraction of additive elements.
-`*' is the multiplication of multiplicative elements,
-`/' is the multiplication of the left operand with the inverse of the
-right operand.
-`mod' is only defined for integers and rationals and denotes the modulo
-operation.
+`<a> + <b>' denotes the addition of additive elements <a> and <b>.
+
+`<a> - <b>' denotes the addition of <a> and the additive inverse of <b>.
+
+`<a> * <b>' denotes the multiplication of multiplicative elements <a> and
+<b>.
+
+`<a> / <b>' denotes the multiplication of <a> with the multiplicative
+inverse of <b>.
+
+`<a> mod <b>' is defined only for integer or rational  left  operand  <a>
+and for non-zero integer right operand <b>.  If  <a>  and  <b>  are  both
+integers, `<a> mod <b>' is the integer <r> in the  integer  range  `0  ..
+|<b>| - 1' satisfying `<a> = <r> + <b><q>',  for some integer <q>  (where
+the operations occurring have their usual meaning over the  integers,  of
+course).
+
+\index{modular remainder}\index{modular inverse}
+\index{coprime}\index{relatively prime}
+If <a> is a rational number and <b> is a non-zero integer, and `<a> = <m>
+/ <n>' where <m> and <n> are coprime integers  with  <n>  positive,  then
+`<a> mod <b>' is the integer <r> in the integer range `0 ..  |<b>|  -  1'
+such that <m> is congruent to `<r><n>' modulo <b>, and <r> is called the
+``modular remainder'' of <a> modulo <b>. Also,  `1  /  <n>  mod  <b>'  is
+called the ``modular inverse'' of <n> modulo <b>. (A pair of integers  is
+said to be *coprime* (or *relatively prime*) if their gcd is 1.)
+
+With the above definition, `4 / 6 mod 32' equals `2 / 3 mod 32' and hence
+exists (and is equal to 22), despite the  fact  that  6  has  no  inverse
+modulo 32.
+
+*Note.*
+For rational <a>, `<a> mod <b>'  could have been defined to be the
+non-negative rational <c> less than `|<b>|' such that `<a> - <c>' is a
+multiple of <b>. However this definition is seldom useful and *not* the
+one chosen for {\GAP}.
+
 `+' and `-' can also be used as unary operations.
-The unary `+' is ignored and unary `-' is equivalent to multiplication by -1.
-`^' denotes powering of a multiplicative element if the right operand
-is an integer,
-and is also used to denote the action of a group element on a point of a set
-if the right operand is a group element.
+The unary `+' is ignored. The unary `-' returns the additive inverse of
+its operand; over the integers it is equivalent to multiplication by `-1'.
 
+`^' denotes powering of a multiplicative element if the right operand  is
+an integer, and is also used to denote the action of a group element on a
+point of a set if the right operand is a group element.
+
+\index{operators!precedence}
 The *precedence* of those operators is as follows. The powering operator
 `^' has the highest precedence, followed by the unary operators `+' and
 `-', which are followed by the multiplicative operators `*', `/', and
@@ -751,6 +787,7 @@ precedence.  That means that the expression `-2 ^ -2 * 3 + 1' is
 interpreted as `(-(2 ^ (-2)) * 3) + 1'. If in doubt use parentheses
 to clarify your intention.
 
+\index{operators!associativity}
 The *associativity* of the arithmetic operators is as follows.
 `^' is not associative, i.e., it is illegal to write `2^3^4',
 use parentheses to clarify whether you mean `(2^3)^4' or `2^(3^4)'.
@@ -837,16 +874,11 @@ assigned a permutation or a list or anything else.
 
 \beginexample
 gap> data:= rec( numbers:= [ 1, 2, 3 ] );
-rec(
- numbers := [ 1, 2, 3 ] )
+rec( numbers := [ 1, 2, 3 ] )
 gap> data.string:= "string";; data;
-rec(
-  numbers := [ 1, 2, 3 ],
-  string := "string" )
+rec( numbers := [ 1, 2, 3 ], string := "string" )
 gap> data.numbers[2]:= 4;; data;
-rec(
-  numbers := [ 1, 4, 3 ],
-  string := "string" )
+rec( numbers := [ 1, 4, 3 ], string := "string" )
 \endexample
 
 If the expression <expr> is a function call then this function must
@@ -912,10 +944,10 @@ An example is `Sortex' which sorts a list and returns the corresponding
 permutation of the entries (see~"Sortex").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{If}
+\Section{If}\null
 
-\index{fi}\index{then}\index{else}\index{elif}
-\>`if <bool-expr1> then <statements1> \{ elif <bool-expr2> then <statements2> \}[ else <statements3> ] fi;'{if statement}
+\indextt{fi}\indextt{then}\indextt{else}\indextt{elif}
+\>`if <bool-expr1> then <statements1> \{ elif <bool-expr2> then <statements2> \}[ else <statements3> ] fi;'{if statement}@{`if' statement}
 
 The `if' statement allows one to execute statements depending on the
 value of some boolean expression. The execution is done as follows.
@@ -981,11 +1013,11 @@ gap> s;
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{While}
+\Section{While}\null
 
-\index{loop!while}
+\atindex{loop!while}{@loop!\noexpand`while'}
 
-\>`while <bool-expr> do <statements> od;'{while loop}
+\>`while <bool-expr> do <statements> od;'{while loop}@{`while' loop}
 
 The `while' loop executes the statement sequence <statements> while the
 condition <bool-expr> evaluates to `true'.
@@ -1020,11 +1052,11 @@ gap> s;
 A `while' loop may be left prematurely using `break', see "Break".
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Repeat}
+\Section{Repeat}\null
 
-\index{loop!repeat}\index{until}
+\atindex{loop!repeat}{@loop!\noexpand`repeat'}\indextt{until}
 
-\>`repeat <statements> until <bool-expr>;'{repeat loop}
+\>`repeat <statements> until <bool-expr>;'{repeat loop}@{`repeat' loop}
 
 The `repeat' loop executes the statement sequence <statements> until the
 condition <bool-expr> evaluates to `true'.
@@ -1061,11 +1093,11 @@ A `repeat' loop may be left prematurely using `break', see "Break".
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{For}
+\Section{For}\null
 
-\index{loop!for}\index{do}\index{od}
+\atindex{loop!for}{@loop!\noexpand`for'}\indextt{do}\indextt{od}
 
-\>`for <simple-var> in <list-expr> do <statements> od;'{for loop}
+\>`for <simple-var> in <list-expr> do <statements> od;'{for loop}@{`for' loop}
 
 The `for' loop executes  the statement sequence <statements> for every
 element of the list <list-expr>.
@@ -1121,7 +1153,7 @@ gap> for i in l do
 >    Print( i, " " );
 >    if i mod 2 = 0 then Add( l, 3 * i / 2 ); fi;
 > od; Print( "\n" );
-1 2 3 4 5 6 3 6 9 9
+1 2 3 4 5 6 3 6 9 9 
 gap> l;
 [ 1, 2, 3, 4, 5, 6, 3, 6, 9, 9 ]
 \endexample
@@ -1135,9 +1167,9 @@ gap> for i in l do
 >    Print( i, " " );
 >    l := [];
 > od; Print( "\n" );
-1 2 3 4 5 6
+1 2 3 4 5 6 
 gap> l;
-[ ]
+[  ]
 \endexample
 
 \>`for <variable> in <iterator> do <statements> od;'{loop over iterator}
@@ -1182,10 +1214,10 @@ combines especially well with a loop over an iterator, as a way of
 searching through a domain for an element with some useful property.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Break}
+\Section{Break}\null
 
 \index{loops!leaving}
-\>`break;'{break statement}
+\>`break;'{break statement}@{`break' statement}
 
 The statement `break;' causes an immediate exit from the innermost
 loop enclosing it. It is an error to use this statement other than
@@ -1208,12 +1240,12 @@ A break statement can only appear inside a loop
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Functions}
+\Section{Function}\null
 
-\index{function}\index{end}\index{local}
-\index{recursion}\index{recursive functions}
+\index{functions!definition of}\indextt{end}\indextt{local}
+\index{recursion}\index{functions!recursive}
 \index{environment}\index{body}
-\>`function ( [ <arg-ident> \{, <arg-ident>\} ] )'{function definition}
+\>function( [ <arg-ident> \{, <arg-ident>\} ] )
 \){    [local  <loc-ident> \{, <loc-ident>\} ; ]}
 \){    <statements>}
 \){end}
@@ -1264,6 +1296,7 @@ Note that the recursive version needs `2 * fib(<n>)-1' steps to compute
 steps.  Both are not optimal however, the library function `Fibonacci'
 only needs about `Log(<n>)' steps.
 
+\index{functions!definition by arrow notation}
 \>`<arg-ident> -> <expr>'{arrow notation for functions}
 
 This is a shorthand for
@@ -1333,8 +1366,9 @@ This feature should be used rarely, since its implementation in {\GAP} is
 not very efficient.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Return}
+\Section{Return}\null
 
+\indextt{return}
 \>`return;'{return from functions}
 
 In this form `return' terminates the call of the innermost function that
@@ -1361,10 +1395,13 @@ in~"Functions".
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Syntax in BNF}
 
-\index{BNF}
+\atindex{BNF}{@BNF}
 
-This section contains the definition  of the {\GAP} syntax in Backus-Naur
-form. A few recent additions to the syntax may be missing from this definition.
+This section contains the definition of the {\GAP} syntax in
+Backus-Naur form. A few recent additions to the syntax may be missing
+from this definition. Also, the actual rules for identifier names
+implemented by the system, are somewhat more permissive than those
+given below (see section "Identifiers").
 
 A  BNF is a set of rules, whose left side  is the name of  a  syntactical
 construct.  Those  names  are enclosed in angle  brackets and  written in

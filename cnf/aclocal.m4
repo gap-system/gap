@@ -23,7 +23,7 @@ dnl ##
 AC_DEFUN(GP_C_UNDERSCORE_SYMBOLS,
 [AC_CHECK_PROGS( NM, nm )
 AC_CACHE_CHECK(whether symbols begin with an underscore, gp_cv_c_underscore_symbols,
-[echo 'int foo() {}' > conftest.c
+[echo 'int foo() { return 0;}' > conftest.c
 ${CC-cc} -c conftest.c 2>&1
 if test -z "$NM" ;  then
   AC_MSG_ERROR( cannot find "nm" )
@@ -104,6 +104,11 @@ dnl #########################################################################
 dnl ##
 dnl ## choose CFLAGS more carefully
 dnl ##
+dnl ##  For alpha/cc (or some flavours of this at least) -O3 is faster
+dnl ##  but seems to reveal a compiler bug applying to stats.c and causing
+dnl ##  SyCompileInput to be clobbered while PrintStatFuncs is being
+dnl ##  initialized
+dnl ##
 AC_DEFUN(GP_CFLAGS,
 [AC_CACHE_CHECK(C compiler default flags, gp_cv_cflags,
  [ case "$host-$CC" in
@@ -118,19 +123,19 @@ AC_DEFUN(GP_CFLAGS,
     i386-*-egcs )
         gp_cv_cflags="-g -O2 -mcpu=i386";;
     alphaev6-*-osf4*-cc )
-	gp_cv_cflags="-g3 -arch ev6 -O3 ";;
+	gp_cv_cflags="-g3 -arch ev6 -O1 ";;
     alphaev56-*-osf4*-cc )
-	gp_cv_cflags="-g3 -arch ev56 -O3";;
+	gp_cv_cflags="-g3 -arch ev56 -O1";;
     alphaev5-*-osf4*-cc )
-	gp_cv_cflags="-g3 -arch ev5 -O3";;
+	gp_cv_cflags="-g3 -arch ev5 -O1";;
     alpha*-*-osf4*-cc )
-	gp_cv_cflags="-g3 -O3";;
+	gp_cv_cflags="-g3 -O1";;
     *aix*cc )
 	gp_cv_cflags="-g -O3";;
     *-solaris*-cc )
 	gp_cv_cflags="-fast -erroff=E_STATEMENT_NOT_REACHED";;
     *-irix*-cc )
-	gp_cv_cflags="-O3 -woff 1110,1167";;
+	gp_cv_cflags="-O3 -woff 1110,1167,1174,1552";;
     * )
         gp_cv_cflags="-O";;
    esac 
@@ -178,6 +183,8 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
         gp_cv_prog_cc_cdynoptions=" -Wall -O2 -arch $hostcpu";;
     *-osf*-cc )
 	gp_cv_prog_cc_cdynoptions=" -shared -x -O2";;
+    *-irix* )
+        gp_cv_prog_cc_cdynoptions=" -O3 -woff 1110,1167,1174,1552";;
    
     * )
         gp_cv_prog_cc_cdynoptions="UNSUPPORTED";;
@@ -191,6 +198,8 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
         gp_cv_prog_cc_cdynlinker="cc";;
     *-osf*-cc )
 	gp_cv_prog_cc_cdynlinker="cc";;
+    *-irix* )
+        gp_cv_prog_cc_cdynlinker="ld";;
     * )
         gp_cv_prog_cc_cdynlinker="echo";;
    esac 
@@ -207,7 +216,8 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
 	gp_cv_prog_cc_cdynlinking="-shared";;
     *osf*cc )
 	gp_cv_prog_cc_cdynlinking="-shared -r";;
-
+    *-irix* )
+       gp_cv_prog_cc_cdynlinking="-shared";;  
     *-nextstep*cc )
         gp_cv_prog_cc_cdynlinking="-arch $hostcpu -Xlinker -r -Xlinker -x -nostdlib";;
     *solaris* )

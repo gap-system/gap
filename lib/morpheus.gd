@@ -37,6 +37,9 @@ DeclareProperty( "IsGroupOfAutomorphisms", IsGroup );
 
 InstallTrueMethod( IsHandledByNiceMonomorphism,IsGroupOfAutomorphisms );
 
+InstallSubsetMaintenance( IsGroupOfAutomorphisms,
+    IsGroup and IsGroupOfAutomorphisms, IsGroup );
+
 #############################################################################
 ##
 #A  AutomorphismDomain(<G>)
@@ -160,11 +163,16 @@ DeclareGlobalFunction("MorMaxFusClasses");
 ##  \enditems
 ##  
 ##  <action> is a number whose bit-representation indicates the requirements
-##  which are enforced on the element tuples found:\par\noindent
-##  1\quad homomorphism\par\noindent
-##  2\quad injective\par\noindent
-##  4\quad surjective\par\noindent
-##  8\quad find all (otherwise stops after the first find)\par\noindent
+##  which are enforced on the element tuples found:
+##  \beginlist
+##  \item{1}   homomorphism
+##
+##  \item{2}   injective
+##
+##  \item{4}   surjective
+##
+##  \item{8}   find all (otherwise stops after the first find)
+##  \endlist
 ##  If the search is for homomorphisms, the function returns homomorphisms
 ##  obtained by mapping the given generators `gens' instead of element tuples.
 ##
@@ -217,6 +225,13 @@ DeclareGlobalFunction("IsomorphismAbelianGroups");
 ##  computes an isomorphism between the groups <G> and <H>
 ##  if they are isomorphic and returns `fail' otherwise.
 ##
+##  With the existing methods the amount of time needed grows with
+##  the size of a generating system of <G>. (Thus in particular for
+##  $p$-groups calculations can be slow.) If you do only need to know
+##  whether groups are isomorphic, you might want to consider `IdSmallGroup'
+##  (see~"IdSmallGroup") or the random isomorphism test
+##  (see~"RandomIsomorphismTest").
+##
 DeclareGlobalFunction("IsomorphismGroups");
 
 #############################################################################
@@ -226,15 +241,31 @@ DeclareGlobalFunction("IsomorphismGroups");
 ##  computes all epimorphisms from <F> onto <G> up to automorphisms of <G>.
 ##  This classifies all factor groups of <F> which are isomorphic to <G>.
 ##
+##  With the existing methods the amount of time needed grows with
+##  the size of a generating system of <G>. (Thus in particular for
+##  $p$-groups calculations can be slow.)
+##
+##  If the `findall' option is set to `false', the algorithm will stop once
+##  one homomorphism has been found (this can be faster and might be
+##  sufficient if not all homomorphisms are needed).
+##
 DeclareOperation("GQuotients",[IsGroup,IsGroup]);
 
 #############################################################################
 ##
 #O  IsomorphicSubgroups(<G>,<H>)  monomorphisms from H onto G up to conjugacy
 ##
-##  computes all monomorphisms from <H> onto <G> up to <G>-conjugacy of the
+##  computes all monomorphisms from <H> into <G> up to <G>-conjugacy of the
 ##  image groups.  This classifies all <G>-classes of subgroups of <G> which
 ##  are isomorphic to <H>.
+##
+##  With the existing methods the amount of time needed grows with
+##  the size of a generating system of <G>. (Thus in particular for
+##  $p$-groups calculations can be slow.)
+##
+##  If the `findall' option is set to `false', the algorithm will stop once
+##  one homomorphism has been found (this can be faster and might be
+##  sufficient if not all homomorphisms are needed).
 ##
 DeclareOperation("IsomorphicSubgroups",[IsGroup,IsGroup]);
 

@@ -497,6 +497,12 @@ InstallMethod( \^,
     [ IsMultiplicativeElementWithInverse, IsInt and IsNegRat ], 0,
     POW_OBJ_INT );
 
+InstallMethod( \^, "catch wrong root taking", true,
+    [ IsMultiplicativeElement, IsRat ], 0,
+function(a,e)
+  Error("^ cannot be used here to compute roots (use `RootInt' instead?)");
+end);
+
 
 #############################################################################
 ##
@@ -729,6 +735,16 @@ InstallMethod(\=,"wrapped additive elements",IsIdenticalObj,
    IsAdditiveElementAsMultiplicativeElementRep],0,
 function(x,y)
   return x![1]=y![1];
+end);
+
+#############################################################################
+##
+#M  IsIdempotent( <elm> )
+##
+InstallMethod(IsIdempotent,"multiplicative element",true,
+  [IsMultiplicativeElement],0,
+function(x)
+  return x*x = x;
 end);
 
 

@@ -8,25 +8,34 @@
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  Data structures for storing general group chains.
-##  The group attribute ChainSubgroup(G) stores the next group down in the 
-##  chain (ie. the structure is recursive).  ChainSubgroup(G) should have 
-##  an attribute Transversal which describes a transversal of 
-##  ChainSubgroup(G) in G, as in gptransv.[gd,gi]
-##
-##  The command "ChainSubgroup" will use the default
-##  method for computing chains -- currently this is
-##  random Schreier-Sims.
-##  Warning: This algorithm is Monte-Carlo.
-##  ChainSubgroup is mutable, since it may start as the trivial
-##      subgroup, and then grow as elements are sifted in, and some stick.
-##      This allows us to do, if we want:
-##          SetChainSubgroup(G, ClosureGroup(ChainSubgroup(G), siftee) );
-##
 ##  Requires: transversal
 ##
 Revision.grpchain_gd :=
     "@(#)$Id$";
+
+#1
+##  Data structures for storing general group chains. Note that this does 
+##  *not* replace `StabChain'.
+##  The group attribute `ChainSubgroup(<G>)' stores the next group down 
+##  in the chain (i.e.~the structure is recursive).  `ChainSubgroup(<G>)' 
+##  should have an attribute `Transversal' which describes a transversal 
+##  of `ChainSubgroup(<G>)' in <G>, as in `gptransv.[gd,gi]'.
+##  
+##  The command `ChainSubgroup' will use the default method for computing
+##  chains -- currently this is random Schreier-Sims, unless the group is
+##  nilpotent.
+##  *Warning:* This algorithm is Monte-Carlo.
+##  `ChainSubgroup' is mutable, since it may start as the trivial subgroup,
+##  and then grow as elements are sifted in, and some stick.
+##  This allows us to do, if we want, things like:
+##  
+##  \){\kernttindent}SetChainSubgroup(<G>, ClosureGroup(ChainSubgroup(<G>), %
+##  <siftee>) );
+##  
+##  Whether this code is used instead of previous methods is determined by 
+##  4 variables which control the behaviour of the filter `IsChainTypeGroup'.
+##  See the file `gap.../lib/grpchain.gd' for details.
+##  
 
 DeclareInfoClass( "InfoChain" );
 
@@ -47,16 +56,17 @@ UsePermChainSubgroups := false;
 ##  Use our code rather than StabChain
 UseStabChainViaChainSubgroup := false;
 
-##  Cutoff for using our code ratherr than nice homomorphisms for mx grps
+##  Cutoff for using our code rather than nice homomorphisms for mx grps
 SmallSpaceCutoff := 50000;
 
 #############################################################################
 ##
-#A  ChainSubgroup
+#A  ChainSubgroup( <G> )
 ##
 ##  Computes the chain, if necessary, and returns the next subgroup in the 
 ##  chain.  The current default is to use the random Schreier-Sims algorithm,
-##  unless the group is known to be nilpotent, in which case MakeHomChain is used.
+##  unless the group is known to be nilpotent, in which case `MakeHomChain'
+##  is used.
 ##
 DeclareAttribute( "ChainSubgroup", IsGroup, "mutable" );
 
@@ -64,17 +74,17 @@ DeclareAttribute( "ChainSubgroup", IsGroup, "mutable" );
 ##
 #A  Transversal( <G> )
 ##
-##  The transversal of this group in the previous subgroup of the chain.
+##  The transversal of the group <G> in the previous subgroup of the chain.
 ##
 DeclareAttribute( "Transversal", IsGroup );  
 
 
 #############################################################################
 ##
-#M  IsInChain( <G> )
+#O  IsInChain( <G> )
 ##
-##  A group is in a chain if it has either a ChainSubgroup or 
-##  a Transversal.
+##  A group <G> is in a chain if it has either a `ChainSubgroup' or 
+##  a `Transversal'.
 ##
 DeclareFilter( "IsInChain" );     
 InstallTrueMethod( IsInChain, HasChainSubgroup );
@@ -96,8 +106,8 @@ InstallImmediateMethod( IsFFEMatrixGroupOverLargeSpace,
 ##
 #P  IsChainTypeGroup( <G> )
 ##
-##  A group is "chain type" if it is the kind of group where
-##  computations are best done with chains.
+##  returns `true' if the group <G> is ``chain type'', i.e. it is the kind
+##  of group where computations are best done with chains.
 ##
 DeclareProperty( "IsChainTypeGroup", IsGroup );
 InstallImmediateMethod( IsChainTypeGroup, IsPermGroup, 0,
@@ -112,8 +122,8 @@ InstallMethod( IsChainTypeGroup, "default:  false if no immediate method ran",
 ##
 #P  IsStabChainViaChainSubgroup( <G> )
 ##
-##  True if stabiliser chains for <G> are to be computed with our code
-##  rather than StabChain.
+##  returns `true' if stabiliser chains for <G> are to be computed with our 
+##  code rather than with `StabChain'.
 ##
 DeclareProperty( "IsStabChainViaChainSubgroup", IsPermGroup );                       
 InstallImmediateMethod( IsStabChainViaChainSubgroup, IsPermGroup, 0,
@@ -121,10 +131,10 @@ InstallImmediateMethod( IsStabChainViaChainSubgroup, IsPermGroup, 0,
 
 #############################################################################
 ##
-#P  GeneratingSetIsComplete( <> )
+#P  GeneratingSetIsComplete( <G> )
 ##
-##  True if the generating set of the group is complete.  For example,
-##  for a stabiliser subgroup this is true if our strong generators
+##  returns `true' if the generating set of the group <G> is complete.  For 
+##  example, for a stabiliser subgroup this is true if our strong generators
 ##  have been verified.
 ##
 DeclareProperty( "GeneratingSetIsComplete", IsGroup );
@@ -160,8 +170,8 @@ DeclareOperation( "Sift",
 ##
 #F  SizeOfChainOfGroup( <G> )
 ##
-##  Uses the chain to compute the size of a group.  Unlike Size(G),
-##  this does not set the Size attribute, which is useful if the chain is
+##  Uses the chain to compute the size of a group.  Unlike `Size(<G>)',
+##  this does not set the `Size' attribute, which is useful if the chain is
 ##  not known to be complete.
 ##  
 DeclareGlobalFunction( "SizeOfChainOfGroup", [IsGroup] );
@@ -186,8 +196,8 @@ DeclareGlobalFunction( "ChainStatistics", [IsGroup and HasChainSubgroup ] );
 ##
 #F  HasChainHomomorphicImage( <G> )
 ##
-##  Does <G> have a chain subgroup derived from a homomorphic image.
-##  This will be false for stabiliser, trivial, and sift function chain 
+##  Does <G> have a chain subgroup derived from a homomorphic image?
+##  This will be `false' for stabiliser, trivial, and sift function chain 
 ##  subgroups.  It will be true for homomorphism and direct product chain
 ##  subgroups.
 ##
@@ -197,7 +207,7 @@ DeclareGlobalFunction( "HasChainHomomorphicImage" );
 ##
 #F  ChainHomomorphicImage( <G> )
 ##
-##  Returns the chain homomorphic image, or fail if no such image exists.
+##  Returns the chain homomorphic image, or `fail' if no such image exists.
 ##
 DeclareGlobalFunction( "ChainHomomorphicImage" );
 
@@ -226,7 +236,7 @@ DeclareAttribute( "BaseOfGroup", IsGroup and IsInChain );
 ##
 #O  ExtendedGroup( <G>, <g> )
 ##
-##  Add a new Schreier generator for <G>
+##  Add a new Schreier generator for <G>.
 ##
 DeclareOperation( "ExtendedGroup", 
     [ IsGroup and IsInChain, IsAssociativeElement ] );
@@ -255,7 +265,7 @@ DeclareGlobalFunction( "ChainSubgroupByStabiliser",
 ##
 #A  OrbitGeneratorsOfGroup( <G> )
 ##
-##  Generators used to compute the orbit of <G>.  Used by baseim.[gd,gi]
+##  Generators used to compute the orbit of <G>.  Used by `baseim.[gd,gi]'.
 ##
 DeclareAttribute( "OrbitGeneratorsOfGroup", IsGroup );
 
@@ -273,27 +283,28 @@ DeclareAttribute( "OrbitGeneratorsOfGroup", IsGroup );
 #F  ChainSubgroupByHomomorphism( <hom> )
 ##
 ##  Form a chain subgroup by the kernel of <hom>.
-##  The subgroup will start with no generators, and will have a hom
+##  The subgroup will start with no generators, and will have a <hom>
 ##  transversal.
 ##
 DeclareGlobalFunction( "ChainSubgroupByHomomorphism", [ IsGroupHomomorphism ] );
 
 #############################################################################
 ##
-#F  ChainSubgroupByProjectionFunction( <G>, <kernelSubgp>, 
-#F	<imgSubgp>, <projFnc> )
+#F  ChainSubgroupByProjectionFunction( <G>, <kernelSubgp>, <imgSubgp>, %
+#F  <projFnc> )
 ##
 ##  When the homomorphism of a quotient group is a projection, then
-##     there is an internal semidirect product, for which TransversalElt()
-##     has a direct implementation as the projection.
-##     hom will be the projection, and elt->ImageElm(hom,elt) is the map.
+##  there is an internal semidirect product, for which `TransversalElt()'
+##  has a direct implementation as the projection.
+##  <hom> will be the projection, and `<elt> -> ImageElm(<hom>, <elt>)' is 
+##  the map.
 ##
 DeclareGlobalFunction( "ChainSubgroupByProjectionFunction",
     [ IsGroup, IsGroup, IsFunction ]); # Ideally, IsProjection, if it existed.
 
 #############################################################################
 ##
-#F  QuotientGroupByChainHomomorphicImage( quo or quo, quo2 )
+#F  QuotientGroupByChainHomomorphicImage( <quo>[, <quo2>] )
 ##
 ##  This function deals with quotient groups of quotient groups in a chain.
 ##
@@ -374,4 +385,7 @@ DeclareGlobalFunction( "ChainSubgroupBySiftFunction",
     [ IsGroup, IsGroup, IsFunction ] );
 
 
-#E
+#############################################################################
+##
+#E  grpchain.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##

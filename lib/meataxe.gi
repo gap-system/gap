@@ -7,9 +7,8 @@
 #H  @(#)$Id$ 
 ##
 #Y  Copyright 1994 -- School of Mathematical Sciences, ANU   
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  (C) 1998-2001 School Math. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the 'Smash'-MeatAxe modified for GAP4 and using the 
 ##  standard MeatAxe interface.  It defines the MeatAxe SMTX.
@@ -17,7 +16,7 @@
 Revision.meataxe_gi:=
   "@(#)$Id$";
 
-GModuleByMats:=function(arg)
+InstallGlobalFunction(GModuleByMats,function(arg)
 local l,f,dim,m;
   l:=arg[1];
   f:=arg[Length(arg)];
@@ -40,30 +39,166 @@ local l,f,dim,m;
     Error("if no generators are given the dimension must be given explicitly");
   else
     dim:=arg[2];
-    l:=[ Immutable( IdentityMat(dim,f) ) ];
+    l:=[ ImmutableMatrix(f, IdentityMat(dim,f) ) ];
     m.smashMeataxe:=rec(isZeroGens:=true);
   fi;
   m.dimension:=dim;
   m.generators:=l;
 
   return m;
-end;
+end);
 
-DeclareInfoClass("InfoMeatAxe");
+#############################################################################
+##
+#F  TrivialGModule ( g, F ) . . . trivial G-module
+##
+##  g is a finite group, F a finite field, trivial smash G-module computed.
+InstallGlobalFunction(TrivialGModule,function (g, F)
+local mats;
+  mats := List(GeneratorsOfGroup(g),i->[[One(F)]]);
+  return GModuleByMats(mats,F);
+end);
 
-SMTX:=rec(name:="The Smash MeatAxe");
-MTX:=SMTX;
+#############################################################################
+##
+#F  InducedGModule ( g, h, m ) . . . calculate an induced G-module
+##
+## h should be a subgroup of a finite group g, and m a smash
+## GModule for h.
+## The induced module for g is calculated.
+InstallGlobalFunction(InducedGModule,function (g, h, m)
 
-SMTX.Getter := function(string)
-  return function(module)
-    if not (IsBound(module.smashMeataxe) and 
-            IsBound(module.smashMeataxe.(string))) then
-      return fail;
-    else
-      return module.smashMeataxe.(string);
-    fi;
-  end;
-end;
+   local  gensh, mats, ghom, gdim, hdim, F, index, gen, genim,
+         gensim, r, i, j, k, l, elt, im;
+
+   if IsGroup (g) = false then
+      return Error ("First argument is not a group.");
+   fi;
+   if SMTX.IsMTXModule (m) = false then
+      return Error ("Second argument is not a meataxe module.");
+   fi;
+
+   gensh := GeneratorsOfGroup (h);
+   mats := SMTX.Generators (m);
+   if Length (gensh) <> Length (mats) then
+      Error ("m does not have same number of generators as h = G1");
+   fi;
+
+   hdim := SMTX.Dimension(m);
+   F := SMTX.Field(m);
+   ghom := GroupHomomorphismByImages(h,GL(hdim,Size(F)),gensh,mats);
+
+   #set up transveral
+   r := RightCosets (g, h);
+   index := Length (r);
+   for i in [1..index] do
+      r[i] := CanonicalRightCosetElement(h,Representative(r[i]));
+   od;
+
+   gdim := index*hdim;
+
+   #Now calculate images of generators.
+   gensim := [];
+   for gen in GeneratorsOfGroup(g) do
+      genim := NullMat (gdim, gdim, F);
+      for i in [1..index] do
+         j := Position (r, CanonicalRightCosetElement(h, r[i]*gen));
+         elt := r[i]*gen/r[j];
+         im := Image (ghom, elt);
+    #Now insert hdim x hdim matrix im in the correct place in the genim.
+         for k in [1..hdim] do
+            for l in [1..hdim] do
+               genim[ (i-1)*hdim+k][ (j-1)*hdim+l] := im[k][l];
+            od;
+         od;
+      od;
+      Add (gensim, genim);
+   od;
+
+   return GModuleByMats (gensim, F);
+
+end);
+
+#############################################################################
+##
+#F PermutationGModule ( g, F) . permutation module
+##
+## g is a permutation group, F a finite field.
+## The corresponding permutation module is output.
+InstallGlobalFunction(PermutationGModule,function (g, F)
+   local gens, deg;
+   gens := GeneratorsOfGroup(g);
+   deg := LargestMovedPoint(gens);
+   return GModuleByMats(List(gens,g->PermutationMat(g,deg,F)),F);
+end);
+
+###############################################################################
+##
+#F  TensorProductGModule ( m1, m2 )  . . tensor product of two G-modules
+##
+## TensorProductGModule calculates the tensor product of smash
+## modules m1 and m2. 
+## They are assumed to be modules over the same algebra so, in particular,
+## they  should have the same number of generators.
+## 
+InstallGlobalFunction(TensorProductGModule,function ( m1, m2)
+
+   local mat1, mat2, F1, F2,  gens, i, l;
+
+   mat1 := SMTX.Generators(m1); mat2 := SMTX.Generators(m2);
+   F1 := SMTX.Field(m1); F2 := SMTX.Field(m2);
+   if (F1 <> F2) then
+      Error ("GModules are defined over different fields.\n");
+   fi;
+   l := Length (mat1);
+   if (l <> Length (mat2)) then
+      Error ("GModules have different numbers of generators.");
+   fi;
+
+   gens := [];
+   for i in [1..l] do
+      gens[i] := KroneckerProduct (mat1[i], mat2[i]);
+   od;
+
+   return GModuleByMats(gens, F1);
+end);
+
+###############################################################################
+##
+#F  WedgeGModule ( module ) . . . . . wedge product of a G-module
+##
+## WedgeGModule calculates the wedge product of a G-module.
+## That is the action on antisymmetrix tensors.
+## 
+InstallGlobalFunction(WedgeGModule,function ( module)
+   local mats, mat, newmat, row, F, gens, dim, nmats, i, j, k, m, n, x;
+
+   mats := SMTX.Generators(module);
+   F := SMTX.Field(module);
+   nmats := Length (mats);
+   dim := SMTX.Dimension(module);
+
+   gens := [];
+   for i in [1..nmats] do
+      mat := mats[i];
+      newmat := [];
+      for j in [1..dim] do
+         for k in [1..j - 1] do
+            row := [];
+            for m in [1..dim] do
+               for n in [1..m - 1] do
+                  x := mat[j][m] * mat[k][n] - mat[j][n] * mat[k][m];
+                  Add (row, x);
+               od;
+            od;
+            Add (newmat, row);
+         od;
+      od;
+      Add (gens, newmat);
+   od;
+
+   return GModuleByMats(gens, F);
+end);
 
 SMTX.Setter := function(string)
   return function(module,obj)
@@ -148,6 +283,11 @@ SMTX.SetCentMat:=SMTX.Setter("centMat");
 SMTX.CentMatMinPoly:=SMTX.Getter("centMatMinPoly");
 SMTX.SetCentMatMinPoly:=SMTX.Setter("centMatMinPoly");
 
+SMTX.FGCentMat:=SMTX.Getter("fieldGenCentMat");
+SMTX.SetFGCentMat:=SMTX.Setter("fieldGenCentMat");
+SMTX.FGCentMatMinPoly:=SMTX.Getter("fieldGenCentMatMinPoly");
+SMTX.SetFGCentMatMinPoly:=SMTX.Setter("fieldGenCentMatMinPoly");
+
 SMTX.SetDegreeFieldExt:=SMTX.Setter("degreeFieldExt");
 
 LinearCombinationVecs := function(v,c)
@@ -201,12 +341,36 @@ SMTX_OrthogonalVector := function ( subbasis )
 end;
 SMTX.OrthogonalVector := SMTX_OrthogonalVector;
 
+SubGModLeadPos := function(sub,dim,subdim,zero)
+local leadpos,cfleadpos,i,j,k;
+   ## As in SpinnedBasis, leadpos[i] gives the position of the first nonzero 
+   ## entry (which will always be 1) of sub[i].
+
+   leadpos := [];
+   cfleadpos := [];
+   for i in [1..dim] do cfleadpos[i] := 0; od;
+   for i in [1..subdim] do
+      j := 1;
+      while j <= dim and sub[i][j]=zero do j := j + 1; od;
+      leadpos[i] := j; cfleadpos[j] := 1;
+      for k in [1..i - 1] do
+         if leadpos[k] = j then
+            Error ("Subbasis isn't normed.");
+         fi;
+      od;
+   od;
+  return [leadpos,cfleadpos];
+end;
+
 #############################################################################
 ##
-#F  SpinnedBasis ( v, matrices,F, [ngens] ) . . . . 
+#F  SpinnedBasis ( v, matrices, F, [ngens] ) . . . . 
 ## 
+## The first argument v  can either be a vector over the module on
+## which matrices act or a subspace.
+##
 ## SpinnedBasis computes a basis for the submodule defined by the action of the
-## matrix group generated by the list matrices on the vector v.
+## matrix group generated by the list matrices on v.
 ## F is the field over which we act.
 ## It is returned as a list of normed vectors.
 ## If the optional third argument is present, then only the first ngens
@@ -231,21 +395,22 @@ SMTX_SpinnedBasis := function ( arg  )
    fi;
    zero := Zero(matrices[1][1][1]);
    ans := [];
-   dim := Length (v);
-   leadpos := [];
-
-   j := 1;
-   while j <= dim and v[j] = zero do j := j + 1; od;
-   if j > dim then
-      return ans;
+   if Length(v)=0 then
+     return [];
    fi;
-   subdim := 1;
-   leadpos[1] := j;
-   w := (v[j]^-1) * v;
-
-   ConvertToVectorRep(w,F);
-   Add ( ans, w );
-
+   if not IsList(v[1]) then
+     v := [v];
+   fi;
+   ans := ShallowCopy(Basis(VectorSpace(F,v)));
+   for v in ans do ConvertToVectorRep(v,F); od;
+   if Length(ans)=0 then
+     return ans;
+   fi;
+   dim := Length(ans[1]);
+   subdim := Length(ans);
+   leadpos := SubGModLeadPos(ans,dim,subdim,zero);
+   leadpos := leadpos[1];
+     
    i := 1;
    while i <= subdim do
       for l in [1..ngens] do
@@ -278,31 +443,19 @@ SMTX_SpinnedBasis := function ( arg  )
       i := i + 1;
    od;
 
+   Sort(ans);
+   ans := Reversed(ans); #To bring it into semi-echelonised form.
    ans:=ImmutableMatrix(F,ans);
    return ans;
 end;
 SMTX.SpinnedBasis := SMTX_SpinnedBasis;
 
-SubGModLeadPos := function(sub,dim,subdim,zero)
-local leadpos,cfleadpos,i,j,k;
-   ## As in SpinnedBasis, leadpos[i] gives the position of the first nonzero 
-   ## entry (which will always be 1) of sub[i].
-
-   leadpos := [];
-   cfleadpos := [];
-   for i in [1..dim] do cfleadpos[i] := 0; od;
-   for i in [1..subdim] do
-      j := 1;
-      while j <= dim and sub[i][j]=zero do j := j + 1; od;
-      leadpos[i] := j; cfleadpos[j] := 1;
-      for k in [1..i - 1] do
-         if leadpos[k] = j then
-            Error ("Subbasis isn't normed.");
-         fi;
-      od;
-   od;
-  return [leadpos,cfleadpos];
+SMTX_SubGModule := function(module, subspace)
+## The submodule of module generated by <subspace>.
+  return SMTX.SpinnedBasis(subspace, SMTX.Generators(module),
+                                    SMTX.Field(module));
 end;
+SMTX.SubGModule := SMTX_SubGModule;
 
 #############################################################################
 ##
@@ -450,7 +603,7 @@ end;
 
 #############################################################################
 ##
-#F  SMTX.InducedActionSubmoduleNB ( module, sub ) . . . . . construct submodule
+#F  SMTX.InducedActionSubmoduleNB ( module, sub ) . . . . construct submodule
 ##
 ## module is a module record, and sub is a list of generators of a submodule.
 ## IT IS ASSUMED THAT THE GENERATORS OF SUB ARE NORMED.
@@ -482,7 +635,7 @@ SMTX.InducedActionSubmoduleNB := function ( module, sub )
    return smodule;
 end;
 
-# Dito, but allowing also unnormed modules
+# Ditto, but allowing also unnormed modules
 SMTX.InducedActionSubmodule := function(module,sub)
 local nb,ans,dim,subdim,smodule,F;
   nb:=SMTX.NormedBasisAndBaseChange(sub);
@@ -522,7 +675,7 @@ end;
 
 #############################################################################
 ##
-#F  SMTX.InducedActionFactorModule( module, sub [,compl] ) .  . generators of quotient
+#F  SMTX.InducedActionFactorModule( module, sub [,compl] )
 ##
 ## module is a module record, and sub is a list of generators of a submodule.
 ## (i.e. each has leading coefficient 1 in a unique place).
@@ -608,7 +761,7 @@ end;
 
 #############################################################################
 ##
-#F  SMTX.InducedAction( module, sub, typ ) . . .  
+#F  SMTX.InducedAction( module, sub, typ )
 ##  generators of sub- and quotient-module and original module wrt new basis
 ##  and new basis
 ## 
@@ -711,6 +864,12 @@ SMTX.SMCoRaEl:=SMTX_SMCoRaEl;
 #F  SMTX.IrreduciblityTest( module ) try to reduce a module over a finite
 ##                                      field
 ##
+## 27/12/2000.
+## New version incorporating Ivanyos/Lux method of handling one difficult case
+## for proving reducibility.
+## (See G.Ivanyos and K. Lux, `Treating the exceptional cases of the meataxe',
+##  Experimental Mathematics 9, 2000, 373-381.
+##
 ## module is a module record
 ## IsIrreducible ( ) attempts to decide whether module is irreducible.
 ## When it succeeds it returns true or false.
@@ -752,7 +911,8 @@ SMTX_IrreducibilityTest := function ( module )
    local matrices, tmatrices, ngens, ans,  M, mat, g1, g2, maxdeg, 
          newgenlist, coefflist, orig_ngens, zero, 
          N, NT, v, subbasis, fac, sfac, pol, orig_pol, q, dim, ndim, i,
-         l, trying, deg, facno, bestfacno, F, count, R, rt0,idmat ;
+         l, trying, deg, facno, bestfacno, F, count, R, rt0,idmat,
+         pfac1, pfac2, pfr, idemp, M2, mat2, mat3;
 
    rt0 := Runtime ();
    Info(InfoMeatAxe,1,"Calling MeatAxe. All times will be in milliseconds");
@@ -795,9 +955,9 @@ SMTX_IrreducibilityTest := function ( module )
    #Main loop starts - choose a random element of group algebra on each pass
    while trying  do
       count := count + 1;
-      if count > 300 then
+      if count mod 300 = 0 then
          Error ("Have generated 300 random elements and failed to prove\n",
-	        "or disprove irreducibility.");
+                "or disprove irreducibility. Type return to keep trying.");
       fi;
       maxdeg := Minimum(maxdeg * 2,dim);
       # On this pass, we only consider irreducible factors up to degree maxdeg.
@@ -832,9 +992,9 @@ SMTX_IrreducibilityTest := function ( module )
                fac := [pol];
             else
                fac := Factors(R, pol, rec(onlydegs:=[deg]));
-	       fac:=Filtered(fac,i->DegreeOfLaurentPolynomial(i)=deg);
+               fac:=Filtered(fac,i->DegreeOfLaurentPolynomial(i)=deg);
                Info(InfoMeatAxe,2,Length (fac)," factors of degree ",deg,
-	            ", Time = ",Runtime()-rt0,".");
+                    ", Time = ",Runtime()-rt0,".");
             fi;
          until fac <> [] or deg = maxdeg;
 
@@ -871,17 +1031,20 @@ SMTX_IrreducibilityTest := function ( module )
                facno := 1; l := Length (sfac);
                while facno <= l and trying do
                   mat := Value (sfac[facno], M,idmat);
+                  MakeImmutable(mat);
+                  ConvertToMatrixRep(mat,F);
                   Info(InfoMeatAxe,2,"Evaluated matrix on factor. Time = ",
-		       Runtime()-rt0,".");
+                       Runtime()-rt0,".");
                   N := NullspaceMat (mat);
                   v := N[1];
+                  ConvertToVectorRep(v,F);
                   ndim := Length (N);
 
                   Info(InfoMeatAxe,2,"Evaluated nullspace. Dimension = ",
-		       ndim,". Time = ",Runtime()-rt0,".");
+                       ndim,". Time = ",Runtime()-rt0,".");
                   subbasis := SMTX.SpinnedBasis (v, matrices, F,orig_ngens);
                   Info(InfoMeatAxe,2,"Spun up vector. Dimension = ",
-		       Length(subbasis),". Time = ",Runtime()-rt0,".");
+                       Length(subbasis),". Time = ",Runtime()-rt0,".");
                   if Length (subbasis) < dim then
                      # Proper submodule found 
                      trying := false;
@@ -898,27 +1061,76 @@ SMTX_IrreducibilityTest := function ( module )
                         od;
                      fi;
                      Info(InfoMeatAxe,2,"Transposed matrices. Time = ",
-		          Runtime()-rt0,".");
+                          Runtime()-rt0,".");
                      NT := NullspaceMat (mat);
+                     ConvertToVectorRep(NT[1],F);
                      Info(InfoMeatAxe,2,"Evaluated nullspace. Dimension = ",
-		          Length(NT),". Time = ",Runtime()-rt0, ".");
+                          Length(NT),". Time = ",Runtime()-rt0, ".");
                      subbasis:=SMTX.SpinnedBasis(NT[1],tmatrices,F,orig_ngens);
-		     Info(InfoMeatAxe,2,"Spun up vector. Dimension = ",
-		          Length(subbasis),". Time = ",Runtime()-rt0, ".");
+                     Info(InfoMeatAxe,2,"Spun up vector. Dimension = ",
+                          Length(subbasis),". Time = ",Runtime()-rt0, ".");
                      if Length (subbasis) < dim then
                         # subbasis is a basis for a submodule of the transposed 
                         # module, and the orthogonal complement of this is a 
-                        # submodule of the original module. So we find a vector                         # v in that, and then spin it. Of course we won't 
+                        # submodule of the original module. So we find a vector 
+                        # v in that, and then spin it. Of course we won't
                         # necessarily get the full orthogonal complement 
                         # that way, but we'll certainly get a proper submodule.
                         v := SMTX.OrthogonalVector (subbasis);
                         SMTX.SetSubbasis(module,
-			  SMTX.SpinnedBasis(v,matrices,F,orig_ngens));
+                          SMTX.SpinnedBasis(v,matrices,F,orig_ngens));
                         ans := false;
                      else
                         ans := true;
                         bestfacno := facno;
                      fi;
+                  fi;
+		  if trying and deg>1 and count>2 then
+                     Info(InfoMeatAxe,1,"Trying Ivanyos/Lux Method");
+                     #first find the appropriate idempotent
+                     pfac1 := sfac[facno];
+                     pfac2:= Quotient(R, orig_pol, sfac[facno]);
+                     while QuotRemLaurpols(pfac2, sfac[facno], 2) = Zero(R) do
+                       pfac1 := pfac1*sfac[facno];
+                       pfac2:= Quotient(R, pfac2, sfac[facno]);
+                     od;
+                     pfr := GcdRepresentation(pfac1, pfac2);
+                     idemp := QuotRemLaurpols(pfr[2]*pfac2, orig_pol, 2);
+		     #Now another random element in the group algebra.
+                     #and a random vector in the module
+                     g2 := Random (F);
+                     if IsOne(g2) then
+                          M2 := matrices[1];
+                        else
+                          M2 := g2 * matrices[1];
+                        fi;
+                     for g1 in [2..ngens] do
+                        g2 := Random (F);
+                        if IsOne(g2) then
+                          M2 := M2 + matrices[g1];
+                        elif not IsZero(g2) then
+                          M2 := M2 + g2 * matrices[g1];
+                        fi;
+                     od;
+                     Info(InfoMeatAxe,2,
+                         "Evaluated second random element in algebra.");
+                     v := Random(FullRowSpace(F,dim));
+                     mat2 := Value (idemp, M,idmat);
+                     MakeImmutable(mat2);
+                     ConvertToMatrixRep(mat2,F);
+                     mat3 := mat2*M2*mat2;
+                     v := v*(M*mat3 - mat3*M);
+                     #This vector might lie in a proper subspace!
+                     ConvertToVectorRep(v,F);
+                     subbasis := SMTX.SpinnedBasis (v, matrices, F,orig_ngens);
+                     Info(InfoMeatAxe,2,"Spun up vector. Dimension = ",
+                       Length(subbasis),". Time = ",Runtime()-rt0,".");
+                    if Length(subbasis) < dim and Length(subbasis) <> 0  then
+                       # Proper submodule found 
+                       trying := false;
+                       ans := false;
+                       SMTX.SetSubbasis(module, subbasis);
+                    fi;
                   fi;
                   facno := facno + 1;
                od; # going through irreducible factors of fixed degree.
@@ -958,6 +1170,7 @@ SMTX_IrreducibilityTest := function ( module )
    return ans;
 
 end;
+
 SMTX.IrreducibilityTest := SMTX_IrreducibilityTest;
 
 SMTX.IsIrreducible:=function(module)
@@ -1059,10 +1272,11 @@ SMTX_RandomIrreducibleSubGModule := function ( module )
          ngens := ngens + 1;
          matrices[ngens] := matrices[genpair[1]] * matrices[genpair[2]];
       od;
-      M:= Immutable( NullMat(dim,dim,Zero(F)) );
+      M:= ImmutableMatrix(F,NullMat(dim,dim,Zero(F)));
       for i in [1..ngens] do M := M + el[2][i] * matrices[i]; od;
       SMTX.SetAlgElMat(submodule2,M);
       N := NullspaceMat(Value(fac,M,M^0));
+      ConvertToVectorRep(N[1],F);
       SMTX.SetAlgElNullspaceVec(submodule2,N[1]);
       return [subbasis2, submodule2];
    fi;
@@ -1070,20 +1284,19 @@ SMTX_RandomIrreducibleSubGModule := function ( module )
 end;
 SMTX.RandomIrreducibleSubGModule := SMTX_RandomIrreducibleSubGModule;
 
-
 #############################################################################
 ##
 #F  SMTX.GoodElementGModule ( module ) . .  find good group algebra element
 ##                                       in an irreducible module
 ##
 ## module is a module that is already known to be irreducible.
-## GoodElementGModule finds a group algebra element with nullspace of 
+## GoodElementGModule finds a group algebra element with nullspace of
 ## minimal possible dimension. This dimension is 1 if the module is absolutely
 ## irreducible, and the degree of the relevant field extension otherwise.
 ## This is needed for testing for equivalence of modules.
 SMTX_GoodElementGModule := function ( module )
-local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens, 
-      fac, sfac, pol, oldpol,  q, deg, i, l, 
+local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
+      fac, sfac, pol, oldpol,  q, deg, i, l,
       trying, dim, mindim, F, R, count, rt0;
 
    rt0 := Runtime ();
@@ -1095,7 +1308,7 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
    fi;
    if  SMTX.IsAbsolutelyIrreducible(module) then
      mindim:=1;
-   else 
+   else
      mindim:=SMTX.DegreeFieldExt(module);
    fi;
 
@@ -1114,14 +1327,14 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
    # characteristic polynomials, factorize, and apply the irreducible factors
    # to el to get matrices with nontrivial nullspaces.
 
-   trying := true; 
+   trying := true;
    count := 0;
    newgenlist := [];
    while trying do
       count := count + 1;
-      if count > 300 then
+      if count mod 300 = 0 then
          Error ("Have generated 300 random elements and failed ",
-	        "to find a good one.");
+                "to find a good one. Type return to keep trying.");
       fi;
       Info(InfoMeatAxe,2,"Choosing random element number ",count,".");
 
@@ -1136,7 +1349,7 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
            Runtime()-rt0,".");
       #That is necessary in case p is defined over a smaller field that F.
       oldpol := pol;
-      #Now we extract the irreducible factors of pol starting with those 
+      #Now we extract the irreducible factors of pol starting with those
       #of low degree
       deg := 0;
       fac := [];
@@ -1147,9 +1360,9 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
                fac := [pol];
             else
                fac := Factors(R, pol, rec(onlydegs:=[deg]));
-	       fac:=Filtered(fac,i->DegreeOfLaurentPolynomial(i)<=deg);
+               fac:=Filtered(fac,i->DegreeOfLaurentPolynomial(i)<=deg);
                Info(InfoMeatAxe,2,Length(fac)," factors of degree ",deg,
-	            ", Time = ",Runtime()-rt0,".");
+                    ", Time = ",Runtime()-rt0,".");
                sfac := Set (fac);
             fi;
          until fac <> [];
@@ -1158,17 +1371,20 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
             i := 1;
             while i <= l and trying do
                mat := Value (fac[i], M,M^0);
+               MakeImmutable(mat);
+               ConvertToMatrixRep(mat,F);
                Info(InfoMeatAxe,2,"Evaluated matrix on factor. Time = ",
-	            Runtime()-rt0,".");
+                    Runtime()-rt0,".");
                N := NullspaceMat(mat);
                Info(InfoMeatAxe,2,"Evaluated nullspace. Dimension = ",
-		    Length(N),". Time = ",Runtime()-rt0,".");
+                    Length(N),". Time = ",Runtime()-rt0,".");
                if Length (N) = mindim then
                   trying := false;
                   SMTX.SetAlgEl(module, [newgenlist, coefflist]);
                   SMTX.SetAlgElMat (module, M);
                   SMTX.SetAlgElCharPol (module, oldpol);
                   SMTX.SetAlgElCharPolFac (module, fac[i]);
+		  ConvertToVectorRep(N[1],F);
                   SMTX.SetAlgElNullspaceVec(module, N[1]);
                   SMTX.SetAlgElNullspaceDimension (module, Length (N));
                fi;
@@ -1180,7 +1396,7 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
             for q in fac do
                pol := Quotient (R, pol, q);
             od;
-         fi; 
+         fi;
       od;
    od;
    Info(InfoMeatAxe,1,"Total time = ",Runtime()-rt0," microseconds.");
@@ -1225,6 +1441,7 @@ local   L, d, p, M, one, zero, R, h, v, w, i, j, nd, ans,
    d := Length ( A );
    M := ListWithIdenticalEntries(Length(A[1]),zero);
    Add ( M, M[1] );
+   ConvertToVectorRep(M,DefaultField(v));
 
    # L[i] (length d) will contain a vector with head entry 1 at position i,
    # which is in the current block.
@@ -1456,6 +1673,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
    one:= One (F);
    v0 := ListWithIdenticalEntries(Length(M0[1]),zero);
    v0[1] := one;
+   ConvertToVectorRep(F,v0);
 
    # v0 is just the vector (1, 0, 0....0) of length ndim. It has nothing
    # in particular to do with M0[1], but multiplying a vector that happens to be 
@@ -1480,7 +1698,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
 	    # form any centralising element is determined by its top row
 	    # (which may be anything but the zero vector).
 
-            if C = [] then
+            if Length(C)=0 then
                C[1] := [];
                repeat
                   ok := 0;
@@ -1490,6 +1708,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
                   od;
                until ok=1;
                for i in [2..ndim] do C[i] := C[i - 1] * M0; od; 
+	       C:=ImmutableMatrix(F,C);
             fi;
             # C0 is the Frobenius form for the action of this power on one
 	    # of its blocks, B (all blocks have the same size). basisBN will
@@ -1576,91 +1795,99 @@ SMTX.DegreeSplittingField:=function(module)
          *SMTX.DegreeFieldExt(module);
 end;
 
-# #############################################################################
-# ##
-# #F  FieldGenCentMat ( module ) . . find a centralizing matrix that generates
-# ##                                the centralizing field of an irred. module
-# ##
-# ## FieldGenCentMat ( ) should only be applied to modules that have already
-# ## been proved irreducible using IsIrreducible. It then tests for absolute
-# ## irreducibility (if not already known) and does nothing if module is
-# ## absolutely irreducible. Otherwise, it replaces the centMat component
-# ## by a matrix that generates (multiplicatively) the centralizing field
-# ## (i.e. its multiplicative order is q^e - 1, where e is the degree of the
-# ## centralizing field. This is not yet used, but maybe in future, if we
-# ## wish to reduce the group to matrices over the larger field.
-# ## It also resets the SmashCentMatMinPoly component.
-# FieldGenCentMat := function ( module )
-#    local e, F, R, q, qe, minpol, pp, 
-#          M, v, M0, v0, C, C0, centmat, newcentmat, genpol, looking, 
-#          i, l, okd; 
-# 
-#    if SMTX.IsMTXModule (module) = false then
-#       return Error ("Argument of IsIrreducible is not a module.");
-#    elif ReducibleFlag (module) <> false then
-#       return Error ("GModule is not known to be irreducible.");
-#    elif AbsReducibleFlag (module) = "unknown" then 
-#       IsAbsolutelyIrreducible (module);
-#    fi;
-# 
-#    if AbsReducibleFlag (module) = false then
-#       return;
-#    fi;
-# 
-#    F := SMTX.Field (module);
-#    R := PolynomialRing (F);
-#    q := Size (F);
-#    e :=SMTX.DegreeFieldExt(module);
-#    qe := q^e - 1;
-#    minpol := CentMatMinPoly (module);
-#    # Factorise q^e - 1 
-#    pp := PrimePowersInt (qe);
-#    # We seek a generator of the field of order q^e - 1. In other words, a
-#    # polynomial genpol of degree e, which has multiplicative order q^e - 1
-#    # modulo minpol. We first try the polynomial x, which is the element we
-#    # have already. If this does not work, then we try random nonconstant
-#    # polynomials until we find one with the right order.
-# 
-#    genpol := Indeterminate (F);
-# 
-#    looking := true;
-#    while looking do
-#       okd := R.operations.OrderKnownDividend (R, genpol, minpol, pp); 
-#       if okd[1] * Order (F, okd[2]) = qe then
-#          looking := false;
-#       fi;
-#       if looking then
-#          repeat
-#             genpol := RandomPol (F, e);
-#          until Degree (genpol) > 0;
-#          genpol := R.operations.StandardAssociate (R, genpol);
-#       fi;
-#    od;
-#    # Finally recalculate centmat and its minimal polynomial.
-#    centmat := CentMat (module);
-#    newcentmat := Value (genpol, centmat,centmat^0);
-#    SetCentMat (module, newcentmat);
-#    SetCentMatMinPoly (module, MinimalPolynomial (newcentmat));
-#    # Ugh! That was very inefficient - should work out the min poly using
-#    # polynomials, but will sort that out if its ever needed.
-#    return;
-# end;
+#############################################################################
+##
+#F  FieldGenCentMat ( module ) . . find a centralizing matrix that generates
+##                                the centralizing field of an irred. module
+##
+## FieldGenCentMat ( ) should only be applied to modules that have already
+## been proved irreducible using IsIrreducible. It then tests for absolute
+## irreducibility (if not already known) and does nothing if module is
+## absolutely irreducible. Otherwise, it returns a a matrix that generates
+## (multiplicatively) the centralizing field (i.e. its multiplicative order
+## is q^e - 1, where e is the degree of the centralizing field. This is not
+## yet used, but maybe in future, if we wish to reduce the group to matrices
+## over the larger field.
+SMTX.FieldGenCentMat := function ( module )
+   local e, F, R, q, qe, minpol, pp, 
+         M, v, M0, v0, C, C0, centmat, newcentmat, genpol, looking, 
+         i, l, okd; 
 
+  if SMTX.FGCentMat(module)=fail then
+    if SMTX.IsMTXModule (module) = false then
+      Error ("Argument of IsIrreducible is not a module.");
+    fi;
+
+    if not SMTX.IsIrreducible(module) then
+      Error ("GModule is not irreducible.");
+    fi;
+
+    # enforce absirred knowledge as well.
+    if not SMTX.IsAbsolutelyIrreducible (module) then
+      Error ("GModule is not absolutely irreducible.");
+    fi;
+
+    if SMTX.CentMat(module)=fail then
+      Error ("No CentMat component!");
+    fi;
+
+    F := SMTX.Field (module);
+    R := PolynomialRing (F);
+    q := Size (F);
+    e :=SMTX.DegreeFieldExt(module);
+    qe := q^e - 1;
+    minpol := SMTX.CentMatMinPoly (module);
+    # Factorise q^e - 1 
+    pp := PrimePowersInt (qe);
+    # We seek a generator of the field of order q^e - 1. In other words, a
+    # polynomial genpol of degree e, which has multiplicative order q^e - 1
+    # modulo minpol. We first try the polynomial x, which is the element we
+    # have already. If this does not work, then we try random nonconstant
+    # polynomials until we find one with the right order.
+
+    genpol := Indeterminate (F);
+
+    looking := true;
+    while looking do
+      okd := FFPOrderKnownDividend (R, genpol, minpol, pp); 
+      if okd[1] * Order (F, okd[2]) = qe then
+	  looking := false;
+      fi;
+      if looking then
+	  repeat
+	    genpol := RandomPol (F, e,1);
+	  until DegreeOfUnivariateLaurentPolynomial(genpol) > 0;
+	  genpol := StandardAssociate (R, genpol);
+      fi;
+    od;
+    # Finally recalculate centmat and its minimal polynomial.
+    centmat := SMTX.CentMat (module);
+    newcentmat := Value (genpol, centmat,centmat^0);
+    SMTX.SetFGCentMat (module, newcentmat);
+    SMTX.SetFGCentMatMinPoly (module, MinimalPolynomial (newcentmat));
+    # Ugh! That was very inefficient - should work out the min poly using
+    # polynomials, but will sort that out if its ever needed.
+  fi;
+  return SMTX.FGCentMat(module);
+end;
 
 ###############################################################################
 ##
 #F  SMTX.CollectedFactors ( module ) . . find composition factors of a module
 ##
+## 01/01/01 Try to deal more efficiently with large numbers of repeated
+## small factors by using SMTX.Homomorphisms
+##
 ## SMTX.CollectedFactors calls IsIrreducible repeatedly to find the
 ## composition factors of the GModule `module'. It also calls
 ## IsomorphismGModule to determine which are isomorphic.
-## It returns a list [f1, f2, ..fr], where each fi is a list [m, n], 
+## It returns a list [f1, f2, ..fr], where each fi is a list [m, n],
 ## where m is an irreducible composition factor of module, and n is the
 ## number of times it occurs in module.
-## 
-SMTX_CollectedFactors := function ( module )
-local dim, factors, factorsout, queue, cmod, new, 
-      d, i, j, l, q;
+##
+SMTX_CollectedFactors:= function ( module )
+local dim, factors, factorsout, queue, cmod, new,
+      d, i, j, l, lq, lf, q, smod, ds, homs, mat;
    if SMTX.IsMTXModule (module) = false then
       return Error ("Argument is not a module.");
    fi;
@@ -1678,20 +1905,19 @@ local dim, factors, factorsout, queue, cmod, new,
    #queue is the list of modules awaiting processing.
 
    while Length (queue) > 0 do
-      l := Length (queue);
-      cmod := queue[l];
-      Unbind (queue[l]);
-      Info(InfoMeatAxe,3,"Length of queue = ", l, ", dim = ", 
-                 SMTX.Dimension(cmod), ".");
+      lq := Length (queue);
+      cmod := queue[lq];
+      Unbind (queue[lq]);
+      d := SMTX.Dimension(cmod);
+      Info(InfoMeatAxe,3,"Length of queue = ", lq, ", dim = ", d, ".");
 
       if SMTX.IsIrreducible (cmod) then
          Info(InfoMeatAxe,2,"Irreducible: ");
          #module is irreducible. See if it is already on the list.
-         d := SMTX.Dimension(cmod);
          new := true;
-         l := Length (factors[d]);
+         lf := Length (factors[d]);
          i := 1;
-         while new and i <= l do
+         while new and i <= lf do
             if SMTX.IsEquivalent(factors[d][i][1], cmod) then
                new := false;
                factors[d][i][2] := factors[d][i][2] + 1;
@@ -1700,17 +1926,53 @@ local dim, factors, factorsout, queue, cmod, new,
          od;
          if new then
             Info(InfoMeatAxe,2," new.");
-            factors[d][l + 1] := [cmod, 1];
-         else 
+            factors[d][lf + 1] := [cmod, 1];
+         else
             Info(InfoMeatAxe,2," old.");
          fi;
       else
          Info(InfoMeatAxe,2,"Reducible.");
          #module is reducible. Add sub- and quotient-modules to queue.
-         l := Length (queue);
+         lq := Length (queue);
          q:=SMTX.InducedAction(cmod,
-	          SMTX.Subbasis (cmod),3);
-         queue[l + 1] := q[1]; queue[l + 2] := q[2];
+                  SMTX.Subbasis (cmod),3);
+         smod := q[1];
+         ds := SMTX.Dimension(smod);
+         if ds < d/10 and SMTX.IsIrreducible(smod) then
+           #Small dimensional submodule
+           #test for repeated occurrences.
+           homs := SMTX.Homomorphisms( smod, cmod);
+           Info(InfoMeatAxe,2,
+              "Small irreducible submodule X ",Length(homs),":");
+           #module is irreducible. See if it is already on the list.
+           new := true;
+           lf := Length (factors[ds]);
+           i := 1;
+           while new and i <= lf do
+              if SMTX.IsEquivalent(factors[ds][i][1], smod) then
+                 new := false;
+                 factors[ds][i][2] := factors[ds][i][2] + Length(homs);
+              fi;
+              i := i + 1;
+           od;
+           if new then
+              Info(InfoMeatAxe,2," new.");
+              factors[ds][lf + 1] := [smod, Length(homs)];
+           else
+              Info(InfoMeatAxe,2," old.");
+           fi;
+           if Length(homs) * ds < d then
+             mat := homs[1];
+             for i in [2..Length(homs)] do
+               mat := Concatenation(mat,homs[i]);
+             od;
+             TriangulizeMat(mat);
+             MakeImmutable(mat);
+             queue[lq + 1] := SMTX.InducedActionFactorModule(cmod, mat);
+           fi;
+         else
+           queue[lq + 1] := smod; queue[lq + 2] := q[2];
+         fi;
       fi;
    od;
 
@@ -1744,16 +2006,16 @@ end;
 ##
 #F  SMTX.Distinguish ( cf, i )  distinguish a composition factor of a module
 ##
-## cf is assumed to be the output of a call to SMTX.CollectedFactors, 
+## cf is assumed to be the output of a call to SMTX.CollectedFactors,
 ## and i is the number of one of the cf.
 ## Distinguish tries to find a group-algebra element for factor[i]
 ## which gives nullity zero when applied to all other cf.
 ## Once this is done, it is easy to find submodules containing this
 ## composition factor.
-## 
+##
 SMTX_Distinguish := function ( cf, i )
-   local el, genpair, ngens, orig_ngens, mat, matsi, mats, M, 
-         dimi, dim, F, fac, sfac, p, q, oldp, found, extdeg, j, k, 
+   local el, genpair, ngens, orig_ngens, mat, matsi, mats, M,
+         dimi, dim, F, fac, sfac, p, q, oldp, found, extdeg, j, k,
          lcf, lf, x, y, wno, deg, trying, N, fact, R;
 
    lcf := Length (cf);
@@ -1764,7 +2026,7 @@ SMTX_Distinguish := function ( cf, i )
    matsi := ShallowCopy(cf[i][1].generators);
    dimi := SMTX.Dimension (cf[i][1]);
 
-   #First check that the existing nullspace has dim. 1 over centralising field. 
+   #First check that the existing nullspace has dim. 1 over centralising field.
    SMTX.GoodElementGModule (cf[i][1]);
 
    #First see if the existing element is OK
@@ -1781,12 +2043,14 @@ SMTX_Distinguish := function ( cf, i )
             ngens := ngens + 1;
             mats[ngens] := mats[genpair[1]] * mats[genpair[2]];
          od;
-         M := Immutable( NullMat (dim, dim, F) );
+         M := ImmutableMatrix(F, NullMat (dim, dim, F) );
          for k in [1..ngens] do
             M := M + el[2][k] * mats[k];
          od;
          ngens := orig_ngens;
          mat := Value (fact, M,M^0);
+         MakeImmutable(mat);
+         ConvertToMatrixRep(mat,F);
          if RankMat (mat) < dim then
             found := false;
             Info(InfoMeatAxe,2,"Current element failed on factor ", j);
@@ -1820,7 +2084,7 @@ SMTX_Distinguish := function ( cf, i )
       el[2] := [];
       for j in [1..ngens] do el[2][j] := Random (F); od;
       #First evaluate on cf[i][1].
-      M := Immutable( NullMat (dimi, dimi, F) );
+      M := ImmutableMatrix(F, NullMat (dimi, dimi, F) );
       for k in [1..ngens] do
          M := M + el[2][k] * matsi[k];
       od;
@@ -1838,7 +2102,7 @@ SMTX_Distinguish := function ( cf, i )
                fac := [p];
             else
                fac := Factors(R, p, rec(onlydegs:=[deg]));
-	       fac:=Filtered(fac,i->DegreeOfLaurentPolynomial(i)<=deg);
+               fac:=Filtered(fac,i->DegreeOfLaurentPolynomial(i)<=deg);
                sfac := Set (fac);
             fi;
          until fac <> [];
@@ -1847,6 +2111,8 @@ SMTX_Distinguish := function ( cf, i )
             j := 1;
             while j <= lf and trying do
                mat := Value (fac[j], M,M^0);
+               MakeImmutable(mat);
+               ConvertToMatrixRep(mat,F);
                N := NullspaceMat (mat);
                if Length (N) = extdeg then
                   trying := false;
@@ -1854,6 +2120,7 @@ SMTX_Distinguish := function ( cf, i )
                   SMTX.SetAlgElMat(cf[i][1], M);
                   SMTX.SetAlgElCharPol (cf[i][1], oldp);
                   SMTX.SetAlgElCharPolFac (cf[i][1], fac[j]);
+		  ConvertToVectorRep(N[1],F);
                   SMTX.SetAlgElNullspaceVec(cf[i][1], N[1]);
                fi;
                j := j + 1;
@@ -1872,7 +2139,7 @@ SMTX_Distinguish := function ( cf, i )
          Info(InfoMeatAxe,2,"Found one.");
          found := true;
          fact := SMTX.AlgElCharPolFac(cf[i][1]);
-         #Apply the alg. el. of factor i to every other factor and 
+         #Apply the alg. el. of factor i to every other factor and
          #see if the matrix is nonsingular.
          for j in [1..lcf] do
             if j <> i and found then
@@ -1883,11 +2150,13 @@ SMTX_Distinguish := function ( cf, i )
                   ngens := ngens + 1;
                   mats[ngens] := mats[genpair[1]] * mats[genpair[2]];
                od;
-               M := Immutable( NullMat (dim, dim, F) );
+               M := ImmutableMatrix(F, NullMat (dim, dim, F) );
                for k in [1..ngens] do
                   M := M + el[2][k] * mats[k];
                od;
                mat := Value (fact, M,M^0);
+               MakeImmutable(mat);
+               ConvertToMatrixRep(mat,F);
                if RankMat (mat) < dim then
                   found := false;
                   Info(InfoMeatAxe,2,"Failed on factor ", j);
@@ -1901,7 +2170,7 @@ SMTX_Distinguish := function ( cf, i )
    od;
 
 end;
-SMTX.Distinguish := SMTX_Distinguish ;
+SMTX.Distinguish := SMTX_Distinguish;
 
 ###############################################################################
 ##
@@ -1934,7 +2203,7 @@ SMTX_MinimalSubGModule := function ( module, cf, i )
       ngens := ngens + 1;
       mats[ngens] := mats[genpair[1]] * mats[genpair[2]];
    od;
-   M := Immutable( NullMat (dim, dim, F) );
+   M := ImmutableMatrix(F, NullMat (dim, dim, F) );
    for k in [1..ngens] do
       M := M + el[2][k] * mats[k];
    od;
@@ -1946,6 +2215,7 @@ SMTX_MinimalSubGModule := function ( module, cf, i )
    fact := SMTX.AlgElCharPolFac(cf[i][1]);
    mat := Value (fact, M,M^0);
    N := NullspaceMat (mat);
+   ConvertToVectorRep(N[1],F);
    return (SMTX.SpinnedBasis (N[1], mats,F, ngens));
 
 end;
@@ -2030,7 +2300,7 @@ SMTX_IsomorphismComp := function (module1, module2, action)
       ngens := ngens + 1;
       matrices2[ngens] := matrices2[genpair[1]] * matrices2[genpair[2]];
    od;
-   M := Immutable( NullMat(dim, dim, F) );
+   M := ImmutableMatrix(F, NullMat(dim, dim, F) );
    for i in [1..ngens] do
       M := M + el[2][i] * matrices2[i];
    od;
@@ -2061,6 +2331,7 @@ SMTX_IsomorphismComp := function (module1, module2, action)
    Info(InfoMeatAxe,2,"Spinning up in direct sum.");
    matrices := SMTX.MatrixSum (matrices1, matrices2);
    v1 := SMTX.AlgElNullspaceVec(module1);
+   ConvertToVectorRep(N[1],F);
    v2 := N[1];
    v := Concatenation (v1, v2);
    basis := SMTX.SpinnedBasis (v, matrices,F);
@@ -2120,6 +2391,7 @@ SMTX_MatrixSum := function (matrices1, matrices2)
 end;
 SMTX.MatrixSum := SMTX_MatrixSum ;
 
+
 #############################################################################
 ##
 #F  SMTX.Homomorphisms( m1, m2) . . . . homomorphisms from an irreducible
@@ -2129,24 +2401,23 @@ SMTX.MatrixSum := SMTX_MatrixSum ;
 ##  (using IsIrreducible), and m2 is an arbitrary module for the same group.
 ## A basis of the space of G-homomorphisms from m1 to m2 is returned.
 ## Each homomorphism is given as a list of base images.
-## 
-SMTX_Homomorphisms := function (m1, m2)
+##
+SMTX_Homomorphisms:= function (m1, m2)
 
-   local F, ngens, orig_ngens, mats1, mats2, dim1, dim2, m1bas, imbases, 
-         el, genpair, fac, mat, N, imlen, subdim, leadpos, vec, imvecs, 
-         numrels, rels, leadposrels, newrels, bno, genno, colno, rowno, 
+   local F, ngens, orig_ngens, mats1, mats2, dim1, dim2, m1bas, imbases,
+         el, genpair, fac, mat, N, imlen, subdim, leadpos, vec, imvecs,
+         numrels, rels, leadposrels, newrels, bno, genno, colno, rowno,
          zero, looking, ans, i, j, k;
 
-   if not SMTX.IsMTXModule (m1) then 
+   if not SMTX.IsMTXModule (m1) then
       return Error ("First argument is not a module.");
    elif not SMTX.IsIrreducible(m1) then
       return Error ("First module is not known to be irreducible.");
    fi;
 
-   if not SMTX.IsMTXModule (m2) then 
+   if not SMTX.IsMTXModule (m2) then
       return Error ("Second argument is not a module.");
    fi;
-
    mats1 := m1.generators;
    mats2 := ShallowCopy(m2.generators);
    ngens := Length (mats1);
@@ -2178,11 +2449,11 @@ SMTX_Homomorphisms := function (m1, m2)
       ngens := ngens + 1;
       mats2[ngens] := mats2[genpair[1]] * mats2[genpair[2]];
    od;
-   mat := Immutable( NullMat(dim2, dim2, F) );
+   mat := ImmutableMatrix(F, NullMat(dim2, dim2, F) );
    for i in [1..ngens] do
       mat := mat + el[2][i] * mats2[i];
    od;
-   # Having done that, we no longer want the extra generators of m2, 
+   # Having done that, we no longer want the extra generators of m2,
    # so we throw them away again.
    for i in [orig_ngens + 1..ngens] do
       Unbind (mats2[i]);
@@ -2191,8 +2462,11 @@ SMTX_Homomorphisms := function (m1, m2)
 
    fac := SMTX.AlgElCharPolFac (m1);
    mat := Value (fac, mat,mat^0);
+   MakeImmutable(mat);
+   ConvertToMatrixRep(mat,F);
    Info(InfoMeatAxe,2,"Calculating nullspace for second module.");
    N := NullspaceMat (mat);
+   N:=ImmutableMatrix(F,N);
    imlen := Length (N);
    Info(InfoMeatAxe,2,"Dimension = ", imlen, ".");
    if imlen = 0 then
@@ -2206,13 +2480,13 @@ SMTX_Homomorphisms := function (m1, m2)
 
    # Now the main algorithm starts. We are going to spin the vectors in m1bas
    # under the action of the module generators, norming as we go. Every
-   # operation that we perform on m1bas will also be performed on each of the 
+   # operation that we perform on m1bas will also be performed on each of the
    # vectors in  imbas[1], ..., imbas[imlen].
    # When we find a vector that norms to zero in m1bas, then the image of this
    # under a homomorphism must be zero. This leads to a linear relation
    # amongst some vectors in imbas. We store up such relations, echelonizing as
    # we go. At the end, if we have numrels subch independent relations, then
-   # there will be imlen - numrels independent homomorphisms from m1 to m2, 
+   # there will be imlen - numrels independent homomorphisms from m1 to m2,
    # which we can then calculate.
 
    subdim := 1; # the dimension of module spanned by m1bas
@@ -2292,7 +2566,7 @@ SMTX_Homomorphisms := function (m1, m2)
                      return [];
                   fi;
                   k := vec[j]^-1;
-                  rels[numrels] := k * vec; 
+                  rels[numrels] := k * vec;
                   leadposrels[numrels] := j;
                fi;
             od;
@@ -2314,12 +2588,12 @@ SMTX_Homomorphisms := function (m1, m2)
             looking := false;
             if rowno <> colno then
                #swap rows rowno and colno
-               vec := m1bas[rowno]; m1bas[rowno] := m1bas[colno]; 
+               vec := m1bas[rowno]; m1bas[rowno] := m1bas[colno];
                m1bas[colno] := vec;
                #and of course the same in the images
                for i in [1..imlen] do
                   vec := imbases[i][rowno];
-                  imbases[i][rowno] := imbases[i][colno]; 
+                  imbases[i][rowno] := imbases[i][colno];
                   imbases[i][colno] := vec;
                od;
             fi;
@@ -2338,8 +2612,8 @@ SMTX_Homomorphisms := function (m1, m2)
       od;
    od;
 
-   #Now we are ready to compute and output the linearly independent 
-   #homomorphisms.  The coefficients for the solution are given by 
+   #Now we are ready to compute and output the linearly independent
+   #homomorphisms.  The coefficients for the solution are given by
    #the basis elements of the nullspace of the transpose of rels.
 
    Info(InfoMeatAxe,2,"Done. Calculating homomorphisms.");
@@ -2349,10 +2623,13 @@ SMTX_Homomorphisms := function (m1, m2)
       rels := TransposedMat (rels);
    fi;
    N := NullspaceMat (rels);
+   for k in N do
+     ConvertToVectorRep(F,k);
+   od;
    ans := [];
    for k in [1..Length (N)] do
       vec := N[k];
-      mat := Immutable( NullMat (dim1, dim2, F) );
+      mat := ImmutableMatrix(F, NullMat (dim1, dim2, F) );
       for i in [1..imlen] do
          mat := mat + vec[i] * imbases[i];
       od;
@@ -2479,6 +2756,51 @@ SMTX.SortHomGModule := SMTX_SortHomGModule;
 
 #############################################################################
 ##
+#F  SMTX.Homomorphism(module1,module2,mat) . . . define a module homorphism
+##
+##  module1 and module2 should be meataxe modules of dimensions m and n
+##  over the same algebra, and mat an mXn matrix over the field of
+##  the modules that defines a homomorphism module1 -> module2, where
+##  the i-th row of mat gives the image in module2 of the i-th basis
+##  vector of module1.
+##  It is checked whether mat really does define a homomorphism.
+##  If, so then the correcponding vector space homomorphism from the underlying
+##  row space of module1 to that of module2 is returned. This can be used
+##  for computing images, kernel, preimages, etc.
+
+SMTX_Homomorphism := function(module1, module2, mat)
+  local F, gens1, gens2, ng, dim1, dim2, i, j;
+  F := SMTX.Field(module1);
+  if F <> SMTX.Field(module2) then
+    Error("Modules are over different fields");
+  fi;
+  gens1 := SMTX.Generators(module1); gens2 := SMTX.Generators(module2);
+  dim1 := SMTX.Dimension(module1); dim2 := SMTX.Dimension(module2);
+  ng := Length(gens1);
+  if ng <> Length(gens2) then
+    Error("Modules are not over the same algebra");
+  fi;
+  if Length(mat) <> dim1 or Length(mat[1]) <> dim2 then
+    Error("matrix has wrong size for a homomorphism");
+  fi;
+  #Check if it is a homorphism
+  MakeImmutable(mat);
+  ConvertToMatrixRep(mat,F);
+  for i in [1..ng] do
+    for j in [1..dim1] do
+      if gens1[i][j] * mat <> mat[j] * gens2[i] then
+        Print(i,j,"\n");
+        Error("matrix does not define a homomorphism");
+      fi;
+    od;
+  od;
+  return LeftModuleHomomorphismByImages(FullRowSpace(F,dim1),
+                          FullRowSpace(F,dim2),IdentityMat(dim1,F),mat);
+end;
+SMTX.Homomorphism := SMTX_Homomorphism;
+
+#############################################################################
+##
 #F SMTX.MinimalSubGModules (m1, m2, [max]) . . 
 ## minimal submodules of m2 isomorphic to m1
 ##
@@ -2555,7 +2877,7 @@ SMTX_MinimalSubGModules := function (arg)
          od;
 	 sub:=List(sub,ShallowCopy);
          TriangulizeMat (sub);
-         Add (submodules, sub);
+         Add (submodules, ImmutableMatrix(F,sub));
 
          #Move on to next set of coefficients if any
          while adno >= sr and coeff[adno]=q do
@@ -2614,7 +2936,7 @@ mats:=m.generators;
 #  Error("zero!");
 #fi;
 #Assert(1,ForAll(m,i->ForAll(mats,j->SolutionMat(m,i*j)<>fail)));
-      Add(ser,Immutable(m));
+      Add(ser,m);
     else
       b:=SMTX.Subbasis(m);
 #Assert(1,ForAll(b,i->ForAll(m.generators,j->SolutionMat(b,i*j)<>fail)));
@@ -2624,8 +2946,7 @@ mats:=m.generators;
       s:=s[1];
       SMTX.SetSmashRecord(s,0);
       SMTX.SetSmashRecord(q,0);
-      Info(InfoMeatAxe,1,"chopped ",SMTX.Dimension(s),"\\",
-           SMTX.Dimension(q));
+      Info(InfoMeatAxe,1,"chopped ",SMTX.Dimension(s),"\\", SMTX.Dimension(q));
       s.smashMeataxe.denombasis:=m.smashMeataxe.denombasis;
 
       #s.smashMeataxe.csbasis:= IdentityMat(SMTX.Dimension(s), SMTX.Field(s) );
@@ -2681,14 +3002,15 @@ local cf,u,i,j,f,cl,min,neu,sq,sb,fb,k,nmin,F;
 	Assert(2,SMTX.InducedAction(m,sq)<>fail);
 	if not sq in neu then
           Info(InfoMeatAxe,2,"submodule dimension ",Length(sq));
-	  Add(neu,Immutable(sq));
+	  Add(neu,sq);
 	fi;
       od;
     od;
     u:=Concatenation(u,neu);
     min:=neu;
   od;
-  Add(u, Immutable( IdentityMat(SMTX.Dimension(m),SMTX.Field(m)) ));
+  Add(u,ImmutableMatrix(SMTX.Field(m),
+                        IdentityMat(SMTX.Dimension(m),SMTX.Field(m))));
   return u;
 end;
 SMTX.BasesSubmodules := SMTX_BasesSubmodules;
@@ -2713,10 +3035,12 @@ SMTX.DualModule:=function(module)
 end;
 
 SMTX.DualizedBasis:=function(module,sub)
-local M;
+local F,M;
+  F:=DefaultFieldOfMatrix(sub);
   M:=NullspaceMat(TransposedMat(sub));
   M:=List(M,ShallowCopy);
   TriangulizeMat(M);
+  M:=ImmutableMatrix(F,M);
   return M;
 end;
 
@@ -2756,6 +3080,72 @@ local m,i,r;
 end;
 SMTX.BasisRadical := SMTX_BasisRadical;
 
+#############################################################################
+##
+#F SMTX.SpanOfMinimalSubGModules (m1, m2) . .
+## span of the minimal submodules of m2 isomorphic to m1
+##
+## It is assumed that m1 is a module that has been proved irreducible
+##  (using IsIrreducible), and m2 is an arbitrary module for the same group.
+## SpanOfMinimalSubGModules computes a normed bases for the span of
+## the minimal submodules of m2 that are isomorphic to m1,
+## First HomGModule is called.
+##
+SMTX_SpanOfMinimalSubGModules := function (m1, m2)
+   local  homs, e, mat, i;
+   Info(InfoMeatAxe,2,"Calculating homomorphisms from m1 to m2.");
+   homs := SMTX.Homomorphisms(m1, m2);
+   if homs=[] then
+     return [];
+   fi;
+   Info(InfoMeatAxe,2,"Sorting them.");
+   SMTX.SortHomGModule (m1, m2, homs);
+
+   e := SMTX.DegreeFieldExt (m1);
+   #homs are now grouped so that each block of e have the same image.
+   #We only want one from each block.
+   if e > 1 then
+     homs := homs{Filtered([1..Length(homs)],i->(i mod e) = 1)};
+   fi;
+   if Length(homs) = 1 then
+     return homs[1];
+   fi;
+   #The span of the the images of homs is what we want!
+   mat := homs[1];
+   for i in [2..Length(homs)] do
+     mat := Concatenation(mat,homs[i]);
+   od;
+   TriangulizeMat(mat);
+   MakeImmutable(mat);
+   return mat;
+end;
+SMTX.SpanOfMinimalSubGModules := SMTX_SpanOfMinimalSubGModules;
+
+SMTX_BasisSocle := function(module)
+local cf, mat, i;
+   cf:=SMTX.CollectedFactors(module);
+   cf:=List(cf,i->i[1]);
+   mat := SMTX.SpanOfMinimalSubGModules(cf[1],module);
+   if Length(cf) = 1 then
+     return mat;
+   fi;
+   for i in [2..Length(cf)] do
+     mat := Concatenation(mat,SMTX_SpanOfMinimalSubGModules(cf[i],module));
+   od;
+   TriangulizeMat(mat);
+   MakeImmutable(mat);
+   return mat;
+end;
+SMTX.BasisSocle := SMTX_BasisSocle;
+
+SMTX_BasisRadical := function(module)
+local d, bs;
+   d := SMTX.DualModule(module);
+   bs := SMTX.BasisSocle(d);
+   return SMTX.DualizedBasis(d,bs);
+end;
+SMTX.BasisRadical := SMTX_BasisRadical;
+
 # the following assignement is for profiling
 SMTX.funcs:=[SMTX_OrthogonalVector,SMTX_SpinnedBasis,SMTX_SubQuotActions,
   SMTX_SMCoRaEl,SMTX_IrreducibilityTest,SMTX_RandomIrreducibleSubGModule,
@@ -2764,5 +3154,6 @@ SMTX.funcs:=[SMTX_OrthogonalVector,SMTX_SpinnedBasis,SMTX_SubQuotActions,
   SMTX_MinimalSubGModule,SMTX_IsomorphismComp,SMTX_MatrixSum,
   SMTX_Homomorphisms,SMTX_SortHomGModule,SMTX_MinimalSubGModules,
   SMTX_BasesCompositionSeries,SMTX_BasesSubmodules,SMTX_BasesMinimalSubmodules,
-  SMTX_BasesMaximalSubmodules,SMTX_BasesMinimalSupermodules,SMTX_BasisRadical];
+  SMTX_BasesMaximalSubmodules,SMTX_BasesMinimalSupermodules,SMTX_BasisSocle,
+  SMTX_BasisRadical];
 

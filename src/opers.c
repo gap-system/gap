@@ -157,7 +157,7 @@ Obj FuncLEN_FLAGS (
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
         flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
-            "you can return a list for <flags>" );
+            "you can replace <flags> via 'return <flags>;'" );
     }
 
     return INTOBJ_INT( LEN_FLAGS(flags) );
@@ -177,7 +177,7 @@ Obj FuncELM_FLAGS (
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
         flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
-            "you can return a list for <flags>" );
+            "you can replace <flags> via 'return <flags>;'" );
     }
 
     /* select and return the element                                       */
@@ -214,7 +214,7 @@ Obj FuncHASH_FLAGS (
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
             flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
-            "you can return a list for <flags>" );
+            "you can replace <flags> via 'return <flags>;'" );
     }
     if ( HASH_FLAGS(flags) != 0 ) {
         return HASH_FLAGS(flags);
@@ -298,7 +298,7 @@ Obj FuncTRUES_FLAGS (
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
         flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
-            "you can return a list for <flags>" );
+            "you can replace <flags> via 'return <flags>;'" );
     }
     if ( TRUES_FLAGS(flags) != 0 ) {
         return TRUES_FLAGS(flags);
@@ -356,7 +356,7 @@ Obj FuncSIZE_FLAGS (
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
         flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
-            "you can return a list for <flags>" );
+            "you can replace <flags> via 'return <flags>;'" );
     }
     if ( TRUES_FLAGS(flags) != 0 ) {
         return INTOBJ_INT( LEN_PLIST( TRUES_FLAGS(flags) ) );
@@ -399,12 +399,12 @@ Obj FuncIS_EQUAL_FLAGS (
     while ( TNUM_OBJ(flags1) != T_FLAGS ) {
         flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags1), 0L,
-            "you can return a list for <flags1>" );
+            "you can replace <flags1> via 'return <flags1>;'" );
     }
     while ( TNUM_OBJ(flags2) != T_FLAGS ) {
         flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags2), 0L,
-            "you can return a list for <flags2>" );
+            "you can replace <flags2> via 'return <flags2>;'" );
     }
     if ( flags1 == flags2 ) {
         return True;
@@ -467,12 +467,12 @@ Obj FuncIS_SUBSET_FLAGS (
     while ( TNUM_OBJ(flags1) != T_FLAGS ) {
         flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags1), 0L,
-            "you can return a list for <flags1>" );
+            "you can replace <flags1> via 'return <flags1>;'" );
     }
     while ( TNUM_OBJ(flags2) != T_FLAGS ) {
         flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags2), 0L,
-            "you can return a list for <flags2>" );
+            "you can replace <flags2> via 'return <flags2>;'" );
     }
     if ( flags1 == flags2 ) {
         return True;
@@ -566,12 +566,12 @@ Obj FuncSUB_FLAGS (
     while ( TNUM_OBJ(flags1) != T_FLAGS ) {
         flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags1), 0L,
-            "you can return a list for <flags1>" );
+            "you can replace <flags1> via 'return <flags1>;'" );
     }
     while ( TNUM_OBJ(flags2) != T_FLAGS ) {
         flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags2), 0L,
-            "you can return a list for <flags2>" );
+            "you can replace <flags2> via 'return <flags2>;'" );
     }
 
     /* do the real work                                                    */
@@ -642,12 +642,12 @@ Obj FuncAND_FLAGS (
     while ( TNUM_OBJ(flags1) != T_FLAGS ) {
         flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags1), 0L,
-            "you can return a list for <flags1>" );
+            "you can replace <flags1> via 'return <flags1>;'" );
     }
     while ( TNUM_OBJ(flags2) != T_FLAGS ) {
         flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags2), 0L,
-            "you can return a list for <flags2>" );
+            "you can replace <flags2> via 'return <flags2>;'" );
     }
 
     /* check the cache                                                     */
@@ -792,8 +792,9 @@ Obj DoSetAndFilter (
     Obj                 op;
 
     while (val != True)
-      val = ErrorReturnObj("You cannot set an \"and-filter\" except to true", 0L, 0L,
-			   "you can return true to set all components true,\nbut you might really want to reset just one component");
+      val = ErrorReturnObj(
+             "You cannot set an \"and-filter\" except to true", 0L, 0L,
+	     "you can type 'return true;' to set all components true\n(but you might really want to reset just one component)");
     
     /* call the first 'and'-ed function                                    */
     op = FLAG1_FILT( self );
@@ -927,7 +928,7 @@ Obj DoSetFilter (
             ErrorReturnVoid(
                 "value feature is already set the other way",
                 0L, 0L,
-                "you can return to ignore it" );
+                "you can 'return;' and ignore it" );
         }
     }
     else {
@@ -935,7 +936,7 @@ Obj DoSetFilter (
             ErrorReturnVoid(
                 "value feature is already set the other way",
                 0L, 0L,
-                "you can return to ignore it" );
+                "you can 'return;' and ignore it" );
         }
     }
 
@@ -1157,7 +1158,7 @@ Obj DoSetReturnTrueFilter (
     if ( val != True ) {
          ErrorReturnVoid( "you cannot set this flag to 'false'",
              0L, 0L,
-             "you can return to ignore it" );
+             "you can 'return;' and ignore it" );
     }
     return 0;
 }
@@ -3100,8 +3101,10 @@ Obj DoConstructor1Args (
     /* get the kinds of the arguments                                      */
     while (!IS_OPERATION(arg1))
       {
-	arg1 = ErrorReturnObj("Constructor: the first argument must be filter not a %s",
-			      (Int)TNAM_OBJ(arg1), 0L, "You can return  filter");
+	arg1 = ErrorReturnObj(
+                "Constructor: the first argument must be a filter not a %s",
+		(Int)TNAM_OBJ(arg1), 0L, 
+                "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     
     kind1 = FLAGS_FILT( arg1 );  
@@ -3193,8 +3196,10 @@ Obj DoConstructor2Args (
     /* get the kinds of the arguments                                      */
     while (!IS_OPERATION(arg1))
       {
-	arg1 = ErrorReturnObj("Constructor: the first argument must be filter not a %s",
-			      (Int)TNAM_OBJ(arg1), 0L, "You can return  filter");
+	arg1 = ErrorReturnObj(
+                "Constructor: the first argument must be a filter not a %s",
+		(Int)TNAM_OBJ(arg1), 0L, 
+                "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     kind1 = FLAGS_FILT( arg1 );  
     kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
@@ -3293,8 +3298,10 @@ Obj DoConstructor3Args (
     /* get the kinds of the arguments                                      */
     while (!IS_OPERATION(arg1))
       {
-	arg1 = ErrorReturnObj("Constructor: the first argument must be filter not a %s",
-			      (Int)TNAM_OBJ(arg1), 0L, "You can return  filter");
+	arg1 = ErrorReturnObj(
+                "Constructor: the first argument must be a filter not a %s",
+		(Int)TNAM_OBJ(arg1), 0L, 
+                "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     kind1 = FLAGS_FILT( arg1 ); 
     kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
@@ -3399,8 +3406,10 @@ Obj DoConstructor4Args (
     /* get the kinds of the arguments                                      */
     while (!IS_OPERATION(arg1))
       {
-	arg1 = ErrorReturnObj("Constructor: the first argument must be filter not a %s",
-			      (Int)TNAM_OBJ(arg1), 0L, "You can return  filter");
+	arg1 = ErrorReturnObj(
+                "Constructor: the first argument must be a filter not a %s",
+		(Int)TNAM_OBJ(arg1), 0L, 
+                "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     kind1 = FLAGS_FILT( arg1 ); 
     kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
@@ -3514,8 +3523,10 @@ Obj DoConstructor5Args (
     /* get the kinds of the arguments                                      */
     while (!IS_OPERATION(arg1))
       {
-	arg1 = ErrorReturnObj("Constructor: the first argument must be filter not a %s",
-			      (Int)TNAM_OBJ(arg1), 0L, "You can return  filter");
+	arg1 = ErrorReturnObj(
+                "Constructor: the first argument must be a filter not a %s",
+		(Int)TNAM_OBJ(arg1), 0L, 
+                "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     kind1 = FLAGS_FILT( arg1 ); 
     kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
@@ -3646,8 +3657,10 @@ Obj DoConstructor6Args (
     /* get the kinds of the arguments                                      */
     while (!IS_OPERATION(arg1))
       {
-	arg1 = ErrorReturnObj("Constructor: the first argument must be filter not a %s",
-			      (Int)TNAM_OBJ(arg1), 0L, "You can return  filter");
+	arg1 = ErrorReturnObj(
+                "Constructor: the first argument must be a filter not a %s",
+		(Int)TNAM_OBJ(arg1), 0L, 
+                "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     kind1 = FLAGS_FILT( arg1 ); 
     kind2 = TYPE_OBJ_FEO( arg2 );  id2 = ID_TYPE( kind2 );
@@ -3835,8 +3848,10 @@ Obj DoVerboseConstructor1Args (
     /* get the kinds of the arguments                                      */
     while (!IS_OPERATION(arg1))
       {
-	arg1 = ErrorReturnObj("Constructor: the first argument must be filter not a %s",
-			      (Int)TNAM_OBJ(arg1), 0L, "You can return  filter");
+	arg1 = ErrorReturnObj(
+                "Constructor: the first argument must be a filter not a %s",
+		(Int)TNAM_OBJ(arg1), 0L, 
+                "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     
     kind1 = FLAGS_FILT( arg1 );  
@@ -3903,8 +3918,10 @@ Obj DoVerboseConstructor2Args (
     /* get the kinds of the arguments                                      */
     while (!IS_OPERATION(arg1))
       {
-	arg1 = ErrorReturnObj("Constructor: the first argument must be filter not a %s",
-			      (Int)TNAM_OBJ(arg1), 0L, "You can return  filter");
+	arg1 = ErrorReturnObj(
+                "Constructor: the first argument must be a filter not a %s",
+		(Int)TNAM_OBJ(arg1), 0L, 
+                "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     
     kind1 = FLAGS_FILT( arg1 );  
@@ -3974,8 +3991,10 @@ Obj DoVerboseConstructor3Args (
     /* get the kinds of the arguments                                      */
     while (!IS_OPERATION(arg1))
       {
-	arg1 = ErrorReturnObj("Constructor: the first argument must be filter not a %s",
-			      (Int)TNAM_OBJ(arg1), 0L, "You can return  filter");
+	arg1 = ErrorReturnObj(
+                "Constructor: the first argument must be a filter not a %s",
+		(Int)TNAM_OBJ(arg1), 0L, 
+                "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     
     kind1 = TYPE_OBJ_FEO( arg1 );
@@ -4050,8 +4069,10 @@ Obj DoVerboseConstructor4Args (
     /* get the kinds of the arguments                                      */
     while (!IS_OPERATION(arg1))
       {
-	arg1 = ErrorReturnObj("Constructor: the first argument must be filter not a %s",
-			      (Int)TNAM_OBJ(arg1), 0L, "You can return  filter");
+	arg1 = ErrorReturnObj(
+                "Constructor: the first argument must be a filter not a %s",
+		(Int)TNAM_OBJ(arg1), 0L, 
+                "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     
     kind1 = FLAGS_FILT( arg1 );  
@@ -4131,8 +4152,10 @@ Obj DoVerboseConstructor5Args (
     /* get the kinds of the arguments                                      */
     while (!IS_OPERATION(arg1))
       {
-	arg1 = ErrorReturnObj("Constructor: the first argument must be filter not a %s",
-			      (Int)TNAM_OBJ(arg1), 0L, "You can return  filter");
+	arg1 = ErrorReturnObj(
+                "Constructor: the first argument must be a filter not a %s",
+		(Int)TNAM_OBJ(arg1), 0L, 
+                "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     
     kind1 = FLAGS_FILT( arg1 );  
@@ -4225,8 +4248,10 @@ Obj DoVerboseConstructor6Args (
     /* get the kinds of the arguments                                      */
     while (!IS_OPERATION(arg1))
       {
-	arg1 = ErrorReturnObj("Constructor: the first argument must be filter not a %s",
-			      (Int)TNAM_OBJ(arg1), 0L, "You can return  filter");
+	arg1 = ErrorReturnObj(
+                "Constructor: the first argument must be a filter not a %s",
+		(Int)TNAM_OBJ(arg1), 0L, 
+                "you can replace the first argument <arg1> via 'return <arg1>;'");
       }
     
     kind1 = FLAGS_FILT( arg1 );  
@@ -4496,7 +4521,8 @@ Obj DoAttribute (
     while (val == (Obj) 0)
       {
 	val = ErrorReturnObj("Method for an attribute must return a value",
-			     0L, 0L, "You can return a value to continue");
+			     0L, 0L, 
+                             "you can supply a value <val> via 'return <val>;'");
       }
     val = CopyObj( val, 0 );
     
@@ -4863,9 +4889,9 @@ Obj DoSetProperty (
         }
         else {
             ErrorReturnVoid(
-                "value property is already set the other way",
+                "Value property is already set the other way",
                 0L, 0L,
-                "you can return to set it anyhow" );
+                "you can 'return;' to set it anyhow" );
         }
     }
 
@@ -4892,9 +4918,9 @@ Obj DoSetProperty (
     }
     else {
         ErrorReturnVoid(
-            "value cannot be set for internal objects",
+            "Value cannot be set for internal objects",
             0L, 0L,
-            "you can return without setting it" );
+            "you can 'return;' without setting it" );
     }
 
     /* return the value                                                    */
@@ -4933,8 +4959,10 @@ Obj DoProperty (
     val = DoOperation1Args( self, obj );
     while (val != True && val != False)
       {
-	val = ErrorReturnObj( "Method for a property did not return true or false",
-			      0L, 0L, "You can return true or false to continue");
+	val = ErrorReturnObj( 
+               "Method for a property did not return true or false",
+	       0L, 0L, 
+               "you can 'return true;' or 'return false;'");
       }
     
     /* set the value (but not for internal objects)                        */
@@ -6299,8 +6327,9 @@ static Int InitLibrary (
 
     /* install the (function) copies of global variables                   */
     /* for the inside-out (kernel to library) interface                    */
-    TRY_NEXT_METHOD = NEW_STRING( 16 );
-    SyStrncat( CSTR_STRING(TRY_NEXT_METHOD), "TRY_NEXT_METHOD", 16 );
+    /*CCC TRY_NEXT_METHOD = NEW_STRING( 16 );
+      SyStrncat( CSTR_STRING(TRY_NEXT_METHOD), "TRY_NEXT_METHOD", 16 );CCC*/
+    C_NEW_STRING(TRY_NEXT_METHOD, 15, "TRY_NEXT_METHOD");
     AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
 
     /* init filters and functions                                          */

@@ -24,7 +24,7 @@ test:
 ../ref/manual.dvi: ._coll ._basic ._groups ._grppc ._rings ._number \
 	._mapping ._oper ._ratfun ._grplib ._alg ._linalg ._fp \
 	._install ._environ ._options ._system ._relation ._rws ._trans \
-	._fpsemi ._tom ._ctbl 
+	._fpsemi ._tom ._ctbl ._orders
 	(cd ../ref;tex manual)
 	fgrep "undefined" ../ref/manual.log
 
@@ -39,7 +39,7 @@ test:
 	touch ._system
 
 ._coll: config.coll coll.msk lists.msk string.msk record.msk domain.msk\
-	combinat.msk boolean.msk
+	blist.msk combinat.msk boolean.msk
 	$(BUILD) -f config.coll
 	touch ._coll
 
@@ -69,7 +69,7 @@ test:
 	touch ._linalg
 
 ._number: config.number integers.msk numtheor.msk rational.msk cyclotom.msk \
-	unknown.msk padics.msk
+	unknown.msk padics.msk fldabnum.msk
 	$(BUILD) -f config.number
 	touch ._number
 
@@ -84,6 +84,10 @@ test:
 ._options: config.options options.msk
 	$(BUILD) -f config.options
 	touch ._options
+
+._orders: config.orders orders.msk
+	$(BUILD) -f config.orders
+	touch ._orders
 
 ._ratfun: config.ratfun ratfun.msk algfld.msk
 	$(BUILD) -f config.ratfun
@@ -101,7 +105,8 @@ test:
 	$(BUILD) -f config.environ
 	touch ._environ
 
-._install: config.install install.msk run.msk sharepkg.msk
+._install: config.install install.msk run.msk sharepkg.msk \
+	refcover.msk tutcover.msk prgcover.msk extcover.msk ficover.msk
 	$(BUILD) -f config.install
 	touch ._install
 
@@ -125,7 +130,7 @@ test:
 	$(BUILD) -f config.tom
 	touch ._tom
 
-._ctbl: config.ctbl ctbl.msk ctblfuns.msk ctbllibr.msk ctblmaps.msk \
+._ctbl: config.ctbl ctbl.msk ctblfuns.msk ctblmaps.msk \
         ctblmono.msk
 	$(BUILD) -f config.ctbl
 	touch ._ctbl

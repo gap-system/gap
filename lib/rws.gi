@@ -406,6 +406,16 @@ function( rws )
     return ReducedForm( rws, Zero(UnderlyingFamily(rws)) );
 end );
 
+#############################################################################
+##
+#M  IsReducedForm( <rws>,<w> )
+##
+InstallMethod(IsReducedForm, 
+	"for a rewriting system and an object", true,
+	[IsRewritingSystem,IsObject],
+	function(rws,w)
+		return ReducedForm(rws,w)=w;
+	end);
 
 #############################################################################
 ##

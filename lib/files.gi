@@ -28,23 +28,37 @@ DeclareRepresentation(
 ##
 #V  DirectoryType . . . . . . . . . . . . . . . . default type of a directory
 ##
-DirectoryType := NewType(
+BindGlobal( "DirectoryType", NewType(
     DirectoriesFamily,
-    IsDirectory and IsDirectoryRep );
+    IsDirectory and IsDirectoryRep ) );
 
 
 #############################################################################
 ##
+#F  USER_HOME_EXPAND . . . . . . . . . . . .  expand leading ~ in file name
+##  
+##  If `USER_HOME' has positive length then a leading '~' character in 
+##  string `str' is substituted by the content of `USER_HOME'.
+##  Otherwise `str' itself is returned.
+##  
+InstallGlobalFunction(USER_HOME_EXPAND, function(str)
+  if Length(str) > 0 and str[1] = '~' and Length(USER_HOME) > 0 then
+    return Concatenation(USER_HOME, str{[2..Length(str)]});
+  else
+    return str;
+  fi;
+end);
+    
 
+#############################################################################
+##
 #M  Directory( <str> )  . . . . . . . . . . .  create a new directpory object
 ##
 InstallMethod( Directory,
     "string",
-    true,
     [ IsString ],
-    0,
-        
 function( str )
+    str := USER_HOME_EXPAND(str);
     #
     # ':' or '\\' probably are untranslated MSDOS or MaxOS path
     # separators, but ':' in position 2 may be OK
@@ -61,7 +75,14 @@ function( str )
 end );
 
 
-
+#############################################################################
+##
+#M  EQ( <dir1>, <dir2> ) . . . . . . . . . . . equality for directory objects
+##  
+InstallMethod( EQ,
+   "for two directories",
+   [ IsDirectory, IsDirectory ],
+   function( d1, d2 ) return d1![1] = d2![1]; end );
 
 
 #############################################################################
@@ -70,10 +91,7 @@ end );
 ##
 InstallMethod( ViewObj,
     "default directory rep",
-    true,
     [ IsDirectoryRep ],
-    0,
-        
 function( obj )
     Print( "dir(\"", obj![1] ,"\")" );
 end );
@@ -85,10 +103,7 @@ end );
 ##
 InstallMethod( PrintObj,
     "default directory rep",
-    true,
     [ IsDirectoryRep ],
-    0,
-        
 function( obj )
     Print( "Directory(\"", obj![1] ,"\")" );
 end );
@@ -100,12 +115,9 @@ end );
 #M  Filename( <directory>, <string> ) . . . . . . . . . . . create a filename
 ##
 InstallOtherMethod( Filename,
-    "string",
-    true,
+    "for a directory and a string",
     [ IsDirectory,
       IsString ],
-    0,
-
 function( dir, name )
     if '\\' in name or ':' in name  then
         Error( "<name> must not contain '\\' or ':'" );
@@ -118,18 +130,20 @@ end );
 ##
 #M  Filename( <directories>, <string> ) . . . . . . . . search for a filename
 ##
-InstallMethod( Filename, "string", true, [ IsList, IsString ], 0,
+InstallMethod( Filename,
+    "for a list and a string",
+    [ IsList, IsString ],
 function( dirs, name )
-    local   dir,  new;
+    local   dir,  new, newgz;
 
     for dir  in dirs  do
         new := Filename( dir, name );
-        if IsExistingFile(new)=true  then
+        newgz := Concatenation(new,".gz");
+        if IsExistingFile(new) = true or IsExistingFile(newgz) = true then
             return new;
         fi;
     od;
     return fail;
-
 end );
 
 
@@ -141,12 +155,11 @@ READ_INDENT := "";
 
 InstallMethod( Read,
     "string",
-    true,
     [ IsString ],
-    0,
-
 function ( name )
     local   readIndent,  found;
+
+    name := USER_HOME_EXPAND(name);
 
     readIndent := SHALLOW_COPY_OBJ( READ_INDENT );
     APPEND_LIST_INTR( READ_INDENT, "  " );
@@ -168,10 +181,8 @@ end );
 ##
 InstallMethod( ReadTest,
     "string",
-    true,
     [ IsString ],
-    0,
-    READ_TEST );
+    name -> READ_TEST( USER_HOME_EXPAND( name ) ) );  
 
 
 #############################################################################
@@ -180,20 +191,18 @@ InstallMethod( ReadTest,
 ##
 InstallMethod( ReadAsFunction,
     "string",
-    true,
     [ IsString ],
-    0,
-    READ_AS_FUNC );
+    name -> READ_AS_FUNC( USER_HOME_EXPAND( name ) ) );  
 
 
 #############################################################################
 ##
-
 #M  Edit( <filename> )  . . . . . . . . . . . . . . . . .  edit and read file
 ##
 InstallGlobalFunction( Edit, function( name )
     local   editor,  ret;
 
+    name := USER_HOME_EXPAND(name);
     editor := Filename( DirectoriesSystemPrograms(), EDITOR );
     if editor = fail  then
         Error( "cannot locate editor `", EDITOR, "'" );
@@ -346,7 +355,5 @@ end );
 
 #############################################################################
 ##
+#E
 
-
-#E  files.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . .  ends here
-##

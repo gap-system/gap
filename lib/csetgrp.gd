@@ -27,6 +27,10 @@ DeclareInfoClass("InfoCoset");
 ##  This function computes an ascending chain of subgroups from <U> to <G>.
 ##  This chain is given as a list whose first entry is <U> and the last entry
 ##  is <G>. The function tries to make the links in this chain small.
+## 
+##  Since `AscendingChain' calls `RefinedChain' to get small steps, the
+##  option `refineIndex' can be used to avoid {\GAP} trying to enforce too small
+##  steps.
 ##
 DeclareGlobalFunction("AscendingChain");
 
@@ -50,6 +54,25 @@ DeclareOperation("AscendingChainOp",[IsGroup,IsGroup]);
 ##  calculations.
 DeclareAttribute("ComputedAscendingChains",IsGroup,
                                         "mutable");
+
+#############################################################################
+##
+#F  RefinedChain(<G>,<c>) . . . . . . . . . . . . . . . .  refine chain links
+##
+##  <c> is an ascending chain in the Group <G>. The task of this routine is
+##  to refine c, i.e. if there is a "link" U>L in c with [U:L] too big,
+##  this procedure tries to find Subgroups G_0,...,G_n of G; such that 
+##  U=G_0>...>G_n=L. This is done by extending L inductively: Since normal
+##  steps can help in further calculations, the routine first tries to
+##  extend to the normalizer in U. If the subgroup is self-normalizing,
+##  the group is extended via a random element. If this results in a step
+##  too big, it is repeated several times to find hopefully a small
+##  extension!
+##
+##  The option `refineIndex' can be used to tell {\GAP} that a specified
+##  step index is good enough.
+##
+DeclareGlobalFunction("RefinedChain");
 
 #############################################################################
 ##
@@ -112,7 +135,7 @@ DeclareOperation("DoubleCosetsNC",[IsGroup,IsGroup,IsGroup]);
 ##
 #O  DoubleCosetRepsAndSizes(<G>,<U>,<V>)
 ##
-##  returns a list of souble coset representatives and their sizes, the
+##  returns a list of double coset representatives and their sizes, the
 ##  entries are lists of the form $[<rep>,<size>]$. This operation is faster
 ##  that `DoubleCosetsNC' because no double coset objects have to be
 ##  created.
@@ -155,7 +178,7 @@ DeclareOperation("RightCoset",[IsGroup,IsObject]);
 
 #############################################################################
 ##
-#O  RightCosets(<G>,<U>)
+#F  RightCosets(<G>,<U>)
 #O  RightCosetsNC(<G>,<U>)
 ##
 ##  computes a duplicate free list of right cosets $Ug$ for $g\in<G>$. A set

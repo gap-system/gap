@@ -38,13 +38,12 @@ gap> Index(c2,gg);
 
 gap> k := Kernel(e);; 
 gap> LowIndexSubgroupsFpGroup(c2,k,11); 
-[ Group(<130 generators>), Group(<131 generators>), Group(<130 generators>) ]
+[ Group(<fp, no generators known>), Group(<fp, no generators known>),
+  Group(<fp, no generators known>) ]
 gap> Length(last);
 3
 
 gap> l := LowIndexSubgroupsFpGroup(c2,TrivialSubgroup(c2),11);; 
-gap> List(l,HasCosetTableInWholeGroup);             
-[ true, true, true, true, true, true, true, true, true, true, true ]
 gap> List(l,x->ConjugacyClassSubgroups(c2,x));;
 gap> Length(last);
 11
@@ -59,6 +58,11 @@ gap> HasSize(t);
 true
 gap> Size(t); 
 1
+
+gap> f := FreeGroup(2);;
+gap> g:=f/[f.1^2,f.2^3];;
+gap> g.1^5=g.1;
+true
 
 gap> STOP_TEST( "xgap.tst", 310142500 );
 

@@ -214,11 +214,12 @@ DeclareFilter( "CanComputeSizeAnySubgroup" );
 InstallTrueMethod(CanEasilyTestMembership,CanComputeSizeAnySubgroup);
 InstallTrueMethod(CanComputeSize,CanComputeSizeAnySubgroup);
 
-# this implicatiobn can create problems with some fp groups. Therefore we
+InstallTrueMethod( CanComputeSize, IsTrivial );
+
+# these implications can create problems with some fp groups. Therefore we
 # are a bit less eager
 #InstallTrueMethod( CanComputeSizeAnySubgroup, IsTrivial );
-InstallTrueMethod( CanComputeSize, IsTrivial );
-InstallTrueMethod( CanEasilyTestMembership, IsTrivial );
+#InstallTrueMethod( CanEasilyTestMembership, IsTrivial );
 
 
 #############################################################################
@@ -419,14 +420,17 @@ InstallTrueMethod( IsSolvableGroup, IsSupersolvableGroup );
 ##  (see~"IsSolvableGroup").
 ##
 DeclareProperty( "IsPolycyclicGroup", IsGroup );
+InstallTrueMethod( IsSolvableGroup, IsPolycyclicGroup );
 InstallTrueMethod( IsPolycyclicGroup, IsSolvableGroup and IsFinite );
-
+InstallTrueMethod( IsPolycyclicGroup, 
+                     IsNilpotentGroup and IsFinitelyGeneratedGroup );
 
 #############################################################################
 ##
 #A  AbelianInvariants( <G> )
 ##
-##  Computes the abelian invariants of the commutator factor group of <G>.
+##  returns the abelian invariants of the commutator factor group of the
+##  group <G>.
 ##  They are given as a list of the orders of a set of independent
 ##  generators of $G/G'$ (see "IndependentGeneratorsOfAbelianGroup").
 ##
@@ -620,11 +624,13 @@ DeclareAttribute( "ConjugacyClassesPerfectSubgroups", IsGroup );
 ##
 #A  ConjugacyClassesSubgroups( <G> )
 ##
-##  This attribute returns a list of conjugacy classes of subgroups of the
-##  group <G>. It also is applicable for lattices of subgroups (see
-##  "LatticeSubgroups").
-##  The order in which the groups are listed depends on the method chosen by
+##  This attribute returns a list of all conjugacy classes of subgroups of
+##  the group <G>.
+##  It also is applicable for lattices of subgroups (see~"LatticeSubgroups").
+##  The order in which the classes are listed depends on the method chosen by
 ##  {\GAP}.
+##  For each class of subgroups, a representative can be accessed using
+##  `Representative' (see~"Representative").
 ##
 DeclareAttribute( "ConjugacyClassesSubgroups", IsGroup );
 
@@ -660,6 +666,9 @@ DeclareAttribute( "DerivedLength", IsGroup );
 ##  series of N. This is an invariant of <G>.
 ##
 DeclareAttribute( "HirschLength", IsGroup );
+InstallIsomorphismMaintenance( HirschLength, 
+                               IsGroup and HasHirschLength,
+                               IsGroup );
 
 
 #############################################################################
@@ -681,6 +690,15 @@ DeclareAttribute( "DerivedSeriesOfGroup", IsGroup );
 ##  factor group $G/G'$ is the largest abelian factor group of $G$.
 ##
 DeclareAttribute( "DerivedSubgroup", IsGroup );
+
+
+#############################################################################
+##
+#A  MaximalAbelianQuotient(<grp>)  . . . . Max abelian quotient
+##
+##  returns an epimorphism from <grp> onto the maximal abelian quotient of
+##  <grp>. the kernel of this epimorphism is the derived subgroup.
+DeclareAttribute( "MaximalAbelianQuotient",IsGroup);
 
 
 #############################################################################
@@ -711,6 +729,7 @@ DeclareAttribute( "DimensionsLoewyFactors", IsGroup );
 ##
 #A  ElementaryAbelianSeries( <G> )
 #A  ElementaryAbelianSeriesLargeSteps( <G> )
+#A  ElementaryAbelianSeries( [<G>,<NT1>,<NT2>,...] )
 ##
 ##  returns a series of normal subgroups of $G$ such that all factors are
 ##  elementary abelian. If the group is not solvable (and thus no such series
@@ -719,6 +738,9 @@ DeclareAttribute( "DimensionsLoewyFactors", IsGroup );
 ##  The variant `ElementaryAbelianSeriesLargeSteps' tries to make the steps
 ##  in this series large (by eliminating intermediate subgroups if possible)
 ##  at a small additional cost.
+##
+##  In the third variant, an elementary abelian series through the given
+##  series of normal subgroups is constructed.
 ##
 DeclareAttribute( "ElementaryAbelianSeries", IsGroup );
 DeclareAttribute( "ElementaryAbelianSeriesLargeSteps", IsGroup );
@@ -1127,7 +1149,8 @@ DeclareGlobalFunction( "ClosureGroupIntest" );
 ##  if the result is a subgroup of the parent of <G> then the parent of <G>
 ##  is set as parent of the result, otherwise an error is raised.
 ##  The check whether the result is contained in the parent of <G> is omitted
-##  by the `NC' version.
+##  by the `NC' version. As a wrong parent might imply wrong properties this
+##  version should be used with care.
 ##
 DeclareGlobalFunction( "ClosureSubgroup" );
 DeclareGlobalFunction( "ClosureSubgroupNC" );
@@ -1185,7 +1208,7 @@ DeclareOperation( "ConjugateSubgroups", [ IsGroup, IsGroup ] );
 ##  returns the core of <U> in <S>, that is the intersection of all
 ##  <S>-conjugates of <U>.
 ##
-InParentFOA( "Core", IsGroup, IsGroup, NewAttribute );
+InParentFOA( "Core", IsGroup, IsGroup, DeclareAttribute );
 
 
 #############################################################################
@@ -1207,11 +1230,19 @@ InParentFOA( "Core", IsGroup, IsGroup, NewAttribute );
 ##  generator <g> and if `<l>[<i>] = <j>' then generator <g> takes the coset
 ##  <i> to the coset <j> by multiplication from the right. Thus the
 ##  permutation representation of <G> on the cosets of <H> is obtained by
-##  applying `PermList' to each generator list (see "PermList"). The coset
-##  table is standardized, i.e., the cosets are sorted with respect to the
-##  smallest word that lies in each coset.
+##  applying `PermList' to each generator list (see "PermList").
 ##
 DeclareOperation( "CosetTable", [ IsGroup, IsGroup ] );
+
+
+#############################################################################
+##
+#O  CosetTableNormalClosure( <G>, <H> )
+##
+##  returns the coset table of the finitely presented group <G> on the cosets
+##  of the normal closure of the subgroup <H>.
+##
+DeclareOperation( "CosetTableNormalClosure", [ IsGroup, IsGroup ] );
 
 
 #############################################################################
@@ -1229,10 +1260,15 @@ DeclareOperation( "FactorGroupNC", [ IsGroup, IsGroup ] );
 #############################################################################
 ##
 #O  Index( <G>, <U> )
+#O  IndexNC( <G>, <U> )
 ##
-##  returns the index $[G:U]={|G| \over |U|}$.
+##  For a subgroup <U> of the group <G>, `Index' returns the index
+##  $[<G>:<U>] = {|<G>| \over |<G>|}$ of <U> in <G>.
+##  The `NC' version does not test whether <U> is contained in <G>.
 ##
-InParentFOA( "Index", IsGroup, IsGroup, NewAttribute );
+InParentFOA( "Index", IsGroup, IsGroup, DeclareAttribute );
+
+DeclareOperation( "IndexNC", [ IsGroup, IsGroup ] );
 
 
 #############################################################################
@@ -1280,7 +1316,7 @@ DeclareOperation( "IsConjugate", [ IsGroup, IsObject, IsObject ] );
 ##  and $u \in <U>$ the element $u^g$ is a member of <U>.
 ##  Note that <U> need not be a subgroup of <G>.
 ##
-InParentFOA( "IsNormal", IsGroup, IsGroup, NewProperty );
+InParentFOA( "IsNormal", IsGroup, IsGroup, DeclareProperty );
 
 
 #############################################################################
@@ -1347,7 +1383,7 @@ DeclareOperation( "IsSubnormal", [ IsGroup, IsGroup ] );
 ##  The normal closure of <U> in <G> is the smallest normal subgroup of <G>
 ##  which contains <U>.
 ##
-InParentFOA( "NormalClosure", IsGroup, IsGroup, NewAttribute );
+InParentFOA( "NormalClosure", IsGroup, IsGroup, DeclareAttribute );
 
 
 #############################################################################
@@ -1369,7 +1405,7 @@ DeclareOperation( "NormalIntersection", [ IsGroup, IsGroup ] );
 ##  the conjugation action of $G$.
 ##  The second form computes $N_G(\langle g\rangle)$.
 ##
-InParentFOA( "Normalizer", IsGroup, IsObject, NewAttribute );
+InParentFOA( "Normalizer", IsGroup, IsObject, DeclareAttribute );
 
 
 #############################################################################
@@ -1419,7 +1455,7 @@ KeyDependentOperation( "PCore", IsGroup, IsPosInt, "prime" );
 ##  If <U> is a subgroup of <G> this operation returns a subnormal series
 ##  that descends from <G> to a subnormal subgroup <V>$\ge$<U>. If <U> is
 ##  subnormal, <V>=<U>.
-InParentFOA( "SubnormalSeries", IsGroup, IsGroup, NewAttribute );
+InParentFOA( "SubnormalSeries", IsGroup, IsGroup, DeclareAttribute );
 
 
 #############################################################################
@@ -1479,9 +1515,9 @@ DeclareOperation( "NrConjugacyClassesInSupergroup", [ IsGroup, IsGroup ] );
 ##
 ##  The algorithm used computes all elements of the group to ensure a short
 ##  word is found. Therefore this function should *not* be used when the
-##  group <G> has more than a few thousand elements. Because of this you
-##  also should not call this function within algorithms, but use
-##  homomorphisms instead. The sole use of this function is didactic.
+##  group <G> has more than a few thousand elements. Because of this, one
+##  should not call this function within algorithms, but use
+##  homomorphisms instead.
 DeclareGlobalFunction("Factorization");
 
 
@@ -1534,10 +1570,9 @@ DeclareOperation( "GroupWithGenerators",
 ##  <gens>, with identity <id>.
 ##
 ##  Note that the value of the attribute `GeneratorsOfGroup' need not be
-##  equal to the list <gens> of generators entered as argument.  Use
-##  `GroupWithGenerators' if you want to be sure that the argument <gens> is
-##  stored as value of `GeneratorsOfGroup'. If this is required, see
-##  `GroupWithGenerators'("GroupWithGenerators").
+##  equal to the list <gens> of generators entered as argument.
+##  Use `GroupWithGenerators' (see~"GroupWithGenerators") if you want to be
+##  sure that the argument <gens> is stored as value of `GeneratorsOfGroup'.
 ##
 DeclareGlobalFunction( "Group" );
 
@@ -1588,7 +1623,7 @@ DeclareCategoryCollections("IsRightTransversal");
 ##  ``act'' on a right transversal to implement the action on the cosets.
 ##  This is often much more efficient than acting on cosets.
 ##
-InParentFOA( "RightTransversal", IsGroup, IsGroup, NewAttribute );
+InParentFOA( "RightTransversal", IsGroup, IsGroup, DeclareAttribute );
 
 
 #############################################################################
@@ -1610,10 +1645,10 @@ DeclareOperation( "IntermediateSubgroups", [IsGroup, IsGroup] );
 
 #############################################################################
 ##
-#F  IsomorphismTypeFiniteSimpleGroup( <G> )
+#F  IsomorphismTypeInfoFiniteSimpleGroup( <G> )
 ##
-##  For a finite simple group <G>, `IsomorphismTypeFiniteSimpleGroup' returns
-##  a record with components `series', `name' and possibly `parameter',
+##  For a finite simple group <G>, `IsomorphismTypeInfoFiniteSimpleGroup'
+##  returns a record with components `series', `name' and possibly `parameter',
 ##  describing the isomorphism type of <G>.
 ##  The component `name' is a string that gives name(s) for <G>,
 ##  and `series' is a string that describes the following series.
@@ -1675,7 +1710,18 @@ DeclareOperation( "IntermediateSubgroups", [IsGroup, IsGroup] );
 ##  group, a tilde sign abstract isomorphisms between groups constructed in a
 ##  different way.
 ##
-DeclareGlobalFunction( "IsomorphismTypeFiniteSimpleGroup" );
+DeclareGlobalFunction( "IsomorphismTypeInfoFiniteSimpleGroup" );
+
+
+#############################################################################
+##
+#F  IsomorphismTypeFiniteSimpleGroup( <G> )
+##
+##  *IsomorphismTypeFiniteSimpleGroup is obsolete,
+##  use IsomorphismTypeInfoFiniteSimpleGroup instead!*
+##
+DeclareSynonym( "IsomorphismTypeFiniteSimpleGroup",
+    IsomorphismTypeInfoFiniteSimpleGroup );
 
 
 #############################################################################
@@ -1686,8 +1732,8 @@ DeclareGlobalFunction( "IsomorphismTypeFiniteSimpleGroup" );
 ##  returns an isomorphism from <G> onto an isomorphic PC group.
 ##  The series chosen for this PC representation depends on
 ##  the method chosen.
-##  <G> may be a polycyclic group of any kind, for example a permuattion
-##  group.
+##  <G> must be a polycyclic group of any kind, for example a solvable
+##  permutation group.
 DeclareAttribute( "IsomorphismPcGroup", IsGroup );
 
 
@@ -1698,8 +1744,8 @@ DeclareAttribute( "IsomorphismPcGroup", IsGroup );
 ##  returns an isomorphism from <G> onto an isomorphic PC group whose family
 ##  pcgs is a special pcgs. (This can be beneficial to the runtime of
 ##  calculations.)
-##  <G> may be a polycyclic group of any kind, for example a permuattion
-##  group.
+##  <G> may be a polycyclic group of any kind, for example a solvable
+##  permutation group.
 DeclareAttribute( "IsomorphismSpecialPcGroup", IsGroup );
 
 
@@ -1719,9 +1765,9 @@ DeclareAttribute("IsomorphismPermGroup",IsGroup);
 #A  IsomorphismFpGroup( <G> )
 ##
 ##  returns an isomorphism from the given finite group <G> to a finitely
-##  presented group isomorphic to <G>. The presentation (and thus the
-##  generators in which it is presented) is chosen by a method to obtain a
-##  short presentation.
+##  presented group isomorphic to <G>. The function first *chooses a set of
+##  generators of <G>* and then computes a presentation in terms of these
+##  generators.
 ##
 DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 
@@ -1729,16 +1775,18 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 #############################################################################
 ##
 #A  IsomorphismFpGroupByGenerators( <G>,<gens>[,<string>] )
+#A  IsomorphismFpGroupByGeneratorsNC( <G>,<gens>,<string> )
 ##
 ##  returns an isomorphism from a finite group <G> to a finitely presented
-##  group <F> isomorphic to <G>.
-##  The generators of <F> correspond to the generators of <G> given in
-##  the list <gens>.
-##  If <string> is given it is used to name the generators of the finitely
-##  presented group.
+##  group <F> isomorphic to <G>.  The generators of <F> correspond to the
+##  *generators of <G> given in the list <gens>*.  If <string> is given it
+##  is used to name the generators of the finitely presented group.
 ##
-DeclareOperation( "IsomorphismFpGroupByGenerators", [ IsGroup, IsList ] );
-DeclareOperation( "IsomorphismFpGroupByGenerators",
+##  The NC version will avoid testing whether the elements in <gens>
+##  generate <G>.
+##
+DeclareGlobalFunction("IsomorphismFpGroupByGenerators");
+DeclareOperation( "IsomorphismFpGroupByGeneratorsNC",
     [ IsGroup, IsList, IsString ] );
 
 DeclareOperation(
@@ -1816,12 +1864,20 @@ DeclareGlobalFunction("HasElementaryAbelianFactorGroup");
 #F  IsGroupOfFamily(<G>)
 ##
 ##  This filter indicates that the group <G> is the group which is stored in
-##  the family of its elements as `WholeGroup'.
-#T This is not correct;
-#T the family <Fam> of <G> stores <G> as `<Fam>!.wholeGroup'.
-#T (In fact currently no attribute `WholeGroup' exists.)
+##  the family <fam> of its elements as `<fam>!.wholeGroup'.
 ##
 DeclareFilter("IsGroupOfFamily");
+
+
+#############################################################################
+##
+#F  Group_PseudoRandom(<G>)
+##
+##  Computes a pseudo-random element of <G> by product replacement.
+##  (This is installed as a method for `PseudoRandom' under the condition
+##  that generators are known.)
+##
+DeclareGlobalFunction("Group_PseudoRandom");
 
 
 #############################################################################

@@ -28,9 +28,9 @@ initially knows the following groups:
     groups"),
   \item{$\bullet$}  the  irreducible solvable subgroups of  $GL(n,p)$ for
     $n>1$ and $p^n \< 256$ (also in "Primitive permutation groups"),
-%\item{$\bullet$} the irreducible maximal finite integral matrix groups
-%  of dimension at most  24  (see~"Irreducible Maximal Finite Integral
-%  Matrix Groups"),
+  \item{$\bullet$} the irreducible maximal finite integral matrix groups
+    of dimension at most  31  (see~"Irreducible Maximal Finite Integral
+    Matrix Groups"),
 %\item{$\bullet$} the  crystallographic  groups  of  dimension  at most  4
 %  (see~"The Crystallographic Groups Library").
 \endlist
@@ -61,7 +61,7 @@ Group(())
 gap> CyclicGroup(12);
 <pc group of size 12 with 3 generators>
 gap> CyclicGroup(IsPermGroup,12);
-Group( [ ( 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12) ] )
+Group([ (1,2,3,4,5,6,7,8,9,10,11,12) ])
 gap> matgrp1:= CyclicGroup( IsMatrixGroup, 12 );
 <matrix group of size 12 with 1 generators>
 gap> FieldOfMatrixGroup( matgrp1 );
@@ -103,13 +103,13 @@ gap> ExtraspecialGroup( 8, "-" );
 \Declaration{AlternatingGroup}
 \beginexample
 gap> AlternatingGroup(5);
-Alt([1..5])
+Alt( [ 1 .. 5 ] )
 \endexample
 
 \Declaration{SymmetricGroup}
 \beginexample
 gap> SymmetricGroup(10);
-Sym([1..10])
+Sym( [ 1 .. 10 ] )
 \endexample
 
 Note that permutation groups provide special treatment of symmetric and
@@ -118,7 +118,7 @@ alternating groups, see~"Symmetric and Alternating Groups".
 \Declaration{MathieuGroup}
 \beginexample
 gap> MathieuGroup( 11 );
-Group([ ( 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11), ( 3, 7,11, 8)( 4,10, 5, 6) ])
+Group([ (1,2,3,4,5,6,7,8,9,10,11), (3,7,11,8)(4,10,5,6) ])
 \endexample
 
 \Declaration{SuzukiGroup}
@@ -145,6 +145,7 @@ gap> SpecialLinearGroup(2,2);
 SL(2,2)
 \endexample
 
+\indextt{OnLines!example}
 Using the `OnLines' operation it is possible to obtain the corresponding
 projective groups in a permutation action:
 
@@ -193,6 +194,29 @@ GO(+1,4,4)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Conjugacy Classes in Classical Groups}
+
+\indextt{ConjugacyClasses!for linear  groups}
+For  general  and   special  linear  groups  (see~"GeneralLinearGroup"
+and~"SpecialLinearGroup") {\GAP}  has an efficient method  to generate
+representatives  of  the conjugacy  classes.  This  uses results  from
+linear algebra on normal forms of matrices. If you know how to do this
+for other types of classical groups, please, tell us.
+
+\beginexample
+gap> g := SL(4,9);                    
+SL(4,9)
+gap> NrConjugacyClasses(g);
+861
+gap> cl := ConjugacyClasses(g);;                   
+gap> Length(cl);
+861
+\endexample
+
+\Declaration{NrConjugacyClassesGL}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Constructors for Basic Groups}
 
 All functions described in the previous sections call constructor operations
@@ -223,7 +247,8 @@ InstallMethod( CyclicGroupCons,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Selection Functions}
 
-\)\fmark All<Library>Groups( $<fun>_1$, $<val>_1$, \dots\ )
+\>`All<Library>Groups( <fun1>, <val1>, ... )'{AllLibraryGroups}%
+@{`All\noexpand<Library>Groups'}
 
 For each of the following group libraries there is a *selection function*.
 This function permits one to select all groups from the library that have a
@@ -278,12 +303,13 @@ selection process.
 In the description of each library we will
 list the properties that are stored for this library.
 
-\)\fmark One<Library>Group( $<fun>_1$, $<val>_1$, \dots\ )
+\>`One<Library>Groups( <fun1>, <val1>, ... )'{OneLibraryGroups}%
+@{`One\noexpand<Library>Groups'}
 
 % If you  do not want  all groups with the  prescribed properties, but only
 % one example, you should call the *example function*. It returns `fail' if
 % no such group exists in the library.
-%  
+%
 % The following sections describing a particular group library mention only
 % the *extraction   function*, by which  you  address a group   via (1)~its
 % degree  or   size    (or for  matrix   groups  its    dimension  and  its
@@ -347,114 +373,162 @@ gap> TransitiveIdentification(Group((1,2),(1,2,3)));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Small Groups}
 
-This library contains explicit lists of all groups of certain orders 
-up to isomorphism. Currently, the catalogue contains the groups 
-
+The Small Groups library gives access to all groups of certain ``small''
+orders. The groups are sorted by their orders and they are listed up to
+isomorphism; that is, for each of the available orders a complete and
+irredundant list of isomorphism type representatives of groups is given.
+Currently, the library contains the following groups:
 \beginlist
-  \item{$\bullet$} whose order factorises in at most 3 primes.
-  \item{$\bullet$} of order at most 2000 except 1024.
-  \item{$\bullet$} of order $5^5$ and $7^4$.
-  \item{$\bullet$} of order $q^n \cdot p$ where $q^n$ divides
-                   $2^8$, $3^6$, $5^5$ or $7^4$ and $p$ is an 
-                   arbitrary prime different to $q$.
+  \item{$\bullet$} those of order at most 2000 except 1024
+                   \qquad ($423\;164\;062$ groups);
+  \item{$\bullet$} those of order $5^5$ and $7^4$
+                   \qquad ($92$ groups);
+  \item{$\bullet$} those of order $q^n \cdot p$ where $q^n$ divides
+                   $2^8$, $3^6$, $5^5$ or $7^4$ and $p$ is an
+                   arbitrary prime with $p \neq q$;
+  \item{$\bullet$} those whose order factorises into at most 3 primes.
 \endlist
+The first two items in this list cover an explicit range of orders; the 
+last two provide access to infinite families of groups having orders of 
+certain types.
 
-The groups whose order factorises in at most 3 primes have been classified
-by O. H{\accent127o}lder in 1893. An explicit description of these groups 
-can be found in \cite{Neu67}. The remaining $p$-groups in the catalogue 
-have been constructed by E. A. O'Brien using the $p$-group generation 
-method, see \cite{New77}, \cite{OBr90} and \cite{OBr91}. An implementation 
-of this method is part of the ANUPQ share package of GAP. The nilpotent 
-groups are then obtained as direct products of $p$-groups. The remaining 
-non-nilpotent groups of order at most 2000 have been determined by Hans 
-Ulrich Besche and Bettina Eick using the coprime split extensions method
-for solvable groups with certain normal Hall subgroups, the Frattini 
-extension method for solvable group in general and the well-known cyclic
-extension algorithm for non-solvable groups. In \cite{BescheEick98} and
-\cite{BescheEick1000} a first version of these methods is described and
-they are also available within the GrpConst share package of GAP. The 
-groups of order $q^n \cdot p$ have been constructed using a generic
-variation of our algorithms, see \cite{BescheEick768}. A survey on group 
-constructions and our algorithms for this purpose can be found in \cite{BEO}.
+The library also has an identification function: it returns the library 
+number of a given group. This function determines library numbers using
+invariants of groups. The function is available for all orders in the 
+library except 512 and 1536.
 
-The Small Groups Library incorporates the Gap 3 libraries `TwoGroup' 
-and `ThreeGroup' without changes. In particular, the 2- and 3-groups in
-the Small Groups Library are sorted as the groups in `TwoGroup' or 
-`ThreeGroup'. Moreover, the Small Groups Library substitutes the Gap 3
-library of solvable groups of order at most 100, but here the sorting
-of groups has changed in the Small Groups Library.
-
-Additionally to the catalogue of groups there exists an identification
-routine for groups of small order; that is, a function that returns the
-catalogue number of a given group. This function determines catalogue 
-numbers using invariants of groups. The function is available for all 
-orders in the catalogue except 512 and 1536.
-
-The catalogue is organised in 8 layers. It is possible to install the
-first $n$ layers only for each $n$ in the range of 1 to 8. There exists 
-an extensive README file for the Small Groups Library containing detailed 
-information on the layers. The layers contain:
-
+The library is organised in 8 layers. Each layer contains the groups of
+certain orders and their corresponding group identification routines. It
+is possible to install the first $n$ layers of the group library and the
+first $m$ layers of the group identification for each $1 \leq m \leq n
+\leq 8$. This might be useful to save disk space. There is an extensive
+README file for the Small Groups library available in the `small' directory
+of the {\GAP} distribution containing detailed information on the layers.
+In summary, the layers are:
 \beginlist
-   \item{(1)} the groups whose size factorises in at most 3 primes.
-   \item{(2)} the remaining groups of size a most 1000 except 512 and 
-                    768.
-   \item{(3)} the remaining groups of size $2^n * p$ with $n \leq 8$ 
-                    and $p$ an odd prime.
-   \item{(4)} the remaining groups of size $q^n * p$ where $q^n$ 
-                    divides $3^6$, $5^5$ or $7^4$ and $p$ is a prime 
-                    different to $q$. Moreover, this layer contains the
-                    groups of order $5^5$ and $7^4$.
-   \item{(5)} the remaining groups of order at most 2000 except
-                    1024, 1152, 1536 and 1920.
+   \item{(1)} the groups whose order factorises into at most 3 primes.
+   \item{(2)} the remaining groups of order at most 1000 except 512 and 768.
+   \item{(3)} the remaining groups of order $2^n * p$ with $n \leq 8$ and
+              $p$ an odd prime.
+   \item{(4)} the groups of order $5^5$ and $7^4$ and the remaining groups
+              of order $q^n * p$ where $q^n$ divides $3^6$, $5^5$ or $7^4$
+              and $p$ is a prime with $p \neq q$.
+   \item{(5)} the remaining groups of order at most 2000 except 1024,
+              1152, 1536 and 1920.
    \item{(6)} the groups of orders 1152 and 1920.
    \item{(7)} the groups of order 512.
    \item{(8)} the groups of order 1536.
 \endlist
 
+The data in this library has been carefully checked and cross-checked.
+It is believed to be reliable. However, no absolute guarantees are given
+and users should, as always, make their own checks in critical cases.
+
+The data occupies about 26 MB (storing over 400 million groups in about
+200 megabits). The group identification occupies about 42 MB of which
+18 MB is used for the groups in layer (6). More information on the Small 
+Groups library can be found on
+\URL{http://www.math.rwth-aachen.de/~{}Hans-Ulrich.Besche/small.html}
+
+This group library has been computed by Hans Ulrich Besche, Bettina Eick
+and E.~A.~O'Brien. A survey on this topic and an account of the history 
+of group constructions can be found in \cite{BEO01}. For further detailed 
+information on the construction of this library we refer to \cite{New77}, 
+\cite{OBr90}, \cite{OBr91}, \cite{BescheEick98}, \cite{BescheEick1000} and 
+\cite{BescheEick768}.
+ 
+\atindex{TwoGroup library}{@\noexpand`TwoGroup' library}
+\atindex{ThreeGroup library}{@\noexpand`ThreeGroup' library}
+The Small Groups library incorporates the {\GAP}~3 libraries `TwoGroup' and
+`ThreeGroup'. The data from these libraries was directly included into the
+Small Groups library, and the ordering there was preserved. The Small
+Groups library replaces the Gap 3 library of solvable groups of order at
+most 100. However, both the organisation and data descriptions of these
+groups has changed in the Small Groups library.
+
 \Declaration{SmallGroup}
 \Declaration{AllSmallGroups}
 \Declaration{OneSmallGroup}
-\Declaration{SmallGroupsInformation}
 \Declaration{NumberSmallGroups}
-\Declaration{IdGroup}
+\Declaration{IdSmallGroup}
 \Declaration{IdsOfAllSmallGroups}
-\Declaration{Gap3CatalogueGroup}
-\Declaration{Gap3CatalogueIdGroup}
+\Declaration{IdGap3SolvableGroup}
+\Declaration{SmallGroupsInformation}
 \Declaration{UnloadSmallGroupsData}
 
 \beginexample
 gap> G := SmallGroup( 768, 1000000 );
 <pc group of size 768 with 9 generators>
-gap> NumberSmallGroups( 512 );
-10494213
-gap> NumberSmallGroups( 768 );
-1090235
-gap> NumberSmallGroups( 2^8 * 5 );
-1116461
-gap> AllGroups( Size, 120, IsSolvableGroup, false );
-[ Group([ ( 1, 2, 4, 8)( 3, 6, 9, 5)( 7,12,13,17)(10,14,11,15)(16,20,21,24)
-        (18,22,19,23), ( 1, 3, 7)( 2, 5,10)( 4, 9,13)( 6,11, 8)(12,16,20)
-        (14,18,22)(15,19,23)(17,21,24) ]), Group([ (1,2,3,4,5), (1,2) ]),
+gap> G := SmallGroup( [768, 1000000] );
+<pc group of size 768 with 9 generators>
+
+gap> AllSmallGroups( 6 );
+[ <pc group of size 6 with 2 generators>,
+  <pc group of size 6 with 2 generators> ]
+gap> AllSmallGroups( Size, 120, IsSolvableGroup, false );
+[ Group([ (1,2,4,8)(3,6,9,5)(7,12,13,17)(10,14,11,15)(16,20,21,24)(18,22,19,
+        23), (1,3,7)(2,5,10)(4,9,13)(6,11,8)(12,16,20)(14,18,22)(15,19,23)(17,
+        21,24) ]), Group([ (1,2,3,4,5), (1,2) ]),
   Group([ (1,2,3,5,4), (1,3)(2,4)(6,7) ]) ]
-gap> IdsOfAllGroups( Size, 60, IsSupersolvableGroup, true );
+
+gap> G := OneSmallGroup( 120, IsNilpotentGroup, false );
+<pc group of size 120 with 5 generators>
+gap> IdSmallGroup(G);
+[ 120, 1 ]
+gap> G := OneSmallGroup( Size, [1..1000], IsSolvableGroup, false );
+Group([ (1,2,3,4,5), (1,2,3) ])
+gap> IdSmallGroup(G);
+[ 60, 5 ]
+gap> UnloadSmallGroupsData();
+\endexample
+
+\beginexample
+gap> IdSmallGroup( GL( 2,3 ) );
+[ 48, 29 ]
+gap> IdSmallGroup( Group( (1,2,3,4),(4,5) ) );
+[ 120, 34 ]
+gap> IdsOfAllSmallGroups( Size, 60, IsSupersolvableGroup, true );
 [ [ 60, 1 ], [ 60, 2 ], [ 60, 3 ], [ 60, 4 ], [ 60, 6 ], [ 60, 7 ],
   [ 60, 8 ], [ 60, 10 ], [ 60, 11 ], [ 60, 12 ], [ 60, 13 ] ]
-gap> OneGroup( Size, [1..1000], IsSolvableGroup, false );
-Group([ (1,2,3,4,5), (1,2,3) ])
-gap> List( DerivedSeries( Gap3CatalogueGroup( 24, 15 ) ), Size );
-[ 24, 12, 4, 1 ]
-gap> IdGroup( GL( 2,3 ) );
-[ 48, 29 ]
-gap> Gap3CatalogueIdGroup( GL( 2,3 ) );
-[ 48, 49 ]
-gap> UnloadSmallGroupsData();
+\endexample
+
+\beginexample
+gap> NumberSmallGroups( 512 );
+10494213
+gap> NumberSmallGroups( 2^8 * 23 );
+1083472
+gap> NumberSmallGroups( 2^9 * 23 );
+Error, the library of groups of size 11776 is not available at
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+or you can return to continue
+brk>
+\endexample
+
+\beginexample
+gap> SmallGroupsInformation( 32 );
+
+  There are 51 groups of order 32.
+  There are sorted by their ranks.
+     1 is cyclic.
+     2 - 20 have rank 2.
+     21 - 44 have rank 3.
+     45 - 50 have rank 4.
+     51 is elementary abelian.
+
+  For the selection functions the values of the following attributes
+  are precomputed and stored:
+     IsAbelian, PClassPGroup, RankPGroup, FrattinifactorSize and
+     FrattinifactorId.
+
+  This size belongs to layer 2 of the SmallGroups library.
+  IdSmallGroup is available for this size.
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Finite Perfect Groups}
-\index{perfect groups}%
 
+\index{perfect groups}
 The {\GAP} library of finite  perfect groups provides, up to isomorphism,
 a list of all perfect groups whose sizes are less than  $10^6$  excluding
 the following sizes:
@@ -565,72 +639,90 @@ acts on two orbits of size 5 and 16 respectively.
 The  notation used in  the ``description''  of  a  group is explained  in
 section 5.1.2 of \cite{HP89}. We quote the respective page from there:
 
-{\advance\leftskip by\manindent \advance\rightskip by\manindent
-Within a class $Q\,\#\,p$, an isomorphism type  of groups will be denoted
-by an  ordered pair of  integers $(r,n)$, where $r \geq  0$ and $n  > 0$.
-More precisely, the isomorphism  types in $Q$ \# $p$  of order $p^r  \!\!
-\mid  \!\! Q  \!\!  \mid$ will be  denoted by  $(r,1)$, $(r,2)$, $(r,3)$,
-$\ldots\,$. Thus $Q$ will always get the size number $(0,1)$.
+{\advance\leftskip by\manindent \advance\rightskip by\manindent%
+Within a class $Q\,\#\,p$, an isomorphism type of groups will be  denoted
+by an ordered pair of integers $(r,n)$, where $r \geq 0$  and  $n  >  0$.
+More precisely, the isomorphism types in $Q \# p$ of order $p^r |Q|$ will
+be denoted by $(r,1), (r,2), (r,3), \ldots\,$. Thus $Q$ will  always  get
+the size number $(0,1)$.
 
-In  addition to the symbol $(r,n)$,  the groups in $Q  \,  {\sl \#} \, p$
-will  also be given a  more descriptive name.  The purpose of  this is to
-provide a very rough idea of  the structure of  the group.  The names are
-derived in the following manner. First of all, the isomorphism classes of
-irreducible  $F_pQ$-modules $M$ with $\mid \!\!  Q  \!\! \mid \mid \!\! M
-\!\! \mid \,  \leq 10^6$,  where $F_p$ is   the field of  order $p$,  are
-assigned symbols. These  will either  be simply $p^x$,  where $x$  is the
-dimension of the module, or, if there is more  than one isomorphism class
-of irreducible modules having the same dimension, they will be denoted by
-$p^x$, $p^{x^\prime}$,  etc.   The one-dimensional  module   with trivial
-$Q$-action  will therefore be denoted  by  $p^1$. These  symbols will  be
-listed under the description of $Q$.  The group name consists essentially
-of a list  of the composition factors  working from the  top of the group
-downwards; hence  it always  starts with the  name  of $Q$ itself.  (This
-convention is the most  convenient in our  context,  but it is  different
-from that adopted  in the ATLAS \cite{CCN85}, for example,
-where composition factors  are listed in the  reverse order. For example,
-we denote a  group isomorphic to $SL(2,5)$  by  $A_5 2^1$ rather  than $2
-\cdot A_5$.)
+In addition to the symbol $(r,n)$, the groups in $Q\,\#\,p$ will also  be
+given a more descriptive name. The purpose of this is to provide  a  very
+rough idea of the structure of the group. The names are  derived  in  the
+following manner. First of all, the isomorphism  classes  of  irreducible
+$F_pQ$-modules $M$ with $|Q|.|M| \leq 10^6$, where $F_p$ is the field  of
+order $p$, are assigned symbols. These will either be simply $p^x$, where
+$x$ is the dimension of the  module,  or,  if  there  is  more  than  one
+isomorphism class of irreducible modules having the same dimension,  they
+will be denoted by $p^x, p^{x^\prime}$, etc. The  one-dimensional  module
+with trivial $Q$-action will therefore be denoted by $p^1$. These symbols
+will be listed under the description of  $Q$.  The  group  name  consists
+essentially of a list of the composition factors working from the top  of
+the group downwards; hence it always starts with the name of $Q$  itself.
+(This convention is the  most  convenient  in  our  context,  but  it  is
+different from that adopted in the ATLAS \cite{CCN85}, for example, where
+composition factors are listed in the  reverse  order.  For  example,  we
+denote a group isomorphic to $SL(2,5)$ by $A_5 2^1$ rather than $2.A_5$.)
 
 Some  other symbols are used  in the name, in order  to give some idea of
 the   relationship  between these    composition  factors, and  splitting
 properties. We shall now list these additional symbols.
+
+\beginlist
 \item{$\times$}  between  two  factors   denotes   a  direct  product  of
       $F_pQ$-modules or groups.
+
 \item{C} (for ``commutator'') between two factors  means  that the second
       lies in the commutator subgroup of the first.  Similarly, a segment
       of the form  $(f_1 \! \times \! f_2) {\sl C} f_3$  would mean  that
       the factors $f_1$ and $f_2$  commute modulo $f_3$ and $f_3$ lies in
       $[f_1,f_2]$.
+
 \item{A} (for ``abelian'') between two factors  indicates that the second
       is  in the  $p$th  power  (but not the commutator subgroup)  of the
       first.   ``A''   may  also   follow  the  factors,   if  bracketed.
+
 \item{E} (for ``elementary abelian'') between two factors  indicates that
       together   they  generate  an  elementary  abelian  group   (modulo
       subsequent factors), but that the resulting $F_pQ$-module extension
       does not split.
+
 \item{N}  (for ``nonsplit'') before  a  factor  indicates  that  $Q$  (or
       possibly its covering group)  splits down as far at this factor but
       not over the factor itself.  So  ``$Q f_1 {\sl N} f_2$'' means that
       the normal subgroup  $f_1f_2$  of the group  has no complement but,
       modulo $f_2$, $f_1$, does have a complement.
 
+\endlist
+
 Brackets have their obvious meaning. Summarizing, we have:
+
+\beginlist
 \item{$\times$} = direct product;
+
 \item{C} = commutator subgroup;
+
 \item{A} = abelian;
+
 \item{E} = elementary abelian; and
+
 \item{N} = nonsplit.
 
+\endlist
+
 Here are some examples.
+
+\beginlist
 \item{(i)}  $A_5 (2^4 {\sl E} 2^1 {\sl E} 2^4) {\sl A}$  means  that  the
       pairs  $2^4 {\sl E} 2^1$  and $2^1 {\sl E} 2^4$ are both elementary
       abelian of exponent 4.
+
 \item{(ii)}   $A_5 (2^4 {\sl E} 2^1 {\sl A}) {\sl C} 2^1$    means   that
       $O_2(G)$  is of  symplectic type  $2^{1+5}$,  with  Frattini factor
       group  of type   $2^4 {\sl E} 2^1$.   The   ``A''  after the  $2^1$
       indicates that $G$ has a  central cyclic subgroup $2^1 {\sl A} 2^1$
       of order 4.
+
 \item{(iii)}     $L_3(2) ((2^1 {\sl E}) \! \times \! ({\sl N} 2^3 {\sl E}
       2^{3^\prime} {\sl A}) {\sl C}) 2^{3^\prime}$    means   that    the
       $2^{3^\prime}$ factor at the bottom lies in the commutator subgroup
@@ -641,9 +733,12 @@ Here are some examples.
       $2^3$  factor.  (Since $G$ is perfect,  it goes without saying that
       the extension $L_3(2) 2^1$ cannot split itself.)
 
+\endlist
+
 We  must  stress  that this  notation does   not  always succeed in being
 precise  or even unambiguous, and the  reader is free to  ignore it if it
-does not seem helpful.\par}
+does not seem helpful.
+\par}%
 
 If such a group description has  been given in  the book for $G$ (and, in
 fact, this is the case for  most of the library  groups), it is displayed
@@ -692,11 +787,11 @@ gap> SimsNo(g);
 3
 \endexample
 
-\>`COHORTS_PRIMITIVE_GROUPS'{COHORTSPRIMITIVEGROUPS}@{`COHORTSPRIMITIVEGROUPS'} V
+\>`COHORTS_PRIMITIVE_GROUPS' V
 
 In \cite{DixonMortimer88} the primitive groups are sorted in
-``cohorts'' according to their socle. The variable
-`COHORTS_PRIMITIVE_GROUPS' contains for each degree a list of the cohorts
+``cohorts'' according to their socle. For each degree, the variable
+`COHORTS_PRIMITIVE_GROUPS' contains a list of the cohorts
 for the primitive groups of this degree. Each cohort is represented by a
 list of length 2, the first entry specifies the socle type (see
 `SocleTypePrimitiveGroup', section~"SocleTypePrimitiveGroup"), the second
@@ -708,11 +803,11 @@ $L_2(7)^2$, $A_7^2$ and $A_{49}$ respectively. the group
 in the third cohort with socle $(A_7\times A_7)$.
 \begintt
 gap> COHORTS_PRIMITIVE_GROUPS[49];
-[ [ rec( series := "Z", width := 2, parameter := 7 ), 
-      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
-          20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33 ] ], 
-  [ rec( series := "L", width := 2, parameter := [ 2, 7 ] ), [ 34 ] ], 
-  [ rec( series := "A", width := 2, parameter := 7 ), [ 35, 36, 37, 38 ] ], 
+[ [ rec( series := "Z", width := 2, parameter := 7 ),
+      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+          20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33 ] ],
+  [ rec( series := "L", width := 2, parameter := [ 2, 7 ] ), [ 34 ] ],
+  [ rec( series := "A", width := 2, parameter := 7 ), [ 35, 36, 37, 38 ] ],
   [ rec( series := "A", parameter := 49, width := 1 ), [ 39, 40 ] ] ]
 \endtt
 
@@ -730,7 +825,7 @@ database without having to compute them anew:
 
 A   library of irreducible   maximal finite   integral  matrix groups  is
 provided with {\GAP}. It  contains $\Q$-class representatives for  all of
-these groups of dimension at  most 24, and $\Z$-class representatives for
+these groups of dimension at  most 31, and $\Z$-class representatives for
 those of dimension at most 11 or of dimension 13, 17, 19, or 23.
 
 The  groups  provided  in this  library  have been  determined by Wilhelm
@@ -748,8 +843,9 @@ institute. The $\Z$-class representatives of  the groups of dimensions 19
 and  23 had already been  determined in  \cite{Ple85}.  Gabriele Nebe has
 recomputed them  for us. Her  main contribution to this library, however,
 is that she has determined and computed the $\Q$-class representatives of
-the groups  of non-prime dimensions  between 12 and  24 (see \cite{PN95},
-\cite{NP95}, \cite{Neb95}).
+the groups  of non-prime dimensions  between 12 and  24 and the groups of
+dimensions  25  to  31   (see   \cite{PN95},  \cite{NP95},  \cite{Neb95},
+\cite{Neb96}).
 
 The library has been brought into {\GAP} format by Volkmar Felsch. He has
 applied several {\GAP} routines  to check certain consistency of the data.
@@ -803,7 +899,7 @@ respectively.  So we  have $Q_1(4) = \{ R_1,  R_2, R_3 \}$,  $Q_2(4) = \{
 R_5, R_6 \}$, $q_1(4) = 3$, and $q_2(4) = 2$.
 
 The $q_1(n)$ $\Q$-classes   of i.m.f.~subgroups of  $GL_n(\Q)$  have been
-determined  for each dimension  $n \leq 24$.   The current {\GAP} library
+determined  for each dimension  $n \leq 31$.   The current {\GAP} library
 provides integral representative groups for all these classes.  Moreover,
 all $\Z$-classes of i.m.f.~subgroups of $GL_n(\Z)$  are known for $n \leq
 11$ and  for $n \in \{13,17,19,23\}$. For   these dimensions, the library
@@ -828,7 +924,7 @@ and a representative vector.
 
 Like most of the  other {\GAP} libraries,  the library of i.m.f.~integral
 matrix   groups   supplies an   extraction   function,  `ImfMatrixGroup'.
-However, as the  library involves only 423  different groups, there is no
+However, as the  library involves only 525  different groups, there is no
 need for a   selection or an  example function.  Instead,   there are two
 functions, `ImfInvariants' and `DisplayImfInvariants', which provide some
 $\Z$-class invariants   that can be extracted  from   the library without
@@ -854,7 +950,7 @@ classes.
 
 `ImfNumberQQClasses' returns the number $q_1($<dim>$)$ of $\Q$-classes of
 i.m.f.~rational matrix groups of dimension  <dim>. Valid values of  <dim>
-are all positive integers up to 24.
+are all positive integers up to 31.
 
 Note: In order  to enable you to loop  just over the classes belonging to
 $Q_1($<dim>$)$, we have  arranged  the list of $\Q$-classes  of dimension
@@ -869,7 +965,7 @@ $dim      \in \{13,17,19,23\}$,  this  is     the  number $q_1($<dim>$) +
 q_2($<dim>$)$ of  $\Q$-classes  of  i.m.f.~subgroups of   $GL_{dim}(\Z)$.
 Otherwise, it is   just  the number  $q_1($<dim>$)$ of   $\Q$-classes  of
 i.m.f.~subgroups of $GL_{dim}(\Q)$.    Valid  values of <dim>     are all
-positive integers up to 24.
+positive integers up to 31.
 
 `ImfNumberZClasses' returns the  number of $\Z$-classes in  the <q>$^{\rm
 th}$   $\Q$-class   of  i.m.f.~integral    matrix   groups  of  dimension
@@ -884,26 +980,26 @@ the   groups in the  <z>$^{\rm   th}$  $\Z$-class  in the  <q>$^{\rm th}$
 $\Q$-class of i.m.f.~integral matrix groups of dimension <dim>:
 
 \beginlist
-\item{-}
+\item{--}
       its  $\Z$-class number  in the form  <dim>.<q>.<z>,  if <dim> is at
-      most 11 or a prime, or its $\Q$-class number in the form <dim>.<q>,
-      else,
-\item{-}
+      most 11 or a prime at most 23, or its $\Q$-class number in the form
+      <dim>.<q>, else,
+\item{--}
       a message if the group is solvable,
-\item{-}
+\item{--}
       the size of the group,
-\item{-}
+\item{--}
       the isomorphism type of the group,
-\item{-}
+\item{--}
       the   elementary  divisors   of  the   associated  quadratic  form,
-\item{-}
+\item{--}
       the sizes  of the  orbits  of short vectors  (these  sizes  are the
       degrees of the  faithful permutation representations  which you may
       construct    using    the   functions   `IsomorphismPermGroup'   or
       `IsomorphismPermGroupImfGroup' below),
-\item{-}
+\item{--}
       the norm of the associated short vectors,
-\item{-}
+\item{--}
       only  in  case  that  the  group  is  not  an  i.m.f.~group  in
       $GL_n(\Q)$:  an  appropriate  message,  including the  $\Q$-class
       number    of   the    corresponding   rational    i.m.f.~class.
@@ -918,7 +1014,7 @@ known  for the given  dimension,  i.e., if $dim  >  11$ and $dim \not \in
 \{13,17,19,23\}$. The  default value of <z> is~1.  This value of <z> will
 be accepted even if the $\Z$-classes are not known. Then it specifies the
 only  representative group  which  is  available for  the <q>$^{\rm  th}$
-$\Q$-class. The greatest legal value of <dim> is 24.
+$\Q$-class. The greatest legal value of <dim> is 31.
 
 \beginexample
 gap> DisplayImfInvariants( 3, 1, 0 );
@@ -957,16 +1053,16 @@ ordinary {\GAP} list.)
 In  the description of the isomorphism  types the following notations are
 used:
 \beginitems
-$A` x 'B$ &
+$A$ `x' $B$ &
       denotes a direct product of a group $A$ by a group $B$,
 
-$A` subd 'B$ &
+$A$ `subd' $B$ &
       denotes a subdirect product of $A$ by $B$,
 
-$A` Y 'B$ &
+$A$ `Y' $B$ &
       denotes a central product of $A$ by $B$,
 
-$A` wr 'B$ &
+$A$ `wr' $B$ &
       denotes a wreath product of $A$ by $B$,
 
 $A`:'B$ &
@@ -978,30 +1074,34 @@ $A`.'B$ &
 
 The groups involved are
 \beginlist
-\item{-} the cyclic groups $C_n$, dihedral groups $D_n$,  and generalized
+\item{--} the cyclic groups $C_n$, dihedral groups $D_n$,  and generalized
       quaternion groups  $Q_n$ of order $n$,  denoted by `C'<n>,  `D'<n>,
       and `Q'<n>, respectively,
-\item{-} the  alternating groups  $A_n$  and  symmetric groups  $S_n$  of
+\item{--} the  alternating groups  $A_n$  and  symmetric groups  $S_n$  of
       degree $n$, denoted by `A'<n> and `S'<n>, respectively,
-\item{-}  the  linear  groups  $GL_n(q)$,   $PGL_n(q)$,   $SL_n(q)$,  and
+\item{--} the  linear  groups   $GL_n(q)$,   $PGL_n(q)$,   $SL_n(q)$,  and
       $PSL_n(q)$,     denoted    by     `GL'(<n>,<q>),    `PGL'(<n>,<q>),
       `SL'(<n>,<q>), and `PSL'(<n>,<q>), respectively,
-\item{-}  the  unitary  groups  $SU_n(q)$  and  $PSU_n(q)$,   denoted  by
+\item{--}  the  unitary  groups  $SU_n(q)$  and  $PSU_n(q)$,   denoted  by
       `SU'(<n>,<q>) and `PSU'(<n>,<q>), respectively,
-\item{-} the symplectic groups $Sp(n,q)$, denoted by `Sp'(<n>,<q>),
-\item{-} the orthogonal group $O_8^{\,+}(2)$, denoted by `O+'(8,2),
-\item{-} the   extraspecial    groups    $2_+^{\,1+8}$,    $3_+^{\,1+2}$,
+\item{--} the  symplectic groups  $Sp(n,q)$  and  $PSp(n,q)$,  denoted  by
+      `Sp'(<n>,<q>) and `PSp'(<n>,<q>), respectively,
+\item{--} the  orthogonal groups   $O_8^{\,+}(2)$   and   $PO_8^{\,+}(2)$,
+      denoted by `O+'(8,2) and `PO+'(8,2), respectively,
+\item{--} the   extraspecial    groups    $2_+^{\,1+8}$,    $3_+^{\,1+2}$,
       $3_+^{\,1+4}$,  and   $5_+^{\,1+2}$,   denoted   by  `2+\^{}(1+8)',
       `3+\^{}(1+2)', `3+\^{}(1+4)', and `5+\^{}(1+2)', respectively,
-\item{-} the Chevalley group $G_2(3)$, denoted by `G(2,3)',
-\item{-} the Weyl groups   $W(A_n)$,  $W(B_n)$,  $W(D_n)$,  $W(E_n)$, and
+\item{--} the Chevalley group $G_2(3)$, denoted by `G2(3)',
+\item{--} the twisted Chevalley group ${^3D}_4(2)$, denoted by `3D4(2)',
+\item{--} the Suzuki group $Sz(8)$, denoted by `Sz(8)',
+\item{--} the Weyl groups   $W(A_n)$,  $W(B_n)$,  $W(D_n)$,  $W(E_n)$, and
       $W(F_4)$,  denoted by  `W(A<n>)',  `W(B<n>)', `W(D<n>)', `W(E<n>)',
       and `W(F4)', respectively,
-\item{-} the sporadic simple groups  $Co_1$, $Co_2$, $Co_3$, $HS$, $J_2$,
+\item{--} the sporadic simple groups  $Co_1$, $Co_2$, $Co_3$, $HS$, $J_2$,
       $M_{12}$, $M_{22}$, $M_{23}$, $M_{24}$, and $Mc$, denoted by `Co1',
       `Co2', `Co3',  `HS', `J2',  `M12', `M22', `M23', `M24',  and  `Mc',
       respectively,
-\item{-} a point stabilizer of index 11 in $M_{11}$, denoted by `M10'.
+\item{--} a point stabilizer of index 11 in $M_{11}$, denoted by `M10'.
 \endlist
 
 As   mentioned      above,  the   data    assembled   by    the  function
@@ -1021,7 +1121,7 @@ are not known for the given dimension, i.e., if  $dim > 11$ and $dim \not
 \in \{13,17,19,23\}$. The  default value of <z> is~1.   This value of <z>
 will   be  accepted even if  the  $\Z$-classes   are  not known.  Then it
 specifies the   only  representative group   which  is available  for the
-<q>$^{\rm th}$ $\Q$-class.  The greatest legal value of <dim> is 24.
+<q>$^{\rm th}$ $\Q$-class.  The greatest legal value of <dim> is 31.
 
 The resulting record contains six or seven components:
 
@@ -1065,9 +1165,8 @@ more information about the underlying lattices.
 
 \beginexample
 gap> ImfInvariants( 8, 15, 1 );
-rec( size := 2592, isSolvable := true,
-  isomorphismType := "C2 x (S3 wr S3)",
-  elementaryDivisors := [ 1, 3, 3, 3, 9, 9, 9, 27 ], minimalNorm := 8,
+rec( size := 2592, isSolvable := true, isomorphismType := "C2 x (S3 wr S3)", 
+  elementaryDivisors := [ 1, 3, 3, 3, 9, 9, 9, 27 ], minimalNorm := 8, 
   sizesOrbitsShortVectors := [ 54 ], maximalQClass := 5 )
 gap> ImfInvariants( 24, 1 ).size;
 10409396852733332453861621760000
@@ -1102,7 +1201,7 @@ dimension,  i.e., if $dim >  11$ and $dim  \not \in \{13,17,19,23\}$. The
 default value  of <z> is~1.   This value of  <z> will be accepted even if
 the $\Z$-classes are not known. Then it specifies the only representative
 group which is available for the <q>$^{\rm  th}$ $\Q$-class. The greatest
-legal value of <dim> is 24.
+legal value of <dim> is 31.
 
 \beginexample
 gap> G := ImfMatrixGroup( 5, 1, 3 );
@@ -1173,17 +1272,15 @@ an  isomorphism  to such a  permutation group  (note  that these {\GAP}~4
 functions   have   replaced   the   {\GAP}~3  functions  `PermGroup'  and
 `PermGroupImfGroup').
 
-\)IsomorphismPermGroup( <G> ) M
+\>IsomorphismPermGroup( <G> )!{for Imf matrix groups} M
 
-\index{IsomorphismPermGroup!for Imf matrix groups}
-`IsomorphismPermGroup' returns an   isomorphism, $\varphi$ say, from  the
-given i.m.f.~integral matrix  group <G>  to  a permutation group <P>  $:=
-\varphi($<G>$)$ acting on a minimal  orbit, $S$ say,  of short vectors of
-<G>  such  that each matrix $<m>  \in  <G>$ is mapped  to the permutation
-induced by its action on $S$.
+returns an isomorphism, $\varphi$ say,  from  the  given  i.m.f.~integral
+matrix group <G> to a permutation group $<P> := \varphi(<G>)$ acting on a
+minimal orbit, $S$ say, of short vectors of <G>  such  that  each  matrix
+$<m> \in <G>$ is mapped to the permutation induced by its action on $S$.
 
 Note that in case of  a large orbit the  construction of $\varphi$ may be
-space and  time consuming. Fortunately,  there are only five $\Q$-classes
+space and  time consuming. Fortunately,  there are only six  $\Q$-classes
 in the library for which the  smallest orbit of  short vectors is of size
 greater than 20000, the worst case being the orbit of size 196560 for the
 Leech lattice ($dim = 24$, $q = 3$).
@@ -1209,10 +1306,10 @@ solvable residuum of the group <G>.
 gap> # Perform the computations in an isomorphic permutation group.
 gap> phi := IsomorphismPermGroup( G );;
 gap> P := Image( phi );
-Group([ ( 1, 7, 6)( 2, 9)( 4, 5,10), ( 2, 3, 4, 5)( 6, 9, 8, 7) ])
+Group([ (1,2)(5,7,9)(6,8,10), (1,3,5,7)(2,4,6,8) ])
 gap> D := DerivedSubgroup( P );
-Group([ ( 1, 2,10, 9)( 3, 8)( 4, 5)( 6, 7),
-  ( 1, 6)( 2, 7, 9, 4)( 3, 8)( 5,10), ( 1, 5,10, 6)( 2, 8, 9, 3) ])
+Group([ (1,9,2,10)(3,4)(5,7)(6,8), (1,9)(2,10)(3,8,4,7)(5,6), 
+  (1,6)(2,5)(3,10,4,9)(7,8) ])
 gap> Size( D );
 960
 gap> IsPerfectGroup( D );
@@ -1227,16 +1324,16 @@ gap> for m in GeneratorsOfGroup( R ) do PrintArray( m ); od;
   [   0,   0,   0,   1,   0 ],
   [   0,   0,   1,   0,   0 ],
   [  -1,  -1,   0,   0,   1 ] ]
+[ [  -1,  -1,  -1,  -1,   2 ],
+  [   0,   0,   0,  -1,   0 ],
+  [   0,   0,  -1,   0,   0 ],
+  [   0,   1,   0,   0,   0 ],
+  [   0,   0,  -1,  -1,   1 ] ]
 [ [   0,   0,  -1,   0,   0 ],
-  [   0,  -1,   0,   0,   0 ],
-  [   1,   0,   0,   0,   0 ],
-  [  -1,  -1,  -1,  -1,   2 ],
-  [   0,  -1,  -1,   0,   1 ] ]
-[ [   0,  -1,   0,   0,   0 ],
-  [   1,   0,   0,   0,   0 ],
-  [   0,   0,   1,   0,   0 ],
-  [  -1,  -1,  -1,  -1,   2 ],
-  [   0,  -1,   0,  -1,   1 ] ]
+  [   1,   1,   1,   1,  -2 ],
+  [  -1,   0,   0,   0,   0 ],
+  [   0,   0,   0,  -1,   0 ],
+  [   0,   1,   0,   0,  -1 ] ]
 \endexample
 
 \>IsomorphismPermGroupImfGroup( <G>, <n> ) F

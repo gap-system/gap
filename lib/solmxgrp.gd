@@ -32,8 +32,10 @@ DeclareGlobalFunction( "SetIsCyclicWithSize",
 #F  ConjugateMatrixActionToLinearAction( <g> )
 ##
 ##  Action on Span( G ), for G a matrix group.
-##  Given d x d matrix acting by conj., g, return d^2 x d^2 matrix acting linearly
-##  Could probably be done better via GAP with something like (not correct here):
+##  Given d x d matrix acting by conj., g, return d^2 x d^2 matrix acting 
+##  linearly.
+##  Could probably be done better via GAP with something like (not correct
+##  here):
 ##   hom := OperationAlgebraHomomorphism( AsAlgebra(G), GF(q)^(d^2), x->x^g)
 ##   ImageElm( hom, g );
 ##
@@ -42,16 +44,17 @@ DeclareGlobalFunction( "ConjugateMatrixActionToLinearAction",
 
 #############################################################################
 ##
-#F  ConjugateMatrixGroupToLinearGroup( <G> )
+#F  ConjugateMatrixGroupToLinearAction( <G> )
 ##
 DeclareGlobalFunction( "ConjugateMatrixGroupToLinearAction",
     [ IsFFEMatrixGroup ] );
 
 #############################################################################
 ##
-#O  MakeHomChain( <> )
+#O  MakeHomChain( <G> )
 ##
-##  Computes a chain of subgroups which are kernels of homomorphisms.
+##  Computes a chain of subgroups for the group <G> which are kernels of 
+##  homomorphisms.
 ##  Currently only implemented for nilpotent groups.  We use the algorithm of
 ##  E. Luks, Computing in Solvable Matrix Groups, FOCS/STOC.
 ##
@@ -62,7 +65,7 @@ DeclareOperation( "MakeHomChain", [ IsGroup ] );
 
 #############################################################################
 ##
-#A  BasisOfHomCosetAddMatrixGroup( <> )
+#A  BasisOfHomCosetAddMatrixGroup( <G> )
 ##
 ##  We'll do Gaussian elimination ourselves.
 ##  GAP has V := VectorSpace(FieldOfMatrixGroup(quo), GeneratorsOfGroup(quo));
@@ -98,9 +101,7 @@ DeclareGlobalFunction( "SiftVector" );
 
 #############################################################################
 ##
-#A  SiftFunction( <> )
-##
-##  
+#A  SiftFunction( <G> )
 ##
 DeclareAttribute( "SiftFunction", IsGroup and IsAdditiveGroup );
 DeclareAttribute( "SiftFunction", IsGroup and IsQuotientToAdditiveGroup );
@@ -167,7 +168,7 @@ InstallImmediateMethod(Size, HasGeneratorOfCyclicGroup, 0,
 
 #############################################################################
 ##
-#O  Sift( <> )
+#O  Sift( <G> )
 ##
 DeclareOperation( "Sift", [ IsFFEMatrixGroup and IsCyclic and IsPGroup,
                             IsMultiplicativeElementWithInverse ] );
@@ -214,4 +215,7 @@ DeclareGlobalFunction( "NaturalHomomorphismByNilpotentClassTwoElement",
     [ IsFFEMatrixGroup ] );
 
 
-#E
+#############################################################################
+##
+#E  solmxgrp.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##

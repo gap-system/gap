@@ -43,12 +43,12 @@ InstallGlobalFunction(Binomial,function ( n, k )
         bin := Binomial( n, n-k );
     else
         bin := 1;  j := 1;
-        for i  in [n-k+1..n]  do
-            bin := bin * i;
-            while j <= k  and bin mod j = 0  do
-                bin := bin / j;
-                j := j + 1;
-            od;
+        # note that all intermediate results are binomial coefficients itself
+        # hence integers!
+        # slight improvement by Frank and Max.
+        for i  in [n,n-1..n-k+1]  do
+            bin := bin * i / j;
+            j := j + 1;
         od;
     fi;
     return bin;
@@ -1022,7 +1022,10 @@ PartitionsK := function ( n, m, k, part, i )
     return parts;
 end;
 
-InstallGlobalFunction(Partitions,function ( arg )
+# The following used to be `Partitions' but was renamed, because
+# the new `Partitions' is much faster and produces less garbage, see
+# below.
+InstallGlobalFunction(PartitionsRecursively,function ( arg )
     local   parts;
     if Length(arg) = 1  then
         parts := PartitionsA( arg[1], arg[1], [], 1 );
@@ -1046,6 +1049,243 @@ InstallGlobalFunction(Partitions,function ( arg )
     return parts;
 end);
 
+
+GPartitionsEasy := function(n)
+  # Returns a list of all Partitions of n, sorted lexicographically.
+  # Algorithm/Proof: Let P_n be the set of partitions of n.
+  # Let B_n^k be the set of partitions of n with all parts less or equal to k.
+  # Then P_n := Union_{k=1}^n [k] + B_{n-k}^k, where "[k]+" means, that
+  # a part k is added. Note that the union is a disjoint union.
+  # The algorithm first enumerates B_{n-k}^k for k=1,2,...,n-1 and then
+  # puts everything together by adding the greatest part.
+  # The GAP list B has as its j'th entry B[j] := B_{n-j}^j for j=1,...,n-1.
+  # Note the greatest part of all partitions in all of B is less than or
+  # equal to QuoInt(n,2).
+  # The first stage of the algorithm consists of a loop, where k runs
+  # from 1 to QuoInt(n,2) and for each k all partitions are added to all
+  # B[j] with greatest part k. Because we run j in descending direction,
+  # we already have B[j+k] (partitions of n-j-k) ready up to greatest part k
+  # when we handle for B[j] (partitions of n-j) the partitions with greatest
+  # part k.
+  # In the second stage we only have to add the correct greatest part to get
+  # a partition of n.
+  # Note that `GPartitions' improves this by including the work for the 
+  # second step in the first one, such that less garbage objects are generated.
+  # n must be a natural number >= 1.
+  local B,j,k,l,p,res;
+  B := List([1..n-1],x->[]);
+  for k in [1..QuoInt(n,2)] do
+    # Now we add all partitions for all entries of B with greatest part k.
+    Add(B[n-k],[k]);   # the trivial partition with greatest part k
+    for j in [n-k-1,n-k-2..k] do   
+      # exactly in those are partitions with greatest part k. Think!
+      # we handle B[j] (partitions of n-j) with greatest part k
+      for p in B[j+k] do    # those are partitions of n-j-k
+        l := [k];
+        Append(l,p);    # This prolonges the bag without creating garbage!
+        Add(B[j],l);
+      od;
+    od;
+  od;
+  res := [];    # here we collect the result
+  for k in [1..n-1] do   # handle partitions with greatest part k
+    for p in B[k] do     # use B[k] = B_{n-k}^k
+      l := [k];          # add a part k
+      Append(l,p);
+      Add(res,l);        # collect
+    od;
+  od;
+  Add(res,[n]);    # one more case
+  return res;
+end;
+
+GPartitions := function(n)
+  # Returns a list of all Partitions of n, sorted lexicographically.
+  # Algorithm/Proof: See first the comment of `GPartitionsEasy'.
+  # This function does exactly the same as `GPartitionsEasy' by the same 
+  # algorithm, but it produces nearly no garbage, because in contrast
+  # to `GPartitionsEasy' the greatest part added in the second stage is
+  # already added in the first stage.
+  # n must be a natural number >= 1.
+  local B,j,k,l,p;
+  B := List([1..n],x->[]);
+  for k in [1..QuoInt(n,2)] do
+    # Now we add all partitions for all entries of B with greatest part k.
+    Add(B[n-k],[n-k,k]);   # the trivial partition with greatest part k
+    for j in [n-k-1,n-k-2..k] do   
+      # exactly in those are partitions with greatest part k. Think!
+      # we handle B[j] (partitions of n-j) with greatest part k
+      for p in B[j+k] do    # those are partitions of n-j-k
+        l := [j];       # This is the greatest part for stage 2
+        Append(l,p);    # This prolonges the bag without creating garbage!
+        l[2] := k;      # here used to be the greatest part for stage 2, now k
+        Add(B[j],l);
+      od;
+    od;
+  od;
+  B[n][1] := [n];       # one more case
+  return Concatenation(B);
+end;
+
+GPartitionsNrPartsHelper := function(n,m,ones)
+  # Helper function for GPartitionsNrParts (see below) for the case
+  # m > n. This is used only internally if m > QuoInt(n,2), because then
+  # the standard routine does not work. Here we just calculate all partitions
+  # of n and append a part m to it. We use exactly the algorithm in 
+  # `GPartitions'.
+  local B,j,k,p,res;
+  B := List([1..n-1],x->[]);
+  for k in [1..QuoInt(n,2)] do
+    # Now we add all partitions for all entries of B with greatest part k.
+    Add(B[n-k],ones[m]+ones[k]);   # the trivial partition with greatest part k
+    for j in [n-k-1,n-k-2..k] do   
+      # exactly in those are partitions with greatest part k. Think!
+      # we handle B[j] (partitions of n-j) with greatest part k
+      for p in B[j+k] do    # those are partitions of n-j-k
+        Add(B[j],p + ones[k]);
+      od;
+    od;
+  od;
+  res := [];    # here we collect the result
+  for k in [1..n-1] do   # handle partitions with greatest part k
+    for p in B[k] do     # use B[k] = B_{n-k}^k
+      AddRowVector(p,ones[k]);
+      Add(res,p);        # collect
+    od;
+  od;
+  Add(res,ones[m]+ones[n]);    # one more case
+  return res;
+end;
+
+
+GPartitionsNrParts:= function(n,m)
+  # This function enumerates the set of all partitions of <n> into exactly
+  # <m> parts.
+  # We call a partition "admissible", if
+  #  0) the sum s of its entries is <= n
+  #  1) it has less or equal to m parts
+  #  2) let g be its greatest part and k the number of parts,
+  #     (m-k)*g+s <= n
+  #     [this means that it may eventually lead to a partition of n with
+  #      exactly m parts]
+  # We proceed in steps. In the first step we write down all admissible
+  # partitions with exactly 1 part, sorted by their greatest part.
+  # In the t-th step (t from 2 to m-2) we use the partitions from step
+  # t-1 to enumerate all admissible partitions with exactly t parts
+  # sorted by their greatest part. In step m we add exactly the difference
+  # of n and the sum of the entries to get a partition of n.
+  #
+  # We use the following Lemma: Leaving out the greatest part is a
+  # surjective mapping of the set of admissible partitions with k parts
+  # to the set of admissible partitions of k-1 parts. Therefore we get
+  # every admissible partition with k parts from a partition with k-1
+  # parts by adding a part which is greater or equal the greatest part.
+  #
+  # Note that all our partitions are vectors of length m and until the
+  # last step we store n-(the sum) in the first entry.
+  #
+  local B,BB,i,j,k,p,pos,pp,prototype,t;
+
+  # some special cases:
+  if n <= 0 or m < 1 then
+    return [];
+  elif m = 1 then
+    return [[n]];
+  fi;
+  # from now on we have m >= 2
+
+  prototype := [1..m]*0;
+
+  # Note that there are no admissible partitions of s<n with greatest part
+  # greater than QuoInt(n,2) and no one-part-admissible partitions with
+  # greatest part greater than QuoInt(n,m):
+  # Therefore this is step 1:
+  B := [];
+  for i in [1..QuoInt(n,m)] do
+    B[i] := [ShallowCopy(prototype)];
+    B[i][1][1] := n-i;   # remember: here is the sum of the parts
+    B[i][1][m] := i;
+  od;
+  for i in [QuoInt(n,m)+1..QuoInt(n,2)] do
+    B[i] := [];
+  od;
+
+  # Now to steps 2 to m-1:
+  for t in [2..m-1] do
+    BB := List([1..QuoInt(n,2)],i->[]);
+    pos := m+1-t;  # here we add a number, this is also number of parts to add
+    for j in [1..QuoInt(n,2)] do   
+      # run through B[j] and add greatest part:
+      for p in B[j] do
+        # add all possible greatest parts:
+        for k in [j+1..QuoInt(p[1],pos)] do
+          pp := ShallowCopy(p);
+          pp[pos] := k;
+          pp[1] := pp[1]-k;
+          Add(BB[k],pp);
+        od;
+        p[pos] := j;
+        p[1] := p[1]-j;
+        Add(BB[j],p);
+      od;
+    od;
+    B := BB;
+  od;
+
+  # In step m we only collect everything (the first entry is already OK!):
+  BB := List([1..n-m+1],i->[]);
+  for j in [1..Length(B)] do
+    for p in B[j] do
+      Add(BB[p[1]],p);
+    od;
+  od;
+  return Concatenation(BB);
+end;
+
+
+# The following replaces what is now `PartitionsRecursively':
+# It now calls `GPartitions' and friends, which is much faster
+# and more environment-friendly because it produces less garbage.
+# Thanks to Goetz Pfeiffer for the ideas!
+InstallGlobalFunction(Partitions,function ( arg )
+    local   parts;
+    if Length(arg) = 1  then
+        if not(IsInt(arg[1])) then
+            Error("usage: Partitions( <n> [, <k>] )");
+        else
+            if arg[1] <= 0 then
+                parts := [[]];
+            else
+                parts := GPartitions( arg[1] );
+            fi;
+        fi;
+    elif Length(arg) = 2  then
+        if not(IsInt(arg[1]) and IsInt(arg[2])) then
+            Error("usage: Partitions( <n> [, <k>] )");
+            return;
+        elif arg[1] < 0 or arg[2] < 0 then
+            parts := [];
+        else
+            if arg[1] = 0  then
+                if arg[2] = 0  then
+                    parts := [ [  ] ];
+                else
+                    parts := [  ];
+                fi;
+            else
+                if arg[2] = 0  then
+                    parts := [  ];
+                else
+                    parts := GPartitionsNrParts( arg[1], arg[2] );
+                fi;
+            fi;
+        fi;
+    else
+        Error("usage: Partitions( <n> [, <k>] )");
+        return;
+    fi;
+    return parts;
+end);
 
 #############################################################################
 ##
@@ -1111,6 +1351,208 @@ InstallGlobalFunction(NrPartitions,function ( arg )
     fi;
 
     return s;
+end);
+
+
+#############################################################################
+##
+#F  PartitionsGreatestLE( <n>, <m> ) . . .  set of partitions of n parts <= m
+##
+##  returns the set of all (unordered) partitions of the integer <n> having
+##  parts less or equal to the integer <m>.
+##
+
+GPartitionsGreatestLEEasy := function(n,m)
+  # Returns a list of all Partitions of n with greatest part less or equal
+  # than m, sorted lexicographically.
+  # This works essentially as `GPartitions', but the greatest parts are
+  # limited.
+  # Algorithm/Proof:
+  # Let B_n^k be the set of partitions of n with all parts less or equal to k.
+  # Then P_n^m := Union_{k=1}^m [k] + B_{n-k}^k}, where "[k]+"
+  # means, that a part k is added. Note that the union is a disjoint union.
+  # Note that in the end we only need B_{n-k}^k for k<=m but to produce them
+  # we need also partial information about B_{n-k}^k for k>m.
+  # The algorithm first enumerates B_{n-k}^k for k=1,2,...,m and begins
+  # to enumerate B_{n-k}^k for k>m as necessary and then puts everything
+  # together by adding the greatest part.
+  # The GAP list B has as its j'th entry B[j] := B_{n-j}^j for j=1,...,n-1.
+  # Note the greatest part of all partitions in all of B is less than or
+  # equal to QuoInt(n,2) and less than or equal to m.
+  # The first stage of the algorithm consists of a loop, where k runs
+  # from 1 to min(QuoInt(n,2),m) and for each k all partitions are added to all
+  # B[j] with greatest part k. Because we run j in descending direction,
+  # we already have B[j+k] (partitions of n-j-k) ready up to greatest part k
+  # when we handle for B[j] (partitions of n-j) the partitions with greatest
+  # part k.
+  # In the second stage we only have to add the correct greatest part to get
+  # a partition of n.
+  # Note that `GPartitionsGreatestLE' improves this by including the
+  # work for the second step in the first one, such that less garbage
+  # objects are generated.
+  # n and m must be a natural numbers >= 1.
+  local B,j,k,l,p,res;
+  if m >= n then return GPartitions(n); fi;   # a special case 
+  B := List([1..n-1],x->[]);
+  for k in [1..Minimum(QuoInt(n,2),m)] do
+    # Now we add all partitions for all entries of B with greatest part k.
+    Add(B[n-k],[k]);   # the trivial partition with greatest part k
+    for j in [n-k-1,n-k-2..k] do   
+      # exactly in those are partitions with greatest part k. Think!
+      # we handle B[j] (partitions of n-j) with greatest part k
+      for p in B[j+k] do    # those are partitions of n-j-k
+        l := [k];
+        Append(l,p);    # This prolonges the bag without creating garbage!
+        Add(B[j],l);
+      od;
+    od;
+  od;
+  res := [];    # here we collect the result
+  for k in [1..m] do   # handle partitions with greatest part k
+    for p in B[k] do     # use B[k] = B_{n-k}^k
+      l := [k];          # add a part k
+      Append(l,p);
+      Add(res,l);        # collect
+    od;
+  od;
+  return res;
+end;
+
+GPartitionsGreatestLE := function(n,m)
+  # Returns a list of all Partitions of n with greatest part less or equal
+  # than m, sorted lexicographically.
+  # This works exactly as `GPartitionsGreatestLEEasy', but faster.
+  # This is done by doing all the work necessary for step 2 already in step 1.
+  # n and m must be a natural numbers >= 1.
+  local B,j,k,l,p,res;
+  if m >= n then return GPartitions(n); fi;   # a special case 
+  B := List([1..n-1],x->[]);
+  for k in [1..Minimum(QuoInt(n,2),m)] do
+    # Now we add all partitions for all entries of B with greatest part k.
+    Add(B[n-k],[n-k,k]);   # the trivial partition with greatest part k
+    for j in [n-k-1,n-k-2..k] do   
+      # exactly in those are partitions with greatest part k. Think!
+      # we handle B[j] (partitions of n-j) with greatest part k
+      for p in B[j+k] do    # those are partitions of n-j-k
+        l := [j];       # for step 2
+        Append(l,p);    # This prolonges the bag without creating garbage!
+        l[2] := k;      # here we add a new part k
+        Add(B[j],l);
+      od;
+    od;
+  od;
+  return Concatenation(B{[1..m]});
+end;
+
+InstallGlobalFunction( PartitionsGreatestLE,
+function(n,m)
+    local parts;
+    if not(IsInt(n) and IsInt(m)) then
+        Error("usage: PartitionsGreatestLE( <n>, <m> )");
+        return;
+    elif n < 0 or m < 0 then
+        parts := [];
+    else
+        if n = 0  then
+            if m = 0  then
+                parts := [ [  ] ];
+            else
+                parts := [  ];
+            fi;
+        else
+            if m = 0  then
+                parts := [  ];
+            else
+                parts := GPartitionsGreatestLE( n, m );
+            fi;
+        fi;
+    fi;
+    return parts;
+end);
+
+ 
+#############################################################################
+##
+#F  PartitionsGreatestEQ( <n>, <m> ) . . . . set of partitions of n parts = n
+##
+##  returns the set of all (unordered) partitions of the integer <n> having
+##  greatest part equal to the integer <m>.
+##
+GPartitionsGreatestEQHelper := function(n,m)
+  # Helper function for GPartitionsGreatestEQ (see below) for the case
+  # m > n. This is used only internally if m > QuoInt(n,2), because then
+  # the standard routine does not work. Here we just calculate all partitions
+  # of n and append a part m to it. We use exactly the algorithm in 
+  # `GPartitions'.
+  local B,j,k,l,p;
+  B := List([1..n],x->[]);
+  for k in [1..QuoInt(n,2)] do
+    # Now we add all partitions for all entries of B with greatest part k.
+    Add(B[n-k],[m,n-k,k]);   # the trivial partition with greatest part k
+    for j in [n-k-1,n-k-2..k] do   
+      # exactly in those are partitions with greatest part k. Think!
+      # we handle B[j] (partitions of n-j) with greatest part k
+      for p in B[j+k] do    # those are partitions of n-j-k
+        l := [m];       # the greatest part
+        Append(l,p);    # This prolonges the bag without creating garbage!
+        l[2] := j;      # This is the greatest part for stage 2
+        l[3] := k;      # here used to be the greatest part for stage 2, now k
+        Add(B[j],l);
+      od;
+    od;
+  od;
+  B[n][1] := [m,n];       # one more case
+  return Concatenation(B);
+end;
+
+GPartitionsGreatestEQ := function(n,m)
+  # Returns a list of all Partitions of n with greatest part equal to
+  # m, sorted lexicographically.
+  # This works exactly as `GPartitionsGreatestLE' for n-m and m and
+  # adds a part m to all partitions. This is however done effectively
+  # during the work.
+  # This is the same as `Partitions(n,m)' in the GAP library.
+  # n and m must be a natural numbers >= 1.
+  local B,j,k,l,p,res;
+  if m > n then return []; fi;     # a special case 
+  if m = n then return [[m]]; fi;  # another special case
+  n := n - m;    # this is >= 1
+  if m >= n then return GPartitionsGreatestEQHelper(n,m); fi;
+  B := List([1..n-1],x->[]);
+  for k in [1..Minimum(QuoInt(n,2),m)] do
+    # Now we add all partitions for all entries of B with greatest part k.
+    Add(B[n-k],[m,n-k,k]);   # the trivial partition with greatest part k
+    for j in [n-k-1,n-k-2..k] do   
+      # exactly in those are partitions with greatest part k. Think!
+      # we handle B[j] (partitions of n-j) with greatest part k
+      for p in B[j+k] do    # those are partitions of n-j-k
+        l := [m];       # the greatest part m
+        Append(l,p);    # This prolonges the bag without creating garbage!
+        l[2] := j;      # for step 2
+        l[3] := k;      # here we add a new part k
+        Add(B[j],l);
+      od;
+    od;
+  od;
+  return Concatenation(B{[1..m]});
+end;
+
+InstallGlobalFunction( PartitionsGreatestEQ,
+function(n,m)
+    local parts;
+    if not(IsInt(n) and IsInt(m)) then
+        Error("usage: PartitionsGreatestEQ( <n>, <m> )");
+        return;
+    elif n < 0 or m < 0 then
+        parts := [];
+    else
+        if m = 0 or n = 0 then
+            parts := [];
+        else
+            parts := GPartitionsGreatestEQ( n, m );
+        fi;
+    fi;
+    return parts;
 end);
 
 
@@ -1408,19 +1850,22 @@ end);
 ##  'AssociatedPartition'  returns the associated partition  of the partition
 ##  <pi> which is obtained by transposing the corresponding Young diagram.
 ##
-InstallGlobalFunction(AssociatedPartition,function(pi)
-
-   local i, j, mu;
-
-   mu:= List([1..pi[1]], x->0);
-   for i in pi do
-      for j in [1..i] do
-	 mu[j]:= mu[j]+1;
+InstallGlobalFunction(AssociatedPartition,function(lambda)
+  local res, k, j;
+  res := [];
+  k := Length(lambda);
+  for j in [1..lambda[1]] do
+    if j <= lambda[k] then
+      res[j] := k;
+    else
+      k := k-1;
+      while j > lambda[k] do
+        k := k-1;
       od;
-   od;
-
-   return(mu);
-
+      res[j] := k;
+    fi;
+  od;
+  return res;
 end);
 
 

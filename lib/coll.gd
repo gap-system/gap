@@ -299,7 +299,7 @@ InstallMethod( UseSubsetRelation,
     IsIdenticalObj,
     [ IsCollection, IsCollection ],
     # Make sure that this method is installed with ``real'' rank zero.
-    - 2 * SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER( IsCollection ))),
+    - 2 * RankFilter( IsCollection ),
     function( super, sub )
 
     local entry;
@@ -515,7 +515,7 @@ InstallMethod( UseIsomorphismRelation,
     true,
     [ IsCollection, IsCollection ],
     # Make sure that this method is installed with ``real'' rank zero.
-    - 2 * SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER( IsCollection ))),
+    - 2 * RankFilter( IsCollection ),
     function( old, new )
 
     local entry;
@@ -630,7 +630,7 @@ InstallMethod( UseFactorRelation,
     true,
     [ IsCollection, IsObject, IsCollection ],
     # Make sure that this method is installed with ``real'' rank zero.
-    - 3 * SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER( IsCollection ))),
+    - 2 * RankFilter( IsCollection )-RankFilter(IsObject),
     function( num, den, fac )
 
     local entry;
@@ -1024,13 +1024,13 @@ DeclareOperation( "Random", [ IsListOrCollection ] );
 #F  RandomList( <list> )
 ##
 ##  \index{random seed}
-##  returns a (pseudo-)random element with equal distribution from a
-##  list <list> of up to $2^{28}$ elements.
+##  For a dense list <list> of up to $2^{28}$ elements,
+##  `RandomList' returns a (pseudo-)random element with equal distribution.
 ##
 ##  The algorithm used is an additive number generator (Algorithm A in
 ##  section~3.2.2 of \cite{TACP2} with lag 30)
 ##
-##  This random number generator is (deliberatly) initialized to the same
+##  This random number generator is (deliberately) initialized to the same
 ##  values when {\GAP} is started, so different runs of {\GAP} with the same
 ##  input will always produce the same result, even if random calculations
 ##  are involved.
@@ -1165,6 +1165,7 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 DeclareGlobalFunction( "List" );
 
 DeclareOperation( "ListOp", [ IsListOrCollection ] );
+DeclareOperation( "ListOp", [ IsListOrCollection, IsFunction ] );
 
 
 #############################################################################
@@ -1296,6 +1297,22 @@ DeclareAttribute( "AsSortedList", IsListOrCollection );
 ##
 DeclareAttribute( "AsSSortedList", IsListOrCollection );
 DeclareSynonym( "AsSet", AsSSortedList );
+
+#############################################################################
+##
+#A  AsSSortedListNonstored( <C> )
+##
+##  returns the `AsSSortedList(<C>)' but ensures that this list (nor a
+##  permutation or substantial subset) will not be
+##  stored in attributes of <C> unless such a list is already stored.
+##  This permits to obtain an element list once
+##  without danger of clogging up memory in the long run.
+##
+##  Because of this guarantee of nonstorage, methods for
+##  `AsSSortedListNonstored' may not default to `AsSSortedList', but only
+##  vice versa.
+##
+DeclareOperation( "AsSSortedListNonstored", [IsListOrCollection] );
 
 
 #############################################################################

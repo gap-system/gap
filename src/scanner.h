@@ -65,13 +65,16 @@ const char * Revision_scanner_h =
 #define S_RPAREN        ((1UL<< 8))
 #define S_COMMA         ((1UL<< 9)+0)
 #define S_DOTDOT        ((1UL<< 9)+1)
-#define S_COLON         ((1UL<< 9)+1)
+#define S_COLON         ((1UL<< 9)+2)
 
-#define S_INT           ((1UL<<10))
+#define S_PARTIALINT    ((1UL<<10)+0)
+#define S_INT           ((1UL<<10)+1)
+
 #define S_TRUE          ((1UL<<11)+0)
 #define S_FALSE         ((1UL<<11)+1)
 #define S_CHAR          ((1UL<<11)+2)
 #define S_STRING        ((1UL<<11)+3)
+#define S_PARTIALSTRING ((1UL<<11)+4)
 
 #define S_REC           ((1UL<<12))
 
@@ -119,6 +122,7 @@ const char * Revision_scanner_h =
 #define S_RETURN        ((1UL<<29)+1)
 #define S_QUIT          ((1UL<<29)+2)
 #define S_QQUIT         ((1UL<<29)+3)
+#define S_CONTINUE      ((1UL<<29)+4)
 
 #define S_SEMICOLON     ((1UL<<30))
 
@@ -209,7 +213,7 @@ typedef UInt            TypSymbolSet;
 **  identifier, integers or strings after that many characters.
 */
 extern  Char            Value [1025];
-
+extern  UInt            ValueLen;
 
 /****************************************************************************
 **
@@ -249,6 +253,17 @@ extern  UInt            NrErrLine;
 */
 extern  Char *          Prompt;
 
+/***************************************************************************** 
+**
+*V  PrintPromptHook . . . . . . . . . . . . . .  function for printing prompt
+*V  EndLineHook . . . . . . . . . . .  function called at end of command line
+**  
+**  These functions can be set on GAP-level. If they are not bound  the 
+**  default is: Instead of `PrintPromptHook' the `Prompt' is printed and
+**  instead of `EndLineHook' nothing is done.
+*/
+extern Obj  PrintPromptHook;
+extern Obj  EndLineHook;
 
 /****************************************************************************
 **
@@ -770,11 +785,12 @@ typedef struct {
     UInt        isstream;
     Int         file;
     Char        name [256];
-    Char        line [256];
+    Char        line [32768];
     Char *      ptr;
     UInt        symbol;
     Int         number;
     Obj         stream;
+    UInt        isstringstream;
     Obj         sline;
     Int         spos;
     UInt        echo;
@@ -823,6 +839,7 @@ extern Char *          In;
 */
 typedef struct {
     UInt        isstream;
+    UInt        isstringstream;
     Int         file;
     Char        line [256];
     Int         pos;

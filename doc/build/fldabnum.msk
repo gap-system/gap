@@ -24,7 +24,7 @@ For details about the bases see \cite{Bre97}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operations for Abelian Number Fields}
 
-For operations for cyclotomics, e.g., `Conductor' (see~"Conductor"),
+For operations for cyclotomics, e.g., `Conductor' ("Conductor"),
 see Chapter~"Cyclotomic Numbers".
 
 \Declaration{IsNumberField}
@@ -36,8 +36,9 @@ see Chapter~"Cyclotomic Numbers".
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Galois Groups of Abelian Number Fields}
 
-\index{abelian number fields!Galois group}%
-\index{number fields!Galois group}%
+\atindex{abelian number fields!Galois group}%
+{@abelian number fields!Galois group}
+\atindex{number fields!Galois group}{@number fields!Galois group}
 \index{automorphism group!of number fields}
 
 The *Galois automorphisms* of the cyclotomic field $\Q(e_{<n>})$

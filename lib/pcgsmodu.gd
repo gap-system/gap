@@ -52,24 +52,12 @@ DeclareGlobalFunction( "ModuloTailPcgsByList" );
 DeclareOperation( "ModuloPcgs", [ IsGroup, IsGroup ] );
 
 
-# AH: 3-5-99: this is nowhere used
-# #############################################################################
-# ##
-# ## ModuloParentPcgs( <pcgs> )
-# ##
-# DeclareAttribute(
-#     "ModuloParentPcgs",
-#     IsPcgs );
-
-
-
 #############################################################################
 ##
 #A  DenominatorOfModuloPcgs( <pcgs> )
 ##
 ##  returns a generating set for the denominator of the modulo pcgs <pcgs>. 
 DeclareAttribute( "DenominatorOfModuloPcgs", IsModuloPcgs );
-
 
 
 #############################################################################

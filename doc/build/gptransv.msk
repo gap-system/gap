@@ -9,9 +9,7 @@
 %%
 \PreliminaryChapter{Transversals of subgroups}
 
-This chapter describes the category of transversals of subgroups.  This
-category has representations:  TransvBySchreierTree, TransvByHomomorphism,
-TransvByDirProd, TransvByTrivSubgrp, TransvBySiftFunct.
+\FileHeader[1]{gptransv}
 
 *The functions and operations described in this chapter have been added
 very recently and are still undergoing development. It is conceivable that
@@ -21,22 +19,16 @@ you plan to use these functions in your own code, please contact us.*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{General operations on transversals}
 
-Every kind of transversal has the following common operations/attributes: 
-Size, Enumerator, Iterator, Random, TransversalElt, SiftOneLevel.
+\FileHeader[2]{gptransv}
+
 \Declaration{TransversalElt}
-\Declaration{SiftOneLevel}[gptransv]
+\Declaration{SiftOneLevel}[gptransv]!{for subgroup transversals}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Transversals by Schreier tree}
 
-Transversals of stabiliser subgroups.  We store a Schreier tree
-to allow us to find transversal elements.
-Note: SiftOneLevel is more efficient that TransversalElt.
-Transversals can be extended as more generators are found for the 
-stabiliser.
-Orbit generators are generators for the original group, stored separately
-so we can add extra generators to form a shallower tree.
-Orbits are stored as hash tables.
+\FileHeader[3]{gptransv}
+
 \Declaration{SchreierTransversal}
 \Declaration{OrbitGenerators}
 \Declaration{OrbitGeneratorsInv}
@@ -52,42 +44,33 @@ Orbits are stored as hash tables.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Transversals by homomorphic images}
 
-  Transversal of the kernel of a homomorphism.
-  Stores a quotient group for the kernel of a homomorphism;  
-  Transversal elements are computed by finding a chain for the image group
-  and doing shadowed stripping.
-  Note: TransversalElt is more efficient that SiftOneLevel
+\FileHeader[4]{gptransv}
+
 \Declaration{HomTransversal}
-\Declaration{Homomorphism}[gptransv]
+\Declaration{Homomorphism}[gptransv]!{for subgroup transversals}
 \Declaration{QuotientGroup}
 \Declaration{ImageGroup}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Transversals by direct products}
 
-  Stores projection and injection for a direct product.  
-  The chain subgroup is the kernel of the projection.
-\Declaration{DirProdTransversal}
+\FileHeader[5]{gptransv}
+
 \Declaration{Projection}
 \Declaration{Injection}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Transversals by Trivial subgroups}
 
-For use when our group is small enough to efficiently enumerate.
+\FileHeader[6]{gptransv}
+
 \Declaration{TransversalByTrivial}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Transversals by sift functions}
 
-  Given a group, subgroup, and sift function from group to subgroup
-      that is constant on cosets, this defines a transversal.
-  One typically prefers a normalized sift function that is the
-      the identity map on subgroups.
-  For situations when there is a non-group theoretic method for 
-  computing the transversal element.  eg. using row reduction for
-  the stabiliser of an invariant subspace.                                 
-  Note: SiftOneLevel is more efficient than TransversalElt.
+\FileHeader[7]{gptransv}
+
 \Declaration{TransversalBySiftFunction}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -280,7 +280,7 @@ InstallTrueMethod( IsFinite, IsBasis and IsBasisFiniteFieldRep );
 ##
 InstallMethod( Basis,
     "for a finite field (delegate to `CanonicalBasis')",
-    [ IsField and IsFinite ],
+    [ IsField and IsFinite ], CANONICAL_BASIS_FLAGS,
     CanonicalBasis );
 
 

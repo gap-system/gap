@@ -8,6 +8,10 @@ The distribution is built under /scratch/gap4dist (this is set in `setvar')
 The file `setvar' will need editing depending on the linux version used and
 the cvs path.
 
+Before you start, make sure to adjust the version number for the release
+in the help text you get with `gap -h'. For this change the two lines in 
+src/system.c containing the substring ", Version" and commit the  change.
+
 The files assume that
 
 - The current version is OK (testfiles &c.).
@@ -45,6 +49,10 @@ to get Mac binaries from Burkhard!)
 
 ======
 
+Remove the old version of GAP, and the bugfixes.
+
+======
+
 Create a branch for the version under cvs (this is commented out in the
 wrapper scripts as it has been frequently necessary to call the building
 process a second time because something was forgotten):
@@ -63,11 +71,11 @@ locally)
 ======
 
 Edit /gap/WWW/Util/DEFAULTS to give the new version number, edit
-WWW/Info4/{distrib.input,bugfixes.input,announce.input,changes.input} to
-the new status. Make and commit.
+WWW/Info4/{distrib.input,bugfixes.input,announce.input,changes.input} and
+WWW/bib/cite4.input to reflect the new status. Make and commit.
 
 ======
 
 Send out the announcement.
 
-   Alexander Hulpke, 27-7-99
+   Alexander Hulpke, 8-Dec-2000

@@ -15,7 +15,7 @@ Revision.grppcext_gi :=
 InstallGlobalFunction( FpGroupPcGroupSQ, function( G )
     local F, f, g, n, rels, i, j, w, v, p, k;
 
-    F := FreeGroup( Length(Pcgs(G)) );
+    F := FreeGroup(IsSyllableWordsFamily, Length(Pcgs(G)) );
     f := GeneratorsOfGroup( F );
     g := Pcgs( G );
     n := Length( g );
@@ -143,7 +143,7 @@ InstallGlobalFunction( ExtensionSQ, function( C, G, M, c )
                                        x -> Characteristic( field ) ) );
 
     # create extension as fp group
-    F := FreeGroup( n+d );
+    F := FreeGroup(IsSyllableWordsFamily, n+d );
     m := GeneratorsOfGroup( F );
 
     # and construct new presentation from collector
@@ -165,7 +165,113 @@ InstallGlobalFunction( ExtensionSQ, function( C, G, M, c )
         od;
     od;
 
+#    Error("A");
     H := PcGroupFpGroup( F / relators );
+
+
+
+
+    SetModuleOfExtension( H, Subgroup(H, Pcgs(H){[n+1..n+d]} ) );
+    return H;
+end );
+
+#############################################################################
+##
+#F  FastExtSQ( G, M, c,check )
+##
+##
+BindGlobal( "FastExtSQ", function( G, M, c,check )
+    local field, d, n, i, j, w, p, k, l, v, F, H, orders,
+          Mgens,pcgs,z,fam,col,exp;
+
+    pcgs:=Pcgs(G);
+
+    # construct module generators
+    field := M.field;
+    z:=Zero(field);
+    Mgens := M.generators;
+    if Length(Mgens) = 0 then
+        return AbelianGroup( List([1..M.dimension], 
+                              x -> Characteristic(M.field)));
+    fi;
+    d := Length(Mgens[1]);
+    n := Length(pcgs);
+
+    F:=FreeGroup(IsSyllableWordsFamily,d+n);
+    fam:=FamilyObj(One(F));
+
+    orders := Concatenation( RelativeOrders(pcgs), List( [1..d], 
+                                       x -> Characteristic( field ) ) );
+
+    col:=SingleCollector(GeneratorsOfGroup(F),orders);
+
+    for i in [1..n] do
+      for j in [1..i] do
+	if i=j then
+	  exp:=ExponentsOfRelativePower(pcgs,i);
+	else
+	  exp:=ExponentsOfConjugate(pcgs,i,j);
+	fi;
+	w:=[];
+	# start at j -- there cannot be earlier entries.
+	for k in [j..n] do
+	  if exp[k]<>0 then
+	    Add(w,k);
+	    Add(w,exp[k]);
+	  fi;
+	od;
+
+	if not IsInt(c) then # add cocycle info
+	  p := (i^2-i)/2 + j - 1;
+	  for k  in [ 1 .. d ]  do
+	    l := c[p*d+k];
+	    if l <> z then
+	      Add( w, n+k );
+	      Add( w, IntFFE(l) );
+	    fi;
+	  od;
+	fi;
+
+	if Length(w)>0 then # other relators are considered trivial
+	  if i=j then
+	    w:=ObjByExtRep(fam,w);
+	    SetPower(col,i,w);
+	  elif w<>[i,1] then
+	    w:=ObjByExtRep(fam,w);
+	    SetConjugate(col,i,j,w);
+	  fi;
+	fi;
+      od;
+    od;
+
+    # module relations do not need to be written down -- they are all
+    # trivial
+
+    # add operation of <G> on module
+    for i  in [ 1 .. n ]  do
+      for j  in [ 1 .. d ]  do
+	v := Mgens[i][j];
+	w := [];
+	for k  in [ 1 .. d ]  do
+	  l := v[k];
+	  if l <> z then
+	    Add( w, n+k );
+	    Add( w, IntFFE(l) );
+	  fi;
+	od;
+	if Length(w)>0 and w<>[n+j,1] then
+	  w:=ObjByExtRep(fam,w);
+	  SetConjugate(col,n+j,i,w);
+        fi;
+      od;
+    od;
+
+    if check then
+      H := GroupByRws(col);
+    else
+      H := GroupByRwsNC(col);
+    fi;
+
     SetModuleOfExtension( H, Subgroup(H, Pcgs(H){[n+1..n+d]} ) );
     return H;
 end );
@@ -174,16 +280,24 @@ end );
 ##
 #M  Extension( G, M, c )
 ##
-InstallMethod( Extension,
-    "generic method for pc groups",
-    true, 
-    [ CanEasilyComputePcgs, IsObject, IsVector ],
-    0,
-function( G, M, c )
-    local C;
-    C := CollectorSQ( G, M, false );
-    return ExtensionSQ( C, G, M, c );
-end );
+InstallMethod( Extension, "generic method for pc groups", true, 
+    [ CanEasilyComputePcgs, IsObject, IsVector ], 0,
+function(G,M,c)
+  return FastExtSQ(G, M, c,true );
+#was:
+#C := CollectorSQ( G, M, false );
+#return ExtensionSQ(C,G,M,c);
+end);
+
+#############################################################################
+##
+#M  ExtensionNC( G, M, c )
+##
+InstallMethod( ExtensionNC, "generic method for pc groups", true, 
+    [ CanEasilyComputePcgs, IsObject, IsVector ], 0,
+function(G,M,c)
+  return FastExtSQ(G, M, c,false );
+end);
 
 #############################################################################
 ##
@@ -639,7 +753,7 @@ function( G, M, C )
 
     # compute orbit of mats on H^2( G, M )
     Mgrp := GroupByGenerators( mats );
-    orbs := Orbits( Mgrp, Image(cc.cohom), OnRight );
+    orbs := OrbitsDomain( Mgrp, Image(cc.cohom), OnRight );
     orbs := List( orbs, x -> PreImagesRepresentative( cc.cohom, x[1] ) );
     ext  := List( orbs, x -> ExtensionSQ( cc.collector, G, M, x ) );
     return ext;
@@ -886,7 +1000,7 @@ function( G, aut, N )
     gensN := GeneratorsOfGroup( FreeGroupOfFpGroup( fpn ) );
     relsN := RelatorsOfFpGroup( fpn );
    
-    F := FreeGroup( n + d );
+    F := FreeGroup(IsSyllableWordsFamily, n + d );
     gensF := GeneratorsOfGroup( F );
     relators := [];
 
@@ -969,7 +1083,7 @@ function( G, aut, p )
     R    := Range( IsomorphismFpGroup( G ) );
     gensR := GeneratorsOfGroup( FreeGroupOfFpGroup( R ) );
     
-    F := FreeGroup( n + 1 );
+    F := FreeGroup(IsSyllableWordsFamily, n + 1 );
     gens := GeneratorsOfGroup( F );
     relators := [];
  

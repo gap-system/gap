@@ -281,6 +281,18 @@ extern Int SyIsEndOfFile (
 **      <ctr>-_ undo a command.
 **      <esc>-T exchange two words.
 */
+#if !SYS_MAC_MWC
+#if HAVE_SELECT
+extern Obj OnCharReadHookActive;  /* if bound the hook is active */
+extern Obj OnCharReadHookInFds;   /* a list of UNIX file descriptors */
+extern Obj OnCharReadHookInFuncs; /* a list of GAP functions */
+extern Obj OnCharReadHookOutFds;  /* a list of UNIX file descriptors */
+extern Obj OnCharReadHookOutFuncs;/* a list of GAP functions with 0 args */
+extern Obj OnCharReadHookExcFds;  /* a list of UNIX file descriptors */
+extern Obj OnCharReadHookExcFuncs;/* a list of GAP functions with 0 args */
+#endif
+#endif
+
 extern Char * SyFgets (
             Char *              line,
             UInt                length,
@@ -620,6 +632,7 @@ OSErr SyFSMakeNewFSSpec (short vol, long dir, Str31 name, FSSpecPtr newFSSpec);
 
 extern void getwindowsize( void );
 
+extern void     InterruptExecStat ( void );
      
 /****************************************************************************
 **

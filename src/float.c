@@ -30,9 +30,18 @@ const char * Revision_float_c =
 
 #include        "bool.h"
 
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#endif
+
+#ifdef HAVE_MATH_H
+#include <math.h>
+#endif
+
 #define VAL_FLOAT(obj) (*(Double *)ADDR_OBJ(obj))
 #define SET_VAL_FLOAT(obj, val) (*(Double *)ADDR_OBJ(obj) = val)
 #define IS_FLOAT(obj) (TNUM_OBJ(obj) == T_FLOAT)
+#define SIZE_FLOAT   sizeof(Double)
 
 /****************************************************************************
 **
@@ -97,7 +106,7 @@ Int EqFloat (
     Obj                 floatL,
     Obj                 floatR )
 {
-  return VAL_FLOAT(floatL) = VAL_FLOAT(floatR);
+  return VAL_FLOAT(floatL) == VAL_FLOAT(floatR);
 }
 
 
@@ -159,6 +168,184 @@ void LoadFloat( Obj obj )
   SET_VAL_FLOAT(obj, LoadDouble());
 }
 
+static inline Obj NEW_FLOAT( Double val )
+{
+  Obj f;
+  f = NewBag(T_FLOAT,SIZE_FLOAT);
+  SET_VAL_FLOAT(f,val);
+  return f;
+}
+
+/****************************************************************************
+**
+*F  ZeroFloat(<float> ) . . . . . . . . . . . . . . . . . . . return the zero 
+**
+*/
+
+
+Obj ZeroFloat( Obj f )
+{
+  return NEW_FLOAT((Double)0.0);
+}
+
+/****************************************************************************
+**
+*F  AinvFloat(<float> ) . . . . . . . . . . . . . . . . . . . unary minus 
+**
+*/
+
+
+Obj AInvFloat( Obj f )
+{
+  return NEW_FLOAT(-VAL_FLOAT(f));
+}
+
+/****************************************************************************
+**
+*F  OneFloat(<float> ) . . . . . . . . . . . . . . . . . . . return the one 
+**
+*/
+
+
+Obj OneFloat( Obj f )
+{
+  return NEW_FLOAT((Double)1.0);
+}
+
+/****************************************************************************
+**
+*F  InvFloat(<float> ) . . . . . . . . . . . . . . . . . . . reciprocal
+**
+*/
+
+
+Obj InvFloat( Obj f )
+{
+  return NEW_FLOAT((Double)1.0/VAL_FLOAT(f));
+}
+
+/****************************************************************************
+**
+*F  ProdFloat(<floatl>, <floatr> ) . . . . . . . . . . . . . . . product
+**
+*/
+
+
+Obj ProdFloat( Obj fl, Obj fr )
+{
+  return NEW_FLOAT(VAL_FLOAT(fl)*VAL_FLOAT(fr));
+}
+
+/****************************************************************************
+**
+*F  PowFloat(<floatl>, <floatr> ) . . . . . . . . . . . . . . exponentiation
+**
+*/
+
+
+Obj PowFloat( Obj fl, Obj fr )
+{
+  return NEW_FLOAT(pow(VAL_FLOAT(fl),VAL_FLOAT(fr)));
+}
+
+/****************************************************************************
+**
+*F  SumFloat(<floatl>, <floatr> ) . . . . . . . . . . . . . .  sum
+**
+*/
+
+
+Obj SumFloat( Obj fl, Obj fr )
+{
+  return NEW_FLOAT(VAL_FLOAT(fl)+VAL_FLOAT(fr));
+}
+
+/****************************************************************************
+**
+*F  DiffFloat(<floatl>, <floatr> ) . . . . . . . . . . . . . . difference
+**
+*/
+
+
+Obj DiffFloat( Obj fl, Obj fr )
+{
+  return NEW_FLOAT(VAL_FLOAT(fl)-VAL_FLOAT(fr));
+}
+
+/****************************************************************************
+**
+*F  QuoFloat(<floatl>, <floatr> ) . . . . . . . . . . . . . . quotient
+**
+*/
+
+
+Obj QuoFloat( Obj fl, Obj fr )
+{
+  return NEW_FLOAT(VAL_FLOAT(fl)/VAL_FLOAT(fr));
+}
+
+/****************************************************************************
+**
+*F  LQuoFloat(<floatl>, <floatr> ) . . . . . . . . . . . . . .left quotient
+**
+*/
+
+
+Obj LQuoFloat( Obj fl, Obj fr )
+{
+  return NEW_FLOAT(VAL_FLOAT(fr)/VAL_FLOAT(fl));
+}
+
+/****************************************************************************
+**
+*F  ModFloat(<floatl>, <floatr> ) . . . . . . . . . . . . . . .mod
+**
+*/
+
+
+Obj ModFloat( Obj fl, Obj fr )
+{
+  return NEW_FLOAT(fmod(VAL_FLOAT(fl),VAL_FLOAT(fr)));
+}
+
+
+/****************************************************************************
+**
+*F  FuncFLOAT_INT(<int>) . . . . . . . . . . . . . . . conversion
+**
+*/
+
+Obj FuncFLOAT_INT( Obj self, Obj i)
+{
+  if (!IS_INTOBJ(i))
+    return Fail;
+  else
+    return NEW_FLOAT((Double)INT_INTOBJ(i));
+}
+
+/****************************************************************************
+**
+*F SumIntFloat( <int>, <float> )
+**
+*/
+
+Obj SumIntFloat( Obj i, Obj f )
+{
+  return NEW_FLOAT( (Double)(INT_INTOBJ(i)) + VAL_FLOAT(f));
+}
+
+
+/****************************************************************************
+**
+*F FuncSIN_FLOAT( <self>, <float> ) . .The sin function from the math library
+**
+*/
+
+Obj FuncSIN_FLOAT( Obj self, Obj f)
+{
+  return NEW_FLOAT(sin(VAL_FLOAT(f)));
+}
+
 /****************************************************************************
 **
 
@@ -182,6 +369,21 @@ static StructGVarFilt GVarFilts [] = {
 
 /****************************************************************************
 **
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+  { "FLOAT_INT", 1, "int",
+    FuncFLOAT_INT, "src/float.c:FLOAT_INT" },
+
+  { "SIN_FLOAT", 1, "float",
+    FuncSIN_FLOAT, "src/float.c:SIN_FLOAT" },
+
+  {0}
+};
+
+
+/****************************************************************************
+**
 
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
@@ -194,6 +396,7 @@ static Int InitKernel (
 
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_FLOAT", &TYPE_FLOAT );
@@ -212,7 +415,30 @@ static Int InitKernel (
     /* install the comparison functions                                    */
     EqFuncs[ T_FLOAT ][ T_FLOAT ] = EqFloat;
     LtFuncs[ T_FLOAT ][ T_FLOAT ] = LtFloat;
+    
+    /* install the unary arithmetic methods                                */
+    ZeroFuncs[ T_FLOAT ] = ZeroFloat;
+    AInvFuncs[ T_FLOAT ] = AInvFloat;
+    OneFuncs [ T_FLOAT ] = OneFloat;
+    InvFuncs [ T_FLOAT ] = InvFloat;
 
+    /* install binary arithmetic methods */
+    ProdFuncs[ T_FLOAT ][ T_FLOAT ] = ProdFloat;
+    PowFuncs [ T_FLOAT ][ T_FLOAT ] = PowFloat;
+    SumFuncs[ T_FLOAT ][ T_FLOAT ] = SumFloat;
+    DiffFuncs [ T_FLOAT ][ T_FLOAT ] = DiffFloat;
+    QuoFuncs [ T_FLOAT ][ T_FLOAT ] = QuoFloat;
+    LQuoFuncs [ T_FLOAT ][ T_FLOAT ] = LQuoFloat;
+    ModFuncs [ T_FLOAT ][ T_FLOAT ] = ModFloat;
+    SumFuncs [ T_INT ][ T_FLOAT ] = SumIntFloat;
+    
+    /* Probably support mixed ops with small ints in the kernel as well
+       on any reasonable system, all small ints should have float equivalents
+
+       Anything else, like mixed ops with rationals, we can leave to the library
+       at least for a while */
+     
+    
     /* return success                                                      */
     return 0;
 }
@@ -230,6 +456,7 @@ static Int InitLibrary (
 
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
+    InitGVarFuncsFromTable( GVarFuncs );
 
     /* return success                                                      */
     return 0;

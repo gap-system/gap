@@ -83,7 +83,7 @@ void            AddPlist (
         list = ErrorReturnObj(
                 "Lists Assignment: <list> must be a mutable list",
                 0L, 0L,
-                "you may return a mutable list" );
+                "you may replace <list> via 'return <list>;'" );
         FuncADD_LIST( 0, list, obj );
         return;
     }
@@ -132,9 +132,9 @@ Obj FuncADD_LIST (
 
 /****************************************************************************
 **
-*F  FuncAPPEND_LIST(<list1>,<list2>)  . . . . . . append elements to a list
+*F  FuncAPPEND_LIST_INTR(<list1>,<list2>)  . . . . . append elements to a list
 **
-**  'FuncAPPEND_LIST' implements the function 'AppendList'.
+**  'FuncAPPEND_LIST_INTR' implements the function 'AppendList'.
 **
 **  'AppendList(<list1>,<list2>)'
 **
@@ -158,20 +158,23 @@ Obj             FuncAPPEND_LIST_INTR (
     /* check the mutability of the first argument */
     while ( !IS_MUTABLE_OBJ( list1) )
       list1 = ErrorReturnObj (
-		"Append: <list1> must be mutable",
+		"Append: <list1> must be a mutable list",
 		0L, 0L,
-		"you can return a mutable list for <list1>");
+		"you can replace <list1> via 'return <list1>;'");
     
 
     /* handle the case of strings now */
     if ( IS_STRING_REP(list1) && IS_STRING_REP(list2))
       {
-	UInt len1, len2, len, min;
+	UInt len1, len2;
 	len1 = GET_LEN_STRING(list1);
 	len2 = GET_LEN_STRING(list2);
-	ResizeBag(list1, len1 + len2 +1);
-	memcpy( ((char *)ADDR_OBJ(list1)) + len1, 
-		(char *)(ADDR_OBJ(list2)), len2 + 1);
+	GROW_STRING(list1, len1 + len2);
+	SET_LEN_STRING(list1, len1 + len2);
+	memcpy( (void *)(CHARS_STRING(list1) + len1), 
+		(void *)CHARS_STRING(list2), len2 + 1);
+        /* ensure trailing zero */
+        *(CHARS_STRING(list1) + len1 + len2) = 0;    
 	return (Obj) 0;
       }
     
@@ -179,9 +182,9 @@ Obj             FuncAPPEND_LIST_INTR (
     if ( TNUM_OBJ( list1 ) != T_PLIST ) {
         while ( ! IS_SMALL_LIST( list1 ) ) {
             list1 = ErrorReturnObj(
-                "AppendList: <list1> must be a list (not a %s)",
+                "AppendList: <list1> must be a small list (not a %s)",
                 (Int)TNAM_OBJ(list1), 0L,
-                "you can return a list for <list1>" );
+                "you can replace <list1> via 'return <list1>;'" );
         }
         PLAIN_LIST( list1 );
         RetypeBag( list1, T_PLIST );
@@ -194,7 +197,7 @@ Obj             FuncAPPEND_LIST_INTR (
             list2 = ErrorReturnObj(
                 "AppendList: <list2> must be a list (not a %s)",
                 (Int)TNAM_OBJ(list2), 0L,
-                "you can return a list for <list2>"  );
+                "you can replace <list2> via 'return <list2>;'"  );
         }
         len2 = LEN_LIST( list2 );
     }
@@ -320,7 +323,7 @@ Obj             FuncPOSITION_SORTED_LIST (
         list = ErrorReturnObj(
             "POSITION_SORTED_LIST: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
-            "you can return a small list for <list>" );
+            "you can replace <list> via 'return <list>;'" );
     }
 
     /* dispatch                                                            */
@@ -412,7 +415,7 @@ Obj             FuncPOSITION_SORTED_COMP (
         list = ErrorReturnObj(
             "POSITION_SORTED_LISTComp: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
-            "you can return a list for <list>" );
+            "you can replace <list> via 'return <list>;'" );
     }
 
     /* check the third argument                                            */
@@ -420,7 +423,7 @@ Obj             FuncPOSITION_SORTED_COMP (
         func = ErrorReturnObj(
             "POSITION_SORTED_LISTComp: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* dispatch                                                            */
@@ -495,6 +498,7 @@ void SORT_LIST (
         }
         h = h / 3;
     }
+    RESET_FILT_LIST(list, FN_IS_NSORT);
 }
 
 void SortDensePlist (
@@ -523,6 +527,7 @@ void SortDensePlist (
         }
         h = h / 3;
     }
+    RESET_FILT_LIST(list, FN_IS_NSORT);
 }
 
 
@@ -561,6 +566,9 @@ void SORT_LISTComp (
         }
         h = h / 3;
     }
+    /* list is not necc. sorted wrt. \< (any longer) */
+    RESET_FILT_LIST(list, FN_IS_SSORT);
+    RESET_FILT_LIST(list, FN_IS_NSORT);
 }
 
 void SortDensePlistComp (
@@ -590,6 +598,9 @@ void SortDensePlistComp (
         }
         h = h / 3;
     }
+    /* list is not necc. sorted wrt. \< (any longer) */
+    RESET_FILT_LIST(list, FN_IS_SSORT);
+    RESET_FILT_LIST(list, FN_IS_NSORT);
 }
 
 /****************************************************************************
@@ -643,6 +654,11 @@ void SORT_PARA_LIST (
         }
         h = h / 3;
     }
+    /* if list was ssorted, then it still will be,
+       but, we don't know anything else any more */
+    RESET_FILT_LIST(list, FN_IS_NSORT);
+    RESET_FILT_LIST(shadow, FN_IS_SSORT);
+    RESET_FILT_LIST(shadow, FN_IS_NSORT);
 }
 
 void SortParaDensePlist (
@@ -724,6 +740,11 @@ void SORT_PARA_LISTComp (
         }
         h = h / 3;
     }
+    /* list is not necc. sorted wrt. \< (any longer) */
+    RESET_FILT_LIST(list, FN_IS_SSORT);
+    RESET_FILT_LIST(list, FN_IS_NSORT);
+    RESET_FILT_LIST(shadow, FN_IS_NSORT);
+    RESET_FILT_LIST(shadow, FN_IS_SSORT);
 }
 
 void SortParaDensePlistComp (
@@ -859,7 +880,7 @@ Obj FuncSORT_LIST (
         list = ErrorReturnObj(
             "SORT_LIST: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
-            "you can return a list for <list>" );
+            "you can replace <list> via 'return <list>;'" );
     }
 
     /* dispatch                                                            */
@@ -893,7 +914,7 @@ Obj FuncSORT_LIST_COMP (
         list = ErrorReturnObj(
             "SORT_LISTComp: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
-            "you can return a list for <list>" );
+            "you can replace <list> via 'return <list>;'" );
     }
 
     /* check the third argument                                            */
@@ -901,7 +922,7 @@ Obj FuncSORT_LIST_COMP (
         func = ErrorReturnObj(
             "SORT_LISTComp: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* dispatch                                                            */
@@ -932,20 +953,20 @@ Obj FuncSORT_PARA_LIST (
         list = ErrorReturnObj(
             "SORT_PARA_LIST: first <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
-            "you can return a list for <list>" );
+            "you can replace <list> via 'return <list>;'" );
     }
     while ( ! IS_SMALL_LIST(shadow) ) {
         shadow = ErrorReturnObj(
             "SORT_PARA_LIST: second <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(shadow), 0L,
-            "you can return a list for <list>" );
+            "you can replace <list> via 'return <list>;'" );
     }
     if( LEN_LIST( list ) != LEN_LIST( shadow ) ) {
         ErrorReturnVoid( 
             "SORT_PARA_LIST: lists must have the same length (not %d and %d)",
             (Int)LEN_LIST( list ),
             (Int)LEN_LIST( shadow ),
-            "you can return" );
+            "you can 'return;'" );
     }
 
     /* dispatch                                                            */
@@ -980,20 +1001,20 @@ Obj FuncSORT_PARA_LIST_COMP (
         list = ErrorReturnObj(
             "SORT_LISTComp: <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
-            "you can return a list for <list>" );
+            "you can replace <list> via 'return <list>;'" );
     }
     while ( ! IS_SMALL_LIST(shadow) ) {
         shadow = ErrorReturnObj(
             "SORT_PARA_LIST: second <list> must be a small list (not a %s)",
             (Int)TNAM_OBJ(shadow), 0L,
-            "you can return a list for <list>" );
+            "you can replace <list> via 'return <list>;'" );
     }
     if( LEN_LIST( list ) != LEN_LIST( shadow ) ) {
         ErrorReturnVoid( 
             "SORT_PARA_LIST: lists must have the same length (not %d and %d)",
             (Int)LEN_LIST( list ),
             (Int)LEN_LIST( shadow ),
-            "you can return" );
+            "you can 'return;'" );
     }
 
     /* check the third argument                                            */
@@ -1001,7 +1022,7 @@ Obj FuncSORT_PARA_LIST_COMP (
         func = ErrorReturnObj(
             "SORT_LISTComp: <func> must be a function (not a %s)",
             (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
+            "you can replace <func> via 'return <func>;'" );
     }
 
     /* dispatch                                                            */
@@ -1065,11 +1086,11 @@ Obj             FuncOnPairs (
         pair = ErrorReturnObj(
             "OnPairs: <pair> must be a list of length 2 (not a %s)",
             (Int)TNAM_OBJ(pair), 0L,
-            "you can return a list of length 2 for <pair>" );
+            "you can replace <pair> via 'return <pair>;'" );
     }
 
     /* create a new bag for the result                                     */
-    img = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
+    img = NEW_PLIST( IS_MUTABLE_OBJ(pair) ? T_PLIST : T_PLIST+IMMUTABLE, 2 );
     SET_LEN_PLIST( img, 2 );
 
     /* and enter the images of the points into the result bag              */
@@ -1111,7 +1132,7 @@ Obj             FuncOnTuples (
         tuple = ErrorReturnObj(
             "OnTuples: <tuple> must be a small list (not a %s)",
             (Int)TNAM_OBJ(tuple), 0L,
-            "you can return a small list for <tuple>" );
+            "you can replace <tuple> via 'return <tuple>;'" );
     }
 
     /* special case for the empty list */
@@ -1131,7 +1152,7 @@ Obj             FuncOnTuples (
     }
 
     /* create a new bag for the result                                     */
-    img = NEW_PLIST( T_PLIST+IMMUTABLE, LEN_LIST(tuple) );
+    img = NEW_PLIST( IS_MUTABLE_OBJ(tuple) ? T_PLIST : T_PLIST+IMMUTABLE, LEN_LIST(tuple) );
     SET_LEN_PLIST( img, LEN_LIST(tuple) );
 
     /* and enter the images of the points into the result bag              */
@@ -1171,7 +1192,7 @@ Obj             FuncOnSets (
         set = ErrorReturnObj(
             "OnSets: <set> must be a set (not a %s)",
             (Int)TNAM_OBJ(set), 0L,
-            "you can return a set for <set>" );
+            "you can replace <set> via 'return <set>;'" );
     }
 
     /* special case for the empty list */

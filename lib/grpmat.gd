@@ -23,6 +23,9 @@ DeclareSynonym( "IsMatrixGroup", IsRingElementCollCollColl and IsGroup );
 ##
 #M  IsHandledByNiceMonomorphism( <mat-grp> )
 ##
+##  For finite matrix groups, there is a default method for
+##  `NiceMonomorphism' based on the action on vectors from the right.
+##
 InstallTrueMethod( IsHandledByNiceMonomorphism, IsMatrixGroup and IsFinite );
 
 
@@ -31,6 +34,22 @@ InstallTrueMethod( IsHandledByNiceMonomorphism, IsMatrixGroup and IsFinite );
 #M  CanComputeSize( <mat-grp> )
 ##
 InstallTrueMethod(CanComputeSize,IsMatrixGroup and IsFinite);
+
+#############################################################################
+##
+##  Operations of Matrix Groups
+#1
+##  The basic operations for groups are described in Chapter~"Group
+##  Actions",
+##  special actions for *matrix* groups mentioned there are `OnLines',
+##  `OnRight', and `OnSubspacesByCanonicalBasis'.
+#T what about acting directly on subspace objects via `OnRight'?
+##
+##  For subtleties concerning multiplication from the left or from the
+##  right,
+##  see~"Acting OnRight and OnLeft".
+##
+
 
 #############################################################################
 ##
@@ -238,6 +257,19 @@ DeclareProperty( "IsFullSubgroupGLorSLRespectingQuadraticForm",
 ##  The labelling of the points of the resulting group is not guaranteed.
 ##
 DeclareGlobalFunction( "AffineActionByMatrixGroup" );
+
+
+#############################################################################
+##
+#F  BlowUpIsomorphism( <matgrp>, <B> )
+##
+##  For a matrix group <matgrp> and a basis <B> of a field extension $L / K$,
+##  say, such that the entries of all matrices in <matgrp> lie in $L$,
+##  `BlowUpIsomorphism' returns the isomorphism with source <matgrp>
+##  that is defined by mapping the matrix $A$ to $`BlownUpMat'( A, <B> )$,
+##  see~"BlownUpMat".
+##
+DeclareGlobalFunction( "BlowUpIsomorphism" );
 
 
 #############################################################################

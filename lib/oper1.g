@@ -178,7 +178,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     fi;
     # push the other functions back
     if not REREADING or not replace then
-        methods{[i+1..LEN_LIST(methods)]+(narg+4)}
+        methods{[narg+4+i+1..narg+4+LEN_LIST(methods)]}
           := methods{[i+1..LEN_LIST(methods)]};
     fi;
 
@@ -702,6 +702,8 @@ BIND_GLOBAL( "RedispatchOnCondition", function(oper,fampred,reqs,cond,val)
 
     # force value 0 (unless offset).
     for i in reqs do
+      # when completing, `RankFilter' is redefined. Thus we must use
+      # SIZE_FLAGS.
       val:=val-SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(i)));
     od;
 

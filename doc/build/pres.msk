@@ -20,6 +20,11 @@ new Generators").
 
 %%  The code for presentations was designed and implemented by Volkmar Felsch.
 
+If you only want to get new presentations for subgroups of a finitely
+presented group (and do not want to manipulate presentations yourself),
+chances are that the operation `IsomorphismFpGroup' already does what you
+want (see~"New Presentations and Presentations for Subgroups").
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Creating Presentations}
 
@@ -58,7 +63,7 @@ false
 gap> G := GeneralLinearGroup( 2, 7 );
 GL(2,7)
 gap> GeneratorsOfGroup( G );
-[ [ [ Z(7), 0*Z(7) ], [ 0*Z(7), Z(7)^0 ] ],
+[ [ [ Z(7), 0*Z(7) ], [ 0*Z(7), Z(7)^0 ] ], 
   [ [ Z(7)^3, Z(7)^0 ], [ Z(7)^3, 0*Z(7) ] ] ]
 gap> Size( G );
 2016
@@ -90,9 +95,9 @@ gap> P := PresentationViaCosetTable( M12, F, words );
 gap> G := FpGroupPresentation( P );
 <fp group on the generators [ a, b, c ]>
 gap> RelatorsOfFpGroup( G );
-[ c^2, b^4, a*c*a*c*a*c, a*b^-2*a*b^-2*a*b^-2, a^11,
-  a^2*b*a^-2*b^-2*a*b^-1*a^2*b^-1, a*b*a^-1*b*a^-1*b^-1*a*b*a^-1*b*a^-1*b^-1,
-  a^2*b*a^2*b^-2*a^-1*b*a^-1*b^-1*a^-1*b^-1,
+[ c^2, b^4, a*c*a*c*a*c, a*b^-2*a*b^-2*a*b^-2, a^11, 
+  a^2*b*a^-2*b^-2*a*b^-1*a^2*b^-1, a*b*a^-1*b*a^-1*b^-1*a*b*a^-1*b*a^-1*b^-1, 
+  a^2*b*a^2*b^-2*a^-1*b*a^-1*b^-1*a^-1*b^-1, 
   a^2*b^-1*a^-1*b^-1*a*c*b*c*a*b*a*b, a^4*b*a^2*b*a^-2*c*a*b*a^-1*c ]
 \endexample
 
@@ -123,6 +128,9 @@ Note, however, that the function `IsomorphismFpGroup' (see
 \Section{SimplifiedFpGroup}
 
 \Declaration{SimplifiedFpGroup}
+If the connection to the original group is important, the operation
+`IsomorphismSimplifiedFpGroup' (see~"IsomorphismSimplifiedFpGroup") should
+be used instead.
 \beginexample
 gap> F6 := FreeGroup( 6, "G" );;
 gap> G := F6 / [ F6.1^2, F6.2^2, F6.4*F6.6^-1, F6.5^2, F6.6^2,
@@ -581,7 +589,7 @@ gap> G := F3 / [ F3.1^3, F3.2^3, F3.3^3, (F3.1*F3.2)^5,
 > (F3.2*F3.3)^3, (F3.2^-1*F3.3)^4 ];;
 gap> a := G.1;; b := G.2;; c := G.3;;
 gap> H := Subgroup( G, [ a, c ] );;
-gap> for i in [ 28, 29, 30, 94, 100 ] do
+gap> for i in [ 61, 62, 63, 90, 97 ] do
 > Pi := PresentationSubgroup( G, H );
 > TzOptions( Pi ).eliminationsLimit := i;
 > Print("#I eliminationsLimit set to ",i,"\n");
@@ -589,16 +597,16 @@ gap> for i in [ 28, 29, 30, 94, 100 ] do
 > TzGoGo( Pi );
 > TzPrintStatus( Pi );
 > od;
-#I eliminationsLimit set to 28
-#I  there are 2 generators and 95 relators of total length 10817
-#I eliminationsLimit set to 29
-#I  there are 2 generators and 5 relators of total length 35
-#I eliminationsLimit set to 30
-#I  there are 3 generators and 98 relators of total length 2928
-#I eliminationsLimit set to 94
-#I  there are 4 generators and 78 relators of total length 1667
-#I eliminationsLimit set to 100
-#I  there are 3 generators and 90 relators of total length 3289
+#I eliminationsLimit set to 61
+#I  there are 2 generators and 104 relators of total length 7012
+#I eliminationsLimit set to 62
+#I  there are 2 generators and 7 relators of total length 56
+#I eliminationsLimit set to 63
+#I  there are 3 generators and 97 relators of total length 5998
+#I eliminationsLimit set to 90
+#I  there are 3 generators and 11 relators of total length 68
+#I eliminationsLimit set to 97
+#I  there are 4 generators and 109 relators of total length 3813
 \endexample
 
 Similarly, we demonstrate the influence of the `saveLimit' parameter by
@@ -608,7 +616,7 @@ changing the `eliminationsLimit' parameter which keeps its default value
 100.
 
 \beginexample
-gap> for i in [ 9, 10, 11, 12, 15 ] do
+gap> for i in [ 7 .. 11 ] do
 > Pi := PresentationSubgroup( G, H );
 > TzOptions( Pi ).saveLimit := i;
 > Print( "#I saveLimit set to ", i, "\n" );
@@ -616,16 +624,16 @@ gap> for i in [ 9, 10, 11, 12, 15 ] do
 > TzGoGo( Pi );
 > TzPrintStatus( Pi );
 > od;
+#I saveLimit set to 7
+#I  there are 3 generators and 99 relators of total length 2713
+#I saveLimit set to 8
+#I  there are 2 generators and 103 relators of total length 11982
 #I saveLimit set to 9
-#I  there are 3 generators and 97 relators of total length 5545
+#I  there are 2 generators and 6 relators of total length 41
 #I saveLimit set to 10
-#I  there are 3 generators and 90 relators of total length 3289
+#I  there are 3 generators and 118 relators of total length 13713
 #I saveLimit set to 11
-#I  there are 3 generators and 103 relators of total length 3936
-#I saveLimit set to 12
-#I  there are 2 generators and 4 relators of total length 21
-#I saveLimit set to 15
-#I  there are 3 generators and 143 relators of total length 18326
+#I  there are 3 generators and 11 relators of total length 58
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1150,7 +1158,7 @@ gap> TzPrint( P );
 #I  5.  14  [ -2, 1, 2, 1, -2, -1, 2, 1, -2, -1, -2, 1, 2, -1 ]
 #I  6.  16  [ -1, 2, 1, 2, -1, 2, 1, 2, -1, 2, 1, 2, -1, 2, 1, 2 ]
 #I  7.  16  [ 2, 1, -2, 1, 2, 1, -2, 1, 2, 1, -2, 1, 2, 1, -2, 1 ]
-#I  8.  18  [ -2, -1, 2, -1, -2, 1, -2, -1, 2, -1, -2, 1, -2, -1, 2, -1, -2,
+#I  8.  18  [ -2, -1, 2, -1, -2, 1, -2, -1, 2, -1, -2, 1, -2, -1, 2, -1, -2, 
   1 ]
 gap> K :=  FpGroupPresentation( P );
 <fp group on the generators [ _x1, _x2 ]>
@@ -1218,8 +1226,9 @@ The following Tietze options are recognized by {\GAP}:
   The Tietze transformation commands will never eliminate  a
   generator of a presentation <P>, if they cannot exclude the
   possibility that the resulting total length of the relators
-  exceeds the value of `lengthLimit'. The default value of
-  `lengthLimit' is `infinity'.
+  exceeds the maximal {\GAP} list length of $2^{31}-1$ or the value
+  of the option `lengthLimit'. The default value of `lengthLimit'
+  is $2^{31}-1$.
 
 `loopLimit':&
   Whenever the `TzGo' command is called for a presentation <P>,
@@ -1268,7 +1277,7 @@ gap> TzPrintOptions( P );
 #I  eliminationsLimit  = 100
 #I  expandLimit        = 150
 #I  generatorsLimit    = 0
-#I  lengthLimit        = infinity
+#I  lengthLimit        = 2147483647
 #I  loopLimit          = infinity
 #I  printLevel         = 1
 #I  saveLimit          = 10

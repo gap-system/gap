@@ -165,7 +165,7 @@ InstallMethod( LeftMagmaIdealByGenerators,
 		SetLeftActingDomain(S, M);
 
     if HasGeneratorsOfGroup(M) then
-        # Because any ideal of a group is a group, we should set the
+        # Because any ideal of a group the whole group, we should set the
         # generators.
         SetGeneratorsOfGroup(S, GeneratorsOfGroup(M));
     fi;
@@ -189,7 +189,7 @@ InstallMethod( RightMagmaIdealByGenerators,
 		SetRightActingDomain(S, M);
 
     if HasGeneratorsOfGroup(M) then
-        # Because any ideal of a group is a group, we should set the
+        # Because any ideal of a group is the whole group, we should set the
         # generators.
         SetGeneratorsOfGroup(S, GeneratorsOfGroup(M));
     fi;
@@ -215,7 +215,7 @@ InstallMethod( MagmaIdealByGenerators,
 		SetActingDomain(S, M);
 
     if HasGeneratorsOfGroup(M) then
-        # Because any ideal of a group is a group, we should set the
+        # Because any ideal of a group is the whole group, we should set the
         # generators.
         SetGeneratorsOfGroup(S, GeneratorsOfGroup(M));
     fi;

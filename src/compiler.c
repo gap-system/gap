@@ -2736,7 +2736,11 @@ CVar CompStringExpr (
 
     /* create the string and copy the stuff                                */
     Emit( "C_NEW_STRING( %c, %d, \"%C\" )\n",
-          string, SIZE_EXPR(expr)-1, (Char*)ADDR_EXPR(expr) );
+
+	  /* the sizeof(UInt) offset is to get past the length of the string
+	     which is now stored in the front of the literal */
+          string, SIZE_EXPR(expr)-1-sizeof(UInt),
+	  sizeof(UInt)+ (Char*)ADDR_EXPR(expr) );
 
     /* we know that the result is a list                                   */
     SetInfoCVar( string, W_LIST );
@@ -4210,6 +4214,7 @@ void CompFor (
         }
         else /* if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_GVAR ) */ {
             var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
+	    CompSetUseGVar( var, COMP_USE_GVAR_ID );
             vart = 'g';
         }
 
@@ -4445,6 +4450,21 @@ void CompBreak (
     }
 
     Emit( "break;\n" );
+}
+
+/****************************************************************************
+**
+*F  CompContinue( <stat> ) . . . . . . . . . . . . . . . . . . . . T_CONTINUE
+*/
+void CompContinue (
+    Stat                stat )
+{
+    /* print a comment                                                     */
+    if ( CompPass == 2 ) {
+        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+    }
+
+    Emit( "continue;\n" );
 }
 
 
@@ -5328,7 +5348,7 @@ void CompAssert2 (
     Emit( "if ( ! LT(CurrentAssertionLevel, %c) ) {\n", lev );
     cnd = CompBoolExpr( ADDR_STAT(stat)[1] );
     Emit( "if ( ! %c ) {\n", cnd );
-    Emit( "ErrorReturnVoid(\"Assertion failure\",0L,0L,\"you may return\"" );
+    Emit( "ErrorReturnVoid(\"Assertion failure\",0L,0L,\"you may 'return;'\"" );
     Emit( ");\n");
     Emit( "}\n" );
     Emit( "}\n" );
@@ -5356,7 +5376,9 @@ void CompAssert3 (
     cnd = CompBoolExpr( ADDR_STAT(stat)[1] );
     Emit( "if ( ! %c ) {\n", cnd );
     msg = CompExpr( ADDR_STAT(stat)[2] );
-    Emit( "if ( %c != (Obj)(UInt)0 )  PrintObj(%c);\n", msg, msg );
+    Emit( "if ( %c != (Obj)(UInt)0 )", msg );
+    Emit( "{\n if ( IS_STRING_REP ( %c ) )\n", msg);
+    Emit( "   PrintString1( %c);\n else\n   PrintObj(%c);\n}\n", msg, msg );
     Emit( "}\n" );
     Emit( "}\n" );
 
@@ -5580,7 +5602,7 @@ Int CompileFunc (
 
     /* emit code to include the interface files                            */
     Emit( "/* C file produced by GAC */\n" );
-    Emit( "#include \"compiled.h\"\n" );
+    Emit( "#include \"src/compiled.h\"\n" );
 
     /* emit code for global variables                                      */
     Emit( "\n/* global variables used in handlers */\n" );
@@ -6034,6 +6056,7 @@ static Int InitKernel (
     CompStatFuncs[ T_REPEAT2         ] = CompRepeat;
     CompStatFuncs[ T_REPEAT3         ] = CompRepeat;
     CompStatFuncs[ T_BREAK           ] = CompBreak;
+    CompStatFuncs[ T_CONTINUE        ] = CompContinue;
     CompStatFuncs[ T_RETURN_OBJ      ] = CompReturnObj;
     CompStatFuncs[ T_RETURN_VOID     ] = CompReturnVoid;
 

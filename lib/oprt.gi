@@ -634,10 +634,10 @@ end );
 ##
 #M  ActionHomomorphismConstructor( <xset>, <surj> )
 ##
-InstallGlobalFunction( ActionHomomorphismConstructor,
-    function( xset, surj )
-    local   G,  D,  act,  fam,  filter,  hom,  i;
-    
+InstallGlobalFunction( ActionHomomorphismConstructor, function(arg)
+local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
+
+    xset:=arg[1];surj:=arg[2];
     G := ActingDomain( xset );
     D := HomeEnumerator( xset );
     act := FunctionAction( xset );
@@ -650,7 +650,9 @@ InstallGlobalFunction( ActionHomomorphismConstructor,
     fi;
 
     hom := rec(  );
-    if IsExternalSetByActorsRep( xset )  then
+    if Length(arg)>2 then
+      filter:=arg[3];
+    elif IsExternalSetByActorsRep( xset )  then
         filter := filter and IsActionHomomorphismByActors;
     elif     IsMatrixGroup( G )
          and not IsOneDimSubspacesTransversalRep( D )
@@ -679,18 +681,33 @@ InstallGlobalFunction( ActionHomomorphismConstructor,
 #                       ( Length( D[ 1 ] ), One( D[ 1 ][ 1 ] ) ) )  then
 #            fi;
 #        fi;
+    # test for constituent homomorphism
     elif not IsExternalSubset( xset )
          and IsPermGroup( G )
          and IsList( D ) and IsCyclotomicCollection( D )
          and act = OnPoints  then
+
+
         filter := IsConstituentHomomorphism;
         hom.conperm := MappingPermListList( D, [ 1 .. Length( D ) ] );
+
+        # if MappingPermListList took a family/group as an
+        # argument then we could patch it instead
+        if IsHomCosetToPerm(One(G)) then
+            hom.conperm := HomCosetWithImage( Homomorphism(G.1), 
+                           One(Source(G)), hom.conperm );
+        fi;
+
+
+    # test for action on disjoint sets of numbers-> blocks homomorphism
     elif not IsExternalSubset( xset )
          and IsPermGroup( G )
          and IsList( D )
          and ForAll( D, IsList and IsSSortedList )
-         and act = OnSets 
-         and Sum( D, Length ) = Length( Union( D ) )
+	 and Length(D)>0 and Length(D[1])>0 and IsInt(D[1][1])
+         and act = OnSets
+	 # disjointness test
+	 and Length(Set(Flat(D)))=Sum(List(D,Length))
 	 then
         filter := IsBlocksHomomorphism;
         hom.reps := [  ];
@@ -709,6 +726,9 @@ InstallGlobalFunction( ActionHomomorphismConstructor,
      then
         filter := filter and
 	  IsGroupGeneralMappingByAsGroupGeneralMappingByImages;
+    # action of fp group
+    elif IsSubgroupFpGroup(G) then
+      filter:=filter and IsFromFpGroupHomomorphism;
     fi;
     if HasBaseOfGroup( xset )  then
         filter := filter and IsActionHomomorphismByBase;
@@ -740,8 +760,18 @@ InstallMethod( SurjectiveActionHomomorphismAttr,
 ##
 InstallMethod( ViewObj, "for action homomorphism", true,
     [ IsActionHomomorphism ], 0,
-    function( hom )
-    Print( "<action homomorphism>" );
+function( hom )
+local name;
+  name:="homo";
+  if HasIsInjective(hom) and IsInjective(hom) then
+    name:="mono";
+    if HasIsSurjective(hom) and IsSurjective(hom) then
+      name:="iso";
+    fi;
+  elif HasIsSurjective(hom) and IsSurjective(hom) then
+    name:="epi";
+  fi;
+  Print( "<action ",name,"morphism>" );
 end );
 
 
@@ -776,47 +806,71 @@ InstallMethod( Range,"ophom: S(domain)", true,
 
 InstallMethod( Range, "surjective action homomorphism",true,
   [ IsActionHomomorphism and IsSurjective ], 0,
-    hom -> GroupByGenerators( List( GeneratorsOfGroup( Source( hom ) ),
-            gen -> ImageElmActionHomomorphism( hom, gen ) ), () ) );
+function(hom)
+local gens,imgs,ran,xset;
+  gens:=GeneratorsOfGroup( Source( hom ) );
+  imgs:=List(gens,gen->ImageElmActionHomomorphism( hom, gen ) );
+  ran:=GroupByGenerators(imgs,());
+  # remember a known base
+  if HasBaseOfGroup(UnderlyingExternalSet(hom)) then
+    xset:=UnderlyingExternalSet(hom);
+    if not IsBound( xset!.basePermImage )  then
+        xset!.basePermImage:=List(BaseOfGroup( xset ),
+				  b->PositionCanonical(Enumerator(xset),b));
+    fi;
+    SetBaseOfGroup(ran,xset!.basePermImage);
+  fi;
+  SetMappingGeneratorsImages(hom,[gens,imgs]);
+  return ran;
+end);
 
-#############################################################################
-##
-#M  AsGroupGeneralMappingByImages( <hom> )  . . .  for action homomorphism
-##
-InstallMethod( AsGroupGeneralMappingByImages, "IsActionHomomorphism",
-  true, [ IsActionHomomorphism ], 0,
-    function( hom )
-    local   xset,  G,  D,  act,  gens,  imgs;
-    
-    xset := UnderlyingExternalSet( hom );
-    G := ActingDomain( xset );
-    D := HomeEnumerator( xset );
-    act := FunctionAction( xset );
-    gens := GeneratorsOfGroup( G );
-    imgs := List( gens, o -> Permutation( o, D, act ) );
-    return GroupHomomorphismByImagesNC( G, Range(hom), gens, imgs );
-end );
-
-#############################################################################
-##
-#M  AsGroupGeneralMappingByImages( <hom> )  . . . . . . if given by operators
-##
-InstallMethod( AsGroupGeneralMappingByImages,
-  "IsActionHomomorphismByActors",true,
-        [ IsActionHomomorphismByActors ], 0,
-    function( hom )
-    local   xset,  G,  D,  act,  gens,  acts,  imgs;
-    
-    xset := UnderlyingExternalSet( hom );
-    G := ActingDomain( xset );
-    D := HomeEnumerator( xset );
-    gens := xset!.generators;
-    acts := xset!.operators;
-    act  := xset!.funcOperation;
-    imgs := List( acts, o -> Permutation( o, D, act ) );
-    return GroupHomomorphismByImagesNC( G,
-                   Range(hom), gens, imgs );
-end );
+# #############################################################################
+# ##
+# #M  AsGroupGeneralMappingByImages( <hom> )  . . .  for action homomorphism
+# ##
+# InstallMethod( AsGroupGeneralMappingByImages, "IsActionHomomorphism",
+#   true, [ IsActionHomomorphism ], 0,
+# function( hom )
+# local   xset,  G,  D,  act,  gens,  imgs;
+# 
+#   # avoid duplicity
+#   if HasIsSurjective(hom) and IsSurjective(hom) then
+#     Range(hom);
+#     if HasAsGroupGeneralMappingByImages(hom) then
+#       return AsGroupGeneralMappingByImages(hom);
+#     fi;
+#   fi;
+#   xset := UnderlyingExternalSet( hom );
+#   G := ActingDomain( xset );
+#   D := HomeEnumerator( xset );
+#   act := FunctionAction( xset );
+#   gens := GeneratorsOfGroup( G );
+#   imgs := List( gens, o -> Permutation( o, D, act ) );
+#   imgs:=GroupHomomorphismByImagesNC( G, Range(hom), gens, imgs );
+#   CopyMappingAttributes(hom,imgs);
+#   return imgs;
+# end );
+# 
+# #############################################################################
+# ##
+# #M  AsGroupGeneralMappingByImages( <hom> )  . . . . . . if given by operators
+# ##
+# InstallMethod( AsGroupGeneralMappingByImages,
+#   "IsActionHomomorphismByActors",true,
+#         [ IsActionHomomorphismByActors ], 0,
+#     function( hom )
+#     local   xset,  G,  D,  act,  gens,  acts,  imgs;
+#     
+#     xset := UnderlyingExternalSet( hom );
+#     G := ActingDomain( xset );
+#     D := HomeEnumerator( xset );
+#     gens := xset!.generators;
+#     acts := xset!.operators;
+#     act  := xset!.funcOperation;
+#     imgs := List( acts, o -> Permutation( o, D, act ) );
+#     return GroupHomomorphismByImagesNC( G,
+#                    Range(hom), gens, imgs );
+# end );
 
 #############################################################################
 ##
@@ -828,7 +882,11 @@ function(hom,U)
 local xset,rest;
 
   xset:=RestrictedExternalSet(UnderlyingExternalSet(hom),U);
-  rest:=ActionHomomorphismAttr( xset );
+  if HasIsSurjective(hom) and IsSurjective(hom) then
+    rest:=SurjectiveActionHomomorphismAttr( xset );
+  else
+    rest:=ActionHomomorphismAttr( xset );
+  fi;
 
   if HasIsInjective(hom) and IsInjective(hom) then
     SetIsInjective(rest,true);
@@ -839,75 +897,6 @@ local xset,rest;
 
   return rest;
 end);
-
-##############################################################################
-###
-##F  ActionHomomorphismSubsetAsGroupGeneralMappingByImages( ... ) . . local
-###
-#InstallGlobalFunction( ActionHomomorphismSubsetAsGroupGeneralMappingByImages,
-#    function
-#    ( G, D, start, gens, acts, act )
-#    local   list,  ps,  poss,  blist,  p,  i,  gen,  img,  pos,  imgs,  hom;
-#    
-#    list := [ 1 .. Length( D ) ];
-#    poss := BlistList( list, List( start, b -> PositionCanonical( D, b ) ) );
-#    blist := StructuralCopy( poss );
-#    list := List( gens, gen -> ShallowCopy( list ) );
-#    ps := Position( poss, true );
-#    while ps <> fail  do
-#        poss[ ps ] := false;
-#        p := D[ ps ];
-#        for i  in [ 1 .. Length( gens ) ]  do
-#            gen := acts[ i ];
-#            img := act( p, gen );
-#            pos := PositionCanonical( D, img );
-#            list[ i ][ ps ] := pos;
-#            if not blist[ pos ]  then
-#                poss[ pos ] := true;
-#                blist[ pos ] := true;
-#            fi;
-#        od;
-#        ps := Position( poss, true );
-#    od;
-#    imgs := List( list, PermList );
-#    hom := GroupHomomorphismByImagesNC( G, Group( imgs,()),
-#                   gens, imgs );
-#    return hom;
-#end );
-#
-##############################################################################
-###
-##M  AsGroupGeneralMappingByImages( <hom> )  . . . . . . . . . . . . . as GHBI
-###
-#InstallMethod(AsGroupGeneralMappingByImages,"IsActionHomomorphismSubset",
-#  true,[ IsActionHomomorphismSubset ], 0,
-#function( hom )
-#local   xset,  G,  gens,ah;
-#    
-#    xset := UnderlyingExternalSet( hom );
-#    G := ActingDomain( xset );
-#    gens := GeneratorsOfGroup( G );
-#    ah:=ActionHomomorphismSubsetAsGroupGeneralMappingByImages( G,
-#           HomeEnumerator( xset ), xset!.start,
-#           gens, gens, FunctionAction( xset ) );
-#if Range(hom)<>Range(ah) or Source(hom)<>Source(ah) then
-#  Error("ranges");
-#fi;
-#    return ah;
-#end );
-#
-#InstallMethod( AsGroupGeneralMappingByImages,
-#  "IsActionHomomorphismSubset and ByActors",true,
-#        [ IsActionHomomorphismSubset
-#      and IsActionHomomorphismByActors ], 0,
-#    function( hom )
-#    local   xset;
-#
-#    xset := UnderlyingExternalSet( hom );
-#    return ActionHomomorphismSubsetAsGroupGeneralMappingByImages(
-#           ActingDomain( xset ), HomeEnumerator( xset ), xset!.start,
-#           xset!.generators, xset!.operators, xset!.funcOperation );
-#end );
 
 #############################################################################
 ##
@@ -955,12 +944,14 @@ end );
 InstallMethod( OrbitOp, "with domain", true, OrbitishReq,0,
 function( G, D, pnt, gens, acts, act )
 local orb,d,gen,i,p;
+  pnt:=Immutable(pnt);
   d:=NewDictionary(pnt,false,D);
   orb := [ pnt ];
   AddDictionary(d,pnt);
   for p in orb do
     for gen in acts do
       i:=act(p,gen);
+      MakeImmutable(i);
       if not KnowsDictionary(d,i) then
 	Add( orb, i );
 	AddDictionary(d,i);
@@ -978,13 +969,16 @@ InstallOtherMethod( OrbitOp, "standard orbit algorithm:list", true,
           IsFunction ], 0,
 function( G, pnt, gens, acts, act )
 local orb,d,gen,i,p,D;
-  D:=DomainForAction(pnt,acts);
+  # try to find a domain
+  D:=DomainForAction(pnt,acts,act);
+  pnt:=Immutable(pnt);
   d:=NewDictionary(pnt,false,D);
   orb := [ pnt ];
   AddDictionary(d,pnt);
   for p in orb do
     for gen in acts do
       i:=act(p,gen);
+      MakeImmutable(i);
       if not KnowsDictionary(d,i) then
 	Add( orb, i );
 	AddDictionary(d,i);
@@ -1006,82 +1000,29 @@ end );
 
 InstallGlobalFunction( OrbitByPosOp,
     function( G, D, blist, pos, pnt, gens, acts, act )
-    local   orb,  p,  gen,  img;
+    local   orb,  p,  gen,  img,pofu;
     
+    if IsInternalRep(D) then
+      pofu:=Position; # avoids one redirection, epsilon faster
+    else
+      pofu:=PositionCanonical;
+    fi;
     blist[ pos ] := true;
     orb := [ pnt ];
     for p  in orb  do
         for gen  in acts  do
             img := act( p, gen );
-            pos := PositionCanonical( D, img );
+            pos := pofu( D, img );
             if not blist[ pos ]  then
-                blist[ pos ] := true;
-                Add( orb, img );
+	      blist[ pos ] := true;
+	      #Add( orb, img );
+	      Add( orb, D[pos] ); # this way we do not store the new element
+	      # but the already existing old one in D. This saves memory.
             fi;
         od;
     od;
     return Immutable( orb );
 end );
-
-#InstallOtherMethod( OrbitOp, "standard orbit algorithm:set", true,
-#        [ IsGroup, IsObject,
-#          IsList,
-#          IsList,
-#          IsFunction ],
-#	  1,# we want this to be better than the following method
-#function( G, pnt, gens, acts, act )
-#local   orb,  p,  i,  gen,orbset,cansort;
-#
-#    #T this should be cleaner, probably by a filter whether comparison is
-#    #T doable.
-#
-#    # catch cases in which we do not want to do a set of the elements
-#    # because ordering is impossible or very expensive
-#    if IsElementOfFpGroupCollection(pnt) # subgroups of fp group
-#     then
-#      TryNextMethod();
-#    fi;
-#
-#    cansort:=CanEasilySortElements(pnt);
-#    orb := [ pnt ];
-#    if cansort then
-#      orbset:=[pnt];
-#    else
-#      orbset:=orb;
-#    fi;
-#    for p  in orb  do
-#        for gen  in acts  do
-#            i := act( p, gen );
-#            if not i in orbset  then
-#                Add( orb, i );
-#		if cansort then
-#		  AddSet(orbset,i);
-#		fi;
-#            fi;
-#        od;
-#    od;
-#    return Immutable( orbset );
-#end );
-#
-#InstallOtherMethod( OrbitOp, "standard orbit algorithm:list", true,
-#        [ IsGroup, IsObject,
-#          IsList,
-#          IsList,
-#          IsFunction ], 0,
-#function( G, pnt, gens, acts, act )
-#local   orb,  p,  i,  gen;
-#
-#    orb := [ pnt ];
-#    for p  in orb  do
-#        for gen  in acts  do
-#            i := act( p, gen );
-#            if not i in orb  then
-#                Add( orb, i );
-#            fi;
-#        od;
-#    od;
-#    return Immutable(orb);
-#end );
 
 #############################################################################
 ##
@@ -1106,20 +1047,6 @@ local   orbstab;
   return Immutable( orbstab );
 end );
 
-InstallOtherMethod( OrbitStabilizerOp, 
-  "`OrbitStabilizerAlgorithm' without domain, for FFE vectors and matrix list",
-  true,[ IsGroup, IsFFECollection, IsList, IsFFECollCollColl, IsFunction ], 0,
-function( G, pnt, gens, acts, act )
-local   orbstab;
-  if CollectionsFamily(CollectionsFamily(FamilyObj(pnt)))<>FamilyObj(acts) or
-    (act<>OnPoints and act<>OnLines and act<>OnRight) then
-    TryNextMethod(); # strange operation, might extend the domain
-  fi;
-  orbstab:=OrbitStabilizerAlgorithm(G,NaturalActedSpace(G,acts,[pnt]),false,
-    gens,acts,rec(pnt:=pnt,act:=act));
-  return Immutable( orbstab );
-end );
-
 #############################################################################
 ##
 #M OrbitStabilizerAlgorithm
@@ -1134,26 +1061,34 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 	dict,	# dictionary
 	blico,	# copy of initial blist (to find out the true domain)
 	blif,	# flag on whether a blist is given
-	useblist,# flag on whether we use blists to find the index of elements
 	crossind,	# index D (via blist) -> orbit position
 	ind,	# stabilizer index
 	indh,	# 1/2 stabilizer index
 	incstb;	# do we still want to increase the stabilizer?
 
-  d:=dopr.pnt;
+  d:=Immutable(dopr.pnt);
   if IsBound(dopr.act) then
     act:=dopr.act;
   else
     act:=dopr.opr;
   fi;
 
+  # try to find a domain
+  if IsBool(D) then
+    D:=DomainForAction(d,acts,act);
+  fi;
+  dict:=NewDictionary(d,true,D);
+
   if IsBound(dopr.stabsub) then
-    stabsub:=dopr.stabsub;
+    stabsub:=AsSubgroup(Parent(G),dopr.stabsub);
   else
     stabsub:=TrivialSubgroup(G);
   fi;
+  # NC is safe
+  stabsub:=ClosureSubgroupNC(stabsub,gens{Filtered([1..Length(acts)],
+	    i->act(d,acts[i])=d)});
 
-  if D=false then
+  if IsBool(D) then
     doml:=Size(G);
   else
     if blist<>false then
@@ -1165,27 +1100,36 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
     fi;
   fi;
 
-  incstb:=true; # do we still include stabilizer elements. If it is
-  # `false' the index `ind' must be equal to the orbit size.
+  incstb:=Index(G,stabsub)>1; # do we still include stabilizer elements. If
+  # it is `false' the index `ind' must be equal to the orbit size.
   orb := [ d ];
 
-  # test for small domains whether the orbit has length 1
-  if doml<10 then
-    if doml=1 or ForAll(acts,i->act( d, i )=d) then
-
-      # do we still need to tick off the orbit in `blist' to
-      # please the caller? (see below as well)
-      if blist<>false then
-	q:=PositionCanonical(D,d);
-	blist[q]:=true;
-      fi;
-
-      return rec( orbit := orb, stabilizer := G );
+  if incstb=false then
+    # do we still need to tick off the orbit in `blist' to
+    # please the caller? (see below as well)
+    if blist<>false then
+      q:=PositionCanonical(D,d);
+      blist[q]:=true;
     fi;
-    
+    return rec( orbit := orb, stabilizer := G );
   fi;
 
-  dict:=NewDictionary(d,true,D);
+#  # test for small domains whether the orbit has length 1
+#  if doml<10 then
+#    if doml=1 or ForAll(acts,i->act( d, i )=d) then
+#
+#      # do we still need to tick off the orbit in `blist' to
+#      # please the caller? (see below as well)
+#      if blist<>false then
+#	q:=PositionCanonical(D,d);
+#	blist[q]:=true;
+#      fi;
+#
+#      return rec( orbit := orb, stabilizer := G );
+#    fi;
+#    
+#  fi;
+
   AddDictionary(dict,d,1);
 
   stb := stabsub; # stabilizer seed
@@ -1198,6 +1142,7 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 	  for i  in [ 1 .. Length( gens ) ]  do
 
 	    img := act( orb[ p ], acts[ i ] );
+	    MakeImmutable(img);
 	    q:=LookupDictionary(dict,img);
 
 	    if q = fail  then
@@ -1216,6 +1161,8 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 	      sch := rep[ p ] * gens[ i ] / rep[ q ];
 	      if not sch in stb  then
 		ind:=stb;
+
+		# NC is safe
 		stb:=ClosureSubgroupNC(stb,sch);
 		ind:=Index(G,stb);
 		indh:=QuoInt(ind,2);
@@ -1291,15 +1238,20 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 	dict,  		# dictionary
 	crossind;	# index D (via blist) -> orbit position
 
-  d:=dopr.pnt;
+  d:=Immutable(dopr.pnt);
   if IsBound(dopr.act) then
     act:=dopr.act;
   else
     act:=dopr.opr;
   fi;
 
+  # try to find a domain
+  if IsBool(D) then
+    D:=DomainForAction(d,acts,act);
+  fi;
+
   if IsBound(dopr.stabsub) then
-    stabsub:=dopr.stabsub;
+    stabsub:=AsSubgroup(Parent(G),dopr.stabsub);
   else
     stabsub:=TrivialSubgroup(G);
   fi;
@@ -1318,6 +1270,7 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
       for i  in [ 1 .. Length( gens ) ]  do
 
 	img := act( orb[ p ], acts[ i ] );
+	MakeImmutable(img);
 
 	q:=LookupDictionary(dict,img);
 
@@ -1327,6 +1280,7 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 	  Add( rep, rep[ p ] * gens[ i ] );
 	else
 	  sch := rep[ p ] * gens[ i ] / rep[ q ];
+	  # NC is safe
 	  stb:=ClosureSubgroupNC(stb,sch);
 	fi;
 
@@ -1361,52 +1315,77 @@ end );
 ##
 #F  Orbits( <arg> ) . . . . . . . . . . . . . . . . . . . . . . . . .  orbits
 ##
-InstallMethod( Orbits, "for quick position domains", true,
-  [ IsGroup, IsList and IsQuickPositionList, IsList, IsList, IsFunction ], 0,
-    function( G, D, gens, acts, act )
+
+BindGlobal("OrbitsByPosOp",function( G, D, gens, acts, act )
     local   blist,  orbs,  next,  orb;
     
     blist := BlistList( [ 1 .. Length( D ) ], [  ] );
     orbs := [  ];
-    next := 1;
-    while next <> fail  do
+    for next in [1..Length(D)] do
+      if blist[next]=false then
 	# by calling `OrbitByPosOp' we avoid testing for positions twice.
 	orb:=OrbitByPosOp(G,D,blist,next,D[next],gens,acts,act);
-        # was: orb := OrbitOp( G, D[ next ], gens, acts, act );
         Add( orbs, orb );
-        # for pnt  in orb  do
-        #     pos := PositionCanonical( D, pnt );
-        #     if pos <> fail  then
-        #         blist[ pos ] := true;
-        #     fi;
-        # od;
-        next := Position( blist, false, next );
+      fi;
     od;
     return Immutable( orbs );
 end );
 
-InstallMethod( Orbits, "for arbitrary domains", true,
+InstallMethod( OrbitsDomain, "for quick position domains", true,
+  [ IsGroup, IsList and IsQuickPositionList, IsList, IsList, IsFunction ], 0,
+  OrbitsByPosOp);
+
+InstallMethod( OrbitsDomain, "for arbitrary domains", true,
     OrbitsishReq, 0,
     function( G, D, gens, acts, act )
     local   orbs, orb;
     
+    if Length(D)>0 and not IsMutable(D) and IsSSortedList(D) 
+      and CanEasilySortElements(D[1]) then
+      return OrbitsByPosOp( G, D, gens, acts, act );
+    fi;
     orbs := [  ];
     while Length(D)>0  do
         orb := OrbitOp( G,D, D[1], gens, acts, act );
         Add( orbs, orb );
 	D:=Difference(D,orb);
+	MakeImmutable(D); # to remember sortedness
     od;
     return Immutable( orbs );
 end );
 
-InstallMethod( Orbits, "empty domain", true,
+InstallMethod( OrbitsDomain, "empty domain", true,
     [ IsGroup, IsList and IsEmpty, IsList, IsList, IsFunction ], 0,
 function( G, D, gens, acts, act )
     return Immutable( [  ] );
 end );
 
-InstallOtherMethod( Orbits, "group without domain", true,
-    [ IsGroup ], 0,
+InstallOtherMethod(OrbitsDomain,"group without domain",true,[ IsGroup ], 0,
+function( G )
+  Error("You must give a domain on which the group acts");
+end );
+
+InstallMethod( Orbits, "for arbitrary domains", true, OrbitsishReq, 0,
+function( G, D, gens, acts, act )
+local   orbs, orb;
+    
+    orbs := [  ];
+    while Length(D)>0  do
+        orb := OrbitOp( G,D[1], gens, acts, act );
+        Add( orbs, orb );
+	D:=Difference(D,orb);
+	MakeImmutable(D); # to remember sortedness
+    od;
+    return Immutable( orbs );
+end );
+
+InstallMethod( OrbitsDomain, "empty domain", true,
+    [ IsGroup, IsList and IsEmpty, IsList, IsList, IsFunction ], 0,
+function( G, D, gens, acts, act )
+    return Immutable( [  ] );
+end );
+
+InstallOtherMethod( Orbits, "group without domain", true, [ IsGroup ], 0,
 function( G )
   Error("You must give a domain on which the group acts");
 end );
@@ -1471,7 +1450,7 @@ local dict,p,i,img,imgs,hom,permimg,orb,imgn,ran,D,xset;
   if IsMatrix(start) and Length(start)>0 then
     # if we have matrices, we need to give a domain as well, to ensure the
     # right field
-    D:=DomainForAction(start[1],acts);
+    D:=DomainForAction(start[1],acts,act);
   else # just base on the start values
     D:=fail;
   fi;
@@ -1578,15 +1557,15 @@ InstallMethod( ExternalOrbits,
 
     blist := BlistList( [ 1 .. Length( D ) ], [  ] );
     orbs := [  ];
-    next := 1;
-    while next <> fail  do
+    for next in [1..Length(D)] do
+      if blist[next]=false then
         pnt := D[ next ];
         orb := ExternalOrbitOp( G, D, pnt, gens, acts, act );
         #SetCanonicalRepresentativeOfExternalSet( orb, pnt );
         SetEnumerator( orb, OrbitByPosOp( G, D, blist, next, pnt,
                 gens, acts, act ) );
         Add( orbs, orb );
-        next := Position( blist, false, next );
+      fi;
     od;
     return Immutable( orbs );
 end );
@@ -1604,15 +1583,15 @@ InstallOtherMethod( ExternalOrbits,
     D := Enumerator( xset );
     blist := BlistList( [ 1 .. Length( D ) ], [  ] );
     orbs := [  ];
-    next := 1;
-    while next <> fail  do
+    for next in [1..Length(D)] do
+      if blist[next]=false then
         pnt := D[ next ];
         orb := ExternalOrbitOp( G, xset, pnt, gens, acts, act );
         #SetCanonicalRepresentativeOfExternalSet( orb, pnt );
         SetEnumerator( orb, OrbitByPosOp( G, D, blist, next, pnt,
                 gens, acts, act ) );
         Add( orbs, orb );
-        next := Position( blist, false, next );
+      fi;
     od;
     return Immutable( orbs );
 end );
@@ -1626,12 +1605,12 @@ local   blist,  orbs,  next,  pnt,  orb,  orbstab,actrec;
 
     orbs := [  ];
     if IsEmpty( D ) then
-      next:= fail;
+      return Immutable( orbs );
     else
-      next:= 1;
       blist:= BlistList( [ 1 .. Length( D ) ], [  ] );
     fi;
-    while next <> fail  do
+    for next in [1..Length(D)] do
+      if blist[next]=false then
         pnt := D[ next ];
         orb := ExternalOrbitOp( G, xsetD, pnt, gens, acts, act );
         # was orbstab := OrbitStabilizer( G, D, pnt, gens, acts, act );
@@ -1642,10 +1621,15 @@ local   blist,  orbs,  next,  pnt,  orb,  orbstab,actrec;
 	fi;
 	orbstab := OrbitStabilizerAlgorithm( G, D, blist, gens, acts, actrec);
         #SetCanonicalRepresentativeOfExternalSet( orb, pnt );
+	if IsSSortedList(orbstab.orbit) then
+	  SetAsSSortedList( orb, orbstab.orbit );
+	else
+	  SetAsList( orb, orbstab.orbit );
+	fi;
         SetEnumerator( orb, orbstab.orbit );
         SetStabilizerOfExternalSet( orb, orbstab.stabilizer );
         Add( orbs, orb );
-        next := Position( blist, false, next );
+      fi;
     od;
     return Immutable( orbs );
 end );
@@ -1714,10 +1698,17 @@ end );
 InstallMethod( PermutationOp, "object on list", true,
   [ IsObject, IsList, IsFunction ], 0,
     function( g, D, act )
-    local   list,  blist,  fst,  old,  new,  pnt;
+    local   list,  blist,  fst,  old,  new,  pnt,perm;
     
-    if Length(D)>2 and CanEasilySortElements(FamilyObj(D)) then
-      IsSSortedList(D);
+    perm:=();
+    if IsPlistRep(D) and Length(D)>2 
+       and CanEasilySortElements(D[1]) then
+      if not IsSSortedList(D) then
+	D:=ShallowCopy(D);
+        perm:=Sortex(D);
+	D:=Immutable(D);
+	SetIsSSortedList(D,true); # ought to be unnecessary, just be safe
+      fi;
     fi;
     list := [  ];
     blist := BlistList( [ 1 .. Length( D ) ], [  ] );
@@ -1741,7 +1732,12 @@ InstallMethod( PermutationOp, "object on list", true,
         until new = fst;
         fst := Position( blist, false, fst );
     od;
-    return PermList( list );
+    new:=PermList( list );
+    if not IsOne(perm) then
+      perm:=perm^-1;
+      new:=new^perm;
+    fi;
+    return new;
 end );
 
 #############################################################################
@@ -2000,7 +1996,13 @@ InstallMethod( BlocksOp,
     
     hom := ActionHomomorphism( G, D, gens, acts, act );
     B := Blocks( ImagesSource( hom ), [ 1 .. Length( D ) ] );
-    return List( B, b -> D{ b } );
+    B:=List( B, b -> D{ b } );
+    # force sortedness
+    if Length(B[1])>0 and CanEasilySortElements(B[1][1]) then
+      B:=AsSSortedList(List(B,i->Immutable(Set(i))));
+      IsSSortedList(B);
+    fi;
+    return B;
 end );
 
 InstallMethod( BlocksOp,
@@ -2058,7 +2060,6 @@ end );
 
 #############################################################################
 ##
-
 #F  OrbitLength( <arg> )  . . . . . . . . . . . . . . . . . . .  orbit length
 ##
 InstallMethod( OrbitLengthOp,"compute orbit", true, OrbitishReq, 0,
@@ -2078,13 +2079,22 @@ end );
 
 #############################################################################
 ##
-#F  OrbitLengths( <arg> ) . . . . . . . . . . . . . . . . . . . orbit lengths
+#F  OrbitLengths( <arg> )
 ##
-InstallMethod( OrbitLengths,"compute orbits",
-    true,
+InstallMethod( OrbitLengths,"compute orbits", true,
     OrbitsishReq, 0,
     function( G, D, gens, acts, act )
     return Immutable( List( Orbits( G, D, gens, acts, act ), Length ) );
+end );
+
+#############################################################################
+##
+#F  OrbitLengthsDomain( <arg> )
+##
+InstallMethod( OrbitLengthsDomain,"compute orbits", true,
+    OrbitsishReq, 0,
+    function( G, D, gens, acts, act )
+    return Immutable( List( OrbitsDomain( G, D, gens, acts, act ), Length ) );
 end );
 
 
@@ -2269,18 +2279,6 @@ end );
 
 #############################################################################
 ##
-#F  Earns( <arg> ) . . . . . . . . elementary abelian regular normal subgroup
-##
-InstallMethod( Earns,
-    true,
-    OrbitsishReq, 0,
-    function( G, D, gens, acts, act )
-    Error( "`Earns' only implemented for primitive permutation groups" );
-end );
-
-
-#############################################################################
-##
 #M  SetEarns( <G>, fail ) . . . . . . . . . . . . . . . . .  never set `fail'
 ##
 InstallOtherMethod( SetEarns,"never set fail",
@@ -2456,105 +2454,127 @@ InstallOtherMethod( RepresentativeActionOp,
     function( G, d, e, act )
     local   rep,        # representative, result
             orb,        # orbit
-            set,        # orbit <orb> as set for faster membership test
-	    cansort,	# may we form sets?
             gen,        # generator of the group <G>
             pnt,        # point in the orbit <orb>
             img,        # image of the point <pnt> under the generator <gen>
             by,         # <by>[<pnt>] is a gen taking <frm>[<pnt>] to <pnt>
+	    dict,	# dictionary
+	    pos,	# position
             frm;        # where <frm>[<pnt>] lies earlier in <orb> than <pnt>
 
-    cansort:=CanEasilySortElements(d);
+    d:=Immutable(d);
+    e:=Immutable(e);
+    dict:=NewDictionary(d,true);
     orb := [ d ];
-    if cansort then
-      set := [ d ];
+    AddDictionary(dict,d,1);
+
+    if act=OnPairs or act=OnTuples and CanComputeSizeAnySubgroup(G) then
+
+      if Length( d ) <> Length( e ) then
+        return fail;
+      fi;
+
+      # a well-behaving group acts on tuples. We compute the representative
+      # iteratively, by mapping element for element
+      rep:=One(G);
+      d:=ShallowCopy(d);
+      for pnt in [1..Length(d)] do
+        img:=RepresentativeAction(G,d[pnt],e[pnt],OnPoints);
+	if img=fail then
+	  return fail;
+	fi;
+	rep:=rep*img;
+	for pos in [pnt+1..Length(d)] do
+	  d[pos]:=OnPoints(d[pos],img);
+	od;
+	G:=Stabilizer(G,e[pnt],OnPoints);
+      od;
+      return rep;
     else
-      set:=orb;
+      # standard action. If act is OnPoints, it should be as fast as pnt^gen.
+      # So there should be no reason to split cases.
+      if d = e  then return One( G );  fi;
+      by  := [ One( G ) ];
+      frm := [ 1 ];
+      for pnt  in orb  do
+	  for gen  in GeneratorsOfGroup( G )  do
+	      img := act(pnt,gen);
+	      MakeImmutable(img);
+	      if img = e  then
+		  rep := gen;
+		  while pnt <> d  do
+		    pos:=LookupDictionary(dict,pnt);
+		    rep := by[ pos ] * rep;
+		    pnt := frm[ pos ];
+		  od;
+		  Assert(2,act(d,rep)=e);
+		  return rep;
+	      elif not KnowsDictionary(dict,img) then
+		  Add( orb, img );
+		  AddDictionary( dict, img, Length(orb) );
+		  Add( frm, pnt );
+		  Add( by,  gen );
+	      fi;
+	  od;
+      od;
+      return fail;
     fi;
 
-    # standard action
-    if   act = OnPoints  then
-        if d = e  then return One( G );  fi;
-        by  := [ One( G ) ];
-        frm := [ 1 ];
-        for pnt  in orb  do
-            for gen  in GeneratorsOfGroup( G )  do
-                img := pnt ^ gen;
-                if img = e  then
-                    rep := gen;
-                    while pnt <> d  do
-                        rep := by[ Position(orb,pnt) ] * rep;
-                        pnt := frm[ Position(orb,pnt) ];
-                    od;
-                    return rep;
-                elif not img in set  then
-                    Add( orb, img );
-		    if cansort then
-		      AddSet( set, img );
-		    fi;
-                    Add( frm, pnt );
-                    Add( by,  gen );
-                fi;
-            od;
-        od;
-        return fail;
-
-    # special case for action on pairs
-    elif act = OnPairs  then
-        if d = e  then return One( G );  fi;
-        by  := [ One( G ) ];
-        frm := [ 1 ];
-        for pnt  in orb  do
-            for gen  in GeneratorsOfGroup( G )  do
-                img := [ pnt[1]^gen, pnt[2]^gen ];
-                if img = e  then
-                    rep := gen;
-                    while pnt <> d  do
-                        rep := by[ Position(orb,pnt) ] * rep;
-                        pnt := frm[ Position(orb,pnt) ];
-                    od;
-                    return rep;
-                elif not img in set  then
-                    Add( orb, img );
-		    if cansort then
-		      AddSet( set, img );
-		    fi;
-                    Add( frm, pnt );
-                    Add( by,  gen );
-                fi;
-            od;
-        od;
-        return fail;
-
-    # other action
-    else
-        if d = e  then return One( G );  fi;
-        by  := [ One( G ) ];
-        frm := [ 1 ];
-        for pnt  in orb  do
-            for gen  in GeneratorsOfGroup( G )  do
-                img := act( pnt, gen );
-                if img = e  then
-                    rep := gen;
-                    while pnt <> d  do
-                        rep := by[ Position(orb,pnt) ] * rep;
-                        pnt := frm[ Position(orb,pnt) ];
-                    od;
-                    return rep;
-                elif not img in set  then
-                    Add( orb, img );
-		    if cansort then
-		      AddSet( set, img );
-		    fi;
-                    Add( frm, pnt );
-                    Add( by,  gen );
-                fi;
-            od;
-        od;
-        return fail;
-
-    fi;
-
+#    # other action
+#    else
+#        if d = e  then return One( G );  fi;
+#        by  := [ One( G ) ];
+#        frm := [ 1 ];
+#        for pnt  in orb  do
+#            for gen  in GeneratorsOfGroup( G )  do
+#                img := act( pnt, gen );
+#                if img = e  then
+#                    rep := gen;
+#                    while pnt <> d  do
+#                        rep := by[ Position(orb,pnt) ] * rep;
+#                        pnt := frm[ Position(orb,pnt) ];
+#                    od;
+#                    return rep;
+#                elif not img in set  then
+#                    Add( orb, img );
+#		    if cansort then
+#		      AddSet( set, img );
+#		    fi;
+#                    Add( frm, pnt );
+#                    Add( by,  gen );
+#                fi;
+#            od;
+#        od;
+#        return fail;
+#
+#    fi;
+#
+#    # special case for action on pairs
+#    elif act = OnPairs  then
+#        if d = e  then return One( G );  fi;
+#        by  := [ One( G ) ];
+#        frm := [ 1 ];
+#        for pnt  in orb  do
+#            for gen  in GeneratorsOfGroup( G )  do
+#                img := [ pnt[1]^gen, pnt[2]^gen ];
+#                if img = e  then
+#                    rep := gen;
+#                    while pnt <> d  do
+#                        rep := by[ Position(orb,pnt) ] * rep;
+#                        pnt := frm[ Position(orb,pnt) ];
+#                    od;
+#                    return rep;
+#                elif not img in set  then
+#                    Add( orb, img );
+#		    if cansort then
+#		      AddSet( set, img );
+#		    fi;
+#                    Add( frm, pnt );
+#                    Add( by,  gen );
+#                fi;
+#            od;
+#        od;
+#        return fail;
 end );
 
 #############################################################################
@@ -2628,7 +2648,7 @@ InstallMethod( RankAction,
        or not IsIdenticalObj( gens, acts )  then
         TryNextMethod();
     fi;
-    return Length( Orbits( Stabilizer( G, D, D[ 1 ], act ),
+    return Length( OrbitsDomain( Stabilizer( G, D, D[ 1 ], act ),
                    D, act ) );
 end );
 
@@ -2719,6 +2739,21 @@ function( hom, elm )
   return ImagesRepresentative( AsGroupGeneralMappingByImages( hom ), elm );
 end );
 
+
+#############################################################################
+##
+#M  MappingGeneratorsImages( <map> )  . . . . .  for group homomorphism
+##
+InstallMethod( MappingGeneratorsImages, "for action hom that is `ByAsGroup'",
+    true, [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages and
+	    IsActionHomomorphism ], 0,
+function( map )
+local gens;
+  gens:= GeneratorsOfGroup( PreImagesRange( map ) );
+  return [gens, List( gens, g -> ImageElmActionHomomorphism( map, g ) ) ];
+end );
+
+
 #############################################################################
 ##
 #M  KernelOfMultiplicativeGeneralMapping( <ophom>, <elm> )
@@ -2726,8 +2761,18 @@ end );
 InstallMethod( KernelOfMultiplicativeGeneralMapping,
   "for action homomorphism", true, [ IsActionHomomorphism ], 0,
 function( hom )
-  return KernelOfMultiplicativeGeneralMapping(
-           AsGroupGeneralMappingByImages( hom ) );
+local map,mapi;
+  if HasIsSurjective(hom) and IsSurjective(hom) then
+    return KernelOfMultiplicativeGeneralMapping(
+	    AsGroupGeneralMappingByImages( hom ) );
+  else
+    Range( hom );
+    mapi := MappingGeneratorsImages( hom );
+    map := GroupHomomorphismByImagesNC( Source( hom ), ImagesSource( hom ),
+              mapi[1], mapi[2] );
+    CopyMappingAttributes( hom,map );
+    return KernelOfMultiplicativeGeneralMapping(map);
+  fi;
 end );
 
 #############################################################################
@@ -2816,6 +2861,7 @@ function( hom, elm )
   fi;
   elm:=OnTuples(hom!.linActBasisPositions,elm); # image points
   elm:=V{elm}; # the corresponding vectors
+  elm:=ImmutableMatrix(DefaultFieldOfMatrixGroup(Source(hom)),elm);
   if not IsBound(hom!.linActInverse) then
     hom!.linActInverse:=Inverse(lab);
   fi;
@@ -2868,11 +2914,49 @@ end);
 
 #############################################################################
 ##
-#M  DomainForAction( <pnt>, <acts> )
+#M  DomainForAction( <pnt>, <acts>,<act> )
 ##
 InstallMethod(DomainForAction,"default: fail",true,
-  [IsObject,IsListOrCollection],0,
-function(pnt,acts)
+  [IsObject,IsListOrCollection,IsFunction],0,
+function(pnt,acts,act)
   return fail;
+end);
+
+#############################################################################
+##
+#M  AbelianSubfactorAction(<G>,<M>,<N>)
+##
+InstallMethod(AbelianSubfactorAction,"generic:use modulo pcgs",true,
+  [IsGroup,IsGroup,IsGroup],0,
+function(G,M,N)
+local p,n,f,o,v,ran,exp,H,phi,alpha;
+  p:=ModuloPcgs(M,N);
+  n:=Length(p);
+  f:=GF(RelativeOrders(p)[1]);
+  o:=One(f);
+  v:=f^n;
+  ran:=[1..n];
+  exp:=ListWithIdenticalEntries(n,0);
+  f:=Size(f);
+  phi:=LinearActionLayer(G,p);
+  H:=Group(phi);
+  UseFactorRelation(G,fail,H);
+  phi:=GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),phi);
+
+  alpha:=GroupToAdditiveGroupHomomorphismByFunction(M,v,function(e)
+    e:=ExponentsOfPcElement(p,e)*o;
+    MakeImmutable(e);
+    ConvertToVectorRep(e,f);
+    return e;
+  end,
+  function(r)
+  local i,l;
+    l:=exp;
+    for i in ran do
+      l[i]:=Int(r[i]);
+    od;
+    return PcElementByExponentsNC(p,l);
+  end);
+  return [phi,alpha,p];
 end);
 

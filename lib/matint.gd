@@ -28,6 +28,10 @@ DeclareInfoClass( "InfoMatInt" );
 #O  SNFChouCollins(<mat>[,<trans>])
 #O  SNFLLLDriven(<mat>[,<trans>])
 ##
+##  These operations have been superceded for most purposed by
+##  "NormalFormIntMat" which should in most cases be faster than any
+##  of them, and produce smaller transforming matrix entries.
+##
 ##  These operations compute the Smith normal form of a matrix with
 ##  integer entries, using the strategy specified in the name. If no optional 
 ##  argument <trans> is given <mat> must be a mutable matrix which will 
@@ -62,6 +66,10 @@ DeclareGlobalFunction("SNFLLLDriven");
 #O  HNFNormDriven(<mat>[,<trans>[,<reduction>]])
 #O  HNFChouCollins(<mat>[,<trans>[,<reduction>]])
 #O  HNFLLLDriven(<mat>[,<trans>[,<reduction>]])
+##
+##  These operations have been superceded for most purposed by
+##  "NormalFormIntMat" which should in most cases be faster than any
+##  of them, and produce smaller transforming matrix entries.
 ##
 ##  These operations compute the Hermite normal form of a matrix with
 ##  integer entries, using the strategy specified in the name. If no optional 
@@ -248,8 +256,8 @@ DeclareGlobalFunction("SNFofREF");
 ##  Compute a Triangular, Hermite or Smith form of the n x m 
 ##  integer input matrix A.  Optionally, compute n x n / m x m
 ##  unimodular transforming matrices Q,P which satisfy QA = H 
-##  or  QAP = S.  The routines used are based on work by Arne Storjohahn
-##  and were implemented in GAP4 by A. Storjohahn and R. Wainwright.
+##  or  QAP = S.  The routines used are based on work by Arne Storjohann
+##  and were implemented in GAP4 by A. Storjohann and R. Wainwright.
 ##  
 ##  Note option is a value ranging from 0 - 15 but not all options make sense 
 ##  (eg reducing off diagonal entries with SNF option selected already).  

@@ -39,10 +39,14 @@ The direct product of  groups is the cartesian product of the groups
 
 {\GAP} will try to choose an efficient representation for the direct
 product. For example the direct product of permutation groups will be a
-permutation group again and the direct product of PC groups will be a PC
+permutation group again and the direct product of pc groups will be a pc
 group.
 
-For a product <P> the operation `Embedding(<P>,<nr>' returns the
+\atindex{Embedding!example for direct products}%
+{@\noexpand`Embedding'!example for direct products}
+\atindex{Projection!example for direct products}%
+{@\noexpand`Projection'!example for direct products}
+For a product <P> the operation `Embedding(<P>,<nr>)' returns the
 homomorphism embedding the <nr>-th factor into <P>. The operation 
 `Projection(<P>,<nr>)' gives the projection of <P> onto the <nr>-th factor
 (see~"Embeddings and Projections for Group Products").
@@ -50,12 +54,11 @@ homomorphism embedding the <nr>-th factor into <P>. The operation
 \beginexample
 gap> g:=Group((1,2,3),(1,2));;
 gap> d:=DirectProduct(g,g,g);
-Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8) ] )
+Group([ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8) ])
 gap> Size(d);
 216
 gap> e:=Embedding(d,2);
-2nd embedding into Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8) 
- ] )
+2nd embedding into Group([ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8) ])
 gap> Image(e,(1,2));
 (4,5)
 gap> Image(Projection(d,2),(1,2,3)(4,5)(8,9)); 
@@ -71,6 +74,19 @@ cartesian product $<G>\times<N>$ with the multiplication
 $(g,n)\cdot(h,m)=(gh,n^{(h\alpha)}m)$.
 
 \Declaration{SemidirectProduct}
+
+\beginexample
+gap> n:=AbelianGroup(IsPcGroup,[5,5]);  
+<pc group of size 25 with 2 generators>
+gap> au:=DerivedSubgroup(AutomorphismGroup(n));;
+gap> Size(au);
+120
+gap> p:=SemidirectProduct(au,n);
+<permutation group with 4 generators>
+gap> Size(p);  
+3000
+\endexample
+
 \beginexample
 gap> n:=AbelianGroup(IsPcGroup,[2,2]);
 <pc group of size 4 with 2 generators>
@@ -79,7 +95,7 @@ gap> au:=AutomorphismGroup(n);
 gap> apc:=IsomorphismPcGroup(au);
 CompositionMapping( Pcgs([ (2,3), (1,3,2) ]) -> 
 [ f1, f2 ], <action homomorphism> )
-gap> g:=Image(apc);;
+gap> g:=Image(apc);
 Group( [ f1*f2^2, f1*f2^2, f1*f2, <identity> of ... ] )
 gap> apci:=InverseGeneralMapping(apc);
 InverseGeneralMapping( CompositionMapping( Pcgs([ (2,3), (1,3,2) ]) -> 
@@ -89,9 +105,31 @@ true
 gap> p:=SemidirectProduct(g,apci,n);
 <pc group of size 24 with 4 generators>
 gap> IsomorphismGroups(p,Group((1,2,3,4),(1,2)));
-[f1,f2,f3,f4]->[(3,4),(2,4,3),(1,2)(3,4),(1,3)(2,4)]
+[ f1, f2, f3, f4 ] -> [ (2,3), (2,4,3), (1,4)(2,3), (1,2)(3,4) ]
 \endexample
 
+\beginexample
+gap> SemidirectProduct(SU(3,3),GF(9)^3); 
+<matrix group of size 4408992 with 3 generators>
+gap> SemidirectProduct(Group((1,2,3),(2,3,4)),GF(5)^4);
+<matrix group of size 7500 with 3 generators>
+\endexample
+
+\beginexample
+gap> g:=Group((3,4,5),(1,2,3));;
+gap> mats:=[[[Z(2^2),0*Z(2)],[0*Z(2),Z(2^2)^2]],
+>          [[Z(2)^0,Z(2)^0], [Z(2)^0,0*Z(2)]]];;
+gap> hom:=GroupHomomorphismByImages(g,Group(mats),[g.1,g.2],mats);;
+gap> SemidirectProduct(g,hom,GF(4)^2); 
+<matrix group of size 960 with 3 generators>
+gap> SemidirectProduct(g,hom,GF(16)^2);
+<matrix group of size 15360 with 4 generators>
+\endexample
+
+\atindex{Embedding!example for semidirect products}%
+{@\noexpand`Embedding'!example for semidirect products}
+\atindex{Projection!example for semidirect products}%
+{@\noexpand`Projection'!example for semidirect products}
 For the semidirect product <P> of <G> with <N>, `Embedding(<P>,1)' embeds
 <G>, `Embedding(<P>,2)' embeds <N>. The operation `Projection(<P>)' returns
 the projection of <P> onto <G>
@@ -100,9 +138,9 @@ the projection of <P> onto <G>
 gap> Size(Image(Embedding(p,1)));
 6
 gap> Embedding(p,2);             
-[f1,f2]->[f3,f4]
+[ f1, f2 ] -> [ f3, f4 ]
 gap> Projection(p);
-[f1,f2,f3,f4]->[f1,f2,<identity>of...,<identity>of...]
+[ f1, f2, f3, f4 ] -> [ f1, f2, <identity> of ..., <identity> of ... ]
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -137,20 +175,22 @@ $$
 
 \Declaration{SubdirectProduct}
 
+\atindex{Projection!example for subdirect products}%
+{@\noexpand`Projection'!example for subdirect products}
 For a subdirect product <P>, the operation `Projection(<P>,<nr>' returns
 the projections on the <nr>-th factor. (In general the factors do not embed
 in a subdirect product.)
 \beginexample
 gap> g:=Group((1,2,3),(1,2));
-Group( [ (1,2,3), (1,2) ] )
+Group([ (1,2,3), (1,2) ])
 gap> hom:=GroupHomomorphismByImagesNC(g,g,[(1,2,3),(1,2)],[(),(1,2)]);
 [ (1,2,3), (1,2) ] -> [ (), (1,2) ]
 gap> s:=SubdirectProduct(g,g,hom,hom);
-Group( [ (1,2,3), (1,2)(5,6), (4,5,6) ] )
+Group([ (1,2,3), (1,2)(5,6), (4,5,6) ])
 gap> Size(s);
 18
 gap> p:=Projection(s,2);
-2nd projection of Group( [ (1,2,3), (1,2)(5,6), (4,5,6) ] )
+2nd projection of Group([ (1,2,3), (1,2)(5,6), (4,5,6) ])
 gap> Image(p,(1,3,2)(4,5,6));
 (1,2,3)
 \endexample
@@ -163,6 +203,11 @@ points is the semidirect product of the normal subgroup $<G>^n$ with the
 group <P> which acts on $<G>^n$ by permuting the components.
 
 \Declaration{WreathProduct}
+
+\atindex{Embedding!example for wreath products}%
+{@\noexpand`Embedding'!example for wreath products}
+\atindex{Projection!example for wreath products}%
+{@\noexpand`Projection'!example for wreath products}
 For a wreath product <W> of <G> with a permutation group <P> of degree <n>
 and $1\le <nr>\le <n>$ the operation `Embedding(<W>,<nr>)' provides the
 embedding of <G> in the <nr>-th component of the direct product of the base
@@ -172,21 +217,21 @@ group $<G>^n$ of <W>.
 (see~"Embeddings and Projections for Group Products").
 \beginexample
 gap> g:=Group((1,2,3),(1,2));
-Group( [ (1,2,3), (1,2) ] )
+Group([ (1,2,3), (1,2) ])
 gap> p:=Group((1,2,3));
-Group( [ (1,2,3) ] )
+Group([ (1,2,3) ])
 gap> w:=WreathProduct(g,p);
-Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8), 
-  (1,4,7)(2,5,8)(3,6,9) ] )
+Group([ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8), (1,4,7)(2,5,8)(3,6,9) 
+ ])
 gap> Size(w);
 648
 gap> Embedding(w,1);
 1st embedding into Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8), 
   (1,4,7)(2,5,8)(3,6,9) ] )
 gap> Image(Embedding(w,3));
-Group( [ (7,8,9), (7,8) ] )
+Group([ (7,8,9), (7,8) ])
 gap> Image(Embedding(w,4));
-Group( [ (1,4,7)(2,5,8)(3,6,9) ] )
+Group([ (1,4,7)(2,5,8)(3,6,9) ])
 gap> Image(Projection(w),(1,4,8,2,6,7,3,5,9));
 (1,2,3)
 \endexample
@@ -213,12 +258,12 @@ The relation between a group product and its factors is provided via
 homomorphisms, the embeddings in the product and the projections from the
 product. Depending on the kind of product only some of these are defined.
 
-\>Embedding(<P>,<nr>) O
+\>Embedding(<P>,<nr>)!{for group products} O
 
 returns the <nr>-th embedding in the group product <P>. The actual meaning
 of this embedding is described in the section for the appropriate product.
 
-\>Projection(<P>[,<nr>]) O
+\>Projection(<P>[,<nr>])!{for group products} O
 
 returns the (<nr>-th) projection of the group product <P>. The actual meaning
 of the projection returned is described in the section for the appropriate

@@ -13,10 +13,11 @@
 
 #############################################################################
 #1
-##  In {\GAP}, a *basis* of a free left $F$-module $V$ of dimension $n$
-##  (see~"Dimension"), say,
-##  is a list of vectors $B = [ v_1, v_2, \ldots, v_n ]$ in $V$
-##  such that $V$ is generated as a left $F$-module by these vectors.
+##  In {\GAP}, a *basis* of a free left $F$-module $V$ is a list of vectors
+##  $B = [ v_1, v_2, \ldots, v_n ]$ in $V$ such that $V$ is generated as a
+##  left $F$-module by these vectors and such that $B$ is linearly
+##  independent over $F$.
+##  The integer $n$ is the dimension of $V$ (see~"Dimension").
 ##  In particular, as each basis is a list (see Chapter~"Lists"),
 ##  it has a length (see~"Length"), and the $i$-th vector of $B$ can be
 ##  accessed as $B[i]$.
@@ -56,7 +57,6 @@
 ##  *Bases handled by nice bases* delegate the work to bases
 ##  of isomorphic left modules over the same left acting domain
 ##  (see~"Vector Spaces Handled By Nice Bases").
-##  Examples of these 
 ##
 ##  Finally, of course there must be bases in {\GAP} that really do the work.
 ##
@@ -81,9 +81,10 @@ Revision.basis_gd :=
 ##
 #C  IsBasis( <obj> )
 ##
-##  A basis of a free left module is an object that knows
-##  how to compute coefficients w.r.t.~its basis vectors.
-##  A basis is an immutable list,
+##  In {\GAP}, a *basis* of a free left module is an object that knows how to
+##  compute coefficients w.r.t.~its basis vectors (see~"Coefficients").
+##  Bases are constructed by `Basis' (see~"Basis").
+##  Each basis is an immutable list,
 ##  the $i$-th entry being the $i$-th basis vector.
 ##
 ##  (See~"Mutable Bases" for mutable bases.)
@@ -96,7 +97,7 @@ DeclareCategory( "IsBasis", IsHomogeneousList and IsDuplicateFreeList );
 #P  IsCanonicalBasis( <B> )
 ##
 ##  If the underlying free left module $V$ of the basis <B> supports a
-##  canonical basis (see "CanonicalBasis") then `IsCanonicalBasis' returns
+##  canonical basis (see~"CanonicalBasis") then `IsCanonicalBasis' returns
 ##  `true' if <B> is equal to the canonical basis of $V$,
 ##  and `false' otherwise.
 ##
@@ -139,7 +140,7 @@ InstallTrueMethod( IsSmallList,
 ##
 #P  IsIntegralBasis( <B> )
 ##
-##  Let <B> be an $S$-basis of a *field* $F$, say,
+##  Let <B> be an $S$-basis of a *field* $F$, say, for a subfield $S$ of $F$,
 ##  and let $R$ and $M$ be the rings of algebraic integers in $S$ and $F$,
 ##  respectively.
 ##  `IsIntegralBasis' returns `true' if <B> is also an $R$-basis of $M$,
@@ -152,9 +153,9 @@ DeclareProperty( "IsIntegralBasis", IsBasis );
 ##
 #P  IsNormalBasis( <B> )
 ##
-##  Let <B> be an $S$-basis of a *field* $F$, say.
+##  Let <B> be an $S$-basis of a *field* $F$, say, for a subfield $S$ of $F$.
 ##  `IsNormalBasis' returns `true' if <B> is invariant under the Galois group
-##  (see~"GaloisGroup.field") of the field extension $F / S$,
+##  (see~"GaloisGroup!of field") of the field extension $F / S$,
 ##  and `false' otherwise.
 ##
 DeclareProperty( "IsNormalBasis", IsBasis );
@@ -216,8 +217,16 @@ DeclareAttribute( "EnumeratorByBasis", IsBasis );
 ##  table $T$ in sparse representation, as used for structure constants
 ##  algebras (see Section~"tut:Algebras" of the {\GAP} User's Tutorial).
 ##
+##  If <B> has length $n$ then $T$ is a list of length $n+2$.
+##  The first $n$ entries of $T$ are lists of length $n$.
+##  $T[ n+1 ]$ is one of $1$, $-1$, or $0$;
+##  in the case of $1$ the table is known to be symmetric,
+##  in the case of $-1$ it is known to be antisymmetric,
+##  and $0$ occurs in all other cases.
+##  $T[ n+2 ]$ is the zero element of the coefficient domain.
+##
 ##  The coefficients w.r.t.~<B> of the product of the $i$-th and $j$-th basis
-##  vector of <B> are stored in $T[i][j]$ as a list of length 2;
+##  vector of <B> are stored in $T[i][j]$ as a list of length $2$;
 ##  its first entry is the list of positions of nonzero coefficients,
 ##  the second entry is the list of these coefficients themselves.
 ##
@@ -228,10 +237,10 @@ DeclareAttribute( "EnumeratorByBasis", IsBasis );
 ##  Let $a = [ a_1, \ldots, a_n ]$ and $b = [ b_1, \ldots, b_n ]$.
 ##  Then
 ##  $$
-##     ( \sum_i a_i v_i ) ( \sum_j b_j v_j )
+##  ( \sum_i a_i v_i ) ( \sum_j b_j v_j )
 ##     = \sum_{i,j} a_i b_j ( v_i v_j )
 ##     = \sum_k ( \sum_j ( \sum_i a_i m_{i,j,k} ) b_j ) v_k
-##     = \sum_k ( a M_k b^{tr} ) v_k \ .
+##     = \sum_k ( a M_k b^{tr} ) v_k\.
 ##  $$
 ##
 DeclareAttribute( "StructureConstantsTable", IsBasis );
@@ -381,18 +390,6 @@ DeclareOperation( "SemiEchelonBasisNC",
 
 #############################################################################
 ##
-#O  NewBasis( <V> )
-#O  NewBasis( <V>, <gens> )
-##
-##  This operation is in principle obsolete.
-##  The idea to introduce it was that its methods were allowed to call
-##  `Objectify', whereas `Basis' methods were thought to call `NewBasis'.
-##
-DeclareOperation( "NewBasis", [ IsFreeLeftModule, IsCollection ] );
-
-
-#############################################################################
-##
 #O  RelativeBasis( <B>, <vectors> )
 #O  RelativeBasisNC( <B>, <vectors> )
 ##
@@ -438,8 +435,8 @@ DeclareOperation( "RelativeBasisNC", [ IsBasis, IsHomogeneousList ] );
 ##  `IsBasisByNiceBasis' (see~"IsBasisByNiceBasis"),
 ##  and stores $C$ as value of the attribute `NiceBasis' (see~"NiceBasis").
 ##  $V$ indicates the intended behaviour by the filter `IsHandledByNiceBasis'
-##  (see~"IsHandledByNiceBasis"), and stores $W$ as value of the attribute
-##  `NiceFreeLeftModule'.
+##  (see~"IsHandledByNiceBasis!for vector spaces"), and stores $W$  as  value
+##  of the attribute `NiceFreeLeftModule' (see~"NiceFreeLeftModule").
 ##
 ##  The bijection between $V$ and $W$ is implemented by the functions
 ##  `NiceVector' (see~"NiceVector") and `UglyVector' (see~"UglyVector");
@@ -459,7 +456,7 @@ DeclareOperation( "RelativeBasisNC", [ IsBasis, IsHomogeneousList ] );
 ##
 ##  <name> must be a string, a filter $f$ with this name is created, and
 ##  a logical implication from $f$ to `IsHandledByNiceBasis'
-##  (see~"IsHandledByNiceBasis") is installed.
+##  (see~"IsHandledByNiceBasis!for vector spaces") is installed.
 ##
 ##  <record> must be a record with the following components.
 ##  \beginitems
@@ -519,10 +516,10 @@ BindGlobal( "NiceBasisFiltersInfo", [] );
 #F  CheckForHandlingByNiceBasis( <R>, <gens>, <M>, <zero> )
 ##
 ##  Whenever a free left module is constructed for which the filter
-##  `IsHandledByNiceBasis' may be useful, `CheckHandlingByNiceBasis' should
-##  be called.
+##  `IsHandledByNiceBasis' may be useful,
+##  `CheckForHandlingByNiceBasis' should be called.
 ##  (This is done in the methods for `VectorSpaceByGenerators',
-##  `AlgebraByGenerators', `IdealBygenerators' etc.~in the {\GAP} library.)
+##  `AlgebraByGenerators', `IdealByGenerators' etc.~in the {\GAP} library.)
 ##
 ##  The arguments of this function are the coefficient ring <R>, the list
 ##  <gens> of generators, the constructed module <M> itself, and the zero
@@ -710,22 +707,4 @@ DeclareGlobalFunction( "BasisWithReplacedLeftModule" );
 #############################################################################
 ##
 #E
-
-#############################################################################
-##
-#A  BasisOfDomain( <V> )
-#O  BasisByGenerators( <V>, <vectors> )
-#O  BasisByGeneratorsNC( <V>, <vectors> )
-#A  SemiEchelonBasisOfDomain( <V> )
-#O  SemiEchelonBasisByGenerators( <V>, <vectors> )
-#O  SemiEchelonBasisByGeneratorsNC( <V>, <vectors> )
-##
-DeclareSynonymAttr( "BasisOfDomain", Basis );
-DeclareSynonym( "BasisByGenerators", Basis );
-DeclareSynonym( "BasisByGeneratorsNC", BasisNC );
-DeclareSynonymAttr( "SemiEchelonBasisOfDomain", SemiEchelonBasis );
-DeclareSynonym( "SemiEchelonBasisByGenerators", SemiEchelonBasis );
-DeclareSynonym( "SemiEchelonBasisByGeneratorsNC", SemiEchelonBasisNC );
-#T obsolete!
-
 

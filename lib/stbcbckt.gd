@@ -19,12 +19,11 @@ Revision.stbcbckt_gd :=
 ##
 DeclareInfoClass( "InfoBckt" );
 
-DeclareGlobalFunction( "IsSymmetricGroupQuick" );
-DeclareGlobalFunction( "YndexSymmetricGroup" );
 DeclareGlobalFunction( "AsPerm" );
 DeclareGlobalFunction( "PreImageWord" );
 DeclareGlobalFunction( "ExtendedT" );
 DeclareGlobalFunction( "MeetPartitionStrat" );
+DeclareGlobalFunction( "MeetPartitionStratCell" );
 DeclareGlobalFunction( "StratMeetPartition" );
 DeclareGlobalFunction( "Suborbits" );
 DeclareGlobalFunction( "OrbitalPartition" );
@@ -38,6 +37,27 @@ DeclareGlobalFunction( "RRefine" );
 DeclareGlobalFunction( "PBIsMinimal" );
 DeclareGlobalFunction( "SubtractBlistOrbitStabChain" );
 DeclareGlobalFunction( "PartitionBacktrack" );
+
+DeclareGlobalFunction("SuboLiBli");
+DeclareGlobalFunction("SuboSiBli");
+DeclareGlobalFunction("SuboTruePos");
+DeclareGlobalFunction("SuboUniteBlist");
+DeclareGlobalFunction("ConcatSubos");
+
+DeclareGlobalFunction("Refinements_ProcessFixpoint");
+DeclareGlobalFunction("Refinements_Intersection");
+DeclareGlobalFunction("Refinements_Centralizer");
+DeclareGlobalFunction("Refinements__MakeBlox");
+DeclareGlobalFunction("Refinements_SplitOffBlock");
+DeclareGlobalFunction("Refinements__RegularOrbit1");
+DeclareGlobalFunction("Refinements_RegularOrbit2");
+DeclareGlobalFunction("Refinements_RegularOrbit3");
+DeclareGlobalFunction("Refinements_Suborbits0");
+DeclareGlobalFunction("Refinements_Suborbits1");
+DeclareGlobalFunction("Refinements_Suborbits2");
+DeclareGlobalFunction("Refinements_Suborbits3");
+DeclareGlobalFunction("Refinements_TwoClosure");
+
 
 DeclareGlobalVariable( "Refinements" );
 

@@ -99,7 +99,7 @@ Revision.tom_gd :=
 ##  Moreover, the number $c_{ij}$ of conjugates of $H_j$ which are contained
 ##  in $H_i$ can be derived from the marks $m_{ij}$ via the formula
 ##  $$
-##  c_{ij} = \frac{m_{ij} m_{j1}}{m_{i1} m_{jj}}.
+##  c_{ij} = \frac{m_{ij} m_{j1}}{m_{i1} m_{jj}}\.
 ##  $$
 ##
 ##  Both the marks $m_{ij}$  and the numbers of subgroups $c_{ij}$ are needed
@@ -175,7 +175,7 @@ Revision.tom_gd :=
 ##  or as table of marks of a factor group from a given table of marks
 ##  (see~"FactorGroupTom").
 ##  Access to the group $G$ is provided by the attribute `UnderlyingGroup'
-##  (see~"UnderlyingGroup") if this value is set.
+##  (see~"UnderlyingGroup!for tables of marks") if this value is set.
 ##  Access to the relevant information about conjugacy classes of subgroups
 ##  of $G$ --compatible with the ordering of rows and columns of the marks in
 ##  <tom>-- is signalled by the filter `IsTableOfMarksWithGens'
@@ -227,7 +227,7 @@ Revision.tom_gd :=
 ##
 DeclareAttribute( "TableOfMarks", IsGroup );
 DeclareAttribute( "TableOfMarks", IsString );
-DeclareAttribute( "TableOfMarks", IsHomogeneousList );
+DeclareAttribute( "TableOfMarks", IsTable );
 
 
 #############################################################################
@@ -298,20 +298,19 @@ DeclareGlobalFunction( "LatticeSubgroupsByTom" );
 ##
 ##  5. Printing Tables of Marks
 #5
-##  \index{ViewObj!for tables of marks}
-##  The default `ViewObj' (see~"ViewObj") method for tables of marks prints
-##  the string `\"TableOfMarks\"',
-##  followed by --if known-- the identifier (see~"Identifier") or
-##  the group of the table of marks enclosed in brackets;
-##  if neither group nor identifier are known then just the number of
-##  conjugacy classes of subgroups is printed instead.
+##  \indextt{ViewObj!for tables of marks}
+##  The default `ViewObj' (see~"ViewObj") method for tables of  marks  prints
+##  the string `\"TableOfMarks\"', followed by --if  known--  the  identifier
+##  (see~"Identifier!for tables of marks") or the group of the table of marks
+##  enclosed in brackets; if neither group nor identifier are known then just
+##  the number of conjugacy classes of subgroups is printed instead.
 ##
-##  \index{PrintObj!for tables of marks}
+##  \indextt{PrintObj!for tables of marks}
 ##  The default `PrintObj' (see~"PrintObj") method for tables of marks
 ##  does the same as `ViewObj',
 ##  except that the group is is `Print'-ed instead of `View'-ed.
 ##
-##  \index{Display!for tables of marks}
+##  \indextt{Display!for tables of marks}
 ##  The default `Display' (see~"Display") method for a table of marks <tom>
 ##  produces a formatted output of the marks in <tom>.
 ##  Each line of output begins with the number of the corresponding class of
@@ -381,7 +380,7 @@ DeclareOperation( "SortedTom", [ IsTableOfMarks, IsPerm ] );
 #A  PermutationTom( <tom> )
 ##
 ##  For the table of marks <tom> of the group $G$ stored as `UnderlyingGroup'
-##  value of <tom> (see~"UnderlyingGroup"),
+##  value of <tom> (see~"UnderlyingGroup!for tables of marks"),
 ##  `PermutationTom' is a permutation $\pi$ such that the $i$-th conjugacy
 ##  class of subgroups of $G$ belongs to the $i^\pi$-th column and row of
 ##  marks in <tom>.
@@ -551,12 +550,11 @@ DeclareAttribute( "ClassNamesTom", IsTableOfMarks );
 ##
 #A  FusionsTom( <tom> )
 ##
-##  For a table of marks <tom>, `FusionsTom' is a list of fusions into other
-##  tables of marks.
-##  Each fusion is a list of length two,
-##  the first entry being the `Identifier' (see~"Identifier") value
-##  of the image table, the second entry being the list of images of the
-##  class positions of <tom> in the image table.
+##  For a table of marks <tom>, `FusionsTom' is a list of fusions into  other
+##  tables of marks. Each fusion is a list of length  two,  the  first  entry
+##  being the `Identifier' (see~"Identifier!for tables of  marks")  value  of
+##  the image table, the second entry being the list of images of  the  class
+##  positions of <tom> in the image table.
 ##
 ##  This attribute is mainly used for tables of marks in the {\GAP} library
 ##  (see~"The Library of Tables of Marks").
@@ -774,8 +772,7 @@ DeclareOperation( "IsSolvableTom", [ IsTableOfMarks, IsPosInt ] );
 ##
 ##  10. Other Operations for Tables of Marks
 #7
-##  \index{IsInternallyConsistent!for tables of marks}
-##  \>IsInternallyConsistent( <tom> ) O
+##  \>IsInternallyConsistent( <tom> )!{for tables of marks} O
 ##
 ##  For a table of marks <tom>, `IsInternallyConsistent'
 ##  decomposes all tensor products of rows of <tom>.
@@ -1033,7 +1030,7 @@ DeclareOperation( "MinimalSupergroupsTom", [ IsTableOfMarks, IsPosInt ] );
 #8
 ##  Let <tom> be the table of marks of the group $G$,
 ##  and assume that <tom> has access to $G$ via the `UnderlyingGroup' value
-##  (see~"UnderlyingGroup").
+##  (see~"UnderlyingGroup!for tables of marks").
 ##  Then it makes sense to use <tom> and its ordering of conjugacy classes of
 ##  subgroups of $G$ for storing information for constructing representatives
 ##  of these classes.
@@ -1049,8 +1046,8 @@ DeclareOperation( "MinimalSupergroupsTom", [ IsTableOfMarks, IsPosInt ] );
 ##  The first is implemented by the attribute `GeneratorsSubgroupsTom'
 ##  (see~"GeneratorsSubgroupsTom"), which uses explicit generators.
 ##  The second, more general, possibility is implemented by the attributes
-##  `StraightLineProgramsTom' (see~"StraightLineProgramsTom")
-##  and `StandardGeneratorsInfo' (see~"StandardGeneratorsInfo").
+##  `StraightLineProgramsTom' (see~"StraightLineProgramsTom") and
+##  `StandardGeneratorsInfo' (see~"StandardGeneratorsInfo!for tables of marks").
 ##  The `StraightLineProgramsTom' value encodes the generators as 
 ##  straight line programs (see~"Straight Line Programs") that evaluate to
 ##  the generators in question when applied to standard generators of $G$.
@@ -1090,8 +1087,8 @@ DeclareAttribute( "GeneratorsSubgroupsTom", IsTableOfMarks );
 ##
 ##  For a table of marks <tom> with `IsTableOfMarksWithGens' value `true',
 ##  `StraightLineProgramsTom' returns a list that contains at position $i$
-##  either a list of straight line programs or a list of straight line
-##  programs (see~"Straight Line Programs"), encoding the generators of;
+##  either a list of straight line programs or a straight line program
+##  (see~"Straight Line Programs"), encoding the generators of
 ##  a representative of the $i$-th conjugacy class of subgroups of
 ##  `UnderlyingGroup( <tom> )';
 ##  in the former case, each straight line program returns a generator,
@@ -1126,10 +1123,9 @@ DeclareAttribute( "WordsTom", IsTableOfMarks );
 ##
 #A  StandardGeneratorsInfo( <tom> )
 ##
-##  For a table of marks <tom>,
-##  a stored value of `StandardGeneratorsInfo' equals the value of this
-##  attribute for the isomorphism type (see~"IsIsomorphismTypeOfGroup")
-##  of the underlying group (see~"UnderlyingGroup") of <tom>,
+##  For a table of marks <tom>, a stored  value  of  `StandardGeneratorsInfo'
+##  equals  the  value  of  this   attribute   for   the   underlying   group
+##  (see~"UnderlyingGroup!for     tables     of     marks")     of     <tom>,
 ##  cf.~Section~"Standard Generators of Groups".
 ##
 ##  In this case, the `GeneratorsOfGroup' value of the underlying group $G$
@@ -1229,8 +1225,8 @@ DeclareOperation( "RepresentativeTomByGeneratorsNC",
 ##       The fusion is explicitly stored on <tbl>.
 ##       Then nothing has to be done.
 ##       This happens only if both <tbl> and <tom> are tables from the {\GAP}
-##       library (see~"The Character Table Library",
-##       "The Library of Tables of Marks").
+##       library (see~"The Library of Tables of Marks" and the manual of
+##       the {\GAP} Character Table Library).
 ##  \item{2.}
 ##       The `UnderlyingGroup' values of <tbl> and <tom> are known and
 ##       equal.

@@ -1,6 +1,6 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
-#include "compiled.h"
+#include "src/compiled.h"
 
 /* global variables used in handlers */
 static GVar G_IS__FUNCTION;
@@ -1251,23 +1251,23 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "RANK_FILTER_COUNT", &GC_RANK__FILTER__COUNT );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "filter1.g:DefaultName(-123512854)" );
- InitHandlerFunc( HdlrFunc1, "filter1.g:HdlrFunc1(-123512854)" );
- InitGlobalBag( &(NameFunc[1]), "filter1.g:NameFunc[1](-123512854)" );
- InitHandlerFunc( HdlrFunc2, "filter1.g:HdlrFunc2(-123512854)" );
- InitGlobalBag( &(NameFunc[2]), "filter1.g:NameFunc[2](-123512854)" );
- InitHandlerFunc( HdlrFunc3, "filter1.g:HdlrFunc3(-123512854)" );
- InitGlobalBag( &(NameFunc[3]), "filter1.g:NameFunc[3](-123512854)" );
- InitHandlerFunc( HdlrFunc4, "filter1.g:HdlrFunc4(-123512854)" );
- InitGlobalBag( &(NameFunc[4]), "filter1.g:NameFunc[4](-123512854)" );
- InitHandlerFunc( HdlrFunc5, "filter1.g:HdlrFunc5(-123512854)" );
- InitGlobalBag( &(NameFunc[5]), "filter1.g:NameFunc[5](-123512854)" );
- InitHandlerFunc( HdlrFunc6, "filter1.g:HdlrFunc6(-123512854)" );
- InitGlobalBag( &(NameFunc[6]), "filter1.g:NameFunc[6](-123512854)" );
- InitHandlerFunc( HdlrFunc7, "filter1.g:HdlrFunc7(-123512854)" );
- InitGlobalBag( &(NameFunc[7]), "filter1.g:NameFunc[7](-123512854)" );
- InitHandlerFunc( HdlrFunc8, "filter1.g:HdlrFunc8(-123512854)" );
- InitGlobalBag( &(NameFunc[8]), "filter1.g:NameFunc[8](-123512854)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/filter1.g:DefaultName(-123512854)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1(-123512854)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1](-123512854)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/filter1.g:HdlrFunc2(-123512854)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/filter1.g:NameFunc[2](-123512854)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/filter1.g:HdlrFunc3(-123512854)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/filter1.g:NameFunc[3](-123512854)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/filter1.g:HdlrFunc4(-123512854)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/filter1.g:NameFunc[4](-123512854)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/filter1.g:HdlrFunc5(-123512854)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/filter1.g:NameFunc[5](-123512854)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/filter1.g:HdlrFunc6(-123512854)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/filter1.g:NameFunc[6](-123512854)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/filter1.g:HdlrFunc7(-123512854)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/filter1.g:NameFunc[7](-123512854)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/filter1.g:HdlrFunc8(-123512854)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/filter1.g:NameFunc[8](-123512854)" );
  
  /* return success */
  return 0;

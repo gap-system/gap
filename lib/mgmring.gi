@@ -710,7 +710,14 @@ InstallGlobalFunction( FreeMagmaRing, function( R, M )
       SetCharacteristic( F, Characteristic( R ) );
     fi;
 
-    m:= Representative( M );
+    # Just taking `Representative( M )' doesn't work if generators are not
+    # yet computed (we need them anyway below).
+    m := GeneratorsOfMagma( M );
+    if Length(m) > 0 then
+      m := m[1];
+    else
+      m:= Representative( M );
+    fi;
     if IsMultiplicativeElementWithOne( m ) then
       F!.oneMagma:= One( m );
 #T no !!
@@ -854,9 +861,8 @@ InstallMethod( Coefficients,
 #M  Basis( <RM> ) . . . . . . . . . . . . . . . . . . . for a free magma ring
 ##
 InstallMethod( Basis,
-    "for a free magma ring",
-    [ IsFreeMagmaRing ],
-    10,  # must be higher than default method for (assoc.) FLMLOR(WithOne)
+    "for a free magma ring (delegate to `CanonicalBasis')",
+    [ IsFreeMagmaRing ], CANONICAL_BASIS_FLAGS,
     CanonicalBasis );
 
 
@@ -1014,7 +1020,10 @@ InstallMethod( Centre,
       coeff:= List( elms, x -> one );
       Add( gens, ElementOfMagmaRing( F, zero, coeff, elms ) );
     od;
-    return FLMLOR( Centre( LeftActingDomain( RG ) ), gens, "basis" );
+    c:= FLMLORWithOne( Centre( LeftActingDomain( RG ) ), gens, "basis" );
+    Assert( 1, IsAbelian( c ) );
+    SetIsAbelian( c, true );
+    return c;
     end );
 
 

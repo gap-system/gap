@@ -97,9 +97,6 @@ DeclareCategory( "IsMutableBasis", IsObject );
 ##
 DeclareOperation( "MutableBasis", [ IsRing, IsCollection ] );
 
-DeclareSynonym( "MutableBasisByGenerators", MutableBasis );
-#T obsolete!
-
 
 #############################################################################
 ##

@@ -34,9 +34,17 @@ InstallMethod( CollectionsFamily,
     colls := NewFamily( "CollectionsFamily(...)", coll_req, coll_imp );
     SetElementsFamily( colls, F );
     return colls;
-    end );
+end );
 
-
+#
+# Rather nasty cludge follows. We need StringFamily before we read
+# this file, so we created it earlier and "force" it to be the CollectionsFamily of
+# CharsFamily here.
+#
+    
+SetElementsFamily( StringFamily, CharsFamily);
+SetCollectionsFamily( CharsFamily, StringFamily);
+    
 #############################################################################
 ##
 #V  IteratorsFamily
@@ -258,23 +266,19 @@ InstallMethod( RepresentativeSmallest,
 ##  an enumerator of <C> and selects a random element of this list using the
 ##  function `RANDOM_LIST', which is a pseudo random number generator.
 ##
-InstallMethod( Random,
-    "for an internal list",
-    true,
+InstallMethod( Random, "for an internal list", true,
     [ IsList and IsInternalRep ], 100,
 #T ?
     RANDOM_LIST );
 
-InstallMethod( Random,
-    "for a (finite) collection",
-    true,
-    [ IsCollection ], 10,
-    function ( C )
-    if not IsFinite( C ) then
-        TryNextMethod();
-    fi;
-    return RANDOM_LIST( Enumerator( C ) );
-    end );
+InstallMethod( Random, "for a (finite) collection", true,
+    [ IsCollection ], 0,
+function ( C )
+  if not IsFinite( C ) then
+    TryNextMethod();
+  fi;
+  return RANDOM_LIST( Enumerator( C ) );
+end );
 
 
 #############################################################################
@@ -295,10 +299,7 @@ InstallMethod( PseudoRandom,
 ##
 InstallMethod( PseudoRandom,
     "for a list or collection (delegate to `Random')",
-    true,
-    [ IsListOrCollection ], 0,
-    Random );
-
+    true, [ IsListOrCollection ], 0, Random );
 
 #############################################################################
 ##
@@ -336,6 +337,28 @@ InstallOtherMethod( AsSSortedList,
     [ IsCollection and IsConstantTimeAccessList ],
     0,
     l->AsSSortedListList(AsPlist(l)) );
+
+#############################################################################
+##
+#M  AsSSortedListNonstored( <C> )
+##
+InstallMethod(AsSSortedListNonstored,"if `AsSSortedList' is known",true,
+  [IsListOrCollection and HasAsSSortedList],
+  # besser geht nicht
+  SUM_FLAGS,
+  AsSSortedList);
+
+InstallMethod(AsSSortedListNonstored,"if `AsList' is known:sort",true,
+  [IsListOrCollection and HasAsList],
+  # unless the construction constructs the elements already sorted, this
+  # method is as good as it gets
+  QuoInt(SUM_FLAGS,4),
+function(l)
+local a;
+  a:=ShallowCopy(AsList(l));
+  Sort(a);
+  return a;
+end);
 
 
 #############################################################################
@@ -577,7 +600,7 @@ InstallMethod( ListOp,
 ##
 #M  ListOp( <coll>, <func> )
 ##
-InstallOtherMethod( ListOp,
+InstallMethod( ListOp,
     "for a list/collection, and a function",
     true,
     [ IsListOrCollection, IsFunction ], 0,
@@ -1064,7 +1087,8 @@ InstallGlobalFunction( Filtered,
     local tnum, res, i, elm;
     tnum:= TNUM_OBJ_INT( C );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
-      res := [];
+      # start with empty list of same representation
+      res := C{[]};
       i   := 0;
       for elm in C do
         if func( elm ) then
@@ -1098,6 +1122,7 @@ InstallMethod( FilteredOp,
     return res;
     end );
 
+#T Is this useful compared to the previous method? (FL)
 InstallMethod( FilteredOp,
     "for an empty list/collection, and a function",
     true,
@@ -2027,7 +2052,7 @@ end );
 
 #############################################################################
 ##
-#M  Union(<C>,...)
+#M  Union2( <C1>, <C2> )
 ##
 BIND_GLOBAL( "UnionSet", function ( C1, C2 )
     local   I;
@@ -2100,10 +2125,18 @@ InstallMethod( Union2,
     return I;
     end );
 
+
+#############################################################################
+##
+#F  Union( <list> )
+#F  Union( <C>, ... )
+##
 InstallGlobalFunction( Union, function ( arg )
-    local   U,          # union, result
+    local   lists,      # concatenation of arguments that are lists
+            other,      # those arguments that are not lists
             D,          # domain or list, running over the arguments
-            copied,     # true if I is a list not identical to anything else
+            U,          # union, result
+            start,      # start position in `other'
             i;          # loop variable
 
     # unravel the argument list if necessary
@@ -2116,21 +2149,38 @@ InstallGlobalFunction( Union, function ( arg )
         return [  ];
     fi;
 
-    # start with the first domain or list
-    U := arg[1];
-    copied := false;
+    # Separate lists and domains.
+    lists:= [];
+    other:= [];
+    for D in arg do
+      if IsList( D ) then
+        Append( lists, D );
+      else
+        Add( other, D );
+      fi;
+    od;
 
-    # loop over the other domains or lists
-    for i  in [2..Length(arg)]  do
-        D := arg[i];
-        if IsList( U ) and IsList( D )  then
-            if not copied then U := Set( U ); fi;
-            UniteSet( U, D );
-            copied := true;
-        else
-            U := Union2( U, D );
-            copied := false;
-        fi;
+    # First unite the lists.
+    # (This can be regarded as the most usual case.
+    # For efficiency reasons, we use one `Set' call instead of
+    # repeated `UniteSet' calls.)
+#T However, this causes a lot of space loss
+#T if many long and redundant lists occur;
+#T using `UniteSet' would be much slower but ``conservative''.
+    if Length( lists ) = 0 then
+      if Length(other)=0 then
+        return lists;
+      fi;
+      U:= other[1];
+      start:= 2;
+    else
+      U:= Set( lists );
+      start:= 1;
+    fi;
+
+    # Now loop over the domains.
+    for i in [ start .. Length( other ) ] do
+      U:= Union2( U, other[i] );
     od;
 
     # return the union

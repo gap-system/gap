@@ -109,6 +109,7 @@ DeclareCategoryCollections( "IsLieObject" );
 ##
 ##  The standard type of objects in a Lie family <F> is `<F>!.packedType'.
 ##
+##  \indextt{Embedding!for Lie algebras}
 ##  The bijection from <Fam> to $F$ is given by `Embedding( <Fam>, $F$ )';
 ##  this bijection respects addition and additive inverses.
 ##

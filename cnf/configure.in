@@ -53,8 +53,15 @@ dnl ## check for the existence of various header files
 dnl ##
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS( termios.h termio.h sgtty.h signal.h stdio.h unistd.h libc.h )
+AC_CHECK_HEADERS( termios.h termio.h sgtty.h signal.h stdio.h unistd.h libc.h sys/stat.h )
+AC_CHECK_HEADERS( errno.h fcntl.h sys/types.h assert.h sys/sysmacros.h stdlib.h string.h math.h)
 
+dnl #########################################################################
+dnl ##
+dnl ## check how to get a pseudo-tty pair
+dnl ##
+
+AC_CHECK_FUNCS( getpseudotty _getpty getpt ptsname_r )
 
 dnl #########################################################################
 dnl ##
@@ -63,20 +70,23 @@ dnl ##
 
 AC_CHECK_FUNCS( rld_load )
 
-AC_CHECK_LIB( dl, dlopen, AC_DEFINE(HAVE_DLOPEN) LIBS="$LIBS -ldl")
-if test "$ac_cv_lib_dl_dlopen" = yes; then
-  ac_cv_func_dlopen="yes"
-else
-  AC_CHECK_FUNCS( dlopen )
-fi
-if test "$ac_cv_func_dlopen" = yes;  then
+AC_SEARCH_LIBS(dlopen, dl, AC_DEFINE(HAVE_DLOPEN,1))
+
+if test "$ac_cv_search_dlopen" != "no";  then
   GP_PROG_CC_EXPORT_DYNAMIC
   if test "$gp_cv_prog_cc_export_dynamic" = yes;  then
     LDFLAGS="$LDFLAGS -export-dynamic"
   fi
 fi
 
-AC_SUBST( LDFLAGS )
+case "$LIBS" in 
+
+	*-ldl* ) C_DYNLIBS="-ldl";;
+                *)  C_DYNLIBS="";;
+esac;
+
+AC_SUBST(LDFLAGS)
+AC_SUBST(C_DYNLIBS)
 
 dnl #########################################################################
 dnl ##
@@ -132,7 +142,7 @@ dnl ##
 dnl ## check for input/output functions
 dnl ##
 
-AC_CHECK_FUNCS( ttyname strerror )
+AC_CHECK_FUNCS( ttyname strerror select )
 
 
 dnl #########################################################################
@@ -170,11 +180,21 @@ case "$host" in
 esac
 
 
+AC_CYGWIN
+if test "$CYGWIN" = "yes"; then
+  AC_DEFINE(SYS_IS_CYGWIN32, 1)
+else
+  AC_DEFINE(SYS_IS_CYGWIN32, 0)
+fi
+
 
 case "$host" in 
-    *pc-cygwin* )
-    AC_DEFINE( SYS_IS_CYGWIN32, 1 )
-    ;;
+	*-darwin* )
+	AC_DEFINE(SYS_IS_DARWIN, 1)
+        ;;
+	* )
+	AC_DEFINE(SYS_IS_DARWIN, 0)
+	;;
 esac
 
 

@@ -78,9 +78,9 @@ end );
 ##
 #M  Length( <pcgs> )
 ##
-InstallMethod( Length,
+InstallMethod( Length,"modulo pcgs",
     true,
-    [ IsModuloPcgs and IsModuloPcgsRep ],
+    [ IsModuloPcgs ],
     0,
     pcgs -> Length(pcgs!.pcSequence) );
 
@@ -89,9 +89,9 @@ InstallMethod( Length,
 ##
 #M  Position( <pcgs>, <elm>, <from> )
 ##
-InstallMethod( Position,
+InstallMethod( Position,"modulo pcgs",
     true,
-    [ IsModuloPcgs and IsModuloPcgsRep,
+    [ IsModuloPcgs ,
       IsObject,
       IsInt ],
     0,
@@ -105,7 +105,7 @@ end );
 ##
 #M  PrintObj( <modulo-pcgs> )
 ##
-InstallMethod( PrintObj,
+InstallMethod( PrintObj,"modulo pcgs",
     true,
     [ IsModuloPcgs ],
     0,
@@ -120,27 +120,15 @@ end );
 ##
 #M  <pcgs> [ <pos> ]
 ##
-InstallMethod( \[\],
+InstallMethod( \[\],"modulo pcgs",
     true,
-    [ IsModuloPcgs and IsModuloPcgsRep,
+    [ IsModuloPcgs,
       IsPosInt ],
     0,
 
 function( pcgs, pos )
     return pcgs!.pcSequence[pos];
 end );
-
-
-#AH: 3-5-99: this is nowhere used
-# #############################################################################
-# ##
-# #M  ModuloParentPcgs( <pcgs> )
-# ##
-# InstallMethod( ModuloParentPcgs,
-#     true,
-#     [ IsPcgs ],
-#     0,
-#     pcgs -> ParentPcgs( pcgs ) mod pcgs );
 
 #############################################################################
 ##
@@ -679,8 +667,8 @@ InstallOtherMethod( RelativeOrderOfPcElement,
       IsObject ],
     # as we fall back on the code for pcgs, we must be sure that the method
     # has lower value
-    SIZE_FLAGS(FLAGS_FILTER(IsModuloPcgs))
-    -SIZE_FLAGS(FLAGS_FILTER(IsModuloPcgs and IsPrimeOrdersPcgs)),
+    RankFilter(IsModuloPcgs)
+    -RankFilter(IsModuloPcgs and IsPrimeOrdersPcgs),
 
 function( pcgs, elm )
     return RelativeOrderOfPcElement( NumeratorOfModuloPcgs(pcgs), elm );

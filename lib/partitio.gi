@@ -37,7 +37,7 @@ Revision.partitio_gi :=
 ##
 #F  Partition( <list> ) . . . . . . . . . . . . . . . . partition constructor
 ##
-BindGlobal( "Partition", function( list )
+InstallGlobalFunction( Partition, function( list )
     local   P,  i,  c;
     
     P := rec( points := Concatenation( list ),
@@ -63,65 +63,67 @@ BindGlobal( "Partition", function( list )
     return P;
 end );
 
-
-#############################################################################
-##
-#F  IsEqualPartition( <P>, <Q> )  . . . . . . . . . . . . . . . equality test
-##
-BindGlobal( "IsEqualPartition", function( P, Q )
-    return P.cellno = Q.cellno;
-end );
-
-
-#############################################################################
-##
-#F  OnPartitions( <P>, <g> )  . . . . . . . permutations acting on partitions
-##
-BindGlobal( "OnPartitions", function( P, g )
-    local   Q,  i;
-    
-    Q := StructuralCopy( P );
-    Q.points := OnTuples( P.points, g );
-    Q.cellno := [  ];
-    for i  in [ 1 .. Length( P.cellno ) ]  do
-        if IsBound( P.cellno[ i ] )  then
-            Q.cellno[ i ^ g ] := P.cellno[ i ];
-        fi;
-    od;
-    return Q;
-end );
-
       
 #############################################################################
 ##
 #F  IsPartition( <P> )  . . . . . . . . . . . . test if object is a partition
 ##
-BindGlobal( "IsPartition", P -> IsRecord( P ) and IsBound( P.cellno ) );
+InstallGlobalFunction( IsPartition, P -> IsRecord( P ) and IsBound( P.cellno ) );
 #T state this in the definition of a partition!
-
-
-#############################################################################
-##
-#F  PointsPartition( <P> )  . . . . . . . . .  points involved in a partition
-##
-BindGlobal( "PointsPartition", P -> Set( P.points ) );
 
 
 #############################################################################
 ##
 #F  NumberCells( <P> )  . . . . . . . . . . . . . . . . . . . number of cells
 ##
-BindGlobal( "NumberCells", P -> Length( P.firsts ) );
+InstallGlobalFunction( NumberCells, P -> Length( P.firsts ) );
 
 
 #############################################################################
 ##
 #F  Cell( <P>, <m> )  . . . . . . . . . . . . . . . . . . . . .  cell as list
 ##
-BindGlobal( "Cell", function( P, m )
+InstallGlobalFunction( Cell, function( P, m )
     return P.points{ [ P.firsts[m] .. P.firsts[m] + P.lengths[m] - 1 ] };
 end );
 
+
+#############################################################################
+#F  Cells( <Pi> ) . . . . . . . . . . . . . . . . . partition as list of sets
+##
+InstallGlobalFunction( Cells, function( Pi )
+    local  cells,  i;
+    
+    cells := [  ];
+    for i  in Reversed( [ 1 .. NumberCells( Pi ) ] )  do
+        cells[ i ] := Cell( Pi, i );
+    od;
+    return cells;
+end );
+
+#############################################################################
+##
+#F  CellNoPoint( <part>,<pnt> )
+##
+InstallGlobalFunction( CellNoPoint,function(part,pt)
+  return part.cellno[pt];
+end );
+
+#############################################################################
+##
+#F  CellNoPoints( <part>,<pnt> )
+##
+InstallGlobalFunction( CellNoPoints,function(part,pts)
+  return part.cellno{pts};
+end );
+
+#############################################################################
+##
+#F  PointInCellNo( <part>,<pnt>,<no> )
+##
+InstallGlobalFunction( PointInCellNo,function(part,pt,no)
+  return part.cellno[pt]=no;
+end );
 
 #############################################################################
 ##
@@ -130,7 +132,7 @@ end );
 ##  Returns a list of the points along in their  cell, ordered as these cells
 ##  are ordered
 ##
-BindGlobal( "Fixcells", function( P )
+InstallGlobalFunction( Fixcells, function( P )
     local   fix,  i;
     
     fix := [  ];
@@ -157,20 +159,58 @@ end );
 ##  `true', at least one point will  move out. If <out> is  a number, at most
 ##  <out> points will move out.
 ##
-BindGlobal( "SplitCell", function( P, i, Q, j, g, out )
-    local   a,  b,  l,  B,  tmp,  m,  x;
+##  Q is either a partition or a single cell.
+##
+BindGlobal("SplitCellTestfun1",function(Q,pt,no)
+  return PointInCellNo(Q,pt,no);
+end);
+
+BindGlobal("SplitCellTestfun2",function(Q,pt,no)
+  if no=1 then
+    return pt in Q;
+  else
+    return not (pt in Q);
+  fi;
+end);
+
+InstallGlobalFunction( SplitCell, function( P, i, Q, j, g, out )
+local   a,  b,  l,  B,  tmp,  m,  x, inflag, outflag,test,k;
 
     a := P.firsts[ i ];
     b := a + P.lengths[ i ];
     l := b - 1;
+
+    if IsPartition(Q) then
+      test:=SplitCellTestfun1;
+    else
+      test:=SplitCellTestfun2;
+    fi;
     
     # If none or  all  points are  moved out,  do  not change <P>  and return
     # 'false'.
+
+    #T is this extra test actually worth it?
     if out <> true  then
-        x := Q{ OnTuples( P.points{ [ a .. l ] }, g ) };
-        if x = j + 0 * x  or  ForAll( x, i -> i <> j )  then
-            return false;
-        fi;
+      # we need that one image gets in and one image gets out
+      inflag:=true;
+      outflag:=true;
+      B:=P.points{[a..l]};
+      k:=1;
+      while (inflag or outflag) and k<=Length(B) do
+        x:=B[k]^g;
+	m:=test(Q,x,j);
+	inflag:=inflag and not m; 
+	outflag:=outflag and m;
+        k:=k+1;
+      od;
+      if inflag or outflag then
+        return false;
+      fi;
+
+#      x := Q{ OnTuples( P.points{ [ a .. l ] }, g ) };
+#      if x = j + 0 * x  or  ForAll( x, i -> i <> j )  then
+#	  return false;
+#      fi;
     fi;
 
     # Collect  the points to  be moved out of  the <i>th  cell  of <P> at the
@@ -193,12 +233,14 @@ BindGlobal( "SplitCell", function( P, i, Q, j, g, out )
                     return false;
                 fi;
                 
-            until Q[ P.points[ b ] ^ g ] <> j;
+            #until Q[ P.points[ b ] ^ g ] <> j;
+            until not test(Q,P.points[ b ] ^ g,j);
 
             # Increase <a> until a point moved out.
             repeat
-                a := a + 1;
-            until Q[ P.points[ a ] ^ g ] =  j;
+	      a := a + 1;
+            #until Q[ P.points[ a ] ^ g ] =  j;
+            until test(Q,P.points[ a ] ^ g,j);
 
             # Swap the points.
             if a < b  then
@@ -213,10 +255,12 @@ BindGlobal( "SplitCell", function( P, i, Q, j, g, out )
         while a < b  do
             repeat
                 b := b - 1;
-            until Q[ P.points[ b ] ^ g ] <> j;
+            #until Q[ P.points[ b ] ^ g ] <> j;
+            until not test(Q,P.points[ b ] ^ g,j);
             repeat
                 a := a + 1;
-            until Q[ P.points[ a ] ^ g ] =  j;
+            #until Q[ P.points[ a ] ^ g ] =  j;
+            until test(Q,P.points[ a ] ^ g,j);
             if a < b  then
                 tmp := P.points[ a ];
                 P.points[ a ] := P.points[ b ];
@@ -246,7 +290,7 @@ end );
 ##  Returns the  number of the cell   from <a> was  taken out,  or `false' if
 ##  nothing was changed.
 ##
-BindGlobal( "IsolatePoint", function( P, a )
+InstallGlobalFunction( IsolatePoint, function( P, a )
     local   i,  pos,  l,  m;
     
     i := P.cellno[ a ];
@@ -283,7 +327,7 @@ end );
 ##
 ##  May behave undefined if there was no splitting before.
 ##
-BindGlobal( "UndoRefinement", function( P )
+InstallGlobalFunction( UndoRefinement, function( P )
     local   M,  m;
     
     M := Length( P.firsts );
@@ -305,27 +349,12 @@ end );
 
 
 #############################################################################
-
-#F  Cells( <Pi> ) . . . . . . . . . . . . . . . . . partition as list of sets
-##
-BindGlobal( "Cells", function( Pi )
-    local  cells,  i;
-    
-    cells := [  ];
-    for i  in Reversed( [ 1 .. NumberCells( Pi ) ] )  do
-        cells[ i ] := Cell( Pi, i );
-    od;
-    return cells;
-end );
-
-
-#############################################################################
 ##
 #F  FixpointCellNo( <P>, <i> )  . . . . . . . . .  fixpoint from cell no. <i>
 ##
 ##  Returns the first point of <P>[ <i> ] (should be a one-point cell).
 ##
-BindGlobal( "FixpointCellNo", function( P, i )
+InstallGlobalFunction( FixpointCellNo, function( P, i )
     return P.points[ P.firsts[ i ] ];
 end );
 
@@ -339,7 +368,7 @@ end );
 ##
 ##  Adds this cell number to <old>.
 ##
-BindGlobal( "FixcellPoint", function( P, old )
+InstallGlobalFunction( FixcellPoint, function( P, old )
     local   lens,  poss,  p;
     
     lens := P.lengths;
@@ -357,23 +386,23 @@ end );
 
 #############################################################################
 ##
-#F  FixcellsCell( <P>, <cellno>, <conj>, <old> )  . . . . . . . . . . . local
+#F  FixcellsCell( <P>, <Q>, <old> )  . . . . . . . . . . . local
 ##
 ##  Returns [ <K>, <I>  ] such that  for j=1,...|K|=|I|,  all points  in cell
-##  <P>[  <I>[j] ], mapped  with <conj> have value  <K>[j] in <cellno> (i.e.,
-##  lie   in cell <K>[j]  of a  partition whose `cellno'  entry is <cellno>).
+##  <P>[  <I>[j] ] have value  <K>[j] in <Q.cellno> (i.e.,
+##  lie   in cell <K>[j]  of the partition <Q>.
 ##  Returns `false' if <K> and <I> are empty.
 ##
-BindGlobal( "FixcellsCell", function( P, cellno, conj, old )
+InstallGlobalFunction( FixcellsCell, function( P, Q, old )
     local   K,  I,  i,  k,  start;
     
     K := [  ];  I := [  ];
     for i  in [ 1 .. NumberCells( P ) ]  do
         start := P.firsts[ i ];
-        k := cellno[ P.points[ start ] ^ conj ];
+        k := CellNoPoint(Q,P.points[ start ]);
         if     not k in old
            and ForAll( start + [ 1 .. P.lengths[ i ] - 1 ], j ->
-                       cellno[ P.points[ j ] ^ conj ] = k ) then
+                       CellNoPoint(Q,P.points[ j ]) = k ) then
             AddSet( old, k );
             Add( K, k );  Add( I, i );
         fi;
@@ -388,7 +417,7 @@ end );
 
 #F  TrivialPartition( <Omega> ) . . . . . . . . . one-cell partition of a set
 ##
-BindGlobal( "TrivialPartition", function( Omega )
+InstallGlobalFunction( TrivialPartition, function( Omega )
     return Partition( [ Omega ] );
 end );
 
@@ -397,9 +426,9 @@ end );
 ##
 #F  OrbitsPartition( <G>, <Omega> ) partition determined by the orbits of <G>
 ##
-BindGlobal( "OrbitsPartition", function( G, Omega )
+InstallGlobalFunction( OrbitsPartition, function( G, Omega )
     if IsGroup( G )  then
-        return Partition( Orbits( G, Omega ) );
+        return Partition( OrbitsDomain( G, Omega ) );
     else
         return Partition( OrbitsPerms( G.generators, Omega ) );
     fi;
@@ -410,7 +439,7 @@ end );
 ##
 #F  SmallestPrimeDivisor( <size> )  . . . . . . . . .  smallest prime divisor
 ##
-BindGlobal( "SmallestPrimeDivisor", function( size )
+InstallGlobalFunction( SmallestPrimeDivisor, function( size )
     local   i;
     
     i := 0;
@@ -436,7 +465,7 @@ end );
 ##  < SmallestPrimeDivisor(  <size>  )), leaves   these $n$  cells   unfused.
 ##  (<size> = 1 suppresses this extra feature.)
 ##
-BindGlobal( "CollectedPartition", function( P, size )
+InstallGlobalFunction( CollectedPartition, function( P, size )
     local   lens,  C,  div,  typ,  p,  i;
 
     lens := P.lengths;
@@ -457,7 +486,6 @@ BindGlobal( "CollectedPartition", function( P, size )
     od;
     return Partition( C );
 end );
-
 
 #############################################################################
 ##

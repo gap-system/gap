@@ -195,6 +195,9 @@ local p,cs,csi,l,i,pcs,ins,j,u;
   if p=fail then
     Error("<G> must be solvable");
   fi;
+  if not HasParent(G) then
+    SetParentAttr(G,Parent(G));
+  fi;
   cs:=ChiefSeries(G);
   csi:=List(cs,i->InducedPcgs(p,i));
   l:=Length(cs);
@@ -203,10 +206,11 @@ local p,cs,csi,l,i,pcs,ins,j,u;
   for i in [l-1,l-2..1] do
     # extend the pc sequence. We have a vector space factor, so we can
     # simply add *some* further generators.
-    u:=cs[i+1];
+    u:=AsSubgroup(Parent(G),cs[i+1]);
     for j in Reversed(Filtered(csi[i],k->not k in cs[i+1])) do
       if not j in u then
         Add(pcs,j);
+	#NC is safe
 	u:=ClosureSubgroupNC(u,j);
       fi;
     od;
@@ -362,8 +366,8 @@ end );
 InstallMethod( \=,
     "pcgs computable groups using home pcgs",
     IsIdenticalObj,
-    [ IsGroup and HasHomePcgs,
-      IsGroup and HasHomePcgs ],
+    [ IsGroup and HasHomePcgs and HasCanonicalPcgsWrtHomePcgs,
+      IsGroup and HasHomePcgs and HasCanonicalPcgsWrtHomePcgs ],
     0,
 
 function( left, right )
@@ -381,8 +385,8 @@ end );
 InstallMethod( \=,
     "pcgs computable groups using family pcgs",
     IsIdenticalObj,
-    [ IsGroup and HasFamilyPcgs,
-      IsGroup and HasFamilyPcgs ],
+    [ IsGroup and HasFamilyPcgs and HasCanonicalPcgsWrtFamilyPcgs,
+      IsGroup and HasFamilyPcgs and HasCanonicalPcgsWrtFamilyPcgs ],
     0,
 
 function( left, right )
@@ -1289,14 +1293,16 @@ InstallMethod( CentralizerOp,
     0,  # in solvable permutation groups, backtrack seems preferable
 
 function( G, H )
-    local   h;
-    
-    for h  in MinimalGeneratingSet( H )  do
-        G := CentralizerSolvableGroup( G,H, h );
-    od;
-    Assert(2,ForAll(GeneratorsOfGroup(G),i->ForAll(GeneratorsOfGroup(H),
-                                                  j->Comm(i,j)=One(G))));
-    return G;
+local   h,P;
+  
+  P:=Parent(G);
+  for h  in MinimalGeneratingSet( H )  do
+      G := CentralizerSolvableGroup( G,H, h );
+  od;
+  G:=AsSubgroup(P,G);
+  Assert(2,ForAll(GeneratorsOfGroup(G),i->ForAll(GeneratorsOfGroup(H),
+						j->Comm(i,j)=One(G))));
+  return G;
 end );
 
 #############################################################################
@@ -1312,7 +1318,8 @@ InstallOtherMethod( RepresentativeActionOp,
     0,
 
 function( G, d, e, opr )
-    if opr <> OnPoints or not (IsPcGroup(G) or (d in G and e in G)) then
+    if opr <> OnPoints or not (IsPcGroup(G) or (d in G and e in G)) or 
+       not (d in G and e in G) then
         TryNextMethod();
     fi;
     return ClassesSolvableGroup( G, 4,rec(candidates:= [ d, e ] ));
@@ -1359,13 +1366,20 @@ local G,	   # common parent
 
     # Calculate a (central) elementary abelian series.
 
+    eas:=fail;
     if IsPrimePowerInt( Size( G ) )  then
         p := FactorsInt( Size( G ) )[ 1 ];
 	home:=PcgsCentralSeries(G);
 	eas:=NormalSeriesByPcgs(home);
-        cent := ReturnTrue;
-    else
-	home:=PcgsElementaryAbelianSeries(G);
+	if NT in eas then
+	  cent := ReturnTrue;
+	else
+	  eas:=fail; # useless
+	fi;
+    fi;
+
+    if eas=fail then
+	home:=PcgsElementaryAbelianSeries([G,NT]);
 	eas:=NormalSeriesByPcgs(home);
 	cent:=function(pcgs,grpg,Npcgs,dep)
 	      local i,j;
@@ -1465,10 +1479,12 @@ InstallMethod(CentralizerModulo,"group centralizer via generators",
   IsFamFamFam,[IsGroup and CanEasilyComputePcgs, IsGroup and
   CanEasilyComputePcgs, IsGroup],0,
 function(G,NT,U)
-local i;
+local i,P;
+  P:=Parent(G);
   for i in GeneratorsOfGroup(U) do
     G:=CentralizerModulo(G,NT,i);
   od;
+  G:=AsSubgroup(P,G);
   return G;
 end);
 
@@ -1567,7 +1583,7 @@ InstallGlobalFunction( GapInputPcGroup, function(U,name)
         Add(lines,",");
     od;
     Add(lines,"r,f,g,rws,x;\n");
-    Add(lines,"f:=FreeGroup(");
+    Add(lines,"f:=FreeGroup(IsSyllableWordsFamily,");
     Add(lines,String(Length(gens)));
     Add(lines,");\ng:=GeneratorsOfGroup(f);\n");
 
@@ -1682,9 +1698,9 @@ end );
 ##
 #M  Enumerator( <G> ) . . . . . . . . . . . . . . . . . .  enumerator by pcgs
 ##
-InstallMethod( Enumerator, true,
+InstallMethod( Enumerator,"finite pc computable groups",true,
         [ IsGroup and CanEasilyComputePcgs and IsFinite ], 0,
-    G -> EnumeratorByPcgs( Pcgs( G ), [ 1 .. Length( Pcgs( G ) ) ] ) );
+    G -> EnumeratorByPcgs( Pcgs( G ) ) );
 
 
 #############################################################################
@@ -2043,11 +2059,11 @@ end);
 
 InstallMethod(IsSimpleGroup,"for solvable groups",true,
   [IsSolvableGroup],
-  # this is also better for permutation groups, so we increse the value to
+  # this is also better for permutation groups, so we increase the value to
   # be above the value for `IsPermGroup'.
-  Maximum(SIZE_FLAGS(FLAGS_FILTER(IsSolvableGroup)),
-          SIZE_FLAGS(FLAGS_FILTER(IsPermGroup))+1)
-    -SIZE_FLAGS(FLAGS_FILTER(IsSolvableGroup))+1,
+  Maximum(RankFilter(IsSolvableGroup),
+          RankFilter(IsPermGroup)+1)
+    -RankFilter(IsSolvableGroup),
 function(G)
   return IsInt(Size(G)) and (Size(G)=1 or IsPrimeInt(Size(G)));
 end);
@@ -2073,12 +2089,6 @@ function(G)
     Print(")");
   fi;
 end);
-
-#############################################################################
-##
-#M  AsList(<G>)
-##
-InstallMethod(AsList,"pc group",true,[IsPcGroup],0,AsSSortedList);
 
 #############################################################################
 ##

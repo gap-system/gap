@@ -139,7 +139,7 @@ in~"A Second Attempt to Implement Elements of Residue Class Rings".
 \Section{Creating Attributes and Properties}
 
 \>NewAttribute( <name>, <filt> )
-\)NewAttribute( <name>, <filt>, <rank> )
+\)\fmark NewAttribute( <name>, <filt>, <rank> )
 
 `NewAttribute' returns a new attribute <attr> with name <name>
 (see also~"ref:Attributes" in the Reference Manual).
@@ -165,7 +165,7 @@ The optional third argument <rank> denotes the incremental rank
 the default value is 1.
 
 \>NewAttribute( <name>, <filt>, "mutable" )
-\)NewAttribute( <name>, <filt>, "mutable", <rank> )
+\)\fmark NewAttribute( <name>, <filt>, "mutable", <rank> )
 
 If the third argument is the string `"mutable"', the stored values of the
 new attribute are not forced to be immutable.
@@ -178,7 +178,7 @@ and this list is mutable because one may want to enter groups into it
 as they are computed.
 
 \>NewProperty( <name>, <filt> )
-\)NewProperty( <name>, <filt>, <rank> )
+\)\fmark NewProperty( <name>, <filt>, <rank> )
 
 `NewProperty' returns a new property <prop> with name <name>
 (see also~"ref:Properties" in the Reference Manual).
@@ -206,7 +206,7 @@ clearly the result value is *not* stored in any of the arguments.
 \Section{Creating Other Filters}
 
 \>NewFilter( <name> )
-\)NewFilter( <name>, <rank> )
+\)\fmark NewFilter( <name>, <rank> )
 
 `NewFilter' returns a simple filter with name <name>
 (see~"ref:Other Filters" in the Reference Manual).
@@ -265,8 +265,8 @@ The two situations where families come into play are the following.
 
 First, since families are used to describe relations between arguments of
 operations in the method selection mechanism
-(see Chapter~"Method Selection",
-and also "ref:Types of Objects" in the Reference Manual),
+(see Chapter~"Method Selection" in this manual,
+and also Chapter~"ref:Types of Objects" in the Reference Manual),
 one has to prescribe such a relation in each method installation
 (see~"Method Installation");
 usual relations are `ReturnTrue' (which means that any relation of the
@@ -284,7 +284,7 @@ for example if it is just represented in a different way,
 there is no choice:
 The new object must lie in the same family as all objects
 that shall be equal to it.
-So only if the new object is different (w.r.t.~the equality ``='')
+So only if the new object is different (w.r.t.~the equality ```=''')
 from all other {\GAP} objects, we are likely to create a new family
 for it.
 Note that enlarging an existing family by such new objects
@@ -302,8 +302,8 @@ then one has to choose the family in such a way that all intended
 elements of a domain do in fact lie in the same family.
 (Remember that a domain is a collection, see Chapter~"ref:Domains"
 in the Reference Manual, and that a collection consists of elements
-in the same family, see~"ref:Collections" and "ref:Families" in the
-Reference Manual.)
+in the same family, see Chapter~"ref:Collections" and Section~"ref:Families"
+in the Reference Manual.)
 
 Let us look at an example.
 Suppose that no permutations are available in {\GAP},
@@ -352,9 +352,9 @@ decide about its family.
 
 
 \>NewFamily( <name> )
-\)NewFamily( <name>, <req> )
-\)NewFamily( <name>, <req>, <imp> )
-\)NewFamily( <name>, <req>, <imp>, <famfilter> )
+\)\fmark NewFamily( <name>, <req> )
+\)\fmark NewFamily( <name>, <req>, <imp> )
+\)\fmark NewFamily( <name>, <req>, <imp>, <famfilter> )
 
 `NewFamily' returns a new family <fam> with name <name>.
 The argument <req>, if present, is a filter of which <fam> shall be a
@@ -406,7 +406,7 @@ in any collection that has the family <fam>.
 \Section{Creating Types}
 
 \>NewType( <fam>, <filt> )
-\)NewType( <fam>, <filt>, <data> )
+\)\fmark NewType( <fam>, <filt>, <data> )
 
 `NewType' returns the type given by the family <fam>
 and the filter <filt>.
@@ -423,46 +423,47 @@ and the example in Chapter~"An Example -- Residue Class Rings".
 
 \>Objectify( <type>, <data> ) F
 
-New objects are created by `Objectify'.
-<data> is a list or a record, and <type> is the type that the desired
-object shall have.
-`Objectify' turns <data> into an object with type <type>.
-That is, <data> is changed, and afterwards it will not be a list or a
-record unless <type> is a type of a list resp. record.
+New objects are created by `Objectify'. <data> is a list or a record, and
+<type> is the type that the desired object shall have. `Objectify'  turns
+<data> into an object with type <type>. That is, <data> is  changed,  and
+afterwards it will not be a list or a record unless  <type>  is  of  type
+list resp. record.
 
-If <data> is a list then `Objectify' turns it into a positional object,
-if <data> is a record then `Objectify' turns it into a component object
+If <data> is a list then `Objectify' turns it into a  positional  object,
+if <data> is a record then `Objectify' turns it into a  component  object
 (for examples, see~"Component Objects" and~"Positional Objects").
 
 `Objectify' does also return the object that it made out of <data>.
 
-For examples where `Objectify' is used, see~"Component Objects",
-"Positional Objects",
-and the example in Chapter~"An Example -- Residue Class Rings".
+For  examples  where  `Objectify'  is  used,   see~"Component   Objects",
+"Positional Objects", and the example in Chapter~"An Example  --  Residue
+Class Rings".
 
-Attribute assignments will change the type of an object. If you create many
-objects code of the form
+Attribute assignments will change the type of an object.  If  you  create
+many objects, code of the form
+
 \begintt
-o:=Objectify(type,rec())
+o:=Objectify(type,rec());
 SetMyAttribute(o,value);
 \endtt
-will take much time for type changes. You can avoid this by setting the
-attributes immediatley while the object is created:
+
+will take a lot of time for type changes. You can avoid this  by  setting
+the attributes immediately while the object is created, via:
 
 \>ObjectifyWithAttributes(<obj>,<type>,<Attr1>,<val1>[,<Attr2>,<val2>...]) F
 
-changes the type of object <obj> to type <type> and sets
-attribute <Attr1> set to <val1>, attribute
-<Attr2> set to <val2> and so forth.
+which changes the type of object <obj> to type <type> and sets  attribute
+<Attr1> to <val1>, sets attribute <Attr2> to <val2> and so forth.
 
-If the filter list of <type> includes that these attributes are set (and for
-propertries also includes the value of the property) and if no special
-setter methods are installed for any of the involved attributes this is done
-simultaneously without type changes which may give a substantial speedup.
+If the filter list of <type> includes that these attributes are set  (and
+the properties also include values of the properties) and if  no  special
+setter methods are installed for any of the involved attributes then they
+are  set  simultaneously  without  type  changes  which  can  produce   a
+substantial speedup.
 
-If the conditions of the last sentence are nort fulfilled, instead an
-ordinary `Objectify' with subsequential `Setter' calls for the attributes is
-performed.
+If the conditions of the last sentence are  not  fulfilled,  an  ordinary
+`Objectify'  with  subsequent  `Setter'  calls  for  the  attributes   is
+performed, instead.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Component Objects}
@@ -726,14 +727,14 @@ But it is also possible to implement new kinds of lists that lie in
 new families, and thus are not equal to lists that were available
 in {\GAP} before.
 An example for this is the implementation of matrices
-whose multiplication via '`*'' is the Lie product of matrices.
+whose multiplication via ```*''' is the Lie product of matrices.
 
 In this situation, it makes no sense to put the new matrices into the
 same family as the original matrices.
 Note that the product of two Lie matrices shall be defined but not the
 product of an ordinary matrix and a Lie matrix.
 So it is possible to have two lists that have the same entries but that
-are not equal w.r.t. '`='' because they lie in different families.
+are not equal w.r.t. ```=''' because they lie in different families.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -741,8 +742,8 @@ are not equal w.r.t. '`='' because they lie in different families.
 
 An operation is defined for elements rather than for objects in the sense
 that if the arguments are replaced by objects that are equal to the old
-arguments w.r.t. the equivalence relation '`='' then the result must be
-equal to the old result w.r.t.~'`=''.
+arguments w.r.t. the equivalence relation ```=''' then the result must be
+equal to the old result w.r.t.~```='''.
 
 But the implementation of many methods is representation dependent in the
 sense that certain representation dependent subobjects are accessed.
@@ -780,7 +781,7 @@ different one, namely to describe the data from which <obj> is composed.
 In particular, the external representation of <obj> is *not* one possible
 (``standard'') representation of <obj>,
 in fact the external representation of <obj> is in general different
-from <obj> w.r.t.~'`='',
+from <obj> w.r.t.~```=''',
 first  of all because the external representation of <obj> does in general
 not lie in the same family as <obj>.
 
@@ -849,13 +850,14 @@ gap> MakeImmutable(l);
 gap> l[3] := 5;
 Lists Assignment: <list> must be a mutable list
 not in any function
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or you can return and ignore the assignment to continue
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' and ignore the assignment to continue
 brk> 
 \endexample
 
 For external Objects, the situation is different. An external Object which
-claims to be immutable (ie its Type does not contain `IsMutable')
+claims to be immutable (i.e. its Type does not contain `IsMutable')
 should not admit any Methods which change the Element it represents.
 The kernel does *not* prevent the use of `!.' and `![' to change the
 underlying data structure.
@@ -899,7 +901,8 @@ gap> e[3];
 (1,4)(2,3)
 gap> e[3] := false;
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error no 1st choice method found for `ASS_LIST' on 3 arguments at
+Error, no 1st choice method found for `ASS_LIST' on 3 arguments called from
+... lines omitted here ...
 \endexample
 
 When we consider copying Objects, another filter `IsCopyable', enters
@@ -937,7 +940,7 @@ gap>
 There are two other related functions: `Immutable', which makes a new
 immutable object which shares no mutable subobjects with its input and
 `MakeImmutable' which changes an object and its mutable subobjects *in
-place* to be immutable. It should only be used on "new" Objects that
+place* to be immutable. It should only be used on ``new'' Objects that
 you have just created, and which cannot share mutable subobjects with
 anything else.
 
@@ -950,27 +953,32 @@ objects you create.
 So, if you are implementing your own external Objects. The rules amount to the
 following:
 
-\beginitems
-1. &You decide if your Objects should be mutable or copyable or constants, by
+\beginlist
+
+\item{1.}
+You decide if your Objects should be mutable or copyable or constants, by
 fixing whether their Type includes `IsMutable' or `IsCopyable'.
 
-2. &You install Methods for your objects respecting that decision:
+\item{2.}
+You install Methods for your objects respecting that decision:
 
-\beginitems
-\* &for constants -- no methods that change the underlying elements
+\itemitem{$\bullet$}
+for constants -- no methods change the underlying elements;
 
-\* &for copyables -- a method for ShallowCopy
+\itemitem{$\bullet$}
+for copyables -- you provide a method for `ShallowCopy';
 
-\* &for mutables  -- you may have methods that change the underlying elements
-		   these should explicitly require IsMutable
-\enditems
-\enditems
+\itemitem{$\bullet$}
+for mutables  -- you may have methods that change the underlying elements
+and these should explicitly require `IsMutable'.
+
+\endlist
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Global Variables in the Library}
 
 Global variables in the {\GAP} library are usually read-only in order to
-avoid that they are overwritten by chance.
+avoid their being overwritten accidentally.
 
 \>BindGlobal( <name>, <val> ) F
 
@@ -979,30 +987,34 @@ and makes it read-only.
 An error is given if the global variable corresponding to <name>
 already had a value bound.
 
-The different types of filters (see Sections~"Creating Categories",
-"Creating Representations", "Creating Attributes and Properties",
-"Creating Other Filters") that are used in the {\GAP} library are
-assigned by the following functions which make the variables automatically
-read-only.
-The only other difference between `New<Something>' and
-`Declare<Something>' is that `DeclareAttribute' and `DeclareProperty'
-also bind read-only global variables with names `Has<name>' and `Set<name>'
-for the tester and setter of the attribute,
-see Section~"ref:Setter and Tester for Attributes" in the Reference Manual.
-For the meaning of the arguments of `Declare<Something>',
-see~"NewAttribute", "NewCategory", "NewFilter", "NewProperty",
-and "NewOperation".
-
 \>DeclareAttribute( <name>, <filt>[, "mutable"][, <rank>] ) F
 \>DeclareCategory( <name>, <super> ) F
 \>DeclareFilter( <name>, <rank> ) F
 \>DeclareProperty( <name>, <filt>[, <rank>] ) F
+\>DeclareRepresentation( <name>, <super>, <slots> ) F
 
-Also operations and other global functions used in the {\GAP} library
-are assigned to read-only variables, with the following functions.
+The different types of filters (see Sections~"Creating Categories",
+"Creating Representations", "Creating Attributes and Properties",
+"Creating Other Filters") that are used in the {\GAP} library are
+assigned by the above `Declare<Something>' functions which make the
+variable with name <name> (a string) automatically read-only.
+The only other difference between `New<Something>' and
+`Declare<Something>' is that `DeclareAttribute' and `DeclareProperty'
+also bind read-only global variables with names `Has<name>' and `Set<name>'
+for the tester and setter of the attribute
+(see Section~"ref:Setter and Tester for Attributes" in the Reference Manual).
+For the meaning of the other arguments of `Declare<Something>',
+see~"NewAttribute", "NewCategory", "NewFilter", "NewProperty", and
+"NewRepresentation".
 
 \>DeclareOperation( <name>, <args-filts> ) F
 \>DeclareGlobalFunction( <name> ) F
+
+declare operations and other global functions used in the {\GAP} library,
+respectively,
+are assigned to the read-only variable with name <name> (a string).
+For the meaning of the other arguments of `DeclareOperation',
+see~"NewOperation".
 
 {\GAP} functions that are not operations and that are intended to be
 called by users should be notified to {\GAP} in the declaration part
@@ -1011,23 +1023,36 @@ of the respective package
 via `DeclareGlobalFunction', which returns a function that serves as a
 place holder for the function that will be installed later,
 and that will print an error message if it is called.
-A global function declared with `DeclareGlobalFunction' can be given its
-value <func> via
+See also~"DeclareSynonym".
 
 \>InstallGlobalFunction( <gvar>, <func> ) F
 
-where <gvar> is the variable named with the <name> argument of the call
-to `DeclareGlobalFunction'.
+A global function declared with `DeclareGlobalFunction' can be given its
+value <func> via `InstallGlobalFunction'; 
+<gvar> is the global variable (*not* a string) named with the 
+<name> argument of the call to `DeclareGlobalFunction'. For example,
+a declaration like
 
-(Note that <func> must be a function which has *not* been declared as a
+\begintt
+DeclareGlobalFunction( "SumOfTwoCubes" );
+\endtt
+
+in the ``declaration part'' (see Section~"Declaration and Implementation
+Part") might have a corresponding ``implementation part'' of:
+
+\begintt
+InstallGlobalFunction( SumOfTwoCubes, function(x, y) return x^3 + y^3; end);
+\endtt
+
+*Note:* <func> must be a function which has *not* been declared as a
 `GlobalFunction' itself. Otherwise completion files
-(see~"ref:Completion Files" in the reference manual) get confused!)
-
-For global variables that are *not* functions,
-instead of using `BindGlobal' one can also declare the variable with
+(see~"ref:Completion Files" in the reference manual) get confused!
 
 \>DeclareGlobalVariable( <name>[, <description>] ) F
 
+For global variables that are *not* functions,
+instead of using `BindGlobal' one can also declare the variable with
+`DeclareGlobalVariable' 
 which creates a new global variable named by the string <name>.
 If the second argument <description> is entered then this must be
 a string that describes the meaning of the global variable.
@@ -1050,6 +1075,50 @@ will assign a structural copy of <value> to <gvar>.
 Furthermore, `InstallFlushableValue' works only if <value> is a list.
 (Note that `InstallFlushableValue' makes sense only for *mutable*
 global variables.)
+
+\>DeclareSynonym( <name>, <value> ) F
+
+assigns the string <name> to a global variable as a synonym for <value>.
+Two typical intended usages are to declare an ``and-filter'', e.g.
+
+\begintt
+DeclareSynonym( "IsGroup", IsMagmaWithInverses and IsAssociative );
+\endtt
+
+and (mainly for compatibility reasons) to provide a previously declared
+global function with an alternative name, e.g.
+
+\begintt
+DeclareGlobalFunction( "SizeOfSomething" );
+DeclareSynonym( "OrderOfSomething", SizeOfSomething );
+\endtt
+
+*Note:* Before using `DeclareSynonym' in the way of this second example,
+one should determine whether the synonym is really needed. Perhaps an
+extra index entry in the documentation would be sufficient. 
+
+When declaring a synonym that is to be an attribute `DeclareSynonymAttr'
+should be used.
+
+\>DeclareSynonymAttr( <name>, <value> ) F
+
+assigns the string <name> to an attribute global variable as a synonym for
+<value>.  Two typical intended usages are to provide a previously declared
+attribute or property with an alternative name, e.g.
+
+\begintt
+DeclareAttribute( "GeneratorsOfDivisionRing", IsDivisionRing );
+DeclareSynonymAttr( "GeneratorsOfField", GeneratorsOfDivisionRing );
+\endtt
+
+and to declare an attribute that is an ``and-filter'', e.g.
+
+\begintt
+DeclareSynonymAttr( "IsField", IsDivisionRing and IsCommutative );
+\endtt
+
+Also see~"DeclareSynonym". (The comments made there also pertain to
+`DeclareSynonymAttr'.)
 
 \>FlushCaches() O
 
@@ -1090,8 +1159,20 @@ Calls to the following functions belong to the declaration part.
 `DeclareFilter',
 `DeclareOperation',
 `DeclareGlobalFunction',
-`DeclareProperty'.
-`InstallTrueMethod',
+`DeclareSynonym',
+`DeclareSynonymAttr',
+`DeclareProperty',
+`InstallTrueMethod'.
+
+See~"DeclareAttribute",
+"DeclareCategory",
+"DeclareFilter",
+"DeclareOperation",
+"DeclareGlobalFunction",
+"DeclareSynonym",
+"DeclareSynonymAttr",
+"DeclareProperty",
+"InstallTrueMethod".
 
 Calls to the following functions belong to the implementation part.
 
@@ -1104,6 +1185,16 @@ Calls to the following functions belong to the implementation part.
 `NewType',
 `Objectify'.
 
+See~"DeclareRepresentation",
+"InstallGlobalFunction",
+"InstallMethod",
+"InstallImmediateMethod",
+"InstallOtherMethod",
+"NewFamily",
+"NewType",
+"Objectify".
+
+\indextt{DeclareRepresentation!belongs to implementation part}
 Whenever both a `New<Something>' and a `Declare<Something>' variant
 of a function exist (see~"Global Variables in the Library"),
 the use of `Declare<Something>' is recommended
@@ -1111,7 +1202,7 @@ because this protects the variables in question from being overwritten.
 Note that there are *no* functions `DeclareFamily' and `DeclareType'
 since families and types are created dynamically,
 hence usually no global variables are associated to them.
-Further note that `DeclareRepresentation' is regarded to belong to the
+Further note that `DeclareRepresentation' is regarded as belonging to the
 implementation part,
 because usually representations of objects are accessed only in very
 few places, and all code that involves a particular representation

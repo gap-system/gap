@@ -103,11 +103,14 @@ InstallMethod( Source,
 
 #############################################################################
 ##
-#R  IsCompositionMappingRep( <map> )
+#F  ConstituentsCompositionMapping( <map> )
 ##
-DeclareRepresentation( "IsCompositionMappingRep",
-    IsGeneralMapping and IsAttributeStoringRep, [ "map1", "map2" ] );
-
+InstallGlobalFunction(ConstituentsCompositionMapping,function(map)
+  if not IsCompositionMappingRep(map) then
+    Error("<map> must be `IsCompositionMappingRep'");
+  fi;
+  return [map!.map1,map!.map2];
+end);
 
 #############################################################################
 ##
@@ -535,18 +538,18 @@ InstallGlobalFunction( MappingByFunction, function ( arg )
     local   map;        # mapping <map>, result
 
 
-		if not Length(arg) in [3,4] then
-			# signal an error
+    if not Length(arg) in [3,4,5] then
+      # signal an error
       Error( "usage: MappingByFunction( <D>, <E>, <fun>[, <inv>] )" );
-		fi;
+    fi;
 
-		# ensure that the source and range are domains
-		if not (IsDomain(arg[1]) and IsDomain(arg[2])) then
-			Error("MappingByFunction: Source and Range must be domains");
-		fi;
+    # ensure that the source and range are domains
+    if not (IsDomain(arg[1]) and IsDomain(arg[2])) then
+	    Error("MappingByFunction: Source and Range must be domains");
+    fi;
 
     # no inverse function given
-    if Length(arg) = 3  then
+    if Length(arg)<>4  then
 
       # make the general mapping
       map:= Objectify( TypeOfDefaultGeneralMapping( arg[1], arg[2],
@@ -554,6 +557,9 @@ InstallGlobalFunction( MappingByFunction, function ( arg )
                            and IsSingleValued
                            and IsTotal ),
                        rec( fun:= arg[3] ) );
+      if Length(arg)=5 and IsFunction(arg[5]) then
+        map!.prefun:=arg[5];
+      fi;
 
     # inverse function given
     elif Length(arg) = 4  then
@@ -563,7 +569,8 @@ InstallGlobalFunction( MappingByFunction, function ( arg )
                                IsNonSPMappingByFunctionWithInverseRep
                            and IsBijective ),
                        rec( fun    := arg[3],
-                            invFun := arg[4] ) );
+                            invFun := arg[4],
+			    prefun := arg[4]) );
 
     fi;
 
@@ -610,6 +617,22 @@ InstallMethod( ImagesRepresentative,
     return map!.fun( elm );
     end );
 
+#############################################################################
+##
+#M  PreImagesRepresentative( <map>, <elm> ) . . . . . for mapping by function
+##
+InstallMethod( PreImagesRepresentative,
+    "for mapping by function",
+    FamRangeEqFamElm,
+    [ IsMappingByFunctionRep, IsObject ], 0,
+  function ( map, elm )
+    if not IsBound(map!.prefun) then
+      # no quick way known
+      TryNextMethod();
+    fi;
+    return map!.prefun( elm );
+  end );
+
 
 #############################################################################
 ##
@@ -636,13 +659,12 @@ InstallMethod( PreImagesElm,
     return [ map!.invFun( elm ) ];
     end );
 
-
 #############################################################################
 ##
 #M  PreImagesRepresentative( <map>, <elm> ) . . . . . for mapping by function
 ##
 InstallMethod( PreImagesRepresentative,
-    "for mapping by function",
+    "for mapping by function with inverse",
     FamRangeEqFamElm,
     [ IsMappingByFunctionWithInverseRep, IsObject ], 0,
     function ( map, elm )
@@ -1132,6 +1154,7 @@ InstallMethod( IdentityMapping,
     # make the mapping
     id := Objectify( TypeOfDefaultGeneralMapping( D, D,
                                   IsSPGeneralMapping
+                              and IsAdditiveElementWithInverse
                               and IsAttributeStoringRep
                               and IsOne ),
                      rec() );
@@ -1201,6 +1224,16 @@ InstallMethod( ImagesSet,
   function ( id, elms )
     return elms;
   end );
+
+#############################################################################
+##
+#M  ImagesSource( <idmap> )
+##
+InstallMethod( ImagesSource,"for identity mapping",true,
+    [ IsGeneralMapping and IsOne ], SUM_FLAGS, # can't do better
+function ( id )
+  return Source(id);
+end );
 
 
 #############################################################################

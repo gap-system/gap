@@ -4,44 +4,43 @@
 echo "Collecting indices"
 awk '$0 !~ /@/ {$0=tolower($0)} {print}' ref/manual.idx >fullindex.idl.pre
 awk '{i=0;a=$0;\
-      match(a,/\{/);\
-      while (RSTART>0) {i=i+RSTART;a=substr(a,RSTART+1);match(a,/\{/);}\
+      rst=index(a,"{");\
+      while (rst>0) {i=i+rst;a=substr(a,rst+1);rst=index(a,"{");}\
       print substr($0,1,i) "R\\idxkern" substr($0,i+1);}'\
   fullindex.idl.pre >fullindex.idl
 awk '$0 !~ /@/ {$0=tolower($0)} {print}' tut/manual.idx >fullindex.idl.pre
 awk '{i=0;a=$0;\
-      match(a,/\{/);\
-      while (RSTART>0) {i=i+RSTART;a=substr(a,RSTART+1);match(a,/\{/);}\
+      rst=index(a,"{");\
+      while (rst>0) {i=i+rst;a=substr(a,rst+1);rst=index(a,"{");}\
       print substr($0,1,i) "T\\idxkern" substr($0,i+1);}'\
   fullindex.idl.pre >>fullindex.idl
 awk '$0 !~ /@/ {$0=tolower($0)} {print}' ext/manual.idx >fullindex.idl.pre
 awk '{i=0;a=$0;\
-      match(a,/\{/);\
-      while (RSTART>0) {i=i+RSTART;a=substr(a,RSTART+1);match(a,/\{/);}\
+      rst=index(a,"{");\
+      while (rst>0) {i=i+rst;a=substr(a,rst+1);rst=index(a,"{");}\
       print substr($0,1,i) "E\\idxkern" substr($0,i+1);}'\
   fullindex.idl.pre >>fullindex.idl
 awk '$0 !~ /@/ {$0=tolower($0)} {print}' prg/manual.idx >fullindex.idl.pre
 awk '{i=0;a=$0;\
-      match(a,/\{/);\
-      while (RSTART>0) {i=i+RSTART;a=substr(a,RSTART+1);match(a,/\{/);}\
+      rst=index(a,"{");\
+      while (rst>0) {i=i+rst;a=substr(a,rst+1);rst=index(a,"{");}\
       print substr($0,1,i) "P\\idxkern" substr($0,i+1);}'\
   fullindex.idl.pre >>fullindex.idl
 awk '$0 !~ /@/ {$0=tolower($0)} {print}' new/manual.idx >fullindex.idl.pre
 awk '{i=0;a=$0;\
-      match(a,/\{/);\
-      while (RSTART>0) {i=i+RSTART;a=substr(a,RSTART+1);match(a,/\{/);}\
+      rst=index(a,"{");\
+      while (rst>0) {i=i+rst;a=substr(a,rst+1);rst=index(a,"{");}\
       print substr($0,1,i) "N\\idxkern" substr($0,i+1);}'\
   fullindex.idl.pre >>fullindex.idl
+cp fullindex.idl fullindex.idx
 makeindex -l fullindex.idl
 
 # put hyphenation help into long commands
 echo "Hyphenating long index entries"
-echo '{match($0,"`");\
-    a=RSTART;\
+echo '{a=index($0,"`");\
     if (a==0) {print $0;}\
     else {\
-      match($0,"'"'"'");\
-      b=RSTART;\
+      b=index($0,"'"'"'");\
       if (b-a>40) {\
 	anf=substr($0,1,a);\
 	mid=substr($0,a+1,b-a-1);\

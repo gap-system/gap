@@ -116,14 +116,20 @@ end );
 ##
 #M  PrintObj( <pcgs> )
 ##
-InstallMethod( PrintObj,
-    "pcgs",
-    true,
-    [ IsPcgs and IsPcgsDefaultRep ],
-    0,
-
+InstallMethod( PrintObj, "pcgs", true, [ IsPcgs and IsPcgsDefaultRep ], 0,
 function(pcgs)
-    Print( "Pcgs(", pcgs!.pcSequence, ")" );
+  Print( "Pcgs(", pcgs!.pcSequence, ")" );
+end );
+
+#############################################################################
+##
+#M  ViewObj( <pcgs> )
+##
+InstallMethod( ViewObj, "pcgs", true, [ IsPcgs and IsPcgsDefaultRep ], 0,
+function(pcgs)
+  Print("Pcgs(");
+  View(pcgs!.pcSequence);
+  Print(")");
 end );
 
 
@@ -281,7 +287,7 @@ function( G )
 
     # compute a group with respect to <new>
     n := Length( new );
-    F := FreeGroup( n );
+    F := FreeGroup(IsSyllableWordsFamily, n );
     gens := GeneratorsOfGroup( F );
     rela := [];
 
@@ -585,21 +591,33 @@ end );
 ##
 #M  LinearCombinationPcgs( <pcgs>, <list> )
 ##
-InstallGlobalFunction(LinearCombinationPcgs,function( pcgs, list )
-    local   elm,  i;
+InstallGlobalFunction(LinearCombinationPcgs,function(arg)
+local pcgs,list,elm,  i;
 
+    pcgs:=arg[1];
+    list:=arg[2];
     if Length(pcgs)=0 then
-      return OneOfPcgs(pcgs);
+      if Length(arg)>2 then
+	return arg[3];
+      else
+	return OneOfPcgs(pcgs);
+      fi;
     fi;
     elm := fail;
 
     for i  in [ 1 .. Length(list) ]  do
         if list[i] <> 0  then
-	  if elm=fail then elm := pcgs[i] ^ list[i];
-	  else elm := elm * pcgs[i] ^ list[i];fi;
+	  if elm=fail then elm := pcgs[i] ^ Int(list[i]);
+	  else elm := elm * pcgs[i] ^ Int(list[i]);fi;
         fi;
     od;
-    if elm=fail then elm := One(pcgs[1]);fi;
+    if elm=fail then
+      if Length(arg)>2 then
+	return arg[3];
+      else
+	return One(pcgs[1]);
+      fi;
+    fi;
 
     return elm;
 
@@ -1159,7 +1177,7 @@ GROUP_BY_PCGS_FINITE_ORDERS := function( pcgs )
     local   f,  e,  m,  i,  type,  s,  id,  tmp,  j;
 
     # construct a new free group
-    f := FreeGroup( Length(pcgs) );
+    f := FreeGroup(IsSyllableWordsFamily, Length(pcgs) );
     e := ElementsFamily( FamilyObj(f) );
 
     # and a default type
@@ -1247,7 +1265,6 @@ end );
 
 #############################################################################
 ##
-
 #R  IsEnumeratorByPcgsRep
 ##
 DeclareRepresentation( "IsEnumeratorByPcgsRep",
@@ -1258,11 +1275,7 @@ DeclareRepresentation( "IsEnumeratorByPcgsRep",
 ##
 #M  EnumeratorByPcgs( <pcgs> )
 ##
-InstallMethod( EnumeratorByPcgs,
-    true,
-    [ IsPcgs ],
-    0,
-
+InstallMethod( EnumeratorByPcgs,"pcgs", true, [ IsPcgs ], 0,
 function( pcgs )
     return Objectify(
         NewType( FamilyObj(pcgs), IsList and IsEnumeratorByPcgsRep ),
@@ -1276,12 +1289,7 @@ end );
 ##
 #M  EnumeratorByPcgs( <pcgs>, <sublist> )
 ##
-InstallOtherMethod( EnumeratorByPcgs,
-    true,
-    [ IsPcgs,
-      IsList ],
-    0,
-
+InstallOtherMethod( EnumeratorByPcgs,"pcgs, sublist",true,[IsPcgs,IsList],0,
 function( pcgs, sublist )
     return Objectify(
         NewType( FamilyObj(pcgs), IsList and IsEnumeratorByPcgsRep ),
@@ -1295,8 +1303,7 @@ end );
 ##
 #M  Length( <enum-by-pcgs> )
 ##
-InstallMethod( Length,
-    true,
+InstallMethod( Length,"enum-by-pcgs", true,
     [ IsList and IsEnumeratorByPcgsRep ],
     0,
     enum -> Product(enum!.relativeOrders{enum!.sublist}) );
@@ -1306,7 +1313,7 @@ InstallMethod( Length,
 ##
 #M  <enum-by-pcgs> [ <pos> ]
 ##
-InstallMethod( \[\],
+InstallMethod( \[\],"enum-by-pcgs",
     true,
     [ IsList and IsEnumeratorByPcgsRep,
       IsPosInt ],
@@ -1331,8 +1338,8 @@ end );
 ##
 #M  Position( <enum-by-pcgs>, <elm>, <zero> )
 ##
-InstallMethod( Position,
-    function(a,b,c) return IsCollsElms(a,b); end,
+InstallMethod( Position,"enum-by-pcgs",
+    IsCollsElmsX,
     [ IsList and IsEnumeratorByPcgsRep,
       IsMultiplicativeElementWithInverse,
       IsZeroCyc ],
@@ -1344,12 +1351,16 @@ function( enum, elm, zero )
     pcgs := enum!.pcgs;
     exp  := ExponentsOfPcElement( pcgs, elm );
     pos  := 0;
-    if ForAny( enum!.complementList, x -> 0 <> exp[x] )  then
-        return fail;
+    if exp=fail or ForAny( enum!.complementList, x -> 0 <> exp[x] )  then
+      return fail;
     fi;
     for i  in enum!.sublist  do
-        pos := pos * enum!.relativeOrders[i] + exp[i];
+      pos := pos * enum!.relativeOrders[i] + exp[i];
     od;
+    # the element is not necessarily contained. So we must check
+    if elm<>enum[pos+1] then
+      return fail;
+    fi;
     return pos + 1;
 end );
 
@@ -1358,7 +1369,7 @@ end );
 ##
 #M  PositionCanonical( <enum-by-pcgs>, <elm> )
 ##
-InstallMethod( PositionCanonical,
+InstallMethod( PositionCanonical,"enum-by-pcgs",
     IsCollsElms,
     [ IsList and IsEnumeratorByPcgsRep,
       IsMultiplicativeElementWithInverse ],
@@ -1371,8 +1382,12 @@ function( enum, elm )
     exp  := ExponentsOfPcElement( pcgs, elm );
     pos  := 0;
     for i  in enum!.sublist  do
-        pos := pos * enum!.relativeOrders[i] + exp[i];
+      pos := pos * enum!.relativeOrders[i] + exp[i];
     od;
+    # the element is not necessarily contained. So we must check
+    if elm<>enum[pos+1] then
+      return fail;
+    fi;
     return pos + 1;
 end );
 
@@ -1460,7 +1475,6 @@ local u,n,i,ro,ran,o,d,j;
   return true;
 end);
 
-
 InstallGlobalFunction(LiftedPcElement,function(new,old,elm)
 local e;
   e:=ShallowCopy(new!.zeroVector);
@@ -1494,6 +1508,54 @@ local p,i;
   return InducedPcgsByPcSequenceNC(new,Concatenation(p,ker));
 end);
 
+#############################################################################
+##
+#M  IsPcgsElementaryAbelianSeries( <pcgs> )
+##
+BindGlobal("DoPcgsElementaryAbelianSeries",function(param)
+local G,e,ind,s,m,i,p;
+  if IsList(param) then
+    G:=param[1];
+    if HasPcgsElementaryAbelianSeries(G) then
+      # can we use the known pcgs?
+      p:=PcgsElementaryAbelianSeries(G);
+      e:=NormalSeriesByPcgs(p);
+      if ForAll(param,i->i in e) then
+        return p;
+      fi;
+    fi;
+  else
+    G:=param;
+  fi;
+  if not IsSolvableGroup(G) then
+    Error("<G> must be solvable");
+  fi;
+  e:=ElementaryAbelianSeriesLargeSteps(param);
+  ind:=[];
+  s:=[];
+  for i in [1..Length(e)-1] do
+    m:=ModuloPcgs(e[i],e[i+1]);
+    Add(ind,Length(s)+1);
+    Append(s,m);
+  od;
+  Add(ind,Length(s)+1);
+  p:=PcgsByPcSequence(FamilyObj(One(G)),s);
+  SetIsPcgsElementaryAbelianSeries(p,true);
+  SetIsPrimeOrdersPcgs(p,true);
+  SetIndicesNormalSteps(p,ind);
+  SetNormalSeriesByPcgs(p,e);
+  return p;
+end);
+
+#############################################################################
+##
+#M  PcgsElementaryAbelianSeries( <G> )
+##
+InstallMethod( PcgsElementaryAbelianSeries, "generic group", true,
+  [ IsGroup ], 0, DoPcgsElementaryAbelianSeries);
+
+InstallOtherMethod( PcgsElementaryAbelianSeries, "group list", true,
+  [ IsList ], 0, DoPcgsElementaryAbelianSeries);
 
 
 #############################################################################

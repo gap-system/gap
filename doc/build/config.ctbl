@@ -1,6 +1,6 @@
-@msfiles = ("ctbl","ctblfuns","ctblmaps","ctbllibr","ctblmono");
+@msfiles = ("ctbl","ctblfuns","ctblmaps","ctblmono");
 @gdfiles = ("ctbl","ctblauto","ctblchar","ctblfuns","ctblgrp","ctbllatt",
-            "ctblmaps","ctblmoli","ctblmono","ctblpope","ctblsolv.gd",
-            "ctblsymm","ctblothe","../tbl/ctadmin.tbd");
+            "ctblmaps","ctblmoli","ctblmono","ctblpope","ctblsolv",
+            "ctblsymm","ctblothe");
 $DIR = "../ref";
 $LIB = "../../lib"; 

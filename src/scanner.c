@@ -96,11 +96,14 @@ const char * Revision_scanner_c =
 #define S_COMMA         ((1UL<< 9)+0)
 #define S_DOTDOT        ((1UL<< 9)+1)
 
-#define S_INT           ((1UL<<10))
+#define S_PARTIALINT    ((1UL<<10)+0)
+#define S_INT           ((1UL<<10)+1)
+
 #define S_TRUE          ((1UL<<11)+0)
 #define S_FALSE         ((1UL<<11)+1)
 #define S_CHAR          ((1UL<<11)+2)
 #define S_STRING        ((1UL<<11)+3)
+#define S_PARTIALSTRING ((1UL<<11)+4)
 
 #define S_REC           ((1UL<<12))
 
@@ -148,6 +151,7 @@ const char * Revision_scanner_c =
 #define S_RETURN        ((1UL<<29)+1)
 #define S_QUIT          ((1UL<<29)+2)
 #define S_QQUIT         ((1UL<<29)+3)
+#define S_CONTINUE      ((1UL<<29)+4)
 
 #define S_SEMICOLON     ((1UL<<30))
 
@@ -234,13 +238,17 @@ typedef UInt            TypSymbolSet;
 **  the name of the identifier, the digits of the integer or the value of the
 **  string constant.
 **
-**  Note that the size of  'Value' limits the  maximal number of  significant
-**  characters  of an identifier,   the maximal size  of  an  integer and the
-**  maximal length of a  string.   'GetIdent', 'GetInt' and 'GetStr' truncate
-**  identifier, integers or strings after that many characters.
+**  Note  that  the  size  of  'Value'  limits  the  maximal  number  of
+**  significant  characters of  an identifier.  'GetIdent' truncates  an
+**  identifier after that many characters.
+**  
+**  The  only other  symbols  which  may not  fit  into  Value are  long
+**  integers  or strings.  Therefor we  have  to check  in 'GetInt'  and
+**  'GetStr' if  the symbols is  not yet  completely read when  Value is
+**  filled.
 */
 Char            Value [1025];
-
+UInt            ValueLen;
 
 /****************************************************************************
 **
@@ -280,6 +288,9 @@ UInt            NrErrLine;
 */
 Char *          Prompt;
 
+/* see scanner.h */
+Obj  PrintPromptHook = 0;
+Obj  EndLineHook = 0;
 
 /****************************************************************************
 **
@@ -609,6 +620,8 @@ UInt OpenInput (
 **
 **  The same as 'OpenInput' but for streams.
 */
+Obj IsStringStream;
+
 UInt OpenInputStream (
     Obj                 stream )
 {
@@ -626,7 +639,14 @@ UInt OpenInputStream (
     Input++;
     Input->isstream = 1;
     Input->stream = stream;
-    Input->sline = 0;
+    Input->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
+    if (Input->isstringstream) {
+        Input->sline = ADDR_OBJ(stream)[2];
+        Input->spos = INT_INTOBJ(ADDR_OBJ(stream)[1]);
+    }
+    else {
+        Input->sline = 0;
+    }
     Input->name[0] = '\0';
     Input->file = -1;
     Input->echo = 0;
@@ -1192,6 +1212,7 @@ UInt OpenOutputStream (
     /* put the file on the stack, start at position 0 on an empty line     */
     Output++;
     Output->stream   = stream;
+    Output->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
     Output->format   = (CALL_1ARGS(PrintFormattingStatus, stream) == True); 
     Output->line[0]  = '\0';
     Output->pos      = 0;
@@ -1360,9 +1381,10 @@ static Int GetLine2 (
     Char *                  buffer,
     UInt                    length )
 {
+
     if ( input->isstream ) {
         if ( input->sline == 0 
-          || SyStrlen(CSTR_STRING(input->sline)) <= input->spos )
+          || GET_LEN_STRING(input->sline) <= input->spos )
         {
             input->sline = CALL_1ARGS( ReadLineFunc, input->stream );
             input->spos  = 0;
@@ -1372,9 +1394,37 @@ static Int GetLine2 (
         }
         else {
             ConvString(input->sline);
-            SyStrncat( buffer, input->spos + CSTR_STRING(input->sline), 
-                       length );
-            input->spos += SyStrlen(buffer);
+            /* we now allow that input->sline actually contains several lines,
+               e.g., it can be a  string from a string stream  */
+            {
+                /***  probably this can be a bit more optimized  ***/
+                register Char * ptr, * bptr;
+                register UInt count, len, max, cbuf;
+                /* start position in buffer */
+                for(cbuf = 0; buffer[cbuf]; cbuf++);
+                /* copy piece of input->sline into buffer and adjust counters */
+                for(count = input->spos,
+                    ptr = (Char *)CHARS_STRING(input->sline) + count, 
+                    len = GET_LEN_STRING(input->sline),
+                    max = length-2,
+                    bptr = buffer + cbuf;
+                    cbuf < max && count < len 
+                                  && *ptr != '\n' && *ptr != '\r';
+                    *bptr = *ptr, cbuf++, ptr++, bptr++, count++);
+                /* we also copy an end of line if there is one */
+                if (*ptr == '\n' || *ptr == '\r') {
+                    buffer[cbuf] = *ptr;
+                    cbuf++;
+                    count++;
+                }
+                buffer[cbuf] = '\0';
+                input->spos = count;
+                /* if input->stream is a string stream, we have to adjust the
+                   position counter in the stream object as well */ 
+                if (input->isstringstream) {
+                    ADDR_OBJ(input->stream)[1] = INTOBJ_INT(count);
+                }
+            }
         }
     }
     else {
@@ -1402,7 +1452,10 @@ static Int GetLine2 (
 */
 extern void PutLine2(
     TypOutputFile *         output,
-    Char *                  line );
+    Char *                  line,
+    UInt                    len   );
+
+Int HELPSubsOn = 1;
 
 Char GetLine ( void )
 {
@@ -1411,13 +1464,23 @@ Char GetLine ( void )
     Char *          q;
 
     /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
+    /* if the GAP function `PrintPromptHook' is defined then it is called  */
+    /* for printing the prompt, see also `EndLineHook'                     */
     if ( ! Input->isstream ) {
+        Pr( "%c", (Int)'\03', 0L );
         if ( Input->file == 0 ) {
-            if ( ! SyQuiet ) Pr( "%s%c", (Int)Prompt, (Int)'\03' );
+            if ( ! SyQuiet ) 
+                if ( PrintPromptHook ) 
+                     CALL_0ARGS( PrintPromptHook );
+                else
+                     Pr( "%s%c", (Int)Prompt, (Int)'\03' );
             else             Pr( "%c", (Int)'\03', 0L );
         }
         else if ( Input->file == 2 ) {
-            Pr( "%s%c", (Int)Prompt, (Int)'\03' );
+            if ( PrintPromptHook ) 
+                 CALL_0ARGS( PrintPromptHook );
+            else
+                 Pr( "%s%c", (Int)Prompt, (Int)'\03' );
         }
     }
 
@@ -1439,14 +1502,21 @@ Char GetLine ( void )
         }
 
 
-        /* convert '?' at the beginning into 'HELP'                        */
-        if ( In[0] == '?' ) {
+        /* convert '?' at the beginning into 'HELP' 
+           (if not inside reading long string which may have line 
+           or chunk from GetLine starting with '?')                        */
+        
+        if ( In[0] == '?' && HELPSubsOn == 1) {
             buf[0] = '\0';
             SyStrncat( buf, In+1, 199 );
             In[0] = '\0';
             SyStrncat( In, "HELP(\"", 6 );
             for ( p = In+6,  q = buf;  *q;  q++ ) {
                 if ( *q != '"' && *q != '\n' ) {
+                    *p++ = *q;
+                }
+                else if ( *q == '"' ) {
+                    *p++ = '\\';
                     *p++ = *q;
                 }
             }
@@ -1457,7 +1527,7 @@ Char GetLine ( void )
         /* if neccessary echo the line to the logfile                      */
 	if( InputLog != 0 && Input->echo == 1)
             if ( !(In[0] == '\377' && In[1] == '\0') ) 
-	    PutLine2( InputLog, In ); 
+	    PutLine2( InputLog, In, SyStrlen(In) ); 
 
 		/*	if ( ! Input->isstream ) {
 	  if ( InputLog != 0 && ! Input->isstream ) {
@@ -1499,8 +1569,8 @@ Char GetLine ( void )
 
             /* if the line is not empty or a comment, print it             */
             else if ( In[0] != '\n' && In[0] != '#' && In[0] != '\377' ) {
-                PutLine2( TestOutput, "- " );
-                PutLine2( TestOutput, In );
+                PutLine2( TestOutput, "- ", 2 );
+                PutLine2( TestOutput, In, SyStrlen(In) );
                 In[0] = '\0';
             }
 
@@ -1601,13 +1671,20 @@ void GetIdent ( void )
     }
 
     /* terminate the identifier and lets assume that it is not a keyword   */
-    if ( i < sizeof(Value)-1 )  Value[i] = '\0';
+    if ( i < sizeof(Value)-1 )  
+        Value[i] = '\0';
+    else {
+        SyntaxError("Identifiers in GAP must consist of less than 1023 characters.");
+        i =  sizeof(Value)-1;
+        Value[i] = '\0';
+    }
     Symbol = S_IDENT;
 
     /* now check if 'Value' holds a keyword                                */
     switch ( 256*Value[0]+Value[i-1] ) {
     case 256*'a'+'d': if(!SyStrcmp(Value,"and"))     Symbol=S_AND;     break;
     case 256*'b'+'k': if(!SyStrcmp(Value,"break"))   Symbol=S_BREAK;   break;
+    case 256*'c'+'e': if(!SyStrcmp(Value,"continue"))   Symbol=S_CONTINUE;   break;
     case 256*'d'+'o': if(!SyStrcmp(Value,"do"))      Symbol=S_DO;      break;
     case 256*'e'+'f': if(!SyStrcmp(Value,"elif"))    Symbol=S_ELIF;    break;
     case 256*'e'+'e': if(!SyStrcmp(Value,"else"))    Symbol=S_ELSE;    break;
@@ -1666,8 +1743,9 @@ void GetIdent ( void )
 **  If the sequence contains characters which are not  digits  'GetInt'  will
 **  interpret the sequence as an identifier and set 'Symbol' to 'S_IDENT'.
 **
-**  The size of 'Value' limits the maximal number of digits  of  an  integer.
-**  If an integer has more digits 'GetInt' issues a warning and truncates it.
+**  When Value is  completely filled we have to check  if the reading of
+**  the integer  is complete  or not to  decide between  Symbol=S_INT or
+**  S_PARTIALINT.
 */
 void GetInt ( void )
 {
@@ -1677,7 +1755,8 @@ void GetInt ( void )
     isInt = 1;
 
     /* read the digits into 'Value'                                        */
-    for ( i=0; IsDigit(*In) || IsAlpha(*In) || *In=='_' || *In=='\\'; i++ ) {
+    for ( i=0; i < sizeof(Value)-1 && (IsDigit(*In) || IsAlpha(*In) || 
+                                           *In=='_' || *In=='\\'); i++ ) {
 
         /* handle escape sequences                                         */
         if ( *In == '\\' ) {
@@ -1695,7 +1774,7 @@ void GetInt ( void )
 
         /* put normal chars into 'Value' but only if there is room         */
         else {
-            if ( i < sizeof(Value)-1 )  Value[i] = *In;
+            Value[i] = *In;
         }
 
         /* if the characters contain non digits it is a variable           */
@@ -1706,14 +1785,20 @@ void GetInt ( void )
 
     }
 
-    /* check for numbers with too many digits                              */
-    if ( sizeof(Value)-1 <= i )
-        SyntaxError("integer must have less than 1024 digits");
-
-    /* terminate the integer                                               */
-    if ( i < sizeof(Value)-1 )  Value[i] = '\0';
-    if ( isInt )  Symbol = S_INT;
-    else          Symbol = S_IDENT;
+    /* terminate the integer         */
+    Value[i] = '\0';
+    if ( isInt ) {
+        if ( i < sizeof(Value)-1 ) 
+              Symbol = S_INT;
+        else          
+              Symbol = S_PARTIALINT;
+    }
+    else {
+        if ( i < sizeof(Value)-1 )
+              Symbol = S_IDENT;
+        else
+           SyntaxError("Identifier must have less than 1023 characters.");
+    }
 }
 
 
@@ -1733,36 +1818,46 @@ void GetInt ( void )
 **  An error is raised if the string includes a <newline> character or if the
 **  file ends before the closing '"'.
 **
-**  The size of 'Value' limits the maximal number of characters in a  string.
-**  If a string has more characters 'GetStr' issues a error and truncates it.
+**  When Value is  completely filled we have to check  if the reading of
+**  the string is  complete or not to decide  between Symbol=S_STRING or
+**  S_PARTIALSTRING.
 */
 void GetStr ( void )
 {
     Int                 i = 0;
+    Char                a, b, c;
 
-    /* skip '"'                                                            */
-    GET_CHAR();
-
+    /* Avoid substitution of '?' in beginning of GetLine chunks */
+    HELPSubsOn = 0;
+    
     /* read all characters into 'Value'                                    */
-    for ( i = 0; *In != '"' && *In != '\n' && *In != '\377'; i++ ) {
+    for ( i = 0; i < sizeof(Value)-1 && *In != '"' 
+                                     && *In != '\n' && *In != '\377'; i++ ) {
 
         /* handle escape sequences                                         */
         if ( *In == '\\' ) {
             GET_CHAR();
-            if      ( *In == '\n' && i < sizeof(Value)-1 )  i--;
-            else if ( *In == 'n'  && i < sizeof(Value)-1 )  Value[i] = '\n';
-            else if ( *In == 't'  && i < sizeof(Value)-1 )  Value[i] = '\t';
-            else if ( *In == 'r'  && i < sizeof(Value)-1 )  Value[i] = '\r';
-            else if ( *In == 'b'  && i < sizeof(Value)-1 )  Value[i] = '\b';
-            else if ( *In == '>'  && i < sizeof(Value)-1 )  Value[i] = '\01';
-            else if ( *In == '<'  && i < sizeof(Value)-1 )  Value[i] = '\02';
-            else if ( *In == 'c'  && i < sizeof(Value)-1 )  Value[i] = '\03';
-            else if (                i < sizeof(Value)-1 )  Value[i] = *In;
+            if      ( *In == '\n' )  i--;
+            else if ( *In == 'n'  )  Value[i] = '\n';
+            else if ( *In == 't'  )  Value[i] = '\t';
+            else if ( *In == 'r'  )  Value[i] = '\r';
+            else if ( *In == 'b'  )  Value[i] = '\b';
+            else if ( *In == '>'  )  Value[i] = '\01';
+            else if ( *In == '<'  )  Value[i] = '\02';
+            else if ( *In == 'c'  )  Value[i] = '\03';
+            else if ( IsDigit( *In ) ) {
+                a = *In; GET_CHAR(); b = *In; GET_CHAR(); c = *In;
+                if (!( IsDigit(b) && IsDigit(c) )){ 
+                 SyntaxError("expecting three octal digits after \\ in string");
+                }
+                Value[i] = (a-'0') * 64 + (b-'0') * 8 + c-'0';
+            }
+            else  Value[i] = *In;
         }
 
         /* put normal chars into 'Value' but only if there is room         */
         else {
-            if ( i < sizeof(Value)-1 )  Value[i] = *In;
+            Value[i] = *In;
         }
 
         /* read the next character                                         */
@@ -1770,18 +1865,28 @@ void GetStr ( void )
 
     }
 
+    /* XXX although we have ValueLen we need trailing \000 here,
+       in gap.c, function FuncMAKE_INIT this is still used as C-string
+       and long integers and strings are not yet supported!    */
+    Value[i] = '\0';
+
     /* check for error conditions                                          */
     if ( *In == '\n'  )
         SyntaxError("string must not include <newline>");
     if ( *In == '\377' )
         SyntaxError("string must end with \" before end of file");
-    if ( sizeof(Value)-1 <= i )
-        SyntaxError("string must have less than 1024 characters");
 
-    /* terminate the string, set 'Symbol' and skip trailing '"'            */
-    if ( i < sizeof(Value)-1 )  Value[i] = '\0';
-    Symbol = S_STRING;
-    if ( *In == '"' )  GET_CHAR();
+    /* set length of string, set 'Symbol' and skip trailing '"'            */
+    ValueLen = i;
+    if ( i < sizeof(Value)-1 )  {
+         Symbol = S_STRING;  
+         if ( *In == '"' )  GET_CHAR();
+    }
+    else
+         Symbol = S_PARTIALSTRING;
+
+    /* switching on substitution of '?' */
+    HELPSubsOn = 1;
 }
 
 
@@ -1799,6 +1904,8 @@ void GetStr ( void )
 */
 void GetChar ( void )
 {
+    Char c;
+    
     /* skip '\''                                                           */
     GET_CHAR();
 
@@ -1812,6 +1919,19 @@ void GetChar ( void )
         else if ( *In == '>'  )  Value[0] = '\01';
         else if ( *In == '<'  )  Value[0] = '\02';
         else if ( *In == 'c'  )  Value[0] = '\03';
+        else if ( *In >= '0' && *In <= '7' ) {
+            /* escaped three digit octal numbers are allowed in input */ 
+            c = 64 * (*In - '0');
+            GET_CHAR();
+            if ( *In < '0' || *In > '7' )
+                SyntaxError("expecting octal digit in character constant");
+            c = c + 8 * (*In - '0');
+            GET_CHAR();
+            if ( *In < '0' || *In > '7' )
+                SyntaxError("expecting 3 octal digits in character constant");
+            c = c + (*In - '0');
+            Value[0] = c;
+        }
         else                     Value[0] = *In;
     }
 
@@ -1849,6 +1969,12 @@ Int DualSemicolon = 0;
 
 void GetSymbol ( void )
 {
+    /* special case if reading of string is not finished */
+    if (Symbol == S_PARTIALSTRING) {
+        GetStr();
+        return;
+    }
+    
     /* if no character is available then get one                           */
     if ( *In == '\0' )
         GET_CHAR();
@@ -1866,8 +1992,8 @@ void GetSymbol ( void )
     switch ( *In ) {
 
     case '.':   Symbol = S_DOT;                         GET_CHAR();
-                if ( *In == '\\' ) { GET_CHAR(); 
-                   if ( *In == '\n' ) { GET_CHAR(); } }
+    /*            if ( *In == '\\' ) { GET_CHAR(); 
+                   if ( *In == '\n' ) { GET_CHAR(); } }   */
                 if ( *In == '.' ) { Symbol = S_DOTDOT;  GET_CHAR();  break; }
                 break;
     case '!':   Symbol = S_ILLEGAL;                     GET_CHAR();
@@ -1919,7 +2045,7 @@ void GetSymbol ( void )
     case '/':   Symbol = S_DIV;                         GET_CHAR();  break;
     case '^':   Symbol = S_POW;                         GET_CHAR();  break;
 
-    case '"':                                           GetStr();    break;
+    case '"':                               GET_CHAR(); GetStr();    break;
     case '\'':                                          GetChar();   break;
     case '\\':                                          GetIdent();  break;
     case '_':                                           GetIdent();  break;
@@ -1954,26 +2080,42 @@ Obj WriteAllFunc;
 
 /****************************************************************************
 **
-*F  PutLine2( <output>, <line> )  . . . . . . . . . . . . print a line, local
+*F  PutLine2( <output>, <line>, <len> )  . . . . . . . . . print a line, local
+**  
+**  Introduced  <len> argument. Actually in all cases where this is called one
+**  knows the length of <line>, so it is not necessary to compute it again
+**  with the inefficient C- SyStrlen.  (FL)
 */
 
 
 void PutLine2(
     TypOutputFile *         output,
-    Char *                  line )
+    Char *                  line,
+    UInt                    len )
 {
     Obj                     str;
-    UInt                    len;
-
+    UInt                    strlen;
     if ( output->isstream ) {
-	len = SyStrlen(line);
-
+        /* special handling of string streams, where we can copy directly */
+       if (output->isstringstream) {
+           str = ADDR_OBJ(output->stream)[1];
+           strlen = GET_LEN_STRING(str);
+           GROW_STRING(str, strlen+len);
+           memcpy((void *) (CHARS_STRING(str) + strlen), (void *)line, len);
+           SET_LEN_STRING(str, strlen + len);
+           *(CHARS_STRING(str) + strlen + len) = '\0';
+           CHANGED_BAG(str);
+           return;
+       }
 	/* Space for the null is allowed for in GAP strings */
 	str = NEW_STRING( len );
 
 	/* But we have to allow for it in SyStrncat */
-	SyStrncat( CSTR_STRING(str), line, len + 1 );
+	/*    XXX SyStrncat( CSTR_STRING(str), line, len + 1 );    */
+        /* this contains trailing zero character */
+        memcpy(CHARS_STRING(str),  line, len + 1 );
 	
+        /* now delegate to library level */
 	CALL_2ARGS( WriteAllFunc, output->stream, str );
       } 
     else {
@@ -1984,23 +2126,24 @@ void PutLine2(
 
 /****************************************************************************
 **
-*F  PutLineTo ( stream ) . . . . . . . . . . . . . . . . . print a line, local
+*F  PutLineTo ( stream, len ) . . . . . . . . . . . . . . print a line, local
 **
-**  'PutLine'  prints the current output line   'stream->line' to <stream>
-**   It  is  called from 'PutChrTo'.
+**  'PutLineTo'  prints the first len characters of the current output 
+**  line   'stream->line' to <stream>
+**  It  is  called from 'PutChrTo'.
 **
 **  'PutLineTo' also compares the output line with the  next line from the test
 **  input file 'TestInput' if 'TestInput' is not 0.  If  this input line does
 **  not starts with 'gap>' and the rest  of the line  matches the output line
 **  then the output line is not printed and the input line is discarded.
 **
-**  'PutLine'   also echoes the  output  line  to the  logfile 'OutputLog' if
+**  'PutLineTo'  also echoes the  output  line  to the  logfile 'OutputLog' if
 **  'OutputLog' is not 0 and the output file is '*stdout*' or '*errout*'.
 **
-**  Finally 'PutLine' checks whether the user has hit '<ctr>-C' to  interrupt
+**  Finally 'PutLineTo' checks whether the user has hit '<ctr>-C' to  interrupt
 **  the printing.
 */
-void PutLineTo ( KOutputStream stream )
+void PutLineTo ( KOutputStream stream, UInt len )
 {
     Char *          p;
 
@@ -2023,20 +2166,20 @@ void PutLineTo ( KOutputStream stream )
             TestLine[0] = '\0';
         }
         else {
-            PutLine2( stream, "+ " );
-            PutLine2( stream, Output->line );
+            PutLine2( stream, "+ ", 2 );
+            PutLine2( stream, Output->line, SyStrlen(Output->line) );
         }
     }
 
     /* otherwise output this line                                          */
     else {
-        PutLine2( stream, stream->line );
+        PutLine2( stream, stream->line, len );
     }
 
     /* if neccessary echo it to the logfile                                */
     if ( OutputLog != 0 && ! stream->isstream ) {
         if ( stream->file == 1 || stream->file == 3 ) {
-            PutLine2( OutputLog, stream->line );
+            PutLine2( OutputLog, stream->line, len );
         }
     }
 }
@@ -2054,12 +2197,14 @@ void PutLineTo ( KOutputStream stream )
 **  In the later case 'PutChrTo' has to decide where to  split the output line.
 **  It takes the point at which $linelength - pos + 8 * indent$ is minimal.
 */
+Int NoSplitLine = 0;
+
 void PutChrTo (
     KOutputStream stream,
     Char                ch )
 {
     Int                 i;
-    Char                str [ 256 ];
+    Char                str [256];
 
     /* '\01', increment indentation level                                  */
     if ( ch == '\01' ) {
@@ -2103,7 +2248,7 @@ void PutChrTo (
         if (stream->pos != 0)
 	  {
 	    stream->line[ stream->pos ] = '\0';
-	    PutLineTo(stream);
+	    PutLineTo(stream, stream->pos );
 	    
 	    /* start the next line                                         */
 	    stream->pos      = 0;
@@ -2122,17 +2267,17 @@ void PutChrTo (
         stream->line[ stream->pos   ] = '\0';
 
         /* print the line                                                  */
-        PutLineTo( stream );
+        PutLineTo( stream, stream->pos );
 
 	/* and dump it from the buffer */
 	stream->pos = 0;
 	if (stream -> format)
 	  {
-	    /* indent for next line                                            */
+	    /* indent for next line                                         */
 	    for ( i = 0;  i < stream->indent; i++ )
 	      stream->line[ stream->pos++ ] = ' ';
 	    
-	    /* set up new split positions                                      */
+	    /* set up new split positions                                   */
 	    stream->spos     = 0;
 	    stream->sindent  = 666;
 	  }
@@ -2140,7 +2285,7 @@ void PutChrTo (
     }
 
     /* normal character, room on the current line                          */
-    else if ( stream->pos < SyNrCols-2 ) {
+    else if ( stream->pos < SyNrCols-2-NoSplitLine ) {
 
         /* put the character on this line                                  */
         stream->line[ stream->pos++ ] = ch;
@@ -2169,7 +2314,7 @@ void PutChrTo (
 	  /* print line up to the best split position                        */
 	  stream->line[ stream->spos++ ] = '\n';
 	  stream->line[ stream->spos   ] = '\0';
-	  PutLineTo( stream );
+	  PutLineTo( stream, stream->spos );
 	  
 	  /* indent for the rest                                             */
 	  stream->pos = 0;
@@ -2197,7 +2342,7 @@ void PutChrTo (
 	    }
 	  /* and print the line                                */
 	  stream->line[ stream->pos   ] = '\0';
-	  PutLineTo( stream );
+	  PutLineTo( stream, stream->pos );
 
 	  /* add the character to the next line                              */
 	  stream->pos = 0;
@@ -2224,6 +2369,37 @@ Obj FuncToggleEcho( Obj self)
 {
   Input->echo = 1 - Input->echo;
   return (Obj)0;
+}
+
+/****************************************************************************
+**
+*F  FuncCPROMPT( )
+**  
+**  returns the current `Prompt' as GAP string.
+*/
+Obj FuncCPROMPT( Obj self)
+{
+  Obj p;
+  p = NEW_STRING(SyStrlen( Prompt ));
+  SyStrncat( CSTR_STRING(p), Prompt, SyStrlen( Prompt ) );
+  return p;
+}
+
+/****************************************************************************
+**
+*F  FuncPRINT_CPROMPT( <prompt> )
+**  
+**  prints current `Prompt' if argument <prompt> is not in StringRep, otherwise
+**  uses the content of <prompt> as `Prompt'.
+**  (important is the flush character without resetting the cursor column)
+*/
+Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
+{
+  if (IS_STRING_REP(prompt)) {
+     Prompt = CSTR_STRING(prompt);
+  }
+  Pr("%s%c", (Int)Prompt, (Int)'\03' );
+  return (Obj) 0;
 }
 
 
@@ -2336,7 +2512,17 @@ void PrTo (
 		    while ( prec-- > 0 )  PutChrTo(stream,' ');
 
 		    /* print the string                                        */
+                    /* must be careful that line breaks don't go inside
+                       escaped sequences \n or \123 or similar */
 		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+                      if (*q == '\\' && NoSplitLine == 0) {
+                         if (*(q+1) < '8' && *(q+1) >= '0')
+                            NoSplitLine = 3;
+                         else
+                            NoSplitLine = 1;
+                      }
+                      else if (NoSplitLine > 0)
+                          NoSplitLine--;
 		      PutChrTo( stream, *q );
 		    }
 		  }
@@ -2581,6 +2767,12 @@ static StructGVarFunc GVarFuncs [] = {
     { "ToggleEcho", 0, "",
       FuncToggleEcho, "src/scanner.c:ToggleEcho" },
 
+    { "CPROMPT", 0, "",
+      FuncCPROMPT, "src/scanner.c:CPROMPT" },
+
+    { "PRINT_CPROMPT", 1, "prompt",
+      FuncPRINT_CPROMPT, "src/scanner.c:PRINT_CPROMPT" },
+
     { 0 }
 
 };
@@ -2649,6 +2841,9 @@ static Int InitKernel (
     /* import functions from the library                                   */
     ImportFuncFromLibrary( "ReadLine", &ReadLineFunc );
     ImportFuncFromLibrary( "WriteAll", &WriteAllFunc );
+    ImportFuncFromLibrary( "IsInputTextStringRep", &IsStringStream );
+    InitCopyGVar( "PrintPromptHook", &PrintPromptHook );
+    InitCopyGVar( "EndLineHook", &EndLineHook );
     InitFopyGVar( "PrintFormattingStatus", &PrintFormattingStatus);
 
     InitHdlrFuncsFromTable( GVarFuncs );

@@ -181,7 +181,8 @@ void            AssGVar (
     Obj *               copy;           /* one copy                        */
     UInt                i;              /* loop variable                   */
     Char *              name;           /* name of a function              */
-    Obj                 onam;          /* object of <name>                */
+    Obj                 onam;           /* object of <name>                */
+    Int                 len;            /* length of string                */
 
     /* make certain that the variable is not read only                     */
     while ( (REREADING != True) &&
@@ -189,7 +190,7 @@ void            AssGVar (
         ErrorReturnVoid(
             "Variable: '%s' is read only",
             (Int)CSTR_STRING( ELM_PLIST(NameGVars,gvar) ), 0L,
-            "you can return after making it writable" );
+            "you can 'return;' after making it writable" );
     }
 
     /* assign the value to the global variable                             */
@@ -236,8 +237,10 @@ void            AssGVar (
     /* assign name to a function                                           */
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
         name = NameGVar(gvar);
-        onam = NEW_STRING(SyStrlen(name));
-        SyStrncat( CSTR_STRING(onam), name, SyStrlen(name) );
+	/*CCC        onam = NEW_STRING(SyStrlen(name));
+	  SyStrncat( CSTR_STRING(onam), name, SyStrlen(name) ); CCC*/
+	len = SyStrlen(name);
+	C_NEW_STRING(onam, len, name);
         RESET_FILT_LIST( onam, FN_IS_MUTABLE );
         NAME_FUNC(val) = onam;
         CHANGED_BAG(val);
@@ -272,7 +275,7 @@ Obj             ValAutoGVar (
             ErrorReturnVoid(
        "Variable: automatic variable '%s' must get a value by function call",
                 (Int)CSTR_STRING( ELM_PLIST(NameGVars,gvar) ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
 
     }
@@ -312,7 +315,7 @@ UInt GVarName (
     Obj                 gvar2;          /* one element of <table>          */
     const Char *        p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
-
+    Int                 len;            /* length of name                  */
     /* start looking in the table at the following hash position           */
     pos = 0;
     for ( p = name; *p != '\0'; p++ ) {
@@ -332,10 +335,13 @@ UInt GVarName (
         CountGVars++;
         gvar = INTOBJ_INT(CountGVars);
         SET_ELM_PLIST( TableGVars, pos, gvar );
-        namx[0] = '\0';
+	/*CCC        namx[0] = '\0';
         SyStrncat( namx, name, 1023 );
         string = NEW_STRING( SyStrlen(namx) );
-        SyStrncat( CSTR_STRING(string), namx, SyStrlen(namx) );
+        SyStrncat( CSTR_STRING(string), namx, SyStrlen(namx) );CCC*/
+	len = SyStrlen(name);
+	memcpy(namx, name, len+1);
+	C_NEW_STRING(string, len, namx);
         RESET_FILT_LIST( string, FN_IS_MUTABLE );
         GROW_PLIST(    ValGVars,    CountGVars );
         SET_LEN_PLIST( ValGVars,    CountGVars );
@@ -621,14 +627,17 @@ UInt            completion_gvar (
 
     next = 0;
     for ( i = 1; i <= CountGVars; i++ ) {
-        curr = NameGVar( i );
-        for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
-        if ( k < len || curr[k] <= name[k] )  continue;
-        if ( next != 0 ) {
-            for ( k = 0; curr[k] != '\0' && curr[k] == next[k]; k++ ) ;
-            if ( k < len || next[k] < curr[k] )  continue;
+        /* consider only variables which are currently bound for completion */
+        if ( VAL_GVAR( i ) || ELM_PLIST( ExprGVars, i )) {
+            curr = NameGVar( i );
+            for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
+            if ( k < len || curr[k] <= name[k] )  continue;
+            if ( next != 0 ) {
+                for ( k = 0; curr[k] != '\0' && curr[k] == next[k]; k++ ) ;
+                if ( k < len || next[k] < curr[k] )  continue;
+            }
+            next = curr;
         }
-        next = curr;
     }
 
     if ( next != 0 ) {

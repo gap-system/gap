@@ -125,15 +125,19 @@ DeclareOperation(
 
 #############################################################################
 ##
-#O  PowerModCoeffs( <list1>, [<len1>,] <exp>, <list2> [,<len2>] )
+#O  PowerModCoeffs( <list1>[, <len1>], <exp>, <list2>[, <len2>] )
 ##
-##  Let <pol1> (and <pol2>) be polynomials given by the first <len1> (<len2>)
-##  entries of the coefficient list <list3> (<list2>).
+##  Let $p_1$ and $p_2$ be polynomials whose coefficients are given by the
+##  first <len1> resp. <len2> entries of the lists <list1> and <list2>,
+##  respectively.
 ##  If <len1> and <len2> are omitted, they default to the lengths of <list1>
 ##  and <list2>.
-##  This operation returns the coefficient list of the remainder when dividing
-##  `<pol1>^<exp>' by <pol2>. The operation reduces coefficients already
-##  while computing powers and therefore avoids an explosion in list length.
+##  Let <exp> be a positive integer.
+##  `PowerModCoeffs' returns the coefficient list of the remainder
+##  when dividing the <exp>-th power of $p_1$ by $p_2$.
+##  The coefficients are reduced already while powers are computed,
+##  therefore avoiding an explosion in list length.
+##
 DeclareOperation(
     "PowerModCoeffs",
     [ IsList, IsInt, IsInt, IsList, IsInt ] );

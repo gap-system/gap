@@ -70,7 +70,7 @@ void CheckTietzeStack (
         return;
     }
     if ( LEN_PLIST(tietze) != TZ_LENGTHTIETZE ) {
-        ErrorQuit( "<tietze must have length %d (not %d)",
+        ErrorQuit( "<tietze> must have length %d (not %d)",
                    (Int)TZ_LENGTHTIETZE, (Int)LEN_PLIST(tietze) );
         return;
     }
@@ -814,7 +814,7 @@ Obj FuncTzOccurrences (
                     continue;
                 ptAux[k] = 0;
                 if ( ! SUM_INTOBJS( ptCnts[k], ptCnts[k], INTOBJ_INT(c) ) ) {
-                    ErrorQuit( "integer overlow", 0L, 0L );
+                    ErrorQuit( "integer overflow", 0L, 0L );
                     return 0;
                 }
                 if ( 0 < c ) {
@@ -973,7 +973,7 @@ Obj FuncTzOccurrencesPairs (
                 if ( ptRel[j1] != numObj )
                     i = i + 2 * numgens;
                 if ( ! SUM_INTOBJS( ptRes[i], ptRes[i], INTOBJ_INT(1) ) ) {
-                    ErrorQuit( "integer overlow", 0L, 0L );
+                    ErrorQuit( "integer overflow", 0L, 0L );
                     return 0;
                 }
             }
@@ -1003,7 +1003,7 @@ Obj FuncTzOccurrencesPairs (
                     if ( ptRel[j2] != invObj )
                         ii = ii + 2 * numgens;
                     if ( !SUM_INTOBJS(ptRes[ii],ptRes[ii],INTOBJ_INT(1)) ) {
-                        ErrorQuit( "integer overlow", 0L, 0L );
+                        ErrorQuit( "integer overflow", 0L, 0L );
                         return 0;
                     }
                 }
@@ -1101,7 +1101,7 @@ Obj FuncTzSearchC (
     /* check the second argument                                           */
     tmp = ELM_LIST( args, 2 );
     if ( ! IS_INTOBJ(tmp) ) {
-        ErrorQuit( "<pos1> must be a posititve int", 0L ,0L );
+        ErrorQuit( "<pos1> must be a positive int", 0L ,0L );
         return 0;
     }
     pos1 = INT_INTOBJ(tmp);
@@ -1113,7 +1113,7 @@ Obj FuncTzSearchC (
     /* check the third argument                                            */
     tmp = ELM_LIST( args, 3 );
     if ( ! IS_INTOBJ(tmp) ) {
-        ErrorQuit( "<pos2> must be a posititve int", 0L ,0L );
+        ErrorQuit( "<pos2> must be a positive int", 0L ,0L );
         return 0;
     }
     pos2 = INT_INTOBJ(tmp);
@@ -1503,6 +1503,160 @@ Obj FuncTzSearchC (
 }
 
 
+/* rewriting using tz form relators */
+
+Obj  FuncReduceLetterRepWordsRewSys (
+ Obj  self,
+ Obj  tzrules,
+ Obj  a_w )
+{
+ UInt n,lt,i,k,p,j,lrul,eq,rlen,newlen,a;
+ Obj w,nw,rul;
+ Obj * wa;
+ Obj * nwa;
+ 
+ w=a_w;
+
+ /* n := Length( w ); */
+ n=LEN_PLIST(w);
+ 
+ /* lt := Length( tzrules ); */
+ lt=LEN_PLIST(tzrules);
+ 
+ /* i := 1; */
+ i=1;
+ 
+ /* while i in [ 1 .. n ] od */
+ while (i<=n) {
+  
+  /* k := 1; */
+  k=1;
+  
+  /* while k in [ 1 .. lt ] od */
+  while (k<=lt) {
+    
+    /* rul := tzrules[k][1]; */
+    rul = ELM_PLIST(tzrules,k);
+    rul = ELM_PLIST(rul,1);
+    lrul = LEN_PLIST(rul);
+   
+   /* if Length( tzrules[k][1] ) <= i then */
+   if (lrul<=i) {
+    
+    /* eq := true; */
+    eq=1;
+
+    /* p := i; */
+    p=i;
+    
+    /* j := Length( rul ); */
+    j=lrul;
+    
+    /* while eq and j > 0 od */
+    while ((eq==1) && (j>0) ) {
+     
+     /* eq := w[p] = rul[j]; */
+     eq=((ELM_LIST(w,p)==ELM_LIST(rul,j))?1:0);
+     
+     /* p := p - 1; */
+     p--;
+     
+     /* j := j - 1; */
+     j--;
+     
+    }
+    /* od */
+    
+    /* if eq then */
+    if (eq==1) {
+     
+     /* make the new plist */
+
+     rlen=LEN_PLIST(ELM_PLIST(ELM_PLIST(tzrules,k),2));
+     newlen = n-lrul+rlen;
+
+     if (newlen==0) {
+       nw=NEW_PLIST(T_PLIST_EMPTY,0);
+     }
+     else {
+	/* make space for the new word */
+	nw = NEW_PLIST(TNUM_OBJ(w),newlen);
+
+       /* addresses */
+       wa=ADDR_OBJ(w);
+       nwa=ADDR_OBJ(nw);
+       wa++;
+       nwa++;
+
+       /* for a in [ 1 .. p ] do */
+       /* Add( nw, w[a] ); */
+       for (a=1; a<=p;a++) {
+ 	 *nwa++=*wa++;
+       }
+       /* od */
+
+       /* rul := tzrules[k][2]; */
+       rul = ELM_PLIST(tzrules,k);
+       rul = ELM_PLIST(rul,2);
+       wa=ADDR_OBJ(rul);
+       wa++;
+
+       /* for a in [ 1 .. Length( rul ) ] do */
+       /* Add( nw, rul[a] ); */
+       for (a=1;a<=rlen;a++) {
+	 *nwa++=*wa++;
+       }
+       /* od */
+
+       /* for a in [ i + 1 .. n ] do */
+       /* there must be a better way for giving this address ... */
+       wa=(Obj*) &(ADDR_OBJ(w)[i+1]);
+       /* Add( nw, w[a] ); */
+       for (a=i+1;a<=n;a++) {
+	 *nwa++=*wa++;
+       }
+       /* od */
+
+     }
+
+     /* w := nw; */
+     SET_LEN_PLIST(nw,newlen);
+     w = nw;
+     
+     /* i := i - Length( tzrules[k][1] ); */
+     i=i-lrul;
+     
+     /* n := Length( w ); */
+     n=newlen;
+     
+     /* k := lt; */
+     k = lt;
+     
+    }
+    /* fi */
+    
+   }
+   /* fi */
+   
+   /* k := k + 1; */
+   k++;
+   
+  }
+  /* od */
+  
+  /* i := i + 1; */
+  i++;
+  
+ }
+ /* od */
+ 
+ /* return w; */
+ return w;
+ 
+}
+
+
+
 /****************************************************************************
 **
 
@@ -1536,6 +1690,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "TzSearchC", -1, "args",
       FuncTzSearchC, "src/tietze.c:TzSearchC" },
+
+    { "REDUCE_LETREP_WORDS_REW_SYS", 2, "tzwords, word",
+  FuncReduceLetterRepWordsRewSys,"src/tietze.c:REDUCE_LETREP_WORDS_REW_SYS" },
 
     { 0 }
 

@@ -19,9 +19,11 @@ see Chapter~"ref:Share Packages" in the Reference Manual.
 
 Every share package is in a subdirectory of the directory `pkg' which
 itself is a subdirectory of a {\GAP} root directory
-(see~"ref:GAP Root Directory"). This directory is
-called the home directory of the share package. *The name of this
-directory is the name of the share package.*
+(see Section~"ref:GAP Root Directory" in the Reference Manual).
+This directory is called the home directory of the share package.
+*The name of this directory (modulo case) is the name of the share package.*
+(The package name may have mixed case; but the directory must be *all* lower
+case.)
 
 The home directory of the share package must contain a file
 `init.g'. This file contains the necessary {\GAP} code to set up all
@@ -55,6 +57,7 @@ programs and instructions for their compilation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Init File of a Share Package}
 
+\indextt{init.g!for a share package}
 The initialization file of a share package is a file `init.g' in the
 home directory of the share package. This file tells {\GAP} about the
 version number of the share package, about the documentation and about
@@ -69,10 +72,11 @@ version number and permits to test whether necessary external binaries or
 other share packages are installed. If instead `DeclareAutoPackage'
 (see~"ref:DeclareAutoPackage" in the Reference Manual) is called, the
 package will be loaded automatically when {\GAP} has started. (To be exact:
-{\GAP} loads the library, then reads the users `gaprc' file and then loads
-the share packages which are intended for automatic loading and which are
-not yet loaded via the users `gaprc' file.)
+{\GAP} loads the library, then reads the users `.gaprc' or `gap.rc' file
+and then loads the share packages which are intended for automatic loading
+and which are not yet loaded via the users `.gaprc' or `gap.rc' file.)
 
+\indextt{ALLPKG}
 At the moment automatic loading is only available for the packages listed
 in the file `pkg/ALLPKG'. This is due to the fact that there is no standard
 C-Function that will list the contents of a subdirectory.
@@ -89,7 +93,8 @@ used to load the actual package in case the first command in the file is
 If the package requires other share packages (see "Requesting one Share
 Package from within Another") this is followed by calls to `RequirePackage'.
 
-Finally, calls to `ReadPkg' will read files which contain the actual {\GAP}
+Finally, calls to `ReadPkg' (see~"ref:ReadPkg" in the Reference Manual)
+will read files which contain the actual {\GAP}
 functions the package provides.
 
 To separate declaration and implementation parts, for larger packages it is
@@ -112,7 +117,8 @@ ReadPkg( "test", "gap/code.g");
 \endtt
 
 This file installs the share package ``test'' in version 1.0. There
-are no requirements that have to be tested, so `ReturnTrue' is used as
+are no requirements that have to be tested, so `ReturnTrue'
+(see~"ref:ReturnTrue" in the Reference Manual) is used as
 test function. It then installs documentation for the share package,
 which can be found in the `doc' subdirectory. Finally, it reads the
 file `code.g' in the `gap' subdirectory, which contains the actual
@@ -127,6 +133,19 @@ at the end of the initialization process.
 
 A share package which has been loaded once
 cannot be unloaded and also cannot be loaded again.
+However, as with any file individual files may be ``reread''.
+
+\>RereadPkg( <pkg>, <file> ) F
+\>RereadPkg( <pkg-file> ) F
+
+In the first form, `RereadPkg' rereads  the  file  <file>  of  the  share
+package <pkg>, where <file> is given as a relative path to the  directory 
+of <pkg>. In the second form where only one argument <pkg-file> is given,
+<pkg-file> should be the complete path of a  file  relative  to  a  `pkg'
+subdirectory of a {\GAP} root path (see~"ref:GAP root directory"  in  the
+Reference Manual). Each of <pkg>,  <file>  and  <pkg-file>  should  be  a
+string.
+
 When  writing (and debugging) a share package it may be therefore
 helpful to use  `RereadPkg' on single  files or to use a separate
 ``reader'' file which does not use the `RequirePackage' mechanism.
@@ -134,6 +153,7 @@ helpful to use  `RereadPkg' on single  files or to use a separate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{An Example of a Share Package}
 
+\indextt{GAP_ROOT_PATHS}
 We illustrate the creation of a share package by an example of a basic
 share package. (The following assumes that you are using {\GAP} under UNIX.)
 
@@ -248,7 +268,8 @@ automatically.
 
 The easiest way to accomplish this is to use `Filename' (see "ref:Filename"
 in the Reference Manual) for checking for  the actual binaries in the path
-given by `DirectoryPackagePrograms'  for the respective package. For example
+given by `DirectoriesPackagePrograms' (see~"ref:DirectoriesPackagePrograms"
+in the Reference Manual) for the respective package. For example
 the ``example'' share package uses the following commands to test whether
 the binary `hello' has been compiled, it issues a warning if not and will
 only load if it is indeed available.
@@ -286,8 +307,9 @@ The first possibility is to write  all the data  for the stand-alone to
 one or several files, then start the stand-alone  which then writes the
 output data to file and finally read in the standalone's output file.
 
-The second way is interfacing via streams (see chapter~"ref:Streams" in the
-reference manual). The support for this however is not yet fully implemented.
+The second way is interfacing via iostreams (see 
+Section~"ref:Input-Output Streams" in the Reference Manual).
+The support for this is in its infancy.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Requesting one Share Package from within Another}
@@ -342,6 +364,8 @@ would be read in and no documentation would be installed.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Declaration and Implementation Part}
 
+\indextt{init.g!for a share package}
+\indextt{read.g!for a share package}
 When  share   packages  require  each other    in  a  circular  way, a
 ``bootstrapping'' problem arises of defining functions before they are
 called. The same  problem occurs in the  library, it is resolved there
@@ -349,8 +373,8 @@ by separating declarations (which  define categories, operations etc.)
 and   implementations (which install methods)   in different files. An
 implementation  file may use   declarations defined in any declaration
 file.   {\GAP} initially reads all  declaration  files (in the library
-they have a `gd' suffix) and afterwards reads all implementation files
-(which have a `gi' suffix).
+they have a `.gd' suffix) and afterwards reads all implementation files
+(which have a `.gi' suffix).
 
 Something similar  is possible for  share packages: if a file `read.g'
 exists in the same place as `init.g',  this `read.g' file is read only
@@ -361,6 +385,11 @@ library  by  creating  such  a file   `read.g',   and restricting  the
 `ReadPkg' statements  in  `init.g' to  only load   those  files of the
 package which provide declaration and to load the implementation files
 from `read.g'.
+
+See Section~"prg:Declaration and Implementation Part" in the Programmers'
+Tutorial which discusses further the commands that should appear in the
+declaration part (in `init.g') and the implementation part (in `read.g')
+of a package.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Package Completion}
@@ -379,14 +408,14 @@ package:
 Completion works for those files which are read (using `ReadPkg')
 from the `read.g' file. (This is no real restriction as completion affects
 only the implementation part.) To create completion files, load the share
-package. Then issue the command
+package. Then use the following command.
 
 \>CreateCompletionFilesPkg(<pkgname>)
 
-This will create a new file `read.co' in the share packages home directory
-(so you must have write permissions there). When reading the share package
-this file is used in place of `read.g' if it exists and automatically takes
-care of completion.
+This will create a new file `read.co' in the share package's home directory
+<pkgname> (so you must have write permissions there). When reading the share
+package this file is used in place of `read.g' if it exists and automatically
+takes care of completion.
 
 When you change files which are completed, {\GAP} will complain about
 non-matching CRC files and will not load them. In this case remove
@@ -398,10 +427,13 @@ with the package.
 If you start {\GAP} with the command line option `-D', it displays
 information about reading and completion, the command line option `-N' turns
 completion off (as if all `.co' files were erased).
+(Section~"ref:Advanced Features of GAP" in the Reference Manual describes the
+options `-D' and `-N'.)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Version Numbers}
 
+\indextt{VERSION}
 A version number is a string which contains nonnegative integers separated
 by non-numeric characters. Examples of valid version numbers are for
 example:
@@ -427,6 +459,7 @@ The global variable `VERSION' contains the version number of the version of
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Testing for a Share Package}
 
+\indextt{LOADED_PACKAGES}
 There are two ways in which one might want to test for a share package. 
 
 The first is whether a package is available for loading or has been loaded.
@@ -440,21 +473,37 @@ can check the global variable `LOADED_PACKAGES' for a record component
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Writing Documentation}
 
-The format of the documentation is described in chapter "Manual format". The
-documentation files provided with the share package must contain the
-`manual.tex' file to actually run {\TeX} over the manual, the separate
-{\TeX} files for the manual chapters and the file `manual.six', produced by
-running {\TeX}. This file is used by the online help to get the index
-information. It may also be helpful to add a pre{\TeX}ed `dvi' or `ps' file
-of the package's manual.
+\indextt{README!for a share package}
+There  are  now  two  recognised  ways   of   producing   share   package
+documentation. There is the method that has been used to produce the main
+manuals for {\GAP} which requires the  documentation  to  be  written  in
+{\TeX} according to the format described  in  chapter  "The  gapmacro.tex
+Manual format". There is now also an XML-based documentation method  that
+uses   the   \package{GAPDoc}    package    (see~"GAPDoc:Title    page").
+Documentation written according to the format described in  chapter  "The
+gapmacro.tex Manual format" must include a `manual.tex' file to  actually
+run {\TeX} over the manual, the separate  {\TeX}  files  for  the  manual
+chapters and the file `manual.six', produced by running {\TeX}.  Whatever
+system that is used  to  produce  the  documentation,  there  must  be  a
+`manual.six' file, since this file is used by the online help to get  the
+index information. If you choose to use  a  method  other  than  the  two
+methods described above then you need to read chapter~"Interface  to  the
+GAP Help System" to find out how to provide the  necessary  help  handler
+functions and `manual.six' file. By the way, this does not mean  that  it
+is in anyway acceptable to provide documentation in just MSWord `.doc' format.
+Whatever, system you use to produce documentation, the output format must
+be one or more of plain text, {\TeX} `dvi', PostScript, PDF, or HTML, and
+preferably at least both plain text and {\TeX}  `dvi'.  It  may  also  be
+helpful to add a pre{\TeX}ed `dvi' or `ps' file of the package's manual.
 
 The main directory of the share package should also contain a file `INSTALL'
-or `README' that tells the user shortly what the share package does and (if
+or `README' that briefly tells the user what the share package does and (if
 applicable) how to compile and install binaries.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Wrapping Up a Share Package}
 
+\indextt{zoo}
 The releases of share packages are independent of releases of {\GAP}.
 Therefore share packages should be wrapped up in separate files that can be
 installed onto any version of {\GAP}. Similarly a share package can be
@@ -471,25 +520,28 @@ If the package provides a substantial amount of code,
 especially if it is intended to be loaded automatically, create a completion
 file (see~"Package Completion") and include it with the package.
 
-We use the `ZOO' archiver to provide {\GAP} archives and we ask you to
+We use the `zoo' archiver to provide {\GAP} archives and we ask you to
 use this format for your share packages. If `zoo' is not installed on your
 system, you can get source code for example at
-\begintt
-ftp://ftp.tex.ac.uk/pub/archive/tools/zoo
-\endtt
+\URL{ftp://ftp.tex.ac.uk/pub/archive/tools/zoo}
 
-`ZOO' by itself archives all files as binary files. This may lead to minor
+or try a search engine like Google
+\URL{http://www.google.com}
+
+with the keywords: `zoo archiving software'.
+
+`zoo' by itself archives all files as binary files. This may lead to minor
 problems when viewing files on DOS or Macintosh systems, which use a
 different textfile format (CRLF versus LF). To overcome such problems we use
 the following mechanism for the {\GAP} archive files, which is supported by
 the `unzoo' we are providing (but is unfortunately not part of the standard
-`ZOO' format):
+`zoo' format):
 
 All files are archived as Unix versions. (If you are using a Windows PC or a
 Macintosh the easiest way to achieve this is to ftp the files in text mode
 to a Unix machine and do the archiving there.)
 
-In `ZOO' one can add comments to files. Whenever a file gets a comment
+When using `zoo' one can add comments to files. Whenever a file gets a comment
 `!TEXT!' this file  will be considered as text (respectively one can enforce
 binary mode by a `!BINARY' comment) and `unzoo' will extract it accordingly,
 adding a CR on non-Unix systems.
@@ -509,7 +561,7 @@ Normally, all files of a share package except `dvi' files or special binary
 files are text files.
 
 If you are unsure about the format, you can use the ``list'' feature of
-`ZOO' on an existing package (for example `XGAP') to see all files with
+`zoo' on an existing package (for example `XGAP') to see all files with
 comments:
 \begintt 
 zoo lc xgap.zoo

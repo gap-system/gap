@@ -215,7 +215,7 @@ gap> fus[1];
       63, 73, 77, 90 ] ]
 \endexample
 
-\Declaration{UnderlyingGroup}
+\Declaration{UnderlyingGroup}!{for tables of marks}
 \beginexample
 gap> UnderlyingGroup( a6 );
 Group([ (1,2)(3,4), (1,2,4,5)(3,6) ])
@@ -233,7 +233,7 @@ rec(
           0, 1 ] ] )
 \endexample
 
-\Declaration{Identifier}
+\Declaration{Identifier}!{for tables of marks}
 \beginexample
 gap> Identifier( a5 );
 "A5"
@@ -416,7 +416,7 @@ gap> MinimalSupergroupsTom( s4, 5 );
 
 \FileHeader[1]{stdgen}
 
-\Declaration{StandardGeneratorsInfo}[stdgen]
+\Declaration{StandardGeneratorsInfo}[stdgen]!{for groups}
 \beginexample
 gap> StandardGeneratorsInfo( TableOfMarks( "L3(3)" ) );
 [ rec( generators := "a, b",
@@ -490,12 +490,12 @@ gap> HasGeneratorsSubgroupsTom( alt5 );  HasStraightLineProgramsTom( alt5 );
 true
 false
 gap> progs:= StraightLineProgramsTom( a5 );;
-gap> List( progs, Length );
-[ 1, 1, 1, 2, 1, 2, 2, 2, 2 ]
 gap> OrdersTom( a5 );
 [ 1, 2, 3, 4, 5, 6, 10, 12, 60 ]
 gap> IsCyclicTom( a5, 4 );
 false
+gap> Length( progs[4] );
+2
 gap> progs[4][1];
 <straight line program>
 gap> Display( progs[4][1] );  # first generator of an el. ab group of order 4
@@ -526,7 +526,7 @@ gap> RepresentativeTom( a5, 4 );
 Group([ (2,3)(4,5), (2,4)(3,5) ])
 \endexample
 
-\Declaration{StandardGeneratorsInfo}[tom]{for tables of marks}
+\Declaration{StandardGeneratorsInfo}[tom]!{for tables of marks}
 \beginexample
 gap> std:= StandardGeneratorsInfo( a5 );
 [ rec( generators := "a, b", description := "||a||=2, ||b||=3, ||ab||=5",

@@ -635,6 +635,16 @@ InstallMethod( Enumerator,
     [ IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
     EnumeratorOfRing );
 
+InstallMethod( Size, "characteristic zero ring is infinite",
+    true, [ IsRing and HasGeneratorsOfRing], 0,
+function(R)
+  if Characteristic(R)=0 and ForAny(GeneratorsOfRing(R),i->not IsZero(i))
+    then
+    return infinity;
+  fi;
+  TryNextMethod();
+end);
+
 
 #############################################################################
 ##

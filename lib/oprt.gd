@@ -30,11 +30,11 @@ DeclareSynonym( "InfoOperation",InfoAction );
 ##
 DeclareCategory( "IsExternalSet", IsDomain );
 
-OrbitishReq  := [ IsGroup, IsList, IsObject,
+OrbitishReq  := [ IsGroup, IsListOrCollection, IsObject,
                   IsList,
                   IsList,
                   IsFunction ];
-OrbitsishReq := [ IsGroup, IsList,
+OrbitsishReq := [ IsGroup, IsListOrCollection,
                   IsList,
                   IsList,
                   IsFunction ];
@@ -463,6 +463,11 @@ end );
 ##  blocks with no seed are computed, they are stored as attribute values
 ##  according to the rules of `OrbitsishOperation'.
 ##
+
+DeclareOperation( "PreOrbishProcessing", [IsGroup]);
+
+InstallMethod( PreOrbishProcessing, [IsGroup], x->x );
+
 BindGlobal( "OrbitishFO", function( name, reqs, famrel, usetype )
 
     local str, nname, orbish, func,oldname;
@@ -530,7 +535,9 @@ BindGlobal( "OrbitishFO", function( name, reqs, famrel, usetype )
 	Error( "usage: ", name, "(<xset>,<pnt>)\n",
 	      "or ", name, "(<G>[,<Omega>],<pnt>[,<gens>,<acts>][,<act>])" );
       fi;
-
+      
+      G := PreOrbishProcessing(G);
+      
       if not IsBound( gens )  then
 	  if CanEasilyComputePcgs( G )  then
 	    gens := Pcgs( G );
@@ -539,6 +546,8 @@ BindGlobal( "OrbitishFO", function( name, reqs, famrel, usetype )
 	  fi;
 	  acts := gens;
       fi;
+      
+      
 
       # In  the  case of `[Maximal]Blocks',  where  $G$  is a permutation group
       # acting on its moved points, use an attribute for $G$.
@@ -758,15 +767,34 @@ OrbitishFO( "Orbit", OrbitishReq, IsCollsElms, false );
 
 #############################################################################
 ##
-#O  Orbits( <G>, <Omega>[, <gens>, <acts>][, <act>] )
+#O  Orbits( <G>, <seeds>[, <gens>, <acts>][, <act>] )
 #A  Orbits( <xset> )
 ##
-##  returns a list of the orbits (given as lists) under the action.
+##  returns a duplicate-free list of the orbits of the elements in <seeds>
+##  under the action <act> of <G>
 ##
 ##  (Note that the arrangement of orbits or of points within one orbit is
 ##  not defined by the operation.)
 ##
 OrbitsishOperation( "Orbits", OrbitsishReq, false, NewAttribute );
+
+
+#############################################################################
+##
+#O  OrbitsDomain( <G>, <Omega>[, <gens>, <acts>][, <act>] )
+#A  OrbitsDomain( <xset> )
+##
+##  returns a list of the orbits of <G> on the domain <Omega> (given as
+##  lists) under the action <act>.
+##
+##  This operation is often faster than `Orbits'.
+##  The domain <Omega> must be closed under the action of <G>, otherwise an
+##  error can occur.
+##
+##  (Note that the arrangement of orbits or of points within one orbit is
+##  not defined by the operation.)
+##
+OrbitsishOperation( "OrbitsDomain", OrbitsishReq, false, NewAttribute );
 
 
 #############################################################################
@@ -780,12 +808,27 @@ OrbitishFO( "OrbitLength", OrbitishReq, IsCollsElms, false );
 
 #############################################################################
 ##
-#O  OrbitLengths( <G>, <Omega>[, <gens>, <acts>][, <act>] )
+#O  OrbitLengths( <G>, <seeds>[, <gens>, <acts>][, <act>] )
 #A  OrbitLengths( <xset> )
+##
+##  computes the lengths of all the orbits of the elements in <seegs> under
+##  the action <act> of <G>.
+##
+OrbitsishOperation( "OrbitLengths", OrbitsishReq, false, NewAttribute );
+
+
+#############################################################################
+##
+#O  OrbitLengthsDomain( <G>, <Omega>[, <gens>, <acts>][, <act>] )
+#A  OrbitLengthsDomain( <xset> )
 ##
 ##  computes the lengths of all the orbits of <G> on <Omega>.
 ##
-OrbitsishOperation( "OrbitLengths", OrbitsishReq, false, NewAttribute );
+##  This operation is often faster than `OrbitLengths'.
+##  The domain <Omega> must be closed under the action of <G>, otherwise an
+##  error can occur.
+##
+OrbitsishOperation( "OrbitLengthsDomain", OrbitsishReq, false, NewAttribute );
 
 
 #############################################################################
@@ -829,7 +872,12 @@ OrbitsishOperation( "ExternalOrbitsStabilizers", OrbitsishReq,
 #O  Transitivity( <G>, <Omega>[, <gens>, <acts>][, <act>] )
 #A  Transitivity( <xset> )
 ##
-##  An action is $k$-transitive if every $k$-tuple of points can be
+##  returns the degree $k$ (a non-negative integer) of transitivity of the
+##  action implied by the arguments, i.e. the largest integer $k$ such that
+##  the action is $k$-transitive. If the action is not transitive `0' is
+##  returned.
+##
+##  An action is *$k$-transitive* if every $k$-tuple of points can be
 ##  mapped simultaneously to every other $k$-tuple.
 ##
 OrbitsishOperation( "Transitivity", OrbitsishReq, false, NewAttribute );
@@ -912,7 +960,11 @@ OrbitsishOperation( "Earns", OrbitsishReq, false, NewAttribute );
 #O  IsTransitive( <G>, <Omega>[, <gens>, <acts>][, <act>] )
 #P  IsTransitive( <xset> )
 ##
-##  An action is transitive if the whole domain forms one orbit.
+##  returns `true' if the action implied by the arguments is transitive, or
+##  `false' otherwise.
+##
+##  \index{transitive}
+##  An action is *transitive* if the whole domain forms one orbit.
 ##
 OrbitsishOperation( "IsTransitive", OrbitsishReq, false, NewProperty );
 
@@ -922,8 +974,12 @@ OrbitsishOperation( "IsTransitive", OrbitsishReq, false, NewProperty );
 #O  IsPrimitive( <G>, <Omega>[, <gens>, <acts>][, <act>] )
 #P  IsPrimitive( <xset> )
 ##
-##  An action is primitive  if it is transitive and no nontrivial block
-##  systems are permissible. See~"Block Systems".
+##  returns `true' if the action implied by the arguments is primitive, or
+##  `false' otherwise.
+##
+##  \index{primitive}
+##  An action is *primitive* if it is transitive and the action admits no 
+##  nontrivial block systems. See~"Block Systems".
 ##
 OrbitsishOperation( "IsPrimitive", OrbitsishReq, false, NewProperty );
 
@@ -941,7 +997,11 @@ OrbitsishOperation( "IsPrimitiveAffine", OrbitsishReq, false, NewProperty );
 #O  IsSemiRegular( <G>, <Omega>[, <gens>, <acts>][, <act>] )
 #P  IsSemiRegular( <xset> )
 ##
-##  An action is semiregular is the stabilizer of each point is the
+##  returns `true' if the action implied by the arguments is semiregular, or
+##  `false' otherwise.
+##
+##  \index{semiregular}
+##  An action is *semiregular* is the stabilizer of each point is the
 ##  identity.
 ##
 OrbitsishOperation( "IsSemiRegular", OrbitsishReq, false, NewProperty );
@@ -952,9 +1012,14 @@ OrbitsishOperation( "IsSemiRegular", OrbitsishReq, false, NewProperty );
 #O  IsRegular( <G>, <Omega>[, <gens>, <acts>][, <act>] )
 #P  IsRegular( <xset> )
 ##
-##  An action is regular if it is semiregular (see `IsSemiRegular') and
-##  transitive. In this case every point <pnt> of <Omega> defines a one to one
-##  correspondence between <G> and <Omega>.
+##  returns `true' if the action implied by the arguments is regular, or
+##  `false' otherwise.
+##
+##  \index{regular}
+##  An action is *regular* if it is  both  semiregular  (see~"IsSemiRegular")
+##  and transitive (see~"IsTransitive!for group actions"). In this case every
+##  point <pnt> of <Omega> defines a one-to-one  correspondence  between  <G>
+##  and <Omega>.
 ##
 OrbitsishOperation( "IsRegular", OrbitsishReq, false, NewProperty );
 
@@ -964,7 +1029,7 @@ OrbitsishOperation( "IsRegular", OrbitsishReq, false, NewProperty );
 #O  RankAction( <G>, <Omega>[, <gens>, <acts>][, <act>] )
 #A  RankAction( <xset> )
 ##
-##  The rank of a transitive action is the number of orbits of
+##  returns the rank of a transitive action, i.e. the number of orbits of
 ##  the point stabilizer.
 ##
 OrbitsishOperation( "RankAction", OrbitsishReq, false, NewAttribute );
@@ -976,10 +1041,14 @@ OrbitsishOperation( "RankAction", OrbitsishReq, false, NewAttribute );
 #F  Permutation( <g>, <xset> )
 ##
 ##  computes the permutation that corresponds to the action of <g> on the
-##  domain <Omega> or the `UnderlyingDomain' value of the external set
-##  <xset>, respectively.
-##  If <g> does not leave the domain invariant, or does not map injectively,
-##  `fail' is returned.
+##  permutation domain <Omega> (a list of objects that are permuted). If an
+##  external set <xset> is given, the permutation domain is the `HomeEnumerator'
+##  of this external set (see Section~"External Sets").
+##  Note that the points of the returned permutation refer to the positions 
+##  in <Omega>, even if <Omega> itself consists of integers.
+##
+##  If <g> does not leave the domain invariant, or does not map the domain 
+##  injectively `fail' is returned.
 ##
 DeclareGlobalFunction( "Permutation" );
 
@@ -991,7 +1060,7 @@ DeclareOperation( "PermutationOp", [ IsObject, IsList, IsFunction ] );
 #O  PermutationCycle( <g>, <Omega>, <pnt> [,<act>] )
 ##
 ##  computes the permutation that represents the cycle of <pnt> under the
-##  action of the elemnt <g>
+##  action of the element <g>.
 ##
 DeclareGlobalFunction( "PermutationCycle" );
 
@@ -1132,6 +1201,27 @@ DeclareGlobalFunction( "OrbitByPosOp" );
 DeclareGlobalFunction( "SetCanonicalRepresentativeOfExternalOrbitByPcgs" );
 
 DeclareGlobalFunction( "StabilizerOfBlockNC" );
+
+#############################################################################
+##
+#O  AbelianSubfactorAction(<G>,<M>,<N>)
+##
+##  Let <G> be a group and $<M>\ge<N>$ be subgroups of a common parent that
+##  are normal under <G>, such that
+##  the subfactor $<M>/<N>$ is elementary abelian. The operation
+##  `AbelianSubfactorAction' returns a list `[<phi>,<alpha>,<bas>]' where
+##  <bas> is a list of elements of <M> which are representatives for a basis
+##  of $<M>/<N>$, <alpha> is a map from <M> into a $n$-dimensional row space
+##  over $GF(p)$ where $[<M>:<N>]=p^n$ that is the
+##  natural homomorphism of <M> by <N> with the quotient represented as an
+##  additive group. Finally <phi> is a homomorphism from <G>
+##  into $GL_n(p)$ that represents the action of <G> on the factor
+##  $<M>/<N>$.
+##
+##  Note: If only matrices for the action are needed, `LinearActionLayer'
+##  might be faster.
+##
+DeclareOperation( "AbelianSubfactorAction",[IsGroup,IsGroup,IsGroup] );
 
 #############################################################################
 ##
@@ -1277,15 +1367,16 @@ DeclareGlobalFunction("OnTuplesTuples");
 
 #############################################################################
 ##
-#O  DomainForAction( <pnt>, <acts> )
+#O  DomainForAction( <pnt>, <acts>, <act> )
 ##
-##  returns a domain which will contain the orbit of <pnt> under the group
+##  returns a domain which will contain the orbit of <pnt> under the action
+##  <act>  of the group
 ##  generated by <acts>. (Such a domain can be helpful for obtaining 
 ##  a dictionary.)
 ##  The default method returns `fail' to indicate that no special domain is
 ##  defined, a special method exists for matrix groups over finite fields.
 ##
-DeclareOperation("DomainForAction",[IsObject,IsListOrCollection]);
+DeclareOperation("DomainForAction",[IsObject,IsListOrCollection,IsFunction]);
 
 
 #############################################################################

@@ -110,7 +110,7 @@ fail
 \beginexample
 gap> g:=Group((1,2,3,4),(1,2));;
 gap> Centralizer(g,(1,2,3));
-Group( [ (1,2,3) ] )
+Group([ (1,2,3) ])
 gap> Centralizer(g,Subgroup(g,[(1,2,3)]));
 Group([ (1,2,3) ])
 gap> Centralizer(g,Subgroup(g,[(1,2,3),(1,2)]));
@@ -119,6 +119,7 @@ Group(())
 
 
 \Declaration{Centre}
+\Declaration{Idempotents}
 \Declaration{IsAssociative}
 \Declaration{IsCentral}
 \Declaration{IsCommutative}

@@ -18,24 +18,27 @@
 **  A list  that  is  known to  be a  string is  represented by a bag of type
 **  'T_STRING', which has the following format:
 **
-**      +----+----+- - - -+----+----+
-**      |1st |2nd |       |last|null|
-**      |char|char|       |char|char|
-**      +----+----+- - - -+----+----+
+**      +--------+----+----+- - - -+----+----+
+**      |length  |1st |2nd |       |last|null|
+**      |as UInt |char|char|       |char|char|
+**      +--------+----+----+- - - -+----+----+
 **
 **  Each entry is a  single character (of C type 'unsigned char').   The last
 **  entry  in  the  bag is the  null  character  ('\0'),  which terminates  C
-**  strings.
+**  strings.  We add this null character although the length is stored in the
+**  object. This allows to use C routines with  strings  directly  with  null 
+**  character free strings (e.g., filenames). 
 **
 **  Note that a list represented by a bag of type  'T_PLIST' or 'T_SET' might
 **  still be a string.  It is just that the kernel does not know this.
 **
 **  This package consists of three parts.
-**
-**  The first  part consists  of    the macros 'NEW_STRING',   'CSTR_STRING',
-**  'GET_LEN_STRING',    and   'GET_ELM_STRING'.    They     determine    the
-**  respresentation of strings.
-**
+**  
+**  The first part consists of the macros 'NEW_STRING', 'CHARS_STRING' (or
+**  'CSTR_STRING'),  'GET_LEN_STRING', 'SET_LEN_STRING', 'GET_ELM_STRING',
+**  'SET_ELM_STRING'  and  'C_NEW_STRING'.  These and  the functions below
+**  use the detailed knowledge about the respresentation of strings.
+**  
 **  The second part  consists  of  the  functions  'LenString',  'ElmString',
 **  'ElmsStrings', 'AssString',  'AsssString', PlainString', 'IsDenseString',
 **  and 'IsPossString'.  They are the functions requried by the generic lists
@@ -45,7 +48,7 @@
 **
 **  The third part consists  of the functions 'PrintString', which is  called
 **  by 'FunPrint', and 'IsString', which test whether an arbitrary list  is a
-**  string, and if so converts it into the above format.
+** string, and if so converts it into the above format.  
 */
 #include        "system.h"              /* system dependent part           */
 
@@ -166,9 +169,16 @@ void PrintChar (
     else if ( chr == '\03' )  Pr("'\\c'",0L,0L);
     else if ( chr == '\''  )  Pr("'\\''",0L,0L);
     else if ( chr == '\\'  )  Pr("'\\\\'",0L,0L);
+    /* print every non-printable on non-ASCII character in three digit
+     * notation  */
+    /*   old version (changed by FL)
     else if ( chr == '\0'  )  Pr("'\\0'",0L,0L);
     else if ( chr <  8     )  Pr("'\\0%d'",(Int)(chr&7),0L);
-    else if ( chr <  32    )  Pr("'\\0%d%d'",(Int)(chr/8),(Int)(chr&7));
+    else if ( chr <  32    )  Pr("'\\0%d%d'",(Int)(chr/8),(Int)(chr&7));*/
+    else if ( chr < 32 || chr > 126 ) {
+        Pr("'\\%d%d", (Int)((chr & 192) >> 6), (Int)((chr & 56) >> 3));
+        Pr("%d'", (Int)(chr&7), 0L);
+    }
     else                      Pr("'%c'",(Int)chr,0L);
 }
 
@@ -204,8 +214,6 @@ void LoadChar( Obj c )
 
 /****************************************************************************
 **
-
-
 *F  FuncCHAR_INT( <self>, <int> ) . . . . . . . . . . . . . . char by integer
 */
 Obj FuncCHAR_INT (
@@ -220,13 +228,13 @@ again:
         val = ErrorReturnObj(
             "<val> must be an integer (not a %s)",
             (Int)TNAM_OBJ(val), 0L,
-            "you can return an integer for <val>" );
+            "you can replace <val> via 'return <val>;'" );
     }
     chr = INT_INTOBJ(val);
     if ( 255 < chr || chr < 0 ) {
         val = ErrorReturnObj(
             "<val> must be an integer between 0 and 255",
-            0L, 0L, "you can return a new integer for <val>" );
+            0L, 0L, "you can replace <val> via 'return <val>;'" );
         goto again;
     }
 
@@ -248,13 +256,183 @@ Obj FuncINT_CHAR (
         val = ErrorReturnObj(
             "<val> must be a character (not a %s)",
             (Int)TNAM_OBJ(val), 0L,
-            "you can return a character for <val>" );
+            "you can replace <val> via 'return <val>;'" );
     }
 
     /* return the character                                                */
     return INTOBJ_INT(*(UChar*)ADDR_OBJ(val));
 }
 
+/****************************************************************************
+**
+*F  FuncCHAR_SINT( <self>, <int> ) .. . . . . . . . . . char by signed integer
+*/
+Obj FuncCHAR_SINT (
+    Obj             self,
+    Obj             val )
+{
+  Int             chr;
+
+  /* get and check the integer value                                     */
+agains:
+  while ( ! IS_INTOBJ(val) ) {
+      val = ErrorReturnObj(
+	  "<val> must be an integer (not a %s)",
+	  (Int)TNAM_OBJ(val), 0L,
+	  "you can replace <val> via 'return <val>;'" );
+  }
+  chr = INT_INTOBJ(val);
+  if ( 127 < chr || chr < -128 ) {
+      val = ErrorReturnObj(
+	  "<val> must be an integer between -128 and 127",
+	  0L, 0L, "you can replace <val> via 'return <val>;'" );
+      goto agains;
+  }
+
+    /* return the character                                                */
+    return ObjsChar[CHAR_SINT(chr)];
+}
+
+
+/****************************************************************************
+**
+*F  FuncSINT_CHAR( <self>, <char> ) . . . . . . . . .  signed integer by char
+*/
+Obj FuncSINT_CHAR (
+    Obj             self,
+    Obj             val )
+{
+  /* get and check the character                                         */
+  while ( TNUM_OBJ(val) != T_CHAR ) {
+      val = ErrorReturnObj(
+	  "<val> must be a character (not a %s)",
+	  (Int)TNAM_OBJ(val), 0L,
+	  "you can replace <val> via 'return <val>;'" );
+  }
+
+  /* return the character                                                */
+  return INTOBJ_INT(SINT_CHAR(*(UChar*)ADDR_OBJ(val)));
+}
+
+/****************************************************************************
+**
+*F  FuncSINTLIST_STRING( <self>, <string> ) signed integer list by string
+*/
+Obj FuncSINTLIST_STRING (
+    Obj             self,
+    Obj             val )
+{
+  UInt l,i;
+  Obj n;
+  UInt1 *p;
+
+  /* test whether val is a string, convert to compact rep if necessary */
+  while (! IsStringConv(val)) {
+     val = ErrorReturnObj(
+         "<val> must be a string, not a %s)",
+         (Int)TNAM_OBJ(val), 0L,
+         "you can replace <val> via 'return <val>;'" );
+  }
+
+  l=GET_LEN_STRING(val);
+  n=NEW_PLIST(T_PLIST,l);
+  SET_LEN_PLIST(n,l);
+  p=CHARS_STRING(val);
+  for (i=1;i<=l;i++) {
+    SET_ELM_PLIST(n,i,INTOBJ_INT(SINT_CHAR(p[i-1])));
+  }
+
+  /* return the character                                                */
+  CHANGED_BAG(n);
+  return n;
+}
+
+/****************************************************************************
+**
+*F  FuncSTRING_SINTLIST( <self>, <string> ) string by signed integer list
+*/
+Obj FuncSTRING_SINTLIST (
+    Obj             self,
+    Obj             val )
+{
+  UInt l,i;
+  Int low, inc;
+  Obj n;
+  UInt1 *p;
+
+  /* there should be a test here, but how do I check cheaply for list of
+   * integers ? */
+
+  /* general code */
+  if (! IS_RANGE(val) ) {
+    if (! IS_PLIST(val)) {
+       val = ErrorReturnObj(
+           "<val> must be a plain list or range, not a %s)",
+           (Int)TNAM_OBJ(val), 0L,
+           "you can replace <val> via 'return <val>;'" );
+    }
+       
+    l=LEN_PLIST(val);
+    n=NEW_STRING(l);
+    SET_LEN_STRING(n,l);
+    p=CHARS_STRING(n);
+    for (i=1;i<=l;i++) {
+      *p++=CHAR_SINT(INT_INTOBJ(ELM_PLIST(val,i)));
+    }
+  }
+  else {
+    l=GET_LEN_RANGE(val);
+    low=GET_LOW_RANGE(val);
+    inc=GET_INC_RANGE(val);
+    n=NEW_STRING(l);
+    SET_LEN_STRING(n,l);
+    p=CHARS_STRING(n);
+    for (i=1;i<=l;i++) {
+      *p++=CHAR_SINT(low);
+      low=low+inc;
+    }
+
+  }
+
+  CHANGED_BAG(n);
+  return n;
+}
+
+/****************************************************************************
+**
+*F  FuncREVNEG_STRING( <self>, <string> ) string by signed integer list
+*/
+Obj FuncREVNEG_STRING (
+    Obj             self,
+    Obj             val )
+{
+  UInt l,i,j;
+  Obj n;
+  UInt1 *p,*q;
+
+  /* test whether val is a string, convert to compact rep if necessary */
+  while (! IsStringConv(val)) {
+     val = ErrorReturnObj(
+         "<val> must be a string, not a %s)",
+         (Int)TNAM_OBJ(val), 0L,
+         "you can replace <val> via 'return <val>;'" );
+  }
+
+  l=GET_LEN_STRING(val);
+  n=NEW_STRING(l);
+  SET_LEN_STRING(n,l);
+  p=CHARS_STRING(val);
+  q=CHARS_STRING(n);
+  j=l-1;
+  for (i=1;i<=l;i++) {
+    /* *q++=CHAR_SINT(-SINT_CHAR(p[j])); */
+    *q++=-p[j];
+    j--;
+  }
+
+  CHANGED_BAG(n);
+  return n;
+}
 
 /****************************************************************************
 **
@@ -264,23 +442,47 @@ Obj FuncINT_CHAR (
 
 /****************************************************************************
 **
-
-*F  GET_ELM_STRING(<list>,<pos>)  . . . . . . . select an element of a string
+*F  NEW_STRING( <len> )  . . . returns new string with length <len>, first
+**  character and "first behind last" set to zero
 **
-**  'GET_ELM_STRING'  returns the  <pos>-th  element  of  the string  <list>.
-**  <pos> must be  a positive integer  less than  or  equal to  the length of
-**  <list>.
-**
-**  Note that 'GET_ELM_STRING' is a  macro, so do not  call it with arguments
-**  that have sideeffects.
-**
-**  'GET_ELM_STRING'  is defined in  the declaration part  of this package as
-**  follows:
-**
-#define GET_ELM_STRING(list,pos) \
-                        ObjsChar[ (UChar)(CSTR_STRING(list)[(pos)-1]) ]
 */
+Obj NEW_STRING ( Int len )
+{
+  Obj res;
+  res = NewBag( T_STRING, SIZEBAG_STRINGLEN(len)  ); 
+  SET_LEN_STRING(res, len);
+  /* it may be sometimes useful to have trailing zero characters */
+  CHARS_STRING(res)[0] = '\0';
+  CHARS_STRING(res)[len + sizeof(UInt)] = '\0';
+  return res;
+}
 
+/****************************************************************************
+**
+*F  GrowString(<list>,<len>) . . . . . .  make sure a string is large enough
+**
+**  returns the new length, but doesn't set SET_LEN_STRING.
+*/
+Int             GrowString (
+    Obj                 list,
+    UInt                need )
+{
+    UInt                len;            /* new physical length             */
+    UInt                good;           /* good new physical length        */
+
+    /* find out how large the data area  should become                     */
+    good = 5 * (GET_LEN_STRING(list)+3) / 4 + 1;
+
+    /* but maybe we need more                                              */
+    if ( need < good ) { len = good; }
+    else               { len = need; }
+
+    /* resize the bag                                                      */
+    ResizeBag( list, SIZEBAG_STRINGLEN(len) );
+
+    /* return the new maximal length                                       */
+    return (Int) len;
+}
 
 /****************************************************************************
 **
@@ -292,16 +494,12 @@ Obj FuncINT_CHAR (
 */
 extern Obj TYPE_LIST_EMPTY_MUTABLE;
 extern Obj TYPE_LIST_EMPTY_IMMUTABLE;
-extern Obj TYPE_LIST_HOM;
+static Obj TYPES_STRING;
 
 
 Obj TypeString (
     Obj                 list )
 {
-    Obj                 kind;           /* kind, result                    */
-    Int                 ktype;          /* kind type of <list>             */
-    Obj                 family;         /* family of elements              */
-    Obj                 kinds;          /* kinds list of <family>          */
 
     /* special case for the empty string                                   */
     if ( GET_LEN_STRING(list) == 0 ) {
@@ -313,46 +511,9 @@ Obj TypeString (
         }
     }
 
-    /* get the kind type and the family of the elements                    */
-    ktype  = TNUM_OBJ( list );
-    family = FAMILY_TYPE( TYPE_CHAR );
-
-    /* get the list kinds of that family                                   */
-    kinds  = TYPES_LIST_FAM( family );
-
-    /* if the kind is not yet known, compute it                            */
-    kind = ELM0_LIST( kinds, ktype-T_STRING+1 );
-    if ( kind == 0 ) {
-        kind = CALL_2ARGS( TYPE_LIST_HOM,
-            family, INTOBJ_INT(ktype-T_STRING+1) );
-        ASS_LIST( kinds, ktype-T_STRING+1, kind );
-    }
-
-    /* return the kind                                                     */
-    return kind;
+    return ELM_PLIST(TYPES_STRING, TNUM_OBJ(list) - T_STRING + 1);
 }
 
-
-/****************************************************************************
-**
-*F  SaveString( <string> )  . . . . . . . . . . . . . . . . . . save a string
-**
-*/
-void SaveString ( Obj string )
-{
-    SaveCStr( CSTR_STRING(string) );
-}
-
-/****************************************************************************
-**
-*F  LoadString( <string> )
-**
-*/
-void LoadString ( Obj string )
-{
-    LoadCStr( CSTR_STRING(string),
-              SIZE_OBJ(string)*(sizeof(Obj)/sizeof(Char)) );
-}
 
 
 /****************************************************************************
@@ -363,8 +524,6 @@ void LoadString ( Obj string )
 
 /****************************************************************************
 **
-
-
 *F  CopyString( <list>, <mut> ) . . . . . . . . . . . . . . . . copy a string
 **
 **  'CopyString' returns a structural (deep) copy of the string <list>, i.e.,
@@ -472,31 +631,44 @@ void CleanStringCopy (
 **
 **  'PrintString' prints the string with the handle <list>.
 **
-**  No  linebreaks are allowed,  if one must be  inserted  anyhow, it must be
-**  escaped by a backslash '\', which is done in 'Pr'.
+**  No linebreaks are  allowed, if one must be inserted  anyhow, it must
+**  be escaped by a backslash '\', which is done in 'Pr'.
 **
-**  The kernel buffer PrStrBuf is used to protect Pr against garbage collections
-**  caused by printing to string streams, which might move the body of list
+**  The kernel  buffer PrStrBuf  is used to  protect Pr  against garbage
+**  collections caused by  printing to string streams,  which might move
+**  the body of list.
+**
+**  The output uses octal number notation for non-ascii or non-printable
+**  characters. The function can be used  to print *any* string in a way
+**  which can be read in by GAP afterwards.
 **
 */
-static char PrStrBuf[10001];	/* 1 for the \0 at the end */
+static char PrStrBuf[10007];	/* 7 for a \c\123 at the end */
 
 void PrintString (
     Obj                 list )
 {
-  UInt scanout;
-  Char c;
-  UInt len = SyStrlen(CSTR_STRING(list));
+  UInt scanout, n;
+  UInt1 c;
+  UInt len = GET_LEN_STRING(list);
   UInt off = 0;
   Pr("\"", 0L, 0L);
-  while (off <= len)
+  while (off < len)
     {
       scanout = 0;
       do 
 	{
-	  c = CSTR_STRING(list)[off++];
+	  c = CHARS_STRING(list)[off++];
 	  switch (c)
 	    {
+            case '\\':
+              PrStrBuf[scanout++] = '\\';
+              PrStrBuf[scanout++] = '\\';
+              break;
+            case '\"':
+              PrStrBuf[scanout++] = '\\';
+              PrStrBuf[scanout++] = '\"';
+              break;
 	    case '\n':
 	      PrStrBuf[scanout++] = '\\';
 	      PrStrBuf[scanout++] = 'n';
@@ -526,17 +698,26 @@ void PrintString (
 	      PrStrBuf[scanout++] = 'c';
 	      break;
 	    default:
-	      PrStrBuf[scanout++] = c;
+              if (c < 32 || c>126) {
+                 PrStrBuf[scanout++] = '\\';
+                 n = c / 64;
+                 c = c - n*64;
+                 PrStrBuf[scanout++] = n + '0';
+                 n = c / 8;
+                 c = c - n*8;
+                 PrStrBuf[scanout++] = n + '0';
+                 PrStrBuf[scanout++] = c + '0'; 
+              }
+              else
+                 PrStrBuf[scanout++] = c;
 	    }
 	}
-      while (c != '\0' && scanout < 10000);
+      while (off < len && scanout < 10000);
       PrStrBuf[scanout++] = '\0';
       Pr( "%s", (Int)PrStrBuf, 0L );
     }
   Pr( "\"", 0L, 0L );
 }
-
-
 /****************************************************************************
 **
 *F  PrintString1(<list>)  . . . . . . . . . . . .  print a string for 'Print'
@@ -549,16 +730,22 @@ void PrintString (
 void PrintString1 (
     Obj                 list )
 {
-  UInt len = SyStrlen(CSTR_STRING(list));
-  UInt off = 0;
-  
-  while (off < len)
-    {
-      PrStrBuf[0] = '\0';
-      SyStrncat(PrStrBuf, CSTR_STRING(list)+off, 10000);
-      Pr( "%s", (Int)PrStrBuf, 0L );
-      off += 10000;
+  UInt len = GET_LEN_STRING(list);
+  UInt scanout, off = 0;
+  UInt1  *p;
+
+  while (off < len)    {
+    for (p = CHARS_STRING(list), scanout=0; 
+         p[off] && off<len && scanout<10000; 
+         off++, scanout++) {
+      PrStrBuf[scanout] = p[off];
     }
+    PrStrBuf[scanout] = '\0';
+    Pr( "%s", (Int)PrStrBuf, 0L );
+    for (p = CHARS_STRING(list); off<len && p[off]==0; off++) {
+      Pr("%c", 0L, 0L);
+    }
+  }
 }
 
 
@@ -573,7 +760,15 @@ Int EqString (
     Obj                 listL,
     Obj                 listR )
 {
-    return (SyStrcmp( CSTR_STRING(listL), CSTR_STRING(listR) ) == 0);
+  UInt lL, lR, i;
+  UInt1 *pL, *pR;
+  lL = GET_LEN_STRING(listL);
+  lR = GET_LEN_STRING(listR);
+  if (lR != lL) return 0;
+  pL = CHARS_STRING(listL);
+  pR = CHARS_STRING(listR);
+  for (i=0; i<lL && pL[i] == pR[i]; i++);
+  return (i == lL);
 }
 
 
@@ -588,7 +783,16 @@ Int LtString (
     Obj                 listL,
     Obj                 listR )
 {
-    return (SyStrcmp( CSTR_STRING(listL), CSTR_STRING(listR) ) < 0);
+  UInt lL, lR, i;
+  UInt1 *pL, *pR;
+  lL = GET_LEN_STRING(listL);
+  lR = GET_LEN_STRING(listR);
+  pL = CHARS_STRING(listL);
+  pR = CHARS_STRING(listR);
+  for (i=0; i<lL && i<lR && pL[i] == pR[i]; i++);
+  if (i == lL) return (lR > lL);
+  if (i == lR) return 0;
+  return pL[i] < pR[i];
 }
 
 
@@ -702,7 +906,7 @@ Obj ElmString (
         ErrorReturnVoid(
             "List Element: <list>[%d] must have an assigned value",
             (Int)pos, 0L,
-            "you can return after assigning a value" );
+            "you can 'return;' after assigning a value" );
         return ELM_LIST( list, pos );
     }
 
@@ -738,12 +942,13 @@ Obj ElmsString (
     Int                 pos;            /* <position> as integer           */
     Int                 inc;            /* increment in a range            */
     Int                 i;              /* loop variable                   */
+    UInt1               *p, *pn;        /* loop pointer                    */
 
     /* general code                                                        */
     if ( ! IS_RANGE(poss) ) {
 
         /* get the length of <list>                                        */
-        lenList = LEN_PLIST( list );
+        lenList = GET_LEN_STRING( list );
 
         /* get the length of <positions>                                   */
         lenPoss = LEN_LIST( poss );
@@ -760,15 +965,15 @@ Obj ElmsString (
                 ErrorReturnVoid(
                     "List Elements: <list>[%d] must have an assigned value",
                     (Int)pos, 0L,
-                    "you can return after assigning a value" );
+                    "you can 'return;' after assigning a value" );
                 return ELMS_LIST( list, poss );
             }
 
             /* select the element                                          */
-            elm = CSTR_STRING(list)[pos-1];
+            elm = CHARS_STRING(list)[pos-1];
 
             /* assign the element into <elms>                              */
-            CSTR_STRING(elms)[i-1] = elm;
+            CHARS_STRING(elms)[i-1] = elm;
 
         }
 
@@ -778,7 +983,7 @@ Obj ElmsString (
     else {
 
         /* get the length of <list>                                        */
-        lenList = LEN_PLIST( list );
+        lenList = GET_LEN_STRING( list );
 
         /* get the length of <positions>, the first elements, and the inc. */
         lenPoss = GET_LEN_RANGE( poss );
@@ -790,14 +995,14 @@ Obj ElmsString (
             ErrorReturnVoid(
                 "List Elements: <list>[%d] must have an assigned value",
                 (Int)pos, 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
             return ELMS_LIST( list, poss );
         }
         if ( lenList < pos + (lenPoss-1) * inc ) {
             ErrorReturnVoid(
                 "List Elements: <list>[%d] must have an assigned value",
                 (Int)(pos + (lenPoss-1) * inc), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
             return ELMS_LIST( list, poss );
         }
 
@@ -805,14 +1010,10 @@ Obj ElmsString (
         elms = NEW_STRING( lenPoss );
 
         /* loop over the entries of <positions> and select                 */
+	p = CHARS_STRING(list);
+	pn = CHARS_STRING(elms);
         for ( i = 1; i <= lenPoss; i++, pos += inc ) {
-
-            /* select the element                                          */
-            elm = CSTR_STRING(list)[pos-1];
-
-            /* assign the element into <elms>                              */
-            CSTR_STRING(elms)[i-1] = elm;
-
+	  pn[i-1] = p[pos-1];
         }
 
     }
@@ -832,31 +1033,47 @@ Obj ElmsString (
 **
 **  'AssString' is the function in 'AssListFuncs' for strings.
 **
-**  'AssString' simply converts the  string into a plain  list, and then does
-**  the same stuff   as 'AssPlist'.  This is  because  a string  is  not very
-**  likely to stay a string after the assignment.
-**
-*N  1996/06/11 mschoene this is the default and should probably not be here
+**  'AssString' keeps <list> in string representation if possible.
+**  
 */
 void AssString (
     Obj                 list,
     Int                 pos,
     Obj                 val )
 {
+  UInt len = GET_LEN_STRING(list);
+
+  if (TNUM_OBJ(val) != T_CHAR || pos > len+1) {
     /* convert the range into a plain list                                 */
     PLAIN_LIST(list);
     CLEAR_FILTS_LIST(list);
 
     /* resize the list if necessary                                        */
-    if ( LEN_PLIST(list) < pos ) {
-        GROW_PLIST( list, pos );
-        SET_LEN_PLIST( list, pos );
+    if ( len < pos ) {
+      GROW_PLIST( list, pos );
+      SET_LEN_PLIST( list, pos );
     }
 
     /* now perform the assignment and return the assigned value            */
     SET_ELM_PLIST( list, pos, val );
     CHANGED_BAG( list );
-}
+  }
+  else {
+    CLEAR_FILTS_LIST(list);
+
+    /* resize the list if necessary                                        */
+    if ( len < pos ) {
+      GROW_STRING( list, pos );
+      SET_LEN_STRING( list, pos );
+      CHARS_STRING(list)[pos] = (UInt1)0;
+    }
+
+    /* now perform the assignment and return the assigned value            */
+    SET_ELM_STRING( list, pos, val ); 
+    /*    CHARS_STRING(list)[pos-1] = *((UInt1*)ADDR_OBJ(val)); */
+    CHANGED_BAG( list );
+  }
+}    
 
 void AssStringImm (
     Obj                 list,
@@ -866,7 +1083,7 @@ void AssStringImm (
     ErrorReturnVoid(
         "Lists Assignment: <list> must be a mutable list",
         0L, 0L,
-        "you can return and ignore the assignment" );
+        "you can 'return;' and ignore the assignment" );
 }
 
 
@@ -882,21 +1099,19 @@ void AssStringImm (
 **
 **  'AsssString' is the function in 'AsssListFuncs' for strings.
 **
-**  'AsssString' simply converts the string to a plain list and then does the
-**  same stuff as 'AsssPlist'.  This is because a  string  is not very likely
-**  to stay a string after the assignment.
+**  'AsssString' simply delegates to AssString. Note that the ordering of 
+**  <poss> can be important if <list> should stay in string representation.
+**   
 */
 void AsssString (
     Obj                 list,
     Obj                 poss,
     Obj                 vals )
 {
-    /* convert <list> to a plain list                                      */
-    PLAIN_LIST(list);
-    CLEAR_FILTS_LIST(list);
-
-    /* and delegate                                                        */
-    ASSS_LIST( list, poss, vals );
+  Int i, len = LEN_LIST(poss);
+  for (i = 1; i <= len; i++) {
+    ASS_LIST(list, INT_INTOBJ(ELM_LIST(poss, i)), ELM_LIST(vals, i));
+  }
 }
 
 void AsssStringImm (
@@ -907,7 +1122,7 @@ void AsssStringImm (
     ErrorReturnVoid(
         "Lists Assignments: <list> must be a mutable list",
         0L, 0L,
-        "you can return and ignore the assignment" );
+        "you can 'return;' and ignore the assignment" );
 }
 
 
@@ -960,9 +1175,9 @@ Int IsSSortString (
 
     /* test whether the string is strictly sorted                          */
     len = GET_LEN_STRING( list );
-    ptr = (UInt1*) CSTR_STRING(list);
+    ptr = (UInt1*) CHARS_STRING(list);
     for ( i = 1; i < len; i++ ) {
-        if ( ! (ptr[i] < ptr[i+1]) )
+        if ( ! (ptr[i-1] < ptr[i]) )
             break;
     }
 
@@ -1008,33 +1223,32 @@ Int IsPossString (
 **  is not in the list.
 **
 **  'PosString' is the function in 'PosListFuncs' for strings.
-*/
+*/ 
 Int PosString (
     Obj                 list,
     Obj                 val,
     Int                 start )
 {
     Int                 lenList;        /* length of <list>                */
-    Obj                 elm;          /* one element of <list>           */
     Int                 i;              /* loop variable                   */
+    UInt1               valc;        /* C characters                    */
+    UInt1               *p;             /* pointer to chars of <list>      */
 
     /* get the length of <list>                                            */
     lenList = GET_LEN_STRING( list );
 
-    /* loop over all entries in <list>                                     */
-    for ( i = start+1; i <= lenList; i++ ) {
+    /* a string contains only characters */
+    if (TNUM_OBJ(val) != T_CHAR) return 0;
+    
+    /* val as C character   */
+    valc = *(UInt1*)ADDR_OBJ(val);
 
-        /* select one element from <list>                                  */
-        elm = GET_ELM_STRING( list, i );
-
-        /* compare with <val>                                              */
-        if ( EQ( elm, val ) )
-            break;
-
-    }
+    /* search entries in <list>                                     */
+    p = CHARS_STRING(list);
+    for ( i = start; i < lenList && p[i] != valc; i++ );
 
     /* return the position (0 if <val> was not found)                      */
-    return (lenList < i ? 0 : i);
+    return (lenList <= i ? 0 : i+1);
 }
 
 
@@ -1058,7 +1272,7 @@ void PlainString (
     tmp = NEW_PLIST( T_PLIST, lenList );
     SET_LEN_PLIST( tmp, lenList );
 
-    /* create the finite field entries                                     */
+    /* copy the characters                                                 */
     for ( i = 1; i <= lenList; i++ ) {
         SET_ELM_PLIST( tmp, i, GET_ELM_STRING( list, i ) );
     }
@@ -1066,11 +1280,16 @@ void PlainString (
     /* change size and type of the string and copy back                    */
     ResizeBag( list, SIZE_OBJ(tmp) );
     RetypeBag( list, TNUM_OBJ(tmp) );
-    SET_LEN_PLIST( list, lenList );
-    for ( i = 1; i <= lenList; i++ ) {
-        SET_ELM_PLIST( list, i, ELM_PLIST( tmp, i ) );
-        CHANGED_BAG( list );
-    }
+
+    /*    Why not just copying the data area ? (FL)
+	  SET_LEN_PLIST( list, lenList );
+	  for ( i = 1; i <= lenList; i++ ) {
+	  SET_ELM_PLIST( list, i, ELM_PLIST( tmp, i ) );
+	  CHANGED_BAG( list );
+	  }
+    */
+    memcpy((void*)ADDR_OBJ(list), (void*)ADDR_OBJ(tmp), SIZE_OBJ(tmp));
+    CHANGED_BAG(list);
 }
 
 
@@ -1139,6 +1358,7 @@ void ConvString (
 {
     Int                 lenString;      /* length of the string            */
     Obj                 elm;            /* one element of the string       */
+    Obj                 tmp;            /* temporary string                */
     Int                 i;              /* loop variable                   */
 
     /* do nothing if the string is already in the string representation    */
@@ -1148,16 +1368,23 @@ void ConvString (
         return;
     }
 
-    /* convert the string to the string representation                     */
-    /*N 1996/09/03 M.Schoenert it assumes the string rep. is more compact  */
-    lenString = LEN_LIST( string );
+
+    lenString = LEN_LIST(string);
+    tmp = NEW_STRING(lenString);
+
+    /* copy the string to the string representation                     */
     for ( i = 1; i <= lenString; i++ ) {
         elm = ELMW_LIST( string, i );
-        CSTR_STRING(string)[i-1] = *((UChar*)ADDR_OBJ(elm));
+        CHARS_STRING(tmp)[i-1] = *((UChar*)ADDR_OBJ(elm));
     }
-    CSTR_STRING(string)[lenString] = '\0';
+    CHARS_STRING(tmp)[lenString] = '\0';
+
+    /* copy back to string  */
     RetypeBag( string, IS_MUTABLE_OBJ(string)?T_STRING:T_STRING+IMMUTABLE );
-    ResizeBag( string, lenString+1 );
+    ResizeBag( string, SIZEBAG_STRINGLEN(lenString) );
+    /* copy data area from tmp */
+    memcpy((void*)ADDR_OBJ(string), (void*)ADDR_OBJ(tmp), SIZE_OBJ(tmp));
+    CHANGED_BAG(string);
 }
 
 
@@ -1248,7 +1475,7 @@ Obj FuncCONV_STRING (
         string = ErrorReturnObj(
             "ConvString: <string> must be a string (not a %s)",
             (Int)TNAM_OBJ(string), 0L,
-            "you can return a string for <string>" );
+            "you can replace <string> via 'return <string>;'" );
         return FuncCONV_STRING( self, string );
     }
 
@@ -1273,12 +1500,162 @@ Obj FuncIS_STRING_REP (
     return (IS_STRING_REP( obj ) ? True : False);
 }
 
+/****************************************************************************
+**
+*F  FuncPOSITION_SUBSTRING( <self>,  <string>, <substr>, <off> ) .  position of
+**  substring
+**  
+**  <str> and <substr> must be strings  and <off> an integer. The position
+**  of  first  character of substring   in string,  search  starting  from
+**  <off>+1, is  returned if such  a substring exists. Otherwise `fail' is
+**  returned.
+*/
+Obj FuncPOSITION_SUBSTRING( 
+			   Obj                  self,
+			   Obj                  string,
+			   Obj                  substr,
+			   Obj                  off )
+{
+  Int    ipos, i, j, lens, lenss, max;
+  UInt1  *s, *ss, c;
+
+  /* check whether <string> is a string                                  */
+  if ( ! IsStringConv( string ) ) {
+    string = ErrorReturnObj(
+	     "POSITION_SUBSTRING: <string> must be a string (not a %s)",
+	     (Int)TNAM_OBJ(string), 0L,
+	     "you can replace <string> via 'return <string>;'" );
+    return FuncPOSITION_SUBSTRING( self, string, substr, off );
+  }
+  
+  /* check whether <substr> is a non-empty string                        */
+  if ( ! IsStringConv( substr ) || (lenss = GET_LEN_STRING(substr)) == 0) {
+    substr = ErrorReturnObj(
+	  "POSITION_SUBSTRING: <substr> must be a non-empty string (not a %s)",
+	  (Int)TNAM_OBJ(substr), 0L,
+	  "you can replace <substr> via 'return <substr>;'" );
+    return FuncPOSITION_SUBSTRING( self, string, substr, off );
+  }
+
+  /* check wether pos is a non-negative integer  */
+  if ( ! IS_INTOBJ(off) || (ipos = INT_INTOBJ(off)) < 0 ) {
+    off = ErrorReturnObj(
+          "POSITION_SUBSTRING: <pos> must be  non-negative integer (not a %s)",
+          (Int)TNAM_OBJ(substr), 0L,
+          "you can replace <pos> via 'return <pos>;'");
+    return FuncPOSITION_SUBSTRING( self, string, substr, off );
+  }
+  
+  lens = GET_LEN_STRING(string);
+  max = lens - lenss + 1;
+  s = CHARS_STRING(string);
+  ss = CHARS_STRING(substr);
+  
+  c = ss[0];
+  for (i = ipos; i < max; i++) {
+    if (c == s[i]) {
+      for (j = 1; j < lenss; j++) {
+	if (! (s[i+j] == ss[j]))
+	  break;
+      }
+      if (j == lenss) 
+	return INTOBJ_INT(i+1);
+    }
+  }
+  return Fail;
+}
 
 /****************************************************************************
 **
+*F  FuncNormalizeWhitespace( <self>, <string> ) . . . . . normalize white
+**  space in place
+**    
+**  Whitespace  characters are  " \r\t\n".  Leading and  trailing whitespace  in
+**  string  is  removed. Intermediate  sequences  of  whitespace characters  are
+**  substituted by a single space.
+**  
+*/ 
+Obj FuncNormalizeWhitespace (
+			      Obj     self,
+			      Obj     string )
+{
+  UInt1  *s, c;
+  Int i, j, len, white;
 
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+  /* check whether <string> is a string                                  */
+  if ( ! IsStringConv( string ) ) {
+    string = ErrorReturnObj(
+	     "NormalizeWhitespace: <string> must be a string (not a %s)",
+	     (Int)TNAM_OBJ(string), 0L,
+	     "you can replace <string> via 'return <string>;'" );
+    return FuncNormalizeWhitespace( self, string );
+  }
+  
+  len = GET_LEN_STRING(string);
+  s = CHARS_STRING(string);
+  i = -1;
+  white = 1;
+  for (j = 0; j < len; j++) {
+    c = s[j];
+    if (c == ' ' || c == '\n' || c == '\t' || c == '\r') {
+      if (! white) {
+	i++;
+	s[i] = ' ';
+	white = 1;
+      }
+    }
+    else {
+      i++;
+      s[i] = c;
+      white = 0;
+    }
+  }
+  if (white && i > -1) 
+    i--;
+  s[i+1] = '\0';
+  SET_LEN_STRING(string, i+1);
+  
+  return (Obj)0;
+}
+
+/****************************************************************************
+**
+*F  UnbString( <string>, <pos> ) . . . . . Unbind function for strings
+**  
+**  This is to avoid unpacking of string to plain list when <pos> is 
+**  larger or equal to the length of <string>.
+**  
 */
+void UnbString (
+  Obj     string,
+  Int     pos )
+{
+        Int len;
+        len = GET_LEN_STRING(string);
+
+        /* only do something special if last character is to be, and can be, 
+         * unbound */
+        if (len < pos) return;
+        if (len != pos) {
+                UnbListDefault(string, pos);
+                return;
+        }
+        if (! IS_MUTABLE_OBJ(string)) {
+                UnbPlistImm(string, pos);
+                return;
+        }
+        /* maybe the string becomes sorted */
+        CLEAR_FILTS_LIST(string);
+        CHARS_STRING(string)[(pos) + sizeof(UInt) - 1] = 0;
+        SET_LEN_STRING(string, len-1);
+} 
+            
+
+  
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * * */
 
 /****************************************************************************
 **
@@ -1601,6 +1978,27 @@ static StructGVarFunc GVarFuncs [] = {
     { "INT_CHAR", 1, "char",
       FuncINT_CHAR, "src/string.c:INT_CHAR" },
 
+    { "CHAR_SINT", 1, "integer",
+      FuncCHAR_SINT, "src/string.c:CHAR_SINT" },
+
+    { "SINT_CHAR", 1, "char",
+      FuncSINT_CHAR, "src/string.c:SINT_CHAR" },
+
+    { "STRING_SINTLIST", 1, "list",
+      FuncSTRING_SINTLIST, "src/string.c:STRING_SINTLIST" },
+
+    { "SINTLIST_STRING", 1, "string",
+      FuncSINTLIST_STRING, "src/string.c:SINTLIST_STRING" },
+
+    { "REVNEG_STRING", 1, "string",
+      FuncREVNEG_STRING, "src/string.c:REVNEG_STRING" },
+
+    { "POSITION_SUBSTRING", 3, "string, substr, off",
+      FuncPOSITION_SUBSTRING, "src/string.c:POSITION_SUBSTRING" },
+
+    { "NormalizeWhitespace", 1, "string",
+      FuncNormalizeWhitespace, "src/string.c:NormalizeWhitespace" },
+
     { 0 }
 
 };
@@ -1608,7 +2006,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Char CharCookie[256][21];
@@ -1629,10 +2026,10 @@ static Int InitKernel (
 
     InitMarkFuncBags( T_CHAR , MarkNoSubBags );
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
-        InitMarkFuncBags( t1                     , MarkOneSubBags );
-        InitMarkFuncBags( t1          +IMMUTABLE , MarkOneSubBags );
-        InitMarkFuncBags( t1 +COPYING            , MarkOneSubBags );
-        InitMarkFuncBags( t1 +COPYING +IMMUTABLE , MarkOneSubBags );
+        InitMarkFuncBags( t1                     , MarkNoSubBags );
+        InitMarkFuncBags( t1          +IMMUTABLE , MarkNoSubBags );
+        InitMarkFuncBags( t1 +COPYING            , MarkNoSubBags );
+        InitMarkFuncBags( t1 +COPYING +IMMUTABLE , MarkNoSubBags );
     }
 
     /* make all the character constants once and for all                   */
@@ -1652,6 +2049,7 @@ static Int InitKernel (
     TypeObjFuncs[ T_CHAR ] = TypeChar;
 
     /* install the kind method                                             */
+    ImportGVarFromLibrary( "TYPES_STRING", &TYPES_STRING );
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
         TypeObjFuncs[ t1            ] = TypeString;
         TypeObjFuncs[ t1 +IMMUTABLE ] = TypeString;
@@ -1768,6 +2166,11 @@ static Int InitKernel (
 
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         IsStringFuncs[ t1 ] = IsStringObject;
+    }
+
+    /* install the list unbind methods  */
+    for ( t1 = T_STRING; t1 <= T_STRING_SSORT+IMMUTABLE; t1++ ) {
+           UnbListFuncs    [ t1            ] = UnbString;
     }
 
     MakeImmutableObjFuncs[ T_STRING       ] = MakeImmutableString;

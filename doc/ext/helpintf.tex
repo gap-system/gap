@@ -1,0 +1,212 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  helpintf.tex              GAP documentation              Frank Lübeck
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+%%  This file describes the interface between the GAP help system and the
+%%  actual documents.
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Interface to the GAP Help System}
+
+In this chapter we describe which  information the help system needs about a
+manual book and  how to tell it this information.  The code which implements
+this interface can be found in `lib/helpbase.gi'.
+
+If you are intending to use a documentation format that is already  used  by
+some other help book you probably don't need  to  know  anything  from  this
+chapter. However, if you want to create a new format and make  it  available
+to {\GAP} then hopefully you will find the necessary information here.
+
+The basic idea of the  help  system  is  as  follows:  One  tells  {\GAP}  a
+directory which contains a file `manual.six', see~"Installing a Help  Book".
+When the {\GAP} help is asked something about this book  it  reads  in  some
+basic information from the file `manual.six': strings like section  headers,
+function names, and index  entries  to  be  searched  by  the  online  help;
+information about the available formats of this book like text,  html,  dvi,
+and pdf;  the  actual  files  containing  the  documentation,  corresponding
+section numbers, and page numbers: and so on. See~"The manual.six file"  for
+a description of the format of the `manual.six' file.
+
+It  turns  out  that there  is  almost  no  restriction  on  the  format  of
+the  `manual.six'  file,   except  that  it  must  provide   a  string,  say
+`\"myownformat\"' which  identifies the  format of the  help book.  Then the
+basic actions  on a help  book are delegated by  the help system  to handler
+functions stored in a  record `HELP_BOOK_HANDLER.myownformat'. See~"The Help
+Book  Handler" for  information  which  functions must  be  provided by  the
+handler and what they  are supposed to do. The main work  to teach {\GAP} to
+use a new document format is to write these handler functions and to produce
+an appropriate `manual.six' file.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Installing a Help Book}
+
+\>HELP_ADD_BOOK( <short>, <long>, <dir> )
+
+This command tells {\GAP} that in directory <dir> (given as either a  string
+describing   the   path   relative   to   the    {\GAP}    root    directory
+`GAP_ROOT_PATHS[1]' or as directory object) contains the  basic  information
+about a help book. The string <short> is used as  an  identifying  name  for
+that book  by  the  online  help.  The  string  <long>  should  be  a  short
+explanation of the content of the book. Both strings together should  easily
+fit on a line, since they are displayed with `?books'.
+
+It is possible to reinstall a book with different strings  <short>,  <long>;
+(for example, documentation of a not-loaded share package indicates this  in
+the string <short> and if you later load the share package,  {\GAP}  quietly
+changes the string <short> as it reinstalls its documentation).
+
+The only condition necessary to make the installation of a book  *valid*  is
+that the directory <dir> must contain a file `manual.six'. The next  section
+explains how this file must look.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The manual.six File}
+
+If  a `manual.six'  file  for  a help  book  is not  in  the  format of  the
+`gapmacro.tex' macros, explained in chapter `The gapmacro.tex Manual Format'
+(see~"The  gapmacro.tex  Manual  Format"),   the  first  non-empty  line  of
+`manual.six' must be of the form
+
+%\begintt
+\)\kernttindent\#SIXFORMAT <myownformat>
+%\endtt
+
+where <myownformat> is an identifying string for this format. The reading of
+the  (remainder  of  the)  file  is   then   delegated   to   the   function
+`HELP_BOOK_HANDLER.<myownformat>.ReadSix' which must exist. Thus  there  are
+no further regulations for the format of the `manual.six' file,  other  that
+what you yourself impose.
+
+The    next    section    explains    what    the    return     value     of
+`HELP_BOOK_HANDLER.<myownformat>.ReadSix' should look like and which further
+function should be contained in `HELP_BOOK_HANDLER.<myownformat>'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Help Book Handler}
+
+For  each  document  format   <myownformat>   there   must   be   a   record
+`HELP_BOOK_HANDLER.<myownformat>' of functions with the following names  and
+functionality.
+
+An  implementation  example of  such  a  set  of handler  functions,  namely
+for  the  `gapmacro.tex' documentation  format,  is  contained in  the  file
+`lib/helpdef.gi'.
+
+\beginitems
+
+`ReadSix( <stream> )' &
+  This must  return a  record <info>  which has at  least the  following two
+  components: `bookname'  which is  the short identifying  name of  the help
+  book, and `entries'.  Here <info>`.entries' must be a list  with one entry
+  per search  string (which can  be a  section header, function  name, index
+  entry,  or whatever  seems sensible  to be  searched for  matching a  help
+  query). A *match*  for the {\GAP} help  is a pair (<info>,  <i>) where <i>
+  refers to an index for the list <info>`.entries' and this corresponds to a
+  certain position in the document. There  is one further regulation for the
+  format of  the entries  of <info>`.entries'.  They must  be lists  and the
+  first element  of  such a list must  be      a string which  is printed by
+  {\GAP}  for example  when several  matches are  found for  a query  (so it
+  should essentially be  the string which is searched for  the match, except
+  that it may  contain upper and lower  case  letters or some markup). There
+  may be other components in <info> which are needed by the functions below,
+  but their names and formats are not prescribed.
+  
+`ShowChapters( <info> )' &
+  This must return  a text string or  list of text lines  which contains the
+  chapter headers of the book <info>`.bookname'.
+
+`ShowSection( <info> )' &
+  This must return  a text string or  list of text lines  which contains the
+  section (and chapter) headers of the book <info>`.bookname'.
+
+`SearchMatches( <info>, <topic>, <frombegin> )' &
+  This  function must  return  a  list of  indices  of <info>`.entries'  for
+  entries which  match the search  string <topic>. If <frombegin>  is `true'
+  then  those parts  of  <topic> which  are separated  by  spaces should  be
+  considered  as  the  beginnings  of  words  to  decide  the  matching.  It
+  <frombegin> is `false', a substring search should be performed. The string
+  <topic>  can be  assumed to  be already  normalized (transformed  to lower
+  case, and whitespace normalized). The function must return a list with two
+  entries `[exact,  match]' where `exact' is  the list of indices  for exact
+  matches and `match' a list of indices of the remaining matches.
+
+`MatchPrevChap( <info>, <i> )' &
+  This should return  the match [<info>, `j'] which points  to the beginning
+  of  the  chapter  containing  match [<info>,  <i>],  respectively  to  the
+  beginning  of  the  previous  chapter  if [<info>,  <i>]  is  already  the
+  beginning of a chapter. (Corresponds to `?\<\<'.)
+
+`MatchNextChap( <info>, <i> )' &
+  Like the previous function except that it should return the match for  the
+  beginning of the next chapter. (Corresponds to `?>>'.)
+
+`MatchPrev( <info>, <i> )' &
+  This should return the previous section (or  appropriate  portion  of  the
+  document). (Corresponds to `?\<'.)
+
+`MatchNext( <info>, <i> )' &
+  Like the previous function except that it should return the  next  section
+  (or appropriate portion of the document). (Corresponds to `?>'.)
+
+`HelpData( <info>, <i>, <type> )' &
+  This returns for match [<info>, <i>] some data whose format depends on the
+  string <type>,  or `fail' if these  data are not available.  The values of
+  <type> which currently must be handled and the corresponding result format
+  are described in the list below.
+
+\enditems
+
+The `HELP_BOOK_HANDLER.<myownformat>.HelpData' function must recognize the
+following values of the <type> argument.
+
+\beginitems
+
+`\"text\"' &
+  This must return a corresponding text string in a format which can be fed
+  into the `Pager', see~"Ref:Pager". 
+
+`\"url\"' &
+  If the help book is available in HTML  format this must return an URL as a
+  string (Probably  a `file://' URL containing  a label for the  exact start
+  position in that file). Otherwise it returns `fail'.
+
+`\"dvi\"' &
+  If the help book  is available in dvi-format this must  return a record of
+  form  `rec( file  := <filename>,  page  := <pagenumber>  )'. Otherwise  it
+  returns `fail'.
+
+`\"pdf\"' &
+  Same as case `\"dvi\"', but for the corresponding pdf-file.
+  
+`\"secnr\"' &
+  This  must return  a  pair  like `[[3,3,1],  \"3.3.1\"]'  which gives  the
+  section  number  as  chapter  number, section  number,  subsection  number
+  triple  and a  corresponding  string  (a chapter  itself  is encoded  like
+  `[[4,0,0], \"4.\"]'). Useful for cross-referencing between help books.
+
+\enditems
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Introducing new Viewer for the Online Help}
+
+There is a  record `HELP_VIEWER_INFO' which contains one  component for each
+help viewer. Such a record contains two components.
+
+The  component `.type'  refers  to  one of  the  <type>s  recognized by  the
+`HelpData' handler function explained in the previous section (currently one
+of `\"text\"', `\"url\"', `\"dvi\"', or `\"pdf\"').
+
+The component  `.show' is  a function which  gets as input  the result  of a
+corresponding `HelpData' handler  call, if it was not  `fail'. This function
+has to perform the actual display of  the data. (E.g., by calling a function
+like `Pager' or by starting up an external viewer program.)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

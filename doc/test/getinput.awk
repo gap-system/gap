@@ -7,6 +7,7 @@ BEGIN{x=0; gin="in";gout="out";
  }
 {if (x==1) {
   sub(/\&/,"#");
+  gsub(/\|\|/,"|");
   if (substr($0,1,4)=="gap>") {
     print substr($0,6) >>gin;
   }

@@ -43,11 +43,12 @@ DeclareSynonym("IsLeftMagmaIdeal", IsMagma and IsLeftActedOnBySuperset);
 ##
 ##  `LeftMagmaIdeal' returns the magma containing the elements in the 
 ##  homogeneous list <gens> and closed under left multiplication by elements 
-##  of the parent magma <D> in which it emeds.
+##  of the magma <D> in which it embeds.
 ##
+
 ##  This has to put in the parent and left acting set. Although it is a 
-##  submagma, we can't call the generic submagma creation since it
-##  works on magma generators.
+##  submagma, we can't call the generic submagma creation since that
+##  requires *magma* generators.
 ##
 ##
 DeclareGlobalFunction( "LeftMagmaIdeal" );

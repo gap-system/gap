@@ -17,15 +17,17 @@ Revision.numtheor_gi :=
 ##
 #F  PrimeResidues( <m> )  . . . . . . . integers relative prime to an integer
 ##
-BindGlobal( "PrimeResiduesSmall",
-    Immutable( [[],[0],[1],[1,2],[1,3],[1,2,3,4],[1,5],[1,2,3,4,5,6]] ) );
+BindGlobal( "PrimeResiduesCache",
+    List( [[],[0],[1],[1,2],[1,3],[1,2,3,4],[1,5],[1,2,3,4,5,6]], Immutable ));
 
 InstallGlobalFunction( PrimeResidues, function ( m )
     local  residues, p, i;
 
     # make <m> it nonnegative, handle trivial cases
     if m < 0  then m := -m;  fi;
-    if m < 8  then return ShallowCopy(PrimeResiduesSmall[m+1]);  fi;
+    if m < Length(PrimeResiduesCache)  then 
+      return ShallowCopy(PrimeResiduesCache[m+1]);  
+    fi;
 
     # remove the multiples of all prime divisors
     residues := [1..m-1];
@@ -49,7 +51,9 @@ InstallGlobalFunction( Phi, function ( m )
 
     # make <m> it nonnegative, handle trivial cases
     if m < 0  then m := -m;  fi;
-    if m < 8  then return Length(PrimeResiduesSmall[m+1]);  fi;
+    if m < Length(PrimeResiduesCache) then 
+      return Length(PrimeResiduesCache[m+1]);  
+    fi;
 
     # compute $phi$
     phi := m;
@@ -71,7 +75,9 @@ InstallGlobalFunction( Lambda, function ( m )
 
     # make <m> it nonnegative, handle trivial cases
     if m < 0  then m := -m;  fi;
-    if m < 8  then return Length(PrimeResiduesSmall[m+1]);  fi;
+    if m < Length(PrimeResiduesCache) then 
+      return Length(PrimeResiduesCache[m+1]);  
+    fi;
 
     # loop over all prime factors $p$ of $m$
     lambda := 1;
@@ -1012,7 +1018,9 @@ InstallGlobalFunction( Sigma, function( n )
     # make <n> it nonnegative, handle trivial cases
     if n < 0  then n := -n;  fi;
     if n = 0  then Error("Sigma: <n> must not be 0");  fi;
-    if n < 8  then return Sum(DivisorsSmall[n+1]);  fi;
+    if n <= Length(DivisorsIntCache) then 
+      return Sum(DivisorsIntCache[n]);  
+    fi;
 
     # loop over all prime $p$ factors of $n$
     sigma := 1;
@@ -1040,7 +1048,9 @@ InstallGlobalFunction( Tau,function( n )
     # make <n> it nonnegative, handle trivial cases
     if n < 0  then n := -n;  fi;
     if n = 0  then Error("Tau: <n> must not be 0");  fi;
-    if n < 8  then return Length(DivisorsSmall[n+1]);  fi;
+    if n <= Length(DivisorsIntCache) then 
+      return Length(DivisorsIntCache[n]);  
+    fi;
 
     # loop over all prime factors $p$ of $n$
     tau := 1;

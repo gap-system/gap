@@ -37,7 +37,7 @@ DeclareRepresentation("IsActionHomomorphismAutomGroup",
 #M  IsGroupOfAutomorphisms(<G>)
 ##
 InstallMethod( IsGroupOfAutomorphisms, "test generators and one",true,
-  [IsGroup and HasGeneratorsOfGroup],0,
+  [IsGroup],0,
 function(G)
 local s;
   if IsGeneralMapping(One(G)) then
@@ -361,6 +361,39 @@ local i,j,flag,cl;
       <Sum(b,i->i.size);end);
   return cl;
 end);
+
+#############################################################################
+##
+#F  SomeVerbalSubgroups
+##  
+SomeVerbalSubgroups:=function(g,h)
+local l,m,i,j,cg,ch,pg;
+  l:=[g];
+  m:=[h];
+  i:=1;
+  while i<=Length(l) do
+    for j in [1..i] do
+      cg:=CommutatorSubgroup(l[i],l[j]);
+      ch:=CommutatorSubgroup(m[i],m[j]);
+      pg:=Position(l,cg);
+      if pg=fail then
+        Add(l,cg);
+	Add(m,ch);
+      else
+        while m[pg]<>ch do
+	  pg:=Position(l,cg,pg+1);
+	  if pg=fail then
+	    Add(l,cg);
+	    Add(m,ch);
+	    pg:=Length(m);
+	  fi;
+        od;
+      fi;
+    od;
+    i:=i+1;
+  od;
+  return [l,m];
+end;
 
 #############################################################################
 ##
@@ -714,8 +747,10 @@ end);
 #F  MorFindGeneratingSystem(<G>,<cl>) . .  find generating system with an few 
 ##                      as possible generators from the first classes in <cl>
 ##
-InstallGlobalFunction(MorFindGeneratingSystem,function(G,cl)
-local lcl,len,comb,combc,com,a;
+InstallGlobalFunction(MorFindGeneratingSystem,function(arg)
+local G,cl,lcl,len,comb,combc,com,a,cnt,s;
+  G:=arg[1];
+  cl:=arg[2];
   Info(InfoMorph,1,"FindGenerators");
   # throw out the 1-Class
   cl:=Filtered(cl,i->Length(i)>1 or Size(i[1].representative)>1);
@@ -754,9 +789,8 @@ end);
 ##       It needs, that both groups are not cyclic.
 ##
 InstallGlobalFunction(Morphium,function(G,H,DoAuto)
-local 
-      len,combi,Gr,Gcl,Ggc,Hr,Hcl,
-      gens,i,c,hom,free,elms,price,result,rels,inns;
+local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,
+      gens,i,c,hom,free,elms,price,result,rels,inns,bcl,vsu;
 
   gens:=SmallGeneratingSet(G);
   len:=Length(gens);
@@ -770,11 +804,43 @@ local
        " of price:",price,"");
 
   if (not HasMinimalGeneratingSet(G) and price/Size(G)>10000)
-     or Sum(Flat(combi),Size)>Size(G)/10 then
+     or Sum(Flat(combi),Size)>Size(G)/10 or IsSolvableGroup(G) then
     if IsSolvableGroup(G) then
       gens:=IsomorphismPcGroup(G);
       gens:=List(MinimalGeneratingSet(Image(gens)),
                  i->PreImagesRepresentative(gens,i));
+      Ggc:=List(gens,i->First(Gcl,j->ForAny(j,j->ForAny(j.classes,k->i in k))));
+      combi:=List(Ggc,i->Concatenation(List(i,i->i.classes)));
+      bcl:=ShallowCopy(combi);
+      Sort(bcl,function(a,b) return Sum(a,Size)<Sum(b,Size);end);
+      bg:=gens;
+      bpri:=Product(combi,i->Sum(i,Size));
+      for i in [1..7*Length(gens)-12] do
+	repeat
+	  for c in [1..Length(gens)] do
+	    if Random([1,2,3])<2 then
+	      gens[c]:=Random(G);
+	    else
+	      x:=bcl[Random(Filtered([1,1,1,1,2,2,2,3,3,4],k->k<=Length(bcl)))];
+	      gens[c]:=Random(Random(x));
+	    fi;
+	  od;
+	until Index(G,SubgroupNC(G,gens))=1;
+	Ggc:=List(gens,i->First(Gcl,
+	          j->ForAny(j,j->ForAny(j.classes,k->i in k))));
+	combi:=List(Ggc,i->Concatenation(List(i,i->i.classes)));
+	Append(bcl,combi);
+	Sort(bcl,function(a,b) return Sum(a,Size)<Sum(b,Size);end);
+	price:=Product(combi,i->Sum(i,Size));
+	Info(InfoMorph,3,"generating system of price:",price,"");
+	if price<bpri then
+	  bpri:=price;
+	  bg:=gens;
+	fi;
+      od;
+
+      gens:=bg;
+      
     else
       gens:=MorFindGeneratingSystem(G,Gcl);
     fi;
@@ -788,6 +854,12 @@ local
   if not DoAuto then
     Hr:=MorRatClasses(H);
     Hcl:=MorMaxFusClasses(Hr);
+  fi;
+
+  vsu:=SomeVerbalSubgroups(G,H);
+  if List(vsu[1],Size)<>List(vsu[2],Size) then
+    # cannot be candidates
+    return [];
   fi;
 
   # now test, whether it is worth, to compute a finer congruence
@@ -816,6 +888,18 @@ local
     od;
     combi:=List(combi,i->Concatenation(List(i,i->i.classes)));
   fi;
+
+  # filter by verbal subgroups
+  for i in [1..Length(gens)] do
+    c:=Filtered([1..Length(vsu[1])],j->gens[i] in vsu[1][j]);
+    c:=Filtered(combi[i],k->
+         c=Filtered([1..Length(vsu[2])],j->Representative(k) in vsu[2][j]));
+    if Length(c)<Length(combi[i]) then
+      Info(InfoMorph,1,"images improved by verbal subgroup:",
+      Sum(combi[i],Size)," -> ",Sum(c,Size));
+      combi[i]:=c;
+    fi;
+  od;
 
   # combi contains the classes, from which the
   # generators are taken.
@@ -967,7 +1051,8 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
 
   for i in au do
     SetIsBijective(i,true);
-    if i!.generators<>i!.genimages then
+    j:=MappingGeneratorsImages(i);
+    if j[1]<>j[2] then
       SetIsInnerAutomorphism(i,false);
     fi;
     SetFilterObj(i,IsMultiplicativeElementWithInverse);
@@ -1116,22 +1201,6 @@ local G;
     return NiceMonomorphism(A);
 end);
 
-#############################################################################
-##
-#M  IsomorphismPermGroup 
-##
-InstallMethod(IsomorphismPermGroup,"for automorphism groups",true,
-               [IsGroupOfAutomorphisms and IsFinite],0,
-function(A)
-local nice;
-  nice:=NiceMonomorphism(A);
-  if IsPermGroup(Range(nice)) then
-    return nice;
-  else
-    return CompositionMapping(IsomorphismPermGroup(Image(nice)),nice);
-  fi;
-end);
-
 
 #############################################################################
 ##
@@ -1179,7 +1248,8 @@ local m;
   elif ID_AVAILABLE(Size(G)) <> fail then
     if IdGroup(G)<>IdGroup(H) then
       return fail;
-    elif IsSolvableGroup(G) and Size(G) <= 2000 then
+    elif ValueOption("hard")=fail 
+      and IsSolvableGroup(G) and Size(G) <= 2000 then
       return IsomorphismSolvableSmallGroups(G,H);
     fi;
   elif Length(ConjugacyClasses(G))<>Length(ConjugacyClasses(H)) then
@@ -1208,6 +1278,7 @@ function (F,G)
 local Fgens,	# generators of F
       cl,	# classes of G
       u,	# trial generating set's group
+      vsu,	# verbal subgroups
       pimgs,	# possible images
       val,	# its value
       best,	# best generating set
@@ -1226,11 +1297,17 @@ local Fgens,	# generators of F
   fi;
 
   Fgens:=GeneratorsOfGroup(F);
-  if IsAbelian(G) and not IsAbelian(F) then
-    Info(InfoMorph,1,"abelian quotients vi F/F'");
-    # for abelian factors go via the commutator factor group
-    fak:=CommutatorFactorGroup(F);
-    h:=NaturalHomomorphismByNormalSubgroup(F,DerivedSubgroup(F));
+
+  # if a verbal subgroup is trivial in the image, it must be in the kernel
+  vsu:=SomeVerbalSubgroups(F,G);
+  vsu:=vsu[1]{Filtered([1..Length(vsu[2])],j->IsTrivial(vsu[2][j]))};
+  if Length(vsu)>1 then
+    fak:=vsu[1];
+    for i in [2..Length(vsu)] do
+      fak:=ClosureSubgroup(fak,vsu[i]);
+    od;
+    Info(InfoMorph,1,"quotient of verbal subgroups :",Size(fak));
+    h:=NaturalHomomorphismByNormalSubgroup(F,fak);
     fak:=Image(h,F);
     u:=GQuotients(fak,G);
     cl:=[];
@@ -1312,7 +1389,12 @@ local Fgens,	# generators of F
     fi;
   until best<>false and (cnt>len*fak or bestval<3*cnt);
 
-  h:=MorClassLoop(G,best[2],rec(gens:=best[1],to:=G,from:=F),13);
+  if ValueOption("findall")=false then
+    # only one
+    h:=[MorClassLoop(G,best[2],rec(gens:=best[1],to:=G,from:=F),5)];
+  else
+    h:=MorClassLoop(G,best[2],rec(gens:=best[1],to:=G,from:=F),13);
+  fi;
   cl:=[];
   u:=[];
   for i in h do
@@ -1330,20 +1412,43 @@ end);
 ##
 #F  IsomorphicSubgroups(<G>,<H>)
 ##
-InstallMethod(IsomorphicSubgroups,
-  "for groups which can compute element orders",true,
+InstallMethod(IsomorphicSubgroups,"for finite groups",true,
   [IsGroup and IsFinite,IsGroup and IsFinite],
   # override `IsFinitelyPresentedGroup' filter.
   1,
 function(G,H)
-local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg;
+local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
 
   if not IsInt(Size(G)/Size(H)) then
     Info(InfoMorph,1,"sizes do not permit embedding");
     return [];
   fi;
 
+  if IsAbelian(G) then
+    if not IsAbelian(H) then
+      return [];
+    fi;
+    if IsCyclic(G) then
+      if IsCyclic(H) then
+        return GroupHomomorphismByImagesNC(H,G,[GeneratorOfCyclicGroup(H)],
+	  [GeneratorOfCyclicGroup(G)^(Size(G)/Size(H))]);
+      else
+        return [];
+      fi;
+    fi;
+  fi;
+
   cl:=ConjugacyClasses(G);
+  if IsCyclic(H) then
+    cl:=List(RationalClasses(G),Representative);
+    cl:=Filtered(cl,i->Order(i)=Size(H));
+    return List(cl,i->GroupHomomorphismByImagesNC(H,G,
+                      [GeneratorOfCyclicGroup(H)],
+		      [i]));
+  fi;
+  cl:=ConjugacyClasses(G);
+
+
   # test whether there is a chance to embed
   cnt:=0;
   while cnt<20 do
@@ -1362,6 +1467,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg;
     if cnt=0 then
       # first the small gen syst.
       gens:=SmallGeneratingSet(H);
+      sg:=Length(gens);
     else
       # then something random
       repeat
@@ -1369,13 +1475,13 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg;
 	  # try to get down to 2 gens
 	  gens:=List([1,2],i->Random(H));
 	else
-	  gens:=List(gens,i->Random(H));
+	  gens:=List([1..sg],i->Random(H));
 	fi;
 	# try to get small orders
 	for k in [1..Length(gens)] do
 	  go:=Order(gens[k]);
 	  # try a p-element
-	  if Random([1..2*Length(gens)])=1 then
+	  if Random([1..3*Length(gens)])=1 then
 	    gens[k]:=gens[k]^(go/(Random(Factors(go))));
 	  fi;
 	od;
@@ -1397,18 +1503,41 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg;
       cnt:=cnt+Int(bw/Size(G)*3);
     fi;
     cnt:=cnt+1;
-  until bw/Size(G)*6<cnt;
+  until bw/Size(G)*3<cnt;
 
   if bw=0 then
     return [];
   fi;
 
+  vsu:=SomeVerbalSubgroups(H,G);
+  # filter by verbal subgroups
+  for i in [1..Length(bg)] do
+    c:=Filtered([1..Length(vsu[1])],j->bg[i] in vsu[1][j]);
+
+#Print(List(bi[i],k->
+#     Filtered([1..Length(vsu[2])],j->Representative(k) in vsu[2][j])),"\n");
+
+    cl:=Filtered(bi[i],k->ForAll(c,j->Representative(k) in vsu[2][j]));
+    if Length(cl)<Length(bi[i]) then
+      Info(InfoMorph,1,"images improved by verbal subgroup:",
+      Sum(bi[i],Size)," -> ",Sum(cl,Size));
+      bi[i]:=cl;
+    fi;
+  od;
+
   Info(InfoMorph,2,"find ",bw," from ",cnt);
   # find all embeddings
   params:=rec(gens:=bg,from:=H);
-  emb:=MorClassLoop(G,bi,params,
-    # all injective homs = 1+2+8
-    11); 
+  if ValueOption("findall")=false then
+    # only one
+    emb:=[MorClassLoop(G,bi,params,
+      # one injective homs = 1+2
+      3)]; 
+  else
+    emb:=MorClassLoop(G,bi,params,
+      # all injective homs = 1+2+8
+      11); 
+  fi;
   Info(InfoMorph,2,Length(emb)," embeddings");
   cl:=[];
   clg:=[];

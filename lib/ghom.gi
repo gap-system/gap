@@ -25,6 +25,18 @@ Revision.ghom_gi :=
 InstallGlobalFunction( GroupHomomorphismByImages,
     function( G, H, Ggens, Hgens )
     local hom;
+    if Length(Ggens)>0 then
+      if not (IsDenseList(Ggens) and IsHomogeneousList(Ggens) and
+	FamilyObj(Ggens)=FamilyObj(G)) then
+        Error("The generators do not all belong to the source");
+      fi;
+    fi;
+    if Length(Hgens)>0 then
+      if not (IsDenseList(Hgens) and IsHomogeneousList(Hgens) and
+	FamilyObj(Hgens)=FamilyObj(H)) then
+        Error("The images do not all belong to the range");
+      fi;
+    fi;
     hom:= GroupGeneralMappingByImages( G, H, Ggens, Hgens );
     if IsMapping( hom ) and IsTotal( hom ) then
       return GroupHomomorphismByImagesNC( G, H, Ggens, Hgens );
@@ -71,20 +83,10 @@ end);
 ##
 #M  <a> = <b> . . . . . . . . . . . . . . . . . . . . . . . . . .  via images
 ##
-InstallMethod( \=,
-    "compare their AsGroupGeneralMappingByImages",
-    IsIdenticalObj,
+InstallMethod( \=, "compare source generator images", IsIdenticalObj,
     [ IsGroupGeneralMapping, IsGroupGeneralMapping ], 0,
     function( a, b )
     local i;
-
-    # force both to GroupGeneralMappingsByImages
-    if not IsGroupGeneralMappingByImages( a ) then
-      a:= AsGroupGeneralMappingByImages( a );
-    fi;
-    if not IsGroupGeneralMappingByImages( b ) then
-      b:= AsGroupGeneralMappingByImages( b );
-    fi;
 
     # try to fall back on homomorphism routines
     if IsSingleValued(a) and IsSingleValued(b) then
@@ -92,7 +94,8 @@ InstallMethod( \=,
       # we will automatically fall in the routines for homomorphisms.
       # So this is not an infinite recursion.
 #T is this really safe?
-      return a = b;
+      a:=MappingGeneratorsImages(a);
+      return a[2]=List(a[1],i->ImagesRepresentative(b,i));
     fi;
 
     # now do the hard test
@@ -135,17 +138,21 @@ InstallMethod( \=,
 ##  then also the result will be constructed as a homomorphism.)
 ##
 InstallMethod( CompositionMapping2,
-    "for gp. hom. and gp. gen. mapp., using `AsGroupGeneralMappingByImages'",
+    "for gp. hom. and gp. gen. mapp., using `MappingGeneratorsImages'",
     FamSource1EqFamRange2,
     [ IsGroupHomomorphism, IsGroupGeneralMapping ], 0,
 function( hom1, hom2 )
+local mapi;
   if (not KnowsHowToDecompose(Source(hom2))) or IsNiceMonomorphism(hom2) then
     TryNextMethod();
   fi;
-  hom2 := AsGroupGeneralMappingByImages( hom2 );
+  if not IsSubset(Source(hom1),ImagesSource(hom2)) then
+    TryNextMethod();
+  fi;
+  mapi:=MappingGeneratorsImages(hom2);
   return GroupGeneralMappingByImages( Source( hom2 ), Range( hom1 ),
-  hom2!.generators, List( hom2!.genimages, img ->
-  ImagesRepresentative( hom1, img ) ) );
+	    mapi[1], List( mapi[2], img ->
+	    ImagesRepresentative( hom1, img ) ) );
 end);
 
 
@@ -215,11 +222,15 @@ InstallAttributeMethodByGroupGeneralMappingByImages( IsSurjective, IsBool );
 InstallMethod( GroupGeneralMappingByImages, "for group, group, list, list",
     true, [ IsGroup, IsGroup, IsList, IsList ], 0,
 function( G, H, gens, imgs )
-local   filter,  hom,pcgs,imgso;
+local   filter,  hom,pcgs,imgso,mapi;
   
-  hom := rec( generators := Immutable( gens ),
-      genimages  := Immutable( imgs ) );
-  filter := IsGroupGeneralMappingByImages and HasSource and HasRange;
+  hom := rec();
+  # generators := Immutable( gens ),
+  # genimages  := Immutable( imgs ) );
+
+  mapi:=[Immutable(gens),Immutable(imgs)];
+  filter := IsGroupGeneralMappingByImages and HasSource and HasRange 
+            and HasMappingGeneratorsImages;
 
   if IsPermGroup( G )  then
       filter := filter and IsPermGroupGeneralMappingByImages;
@@ -238,25 +249,11 @@ local   filter,  hom,pcgs,imgso;
   elif IsPcgs( gens )  then
     filter := filter and IsGroupGeneralMappingByPcgs;
     pcgs:=[gens,imgs];
-#      if IsModuloPcgs( gens ) and not IsPcgs(gens) then
-#  hom.generators := Concatenation( gens,
-#DenominatorOfModuloPcgs( gens ) );
-#  hom.genimages := Concatenation( imgs, List
-#      ( DenominatorOfModuloPcgs( gens ), x -> One( H ) ) );
-#      elif IsModuloPcgsPermGroupRep( gens ) then
-#  hom.generators := Concatenation( gens,
-#GeneratorsOfGroup( gens!.denominator ) );
-#  hom.genimages := Concatenation( imgs, List
-#      ( GeneratorsOfGroup( gens!.denominator ), x -> One( H ) ) );
-#      fi;
   fi;
 
   if pcgs<>false then
     hom.sourcePcgs       := pcgs[1];
     hom.sourcePcgsImages := pcgs[2];
-    # precompute powers of the pcgs images
-    hom.sourcePcgsImagesPowers := List([1..Length(pcgs[1])],
-    i->List([1..RelativeOrders(pcgs[1])[i]-1], j->pcgs[2][i]^j));
   fi;
 
   if IsPcGroup( H )  then
@@ -283,10 +280,11 @@ local   filter,  hom,pcgs,imgso;
     ( ElementsFamily( FamilyObj( G ) ),
       ElementsFamily( FamilyObj( H ) ) ), filter ), 
       Source,G,
-      Range,H);
+      Range,H,
+      MappingGeneratorsImages,mapi);
    else
     if HasGeneratorsOfGroup(H) 
-       and IsIdenticalObj(GeneratorsOfGroup(H),hom.genimages) then
+       and IsIdenticalObj(GeneratorsOfGroup(H),mapi[2]) then
       
       imgso:=H;
     else
@@ -299,7 +297,8 @@ local   filter,  hom,pcgs,imgso;
       ElementsFamily( FamilyObj( H ) ) ), filter and HasImagesSource ), 
       Source,G,
       Range,H,
-              ImagesSource,imgso);
+      ImagesSource,imgso,
+      MappingGeneratorsImages,mapi);
   fi;
 
   return hom;
@@ -317,38 +316,59 @@ end );
 
 #############################################################################
 ##
+#M  MappingGeneratorsImages( <map> )  . . . . .  for group homomorphism
+##
+InstallMethod( MappingGeneratorsImages, "for a group homomorphism",
+    true, [ IsGroupHomomorphism ], 0,
+function( map )
+local gens;
+  # temporary workaround for compatibility with external code.
+  if IsBound(map!.generators) and IsBound(map!.genimages) then
+    Info(InfoWarning,1,"still using !.gen(erators/images)");
+    return [map!.generators,map!.genimages];
+  fi;
+  gens:= GeneratorsOfGroup( PreImagesRange( map ) );
+  return [gens, List( gens, g -> ImagesRepresentative( map, g ) ) ];
+end );
+
+RedispatchOnCondition(MappingGeneratorsImages,true,
+  [IsGeneralMapping],[IsGroupHomomorphism],0);
+
+
+#############################################################################
+##
 #M  AsGroupGeneralMappingByImages( <map> )  . . . . .  for group homomorphism
 ##
 InstallMethod( AsGroupGeneralMappingByImages, "for a group homomorphism",
     true, [ IsGroupHomomorphism ], 0,
 function( map )
-  local gens;
-  gens:= GeneratorsOfGroup( PreImagesRange( map ) );
-  gens:=GroupHomomorphismByImagesNC( Source( map ), Range( map ),
-      gens, List( gens, g -> ImagesRepresentative( map, g ) ) );
-  return gens;
+local mapi,hom;
+  Range(map); # for surjective action homomorphisms thsi enforces
+              # computation of the MappingGeneratorsImages as well
+  mapi:=MappingGeneratorsImages(map);
+  hom:=GroupHomomorphismByImagesNC(Source(map),Range(map),mapi[1],mapi[2]);
+  CopyMappingAttributes(map,hom);
+  return hom;
 end );
 
 InstallMethod( AsGroupGeneralMappingByImages, "for group general mapping",
     true, [ IsGroupGeneralMapping ], 0,
 function( map )
-local gens, cok;
-  gens:= GeneratorsOfGroup( PreImagesRange( map ) );
+local mapi, cok,hom;
+  mapi:=MappingGeneratorsImages(map);
   cok := GeneratorsOfGroup( CoKernelOfMultiplicativeGeneralMapping( map ) );
-  gens:= GroupGeneralMappingByImages( Source( map ), Range( map ),
-  Concatenation( gens, List( cok, g -> One( Source( map ) ) ) ),
-  Concatenation( List( gens, g -> ImagesRepresentative( map, g ) ),
-  cok ) );
-  return gens;
+  hom:=GroupGeneralMappingByImages( Source( map ), Range( map ),
+    Concatenation( mapi[1],List(cok,g->One(Source(map)))),
+    Concatenation( mapi[2],cok ) );
+  CopyMappingAttributes(map,hom);
+  return hom;
 end );
     
 #############################################################################
 ##
 #M  AsGroupGeneralMappingByImages( <hom> )  . . . . . . . . . . . .  for GHBI
 ##
-InstallMethod( AsGroupGeneralMappingByImages,
-    "for GHBI",
-    true,
+InstallMethod( AsGroupGeneralMappingByImages, "for GHBI", true,
     [ IsGroupGeneralMappingByImages ], 
     SUM_FLAGS, # better than everything else
     IdFunc );
@@ -376,19 +396,20 @@ InstallMethod( \=,
     [ IsGroupHomomorphism and IsGroupGeneralMappingByImages,
       IsGroupHomomorphism ], 1,
     function( hom1, hom2 )
-    local   i;
+    local   i,mapi;
     
     if    Source( hom1 ) <> Source( hom2 )
        or Range ( hom1 ) <> Range ( hom2 )  then
         return false;
-    elif     IsGroupGeneralMappingByImages( hom2 )
-         and Length( hom2!.generators ) < Length( hom1!.generators )  then
+    fi;
+    mapi:=MappingGeneratorsImages(hom1);
+    if   IsGroupGeneralMappingByImages( hom2 )
+         and Length(MappingGeneratorsImages(hom2)[1]) < Length(mapi[1])  then
         return hom2 = hom1;
     fi;
-    for i  in [ 1 .. Length( hom1!.generators ) ]  do
-        if ImagesRepresentative( hom2, hom1!.generators[ i ] )
-           <> hom1!.genimages[ i ]  then
-            return false;
+    for i  in [ 1 .. Length( mapi[1] ) ]  do
+        if ImagesRepresentative( hom2, mapi[1][i] ) <> mapi[2][ i ]  then
+	  return false;
         fi;
     od;
     return true;
@@ -427,64 +448,80 @@ end);
 #M  ImagesSource( <hom> ) . . . . . . . . . . . . . . . . . . . . .  for GHBI
 ##
 InstallMethod( ImagesSource, "for GHBI", true,
-    [ IsGroupGeneralMappingByImages ], 
-    2, # rank higher than the next method to avoid infinite recursions
-    hom -> SubgroupNC( Range( hom ), hom!.genimages ) );
+    [ IsGroupHomomorphism ], 
+    # 2, # rank higher than the next method to avoid infinite recursions
+    0,
+    hom -> SubgroupNC( Range( hom ), MappingGeneratorsImages(hom)[2] ) );
 
 
-#############################################################################
-##
-#M  ImagesSource( <hom> ) . . . . . . . . . . . . . .  for group homomorphism
-##
-##  The generic method calls `ImagesSet' which computes the cokernel
-##  and forms the group generated by generator images and cokernel images.
-#T Is it really reasonable to install a new method for avoiding the
-#T concatenation?
-#T Note that if a mapping knows to be a group homomorphism then it also knows
-#T that its cokernel is trivial.
-#T (And the existence of this method with `Image' instaed of
-#T `ImagesRepresentative' caused `Operation' to last forever ...)
-##
-InstallMethod( ImagesSource, "group homomorphisms", true,
-    [ IsGroupHomomorphism ], 0,
-    hom -> SubgroupNC( Range( hom ),
-                       List( GeneratorsOfGroup( Source( hom ) ),
-                             i -> ImagesRepresentative( hom, i ) ) ) );
+# thanks to `MappingGeneratorsImages' this method is obsolete now.
+# #############################################################################
+# ##
+# #M  ImagesSource( <hom> ) . . . . . . . . . . . . . .  for group homomorphism
+# ##
+# ##  The generic method calls `ImagesSet' which computes the cokernel
+# ##  and forms the group generated by generator images and cokernel images.
+# #T Is it really reasonable to install a new method for avoiding the
+# #T concatenation?
+# #T Note that if a mapping knows to be a group homomorphism then it also knows
+# #T that its cokernel is trivial.
+# #T (And the existence of this method with `Image' instaed of
+# #T `ImagesRepresentative' caused `Operation' to last forever ...)
+# ##
+# InstallMethod( ImagesSource, "group homomorphisms", true,
+#     [ IsGroupHomomorphism ], 0,
+#     hom -> SubgroupNC( Range( hom ),
+#                        List( GeneratorsOfGroup( Source( hom ) ),
+#                              i -> ImagesRepresentative( hom, i ) ) ) );
 
 
 #############################################################################
 ##
 #M  PreImagesRange( <hom> ) . . . . . . . . . . . . . . . . . . . .  for GHBI
 ##
-InstallMethod( PreImagesRange,
-    "for GHBI",
-    true,
+InstallMethod( PreImagesRange, "for GHBI", true,
     [ IsGroupGeneralMappingByImages ], 0,
-    hom -> SubgroupNC( Source( hom ), hom!.generators ) );
+    hom -> SubgroupNC( Source( hom ), MappingGeneratorsImages(hom)[1] ) );
 
 
 #############################################################################
 ##
 #M  InverseGeneralMapping( <hom> )  . . . . . . . . . . . . . . . .  for GHBI
 ##
-InstallMethod( InverseGeneralMapping,
-    "for GHBI",
-    true,
-    [ IsGroupGeneralMappingByImages ], 0,
-    function( hom )
-    return GroupGeneralMappingByImages( Range( hom ),   Source( hom ),
-                                        hom!.genimages, hom!.generators );
-    end );
+InstallMethod( InverseGeneralMapping, "for GHBI", true,
+  [ IsGroupGeneralMappingByImages ], 0,
+function( hom )
+local mapi;
+  mapi:=MappingGeneratorsImages(hom);
+  mapi:=GroupGeneralMappingByImages( Range( hom ),   Source( hom ),
+				      mapi[2], mapi[1] );
+  if HasIsSurjective(hom) and IsSurjective(hom) then
+    SetIsTotal(mapi,true);
+  fi;
+  if HasIsTotal(hom) and IsTotal(hom) then
+    SetIsSurjective(mapi,true);
+  fi;
+  if HasIsSingleValued(hom) and IsSingleValued(hom) then
+    SetIsInjective(mapi,true);
+  fi;
+  if HasIsSingleValued(hom) and IsSingleValued(hom) then
+    SetIsInjective(mapi,true);
+  fi;
+  if HasIsInjective(hom) and IsInjective(hom) then
+    SetIsSingleValued(mapi,true);
+  fi;
+  return mapi;
+end );
 
-InstallMethod( InverseGeneralMapping,
-    "for bijective GHBI",
-    true,
-    [ IsGroupGeneralMappingByImages and IsBijective ], 0,
-    function( hom )
-    hom := GroupHomomorphismByImagesNC( Range( hom ),   Source( hom ),
-                                        hom!.genimages, hom!.generators );
-    SetIsBijective( hom, true );
-    return hom;
+InstallMethod( InverseGeneralMapping, "for bijective GHBI", true,
+  [ IsGroupGeneralMappingByImages and IsBijective ], 0,
+function( hom )
+local mapi;
+  mapi:=MappingGeneratorsImages(hom);
+  hom := GroupHomomorphismByImagesNC( Range( hom ),   Source( hom ),
+				      mapi[2], mapi[1] );
+  SetIsBijective( hom, true );
+  return hom;
 end );
 
 
@@ -498,13 +535,15 @@ InstallGlobalFunction( MakeMapping, function( hom )
             imgs,       # elements of subgroup of '<hom>.range'
             imgr,       # representatives of <imgs> in '<hom>.images'
             rep,        # one new element of <elmr> or <imgr>
+	    mapi,	# generators and images
             i, j, k;    # loop variables
 
     # if necessary compute the mapping with a Dimino algorithm
     if not IsBound( hom!.elements )  then
         hom!.elements := [ One( Source( hom ) ) ];
         hom!.images   := [ One( Range ( hom ) ) ];
-        for i  in [ 1 .. Length( hom!.generators ) ]  do
+	mapi:=MappingGeneratorsImages(hom);
+        for i  in [ 1 .. Length( mapi[1] ) ]  do
             elms := ShallowCopy( hom!.elements );
             elmr := [ One( Source( hom ) ) ];
             imgs := ShallowCopy( hom!.images );
@@ -512,11 +551,11 @@ InstallGlobalFunction( MakeMapping, function( hom )
             j := 1;
             while j <= Length( elmr )  do
                 for k  in [ 1 .. i ]  do
-                    rep := elmr[j] * hom!.generators[k];
+                    rep := elmr[j] * mapi[1][k];
                     if not rep in hom!.elements  then
                         Append( hom!.elements, elms * rep );
                         Add( elmr, rep );
-                        rep := imgr[j] * hom!.genimages[k];
+                        rep := imgr[j] * mapi[2][k];
                         Append( hom!.images, imgs * rep );
                         Add( imgr, rep );
                     fi;
@@ -534,31 +573,32 @@ end );
 ##
 #M  CoKernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . . . .  for GHBI
 ##
-InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
-    "for GHBI",
-    true,
+InstallMethod( CoKernelOfMultiplicativeGeneralMapping, "for GHBI", true,
     [ IsGroupGeneralMappingByImages ], 0,
     function( hom )
     local   C,          # co kernel of <hom>, result
             gen,        # one generator of <C>
+	    mapi,	# generators/images
             i, k;       # loop variables
 
     # make sure we have the mapping
     if not IsBound( hom!.elements )  then
-        MakeMapping( hom );
+      MakeMapping( hom );
     fi;
+    mapi:=MappingGeneratorsImages(hom);
 
     # start with the trivial co kernel
     C := TrivialSubgroup( Range( hom ) );
 
     # for each element of the source and each generator of the source
     for i  in [ 1 .. Length( hom!.elements ) ]  do
-        for k  in [ 1 .. Length( hom!.generators ) ]  do
+        for k  in [ 1 .. Length( mapi[1] ) ]  do
 
             # the co kernel must contain the corresponding Schreier generator
-            gen := hom!.images[i] * hom!.genimages[k]
+            gen := hom!.images[i] * mapi[2][k]
                  / hom!.images[ Position( hom!.elements,
-                                         hom!.elements[i]*hom!.generators[k])];
+                                         hom!.elements[i]*mapi[1][k])];
+	    #NC is safe
             C := ClosureSubgroupNC( C, gen );
 
         od;
@@ -595,20 +635,21 @@ InstallMethod( IsInjective,
 ##
 InstallGlobalFunction( ImagesRepresentativeGMBIByElementsList,
 function( hom, elm )
-  local   p;
+local   p,mapi;
   if not IsBound( hom!.elements )  then
+    mapi:=MappingGeneratorsImages(hom);
     # catch a few trivial cases
-    if Length(hom!.generators)>0 then
-      if CanEasilyCompareElements(hom!.generators[1]) then
-        p:=Position(hom!.generators,elm);
-if p<>fail then 
-  return hom!.genimages[p];
-fi;
+    if Length(mapi[1])>0 then
+      if CanEasilyCompareElements(mapi[1][1]) then
+        p:=Position(mapi[1],elm);
+	if p<>fail then 
+	  return mapi[2][p];
+	fi;
       else
-        p:=PositionProperty(hom!.generators,i->IsIdenticalObj(i,elm));
-if p<>fail then 
-  return hom!.genimages[p];
-fi;
+        p:=PositionProperty(mapi[1],i->IsIdenticalObj(i,elm));
+	if p<>fail then 
+	  return mapi[2][p];
+	fi;
       fi;
     fi;
 
@@ -616,7 +657,7 @@ fi;
   fi;
   p := Position( hom!.elements, elm );
   if p <> fail  then  return hom!.images[ p ];
-else  return fail;             fi;
+  else  return fail;             fi;
 end );
 
 #############################################################################
@@ -652,12 +693,26 @@ end );
 ##
 #M  ViewObj( <hom> )  . . . . . . . . . . . . . . . . . . . . . . .  for GHBI
 ##
-InstallMethod( ViewObj,
-    "for GHBI",
-    true,
+InstallMethod( ViewObj, "for GHBI", true,
     [ IsGroupGeneralMappingByImages ], 0,
-    function( hom )
-    Print( hom!.generators, " -> ", hom!.genimages );
+function( hom )
+local mapi;
+  mapi:=MappingGeneratorsImages(hom);
+  View(mapi[1]);
+  Print(" -> ");
+  View(mapi[2]);
+end );
+
+#############################################################################
+##
+#M  String( <hom> )  . . . . . . . . . . . . . . . . . . . . . . .  for GHBI
+##
+InstallMethod( String, "for GHBI", true,
+    [ IsGroupGeneralMappingByImages ], 0,
+function( hom )
+local mapi;
+  mapi:=MappingGeneratorsImages(hom);
+  return Concatenation(String(mapi[1])," -> ",String(mapi[2]));
 end );
 
 
@@ -665,25 +720,25 @@ end );
 ##
 #M  PrintObj( <hom> ) . . . . . . . . . . . . . . . . . . . . . . .  for GHBI
 ##
-InstallMethod( PrintObj,
-    "for group general mapping b.i.",
-    true,
-    [ IsGroupGeneralMappingByImages ], 0,
-    function( hom )
-    Print( "GroupGeneralMappingByImages( ",
-           Source( hom ), ", ", Range(  hom ), ", ",
-           hom!.generators, ", ", hom!.genimages, " )" );
-    end );
+InstallMethod( PrintObj, "for group general mapping b.i.", true,
+  [ IsGroupGeneralMappingByImages ], 0,
+function( hom )
+local mapi;
+  mapi:=MappingGeneratorsImages(hom);
+  Print( "GroupGeneralMappingByImages( ",
+	  Source( hom ), ", ", Range(  hom ), ", ",
+	  mapi[1], ", ", mapi[2], " )" );
+end );
 
-InstallMethod( PrintObj,
-    "for GHBI",
-    true,
-    [ IsGroupGeneralMappingByImages and IsMapping ], 0,
-    function( hom )
-    Print( "GroupHomomorphismByImages( ",
-           Source( hom ), ", ", Range(  hom ), ", ",
-           hom!.generators, ", ", hom!.genimages, " )" );
-    end );
+InstallMethod( PrintObj, "for GHBI", true,
+  [ IsGroupGeneralMappingByImages and IsMapping ], 0,
+function( hom )
+local mapi;
+  mapi:=MappingGeneratorsImages(hom);
+  Print( "GroupHomomorphismByImages( ",
+	  Source( hom ), ", ", Range(  hom ), ", ",
+	  mapi[1], ", ", mapi[2], " )" );
+end );
 
 
 #############################################################################
@@ -785,13 +840,23 @@ end );
 
 #############################################################################
 ##
+#M  MappingGeneratorsImages( <hom> )  . . .  for conjugator isomorphism
+##
+InstallMethod( MappingGeneratorsImages,
+    "for conjugator isomorphism", true, [ IsConjugatorIsomorphism ], 0,
+function( hom )
+local gens;
+  gens:= GeneratorsOfGroup( Source(hom) );
+  return [gens,OnTuples( gens, ConjugatorOfConjugatorIsomorphism( hom ) )];
+end );
+
+#############################################################################
+##
 #M  AsGroupGeneralMappingByImages( <hom> )  . . .  for conjugator isomorphism
 ##
 InstallMethod( AsGroupGeneralMappingByImages,
-    "for conjugator isomorphism",
-    true,
-    [ IsConjugatorIsomorphism ], 0,
-    function( hom )
+    "for conjugator isomorphism", true, [ IsConjugatorIsomorphism ], 0,
+function( hom )
     local G, gens, map;
   
     G:= Source( hom );
@@ -800,7 +865,7 @@ InstallMethod( AsGroupGeneralMappingByImages,
               OnTuples( gens, ConjugatorOfConjugatorIsomorphism( hom ) ) );
     SetIsBijective( map, true );
     return map;
-    end );
+end );
 
 
 #############################################################################
@@ -949,13 +1014,22 @@ InstallMethod( PreImagesSet,
 ##
 #M  ViewObj( <hom> )  . . . . . . . . . . . . . .  for conjugator isomorphism
 ##
-InstallMethod( ViewObj,
-    "for conjugator isomorphism",
-    true,
-    [ IsConjugatorIsomorphism ], 0,
-    function( hom )
-    Print( "^", ConjugatorOfConjugatorIsomorphism( hom ) );
-    end );
+InstallMethod( ViewObj, "for conjugator isomorphism",
+    true, [ IsConjugatorIsomorphism ], 0,
+function( hom )
+  Print("^");
+  View( ConjugatorOfConjugatorIsomorphism( hom ) );
+end );
+
+#############################################################################
+##
+#M  String( <hom> )  . . . . . . . . . . . . . .  for conjugator isomorphism
+##
+InstallMethod( String, "for conjugator isomorphism",
+    true, [ IsConjugatorIsomorphism ], 0,
+function( hom )
+  return Concatenation("^",String(ConjugatorOfConjugatorIsomorphism( hom ) ));
+end );
 
 
 #############################################################################
@@ -1107,7 +1181,7 @@ InstallGlobalFunction( GroupHomomorphismByFunction, function ( arg )
     local   map;        # mapping <map>, result
 
     # no inverse function given
-    if Length(arg) = 3  then
+    if Length(arg) in [3,5]  then
 
       # make the general mapping
       map:= Objectify(
@@ -1117,6 +1191,9 @@ InstallGlobalFunction( GroupHomomorphismByFunction, function ( arg )
                            and IsSingleValued
                            and IsTotal and IsGroupHomomorphism ),
                        rec( fun:= arg[3] ) );
+      if Length(arg)=5 and IsFunction(arg[5]) then
+        map!.prefun:=arg[5];
+      fi;
 
     # inverse function given
     elif Length(arg) = 4  then
@@ -1127,9 +1204,10 @@ InstallGlobalFunction( GroupHomomorphismByFunction, function ( arg )
         ElementsFamily(FamilyObj(arg[2]))),
                                IsSPMappingByFunctionWithInverseRep
                            and IsBijective
-   and IsGroupHomomorphism),
+			   and IsGroupHomomorphism),
                        rec( fun    := arg[3],
-                            invFun := arg[4] ) );
+                            invFun := arg[4],
+			    prefun := arg[4]) );
 
     # otherwise signal an error
     else
@@ -1142,6 +1220,15 @@ InstallGlobalFunction( GroupHomomorphismByFunction, function ( arg )
     return map;
 end );
 
+InstallMethod(RegularActionHomomorphism,"generic",true,[IsGroup],0,
+function(G)
+local hom;
+  Size(G);
+  hom:=ActionHomomorphism(G,AsSSortedList(G),OnRight,"surjective");
+  SetSize(Range(hom),Size(G));
+  SetIsRegular(Range(hom),true);
+  return hom;
+end);
 
 #############################################################################
 ##

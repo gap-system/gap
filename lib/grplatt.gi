@@ -232,19 +232,19 @@ local   G,		   # group
     zupposPrime:=[];
     zupposPower:=[];
     for r  in zuppos  do
-        i:=SmallestRootInt(Order(r));
-        Add(zupposPrime,i);
-        k:=0;
-        while k <> false  do
-            k:=k + 1;
-            if GcdInt(i,k) = 1  then
-                l:=Position(zuppos,r^(i*k));
-                if l <> fail  then
-                    Add(zupposPower,l);
-                    k:=false;
-                fi;
-            fi;
-        od;
+      i:=SmallestRootInt(Order(r));
+      Add(zupposPrime,i);
+      k:=0;
+      while k <> false  do
+	k:=k + 1;
+	if GcdInt(i,k) = 1  then
+	  l:=Position(zuppos,r^(i*k));
+	  if l <> fail  then
+	    Add(zupposPower,l);
+	    k:=false;
+	  fi;
+	fi;
+      od;
     od;
     Info(InfoLattice,1,"powers computed");
 
@@ -263,13 +263,14 @@ local   G,		   # group
       if func<>false then
 	perfect:=Filtered(perfect,func);
       fi;
+      perfect:=List(perfect,i->AsSubgroup(Parent(G),i));
     fi;
 
     perfectZups:=[];
     perfectNew :=[];
     for i  in [1..Length(perfect)]  do
         I:=perfect[i];
-        perfectZups[i]:=BlistList(zuppos,AttributeValueNotSet(AsList,I));
+        perfectZups[i]:=BlistList(zuppos,AsSSortedListNonstored(I));
         perfectNew[i]:=true;
     od;
     Info(InfoLattice,1,"<G> has ",Length(perfect),
@@ -287,188 +288,175 @@ local   G,		   # group
 
     # loop over the layers of group (except the group itself)
     for l  in [1..Length(factors)-1]  do
-        Info(InfoLattice,1,"doing layer ",l,",",
-                      "previous layer has ",layere-layerb+1," classes");
+      Info(InfoLattice,1,"doing layer ",l,",",
+		    "previous layer has ",layere-layerb+1," classes");
 
-        # extend representatives of the classes of the previous layer
-        for h  in [layerb..layere]  do
+      # extend representatives of the classes of the previous layer
+      for h  in [layerb..layere]  do
 
-            # get the representative,its zuppos blist and extend-by blist
-            H:=Representative(classes[h]);
-            Hzups:=classesZups[h];
-            Hexts:=classesExts[h];
-            Info(InfoLattice,2,"extending subgroup ",h,", size = ",Size(H));
+	# get the representative,its zuppos blist and extend-by blist
+	H:=Representative(classes[h]);
+	Hzups:=classesZups[h];
+	Hexts:=classesExts[h];
+	Info(InfoLattice,2,"extending subgroup ",h,", size = ",Size(H));
 
-            # loop over the zuppos whose <p>-th power lies in <H>
-            for i  in [1..Length(zuppos)]  do
-                if Hexts[i] and Hzups[zupposPower[i]]  then
+	# loop over the zuppos whose <p>-th power lies in <H>
+	for i  in [1..Length(zuppos)]  do
 
-		  # make the new subgroup <I>
-		  I:=Subgroup(Parent(G),Concatenation(GeneratorsOfGroup(H),
-							   [zuppos[i]]));
-                  if func=false or func(I) then
+	    if Hexts[i] and Hzups[zupposPower[i]]  then
 
-                    SetSize(I,Size(H) * zupposPrime[i]);
+	      # make the new subgroup <I>
+	      # NC is safe -- all groups are subgroups of Parent(H)
+	      I:=ClosureSubgroupNC(H,zuppos[i]);
+	      #Subgroup(Parent(G),Concatenation(GeneratorsOfGroup(H),
+	      #			   [zuppos[i]]));
+	      if func=false or func(I) then
 
-                    # compute the zuppos blist of <I>
-                    Ielms:=AttributeValueNotSet(AsList,I);
-                    Izups:=BlistList(zuppos,Ielms);
+		SetSize(I,Size(H) * zupposPrime[i]);
 
-                    # compute the normalizer of <I>
-                    N:=Normalizer(G,I);
-		    #AH 'NormalizerInParent' attribute ?
-                    #if IsParent(G)  and not IsBound(I.normalizer)  then
-                    #    I.normalizer:=Subgroup(Parent(G),GeneratorsOfGroup(N));
-                    #    I.normalizer.size:=Size(N);
-                    #fi;
-                    Info(InfoLattice,2,"found new class ",nrClasses+1,
-		         ", size = ",Size(I),
-                         " length = ",Size(G) / Size(N));
+		# compute the zuppos blist of <I>
+		Ielms:=AsSSortedListNonstored(I);
+		Izups:=BlistList(zuppos,Ielms);
 
-                    # make the new conjugacy class
-                    C:=ConjugacyClassSubgroups(G,I);
-                    SetSize(C,Size(G) / Size(N));
-                    SetStabilizerOfExternalSet(C,
-		      Subgroup(Parent(G),GeneratorsOfGroup(N)));
-                    nrClasses:=nrClasses + 1;
-                    classes[nrClasses]:=C;
+		# compute the normalizer of <I>
+		N:=Normalizer(G,I);
+		#AH 'NormalizerInParent' attribute ?
+		Info(InfoLattice,2,"found new class ",nrClasses+1,
+		      ", size = ",Size(I)," length = ",Size(G)/Size(N));
 
-                    # store the extend by list
-                    if l < Length(factors)-1  then
-                        classesZups[nrClasses]:=Izups;
-                        Nzups:=BlistList(zuppos,
-			                 AttributeValueNotSet(AsList,N));
-                        SubtractBlist(Nzups,Izups);
-                        classesExts[nrClasses]:=Nzups;
-                    fi;
+		# make the new conjugacy class
+		C:=ConjugacyClassSubgroups(G,I);
+		SetSize(C,Size(G) / Size(N));
+		SetStabilizerOfExternalSet(C,N);
+		nrClasses:=nrClasses + 1;
+		classes[nrClasses]:=C;
 
-		    # compute the right transversal
-		    # (but don't store it in the parent)
-		    reps:=RightTransversalOp(G,N);
-
-                    # loop over the conjugates of <I>
-                    for r  in reps  do
-
-                        # compute the zuppos blist of the conjugate
-                        if r = One(G)  then
-                            Jzups:=Izups;
-                        else
-                            Jzups:=BlistList(zuppos,OnTuples(Ielms,r));
-                        fi;
-
-                        # loop over the already found classes
-                        for k  in [h..layere]  do
-                            Kzups:=classesZups[k];
-
-                            # test if the <K> is a subgroup of <J>
-                            if IsSubsetBlist(Jzups,Kzups)  then
-
-                                # don't extend <K> by the elements of <J>
-                                SubtractBlist(classesExts[k],Jzups);
-
-                            fi;
-
-                        od;
-
-                    od;
-
-                    # now we are done with the new class
-                    Unbind(Ielms);
-                    Unbind(reps);
-                    Info(InfoLattice,2,"tested inclusions");
-
-		  else
-		    Info(InfoLattice,1,"discarded!");
-		  fi; # if condition fulfilled
-
-                fi; # if Hexts[i] and Hzups[zupposPower[i]]  then ...
-            od; # for i  in [1..Length(zuppos)]  do ...
-
-            # remove the stuff we don't need any more
-            Unbind(classesZups[h]);
-            Unbind(classesExts[h]);
-
-        od; # for h  in [layerb..layere]  do ...
-
-        # add the classes of perfect subgroups
-        for i  in [1..Length(perfect)]  do
-            if    perfectNew[i]
-              and IsPerfectGroup(perfect[i])
-              and Length(Factors(Size(perfect[i]))) = l
-            then
-
-                # make the new subgroup <I>
-                I:=perfect[i];
-
-                # compute the zuppos blist of <I>
-                Ielms:=AttributeValueNotSet(AsList,I);
-                Izups:=BlistList(zuppos,Ielms);
-
-                # compute the normalizer of <I>
-                N:=Normalizer(G,I);
-		# AH: NormalizerInParent ?
-                #if IsParent(G)  and not IsBound(I.normalizer)  then
-                #    I.normalizer:=Subgroup(Parent(G),N.generators);
-                #    I.normalizer.size:=Size(N);
-                #fi;
-                Info(InfoLattice,2,"found perfect class ",nrClasses+1,
-                     " size = ",Size(I),", length = ",
-		     Size(G) / Size(N));
-
-                # make the new conjugacy class
-                C:=ConjugacyClassSubgroups(G,I);
-                SetSize(C,Size(G)/Size(N));
-                SetStabilizerOfExternalSet(C,
-		  Subgroup(Parent(G),GeneratorsOfGroup(N)));
-                nrClasses:=nrClasses + 1;
-                classes[nrClasses]:=C;
-
-                # store the extend by list
-                if l < Length(factors)-1  then
-                    classesZups[nrClasses]:=Izups;
-                    Nzups:=BlistList(zuppos,AttributeValueNotSet(AsList,N));
-                    SubtractBlist(Nzups,Izups);
-                    classesExts[nrClasses]:=Nzups;
-                fi;
+		# store the extend by list
+		if l < Length(factors)-1  then
+		  classesZups[nrClasses]:=Izups;
+		  Nzups:=BlistList(zuppos,AsSSortedListNonstored(N));
+		  SubtractBlist(Nzups,Izups);
+		  classesExts[nrClasses]:=Nzups;
+		fi;
 
 		# compute the right transversal
 		# (but don't store it in the parent)
 		reps:=RightTransversalOp(G,N);
 
-                # loop over the conjugates of <I>
-                for r  in reps  do
+		# loop over the conjugates of <I>
+		for r  in reps  do
 
-                    # compute the zuppos blist of the conjugate
-                    if r = One(G)  then
-                        Jzups:=Izups;
-                    else
-                        Jzups:=BlistList(zuppos,OnTuples(Ielms,r));
-                    fi;
+		  # compute the zuppos blist of the conjugate
+		  if r = One(G)  then
+		    Jzups:=Izups;
+		  else
+		    Jzups:=BlistList(zuppos,OnTuples(Ielms,r));
+		  fi;
 
-                    # loop over the perfect classes
-                    for k  in [i+1..Length(perfect)]  do
-                        Kzups:=perfectZups[k];
+		  # loop over the already found classes
+		  for k  in [h..layere]  do
+		    Kzups:=classesZups[k];
 
-                        # throw away classes that appear twice in perfect
-                        if Jzups = Kzups  then
-                            perfectNew[k]:=false;
-                            perfectZups[k]:=[];
-                        fi;
+		    # test if the <K> is a subgroup of <J>
+		    if IsSubsetBlist(Jzups,Kzups)  then
+		      # don't extend <K> by the elements of <J>
+		      SubtractBlist(classesExts[k],Jzups);
+		    fi;
 
-                    od;
+		  od;
 
-                od;
+		od;
 
-                # now we are done with the new class
-                Unbind(Ielms);
-                Unbind(reps);
-                Info(InfoLattice,2,"tested equalities");
+		# now we are done with the new class
+		Unbind(Ielms);
+		Unbind(reps);
+		Info(InfoLattice,2,"tested inclusions");
 
-                # unbind the stuff we dont need any more
-                perfectZups[i]:=[];
+	      else
+		Info(InfoLattice,1,"discarded!");
+	      fi; # if condition fulfilled
 
-            fi; 
-	    # if IsPerfectGroup(I) and Length(Factors(Size(I))) = layer the...
+	    fi; # if Hexts[i] and Hzups[zupposPower[i]]  then ...
+	  od; # for i  in [1..Length(zuppos)]  do ...
+
+	  # remove the stuff we don't need any more
+	  Unbind(classesZups[h]);
+	  Unbind(classesExts[h]);
+        od; # for h  in [layerb..layere]  do ...
+
+        # add the classes of perfect subgroups
+        for i  in [1..Length(perfect)]  do
+	  if    perfectNew[i]
+	    and IsPerfectGroup(perfect[i])
+	    and Length(Factors(Size(perfect[i]))) = l
+	  then
+
+	    # make the new subgroup <I>
+	    I:=perfect[i];
+
+	    # compute the zuppos blist of <I>
+	    Ielms:=AsSSortedListNonstored(I);
+	    Izups:=BlistList(zuppos,Ielms);
+
+	    # compute the normalizer of <I>
+	    N:=Normalizer(G,I);
+	    # AH: NormalizerInParent ?
+	    Info(InfoLattice,2,"found perfect class ",nrClasses+1,
+		  " size = ",Size(I),", length = ",Size(G)/Size(N));
+
+	    # make the new conjugacy class
+	    C:=ConjugacyClassSubgroups(G,I);
+	    SetSize(C,Size(G)/Size(N));
+	    SetStabilizerOfExternalSet(C,N);
+	    nrClasses:=nrClasses + 1;
+	    classes[nrClasses]:=C;
+
+	    # store the extend by list
+	    if l < Length(factors)-1  then
+	      classesZups[nrClasses]:=Izups;
+	      Nzups:=BlistList(zuppos,AsSSortedListNonstored(N));
+	      SubtractBlist(Nzups,Izups);
+	      classesExts[nrClasses]:=Nzups;
+	    fi;
+
+	    # compute the right transversal
+	    # (but don't store it in the parent)
+	    reps:=RightTransversalOp(G,N);
+
+	    # loop over the conjugates of <I>
+	    for r  in reps  do
+
+	      # compute the zuppos blist of the conjugate
+	      if r = One(G)  then
+		Jzups:=Izups;
+	      else
+		Jzups:=BlistList(zuppos,OnTuples(Ielms,r));
+	      fi;
+
+	      # loop over the perfect classes
+	      for k  in [i+1..Length(perfect)]  do
+		Kzups:=perfectZups[k];
+
+		# throw away classes that appear twice in perfect
+		if Jzups = Kzups  then
+		  perfectNew[k]:=false;
+		  perfectZups[k]:=[];
+		fi;
+
+	      od;
+
+	    od;
+
+	    # now we are done with the new class
+	    Unbind(Ielms);
+	    Unbind(reps);
+	    Info(InfoLattice,2,"tested equalities");
+
+	    # unbind the stuff we dont need any more
+	    perfectZups[i]:=[];
+
+	  fi; 
+	  # if IsPerfectGroup(I) and Length(Factors(Size(I))) = layer the...
         od; # for i  in [1..Length(perfect)]  do
 
         # on to the next layer
@@ -494,11 +482,11 @@ local   G,		   # group
 
     # sort the classes
     Sort(classes,
-                  function (c,d)
-                     return Size(Representative(c)) < Size(Representative(d))
-                        or (Size(Representative(c)) = Size(Representative(d))
-                            and Size(c) < Size(d));
-                   end);
+	 function (c,d)
+	    return Size(Representative(c)) < Size(Representative(d))
+	      or (Size(Representative(c)) = Size(Representative(d))
+		  and Size(c) < Size(d));
+	 end);
 
     # create the lattice
     lattice:=Objectify(NewType(FamilyObj(classes),IsLatticeSubgroupsRep),
@@ -732,6 +720,10 @@ function (L)
 	    grp,	       # the group
             i,k,r;         # loop variables
 
+    if IsBound(L!.func) then
+      Error("cannot compute maximality inclusions for partial lattice");
+    fi;
+
     grp:=L!.group;
     # compute the lattice,fetch the classes,zuppos,and representatives
     classes:=L!.conjugacyClassesSubgroups;
@@ -758,7 +750,7 @@ function (L)
         Info(InfoLattice,2," testing class ",i);
 
         # compute the zuppos blist of <I>
-        Ielms:=AttributeValueNotSet(AsList,I);
+        Ielms:=AsSSortedListNonstored(I);
         Izups:=BlistList(zuppos,Ielms);
         classesZups[i]:=Izups;
 
@@ -834,6 +826,10 @@ function (L)
 	    grp,	       # the group
             i,k,r;         # loop variables
 
+    if IsBound(L!.func) then
+      Error("cannot compute maximality inclusions for partial lattice");
+    fi;
+
     grp:=L!.group;
     # compute the lattice,fetch the classes,zuppos,and representatives
     classes:=L!.conjugacyClassesSubgroups;
@@ -854,7 +850,7 @@ function (L)
         I:=Representative(classes[i]);
 
         # compute the zuppos blist of <I>
-        Ielms:=AttributeValueNotSet(AsList,I);
+        Ielms:=AsSSortedListNonstored(I);
         Izups:=BlistList(zuppos,Ielms);
         classesZups[i]:=Izups;
 

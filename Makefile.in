@@ -34,7 +34,7 @@ BASECC=@BASECC@
 
 default: compile
 
-config: bin/@target@-@BASECC@/configure bin/@target@-@BASECC@/Makefile
+config: bin/@target@-@BASECC@/configure bin/@target@-@BASECC@/Makefile 
 
 bin/@target@-@BASECC@/configure: cnf/configure.out
 	if test ! -d bin;  then mkdir bin;  fi
@@ -42,7 +42,7 @@ bin/@target@-@BASECC@/configure: cnf/configure.out
 	@rm -f bin/@target@-@BASECC@/configure
 	cp cnf/configure.out bin/@target@-@BASECC@/configure
 
-bin/@target@-@BASECC@/Makefile: bin/@target@-@BASECC@/configure cnf/config.hin
+bin/@target@-@BASECC@/Makefile: bin/@target@-@BASECC@/configure cnf/config.hin cnf/gac.in
 	( cd bin/@target@-@BASECC@ ; CC=$(CC) ./configure --target=@target@ @gp_configure_options@ )
 
 compile: config

@@ -102,20 +102,20 @@ gap> r := Random(dom);;
 gap> c:= EquivalenceClassOfElement(e,r);;
 gap> e = EquivalenceClassRelation(c);
 true
-gap> ec := EquivalenceClasses(e);
-[ {1}, {2}, {3}, {6}, {7}, {8}, {9}, {10} ]
-gap> 4 in ec[2];
+gap> ec := EquivalenceClassOfElement(e,2);
+{2}
+gap> 4 in ec;
 true
-gap> 5 in ec[3];
+gap> 1 in ec;
 false
 gap> Images(e,2); 
 [ 2, 4, 5 ]
 gap> Images(e,10);
 [ 10 ]
-gap> br:=BinaryRelationByListOfImages([[1],[2,4,5],[3],[4,2,5],[2,4,5],[6],[7],[8],[9],[10]]);;
+gap> br:=BinaryRelationOnPoints([[1],[2,4,5],[3],[4,2,5],[2,4,5],[6],[7],[8],[9],[10]]);;
 gap> e=br;
 true 
-gap> ImagesListOfBinaryRelation(br);
+gap> Successors(br);
 [ [ 1 ], [ 2, 4, 5 ], [ 3 ], [ 2, 4, 5 ], [ 2, 4, 5 ], [ 6 ], [ 7 ], [ 8 ], 
   [ 9 ], [ 10 ] ]
 gap> EquivalenceRelationPartition(br);
@@ -129,17 +129,17 @@ gap> ##      JoinEquivalenceRelations
 gap> ##      MeetEquivalenceRelations
 gap> ##      EquivalenceClassOfElement
 gap> ##################################################
-gap> br := BinaryRelationByListOfImages([[2],[3],[4],[5],[6],[7],[8],[9],[10],[]]);;
+gap> br := BinaryRelationOnPoints([[2],[3],[4],[5],[6],[7],[8],[9],[10],[]]);;
 gap> rc := ReflexiveClosureBinaryRelation(br);;
-gap> ImagesListOfBinaryRelation(rc);
+gap> Successors(rc);
 [ [ 1, 2 ], [ 2, 3 ], [ 3, 4 ], [ 4, 5 ], [ 5, 6 ], [ 6, 7 ], [ 7, 8 ],
   [ 8, 9 ], [ 9, 10 ], [ 10 ] ]
 gap> sc := SymmetricClosureBinaryRelation(br);;
-gap> ImagesListOfBinaryRelation(sc);
+gap> Successors(sc);
 [ [ 2 ], [ 1, 3 ], [ 2, 4 ], [ 3, 5 ], [ 4, 6 ], [ 5, 7 ], [ 6, 8 ], 
   [ 7, 9 ], [ 8, 10 ], [ 9 ] ]
 gap> tc := TransitiveClosureBinaryRelation(br);;
-gap> ImagesListOfBinaryRelation(tc);
+gap> Successors(tc);
 [ [ 2, 3, 4, 5, 6, 7, 8, 9, 10 ], [ 3, 4, 5, 6, 7, 8, 9, 10 ],
   [ 4, 5, 6, 7, 8, 9, 10 ], [ 5, 6, 7, 8, 9, 10 ], [ 6, 7, 8, 9, 10 ],
   [ 7, 8, 9, 10 ], [ 8, 9, 10 ], [ 9, 10 ], [ 10 ], [  ] ]

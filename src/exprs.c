@@ -201,7 +201,7 @@ Obj             EvalUnknownBool (
         val = ErrorReturnObj(
             "<expr> must be 'true' or 'false' (not a %s)",
             (Int)TNAM_OBJ(val), 0L,
-            "you can return 'true' or 'false'" );
+            "you can replace <expr> via 'return <expr>;'" );
     }
 
     /* return the value                                                    */
@@ -951,7 +951,7 @@ Obj             EvalPermExpr (
                 val = ErrorReturnObj(
               "Permutation: <expr> must be a positive integer (not a %s)",
                     (Int)TNAM_OBJ(val), 0L,
-                    "you can return a positive integer" );
+                    "you can replace <expr> via 'return <expr>;'" );
             }
             c = INT_INTOBJ(val);
 
@@ -973,7 +973,7 @@ Obj             EvalPermExpr (
                 return ErrorReturnObj(
                     "Permutation: cycles must be disjoint",
                     0L, 0L,
-                    "you can return a permutation" );
+                    "you can replace permutation <perm> via 'return <perm>;'" );
             }
 
             /* enter the previous entry at current location                */
@@ -1211,7 +1211,7 @@ Obj             EvalRangeExpr (
         val = ErrorReturnObj(
             "Range: <first> must be an integer less than 2^28 (not a %s)",
             (Int)TNAM_OBJ(val), 0L,
-            "you can return an integer for <first>" );
+            "you can replace <first> via 'return <first>;'" );
     }
     low = INT_INTOBJ( val );
 
@@ -1223,13 +1223,13 @@ Obj             EvalRangeExpr (
                 val = ErrorReturnObj(
                     "Range: <second> must be an integer less than 2^28 (not a %s)",
                     (Int)TNAM_OBJ(val), 0L,
-                    "you can return an integer for <second>" );
+                    "you can replace <second> via 'return <second>;'" );
             }
             else {
                 val = ErrorReturnObj(
                     "Range: <second> must not be equal to <first> (%d)",
                     (Int)low, 0L,
-                    "you can return a new integer for <second>" );
+                    "you can replace the integer <second> via 'return <second>;'" );
             }
         }
         inc = INT_INTOBJ(val) - low;
@@ -1245,13 +1245,13 @@ Obj             EvalRangeExpr (
             val = ErrorReturnObj(
                 "Range: <last> must be an integer less than 2^28 (not a %s)",
                 (Int)TNAM_OBJ(val), 0L,
-                "you can return an integer for <last>" );
+                "you can replace <last> via 'return <last>;'" );
         }
         else {
             val = ErrorReturnObj(
                 "Range: <last>-<first> (%d) must be divisible by <inc> (%d)",
                 (Int)(INT_INTOBJ(val)-low), (Int)inc,
-                "you can return a new integer for <last>" );
+                "you can replace the integer <last> via 'return <last>;'" );
         }
     }
     high = INT_INTOBJ(val);
@@ -1296,12 +1296,12 @@ Obj             EvalStringExpr (
     Expr                expr )
 {
     Obj                 string;         /* string value, result            */
-
-    /* create the string and copy the stuff                                */
-    string = NEW_STRING( SIZE_EXPR(expr)-1 );
-    SyStrncat( CSTR_STRING(string), 
-               (Char*)ADDR_EXPR(expr),
-               SIZE_EXPR(expr)-1 );
+    UInt                 len;           /* size of expression              */
+    
+    len = *((UInt *)ADDR_EXPR(expr));
+    string = NEW_STRING(len);
+    memcpy((void *)ADDR_OBJ(string), (void *)ADDR_EXPR(expr), 
+                      SIZEBAG_STRINGLEN(len) );
 
     /* return the string                                                   */
     return string;
@@ -1805,7 +1805,8 @@ void            PrintRangeExpr (
 void            PrintStringExpr (
     Expr                expr )
 {
-    Pr( "\"%S\"", (Int)ADDR_EXPR(expr), 0L );
+    PrintString(EvalStringExpr(expr));
+    /*Pr( "\"%S\"", (Int)ADDR_EXPR(expr), 0L );*/
 }
 
 

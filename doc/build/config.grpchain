@@ -1,4 +1,4 @@
 @msfiles = ("hash2","quogphom","gptransv","grpchain");
-@gdfiles = ("dict","eigen","quogphom","gptransv","grpchain","rss","solmxgp");
+@gdfiles = ("dict","eigen","quogphom","gptransv","grpchain","rss","solmxgrp");
 $DIR = "../new";
 $LIB = "../../lib"; 

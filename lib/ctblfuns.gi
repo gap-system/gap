@@ -726,7 +726,7 @@ InstallMethod( GlobalPartitionOfClasses,
     if HasAutomorphismsOfTable( tbl ) then
 
       # The orbits define the finest possible global partition.
-      part:= Orbits( AutomorphismsOfTable( tbl ),
+      part:= OrbitsDomain( AutomorphismsOfTable( tbl ),
                      [ 1 .. Length( NrConjugacyClasses( tbl ) ) ] );
 
     else
@@ -1731,10 +1731,8 @@ InstallMethod( IsIrreducibleCharacter,
 ##
 InstallMethod( ScalarProduct,
     "for two class functions",
-    true,
-    [ IsClassFunction, IsClassFunction ], 0,
+    [ IsClassFunction, IsClassFunction ],
     function( chi, psi )
-
     local tbl, i, size, weights, scalarproduct;
 
     tbl:= UnderlyingCharacterTable( chi );
@@ -1752,8 +1750,7 @@ InstallMethod( ScalarProduct,
 ##
 InstallMethod( ScalarProduct,
     "for ordinary table and two homogeneous lists",
-    true,
-    [ IsOrdinaryTable, IsRowVector, IsRowVector ], 0,
+    [ IsOrdinaryTable, IsRowVector, IsRowVector ],
     function( tbl, x1, x2 )
 
      local i,       # loop variable
@@ -1891,14 +1888,12 @@ InstallMethod( MatScalarProducts,
 ##
 InstallOtherMethod( Norm,
     "for a class function",
-    true,
-    [ IsClassFunction ], 0,
+    [ IsClassFunction ],
     chi -> ScalarProduct( chi, chi ) );
 
 InstallOtherMethod( Norm,
     "for an ordinary character table and a homogeneous list",
-    true,
-    [ IsOrdinaryTable, IsHomogeneousList ], 0,
+    [ IsOrdinaryTable, IsHomogeneousList ],
     function( tbl, chi )
     return ScalarProduct( tbl, chi, chi );
     end );
@@ -1947,25 +1942,25 @@ InstallMethod( ClassPositionsOfCentre,
 #M  ConstituentsOfCharacter( [<tbl>, ]<chi> ) .  irred. constituents of <chi>
 ##
 InstallMethod( ConstituentsOfCharacter,
-    true,
-    [ IsClassFunction ], 0,
+    [ IsClassFunction ],
     chi -> ConstituentsOfCharacter( UnderlyingCharacterTable( chi ), chi ) );
 
 InstallMethod( ConstituentsOfCharacter,
     "for a character",
-    true,
-    [ IsClassFunction and IsCharacter ], 0,
+    [ IsClassFunction and IsCharacter ],
     function( chi )
 
-    local irr,    # irreducible characters of underlying table of 'chi'
+    local tbl,    # underlying table of `chi'
+          irr,    # irreducible characters of `tbl'
           values, # character values
-          deg,    # degree of 'chi'
+          deg,    # degree of `chi'
           const,  # list of constituents, result
-          i,      # loop over 'irr'
+          i,      # loop over `irr'
           irrdeg, # degree of an irred. character
           scpr;   # one scalar product
 
-    irr:= Irr( UnderlyingCharacterTable( chi ) );
+    tbl:= UnderlyingCharacterTable( chi );
+    irr:= Irr( tbl );
     values:= ValuesOfClassFunction( chi );
     deg:= values[1];
     const:= [];
@@ -1973,7 +1968,7 @@ InstallMethod( ConstituentsOfCharacter,
     while 0 < deg and i <= Length( irr ) do
       irrdeg:= DegreeOfCharacter( irr[i] );
       if irrdeg <= deg then
-        scpr:= ScalarProduct( chi, irr[i] );
+        scpr:= ScalarProduct( tbl, chi, irr[i] );
         if scpr <> 0 then
           deg:= deg - scpr * irrdeg;
           Add( const, irr[i] );
@@ -1986,9 +1981,8 @@ InstallMethod( ConstituentsOfCharacter,
     end );
 
 InstallMethod( ConstituentsOfCharacter,
-    "for an ordinary table, and a homogeneous list ",
-    true,
-    [ IsOrdinaryTable, IsHomogeneousList ], 0,
+    "for an ordinary table, and a homogeneous list",
+    [ IsOrdinaryTable, IsHomogeneousList ],
     function( tbl, chi )
 
     local irr,    # irreducible characters of `tbl'
@@ -2000,7 +1994,7 @@ InstallMethod( ConstituentsOfCharacter,
     const:= [];
     proper:= true;
     for i in Irr( tbl ) do
-      scpr:= ScalarProduct( chi, i );
+      scpr:= ScalarProduct( tbl, chi, i );
       if scpr <> 0 then
         Add( const, i );
         proper:= proper and IsInt( scpr ) and ( 0 < scpr );
@@ -2016,9 +2010,8 @@ InstallMethod( ConstituentsOfCharacter,
     end );
 
 InstallMethod( ConstituentsOfCharacter,
-    "for a Brauer table, and a homogeneous list ",
-    true,
-    [ IsBrauerTable, IsHomogeneousList ], 0,
+    "for a Brauer table, and a homogeneous list",
+    [ IsBrauerTable, IsHomogeneousList ],
     function( tbl, chi )
 
     local irr,    # irreducible characters of `tbl'
@@ -3638,8 +3631,14 @@ InstallMethod( ReducedCharacters,
 ##
 InstallGlobalFunction( IrreducibleDifferences, function( arg )
 
-    local i, j, x, tbl, reducibles, irreducibledifferences, scprmatrix,
-          reducibles2, diff, norms, norms2;
+    local tbl,
+          reducibles,
+          irreducibledifferences,
+          scprmatrix,
+          i, j,
+          diff,
+          reducibles2,
+          norms, norms2;
 
     if not ( Length( arg ) in [ 3, 4 ] and IsOrdinaryTable( arg[1] ) and
              IsList( arg[2] ) and ( IsList( arg[3] ) or IsString( arg[3] ) ) )
@@ -4324,9 +4323,9 @@ InstallGlobalFunction( FrobeniusCharacterValue, function( value, p )
       od;
 
       if p^m > MAXSIZE_GF_INTERNAL then
-        Print( "#E  ", value,
-               " cannot be expressed using GAP's internal finite fields\n" );
-#T !!
+        Info( InfoWarning, 1,
+              value,
+              " cannot be expressed using GAP's internal finite fields" );
         return fail;
       fi;
 
@@ -4335,11 +4334,15 @@ InstallGlobalFunction( FrobeniusCharacterValue, function( value, p )
       primefield:= GF(p);
       zero:= Zero( primefield );
 
-      if not IsBound( CONWAYPOLYNOMIALS[p][k] ) then
-        Info( InfoCharacterTable, 1,
-              "trying to compute Conway polynomial of degree ", k,
-              " for p = ", p );
-return fail;
+      # Give up if the required Conway polynomial is hard to compute.
+      if    not IsBound( CONWAYPOLYNOMIALS[p] )
+         or not IsBound( CONWAYPOLYNOMIALS[p][k] ) then
+        if not TryConwayPolynomialForFrobeniusCharacterValue( p, k ) then
+          Info( InfoWarning, 1,
+                "the Conway polynomial of degree ", k, " for p = ", p,
+                " is not known" );
+          return fail;
+        fi;
       fi;
       conwaypol:= ConwayPolynomial( p, k );
 
@@ -4374,6 +4377,21 @@ return fail;
     # Return the Frobenius character value.
     return value;
 end );
+
+
+#############################################################################
+##
+#F  TryConwayPolynomialForFrobeniusCharacterValue( <p>, <n> )
+##
+##  We hope to have a fair chance to find an unknown Conway polynomial if
+##  the degree is a prime or $4$;
+##  note that in this range, we may get an additional problem because of the
+##  probabilistic primality test of {\GAP}.
+##
+InstallGlobalFunction( TryConwayPolynomialForFrobeniusCharacterValue,
+    function( p, n )
+    return IsPrimeInt( n ) or n < 6;
+    end );
 
 
 #############################################################################
@@ -4778,7 +4796,7 @@ InstallHandlingByNiceBasis( "IsClassFunctionsSpace", rec(
 InstallOtherMethod( ScalarProduct,
     "for left module of class functions, and two class functions",
     IsCollsElmsElms,
-    [ IsFreeLeftModule, IsClassFunction, IsClassFunction ], 0,
+    [ IsFreeLeftModule, IsClassFunction, IsClassFunction ],
     function( V, x1, x2 )
     local tbl;
     tbl:= UnderlyingCharacterTable( x1 );
@@ -4798,9 +4816,8 @@ InstallOtherMethod( ScalarProduct,
 ##
 InstallOtherMethod( ScalarProduct,
     "for module of class functions, and two values lists",
-    true,
     [ IsFreeLeftModule and IsClassFunctionsSpace,
-      IsHomogeneousList, IsHomogeneousList ], 0,
+      IsHomogeneousList, IsHomogeneousList ],
     function( V, x1, x2 )
     return ScalarProduct( NiceFreeLeftModuleInfo( V ), x1, x2 );
     end );

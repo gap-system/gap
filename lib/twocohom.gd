@@ -54,16 +54,18 @@ DeclareGlobalFunction( "TwoCohomologySQ" );
 ##
 #O  TwoCocycles( <G>, <M> )
 ##
-##  returns the group of 2-cocycles of <G> by the <G>-module <M>. This group
-##  is given as vector space over the field underlying <M>.
+##  returns the group of 2-cocycles of a pc group <G> by the <G>-module <M>. 
+##  The generators of <M> must correspond to Pcgs(<G>). The group of 
+##  cocycles is given as vector space over the field underlying <M>.
 DeclareOperation( "TwoCocycles", [ IsPcGroup, IsObject ] );
 
 #############################################################################
 ##
 #O  TwoCoboundaries( <G>, <M> )
 ##
-##  returns the group of 2-coboundaries of <G> by the <G>-module <M>. This
-##  group is given as vector space over the field underlying <M>.
+##  returns the group of 2-coboundaries of a pc group <G> by the <G>-module 
+##  <M>. The generators of <M> must correspond to Pcgs(<G>). The group of 
+##  coboundaries is given as vector space over the field underlying <M>.
 DeclareOperation( "TwoCoboundaries", [ IsPcGroup, IsObject ] );
 
 #############################################################################
@@ -71,6 +73,7 @@ DeclareOperation( "TwoCoboundaries", [ IsPcGroup, IsObject ] );
 #O  TwoCohomology( <G>, <M> )
 ##
 ##  returns a record defining the second cohomology group as factor space of 
-##  the space of cocycles by the space of coboundaries.
+##  the space of cocycles by the space of coboundaries. <G> must be a pc group
+##  and the generators of <M> must correspond to the pcgs of <G>.
 DeclareOperation( "TwoCohomology", [ IsPcGroup, IsObject ] );
 

@@ -96,6 +96,12 @@ DeclareOperationKernel( "Unbind.", [ IsObject, IsObject ], UNB_REC );
 ##
 DeclareAttribute( "RecNames", IsRecord );
 
+#############################################################################
+##
+#F  RecFields( <record> )
+##
+BIND_GLOBAL( "RecFields", RecNames );
+
 
 #############################################################################
 ##
@@ -234,7 +240,7 @@ InstallMethod( \<,
 InstallMethod(\.,"catch error",true,[IsObject,IsObject],0,
 function(obj,nr)
 local msg;
-  msg:=Concatenation(", illegal access to record component `obj.",
+  msg:=Concatenation("illegal access to record component `obj.",
         NameRNam(nr),"'\n",
   "of the object <obj>. (Objects by default do not have record components.\n",
   "The error might be a relic from translated GAP3 code.)      ");
@@ -248,7 +254,7 @@ end);
 InstallMethod(IsBound\.,"catch error",true,[IsObject,IsObject],0,
 function(obj,nr)
 local msg;
-  msg:=Concatenation(", illegal access to record component `IsBound(obj.",
+  msg:=Concatenation("illegal access to record component `IsBound(obj.",
         NameRNam(nr),")'\n",
   "of the object <obj>. (Objects by default do not have record components.\n",
   "The error might be a relic from translated GAP3 code.)      ");
@@ -262,7 +268,7 @@ end);
 InstallMethod(Unbind\.,"catch error",true,[IsObject,IsObject],0,
 function(obj,nr)
 local msg;
-  msg:=Concatenation(", illegal access to record component `Unbind(obj.",
+  msg:=Concatenation("illegal access to record component `Unbind(obj.",
         NameRNam(nr),")'\n",
   "of the object <obj>. (Objects by default do not have record components.\n",
   "The error might be a relic from translated GAP3 code.)      ");
@@ -276,7 +282,7 @@ end);
 InstallMethod(\.\:\=,"catch error",true,[IsObject,IsObject,IsObject],0,
 function(obj,nr,elm)
 local msg;
-  msg:=Concatenation(", illegal assignement to record component `obj.",
+  msg:=Concatenation("illegal assignement to record component `obj.",
         NameRNam(nr),"'\n",
   "of the object <obj>. (Objects by default cannot have record components.\n",
   "The error might be a relic from translated GAP3 code.)      ");

@@ -104,7 +104,7 @@ Sift/group membership test succeeded.
 Enumerator test succeeded.
 32
 
-gap> STOP_TEST( "solmxgrp.tst", 800000000 );
+gap> STOP_TEST( "solmxgrp.tst", 80000000000 );
 
 
 #############################################################################

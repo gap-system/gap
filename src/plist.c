@@ -135,10 +135,13 @@ Int             GrowPlist (
 **   T_PLIST_TAB                known to be a table  *
 **   T_PLIST_TAB_NSORT           etc
 **   T_PLIST_TAB_SSORT           etc
+**   T_PLIST_TAB_RECT           known to be a rectangular table  *
+**   T_PLIST_TAB_RECT_NSORT      etc
+**   T_PLIST_TAB_RECT_SSORT      etc
 **   T_PLIST_CYC                known to be a list of constant kernel cyclotomics
 **   T_PLIST_CYC_NSORT           etc
 **   T_PLIST_CYC_SSORT           etc
-**   T_PLIST_FFE                known to be a list of kernel FFEs
+**   T_PLIST_FFE                known to be a list of kernel FFEs over same field
 **
 **   * -- these tnums can only be safely given when none of the elements of the list
 **        is mutable
@@ -226,8 +229,7 @@ Int KTNumPlist (
     Int                 isDense = 1;    /* is <list> dense                 */
     Int                 isTable = 0;    /* are <list>s elms all lists      */
     Int                 isRect  = 0;    /* are lists elms of equal length
-					   only test this one for PLIST elements */
-    Int                 isCyc   = 0;    /* are <list> elms all cyclotomic  */
+                                     only test this one for PLIST elements */
     Int                 areMut  = 0;    /* are <list>s elms mutable        */
     Int                 len     = 0;    /* if so, this is the length       */
     Obj                 family  = 0;    /* family of <list>s elements      */
@@ -358,6 +360,27 @@ Int KTNumPlist (
 	    /* This is a hack */
 	    RetypeBag(list, res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE ));
 	  }
+	else if (TNUM_OBJ(ELM_PLIST(list,1)) == T_FFE)
+	  {
+	    FF fld = FLD_FFE(ELM_PLIST(list,1));
+	    UInt isFFE = 1;
+	    for (i = 2; i <= lenList; i++)
+	      {
+		Obj elm = ELM_PLIST(list,i);
+		if (!IS_FFE(elm) || FLD_FFE(elm) != fld)
+		  {
+		    isFFE = 0;
+		    break;
+		  }
+	      }
+	    if (isFFE)
+	      {
+		res = T_PLIST_FFE;
+		RetypeBag(list, res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE ));
+	      }
+	    else
+	      res = T_PLIST_HOM;
+	  }
 	else
 	  res = T_PLIST_HOM;
 	if (famfirst != (Obj *) 0)
@@ -388,7 +411,6 @@ Int KTNumHomPlist (
 {
     Int                 isTable = 0;    /* are <list>s elms all lists   */
     Int                 isRect  = 0;    /* are <list>s elms all equal length */
-    Int                 isCyc   = 0;    /* are <list> elms all cyclotomic  */
     Int                 len     = 0;    /* if so, this is the length       */
     Int                 lenList;        /* length of list                  */
     Obj                 elm;            /* one element of <list>           */
@@ -429,6 +451,27 @@ Int KTNumHomPlist (
 	RetypeBag(list, res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE ));
 	goto finish;
       }
+    if (TNUM_OBJ(elm) == T_FFE)
+      {
+	FF fld = FLD_FFE(ELM_PLIST(list,1));
+	UInt isFFE = 1;
+	for (i = 2; i <= lenList; i++)
+	  {
+	    Obj elm = ELM_PLIST(list,i);
+	    if (!IS_FFE(elm) || FLD_FFE(elm) != fld)
+	      {
+		isFFE = 0;
+		break;
+	      }
+	  }
+	if (isFFE)
+	  {
+	    res = T_PLIST_FFE;
+	    RetypeBag(list, res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE ));
+	    goto finish;
+	  }
+      }
+	
 
     /* Unless we already know it is, then check if the list is a table */
     if (!HAS_FILT_LIST(list, FN_IS_TABLE ))
@@ -503,7 +546,6 @@ Obj TypePlistWithKTnum (
     Int                 ktype;          /* kind type of <list>             */
     Obj                 family;         /* family of elements              */
     Obj                 kinds;          /* kinds list of <family>          */
-    UInt                testing;
 
     /* recursion is possible for this type of list                         */
     MARK_LIST( list, TESTING );
@@ -1088,7 +1130,7 @@ Obj             ElmPlist (
         ErrorReturnVoid(
             "List Element: <list>[%d] must have an assigned value",
             (Int)pos, 0L,
-            "you can return after assigning a value" );
+            "you can 'return;' after assigning a value" );
         return ELM_LIST( list, pos );
     }
 
@@ -1100,7 +1142,7 @@ Obj             ElmPlist (
         ErrorReturnVoid(
             "List Element: <list>[%d] must have an assigned value",
             (Int)pos, 0L,
-            "you can return after assigning a value" );
+            "you can 'return;' after assigning a value" );
         return ELM_LIST( list, pos );
     }
 
@@ -1119,7 +1161,7 @@ Obj             ElmPlistDense (
         ErrorReturnVoid(
             "List Element: <list>[%d] must have an assigned value",
             (Int)pos, 0L,
-            "you can return after assigning a value" );
+            "you can 'return;' after assigning a value" );
         return ELM_LIST( list, pos );
     }
 
@@ -1144,7 +1186,7 @@ Obj             ElmvPlist (
         ErrorReturnVoid(
             "List Element: <list>[%d] must have an assigned value",
             (Int)pos, 0L,
-            "you can return after assigning a value" );
+            "you can 'return;' after assigning a value" );
         return ELM_LIST( list, pos );
     }
 
@@ -1219,7 +1261,7 @@ Obj             ElmsPlist (
                 ErrorReturnVoid(
                     "List Elements: <list>[%d] must have an assigned value",
                     (Int)pos, 0L,
-                    "you can return after assigning a value" );
+                    "you can 'return;' after assigning a value" );
                 return ELMS_LIST( list, poss );
             }
 
@@ -1229,7 +1271,7 @@ Obj             ElmsPlist (
                 ErrorReturnVoid(
                     "List Elements: <list>[%d] must have an assigned value",
                     (Int)pos, 0L,
-                    "you can return after assigning a value" );
+                    "you can 'return;' after assigning a value" );
                 return ELMS_LIST( list, poss );
             }
 
@@ -1259,14 +1301,14 @@ Obj             ElmsPlist (
             ErrorReturnVoid(
                 "List Elements: <list>[%d] must have an assigned value",
                 (Int)pos, 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
             return ELMS_LIST( list, poss );
         }
         if ( lenList < pos + (lenPoss-1) * inc ) {
             ErrorReturnVoid(
                 "List Elements: <list>[%d] must have an assigned value",
                 (Int)pos + (lenPoss-1) * inc, 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
             return ELMS_LIST( list, poss );
         }
 
@@ -1284,7 +1326,7 @@ Obj             ElmsPlist (
                 ErrorReturnVoid(
                     "List Elements: <list>[%d] must have an assigned value",
                     (Int)pos, 0L,
-                    "you can return after assigning a value" );
+                    "you can 'return;' after assigning a value" );
                 return ELMS_LIST( list, poss );
             }
 
@@ -1334,9 +1376,11 @@ Obj             ElmsPlistDense (
 	  elms = NEW_PLIST( MUTABLE_TNUM(TNUM_OBJ(list)), lenPoss);
 	else if (HAS_FILT_LIST(list, FN_IS_TABLE))
 	  elms = NEW_PLIST( T_PLIST_TAB, lenPoss );
-	else if (T_PLIST_CYC <= TNUM_OBJ(list) && TNUM_OBJ(list) <= T_PLIST_CYC_SSORT+IMMUTABLE)
+	else if (T_PLIST_CYC <= TNUM_OBJ(list) && TNUM_OBJ(list) <= 
+                                                  T_PLIST_CYC_SSORT+IMMUTABLE)
 	  elms = NEW_PLIST( T_PLIST_CYC, lenPoss );
-	else if (T_PLIST_FFE <= TNUM_OBJ(list) && TNUM_OBJ(list) <= T_PLIST_FFE+IMMUTABLE)
+	else if (T_PLIST_FFE <= TNUM_OBJ(list) && TNUM_OBJ(list) <= 
+                                                  T_PLIST_FFE+IMMUTABLE)
 	  elms = NEW_PLIST( T_PLIST_FFE, lenPoss );
 	else if (HAS_FILT_LIST(list, FN_IS_HOMOG))
 	  elms = NEW_PLIST( T_PLIST_HOM, lenPoss );
@@ -1354,7 +1398,7 @@ Obj             ElmsPlistDense (
                 ErrorReturnVoid(
                     "List Elements: <list>[%d] must have an assigned value",
                     (Int)pos, 0L,
-                    "you can return after assigning a value" );
+                    "you can 'return;' after assigning a value" );
                 return ELMS_LIST( list, poss );
             }
 
@@ -1383,37 +1427,39 @@ Obj             ElmsPlistDense (
         inc = GET_INC_RANGE( poss );
 
         /* check that no <position> is larger than 'LEN_LIST(<list>)'      */
-        if ( lenList < pos ) {
+        if ( pos < 1 || lenList < pos ) {
             ErrorReturnVoid(
                 "List Elements: <list>[%d] must have an assigned value",
                 (Int)pos, 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
             return ELMS_LIST( list, poss );
         }
-        if ( lenList < pos + (lenPoss-1) * inc ) {
+        if ( pos+(lenPoss-1) * inc < 1 || lenList < pos+(lenPoss-1) * inc ) {
             ErrorReturnVoid(
                 "List Elements: <list>[%d] must have an assigned value",
                 (Int)pos + (lenPoss-1) * inc, 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
             return ELMS_LIST( list, poss );
         }
 
         /* make the result list                                            */
         /* try to assert as many properties as possible                    */
-        if      ( HAS_FILT_LIST(list, FN_IS_SSORT))
+        if      ( HAS_FILT_LIST(list, FN_IS_SSORT) && inc > 0 )
 	  {
 	      elms = NEW_PLIST( MUTABLE_TNUM(TNUM_OBJ(list)), lenPoss );
-	      if (lenPoss > 1 && inc < 0)
+	/*      if (lenPoss > 1 && inc < 0)
 		{
 		  RESET_FILT_LIST(elms, FN_IS_SSORT);
 		  SET_FILT_LIST(elms, FN_IS_NSORT);
-		}
+		}  */
 	  }
 	else if (HAS_FILT_LIST(list, FN_IS_TABLE))
 	  elms = NEW_PLIST( T_PLIST_TAB, lenPoss );
-	else if (T_PLIST_CYC <= TNUM_OBJ(list) && TNUM_OBJ(list) <= T_PLIST_CYC_SSORT+IMMUTABLE)
+	else if (T_PLIST_CYC <= TNUM_OBJ(list) && TNUM_OBJ(list) <= 
+                                                  T_PLIST_CYC_SSORT+IMMUTABLE)
 	  elms = NEW_PLIST( T_PLIST_CYC, lenPoss );
-	else if (T_PLIST_FFE <= TNUM_OBJ(list) && TNUM_OBJ(list) <= T_PLIST_FFE+IMMUTABLE)
+	else if (T_PLIST_FFE <= TNUM_OBJ(list) && TNUM_OBJ(list) <= 
+                                                  T_PLIST_FFE+IMMUTABLE)
 	  elms = NEW_PLIST( T_PLIST_FFE, lenPoss );
 	else if (HAS_FILT_LIST(list, FN_IS_HOMOG))
 	  elms = NEW_PLIST( T_PLIST_HOM, lenPoss );
@@ -1481,7 +1527,7 @@ void            UnbPlistImm (
     ErrorReturnVoid(
         "List Unbind: <list> must be a mutable list",
         0L, 0L,
-        "you can return and ignore the unbind" );
+        "you can 'return;' and ignore the unbind" );
 }
 
 
@@ -1638,7 +1684,6 @@ void AssPlistDense (
     Obj                 val )
 {
   Int len;
-  Obj fam;
   
   /* the list will probably loose its flags/properties                   */
   CLEAR_FILTS_LIST(list);
@@ -1732,7 +1777,7 @@ void            AssPlistImm (
     ErrorReturnVoid(
         "Lists Assignment: <list> must be a mutable list",
         0L, 0L,
-        "you can return and ignore the assignment" );
+        "you can 'return;' and ignore the assignment" );
 }
 
 
@@ -1914,7 +1959,7 @@ void            AsssPlistImm (
     ErrorReturnVoid(
         "Lists Assignments: <list> must be a mutable list",
         0L, 0L,
-        "you can return and ignore the assignment" );
+        "you can 'return;' and ignore the assignment" );
 }
 
 
@@ -2464,21 +2509,21 @@ Obj FuncASS_PLIST_DEFAULT (
         pos = ErrorReturnObj(
             "<pos> must be an integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0,
-            "you can return an integer for <pos>" );
+            "you can replace <pos> via 'return <pos>;'" );
     }
     p = INT_INTOBJ(pos);
     if ( p < 0 ) {
         pos = ErrorReturnObj(
             "<pos> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0,
-            "you can return a positive integer for <pos>" );
+            "you can replace <pos> via 'return <pos>;'" );
         return FuncASS_PLIST_DEFAULT( self, plist, pos, val );
     }
     while ( ! IS_PLIST(plist) || ! IS_MUTABLE_PLIST(plist) ) {
         plist = ErrorReturnObj(
             "<list> must be a mutable plain list (not a %s)",
             (Int)TNAM_OBJ(plist), 0,
-            "you can return a mutable plain list for <list>" );
+            "you can replace <list> via 'return <list>;'" );
     }
 
     /* call `AssPlistXXX'                                                  */

@@ -273,6 +273,16 @@ InstallMethod( CanonicalBasis,
 
 #############################################################################
 ##
+#M  Basis( <M> )  . . . . . . . . . . . . . . . . . .  for full matrix module
+##
+InstallMethod( Basis,
+    "for full matrix module (delegate to `CanonicalBasis')",
+    [ IsFreeLeftModule and IsFullMatrixModule ], CANONICAL_BASIS_FLAGS,
+    CanonicalBasis );
+
+
+#############################################################################
+##
 #M  Coefficients( <B>, <m> )  . for a canonical basis of a full matrix module
 ##
 InstallMethod( Coefficients,
@@ -290,17 +300,6 @@ InstallMethod( Coefficients,
       return fail;
     fi;
     end );
-
-
-#############################################################################
-##
-#M  Basis( <M> )  . . . . . . . . . . . . . . . . . .  for full matrix module
-##
-InstallMethod( Basis,
-    "for full matrix module",
-    [ IsFreeLeftModule and IsFullMatrixModule ],
-    SUM_FLAGS,
-    CanonicalBasis );
 
 
 #############################################################################

@@ -42,45 +42,67 @@ find and how to print it.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Installation for the Impatient}
 
+\indextt{unzoo}
 Because {\GAP} supports three different platforms, Windows, Macintosh and
-Unix, the installation process might differ a bit from what you are used to.
+UNIX, the installation process might differ a bit from what you are used to.
 This document explains in detail which files to get and how to install the
 system and if you are inexperienced we strongly recommend you follow these
-descriptions.
+instructions.
 
-If you have already experience in installing {\GAP} or would not read the
+If you already have experience in installing {\GAP} or would not read the
 installation instructions anyhow this section provides a quick run through.
 (If it is incomprehensible or causes problems, *please follow the explicit
-installation instructions given below!*):
+installation instructions given below!*)
 
-Get an `unzoo' binary and installation archive(s) and bugfix files. Call
+Get and `unzoo' binary and installation archive(s) and all bugfix files.
+The following instructions assume you have `unzoo' and it is in your path.
+Call
 \begintt
-unzoo -x archive.zoo
+unzoo -x gap{{versionsuffix}}.zoo
 cd {{gapdirname}}
 \endtt
-If there were bugfixes, extract all of them with:
+If there were bugfixes, for each `X' and in *ascending* order,
+extract them with:
 \begintt
-unzoo -x ../fixXX{{versionsuffix}}.zoo
+unzoo -x ../fix{{versionsuffix}}nX.zoo
 \endtt
-To compile a binary call
+Then, to compile the {\GAP} binary call
 \begintt
 ./configure
 make
 \endtt
 and you will get a shell script `bin/gap.sh' to start {\GAP} which you can
-copy in a standard path.
+copy in a standard path, e.g. copy the script to say `/usr/local/bin' and
+rename it to how you expect users to call {\GAP} (either `gap' or `gap4'
+is usual).
 
-Send an email to \Mailto{gap@dcs.st-and.ac.uk}, telling us about the installation.
+Send an email to \Mailto{gap@dcs.st-and.ac.uk}, telling us about the 
+installation. (This is just a courtesy; we like to know how many people
+are using {\GAP} and get feedback regarding difficulties (hopefully none)
+that users may have had with installation.)
 
-You might also want to unpack and install share packages in the `pkg'
-directory.
+You might also want to unpack and install share packages.
+Generally, this involves first getting `allshare{{versionsuffix}}.zoo' and
+`submitshare{{versionsuffix}}.zoo' (these have all the accepted/refereed and
+all the submitted but not yet refereed share packages, respectively) or 
+visiting the {\GAP} website again and first looking for the `Share Packages'
+link and following through to the individual share package `.zoo' files you
+want. The share package `.zoo' files should all be `unzoo'-ed in the `pkg'
+directory, i.e. do: `cd pkg' first. Some of the share packages are written
+entirely in {\GAP}; these are essentially ``ready-to-go'' after unpacking,
+except they should be listed in the `ALLPKG' file (see~"Loading a Share
+Package"). Other share packages have a C code component; these generally
+require one to do: `./configure; make' in their respective directories.
+Each share package has a `README'; it's recommended that despite your
+impatience that you at least give these a quick glance; for one thing
+they will tell you whether the `./configure; make' steps are needed.
 
 Also note that a few details might have changed since the last release.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Getting GAP}
 
-\index{ftp}\index{www}
+\indextt{ftp}\index{www}
 {\GAP} is distributed *free of charge*. You can obtain it via `ftp' and
 give it away to your colleagues. {\GAP} is *not* in the public domain,
 however. In particular you are not allowed to incorporate {\GAP} or
@@ -102,12 +124,12 @@ The current release of {\GAP} is version {{versionnumber}}.
 We distribute the *full source* for everything, the C code for the kernel,
 the {\GAP} code for the library, and the {\TeX} code for the manual. So it
 should be no problem to get {\GAP}, even if you have a rather uncommon
-system. Of course, ports to non UNIX systems may require some work.  Note
-that about 16 MByte of main memory (though at least 32MByte is desirable)
+system. Of course, ports to non UNIX systems may require some work. Note
+that about 16 MByte of main memory (though at least 32 MByte is desirable)
 and about 30MB of disk space are required to run {\GAP}. A full {\GAP}
 installation, including all share packages and data libraries can use 200MB
-and more of disk space. {\GAP} will compile on pentium (586) processors, though a
-faster machine is recommended.
+and more of disk space. {\GAP} will compile on pentium (586) processors, 
+though a faster machine is recommended.
 
 (If you already downloaded an installation archive, you may ignore the rest of
 this section.)
@@ -201,7 +223,7 @@ which files you need, to avoid transferring those that you do not need.
 `gapmac{{versionsuffix}}.zoo':&
  This file contains a complete distribution for Macintosh under MacOS. You
  will also need to obtain the binaries separately from the `bin'
- subdirectory.
+ subdirectory via ftp or from the links on the Distribution web page.
 
 `allshare{{versionsuffix}}.zoo':&
  This file contains all accepted share packages as of the release date.
@@ -209,7 +231,7 @@ which files you need, to avoid transferring those that you do not need.
 `submitshare{{versionsuffix}}.zoo':&
  This file contains all submitted, but not accepted, share packages
  whose authors wish to make them available, as of the release date. They
- should be viewed as analagous to preprints.
+ should be viewed as analogous to preprints.
 
 `util/unzoo.c':&
  A simple `zoo' archive extractor, which should be
@@ -217,7 +239,8 @@ which files you need, to avoid transferring those that you do not need.
  subdirectory contains precompiled executables
  for common systems.
 
-More files are in the following *subdirectories*:
+ More files are available from the Distribution web page links or
+ the following ftp *subdirectories*:
 
 `bin':&
  This directory contains *executables* for systems
@@ -242,13 +265,14 @@ More files are in the following *subdirectories*:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{GAP for UNIX}
 
-\index{BSD}\index{4.2BSD}\index{4.3BSD}\index{ULTRIX}
-\index{Linux}\index{OSF}\index{RS/6000}
-\index{System V}\index{SysV}\index{HP-UX}\index{SunOS}\index{Solaris}
-\index{IRIX}
+\atindex{BSD}{@BSD}\atindex{4.2BSD}{@4.2BSD}\atindex{4.3BSD}{@4.3BSD}
+\atindex{ULTRIX}{@ULTRIX}
+\atindex{Linux}{@Linux}\atindex{OSF}{@OSF}\atindex{RS/6000}{@RS/6000}
+\atindex{System V}{@System V}\atindex{SysV}{@SysV}\atindex{HP-UX}{@HP-UX}
+\atindex{Solaris}{@Solaris}\atindex{IRIX}{@IRIX}
 {\GAP} runs very well under UNIX. In fact it is being developed on UNIX
-workstations. {\GAP} running on any UNIX machine should behave exactly
-as described in the manual.
+workstations (and PCs under Linux). {\GAP} running on any UNIX machine
+should behave exactly as described in the manual.
 
 {\GAP} has successfully been compiled and installed on the following UNIX
 machines:
@@ -256,8 +280,8 @@ machines:
 DECalpha under OSF 3.2 with GNU cc 2 or cc,
 HP9000 under HP-UX with GNU cc 2, 
 IBM PC under Linux with GNU cc 2, 
-IBM RS/6000 & AIX with GNU cc 2, SGI Mips under IRIX 5/6 with gcc2 or cc,
-Sun Sparc under SunOS with GCC 2, Sun Sparc under Solaris with GCC 2 or cc. 
+IBM RS/6000 & AIX with GNU cc 2, SGI Mips under IRIX 5/6 with gcc2 or
+cc, Sun Sparc under Solaris with GCC 2 or cc. 
 \endtt
 
 We hope that compiling and installing {\GAP} on another UNIX machine does
@@ -271,10 +295,12 @@ command line options that {\GAP} accepts under UNIX.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Installation of GAP for UNIX}
 
-\index{installation!under UNIX}\index{UNIX!installation}
+\atindex{installation!under UNIX}{@installation!under UNIX}
+\atindex{UNIX!installation}{@UNIX!installation}
 Installing {\GAP} on a UNIX machine
 is fairly easy. Get the files described in "Getting GAP"
-and decide into which directory you want to install {\GAP} {{versionnumber}}. If
+and decide into which directory you want to install {\GAP} {{versionnumber}}. 
+If
 you will be the only user using {\GAP}, you probably should install it
 in your home directory. If other users will be also using {\GAP}, you
 should install it in a public place, such as `/usr/local/lib/'. {\GAP}
@@ -318,6 +344,10 @@ you@unix> ./unzoo -x gap{{versionsuffix}}.zoo
 you@unix> 
 \endtt
 
+(Messages of the form: `/bin/mkdir: cannot create directory' are harmless
+and can be ignored. They stem from issuing `mkdir' calls for top level
+directories every time a new subdirectory is created.)
+
 If you got not the full distribution file but several small files, extract
 all of them (*except the bug fixes and share packages!*) in this way.
 
@@ -327,24 +357,29 @@ longer. If you are short of disk space you can remove it now.)
 you@unix> rm gap{{versionsuffix}}.zoo
 \endtt
 
-Now go in the directory `{{gapdirname}}' If you got any bug fixes (there are
-none in the initial release but doubtlessly some will follow. You can find
-them in the `bugfixes' directory on our ftp server(s).) extract these
-there. (The bug fixes extract only on this level to make them applicable
-even if you chose later to rename the root directory of your {\GAP}
-distribution.)
+Now go into the directory `{{gapdirname}}'. If there are any bug fixes 
+(there are none in the initial release but invariably some follow later and
+are deposited in the `bugfixes' directory on our ftp server(s)), extract 
+these while in the `{{gapdirname}}' directory. (The bug fixes extract only
+on this level of the directory hierarchy to make them applicable even if you
+chose later to rename the root directory of your {\GAP} distribution.)
 
-If there is more than  one  fix 
-file,  first unpack  `fix1', then `fix2', an so on.
+If there is more than one fix file, first unpack `fix{{versionsuffix}}n1.zoo',
+then `fix{{versionsuffix}}n2.zoo', and so on. The program may ask you for 
+confirmation to overwrite files, you should give this permission.
 
 \begintt
 you@unix> cd {{gapdirname}}
-you@unix> ../unzoo -x ../fixXX{{versionsuffix}}.zoo
-[again extraction information]
+you@unix> ../unzoo -x ../fix{{versionsuffix}}n1.zoo
+[extraction information]
+you@unix> ../unzoo -x ../fix{{versionsuffix}}n2.zoo
+[extraction information]
+.
+.
 \endtt
 
 If you got any share packages, extract them in the `pkg' subdirectory in the
-same way.  For example if you got the `allshare{{versionsuffix}}.zoo' and
+same way. For example if you got the `allshare{{versionsuffix}}.zoo' and
 `submitshare{{versionsuffix}}.zoo' archives, you would issue:
 
 \begintt
@@ -354,18 +389,28 @@ you@unix> ../../unzoo -x ../../submitshare{{versionsuffix}}.zoo
 you@unix> cd ..
 \endtt
 
+There is a little more to do to install the share packages but (particularly
+for those packages with a C code component) it's only appropriate to 
+complete each share package's installation after {\GAP} has been compiled.
+
 The directories `tbl', `tom', `trans', `small' and `prim' contain data
 libraries. If you are short of disk space you can erase some of them,
-but then of course you will not be able to access this data.
+and any of the share package directories in `pkg' that you have decided
+you don't need, but then of course you will not be able to access these
+data or packages.
 
 Under UNIX, we now use the ``autoconfig'' method to take care of system
 dependencies. (See~"Porting GAP" if this is not working on your machine.)
 
-If you are installing {\GAP} on various systems that share a file system and if
-you have installed {\GAP} already on another machine you *must* remove the
-files `config.cache' and `config.status' first!
+If you are installing {\GAP} on various systems that share a file system 
+then all the above steps have essentially been done for all but the first
+system and on succeeding systems these steps are replaced by (fairly
+obviously) changing to the `{{gapdirname}}' directory. However, before 
+proceeding with the following steps, on each other machine you *must* 
+first remove the files `config.cache' and `config.status' created on
+the previous machine!
 
-Then run the shell script `configure':
+Now run the shell script `configure':
 
 \begintt
 you@unix> ./configure
@@ -373,7 +418,7 @@ checking host system type... i686-unknown-linux2.0.27
 [many more lines]
 \endtt
 
-This will automatially detect the machine and compiler target. The 
+This will automatically detect the machine and compiler target. The 
 process will automatically create an appropriate binary subdirectory.
 It also creates a `Makefile' that will be used to compile {\GAP} on this
 machine. Simply call `make':
@@ -391,15 +436,19 @@ to obtain a better performance. Section~"Optimization and Compiler Options"
 explains how to do this.
 
 The compilation process creates the object files and the executable in
-the directory `/usr/local/lib/{{gapdirname}}/bin/<target>/', where <target> is
-the name printed by the first `configure'. In our example the executable
-will be created as
-`/usr/local/lib/{{gapdirname}}/bin/i686-unknown-linux2.0.27/gap'
+the directory 
+
+\)\kernttindent/usr/local/lib/{{gapdirname}}/bin/<target>/
+
+where <target> is the name printed by the first `configure'. In our example
+the executable will be created as
+
+\)\kernttindent/usr/local/lib/{{gapdirname}}/bin/i686-unknown-linux2.0.27/gap
 
 The automatic configuration should work on any UNIX system. If it does not,
 please inform us at \Mailto{gap-trouble@dcs.st-and.ac.uk}.
 
-In order  to  test your  compilation now run the newly created executable.
+In order to test your compilation now run the newly created executable.
 You should get the {\GAP} banner and then the {\GAP} prompt. (The process of
 starting {\GAP} may take a little while.)
 
@@ -447,7 +496,7 @@ should give the following lines:
 
 \beginexample
 gap> Factors( 7921 );
-[ 89, 89 ] 
+[ 89, 89 ]
 \endexample
 
 If you can compile but command line editing does not work
@@ -469,14 +518,14 @@ Execute the script to start {\GAP} again
 you@unix> bin/gap.sh
 \endtt
 If the shell complains that it cannot execute or find `gap.sh' check
-the  permissions of  the  file by  doing a `ls  -l bin/gap.sh'. The
+the permissions of the file by doing a `ls  -l bin/gap.sh'. The
 permissions should include execute permissions, if they don't you can set
 them by
 \begintt
 you@unix> chmod +x bin/gap.sh
 \endtt
 
-Then copy this script into  a directory in  your search path,  for example
+Then copy this script into a directory in your search path, for example
 `/usr/local/bin/' as `gap' (or `gap4' if you also have {\GAP} 3 running on
 the same machine). (If you are using the C-shell, you will also
 have to `rehash', so that the C-shell adds `gap' to its internal
@@ -494,12 +543,12 @@ you@unix> cd ~
 you@unix> gap
 \endtt
 
-(If you get an error message ``hmm, I cannot find lib/init.g'' you are
+(If you get an error message ```hmm, I cannot find lib/init.g''' you are
 starting the pure binary. It needs to find the library which is given via
 the command line parameter `-l'.)
 
 A set of test files is provided, running them all takes some 40 minutes on
-a Pentium Pro 200 Mhz. As a quick test we start `combinat.tst' first.
+a Pentium Pro 200 MHz. As a quick test we start `combinat.tst' first.
 
 \begintt
 gap> Filename( DirectoriesLibrary("tst"), "combinat.tst" );
@@ -519,7 +568,7 @@ installation, it only serves as a confirmation that everything went
 OK. The full test suite takes some time (almost 2 hours on a Pentium
 III/500) and uses quite a bit of memory (around 100MB), so you may
 wish to skip this step or run only part of the tests. This does no
-harm)
+harm.
 
 \begintt
 gap> Filename( DirectoriesLibrary("tst"), "testall.g" );
@@ -544,37 +593,88 @@ which stem from differences in available share packages.
 The information about the manual is system independent, you can find it in
 section~"The Documentation".
 
-If you also installed share packages which require external binaries now go
-to the share packages directories (the directories under `pkg') and follow
-the instructions given there to compile their binaries.
+Now you should finish the installation for the share packages you intend to
+install. First do:
 
-Some share packages are set up to load (or provide the documentation)
-automatically. To enable this you have to list all packages in a file
-`ALLPKG' in the `pkg' directory (see section~"Loading a Share Package" in
-the reference manual for details), the easiest way to do this under UNIX is
-by issuing the command
+\begintt
+you@unix> cd pkg
+\endtt
+
+Each share package has a `README', which details the additional steps
+necessary for installation of the share package.
+Some of the share packages are written entirely in {\GAP}; for these once
+you have installed them on one system there is no further work required
+on other systems sharing the same file system. For the packages with a C
+code component, generally one must do `./configure' and `make' after changing
+to the package's directory, e.g. for the \package{ACE} share package you 
+usually only need to do:
+
+\begintt
+you@unix> cd ace
+you@unix> ./configure
+you@unix> make
+you@unix> cd ..
+\endtt
+
+For other systems sharing the same file system you need to repeat these
+steps for each system; the appropriate time is immediately after compiling
+{\GAP} on each system.
+
+Some share packages are set up to load  (or  provide  the  documentation)
+automatically. To enable this, after  installing  all  the  packages  you
+think you will need, you should list all  the  share  packages  you  have
+installed in a file `ALLPKG' in the `pkg' directory (see Section~"Loading
+a Share Package" in the Reference Manual for details); an easy way to  do
+this under UNIX is by issuing the command
+
 \begintt
 find * -type d -maxdepth 0 -print > ALLPKG
 \endtt
-in the `pkg' directory.
+while still in the `pkg' directory.
 
-If you want to install {\GAP} also on different architectures, which share
-the same file system with the machine on which you just installed {\GAP} log 
-into these machines and go to the {\GAP} home directory. You do not need to
-extract any new files, simply execute the same ``configure/make'' process
-which has been described above again. Make sure, however that you copy the
-`bin/gap.sh' and `bin/gac' shell scripts created by the `make' process
-because they are system dependent and will be overwritten when compiling on
-another system.
+Please see
+Chapter~"Share Packages" for more details on the installation of share
+packages.
 
-A few final reminders: Make sure that you got and installed all bugfixes. We
-would appreciate if after installation you could send us a short note at
-\Mailto{gap@dcs.st-and.ac.uk} (even if you had installed GAP3 before). We also
-suggest that you subscribe to our `gap-forum' mailing list, see the {\GAP}
-web pages for details.
+If you want to install {\GAP}  also  on  different  architectures,  which
+share the same file system with the machine on which you  just  installed
+{\GAP} log into these machines and go to the {\GAP} home  directory.  You
+do  not  need  to  extract  any  new  files,  simply  execute  the   same
+``configure/make'' process which has  been  described  above  again  (but
+remember to remove the files  `config.cache'  and  `config.status',  each
+time). Make sure also,  however,  that  you  copy  the  `bin/gap.sh'  and
+`bin/gac' shell scripts created by the `make' process, each time, because
+they are system dependent and will be overwritten when compiling on  each
+new system.
 
-Thats all, the installation is complete. We hope that you will enjoy using
-{\GAP}. If you have problems, do not hesitate to contact us at
+*A few final reminders:*
+
+\beginlist
+
+\item{$\bullet$}
+Make sure that you got and installed *all* bugfixes. 
+
+\item{$\bullet$}
+We would appreciate after installation your sending us a short note at
+\Mailto{gap@dcs.st-and.ac.uk} 
+(even if you have installed {\GAP} 3 before).
+Generally, we do not reply to such emails; we only use them to gain  some
+idea of how many people use {\GAP} and of the machines/operating  systems
+on which {\GAP} has been successfully installed.
+
+\item{$\bullet$}
+We also suggest that you subscribe to our `gap-forum' mailing  list;  see
+the {\GAP} web pages for details. Whenever there is  a  bug  fix  or  new
+release of {\GAP} this is where it is  announced.  The  `gap-forum'  also
+deals with user questions of a general  nature;  bug  reports  and  other
+problems you have while installing and/or using {\GAP} should be sent  to
+\Mailto{gap-trouble@dcs.st-and.ac.uk}.
+
+\endlist
+
+That's all, your installation should be complete. We hope that you will 
+enjoy using {\GAP}. Remember, if you have problems, do not hesitate to
+contact us at
 \Mailto{gap-trouble@dcs.st-and.ac.uk}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -586,10 +686,10 @@ extracted properly (Alpha-OSF machines are prone to this). Call
 \begintt
 touch * cnf/* src/*
 \endtt
-from the main GAP directory (this ought to reset the date of all relevant
+from the main {\GAP} directory (this ought to reset the date of all relevant
 files to ``now'') and try again.
 
-Rarely the `configure' process does not find out properly about the 
+Sometimes the `configure' process does not properly figure out the 
 ``inline'' compiler command. If you get error messages
 that complain that ``inline'' is unknown, edit the file `config.h' in the
 `bin/<target>' subdirectory and replace the line
@@ -616,24 +716,20 @@ if it is installed on your machine.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Problems on Particular Systems}
 
-The standard `cc' compiler on a Sun under SunOS 4 canot compile {\GAP}
-because it is not ANSI compliant.  The `configure' script by default
-choses `gcc', if only `cc' is installed on your machine use the
-`gcc'-compiled binary we provide.
-
 The highest levels of optimization of the OSF/4 C compiler `cc' on the
 Compaq alpha chip make assumptions about the use of pointers which are
-not valid for {\GAP}, and produce executables that can crash. `-O3'
-seems to be safe, but `-O4' and `-fast' do not.
+not valid for {\GAP}, and produce executables that can crash; `-O3'
+seems to be safe, but `-O4' and `-fast' are not.
 
-On Sun and Irix systems which are capable of running in 32 or 64 bit
+On Sun and IRIX systems which are capable of running in 32 or 64 bit
 modes, it is possible to build a 64 bit version of {\GAP}, but special 
 procedures are needed (and, on Suns, a compiler bug must be
-circumvented). If you wish to compile on such a system, send email to 
-|gap-trouble@dcs.st-and.ac.uk|.
+circumvented). If you wish to compile on such a system, please send an
+email to 
+\Mailto{gap-trouble@dcs.st-and.ac.uk}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Optimization and Compiler Options}.
+\Section{Optimization and Compiler Options}
 
 Because of the large variety of different versions of UNIX and different
 compilers it is possible that the `configure' process will not chose
@@ -646,7 +742,7 @@ specific processor optimizations) you will have to assign them to the variable
 \begintt
 make COPTS=-option
 \endtt
-If there are several  compiler options or if they contain spaces you might
+If there are several compiler options or if they contain spaces you might
 have to enclose them by quotes to avoid depending on the shell you are
 using.
 
@@ -711,7 +807,7 @@ In addition to the general copyright for {\GAP} set forth in the
 Copyright the following terms apply to {\GAP} for Windows.
 
 The executable of {\GAP} for Windows that we distribute was compiled with
-The `gnuwin32' compiler of the `cygwin' package.  
+The `gnuwin32' compiler of the `cygwin' package. 
 This compiler can be obtained by anonymous `ftp' from a
 variety of general public FTP archives. Many thanks to the Free Software
 Foundation and Cygnus Support for this amazing piece of work.
@@ -737,7 +833,8 @@ the GPL too, i.e., is distributed freely, which it basically does anyhow.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Installation of GAP for Windows}
 
-\index{installation!under Windows}\index{Windows!installation}
+\atindex{installation!under Windows}{@installation!under Windows}
+\atindex{Windows!installation}{@Windows!installation}
 Installing {\GAP} under 32-bit Windows should be fairly easy.
 Get the Windows-specific files described in "Getting GAP"
 and decide into which directory you want to install {\GAP} {{versionnumber}}.
@@ -761,15 +858,19 @@ to put {\GAP}.
 Get the distribution `gappc{{versionsuffix}}.zoo' and the Windows version of
 the zoo archive extractor `unzoo.exe'.
 
-(The `zoo' archives we provide for GAP contain comments which indicate
+(The `zoo' archives we provide for {\GAP} contain comments which indicate
 whether files are text or binary files. The `unzoo' we provide uses these
 comments to translate the ``LF'' line exndings we use to the Windows style
 ``CRLF''. If you use another zoo extractor you might lose this information
 and end up with files that might not conform to your operation system
 standards.)
 
-How you can get those files is described in the section "Getting GAP". Remember that the distribution consists of binary files
-and that you must transmit them in binary mode.
+How you can get those files is described in the section "Getting GAP". 
+Remember that the distribution consists of binary files
+and that you must transmit them in binary mode. See 
+\URL{http://www-gap.dcs.st-and.ac.uk/~gap/Info/mime.html}
+
+if you have problems with loading the files.
 
 Now unpack the distribution with the command
 
@@ -777,7 +878,7 @@ Now unpack the distribution with the command
 C:\GAP> unzoo -x gappc{{versionsuffix}}.zoo
 {{gapdirname}}\bin\gap.bat -- extracted
 {{gapdirname}}\doc\aboutgap.tex -- extracted
-{{gapdirname}}\doc\aggroup.tex  -- extracted
+{{gapdirname}}\doc\aggroup.tex -- extracted
 [many more lines]
 \endtt
 
@@ -787,31 +888,51 @@ all of them (*except the bug fixes and share packages!*) in this way.
 (Afterwards you will not need the file `gappc{{versionsuffix}}.zoo' any
 longer. If you are short of disk space you can remove it now.)
 \begintt
-C:\GAP> del gap{{versionsuffix}}.zoo
+C:\GAP> del gappc{{versionsuffix}}.zoo
 \endtt
 
-Now go in the directory `{{gapdirname}}' If you got any bug fixes (there are
-none in the initial release but doubtlessly some will follow. You can find
-them in the `bugfixes' directory on out ftp server.) extract these
-there. (The bug fixes extract only on this level to make them applicable
-even if you chose later to rename the root directory of your {\GAP}
-distribution.)
+Now go into the directory `{{gapdirname}}'. If there are any bug fixes 
+(there are none in the initial release but invariably some follow later and
+are deposited in the `bugfixes' directory on our ftp server(s)), extract 
+these while in the `{{gapdirname}}' directory. (The bug fixes extract only
+on this level of the directory hierarchy to make them applicable even if you
+chose later to rename the root directory of your {\GAP} distribution.)
 
-If there is more than  one  fix 
-file,  first unpack  `fix1', then `fix2', an so on.
+If there is more than one fix file, first unpack `fix{{versionsuffix}}n1.zoo',
+then `fix{{versionsuffix}}n2.zoo', and so on. The program may ask you for 
+confirmation to overwrite files, you should give this permission.
 
 \begintt
 C:\GAP> cd {{gapdirname}}
-C:\GAP\{{ucgapdirname}}> ..\unzoo -x ..\fixXX{{versionsuffix}}.zoo
-[again extraction information]
+C:\GAP\{{ucgapdirname}}> ../unzoo -x ../fix{{versionsuffix}}n1.zoo
+[extraction information]
+C:\GAP\{{ucgapdirname}}> ../unzoo -x ../fix{{versionsuffix}}n2.zoo
+[extraction information]
+.
+.
 \endtt
 
+If the bugfixes provide a new binary, unpack the corresponding file
+`wbinXXX.zoo' in the same way. You only need to get the binary of the most
+recent bugfix, it will incorporate all changes and overwrite the old
+binary.
+
 If you got any share packages, extract them in the `pkg' subdirectory in the
-same way.
+same way. 
+Some share packages are set up to load (or provide the documentation)
+automatically. To enable this, after installing all the packages you think
+you will need, you should list all the share packages you have installed
+in a file `ALLPKG' in the `pkg' directory (see Section~"Loading a Share
+Package" in the Reference Manual for details).
 
 The directories `tbl', `tom', `trans', `small' and `prim' contain data
-libraries. If you are short of disk space you can erase some of them,
-but then of course you will not be able to access this data.
+libraries. If you are short of disk space you can erase some of them and
+any share package directories in the `pkg' directory that you don't need,
+but then of course you will not be able to access these data and packages.
+(Any share package that has a C code component is essentially UNIX-dependent
+and you may as well delete those; such packages typically describe in their
+`README' files that they require `configure' and `make' to complete their
+installation or have a `src' directory.)
 
 We provide a precompiled binary in the `bin' subdirectory, so there is no
 need to compile {\GAP} yourself.
@@ -830,7 +951,9 @@ section on problems at the end of this document for a remedy.)
 
 *If your version of Windows uses a language other than English* (this is a
 misdesign in Windows which does not offer a portable way to obtain the
-current directory), you *must* now
+current directory), or *if the path directory in which you installed {\GAP}
+includes long filenames or blanks*,
+you *must* now
 edit the file `gap.bat' in the `bin' directory to put in the correct path.
 \begintt
 C:\GAP\{{ucgapdirname}}> edit bin\gap.bat
@@ -839,10 +962,18 @@ The second line of the file must give absolute paths and should look like
 this (if your version of Windows is English, `instwin.bat' will have taken
 care of this already):
 \begintt
-C:\GAP\{{ucgapdirname}}\bin\gapw95.exe -m 14m -l C:\GAP\{{ucgapdirname}}; %1 %2 %3 %4 %5 %6 %7 %8
+C:\GAP\{{ucgapdirname}}\bin\gapw95.exe -m 14m -l C:\GAP\{{ucgapdirname}}; %1 
+%2 %3 %4 %5 %6 %7 %8
 \endtt
 
-In order  to  test your installation now start {\GAP} (from the
+If the path included long filenames or blanks, you might need to edit the
+`-l' argument and enclode it in apostrophes:
+\begintt
+C:\XYRXMIR~1\{{ucgapdirname}}\bin\gapw95.exe -m 14m -l 'C:\Xyrxmir 
+Zoppendonser\GAP\{{ucgapdirname}}'; %1 %2 %3 %4 %5 %6 %7 %8
+\endtt
+
+In order to test your installation now start {\GAP} (from the
 main {\GAP} directory).
 You should get the {\GAP} banner and then the {\GAP} prompt. (The process of
 starting {\GAP} may take a little while.)
@@ -911,7 +1042,7 @@ more pleasant icon. You can find details on how to do this on the web page
 \URL{http://www-gap.dcs.st-and.ac.uk/~gap/Info4/windows.html}
 
 A set of test files is provided, running them all takes some 60 minutes on
-a Pentium Pro 200 Mhz. As a quick test we start `combinat.tst' first.
+a Pentium Pro 200 MHz. As a quick test we start `combinat.tst' first.
 
 \begintt
 gap> Filename( DirectoriesLibrary("tst"), "combinat.tst" );
@@ -926,14 +1057,14 @@ Note that {\GAP} internally uses `/' to separate directory names. This will
 be translated to backslashes for the operating system.
 
 Now you can use `Read' (*not* `ReadTest') to read the file `testall.g' to run
-*all* available test files.  This is not a necessary part of the
+*all* available test files. This is not a necessary part of the
 installation, it only serves as a confirmation that everything went
 OK. The full test suite takes some time (almost 2 hours on a Pentium
 III/500) and uses quite a bit of memory, so you may
 wish to skip this step or run only part of the tests. This does no
-harm)
+harm.)
 
-To run the complete test you will need to start GAP with about 100MB
+To run the complete test you will need to start {\GAP} with about 100MB
 of memory, although most of it will run in less.
 (You should not pay too much attention to the {\GAP}stone ratings of the
 different files. The time measurements are not calibrated and sometimes vary
@@ -956,28 +1087,48 @@ which stem from differences in available share packages.
 The information about the manual is system independent, you can find it in
 section~"The Documentation".
 
-A few final reminders: Make sure that you got and installed all bugfixes. We
-would appreciate if after installation you could send us a short note at
-\Mailto{gap@dcs.st-and.ac.uk} (even if you had installed GAP3 before). We also
-suggest that you subscribe to our `gap-forum' mailing list, see the {\GAP}
-web pages for details.
+*A few final reminders:*
 
-Thats all, the installation is complete. We hope that you will enjoy using
-{\GAP}. If you have problems, do not hesitate to contact us at
+\beginlist
+
+\item{$\bullet$}
+Make sure that you got and installed *all* bugfixes. 
+
+\item{$\bullet$}
+We would appreciate after installation your sending us a short note at
+\Mailto{gap@dcs.st-and.ac.uk} 
+(even if you have installed {\GAP} 3 before).
+Generally, we do not reply to such emails; we only use them to gain some idea
+of how many people use {\GAP} and of the machines/operating systems on which
+{\GAP} has been successfully installed.
+
+\item{$\bullet$}
+We also suggest that you subscribe to our `gap-forum' mailing list; 
+see the {\GAP} web pages for details. Whenever there is a bug fix or new
+release of {\GAP} this is where it is announced. The `gap-forum' also
+deals with user questions of a general nature; bug reports and other
+problems you have while installing and/or using {\GAP} should be sent to
+\Mailto{gap-trouble@dcs.st-and.ac.uk}.
+
+\endlist
+
+That's all, your installation should be complete. We hope that you will 
+enjoy using {\GAP}. Remember, if you have problems, do not hesitate to
+contact us at
 \Mailto{gap-trouble@dcs.st-and.ac.uk}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{GAP for MacOS}
 
-\index{MacOS}\index{Apple}\index{Macintosh}
-This sections contain information about {\GAP} that is specific to the
+\atindex{MacOS}{@MacOS}\atindex{Apple}{@Apple}\atindex{Macintosh}{@Macintosh}
+This section contains information about {\GAP} that is specific to the
 port of {\GAP} for Apple Macintosh systems under MacOS (simply called
 {\GAP} for MacOS below).
 
 To run {\GAP} for MacOS you need an Apple Macintosh with a Motorola M68020, 
-M68030, or M68040 processor, or a Power Macintosh.  The computer must have 
-at least 16MByte of (physical) memory and a harddisk.  For 
-serious calculations, much more may be needed.  The operating system must 
+M68030, or M68040 processor, or a Power Macintosh. The computer must have 
+at least 16MByte of (physical) memory and a harddisk. For 
+serious calculations, much more may be needed. The operating system must 
 be System 7 or higher.
 
 The section "Copyright of GAP for MacOS" describes the copyright as it
@@ -994,20 +1145,21 @@ following terms apply to {\GAP} for the Mac.
 
 The system dependent part of {\GAP} for the Mac was written by Burkhard 
 H{\accent127 o}fling (his email address is
-\Mailto{Burkhard.Hoefling@mathematik.uni-jena.de}). He assigns
-the copyright to the GAP group. Many thanks to Burkard for his help!
+\Mailto{Burkhard.Hoefling@minet.uni-jena.de}). He assigns
+the copyright to the {\GAP} group. Many thanks to Burkhard for his help!
 Burkhard H{\accent127 o}fling{\pif}s port was partly based on an earlier
-port of {\GAP} for the 
-Mac, which was done by Dave Bayer (\Mailto{dab@math.columbia.edu}) and used the 
-Mac Programmers Workshop (MPW) compiler.  Many thanks to Dave for his work.  
+port of {\GAP} for the Mac, 
+which was done by Dave Bayer (\Mailto{dab@math.columbia.edu})
+and used the 
+Mac Programmers Workshop (MPW) compiler. Many thanks to Dave for his work. 
 Moreover, the built-in editor is based upon the freeware text editor 
-PlainText by Mel Park which, in turn, uses TE32K, a TextEdit replacement by 
-Roy Wood. It also uses Internet Config.
+`PlainText' by Mel Park which, in turn, uses `TE32K', a `TextEdit' 
+replacement by Roy Wood. It also uses `Internet Config'.
 
 For technical reasons we do not distribute the Macintosh specific source and
 project files as part of the standard archives. If you are interested in
 compiling {\GAP} yourself, we are happy to provide you with the appropriate
-files (contact us at \Mailto{gap-trouble@dcs.st-and.ac.uk}).  The source can
+files (contact us at \Mailto{gap-trouble@dcs.st-and.ac.uk}). The source can
 be compiled with CodeWarrior 11 with Apple's Universal Headers 3.2
 installed.
 
@@ -1018,9 +1170,8 @@ or \Mailto{gap-trouble@dcs.st-and.ac.uk} if you need further information.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Installation of GAP for MacOS}
 
-Installing {\GAP} under MacOS 
-is fairly easy. Get the Mac-specific files described in "Getting GAP"
-and decide into which folder you want to install {\GAP} {{versionnumber}}.
+Installing {\GAP} under MacOS is fairly easy. First, decide into which 
+folder you want to install {\GAP} {{versionnumber}}.
 {\GAP} will be installed in a subfolder `{{gapdirname}}' of this folder.
 You can later move {\GAP} to a different location.
 
@@ -1035,8 +1186,19 @@ dates are *not* to be taken literally.
 If you encounter problems please also see section~"If Things Go Wrong" of
 this document.
 
-Get the distribution `gapmac{{versionsuffix}}.zoo' and the binary archives
-`bin{{versionsuffix}}-PPC.sit' and `unzoo-PPC.sit'.  How you can get those
+Get the Mac-specific files described  in  "Getting  GAP",  that  is,  the
+distribution   `gapmac{{versionsuffix}}.zoo',    the    binary    archive
+`unzoo-PPC.sit', all bugfixes, and the {\GAP} application  program  (also
+called *binary* or  *executable*).  The  {\GAP}  application  program  is
+distributed     as     a     binary     archive.     It     is     called
+`bin{{versionsuffix}}-PPC.sit' if no  bugfixes  requiring  a  new  {\GAP}
+application  have  been  issued  so  far.   Otherwise,   it   is   called
+`bin{{versionsuffix}}nX-PPC.sit', where `X' is the  number  of  the  last
+bugfix. The latest {\GAP}  application  archive  is  available  from  the
+{\GAP} distribution web page, or from the `mac' subdirectory of the `bin'
+subdirectory on the ftp servers.
+
+How you can get those
 files is described in the section "Getting GAP". Remember that the
 distribution consists of binary files and that you must transmit them in
 binary mode. Make sure all of the downloaded files are in the `GAP' folder.
@@ -1046,7 +1208,7 @@ them. If even this fails use one of the standard
 decompression utilities, such as `Stuffit Expander'.
 
 After this process you should end up with two binaries,
-`GAP 4 PPC' and `unzoo PPC'. 
+`GAP 4 PPC' and `unzoo PPC' in the folder `GAP'.
 
 Click on `unzoo PPC'. You will get a new window with a prompt line. Type
 \begintt
@@ -1055,11 +1217,12 @@ Click on `unzoo PPC'. You will get a new window with a prompt line. Type
 followed by <return>. You will get many lines of output in this window. When
 you get the prompt again type simply <return> to leave `unzoo'.
 
-(The `zoo' archives we provide for GAP contain comments which indicate
+This should have created a folder `{{gapdirname}}' in the current folder.
+
+(The `zoo' archives we provide for {\GAP} contain comments which indicate
 whether files are text or binary files. The `unzoo' we provide uses these
 comments. If you use another zoo extractor you might lose this information
-and end up with files that might not conform to your operation system
-standards.)
+and end up with files that contain text but cannot be opened as text files.)
 
 This should have created a folder `{{gapdirname}}' in the current folder.
 
@@ -1071,39 +1234,50 @@ Move `unzoo', `GAP 4 PPC' and all bugfix files in the folder `{{gapdirname}}'.
 (Afterwards you will not need the file `gapmac{{versionsuffix}}.zoo' any
 longer. If you are short of disk space you can remove it now.)
 
-Now go in the folder `{{gapdirname}}' If you got any bug fixes (there are
-none in the initial release but doubtlessly some will follow. You can find
-them in the `bugfixes' directory on out ftp server.) extract these
-there. (The bug fixes extract only on this level to make them applicable
-even if you chose later to rename the root directory of your {\GAP}
-distribution.)
+Now go in the folder `{{gapdirname}}'. If you got any bug fixes, extract
+these there. To expand the files in the right place, `unzoo' and the bugfix
+archives must be in the `{{gapdirname}}' folder. In this way, they are
+applicable even if you chose later to move the root folder `{{gapdirname}}'
+of your {\GAP} installation to another place.
 
-If there is more than  one  fix 
-file,  first unpack  `fix1', then `fix2', an so on. Again start `unzoo' (to
-expand the files in the right place you must start `unzoo' from within the
-`{{gapdirname}}' folder) and type
-
+If there is more than one fix file, first unpack `fix{{versionsuffix}}n1.zoo',
+then `fix{{versionsuffix}}n1.zoo', and so on. This is done, by again starting
+`unzoo' and typing
 
 \begintt
--x ../fixXX{{versionsuffix}}.zoo
+-x -o fix{{versionsuffix}}n1.zoo
 \endtt
 
 and so forth to extract all bugfixes.
 
-If you got any share packages, extract them in the `pkg' subdirectory in the
-same way.
+If you got any share packages, move them into the `pkg' folder in the folder 
+folder `{{gapdirname}}' along with `unzoo PPC' and extract them in the `pkg' 
+subdirectory in the same way as the bugfixes.
+Some share packages are set up to load (or provide the documentation)
+automatically. To enable this, after installing all the packages you think
+you will need, you should list all the share packages you have installed
+in a file `ALLPKG' in the `pkg' directory (see Section~"Loading a Share 
+Package" in the Reference Manual for details).
 
-The folders `tbl', `tom', `trans', `small' and `prim' contain data
-libraries. If you are short of disk space you can erase some of them,
-but then of course you will not be able to access this data.
+After extraction you may discard all `.zoo' files if you are short of disk 
+space.
+
+The directories `tbl', `tom', `trans', `small' and `prim' contain data
+libraries. If you are short of disk space you can erase some of them and
+any share package directories in the `pkg' directory that you don't need,
+but then of course you will not be able to access these data and packages.
+(Any share package that has a C code component is essentially UNIX-dependent
+and you may as well delete those; such packages typically describe in their
+`README' files that they require `configure' and `make' to complete their
+installation or have a `src' directory.)
 
 As there is a precompiled binary in the `{{gapdirname}}' folder, there is no
 need to compile {\GAP} yourself.
 
-In order  to  test your  installation now run the `GAP' application
+In order to test your installation now run the `GAP' application
 by clicking on `GAP 4 PPC'.
 You should get the {\GAP} banner and then the {\GAP} prompt in a window
-titled `GAP log'.. (The process of starting {\GAP} may take a while.)
+titled `GAP log'. (The process of starting {\GAP} may take a while.)
 
 Try a few things to see if the installation succeeded.
 
@@ -1126,7 +1300,8 @@ gap> Length( ConjugacyClasses( m11 ) );
 \endtt
 
 A set of test files is provided, running them all probably takes some 40
-minutes on a 200 Mhz PPC machine. As a quick test we start `combinat.tst' first.
+minutes on a 200 MHz PPC machine. As a quick test we start `combinat.tst' 
+first.
 Initially we must ensure that the print width of {\GAP} is 80 characters per
 line which we achieve with the `SizeScreen' command (otherwise we will be
 swamped with error messages).
@@ -1142,12 +1317,12 @@ true
 \endtt
 
 Now use `Read' (*not* `ReadTest') to read the file `testall.g' to run
-*all* available test files.  This is not a necessary part of the
-installation, it only serves as a confirmation that everything went
+*all* available test files. This is not a necessary part of the
+installation; it only serves as a confirmation that everything went
 OK. The full test suite takes some time (almost 2 hours on a Pentium
 III/500) and uses quite a bit of memory (around 100MB), so you may
 wish to skip this step or run only part of the tests. This does no
-harm)
+harm.
 
 You should not pay too much attention to the {\GAP}stone ratings of the
 different files. The time measurements are not calibrated and sometimes vary
@@ -1170,17 +1345,37 @@ You can ignore warnings from `weakptr.tst', which stem from garbage
 collections occurring at different times, and those from `grpconst.tst'
 which stem from differences in available share packages.
 
-The information about the manual is system independent, you can find it in
+The information about the manual is system independent; you can find it in
 section~"The Documentation".
 
-A few final reminders: Make sure that you got and installed all bugfixes. We
-would appreciate if after installation you could send us a short note at
-\Mailto{gap@dcs.st-and.ac.uk} (even if you had installed GAP3 before). We also
-suggest that you subscribe to our `gap-forum' mailing list, see the {\GAP}
-web pages for details.
+*A few final reminders:*
 
-Thats all, the installation is complete. We hope that you will enjoy using
-{\GAP}. If you have problems, do not hesitate to contact us at
+\beginlist
+
+\item{$\bullet$}
+Make sure that you got and installed *all* bugfixes. 
+
+\item{$\bullet$}
+We would appreciate after installation your sending us a short note at
+\Mailto{gap@dcs.st-and.ac.uk} 
+(even if you have installed {\GAP} 3 before).
+Generally, we do not reply to such emails; we only use them to gain some idea
+of how many people use {\GAP} and of the machines/operating systems on which
+{\GAP} has been successfully installed.
+
+\item{$\bullet$}
+We also suggest that you subscribe to our `gap-forum' mailing list; 
+see the {\GAP} web pages for details. Whenever there is a bug fix or new
+release of {\GAP} this is where it is announced. The `gap-forum' also
+deals with user questions of a general nature; bug reports and other
+problems you have while installing and/or using {\GAP} should be sent to
+\Mailto{gap-trouble@dcs.st-and.ac.uk}.
+
+\endlist
+
+That's all, your installation should be complete. We hope that you will 
+enjoy using {\GAP}. Remember, if you have problems, do not hesitate to
+contact us at
 \Mailto{gap-trouble@dcs.st-and.ac.uk}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1199,12 +1394,12 @@ memory the Finder allocates to {\GAP} when it is launched. The maximum
 amount of {\GAP} workspace is this value, minus a certain amount used 
 internally by the {\GAP} application (for the PPC 
 version, currently around 1.7 Megabytes, plus the size of the {\GAP} 
-application if you do not use virtual memory,, and 2.9 Megabytes for the 
+application if you do not use virtual memory, and 2.9 Megabytes for the 
 68K version), minus any additional amount set with the `-a', `-P' or `-W'
 command line options (see below).
 
 You can find information about the amount of free {\GAP} workspace, the total
-amount of available workspace, and the remaining free memory, in the 
+amount of available workspace, and the remaining free memory, 
 by choosing `About GAP' in the `Apple' menu.
 
 To ensure efficient operation, you should not allocate more memory to {\GAP}
@@ -1216,56 +1411,78 @@ If you notice heavy disk use during garbage collections, this is a clear
 indication that you have allocated too much memory to {\GAP}.
 
 Since you cannot enter command line options directly when you launch the
-{\GAP} application on a Macintosh , another  mechanism is being used:  Hold
-down the Command (Apple) key when launching  the GAP application.  A dialog
-box will open, into which you can enter the  desired GAP command line
+{\GAP} application on a Macintosh, another mechanism is being used: Hold
+down the Command (Apple) key when launching the {\GAP} application. A dialog
+box will open, into which you can enter the desired {\GAP} command line
 options exactly as you would enter the command line options under UNIX. (Note
-that the dialog box will already  contain settings which you have 
-previously saved settings). The `OK' button accepts the command line for 
+that the dialog box will already contain settings which you have 
+previously saved). The `OK' button accepts the command line for 
 the current {\GAP} session, and the `Save'
-button can be used to save these options for subsequent GAP sessions. The
+button can be used to save these options for subsequent {\GAP} sessions. The
 command line options will be saved in a text file called `GAP options' in the 
-`Preferences' folder in the system folder. You may also modify the file  `GAP
-options' directly; note that changes only take effect the next time  you launch
+`Preferences' folder in the system folder. You may also modify the file `GAP
+options' directly; note that changes only take effect the next time you launch
 {\GAP}.
 
-The file called `.gaprc' on Unix systems (see "The .gaprc file") is called 
-`gap.rc' on the Mac; it must be in the same folder as the GAP application.
+\indextt{gap.rc}
+The file called `.gaprc' on UNIX systems (see "The .gaprc file") is called 
+`gap.rc' on the Mac; it must be in the same folder as the {\GAP} application.
 
 There are three additional command line option on the Mac.
 
-`-z <n>' sets the time between checks for events (keystrokes, mouse clicks 
-etc.) to $n/60$ second. Lower values make GAP more responsive 
-but computations are somewhat slower. A value greater than 60 is not 
-recommended, the default value for $n$ is $6$.
+\beginitems
 
-`-P' <m> sets the amount of memory required for printing. The reason is
-that printer drivers may require quite a bit of memory, and may even crash 
-if not enough is found. To prevent this, {\GAP} will not print unless at 
-least the specified amount of memory is available. The default value is
-64 Kilobytes, which is enough for the Apple LaserWriter printer driver. 
+\indextt{-z!on Macintosh}
+`-z <n>' &
+sets the time between checks for events (keystrokes, mouse  clicks  etc.)
+to $n/60$ second. Lower values make {\GAP} more responsive but  computations
+are somewhat slower. A value greater than  60  is  not  recommended,  the
+default value for $n$ is $6$.
+
+\indextt{-P!on Macintosh}
+`-P <m>' &
+sets the amount of memory required  for  printing.  The  reason  is  that
+printer drivers may require quite a bit of memory, and may even crash  if
+not enough is found. To prevent this, {\GAP} will  not  print  unless  at
+least the specified amount of memory is available. The default  value  is
+64 Kilobytes, which is enough for the Apple LaserWriter  printer  driver.
 Setting the printing memory to 0 disables printing altogether.
 
-`-W' <m> sets the size of the log window to <m> bytes. This means that if
-the text in the log window exceeds this amount, then lines at the beginning
-of the log are deleted. The default value is 32 Kilobytes.
+\indextt{-W!on Macintosh}
+`-W <m>' &
+sets the size of the log window to <m> bytes. This means that if the text
+in the log window exceeds this amount, then lines at the beginning of the
+log are deleted. The default value is 32 Kilobytes.
+
+\enditems
 
 The following command line options work differently on the Mac.
 
-On the Mac, the `-a' option  has a different meaning from the one 
-described in  "Advanced Features of GAP". On the Mac, it must be used 
-to reserve memory for loading dynamic libraries into {\GAP}. See 
-"The Compiler" for details about dynamic libraries (and note that 
-the PPC version of {\GAP} for MacOS *can* use dynamic libraries). 
+\beginitems
 
-The `-f' and `-n' command line options do not have any effect on 
-the Mac.
+\indextt{-a!on Macintosh}
+`-a' &
+On the Mac, the  `-a'  option  has  a  different  meaning  from  the  one
+described in "Advanced Features of GAP". On the Mac, it must be  used  to
+reserve memory for  loading  dynamic  libraries  into  {\GAP}.  See  "The
+Compiler" for details about dynamic libraries  (and  note  that  the  PPC
+version of {\GAP} for MacOS *can* use dynamic libraries).
 
-The '-e' command line option enables `<ctr>-D'.
+\indextt{-f!on Macintosh}\indextt{-n!on Macintosh}
+`-f', `-n' &
+The `-f' and `-n' command line options do not have any effect on the Mac.
 
-The `-o' command line option should not normally be used on the Mac. The value
-set by the `-o' option is only used if it is lower than the size of the workspace
-that would normally be available for {\GAP}.
+\indextt{-e!on Macintosh}
+`-e' &
+The `-e' command line option enables `<ctr>-D'.
+
+\indextt{-o!on Macintosh}
+`-o' &
+The `-o' command line option should not normally be used on the Mac.  The
+value set by the `-o' option is only used if it is lower than the size of
+the workspace that would normally be available for {\GAP}.
+
+\enditems
 
 All interaction between {\GAP} and you takes place via the `GAP log' 
 window: this is where {\GAP} prints its messages and waits for your input.
@@ -1276,13 +1493,14 @@ old lines is that otherwise {\GAP} may run out of memory just because of
 the messages it has printed.
 
 Unlike previous versions, {\GAP} for the Mac now remembers the font and
-text size as well as the window position of the {\GAP} log window from one
+text size (which can be set choosing `Format...' in the `Edit' menu)
+as well as the window position of the {\GAP} log window from one
 session to the next.
 
 Almost all of the {\GAP} editing keys described in "Line Editing" work
 on the Mac. In addition, {\GAP} for MacOS also supports the usual 
 editing keys on the Mac, such as Copy and Paste, Undo, arrow keys (also
-with `<shift>',  `<option>' and `<command>'. Note that you can also move 
+with `<shift>', `<option>' and `<command>'. Note that you can also move 
 forward and backward in the command line history by pressing 
 `<ctrl>-<arrow down>' and `<ctrl>-<arrow up>'.
 
@@ -1292,29 +1510,31 @@ Note that `Quit' in {\GAP}'s file menu works differently from the `quit'
 cannot be used to quit from a break loop. 
 
 {\GAP} for MacOS also contains a simple built-in text editor, which is mainly
-intended to create {\GAP} files. `New', `Open...', `Save' and ~Close' from the
+intended to create {\GAP} files. `New', `Open...', `Save' and~`Close' from the
 `File' menu work in the usual way.
 
 The `Read...' and `LogTo' commands in the `File' menu work basically like the 
 corresponding {\GAP} commands (see "File Operations"). The only difference
 is that {\GAP} will prompt you for the file with a standard Mac file opening
 dialog, so you do not have to enter the path name yourself. (You will see the
-file's path name in the log window afterwards). Note that if a file you want to
+file's path name in the log window afterwards). Note that if a file you want 
+to
 read is open in {\GAP}'s built-in editor, then {\GAP} will read the file from
 the edit window, not from the disk.
 
 The `Read...' command in the `File' menu changes to `Read' if the front window
 belongs to a file in {\GAP}'s built-in editor -- choosing `Read' then makes
-{\GAP}  read that file -- and while the file is being read, the `File' menu item
+{\GAP} read that file -- and while the file is being read, the `File' menu 
+item
 changes to `Abort Read'. You cannot close the file's window while it is being
-read by  {\GAP} -- choose `Abort Read' first.
+read by {\GAP} -- choose `Abort Read' first.
 
 Garbage collection messages, which are switched on and off by the `-g'
 command line option (see "Command Line Options") can also be switched
 on and off by choosing `Show garbage collections' and 
 `Show partial collections' from the `Window' menu.
 
-If `Always scroll to printout' is selected in the `Window'  menu, {\GAP} will
+If `Always scroll to printout' is selected in the `Window' menu, {\GAP} will
 always scroll the `GAP log' window so that you can see what {\GAP} is 
 currently printing. Otherwise, the {\GAP} log window is only scrolled to
 the current print position when {\GAP} prints its prompt and
@@ -1324,15 +1544,17 @@ viewing the text at the beginning of the log window and some lines are just
 being deleted from the log because it has exceeded its 32000 character limit.
 
 The contents of the `Help' menu should be quite self-explanatory. Note that, 
-unlike in {\GAP} 3 for the Mac, the online help is not displayed in a separate window,
+unlike in {\GAP} 3 for the Mac, the online help is not displayed in a separate 
+window,
 nor is the online help available while {\GAP} is computing.
 
-Holding down the command (apple) key while selecting text does the same as
+Holding down the Command (Apple) key while selecting text does the same as
 selecting the text and choosing `Find selection in table of contents' from
-the `Help' menu, holding down both command and option keys while selecting
+the `Help' menu, holding down both Command and Option keys while selecting
 tries to find the selection in the index.
 
 \index{internet config}
+\indextt{SetHelpViewer!using Internet Config on Macintosh}
 If you have Internet Config and a web browser, such as `Netscape', `Internet
 Explorer', or `MacLynx' installed on your Mac, you can also view the manual
 with one of these viewers. `Internet Config' is available free of charge
@@ -1341,10 +1563,12 @@ applications. Open the `Internet Config' application and make sure that the
 `Helper' application for `file' is set to the web browser which you want to
 use. Then type the {\GAP} command
 
-\>SetHelpViewer("Internet Config");
+\begintt
+SetHelpViewer("Internet Config");
+\endtt
 
-(See "Changing the Way the Help Pages are Displayed" for other options). Note
-that you will have to have the {\GAP} documentation in `html' format on your
+(See "Changing the Help Viewer" for other options). Note
+that you will have to have the {\GAP} documentation in `HTML' format on your
 Mac. If you have internet access and want to read the help pages from one of
 the {\GAP} servers directly, you may bind the variable `HELP_EXTERNAL_URL'
 to the base URL of the manual, e.g. if you set
@@ -1353,9 +1577,9 @@ to the base URL of the manual, e.g. if you set
 HELP_EXTERNAL_URL := "http://www-gap.dcs.st-and.ac.uk/~gap/Manual4";
 \endtt
 
-then the GAP manual will be read from the {\GAP} server in St. Andrews. Note
+then the {\GAP} manual will be read from the {\GAP} server in St.~Andrews. Note
 that you may have to increase the amount of memory allocated to your browser
-in order to display some of the larger html pages, or to display them
+in order to display some of the larger HTML pages, or to display them
 reasonably quickly.
 
 If you want to use your web browser as the default viewer, it may be a good
@@ -1364,16 +1588,17 @@ idea to include the above lines in your `gap.rc' file.
 When you want to refer to files or folders in {\GAP} (for example in the
 `Read', `PrintTo', `AppendTo', `LogTo' commands), or have to specify files
 or folders for a command line option, these files must be identified by UNIX
-style path names.   (Presently, {\GAP} for MacOS also supports Mac path
+style path names.  (Presently, {\GAP} for MacOS also supports Mac path
 names, but this may change in the future.) 
 
 Those users who are familiar with UNIX path names may skip rest of this
-section, noting that the working directory is the one in  which the {\GAP}
-application resides, and that file names on the Mac are  not case sensitive. 
+section, noting that the working directory (i.e., folder) is the one in 
+which the {\GAP} application resides, and that file names on the Mac are 
+*not* case sensitive. 
 
 Paths are strings used to describe where a file 
 is stored on a hard 
-disk. There are two ways for specifying Unix path names: absolute and 
+disk. There are two ways for specifying UNIX path names: absolute and 
 relative paths. An absolute path starts with a `/', then the name of the 
 disk where the file is located, another `/', then a list of folders, 
 each containing the next one, separated by `/', and finally the name of 
@@ -1388,15 +1613,15 @@ should be created) in the folder `programs' in the folder `documents' on
 
 Relative path names work similarly, except that the starting point is 
 not a disk but the folder in which the {\GAP} application program resides.
- Relative path names are formed like absolute ones, except that they do 
+Relative path names are formed like absolute ones, except that they do 
 not start with a `/'. Thus, if you want to access the file `temp.g' in 
 the folder `tmp' in the {\GAP} folder, you may use the following path name:
-`tmp/temp.g'
+`tmp/temp.g'.
 It is also possible to move upward to a parent folder: suppose that the 
 folder containing {\GAP} is called `applications', which contains a folder 
 `editor' which in turn contains the file 'program.g', then you could 
 access this file by the path `../editor/program.g'. The path `./' refers
-to the {\GAP} folder itself.  
+to the {\GAP} folder itself, and `../' refers to ``the folder above''.
 
 Note also that {\GAP} for the Mac follows (resolves) aliases to folders and 
 files.
@@ -1405,9 +1630,9 @@ files.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Testing for the System Architecture}
 
-\Declaration{ARCH_IS_UNIX}[system.g]
-\Declaration{ARCH_IS_MAC}[system.g]
-\Declaration{ARCH_IS_WINDOWS}[system.g]
+\Declaration{ARCH_IS_UNIX}[system.g]!{}
+\Declaration{ARCH_IS_MAC}[system.g]!{}
+\Declaration{ARCH_IS_WINDOWS}[system.g]!{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Porting GAP}
@@ -1431,12 +1656,12 @@ operating system and compiler independent, and one file that contains all
 the operating system and compiler dependent functions. Usually only this
 file must be modified to port {\GAP} to a new operating system.
 
-Now lets take a look at the minimal support that {\GAP} needs from the
+Now let us take a look at the minimal support that {\GAP} needs from the
 operating system and the machine:
 
 You need enough main memory in your computer. The size of the
 {\GAP} kernel varies between 1.5 and 2.5 MByte (depending on the machine).
-The {\GAP} library additionally takes a minimum of 10MByte
+The {\GAP} library additionally takes a minimum of 10MByte and the
 library of functions that {\GAP} loads takes up another 1.5 MByte. So it
 is clear that at least 16 MByte of main memory are required to do any
 serious work with {\GAP}.
@@ -1447,11 +1672,11 @@ memory is available in one contiguous chunk.
 Note that this implies that there is no point in trying to port {\GAP} to
 plain MS-DOS running on IBM PCs and compatibles. The version of {\GAP}
 for IBM PC compatibles that we provide runs on machines with the
-Intel 80486, Pentium or ibeyond processor  under 32-bit Windows.
-(This is also necessary, because, as mentioned
-below, {\GAP} wants to view its memory as a large flat address space.)
+Intel 80486, Pentium or beyond processor under 32-bit Windows.
+(This is also necessary, because, as just mentioned, {\GAP} wants to view its 
+memory as a large flat address space.)
 
-Next lets turn to the requirements for the C compiler and its library.
+Next let us turn to the requirements for the C compiler and its library.
 
 As was already mentioned, the {\GAP} kernel is written in the C language.
 We have tried to use as few features of the C language as possible.
@@ -1483,88 +1708,121 @@ in the line
 \begintt
 #define C_STACK_ALIGN      2
 \endtt
-of `config.h'. Increase the value to the next power of 2 (\<= 8) and compile
-{\GAP} anew.
+of `config.h'. Increase the value to the next power of 2  ($\le  8$)  and
+compile {\GAP} anew.
 
-There is still a `Makefile' in the `src' directory, but it is
-not used by the configuration process any longer. 
-As a last resort you might want to try this file, but please still report
-your problems to `gap-trouble'.
+There is still a `Makefile' in the `src' directory, but it is not used by
+the configuration process any longer. As a last resort you might want  to
+try this file, but please still report your problems to `gap-trouble'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Documentation}
 
-The {\GAP} manual is distributed in various ``books''. The standard
-distribution contains four of them (as well as a comprehensive index).
-Share packages and other extensions may provide their own manuals.
+The {\GAP} manual is  distributed  in  various  ``books''.  The  standard
+distribution contains four of them (as well as  a  comprehensive  index).
+Share  packages  (see  Chapter~"Share  Packages"  and,   in   particular,
+Section~"Loading a Share Package") provide  their  own  documentation  in
+their own `doc' directories.
 
-All documentation will be available automatically for the online help
-(see~"Help"). There also is (if installed) an HTML version in the `doc/htm'
-subdirectory that can be viewed with an HTML browser.  Note that you need to
-set up the `symbol' font properly in your web browser to get a correct
-display of mathematical formulae (see section~"HTML Font Setup").
+All documentation will be available automatically  for  the  online  help
+(see Section~"Tut:Help" in the Tutorial and Chapter~"The Help System"  in
+this manual for more details).
 
-Typing `?<topic>' after the `gap>' prompt will display the manual section
-about <topic> (or offer you a list of sections that fit), `??<topic>' will
-list all sections  in whose title <topic> occurs.
+There also  is (if  installed) an  HTML version  of some  books that  can be
+viewed with an  HTML browser, see~"Changing the Help Viewer".  Some of these
+use  *symbol  fonts*  for  mathematical  formulae.  To  get  them  correctly
+displayed (only in  a browser which uses a graphical  display), you may want
+to adjust the font setup for your browser. See~"HTML Font Setup" below for a
+hint.
 
-Unless you only downloaded a rudimentary distribution, there will be already
-`dvi' and `pdf' files for the manual books provided with the standard
-distribution. You find these in the directory
-`{{gapdirname}}/doc' in the subdirectories `tut' (a beginner{\pif}s tutorial),
-`ref' (the reference manual), `prg' (programmer{\pif}s tutorial) and `ext'
-(programmer{\pif}s reference).
+The manual is also available in `dvi' and `pdf' format.
+In the full UNIX
+distribution (`gap{{versionsuffix}}.zoo') these files are included in the
+directory
+`{{gapdirname}}/doc'  in the
+subdirectories  `tut' (a  beginner{\pif}s  tutorial),  `ref' (the  reference
+manual),  `prg' (programmer{\pif}s  tutorial), `ext'  (programmer{\pif}s
+reference) and `new' (new material that might still change in future versions).
 
-If you do not yet have a viewer for `pdf' files, you can take for example
-Adobe Acrobat
-\URL{http://www.adobe.com/products/acrobat/readstep.html} (a copyrighted, but
-free program) or XPDF
-\URL{http://www.foolabs.com/xpdf/xpdf.html} (a free program under GPL).
+If you downloaded another distribution file, you can get missing `dvi' or
+`pdf' files in the archives `docdvi{{versionsuffix}}.zoo' and
+`docpdf{{versionsuffix}}.zoo' from the same place you got {\GAP}.
 
-As a complete beginner, we suggest you read the tutorial first for an
-introduction to GAP4.
+If  you want  to  use these manual files  with  the online  help you  may
+check (or  make sure)  that  your  system  provides some  additional
+software  like
 
-If you have experience with GAP3, it might be still worth to at least glance
-over the first chapters of the tutorial. You however should read the last
-chapter of the tutorial, ``Migrating to GAP4''. This chapter gives a summary
-of changes between GAP3 and GAP4 that will affect the user. It also explains
-a ``compatibility mode'' you may turn on to make GAP4 behave a bit more like
-GAP3.
+\beginitems
 
-As some of the manuals are quite large you should not immediately print
-them. If you start using {\GAP} it will be helpful to print the tutorial (and
-probably the first chapters of the reference manual).
-There is no compelling reason to print the whole of the reference manual.
-We also recommend to print the full index to the manuals to be found in
-`{{gapdirname}}/doc/fullindex.dvi'.
+`xpdf'&
+see  \URL{http://www.foolabs.com/xpdf/}
+
+`xdvi'&
+see any of the CTAN  sites/mirrors; the main site is:
+\URL{http://www.ctan.org/}
+
+&
+and the mirrors are listed at:
+\URL{http://www.ctan.org/tex-archive/CTAN.sites}
+
+&
+At any of the mirrors the path of the file containing the `xdvi' archive
+(after the main site name) is
+`tex-archive/dviware/xdvi/xdvi.tar.gz'.
+
+`acroread'&
+see \URL{http://www.adobe.com/products/acrobat/readstep.html}
+
+\enditems
+
+As  a complete  beginner, we  suggest  you read  the tutorial  first for  an
+introduction to {\GAP} 4. Then start to use the system with extensive use of
+the  online  help  system  (see  Section~"Tut:Help"  in  the  Tutorial   and
+Chapter~"The Help System" in this manual).
+
+If you  have experience with  {\GAP} 3, it might  be still worthwhile  to at
+least glance  over the first  chapters of  the tutorial. You  however should
+read the last  chapter of the tutorial, ``Migrating to  GAP4''. This chapter
+gives a summary  of changes between {\GAP}  3 and {\GAP} 4  that will affect
+the user. It also explains a ``compatibility  mode'' you may turn on to make
+{\GAP} 4 behave a bit more like {\GAP} 3.
+
+As some  of the manuals  are quite large,  you should not  immediately print
+them. If  you start using  {\GAP} it will be  helpful to print  the tutorial
+(and  probably the  first chapters  of the  reference manual).  There is  no
+compelling reason to print the whole of the reference manual, better use the
+online help which provides useful search features.
+%%     I don't agree, it is much better to learn to use the online help! (FL)
+%%  
+%%  We also recommend to print the full index to the manuals to be found in
+%%  `{{gapdirname}}/doc/fullindex.dvi'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{HTML Font Setup}
 
 The HTML pages of the manual use the `symbol' font to display non-latin
 symbols in mathematical formulae. This font might not be enabled by default
-on your browser. The section on `Browser Problems' in the documentation of
-the `tth' converter
-\URL{http://hutchinson.belmont.ma.us/tth/manual.cgi}
-describes some common problems and their solution.
+on your browser. The documentation of the `tth' converter we use 
+\URL{http://hutchinson.belmont.ma.us/tth/Xfonts.html}
 
-In particular, it suggests the following quick way to achieve a proper
-setup for Netscape 4 under X-Windows:
-Add the following line to your `.Xdefaults' (or `.Xresources') file: 
+describes how to set up this font for use in Netscape or Konqueror. For
+Netscape on UNIX, essentially you want:
+
 \begintt
 Netscape*documentFonts.charset*adobe-fontspecific:   iso-8859-1
 \endtt
-and call
-\begintt
-xrdb .Xdefaults
-\endtt
-(or restart the X server) to make it read the file. Once netscape is
-restarted the fonts should be rendered properly.
+
+in your `.Xresources' or `.Xdefaults' file. 
+
+A good test to see if you need this remedy is to check the display of:
+$\{1,\dots,n\}$; if you see an ellipsis (three dots) between the commas,
+you are ok, and if you see `1/4' you need the remedy!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{If Things Go Wrong}
+
 \index{problems}
-\index{FAQ}
+\atindex{FAQ}{@FAQ}
 
 This section lists a few common problems when installing or running {\GAP}
 and their remedies:
@@ -1582,25 +1840,27 @@ You might have a `.gaprc' file that was intended for \GAP~3 but is not
 compatible with \GAP~4. See section~"The .gaprc file" in chapter~"Running
 GAP" of the reference manual.
 
-{\GAP} stops with an error message: ``{`cannot extend the workspace any more'}''.&
+{\GAP} stops with an error message: ``{`cannot extend the workspace any 
+more'}''.&
 Your calculation exceeded the available memory. Most likely you asked {\GAP}
 to do something which required more memory than you have (as listing all
 elements of $S_{15}$ for example). You can use the command line option `-g'
 (see section~"Command Line Options" in the reference manual) to display how
 much memory {\GAP} uses. If this is below what your machine has available
 (this happens for example under Windows) extending the workspace is
-impossible. Start {\GAP} with more memory or use the `-a' option to pre-allocate
+impossible. Start {\GAP} with more memory or use the `-a' option to pre-
+allocate
 initially a large piece of workspace.
 
 {\GAP} complains: ``{`corrupted completion file'}''.&
 Some library files got changed without rebuilding the completion files.
 This is often a sign that earlier bugfixes were not installed properly or
-that you changed the library yourself. In th elatter case,
+that you changed the library yourself. In the latter case,
 start {\GAP} with command line option `-N' and see section~"Completion Files".
 
 {\GAP} stops with an error message ``{`exceeded the permitted memory'}''.&
 Your job got bigger than what is permitted by default (128MB). (This is a
-safety feature to avoid singe jobs wrecking a multi-user system.) You can
+safety feature to avoid single jobs wrecking a multi-user system.) You can
 type `return;' to continue, if the error message happens repeatedly you
 better start the job anew and use the command line option `-o' to set a
 higher memory limit.
@@ -1612,7 +1872,7 @@ are prone to this). Call
 \begintt
 touch * cnf/* src/*
 \endtt
-from the main GAP directory (this ought to reset the date of all relevant
+from the main {\GAP} directory (this ought to reset the date of all relevant
 files to ``now'') and try again.
 
 Recompilation does not actually compile changed files.&
@@ -1628,7 +1888,7 @@ longer.
 A calculation runs into an error ``no method found''.&
 {\GAP} is not able to execute a certain operation with the given arguments.
 Besides the possibility of bugs in the library this means two things: Either
-{\GAP} truely is incapable of coping with this task (the objects might be
+{\GAP} truly is incapable of coping with this task (the objects might be
 too complicated for the existing algorithms or there might be no algorithm
 that can cope with the input). Another possibility is that {\GAP} does not
 *know* that the objects have certain nice properties (like being finite)
@@ -1642,12 +1902,14 @@ The `gap.bat' file does not start GAP.&
 Make sure you ran `instwin.bat'. If your version
 of Windows uses a language other than English you must still edit the
 resulting file `gap.bat' in the `bin' subdirectory, due to a misdesign of
-Windows.
+Windows. If the path name contains long file names or blanks, you might have
+to edit the file to rectify the `-l' argument or to enclose it by
+apostrophes.
 
 Windows complains `Out of environment space'.&
 Click the batch file `instwin.bat' or `gap.bat' which caused the problem
 with the right mouse button and select `Properties',`Memory' and increase
-the initial environment space to at least 1024.  This will create a `pif'
+the initial environment space to at least 1024. This will create a `pif'
 shortcut which should be used to start {\GAP}.
 
 Command line editing does not work under Windows.&
@@ -1666,6 +1928,8 @@ accent-circonflexe and do not pass it properly to {\GAP}.
 
 Cut and Paste does not work&
 See \URL{http://www-gap.dcs.st-and.ac.uk/~gap/Info4/windows.html}
+
+&
 for a remedy.
 \enditems
 

@@ -113,17 +113,19 @@ SMALL_GROUPS_INFORMATION[ 8 ] := function( size, smav, num )
     if not IsPrimePowerInt( size ) then
         Print("  There are sorted by their Frattini factors. \n");
         i := 1;
-        repeat 
-            if prop.pos[ i ][ 1 ] = -prop.pos[ i ][ 2 ] then
-                Print( "     ", prop.pos[ i ][ 1 ],
+        if ffid[ 2 ] > 1 then
+            repeat 
+                if prop.pos[ i ][ 1 ] = -prop.pos[ i ][ 2 ] then
+                    Print( "     ", prop.pos[ i ][ 1 ],
                        " has Frattini factor ", prop.frattFacs[ i ], ".\n"  );
-            else
-                Print( "     ", prop.pos[ i ][ 1 ], " - ",
+                else
+                    Print( "     ", prop.pos[ i ][ 1 ], " - ",
                        -prop.pos[ i ][ 2 ], " have Frattini factor ",
                        prop.frattFacs[ i ], ".\n"  );
-            fi;
-            i := i + 1;
-        until prop.frattFacs[ i ] = ffid;
+                fi;
+                i := i + 1;
+            until prop.frattFacs[ i ] = ffid;
+        fi;
         Print("     ", ffid[2], " - ", num, 
               " have trivial Frattini subgroup.\n");
     else

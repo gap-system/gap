@@ -36,8 +36,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Decompositions}
 
-\index{decomposition matrix}%
-\index{DEC}
+\index{decomposition matrix}
+\atindex{DEC}{@DEC}
 
 \FileHeader[1]{zlattice}
 
@@ -51,13 +51,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Lattice Reduction}
 
-\index{LLL algorithm!for vectors}%
-\index{short vectors spanning a lattice}%
+\atindex{LLL algorithm!for vectors}{@LLL algorithm!for vectors}
+\index{short vectors spanning a lattice}
 \index{lattice base reduction}
 
 \Declaration{LLLReducedBasis}
 
-\index{LLL algorithm!for Gram matrices}%
+\atindex{LLL algorithm!for Gram matrices}{@LLL algorithm!for Gram matrices}
 \index{lattice base reduction}
 \Declaration{LLLReducedGramMat}
 

@@ -153,6 +153,11 @@ DeclareSynonym( "ImproveOperationDegreeByBlocks",
 ##  an intransitive permutation representation
 ##  the degree of which may be smaller than the original degree.
 ##
+##  The methods used might involve the use of random elements and the
+##  permutation representation (or even the degree of the representation) is
+##  not guaranteed to be the same for different calls of
+##  `SmallerDegreePermutationRepresentation'.
+##
 DeclareGlobalFunction( "SmallerDegreePermutationRepresentation" );
 
 

@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  trans.gd           GAP library                    Andrew Solomon
+#W  trans.gd                 GAP library                       Andrew Solomon
 ##
 #H  @(#)$Id$
 ##
@@ -9,6 +9,9 @@
 ##
 ##  This file contains the declarations for transformations
 ##
+##  Further maintenance and development by:
+##    Andrew Solomon
+##    Robert F. Morse
 
 #1  
 ##  A *transformation* in {\GAP} is an endomorphism of a set of integers
@@ -37,13 +40,25 @@ Revision.trans_gd :=
 #C  IsTransformation(<obj>)
 #C  IsTransformationCollection(<obj>)
 ##
-##  We declare it as IsMultiplicativeElementWithOne since
-##  the identity automorphism of  $\{1 .. n\}$ is a multiplicative
+##  We declare it as `IsMultiplicativeElementWithOne' since
+##  the identity automorphism of  $\{1,\ldots,n\}$ is a multiplicative
 ##  two sided identity for any transformation on the same set.
 
 DeclareCategory("IsTransformation", 
 	IsMultiplicativeElementWithOne and IsAssociativeElement);
 DeclareCategoryCollections("IsTransformation");
+
+############################################################################
+##
+#R  IsTransformationRep(<obj>)
+## 
+##  A transformation is an endomorphism of a set of integers
+##  of the form `[1 .. n]'. 
+##
+##  A transformation is completely specified by a list of images
+##  the ith element is the image of i under the transformation.
+##
+DeclareRepresentation("IsTransformationRep", IsPositionalObjectRep ,[1]);
 
 #############################################################################
 ##
@@ -55,14 +70,24 @@ DeclareCategoryCollections("IsTransformation");
 ##  lie within the range $\{1,\dots,n\}$ where <n> is the length of <images>,
 ##  but for speed purposes, a non-checking version is also supplied.
 ## 
+#F  IdentityTransformation(<n>)
+## 
+##  return the identity transformation of degree <n>  
+##
+#F  RandomTransformation(<n>)
+##
+##  returns a random transformation of degree <n>
+##
 DeclareGlobalFunction("Transformation");
 DeclareGlobalFunction("TransformationNC");
+DeclareGlobalFunction("IdentityTransformation");
+DeclareGlobalFunction("RandomTransformation");
 
 ############################################################################
 ##
 #A  DegreeOfTransformation(<trans>)
 ## 
-##	returns the degree of <trans>.
+##  returns the degree of <trans>.
 ##  
 DeclareAttribute("DegreeOfTransformation", IsTransformation);
 
@@ -86,7 +111,7 @@ DeclareAttribute("ImageSetOfTransformation", IsTransformation);
 ##
 #A  RankOfTransformation( <trans> )
 ##
-##	returns the rank of <trans>.
+##  returns the rank of <trans>.
 ##
 DeclareAttribute("RankOfTransformation", IsTransformation);
 
@@ -107,6 +132,15 @@ DeclareAttribute("KernelOfTransformation", IsTransformation);
 ##
 DeclareOperation("PreimagesOfTransformation",[IsTransformation, IsInt]);
 
+#############################################################################
+##
+#O  RestrictedTransformation(<trans>, <alpha>)
+##  
+##  The transformation <trans> is restricted to only those points of <alpha>.
+##
+DeclareOperation("RestrictedTransformation", 
+    [IsTransformation, IsListOrCollection]);
+
 ############################################################################
 ##
 #O  AsTransformation( <O> )
@@ -115,7 +149,7 @@ DeclareOperation("PreimagesOfTransformation",[IsTransformation, IsInt]);
 ##
 ##  returns the object <O> when considered as a transformation.   In the
 ##  second form, it returns <O> as a transformation of degree <n>, signalling
-##  an error if such a representation is not possible.   AsTransformationNC
+##  an error if such a representation is not possible.  `AsTransformationNC'
 ##  does not perform this check.
 ##
 DeclareOperation("AsTransformation", [IsObject]);
@@ -126,9 +160,9 @@ DeclareOperation("AsTransformationNC", [IsObject]);
 #O  TransformationRelation( <R> )
 ##
 ##  returns the binary relation <R> when considered as a transformation.
-##  Only makes sense for injective binary relations over [1..n],   Returns 
-##  an error if the relation is not over [1..n], and fail if it is not
-##   injective.
+##  Only makes sense for injective binary relations over `[1..n]'.  Returns 
+##  an error if the relation is not over `[1..n]', and `fail' if it is not
+##  injective.
 ##
 DeclareOperation("TransformationRelation", [IsGeneralMapping]);
 
@@ -140,6 +174,12 @@ DeclareOperation("TransformationRelation", [IsGeneralMapping]);
 ##
 DeclareOperation("BinaryRelationTransformation", [IsTransformation]);
 
+DeclareOperation("InverseOp", [IsTransformation]);
+
+
+DeclareOperation("PermLeftQuoTransformation", 
+    [IsTransformation, IsTransformation]);
+
 #############################################################################
 ##
 #F  TransformationFamily(n) 
@@ -149,10 +189,10 @@ DeclareOperation("BinaryRelationTransformation", [IsTransformation]);
 ##  For each `<n> > 0' there is a single family and type of transformations
 ##  on n points. To speed things up, we store these in 
 ##  a database of types. The three functions above a then 
-##  access functions. If the nth entry isn't yet created, they trigger
+##  access functions. If the <n>th entry isn't yet created, they trigger
 ##  creation as well.
 ## 
-##  For `<n> > 0', element <n>  of th etype database is
+##  For `<n> > 0', element <n>  of the type database is
 ##  `[TransformationFamily(n), TransformationType(n)]'
 
 DeclareGlobalFunction("TransformationFamily");
@@ -160,3 +200,7 @@ DeclareGlobalFunction("TransformationType");
 DeclareGlobalFunction("TransformationData");
 _TransformationFamiliesDatabase := [];
 
+
+#############################################################################
+##
+#E

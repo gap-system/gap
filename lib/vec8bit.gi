@@ -26,10 +26,11 @@ Revision.vec8bit_gi :=
 ##  without changing the kernel.
 ##
 
-InstallValue(TYPES_VEC8BIT , [[],[], []]);
+InstallValue(TYPES_VEC8BIT , [[],[], [], []]);
 TYPES_VEC8BIT[1][257] := 1;
 TYPES_VEC8BIT[2][257] := 1;
 TYPES_VEC8BIT[3][257] := 1;
+TYPES_VEC8BIT[4][257] := 1;
 
 
 #############################################################################
@@ -48,7 +49,7 @@ InstallGlobalFunction(TYPE_VEC8BIT,
         filts := IsHomogeneousList and IsListDefault and IsCopyable and
                  Is8BitVectorRep and IsSmallList and
                  IsNoImmediateMethodsObject and
-                 IsRingElementList;
+                 IsRingElementList and HasLength;
         if mut then filts := filts and IsMutable; fi;
         TYPES_VEC8BIT[col][q] := NewType(FamilyObj(GF(q)),filts);
     fi;
@@ -56,15 +57,16 @@ InstallGlobalFunction(TYPE_VEC8BIT,
 end);
 
 InstallGlobalFunction(TYPE_VEC8BIT_LOCKED,
-  function( q)
+  function( q, mut)
     local col,filts;
-    col := 3;
+    if mut then col := 3; else col := 4; fi;
     if not IsBound(TYPES_VEC8BIT[col][q]) then
         filts := IsHomogeneousList and IsListDefault and IsCopyable and
                  Is8BitVectorRep and IsSmallList and
                  IsNoImmediateMethodsObject and
                  IsLockedRepresentationVector and
-                 IsRingElementList;
+                 IsRingElementList and HasLength;
+        if mut then filts := filts and IsMutable; fi;
         TYPES_VEC8BIT[col][q] := NewType(FamilyObj(GF(q)),filts);
     fi;
     return TYPES_VEC8BIT[col][q];
@@ -418,7 +420,7 @@ InstallMethod( AdditiveInverseOp, "For an 8 bit vector",
 ##
 #M  ZeroOp( <vec> )
 ##
-##  A mutable zero vector of the same field and length
+##  A  zero vector of the same field and length and mutability
 ##
 
 InstallMethod( ZeroOp, "For an 8 bit vector",
@@ -868,8 +870,90 @@ InstallMethod( PowerModCoeffs,
     return pow;
 end);
             
+#############################################################################
+##
+#M  SemiEchelonMat
+##
+
+#
+# If mat is in the  special representation, then we do 
+# have to copy it, but we know that the rows of the result will
+# already be in special representation, so don't convert
+#
+
+InstallMethod(SemiEchelonMat, "shortcut method for 8bit matrices",
+        true,
+        [ IsMatrix and Is8BitMatrixRep and IsFFECollColl ],
+        0,
+        function( mat )
+    local copymat;
+    copymat := List(mat, ShallowCopy);
+    return SemiEchelonMatDestructive( copymat );
+end);
+
+InstallMethod(SemiEchelonMatTransformation, "shortcut method for 8bit matrices",
+        true,
+        [ IsMatrix and Is8BitMatrixRep and IsFFECollColl ],
+        0,
+        function( mat )
+    local copymat;
+    copymat := List(mat, ShallowCopy);
+    return SemiEchelonMatTransformationDestructive( copymat );
+end);
+
+InstallMethod(SemiEchelonMatDestructive, "kernel method for plain lists of 8bit vectors",
+        true,
+        [ IsPlistRep and IsMatrix and IsMutable and IsFFECollColl ],
+        0,
+        SEMIECHELON_LIST_VEC8BITS
+        );
         
-      
+InstallMethod(SemiEchelonMatTransformationDestructive, 
+        " kernel method for plain lists of 8 bit vectors",
+        true,
+        [ IsMatrix and IsFFECollColl and IsPlistRep and IsMutable],
+        0, 
+        SEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS);
+
+
+
+#############################################################################
+##
+#M  TriangulizeMat( <plain list of GF2 vectors> )
+##
+
+InstallMethod(TriangulizeMat,
+        "kernel method for plain list of GF2 vectors",
+        true,
+        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
+        0, 
+        TRIANGULIZE_LIST_VEC8BITS);
+
+#############################################################################
+##
+#M  DeterminantMatDestructive ( <plain list of GF2 vectors> )
+##
+
+InstallMethod(DeterminantMatDestructive,
+        "kernel method for plain list of GF2 vectors",
+        true,
+        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
+        0, 
+        DETERMINANT_LIST_VEC8BITS);
+
+#############################################################################
+##
+#M  RankMatDestructive ( <plain list of GF2 vectors> )
+##
+
+
+InstallMethod(RankMatDestructive,
+        "kernel method for plain list of GF2 vectors",
+        true,
+        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
+        0, 
+        RANK_LIST_VEC8BITS);
+  
             
 #############################################################################
 ##

@@ -141,6 +141,75 @@ end);
 
 #############################################################################
 ##
+#M  ReadAllLine( <iostream>[, <nofail>][, <IsAllLine>] ) . .  read whole line
+##
+InstallMethod( ReadAllLine, "iostream,boolean,function", 
+        [ IsInputOutputStream, IsBool, IsFunction ],
+    function(iostream, nofail, IsAllLine)
+    local line, fd, moreOfline;
+    line := ReadLine(iostream);
+    if nofail or line <> fail then
+        fd := FileDescriptorOfStream(iostream);
+        if line = fail then
+          line := "";
+        fi;
+        while not IsAllLine(line) do
+            UNIXSelect([fd], [], [], fail, fail);
+            moreOfline := ReadLine(iostream);
+            Append(line, moreOfline);
+        od;
+    fi;
+    return line;
+end);
+        
+InstallOtherMethod( ReadAllLine, "iostream,boolean", 
+        [ IsInputOutputStream, IsBool ],
+    function(iostream, nofail)
+    return ReadAllLine(iostream, nofail, 
+                       line -> 0 < Length(line) and line[Length(line)] = '\n');
+end);
+        
+InstallOtherMethod( ReadAllLine, "iostream,function", 
+        [ IsInputOutputStream, IsFunction ],
+    function(iostream, IsAllLine)
+    return ReadAllLine(iostream, false, IsAllLine);
+end);
+        
+InstallOtherMethod( ReadAllLine, "iostream", 
+        [ IsInputOutputStream ],
+    iostream -> ReadAllLine(iostream, false)
+);
+        
+# For an input stream that is not an input/output stream it's really
+# inappropriate to call ReadAllLine. We provide the functionality of
+# ReadLine only, in this case.
+InstallMethod( ReadAllLine, "stream,boolean,function", 
+        [ IsInputStream, IsBool, IsFunction ],
+    function(stream, nofail, IsAllLine)
+    return ReadLine(stream); #ignore other arguments
+end);
+        
+InstallOtherMethod( ReadAllLine, "stream,boolean", 
+        [ IsInputStream, IsBool ],
+    function(stream, nofail)
+    return ReadLine(stream); #ignore other argument
+end);
+        
+InstallOtherMethod( ReadAllLine, "stream,function", 
+        [ IsInputStream, IsFunction ],
+    function(stream, IsAllLine)
+    return ReadLine(stream); #ignore other argument
+end);
+        
+InstallOtherMethod( ReadAllLine, "stream", 
+        [ IsInputStream ], ReadLine
+);
+        
+        
+
+
+#############################################################################
+##
 #M  Read( <input-stream> )	. . . . . . . . . .  read stream as GAP input
 ##
 InstallOtherMethod( Read,
@@ -223,7 +292,10 @@ InstallOtherMethod( LogTo,
     true,
     [ IsString ],
     0,
-    function(name) LOG_TO(name); end ); # ignore return value
+    function(name) 
+      name := USER_HOME_EXPAND(name);
+      LOG_TO(name); 
+    end ); # ignore return value
 
 
 #############################################################################
@@ -259,7 +331,8 @@ InstallOtherMethod( InputLogTo,
     true,
     [ IsString ],
     0,
-    function(name) INPUT_LOG_TO(name); end ); # ignore return value
+    function(name) name := USER_HOME_EXPAND(name); INPUT_LOG_TO(name); end ); 
+    # ignore return value
 
 
 #############################################################################
@@ -295,7 +368,8 @@ InstallOtherMethod( OutputLogTo,
     true,
     [ IsString ],
     0,
-    function(name) OUTPUT_LOG_TO(name); end ); # ignore return value
+    function(name) name := USER_HOME_EXPAND(name); OUTPUT_LOG_TO(name); end ); 
+    # ignore return value
 
 
 #############################################################################
@@ -365,17 +439,6 @@ end );
 
 #############################################################################
 ##
-
-#R  IsInputTextStringRep
-##
-DeclareRepresentation(
-    "IsInputTextStringRep",
-    IsPositionalObjectRep,
-    [] );
-
-
-#############################################################################
-##
 #V  InputTextStringType
 ##
 InputTextStringType := NewType(
@@ -395,7 +458,7 @@ InstallMethod( InputTextString,
         
 function( str )
     ConvertToStringRep(str);
-    return Objectify( InputTextStringType, [ 0, Immutable(str) ] );
+    return Objectify( InputTextStringType, [ 0, str ] );
 end );
 
 
@@ -498,24 +561,21 @@ InstallMethod( ReadLine,
     [ IsInputTextStream and IsInputTextStringRep ],
     0,
 
-function( stream )
-    local   str,  len,  start,  stop;
-
-    str := stream![2];
-    len := Length(str);
-    if len <= stream![1]  then
-        return fail;
-    fi;
-    start := stream![1] + 1;
-    stop  := start;
-    while stop <= len and str[stop] <> '\n'  do
-        stop := stop + 1;
-    od;
-    stream![1] := stop;
-    return Immutable( str{[start..stop]} );
-
+function ( stream )
+  local  str, len, start, stop;
+  str := stream![2];
+  len := Length( str );
+  start := stream![1] + 1;
+  if start > len  then
+    return fail;
+  fi;
+  stop := Position( str, '\n', stream![1] );
+  if stop = fail  then
+    stop := len;
+  fi;
+  stream![1] := stop;
+  return str{[ start .. stop ]};
 end );
-
 
 #############################################################################
 ##
@@ -602,6 +662,7 @@ InstallMethod( InputTextFile,
         
 function( str )
     local   fid;
+    str := USER_HOME_EXPAND(str);
 
     fid := INPUT_TEXT_FILE(str);
     if fid = fail  then
@@ -987,7 +1048,7 @@ end );
 ##
 #M  PrintFormattingStatus( <output-text-string> )
 ##
-InstallMethod( PrintFormattingStatus, "output tyext string", true,
+InstallMethod( PrintFormattingStatus, "output text string", true,
         [IsOutputTextStringRep and IsOutputTextStream],
         0,
         str -> str![2]);
@@ -1057,6 +1118,7 @@ InstallMethod( OutputTextFile,
         
 function( str, append )
     local   fid;
+    str := USER_HOME_EXPAND(str);
 
     fid := OUTPUT_TEXT_FILE( str, append );
     if fid = fail  then
@@ -1155,7 +1217,7 @@ end );
 ##
 #M  PrintFormattingStatus( <output-text-file> )
 ##
-InstallMethod( PrintFormattingStatus, "output tyext file", true,
+InstallMethod( PrintFormattingStatus, "output text file", true,
         [IsOutputTextFileRep and IsOutputTextStream],
         0,
         str -> str![3]);
@@ -1537,6 +1599,164 @@ InstallMethod(CloseStream,
     CLOSE_PTY_IOSTREAM(stream![1]);
     SetFilterObj(stream, IsClosedStream);
 end);
+
+#############################################################################
+##
+#M  FileDescriptorOfStream( <iostream-by-pty> )
+##
+
+InstallMethod(FileDescriptorOfStream,
+        [IsInputTextStream and IsInputTextFileRep],
+        function(stream)
+    return FD_OF_FILE(stream![1]);
+end);
+
+InstallMethod(FileDescriptorOfStream,
+        [IsOutputTextStream and IsOutputTextFileRep],
+        function(stream)
+    return FD_OF_FILE(stream![1]);
+end);
+
+InstallMethod(FileDescriptorOfStream,
+        [IsInputOutputStreamByPtyRep and IsInputOutputStream],
+        function(stream)
+    return FD_OF_IOSTREAM(stream![1]);
+end);
+
+
+#############################################################################
+##
+#V  OnCharReadHookInFuncs
+#V  OnCharReadHookInFds
+#V  OnCharReadHookInStreams
+#V  OnCharReadHookOutFuncs
+#V  OnCharReadHookOutFds
+#V  OnCharReadHookOutStreams
+#V  OnCharReadHookExcFuncs
+#V  OnCharReadHookExcFds
+#V  OnCharReadHookExcStreams
+InstallValue( OnCharReadHookInFuncs, []);
+InstallValue( OnCharReadHookInFds, []);
+InstallValue( OnCharReadHookInStreams, []);
+InstallValue( OnCharReadHookOutFuncs, []);
+InstallValue( OnCharReadHookOutFds, []);
+InstallValue( OnCharReadHookOutStreams, []);
+InstallValue( OnCharReadHookExcFuncs, []);
+InstallValue( OnCharReadHookExcFds, []);
+InstallValue( OnCharReadHookExcStreams, []);
+
+# Just to avoid warnings:
+OnCharReadHookActive := false;
+
+#############################################################################
+##
+#F  InstallCharReadHookFunc( <stream>, <mode>, <func> )
+##
+##  ...
+##
+InstallGlobalFunction( "InstallCharReadHookFunc",
+  function(s,m,f)
+    local fd;
+    if not(IsInputOutputStream(s) and IsInputOutputStreamByPtyRep(s)) and
+       not(IsInputTextStream(s) and IsInputTextFileRep(s)) and 
+       not(IsOutputTextStream(s) and IsOutputTextFileRep(s)) then
+      Error("First argument must be an iostream or a file stream.");
+      return;
+    fi;
+    if not(IsFunction(f)) then
+      Error("Third argument must be a function.");
+      return;
+    fi;
+    fd := FileDescriptorOfStream(s);
+    if 'r' in m or 'R' in m then
+      if not(fd in OnCharReadHookInFds) then
+        Add(OnCharReadHookInFds,fd);
+        Add(OnCharReadHookInFuncs,f);
+        Add(OnCharReadHookInStreams,s);
+        OnCharReadHookActive := true;
+      fi;
+    fi;
+    if 'w' in m or 'W' in m then
+      if not(fd in OnCharReadHookOutFds) then
+        Add(OnCharReadHookOutFds,fd);
+        Add(OnCharReadHookOutFuncs,f);
+        Add(OnCharReadHookOutStreams,s);
+        OnCharReadHookActive := true;
+      fi;
+    fi;
+    if 'x' in m or 'X' in m then
+      if not(fd in OnCharReadHookExcFds) then
+        Add(OnCharReadHookExcFds,fd);
+        Add(OnCharReadHookExcFuncs,f);
+        Add(OnCharReadHookExcStreams,s);
+        OnCharReadHookActive := true;
+      fi;
+    fi;
+    return;
+  end);
+
+
+#############################################################################
+##
+#F  UnInstallCharReadHookFunc( <stream> )
+##
+##  ...
+##
+InstallGlobalFunction( "UnInstallCharReadHookFunc",
+  function(s,f)
+    local fd,i,l;
+    # no checking of arguments because no harm is done in case of garbage!
+    l := Length(OnCharReadHookInFuncs);
+    i := l;
+    while i > 0 do
+      if OnCharReadHookInFuncs[i] = f and OnCharReadHookInStreams[i] = s then
+        OnCharReadHookInFuncs[i] := OnCharReadHookInFuncs[l];
+        Unbind(OnCharReadHookInFuncs[l]);
+        OnCharReadHookInStreams[i] := OnCharReadHookInStreams[l];
+        Unbind(OnCharReadHookInStreams[l]);
+        OnCharReadHookInFds[i] := OnCharReadHookInFds[l];
+        Unbind(OnCharReadHookInFds[l]);
+        l := l - 1;
+      fi;
+      i := i - 1;
+    od;
+    l := Length(OnCharReadHookOutFuncs);
+    i := l;
+    while i > 0 do
+      if OnCharReadHookOutFuncs[i] = f and OnCharReadHookOutStreams[i] = s then
+        OnCharReadHookOutFuncs[i] := OnCharReadHookOutFuncs[l];
+        Unbind(OnCharReadHookOutFuncs[l]);
+        OnCharReadHookOutStreams[i] := OnCharReadHookOutStreams[l];
+        Unbind(OnCharReadHookOutStreams[l]);
+        OnCharReadHookOutFds[i] := OnCharReadHookOutFds[l];
+        Unbind(OnCharReadHookOutFds[l]);
+        l := l - 1;
+      fi;
+      i := i - 1;
+    od;
+    l := Length(OnCharReadHookExcFuncs);
+    i := l;
+    while i > 0 do
+      if OnCharReadHookExcFuncs[i] = f and OnCharReadHookExcStreams[i] = s then
+        OnCharReadHookExcFuncs[i] := OnCharReadHookExcFuncs[l];
+        Unbind(OnCharReadHookExcFuncs[l]);
+        OnCharReadHookExcStreams[i] := OnCharReadHookExcStreams[l];
+        Unbind(OnCharReadHookExcStreams[l]);
+        OnCharReadHookExcFds[i] := OnCharReadHookExcFds[l];
+        Unbind(OnCharReadHookExcFds[l]);
+        l := l - 1;
+      fi;
+      i := i - 1;
+    od;
+    if Length(OnCharReadHookInFuncs) = 0 and
+       Length(OnCharReadHookOutFuncs) = 0 and
+       Length(OnCharReadHookExcFuncs) = 0 then
+      Unbind(OnCharReadHookActive);
+    fi;
+  end);
+
+# to be bound means active:
+Unbind(OnCharReadHookActive);
 
 #############################################################################
 ##

@@ -325,7 +325,7 @@ Obj ElmPRec (
         ErrorReturnVoid(
             "Record: '<rec>.%s' must have an assigned value",
             (Int)NAME_RNAM(rnam), 0L,
-            "you can return after assigning a value" );
+            "you can 'return;' after assigning a value" );
         return ELM_REC( rec, rnam );
     }
 
@@ -379,7 +379,7 @@ void            UnbPRecImm (
     ErrorReturnVoid(
         "Record Unbind: <rec> must be a mutable record",
         0L, 0L,
-        "you can return and ignore the unbind" );
+        "you can 'return;' and ignore the unbind" );
 }
 
 
@@ -426,7 +426,7 @@ void            AssPRecImm (
     ErrorReturnVoid(
         "Records Assignment: <rec> must be a mutable record",
         0L, 0L,
-        "you can return and ignore the assignment" );
+        "you can 'return;' and ignore the assignment" );
 }
 
 
@@ -644,7 +644,7 @@ Obj FuncREC_NAMES (
         rec = ErrorReturnObj(
             "RecNames: <rec> must be a record (not a %s)",
             (Int)TNAM_OBJ(rec), 0L,
-            "you can return a record for <rec>" );
+            "you can replace <rec> via 'return <rec>;'" );
     }
 
     /* allocate the list                                                   */
@@ -684,7 +684,7 @@ Obj FuncREC_NAMES_COMOBJ (
         rec = ErrorReturnObj(
             "RecNames: <rec> must be a component object (not a %s)",
             (Int)TNAM_OBJ(rec), 0L,
-            "you can return a component object for <rec>" );
+            "you can replace <rec> via 'return <rec>;'" );
     }
 
     /* allocate the list                                                   */

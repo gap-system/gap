@@ -80,7 +80,7 @@ true
 
 \indextt{IsFieldControlledByGaloisGroup}
 
-\Declaration{GaloisGroup}[field]
+\Declaration{GaloisGroup}[field]!{of field}
 
 \beginexample
 gap> g:= GaloisGroup( AsField( GF(2^2), GF(2^12) ) );;
@@ -93,7 +93,7 @@ gap> Size( h );  IsAbelian( h );
 true
 \endexample
 
-\>MinimalPolynomial( <F>, <z>[, <ind>] ) O
+\>MinimalPolynomial( <F>, <z>[, <ind>] )!{over a field} O
 
 returns the minimal polynomial of <z> over the field <F>.
 This is a generator of the ideal in $<F>[x]$ of all polynomials
@@ -122,7 +122,7 @@ gap> TracePolynomial( CF(16), Rationals, E(8) );
 \endexample
 
 \Declaration{Norm}
-\Declaration{Trace}
+\Declaration{Trace}!{for field elements}
 \Declaration{Conjugates}
 
 \beginexample

@@ -64,3 +64,4 @@ ReadLib( "options.gi"  );
 ReadLib( "attr.gd"     );
 ReadLib( "attr.gi"     );
 
+ReadLib( "float.g"     );

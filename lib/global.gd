@@ -31,6 +31,18 @@ Revision.global_gd :=
 
 #############################################################################
 ##
+#F  IsValidIdentifier( <str> ) . . .  check if a string is a valid identifier
+##
+##  returns `true'  if  the  string  <str>  would  form  a  valid  identifier
+##  consisting of letters,  digits  and  underscores;  otherwise  it  returns
+##  `false'. It does not check whether <str> contains characters escaped by a
+##  backslash `\\'.
+##
+
+DeclareGlobalFunction("IsValidIdentifier");
+
+#############################################################################
+##
 #F  ValueGlobal ( <name> ) .  . . . . . . . . . . access a global by its name
 ## 
 ##  ValueGlobal ( <name> ) returns the value currently bound to the global
@@ -40,7 +52,6 @@ Revision.global_gd :=
 
 DeclareGlobalFunction("ValueGlobal");
 
-
 #############################################################################
 ##
 #F  IsBoundGlobal ( <name> ) . . . . . check if a global is bound by its name
@@ -49,9 +60,7 @@ DeclareGlobalFunction("ValueGlobal");
 ##  to the global variable named by the string <name> and false otherwise
 ##
 
-
 DeclareGlobalFunction("IsBoundGlobal");
-
 
 #############################################################################
 ##

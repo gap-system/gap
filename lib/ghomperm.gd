@@ -23,6 +23,7 @@ DeclareRepresentation( "IsPermGroupGeneralMappingByImages",
 DeclareSynonym( "IsPermGroupHomomorphismByImages",
     IsPermGroupGeneralMappingByImages and IsMapping );
 
+
 #############################################################################
 ##
 #R  IsToPermGroupGeneralMappingByImages(<map>)
@@ -35,6 +36,20 @@ DeclareRepresentation( "IsToPermGroupGeneralMappingByImages",
 DeclareSynonym( "IsToPermGroupHomomorphismByImages",
     IsToPermGroupGeneralMappingByImages and IsMapping );
 
+
+#############################################################################
+##
+#F  RelatorsPermGroupHom(<hom>,<gens>)
+##
+##  `RelatorsPermGroupHom' is an internal function which is called by the
+##  operation `IsomorphismFpGroupByGeneratorsNC' in case of a permutation group.
+##  It implements John Cannon's multi-stage relations finding algorithm as
+##  described in~\cite{Neu82}.
+##
+DeclareGlobalFunction("RelatorsPermGroupHom");
+
+
+#############################################################################
 DeclareGlobalFunction( "AddGeneratorsGenimagesExtendSchreierTree" );
 DeclareGlobalFunction( "ImageSiftedBaseImage" );
 DeclareGlobalFunction( "CoKernelGensIterator" );

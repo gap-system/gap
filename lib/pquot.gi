@@ -1155,9 +1155,11 @@ function( G, p, n, collector )
 
     ##  Create the collector.  
     if collector = "combinatorial" then
-        qs.collector := CombinatorialCollector( FreeGroup( n, "a" ), p );
+        qs.collector := CombinatorialCollector(
+	  FreeGroup(IsSyllableWordsFamily, n, "a" ), p );
     else
-        qs.collector := SingleCollector( FreeGroup( n, "a" ), p );
+        qs.collector := SingleCollector(
+	  FreeGroup(IsSyllableWordsFamily, n, "a" ), p );
     fi;
     
     qs.collector![SCP_INVERSES] := 
@@ -1490,74 +1492,6 @@ function( arg )
     return qs;
 end );
 
-#########################################################
-##
-#M MaximalAbelianQuotient(<fp group>)
-##
-##
-InstallMethod(MaximalAbelianQuotient,
-	"for finitely presented groups",
-	true,
-	[IsFpGroup],
-	0,
-
-function(f)
-
-local m,s,g,i,j,rel,gen,img,fin,hom;
-
-  m:=List(RelatorsOfFpGroup(f),w->ExponentSums(f,w));
-
-  gen:=GeneratorsOfGroup(f);
-  g:=FreeGroup(gen);
-  gen:=GeneratorsOfGroup(g);
-
-  rel:=[];
-  for i in [1..Length(gen)-1] do
-    for j in [i+1..Length(gen)] do
-      Add(rel, Comm(gen[i],gen[j]));
-    od;
-  od;
-
-  if Length(m)>0 then  
-    s:=NormalFormIntMat(m,9);
-   
-    if Length(m[1])>s.rank then
-      for i in [1..s.rank] do  
-        Add(rel,g.(i)^s.normal[i][i]);
-      od;
-      g:=g/rel;
-      fin:=false;
-    else  
-      g:=AbelianGroup(DiagonalOfMat(s.normal));
-      fin:=true;
-    fi;
-  
-    gen:=GeneratorsOfGroup(g);
-    s:=s.coltrans;
-    img:=[];
-    for i in [1..Length(s)] do
-      m:=Identity(g);
-      for j in [1..Length(gen)] do
-        m:=m*gen[j]^s[i][j];
-      od;
-      Add(img,m);
-    od;
-  else 
-    g:=g/rel;
-    fin:=Length(gen)=0;
-    img:=GeneratorsOfGroup(g);
-  fi;
-
-  SetIsFinite(g,fin);
-  SetIsAbelian(g,true);
-
-  hom:=GroupHomomorphismByImagesNC(f,g,GeneratorsOfGroup(f),img);
-  SetIsSurjective(hom,true);
-
-  return hom;
-end);
-
-
 
 #############################################################################
 ##
@@ -1578,9 +1512,10 @@ InstallMethod( EpimorphismPGroup,
         true,
         [IsSubgroupFpGroup and IsWholeFamily, IsPosInt, IsPosInt],
         0,
-        function( G, p, c )
-    
-    return EpimorphismQuotientSystem( PQuotient( G, p, c ) );
+function( G, p, c )
+local m;
+  m:=Minimum(30000,Maximum(256,(c*Length(GeneratorsOfGroup(G)))^2));
+  return EpimorphismQuotientSystem( PQuotient( G, p, c, m) );
 end );
 
 
@@ -1589,8 +1524,7 @@ InstallMethod( EpimorphismPGroup,
         true,
         [IsSubgroupFpGroup, IsPosInt ],
         0,
-        function( U, p )
-    
+function( U, p )
     return EpimorphismPGroup( U, p, 1000 );
 end );    
 
@@ -1611,12 +1545,10 @@ InstallMethod( EpimorphismPGroup,
 #    images := GeneratorsOfGroup( U );
 #    images := List( images , g->Image( phi, g ) );
 
-    images := phi!.genimages;
+    images := MappingGeneratorsImages(phi)[2];
     images := List( images , g->Image( psi, g ) );
   
-    eps := GroupHomomorphismByImagesNC( 
-                   U, Image( psi ), 
-                   phi!.generators, images );
+    eps:=CompositionMapping2(psi,phi);
 
     SetIsSurjective( eps, true );
 
@@ -1829,16 +1761,29 @@ end );
 ##  
 ##  This function does not belong here
 ##
-InstallGlobalFunction( EpimorphismNilpotentQuotient,
-    function(arg)
-    local g,n,a,h,i,q,d,img,geni,gen,hom;
+InstallGlobalFunction("EpimorphismNilpotentQuotient",function(arg)
+local g,n;
+  g:=arg[1];
+  if Length(arg)>1 then
+    n:=arg[2];
+  else
+    n:=fail;
+  fi;
+  return EpimorphismNilpotentQuotientOp(g,n);
+end);
 
-    g := arg[1];
-    if Length(arg) = 1 then
-        n := fail;
-    else
-        n := arg[2];
-    fi;
+InstallMethod( EpimorphismNilpotentQuotientOp,"subgroup fp group",
+        true, [ IsSubgroupFpGroup,IsObject],0,
+function(G,n)
+local iso;
+  iso:=IsomorphismFpGroup(G);
+  return iso*EpimorphismNilpotentQuotient(Image(iso),n);
+end);
+
+InstallMethod( EpimorphismNilpotentQuotientOp,"full fp group",
+        true, [ IsSubgroupFpGroup and IsWholeFamily,IsObject],0,
+function(g,n)
+local a,h,i,q,d,img,geni,gen,hom,lcs,c,sqa,cnqs,genum;
 
     a:=Set( Flat( List( AbelianInvariants(g), Factors ) ) );
     if 0 in a then
@@ -1851,11 +1796,37 @@ InstallGlobalFunction( EpimorphismNilpotentQuotient,
     h:=[];
     for i in a do
         if n <> fail then
-            q := PQuotient(g,i,n);
+          # caveat: The PQ gives p-class. We might have to go to a higher
+	  # p-class to get the corresponding nilpotency class
+	  c:=n;
+	  cnqs:=1;
+	  genum:=Minimum(8192,(c*Length(GeneratorsOfGroup(g)))^2);
+	  #T the way we run the pq iteratively is a bit stupid. Once the
+	  #T interface is documented it would be better to run it iteratively
+	  repeat
+	    sqa:=cnqs;
+	    c:=c+1;
+            q := PQuotient(g,i,c,genum);
+
+	    # try to increase the number of generators in time
+	    if q!.numberOfGenerators*8>genum then
+	      genum:=genum*16;
+	    fi;
+
+	    q := EpimorphismQuotientSystem( q );
+	    lcs:=LowerCentralSeriesOfGroup(Image(q));
+	    # size of the class-n quotient bit so far
+	    cnqs:=Index(lcs[1],lcs[Minimum(Length(lcs),n+1)]);
+	  until cnqs=sqa; # the class-n-quotient did not grow
+	  if Length(lcs)>n+1 then
+	    # take only the top bit
+	    q:=q*NaturalHomomorphismByNormalSubgroupNC(lcs[1],lcs[n+1]);
+	  fi;
         else
-            q := PQuotient(g,i);
+	  q := PQuotient(g,i,1000,
+	    Maximum(256,(40*Length(GeneratorsOfGroup(g)))^2));
+	  q := EpimorphismQuotientSystem( q );
         fi;
-        q := EpimorphismQuotientSystem( q );
         Add(h,q);
     od;
 
@@ -1876,6 +1847,8 @@ InstallGlobalFunction( EpimorphismNilpotentQuotient,
   
     return hom;
 end);
+
+
 
 #############################################################################
 ##

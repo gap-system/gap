@@ -61,7 +61,7 @@ y
 X
 gap> Indeterminate(GF(3),3);
 y
-gap> Indeterminate(GF(3),[y,z]);   
+gap> Indeterminate(GF(3),[y,z]);
 x
 \endexample
 
@@ -141,8 +141,11 @@ $`Numerator'(<g>)*`Denominator'(<f>)$.
 \beginexample
 gap> x:=Indeterminate(Rationals,"x");;y:=Indeterminate(Rationals,"y");;
 gap> f:=3+x*y+x^5;;g:=5+x^2*y+x*y^2;;
-gap> a:=g/f;;
-gap> b:=(g*f)/(f^2);;
+gap> a:=g/f;
+(5+x^2*y+x*y^2)/(3+x*y+x^5)
+gap> b:=(g*f)/(f^2);
+(15+5*x*y+3*x^2*y+3*x*y^2+5*x^5+x^3*y^2+x^2*y^3+x^7*y+x^6*y^2)/(9+6*x*y+x^2*y^\
+2+6*x^5+2*x^6*y+x^10)
 gap> a=b;
 true
 \endexample
@@ -156,9 +159,9 @@ with ring elements (``terms'') are compared first by their monomials and
 then by their coefficients.
 
 \beginexample
-gap> x<y; 
+gap> x<y;
 true
-gap> x^2*y<x*y^2;                  
+gap> x^2*y<x*y^2;
 true
 gap> x*y<x^2*y;
 true
@@ -166,7 +169,7 @@ gap> x^2*y < 5* y*x^2;
 true
 \endexample
 Polynomials are compared by comparing the largest terms in turn until they
-differ. 
+differ.
 \beginexample
 gap> x+y<y;
 false
@@ -200,7 +203,7 @@ and then lexicographically on the coefficients.
 gap> x:=Indeterminate(Rationals,1);;y:=Indeterminate(Rationals,2);;
 gap> DenominatorOfRationalFunction((x*y+x^2)/y);
 y
-gap> NumeratorOfRationalFunction((x*y+x^2)/y);  
+gap> NumeratorOfRationalFunction((x*y+x^2)/y);
 x^2+x*y
 \endexample
 
@@ -219,6 +222,7 @@ x+x^2*y^2
 \endexample
 
 \Declaration{IsUnivariateRationalFunction}
+\Declaration{CoefficientsOfUnivariateRationalFunction}
 
 \Declaration{IsUnivariatePolynomial}
 \Declaration{CoefficientsOfUnivariatePolynomial}
@@ -237,6 +241,9 @@ tests (in particular univariatness) might be expensive in some cases.
 For reasons of performance within algorithms it can be useful to use other
 attributes, which give a slightly more technical representation. See
 section~"The Representations of Rational Functions" for details.
+
+\Declaration{IsPrimitivePolynomial}
+\Declaration{SplittingField}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Univariate Polynomials}
@@ -259,7 +266,7 @@ gap> DegreeOfLaurentPolynomial(p);
 3
 gap> IndeterminateNumberOfLaurentPolynomial(p);
 1
-gap> IndeterminateOfLaurentPolynomial(p);      
+gap> IndeterminateOfLaurentPolynomial(p);
 x
 \endexample
 
@@ -315,7 +322,7 @@ gap> LeadingCoefficient(f,2);
 9
 gap> LeadingMonomial(f);
 [ 2, 7 ]
-gap> LeadingCoefficient(f);                  
+gap> LeadingCoefficient(f);
 9
 \endexample
 
@@ -327,10 +334,9 @@ gap> Derivative(f,2);
 \Declaration{Discriminant}
 \beginexample
 gap> Discriminant(f,1);
-50000+300000*y+675000*y^2+675000*y^3+253125*y^4+62208*y^5+900000*y^7+
-4050000*y^8+6489720*y^9+3037500*y^10+1105920*y^13+6075000*y^14+18225000*y^15+
-13668750*y^16+1474560*y^17+19208040*y^21+27337500*y^22+262144*y^25+20503125*y^
-28
+50000+300000*y+675000*y^2+675000*y^3+253125*y^4+62208*y^5+900000*y^7+4050000*y\
+^8+6489720*y^9+3037500*y^10+1105920*y^13+6075000*y^14+18225000*y^15+13668750*y\
+^16+1474560*y^17+19208040*y^21+27337500*y^22+262144*y^25+20503125*y^28
 \endexample
 
 \Declaration{Resultant}
@@ -357,15 +363,16 @@ given!
 
 \Declaration{OnIndeterminates}
 \beginexample
-gap> OnIndeterminates(x^7*y+x*y^4,(1,17)(2,28)); 
+gap> OnIndeterminates(x^7*y+x*y^4,(1,17)(2,28));
 x_17*x_28^4+x_17^7*x_28
 gap> Stabilizer(Group((1,2,3,4),(1,2)),x*y,OnIndeterminates);
-Group( [ (1,2), (3,4) ] )
+Group([ (1,2), (3,4) ])
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Minimal Polynomials}
 
+\indextt{MinimalPolynomial!over a ring}
 \Declaration{MinimalPolynomial}
 \beginexample
 gap> MinimalPolynomial(Rationals,[[2,0],[0,2]]);
@@ -380,7 +387,7 @@ gap> MinimalPolynomial(Rationals,[[2,0],[0,2]]);
 \beginexample
 gap> CyclotomicPolynomial(Rationals,5);
 1+x+x^2+x^3+x^4
-gap> CyclotomicPol(5);                 
+gap> CyclotomicPol(5);
 [ 1, 1, 1, 1, 1 ]
 \endexample
 
@@ -456,6 +463,11 @@ gap> CoefficientsOfLaurentPolynomial(p*p);
 \Declaration{QuotRemLaurpols}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Univariate Rational Functions}
+
+\Declaration{UnivariateRationalFunctionByCoefficients}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Polynomial Rings}
 
 While polynomials depend only on the family of the coefficients, polynomial
@@ -482,7 +494,7 @@ gap> r:=PolynomialRing(GF(7),3);
 PolynomialRing(..., [ x_1, x_2, x_3 ])
 gap> r2:=PolynomialRing(GF(7),3,IndeterminatesOfPolynomialRing(r));
 PolynomialRing(..., [ x_4, x_5, x_6 ])
-gap> r:=PolynomialRing(GF(7),["x","y","z","z2"]);                           
+gap> r:=PolynomialRing(GF(7),["x","y","z","z2"]);
 PolynomialRing(..., [ x, y, z, z2 ])
 \endexample
 
@@ -502,7 +514,7 @@ gap> IsPolynomialRing(r);
 true
 gap> IsFiniteFieldPolynomialRing(r);
 true
-gap> IsRationalsPolynomialRing(r);  
+gap> IsRationalsPolynomialRing(r);
 false
 \endexample
 
@@ -514,7 +526,7 @@ false
 \beginexample
 gap> r:=UnivariatePolynomialRing(Rationals,"x");
 <algebra-with-one over Rationals, with 1 generators>
-gap> r2:=PolynomialRing(Rationals,["q"]); 
+gap> r2:=PolynomialRing(Rationals,["q"]);
 <algebra-with-one over Rationals, with 1 generators>
 gap> IsUnivariatePolynomialRing(r);
 true
@@ -544,7 +556,7 @@ Currently two admissible orderings are available:
 gap> x:=X(Rationals,"x");;y:=X(Rationals,"y");;z:=X(Rationals,"z");;
 gap> bas:=[x^3*y*z,x*y^2*z,z*y*z^3+x];
 [ x^3*y*z, x*y^2*z, x+y*z^4 ]
-gap> PolynomialReduction(x^7*z*bas[1]+y^5*bas[3]+x*z,bas,                      
+gap> PolynomialReduction(x^7*z*bas[1]+y^5*bas[3]+x*z,bas,
 > MonomialTotalDegreeLess);
 [ x*z, [ x^7*z, 0, y^5 ] ]
 \endexample
@@ -567,8 +579,8 @@ are ``compatible''.
 \Declaration{RationalFunctionsFamily}
 \Declaration{IsRationalFunctionsFamily}
 \begintt
-gap> fam:=RationalFunctionsFamily(FamilyObj(1)); 
-NewFamily( "RationalFunctionsFamily(...)", [ 618, 620 ], 
+gap> fam:=RationalFunctionsFamily(FamilyObj(1));
+NewFamily( "RationalFunctionsFamily(...)", [ 618, 620 ],
 [ 82, 85, 89, 93, 97, 100, 103, 107, 111, 618, 620 ] )
 \endtt
 
@@ -586,8 +598,10 @@ false
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Representations of Rational Functions}
 
-{\GAP} uses three representations of rational functions: Rational
-functions given by numerator and denominator, polynomials and
+{\GAP} uses four representations of rational functions: Rational
+functions given by numerator and denominator, polynomials, univariate
+rational functions (given by coefficient lists for numerator and denominator
+and valuation) and
 Laurent polynomials (given by coefficient list and valuation).
 
 These representations do not necessarily reflect mathematical properties:
@@ -669,10 +683,9 @@ and `IndeterminateNumberOfUnivariateRationalFunction'
 \Declaration{PolynomialByExtRep}
 \beginexample
 gap> fam:=RationalFunctionsFamily(FamilyObj(1));;
-[ 82, 85, 89, 93, 97, 100, 103, 107, 111, 618, 620 ] )
 gap> p:=PolynomialByExtRep(fam,[[1,2],1,[2,1,9,7],3]);
 x^2+3*y*x_9^7
-gap> q:=p/(p+1); 
+gap> q:=p/(p+1);
 (x^2+3*y*x_9^7)/(1+x^2+3*y*x_9^7)
 gap> ExtRepNumeratorRatFun(q);
 [ [ 1, 2 ], 1, [ 2, 1, 9, 7 ], 3 ]
@@ -685,7 +698,7 @@ gap> ExtRepDenominatorRatFun(q);
 \Section{Arithmetic for External Representations of Polynomials}
 
 The following operations are used internally to perform the arithmetic for
-polynomials in their ``external'' representation 
+polynomials in their ``external'' representation
 (see~"The Defining Attributes of Rational Functions")
 as lists.
 \Declaration{ZippedSum}

@@ -221,10 +221,9 @@ local   classes,    # classes to be constructed, the result
                           #centralizer:=C,
                           #centralizerpcgs:=cengen,
                           cengen:=cengen,
-                          operator:=WordVector( gens,
-                                  #OneOfPcgs( cl.centralizerpcgs ),
-                                  One( cl.candidates[1] ),
-                                  exp * N!.subspace.inverse ) );
+                          operator:=LinearCombinationPcgs( gens,
+                                  exp * N!.subspace.inverse,
+				  One( cl.candidates[1] ))^-1);
                 Add( classes, c );
             od;
         else
@@ -524,6 +523,7 @@ local  G,  home,  # the group and the home pcgs
        LcapH,KcapH, # intersections
        N,   cent,   # elementary abelian factor, for affine action
        cls, newcls, # classes in range/source of homomorphism
+       cli,	# index
        news,    # new classes obtained in step
        cl,      # class looping over <cls>
        opr, exp,  # (candidates[i]^opr[i])^exp[i]=cls[i].representative
@@ -534,10 +534,12 @@ local  G,  home,  # the group and the home pcgs
        opt,	# options
        consider, # consider function
        divi,
+       inflev,  # InfoLevel flag
        nexpo,	# N-Exponents of the elements of N conjugated
        allcent;	# DivisorsInt(Size(G)) (used for Info)
   
 
+  inflev:=InfoLevel(InfoClasses)>1;
   mode:=arg[2];  # explained below whenever it appears
   if mode mod 2=1 then
     Error("this function does not cater for rational classes any longer");
@@ -674,7 +676,7 @@ local  G,  home,  # the group and the home pcgs
 
   Info(InfoClasses,1,"Series of sizes ",List(eas,Size));
 
-  if mode<3 and InfoLevel(InfoClasses)>1 then
+  if mode<3 and inflev then
     divi:=DivisorsInt(Size(G));
     Info(InfoClasses,2,"centsiz: ",divi);
   fi;
@@ -767,9 +769,11 @@ local  G,  home,  # the group and the home pcgs
 	    # if it is the first time, we must actually map in the factor
 	    i.representative:=ProjectedPcElement(home,fhome,i.representative);
 	    i.centralizerpcgs:=ProjectedInducedPcgs(home,fhome,i.cengen);
+	    i.cengen:=i.centralizerpcgs!.pcSequence;
 	  else
 	    i.representative:=LiftedPcElement(fhome,ofhome,i.representative);
 	    i.centralizerpcgs:=LiftedInducedPcgs(fhome,ofhome,i.cengen,N);
+	    i.cengen:=i.centralizerpcgs!.pcSequence;
 	  fi;
 	  i.yet:=true; # several cl records may be equal. We must map only
 	               # once
@@ -779,6 +783,7 @@ local  G,  home,  # the group and the home pcgs
       for i in cls do
         if IsBound(i.cengen) and not IsBound(i.centralizerpcgs) then
 	  i.centralizerpcgs:=InducedPcgsByPcSequence(fhome,i.cengen);
+	  i.cengen:=i.centralizerpcgs!.pcSequence;
 	fi;
       od;
     fi;
@@ -795,7 +800,7 @@ local  G,  home,  # the group and the home pcgs
     #SetFilterObj(N, IsPcgs);
 
     if not IsIdenticalObj(G,H) then
-Error("idobj not yet corrected");
+Error("This case disabled -- code not yet corrected");
       KcapH:=LcapH;
       LcapH:=NormalIntersectionPcgs(fhome,Hp,Lp);
       N!.capH:=KcapH mod LcapH;
@@ -870,11 +875,11 @@ Error("idobj not yet corrected");
 
     else
       newcls:=[];
-      for cl  in cls  do
+      for cli in [1..Length(cls)]  do
 
+	cl:=cls[cli];
 	if consider=true 
-	#AH: 26-4-98: temporarily disabled as used only very rarely
-	#or consider(cl.representative,cl.centralizer,K,L) 
+	 or consider(fhome,cl.representative,cl.centralizerpcgs,K,L) 
 	  then
 	  if allcent or cent(fhome,cl.centralizerpcgs, N, Ldep) then
 	    news:=CentralStepClEANS(fhome,QG, QG, N, cl,false);
@@ -889,19 +894,20 @@ Error("idobj not yet corrected");
 	  Append(newcls,news);
         fi;
 
+        Unbind(cls[cli]);
       od;
       cls:=newcls;
     fi;
 
-#    if InfoLevel(InfoClasses)>1 then
-#      i.centralizerpcgs:=InducedPcgsByPcSequence(home,i.cengen);
-#      c:=Collected(List(cls,i->Size(SubgroupByPcgs(G,i.centralizerpcgs))));
-#      if not IsBound( divi ) then
-#        divi:=DivisorsInt(Size(G));
-#      fi;
-#      c:=Concatenation(c,List(divi,i->[i,0])); # to cope with `First'
-#      Info(InfoClasses,2,List(divi,i->First(c,j->j[1]=i)[2]));
-#    fi;
+    if inflev then
+      c:=Collected(List(cls,i->Size(SubgroupByPcgs(QH,
+           InducedPcgsByPcSequence(fhome,i.cengen)))));
+      if not IsBound( divi ) then
+        divi:=DivisorsInt(Size(G));
+      fi;
+      c:=Concatenation(c,List(divi,i->[i,0])); # to cope with `First'
+      Info(InfoClasses,2,List(divi,i->First(c,j->j[1]=i)[2]));
+    fi;
 
   od;
 
@@ -917,6 +923,7 @@ Error("idobj not yet corrected");
     if not IsBound(i.centralizer) then
       if not IsBound(i.centralizerpcgs) then
 	i.centralizerpcgs:=InducedPcgsByPcSequence(home,i.cengen);
+	i.cengen:=i.centralizerpcgs;
       fi;
       i.centralizer:=SubgroupByPcgs(G,i.centralizerpcgs);
     fi;
@@ -931,8 +938,8 @@ Error("idobj not yet corrected");
 end);
 
 InstallGlobalFunction(CentralizerSizeLimitConsiderFunction,function(sz)
-  return function(rep,cen,K,L)
-           return Index(cen,K)<=sz;
+  return function(fhome,rep,cenp,K,L)
+           return Product(RelativeOrders(cenp))/Size(K)<=sz;
 	  end;
 end);
     
@@ -1012,7 +1019,6 @@ local  G,  home,  # the group and the home pcgs
        new, power,  # auxiliary variables for determination of power tree
        c,  i,     # loop variables
        opt,	# options
-       consider, # consider function
        divi;	# DivisorsInt(Size(G)) (used for Info)
   
 
@@ -1044,11 +1050,11 @@ local  G,  home,  # the group and the home pcgs
     candidates:=false;
   fi;
 
-  if IsBound(opt.consider) then
-    consider:=opt.consider;
-  else
-    consider:=true;
-  fi;
+  #if IsBound(opt.consider) then
+  #  consider:=opt.consider;
+  #else
+  #  consider:=true;
+  #fi;
   
   # Treat the case of a trivial group.
   if IsTrivial(H) then
@@ -1320,9 +1326,8 @@ local  G,  home,  # the group and the home pcgs
       newcls:=[];
       for cl  in cls  do
 
-	if consider=true or
-	  consider(cl.representative,cl.centralizer,K,L) 
-	  then
+	#if consider=true or consider(fhome,cl.representative,cl.centralizerpcgs,K,L) 
+	  #then
 	  if cent(cl, N, L) then
 	    news:=CentralStepClEANS(home,G, G, N, cl);
 	  else
@@ -1332,7 +1337,7 @@ local  G,  home,  # the group and the home pcgs
 		  i->ForAll(GeneratorsOfGroup(i.centralizer),
 		  j->Comm(i.representative,j) in eas[step])));
 	  Append(newcls,news);
-        fi;
+        #fi;
 
       od;
       cls:=newcls;
@@ -1530,8 +1535,8 @@ InstallGlobalFunction( CentralStepConjugatingElement,
     local   v,  conj;
     
     v:=ExponentsOfPcElement( N, h ^ -l * h ^ cN * k1 * k2 ^ -l );
-    conj:=WordVector( N!.CmodK{ N!.subspace.needed },
-                    OneOfPcgs( N ), v * N!.subspace.inverse );
+    conj:=LinearCombinationPcgs( N!.CmodK{ N!.subspace.needed },
+                    v * N!.subspace.inverse,OneOfPcgs( N ) );
     conj:=LeftQuotient( conj, cN );
     return conj;
 end );
@@ -1686,10 +1691,12 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                 for i  in [ 1 .. Length( r ) ]  do
                     reps[ i ]:=PcElementByExponentsNC
                         ( K, K!.subspace.baseComplement, r[ i ] );
-                    exps[ i ]:=WordVector( GeneratorsOfGroup( preimage )
-                        { K!.subspace.needed }, One( preimage ), v[ i ] );
-                    conj[ i ]:=WordVector( preimage!.operators
-                        { K!.subspace.needed }, One( G ), v[ i ] );
+                    exps[ i ]:=LinearCombinationPcgs(
+		      GeneratorsOfGroup(preimage){K!.subspace.needed},
+		      v[ i ],One(preimage));
+                    conj[ i ]:=LinearCombinationPcgs( 
+		      preimage!.operators { K!.subspace.needed }, v[ i ],
+		      One(G));
                 od;
             
             # In the  construction case,  the complement  to <Q>  is a set of
@@ -1761,7 +1768,14 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                  ExponentsOfPcElement( N, LeftQuotient( h ^ Int( preimage ),
                          h ^ operator ) ) * N!.subspace.projection );
             opr:=function( k, l )
-                return ( v * k ) ^ ( 1 / Int( l ) mod p );
+                return 
+		#AH, jun3 2001: without the pcgs filtereing we might get
+		# extra kernel elements. I have no idea how this was
+		# originally avoided. This is rather a workaround than a fix
+		# -- the whole code should be rewritten cleanly.
+		PcElementByExponentsNC(N,ExponentsOfPcElement(N,
+		( v * k ) ^ ( 1 / Int( l ) mod p ) 
+		));
             end;
             xset:=ExternalSet( cyc, K, opr );
             

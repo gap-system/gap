@@ -30,6 +30,8 @@ Structures".
 Some technical details of general mappings are described in section~"General
 Mappings".
 
+\Declaration{IsTuple}
+
 %%  The general support for mappings is due to Thomas Breuer.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38,9 +40,12 @@ Mappings".
 \Declaration{GeneralMappingByElements}
 \Declaration{MappingByFunction}
 
+\Declaration{InverseGeneralMapping}
+
 \Declaration{CompositionMapping}
 \Declaration{CompositionMapping2}
-\Declaration{InverseGeneralMapping}
+\Declaration{IsCompositionMappingRep}
+\Declaration{ConstituentsCompositionMapping}
 
 \Declaration{ZeroMapping}
 \Declaration{IdentityMapping}
@@ -146,11 +151,17 @@ detail.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Linear Mappings}
 
+Also see Sections~"Mappings that Respect Multiplication" and~"Mappings that
+Respect Addition".
+
 \Declaration{RespectsScalarMultiplication}
 \Declaration{IsLeftModuleGeneralMapping}
 \Declaration{IsLinearMapping}
-\Declaration{KernelOfMultiplicativeGeneralMapping}
-\Declaration{CoKernelOfMultiplicativeGeneralMapping}
+
+See also `KernelOfMultiplicativeGeneralMapping'
+("KernelOfMultiplicativeGeneralMapping") and
+`CoKernelOfMultiplicativeGeneralMapping'
+("CoKernelOfMultiplicativeGeneralMapping").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Ring Homomorphisms}

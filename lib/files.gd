@@ -28,6 +28,12 @@ DeclareCategory(
 ##
 DirectoriesFamily := NewFamily( "DirectoriesFamily" );
 
+#############################################################################
+##
+#F  USER_HOME_EXPAND . . . . . . . . . . . . .  expand leading ~ in file name
+##  
+DeclareGlobalFunction("USER_HOME_EXPAND");
+
 
 #############################################################################
 ##
@@ -141,22 +147,28 @@ end );
 ##
 #F  DirectoriesPackageLibrary( <name> [,<path>] )
 ##
-##  takes  the name of a share  package and locates  the library functions
-##  of the share package.  The default is that the  library functions are in
-##  the subdirectory `lib' of the share package's home directory.  If this
-##  is not the case, then the  second  argument needs to   be present and
-##  specify  a string that is  a path name relative to  the home directory
-##  of  the share package.
+##  takes the string <name>, a name of a share package and returns a list  of
+##  directory  objects  for  the  sub-directory/ies  containing  the  library
+##  functions of the share package, up to one for each `pkg' sub-directory of
+##  a path in `GAP_ROOT_PATHS'. The default is that the library functions are
+##  in the subdirectory `lib' of the share package's home directory. If  this
+##  is not the case, then the second argument <path> needs to be present  and
+##  must be a string that is a path name relative to the  home  directory  of
+##  the share package with name <name>.
 BIND_GLOBAL( "DirectoriesPackageLibrary", function( arg )
     local   name,  path,  dirs,  dir,  tmp;
+
+    if IsEmpty(arg) or 2 < Length(arg) then
+        Error( "usage: DirectoriesPackageLibrary( <name> [,<path>] )\n" );
+    elif not ForAll(arg, IsString) then
+        Error( "string argument(s) expected\n" );
+    fi;
 
     name := arg[1];
     if 1 = Length(arg)  then
         path := "lib";
-    elif 2 = Length(arg)  then
-        path := arg[2];
     else
-        Error( "DirectoriesPackageLibrary( <name> [,<path>] )" );
+        path := arg[2];
     fi;
 
     if '\\' in name or ':' in name  then

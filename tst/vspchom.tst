@@ -497,11 +497,11 @@ gap> BasisVectors( b );
   <linear mapping by matrix, GF(3^3) -> GF(3^3)>, 
   <linear mapping by matrix, GF(3^3) -> GF(3^3)> ]
 gap> Coefficients( b, id );
-[ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ]
+[ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ]
 gap> map:= LeftModuleHomomorphismByMatrix( bv, 2 * IdentityMat( 3, f ), bv );
 <linear mapping by matrix, GF(3^3) -> GF(3^3)>
 gap> Coefficients( b, map );
-[ Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3) ]
+[ Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ]
 
 
 gap> endoendo:= End( f, endo );

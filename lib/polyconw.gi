@@ -44,6 +44,19 @@ end );
 ##  specific polynomials, are taken from a list computed by Richard Parker,
 ##  and have been checked using the {\GAP} library function `ConwayPol'.
 ##
+ 
+##  
+##  June, 11, 2001  (Frank Lübeck) All cases with  comments about "not
+##  veryfied" in the  list below are now checked  independently with a
+##  program  written  in  Magma  in combination  with  a  parallelized
+##  C-program.  We  also  add  a list  of  previously  unknown  Conway
+##  polynomials  which were  computed using  these programs.  For this
+##  more than 100 computers and many years of CPU-time were used!
+##  
+##  Most  of these  new  polynomials  could never  be  found with  the
+##  algorithm used  in `ConwayPol' below  (but that algorithm  is very
+##  good to find polynomials for GF(p^r) where r is a prime.
+##  
 InstallValue( CONWAYPOLYNOMIALS, [] );
 
 CONWAYPOLYNOMIALS[2] := [
@@ -1312,6 +1325,297 @@ CONWAYPOLYNOMIALS[97] := [
     [92,22],
     ];
 
+CONWAYPOLYNOMIALS[101]:=[];
+CONWAYPOLYNOMIALS[103]:=[];
+CONWAYPOLYNOMIALS[107]:=[];
+CONWAYPOLYNOMIALS[109]:=[];
+CONWAYPOLYNOMIALS[113]:=[];
+CONWAYPOLYNOMIALS[127]:=[];
+
+############################################################################
+##  
+##  New polynomials added by Frank Lübeck, also document the checks of
+##  polynomials given in the list above.
+##  
+
+# checked 2,42 Magma
+# checked 2,50 Magma
+CONWAYPOLYNOMIALS[2][52] := 
+[ 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0,
+1, 1, 1, 1]; # new, with Magma
+# checked 2,54 Magma
+CONWAYPOLYNOMIALS[2][56] :=
+[ 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0,
+0, 1, 0, 0, 0, 1, 0, 0, 1]; # new, with Magma
+# new, parallel, 2 days on 10 machines
+CONWAYPOLYNOMIALS[2][58] := 
+[1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1,
+1, 1, 0, 0, 1, 0, 1];
+# checked 2,60 Magma
+CONWAYPOLYNOMIALS[2][66] :=  # new, with Magma
+[ 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1,
+0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1]; 
+
+
+
+# confirmed 3,21 parallel
+# checked 3,30 parallel
+# checked 3,32 parallel
+CONWAYPOLYNOMIALS[3][34] := # new, parallel
+[2, 0, 0, 0, 2, 0, 2, 1, 0, 2, 0, 1, 2, 0, 2, 0, 2, 2, 1];
+CONWAYPOLYNOMIALS[3][36] := # new, with Magma
+[ 2, 1, 1, 1, 0, 2, 2, 0, 2, 1, 2, 2, 0, 2, 2, 0, 1, 1, 0, 0, 2, 1];
+# new, parallel (special, since 3^21 is wrong in Magma
+CONWAYPOLYNOMIALS[3][42] :=  
+[2, 2, 0, 2, 0, 1, 0, 0, 2, 1, 0, 2, 1, 1, 2, 1, 2, 1, 1, 1, 0, 0, 2, 1, 0,
+2, 2, 1, 0, 1];
+CONWAYPOLYNOMIALS[3][44] := # new, parallel, 3 days on 50 machines
+[2, 0, 1, 1, 2, 2, 1, 1, 0, 0, 1, 0, 1, 0, 2, 2, 0, 1, 1, 0, 2, 1, 1, 2];
+CONWAYPOLYNOMIALS[3][48] :=  # new, parallel
+[2, 0, 1, 2, 1, 0, 2, 0, 2, 0, 2, 2, 0, 2, 1, 0, 0, 1, 1, 1, 1, 2, 1, 0, 2,
+0, 2, 2, 0, 1, 0, 2];
+
+# checked 5,22 Magma
+# checked 5,24 Magma
+CONWAYPOLYNOMIALS[5][26] := # new, parallel, 2 days on >80 machines
+[2, 3, 4, 3, 1, 1, 3, 3, 2, 1, 4, 0, 2, 2, 0, 4];
+CONWAYPOLYNOMIALS[5][30] := # new, with Magma
+[ 2, 1, 1, 0, 1, 4, 3, 4, 2, 2, 0, 2, 3, 4, 4, 0, 4, 4, 0, 3, 0, 4];
+CONWAYPOLYNOMIALS[5][36] := # new, parallel, 16 hours on 10 machines
+[2, 1, 3, 1, 0, 4, 0, 2, 2, 0, 3, 0, 4, 1, 2, 3, 3, 1, 0, 2, 0, 1, 1, 0, 1];
+CONWAYPOLYNOMIALS[5][42] := # new, parallel, 34 hours on 9 machines 
+[2, 1, 2, 0, 2, 3, 3, 0, 1, 4, 2, 4, 2, 4, 2, 3, 3, 0, 0, 3, 0, 1, 0, 3, 3,
+4, 0, 4, 0, 2];
+
+# checked 7,18 Magma
+# new, parallel
+CONWAYPOLYNOMIALS[7][20] := [3, 1, 0, 3, 0, 3, 1, 3, 2, 5, 2, 6, 1];
+# new, 5 hours on 10 machines in parallel
+CONWAYPOLYNOMIALS[7][22] := [3, 4, 5, 5, 6, 4, 3, 2, 5, 3, 5, 6, 1];
+# new, parallel
+CONWAYPOLYNOMIALS[7][24] := [3, 3, 4, 6, 2, 2, 5, 4, 3, 0, 1, 2, 1, 5, 5, 6];
+CONWAYPOLYNOMIALS[7][30] := # new, parallel
+[3, 2, 5, 1, 0, 3, 2, 4, 2, 3, 3, 2, 5, 6, 3, 2, 1, 0, 4, 1, 4, 4, 1];
+
+# new, parallel
+CONWAYPOLYNOMIALS[11][16] := [2, 9, 10, 3, 5, 3, 1, 10, 1];
+# new, Magma
+CONWAYPOLYNOMIALS[11][18] := [ 2, 2, 8, 9, 3, 0, 1, 9, 3, 8, 10, 8, 3];
+# new, parallel, 3 days on >80 machines
+CONWAYPOLYNOMIALS[11][22] := [2, 4, 3, 6, 10, 10, 8, 4, 10, 4, 1, 10, 1];
+CONWAYPOLYNOMIALS[11][30] := # new, parallel, 10 hours on 10 machines
+[2, 3, 3, 0, 8, 10, 2, 1, 6, 0, 6, 9, 1, 10, 5, 0, 7, 8, 8, 2, 0, 10];
+
+# confirmed 13,14 parallel
+# new, 6 hours on 10 machines in parallel
+CONWAYPOLYNOMIALS[13][16] :=  [2, 6, 12, 9, 12, 2, 8, 12, 3];
+# new, parallel
+CONWAYPOLYNOMIALS[13][18] := [2, 9, 0, 6, 5, 3, 5, 9, 11, 11, 4, 10];
+# new, parallel
+CONWAYPOLYNOMIALS[13][20] := [2, 11, 8, 4, 0, 4, 7, 8, 7, 0, 9, 12, 1];
+# new, parallel, 8 hours on >80 machines
+CONWAYPOLYNOMIALS[13][30] := 
+[2, 0, 2, 4, 4, 4, 5, 4, 12, 4, 9, 5, 4, 6, 7, 11, 3, 11, 10, 1, 0, 0, 2];
+
+# checked 17,12 Magma
+# new, parallel
+CONWAYPOLYNOMIALS[17][18] := 
+[3, 9, 13, 13, 11, 9, 0, 1, 7, 16, 9, 0, 1];
+# new, parallel, 2 days on 80 machines 
+CONWAYPOLYNOMIALS[17][20] :=
+[3, 5, 2, 13, 1, 9, 14, 3, 13, 14, 16, 5, 1];
+# new, parallel, 2 days on 80 machines 
+CONWAYPOLYNOMIALS[17][24] := 
+[3, 14, 14, 6, 6, 14, 7, 15, 8, 2, 3, 2, 2, 6, 6, 3, 1];
+# new, parallel, 2 days on >80 machines
+CONWAYPOLYNOMIALS[17][30] := 
+[3, 14, 8, 0, 6, 12, 5, 12, 15, 1, 8, 16, 15, 14, 8, 13, 13, 3, 12, 0, 9, 14];
+
+# checked 19,12 Magma
+# checked 19,15 parallel (3 days on 10 machines)
+# new, parallel, 3 days on >80 machines
+CONWAYPOLYNOMIALS[19][24] := 
+[2, 8, 17, 8, 5, 12, 6, 0, 9, 15, 15, 6, 14, 0, 4, 6];
+
+# checked 23,12 Magma
+# new, parallel
+CONWAYPOLYNOMIALS[23][18] := 
+[5, 19, 3, 11, 0, 21, 16, 3, 18, 1, 2, 18, 1];
+
+# new, parallel
+CONWAYPOLYNOMIALS[23][14] := [5, 22, 1, 19, 18, 1, 16, 5, 1];
+# new, parallel, 3 days on 60-80 machines
+CONWAYPOLYNOMIALS[23][16] := [5, 17, 14, 1, 13, 16, 19, 19];
+
+# checked 29,10 Magma
+# checked 29,12 Magma
+# new, parallel
+CONWAYPOLYNOMIALS[29][18] := 
+[2, 14, 19, 16, 8, 10, 2, 26, 6, 1, 1, 24];
+
+# checked 31,12 Magma
+
+# checked 37,12 Magma
+
+# new, parallel
+CONWAYPOLYNOMIALS[41][10] := [6, 30, 20, 8, 31, 3]; 
+# new, parallel
+CONWAYPOLYNOMIALS[41][12] := [6, 27, 21, 24, 34, 13, 26];
+# new, GAP
+CONWAYPOLYNOMIALS[41][41] := [ 35, 40 ];
+
+# new, parallel
+CONWAYPOLYNOMIALS[47][10] := [5, 45, 45, 18, 14, 42, 1];
+# new, parallel
+CONWAYPOLYNOMIALS[47][12] := [5, 9, 14, 46, 12, 35, 40, 46];
+# new, GAP
+CONWAYPOLYNOMIALS[53][53] := [ 51, 52 ];
+# new, Magma
+CONWAYPOLYNOMIALS[59][10] := [ 2, 15, 39, 4, 25, 28, 1];
+# new, parallel
+CONWAYPOLYNOMIALS[59][12] := [2, 1, 8, 38, 21, 51, 25, 39];
+# 12 days in parallel on 40-60 machines
+CONWAYPOLYNOMIALS[67][18] := [ 2, 13, 59, 6, 51, 29, 28, 55, 33, 18, 52, 63, 1];
+# new, Magma
+CONWAYPOLYNOMIALS[71][10] := [7, 40, 1, 26, 17, 53];
+# new, parallel
+CONWAYPOLYNOMIALS[71][12] := [7, 23, 58, 21, 55, 29, 28, 12];
+
+# new, Magma
+CONWAYPOLYNOMIALS[73][12] := [5, 25, 29, 46, 20, 26, 52, 69, 1];
+# new, GAP (most of them easy to compute, may be relevant for some 
+# sporadic groups
+CONWAYPOLYNOMIALS[101][1] := [ 99 ];
+CONWAYPOLYNOMIALS[101][2] := [ 2, 97 ];
+
+CONWAYPOLYNOMIALS[103][1] := [ 98 ];
+CONWAYPOLYNOMIALS[103][2] := [ 5, 102 ];
+
+CONWAYPOLYNOMIALS[107][1] := [ 105 ];
+CONWAYPOLYNOMIALS[107][2] := [ 2, 103 ];
+
+CONWAYPOLYNOMIALS[109][1] := [ 103 ];
+CONWAYPOLYNOMIALS[109][2] := [ 6, 108 ];
+CONWAYPOLYNOMIALS[109][3] := [ 103, 1 ];
+CONWAYPOLYNOMIALS[109][4] := [ 6, 98, 11 ];
+CONWAYPOLYNOMIALS[109][5] := [ 103, 4 ];
+CONWAYPOLYNOMIALS[109][6] := [ 6, 66, 102, 107 ];
+
+CONWAYPOLYNOMIALS[113][1] := [ 110 ];
+CONWAYPOLYNOMIALS[113][2] := [ 3, 101 ];
+
+CONWAYPOLYNOMIALS[127][1] := [ 124 ];
+CONWAYPOLYNOMIALS[127][2] := [ 3, 126 ];
+CONWAYPOLYNOMIALS[127][3] := [ 124, 3 ];
+CONWAYPOLYNOMIALS[127][4] := [ 3, 97, 2 ];
+CONWAYPOLYNOMIALS[127][5] := [ 124, 7 ];
+CONWAYPOLYNOMIALS[127][6] := [ 3, 82, 115, 84 ];
+
+##  a utility function, checks consistency of a polynomial with Conway
+##  polynomials of proper subfield. (But  doesn't check that it is the
+##  "smallest" such polynomial  in the ordering used  to define Conway
+##  polynomials.
+BindGlobal( "IsConsistentPolynomial", function( pol )
+  local n, p, ps, x, null, f;
+  n := DegreeOfLaurentPolynomial(pol);
+  p := Characteristic(pol);
+  ps := Set(FactorsInt(n));
+  x := IndeterminateOfLaurentPolynomial(pol);
+  null := 0*pol;
+  f := function(k)
+    local kpol;
+    kpol := ConwayPolynomial(p, k);
+    return Value(kpol, PowerMod(x, (p^n-1)/(p^k-1), pol)) mod pol = null;
+  end;
+  
+  if IsPrimitivePolynomial(GF(p), pol) then
+    return ForAll(ps, p-> f(n/p));
+  else
+    return false;
+  fi;
+end);
+
+BRENT_FACTORS_LIST := "not loaded, call `AddBrentFactorList();'";
+AddBrentFactorList := function(    )
+  local str, get, comm, res, n, p, z, pos;
+  Print(
+  "Copying many prime factors of numbers a^n+1 / a^n-1 from Richard Brent's\n",
+  "list `factors.gz' (in \n",
+  "ftp://ftp.comlab.ox.ac.uk/pub/Documents/techpapers/Richard.Brent/factors/factors.gz\n");
+  str := "";
+  get := OutputTextString(str, false);
+  comm := "wget -q ftp://ftp.comlab.ox.ac.uk/pub/Documents/techpapers/Richard.Brent/factors/factors.gz -O - | gzip -dc ";
+  Process(DirectoryCurrent(), Filename(DirectoriesSystemPrograms(),"sh"),
+          InputTextUser(), get, ["-c", comm]);
+  res := [[],[]];
+  n := 0;
+  p := Position(str, '\n', 0);
+  while p <> fail do
+    z := str{[n+1..p-1]};
+    pos := Position(z, '-');
+    if pos = fail then
+      pos := Position(z, '+');
+    fi;
+    if pos <> fail then
+      Add(res[1], NormalizedWhitespace(z{[1..pos]}));
+      Add(res[2], Int(NormalizedWhitespace(z{[pos+2..Length(z)]})));
+    fi;
+    n := p;
+    p := Position(str, '\n', n);
+  od; 
+  for p in res[2] do 
+    AddSet(Primes2,p);
+  od;  
+  SortParallel(res[1], res[2]);
+  BRENT_FACTORS_LIST := res;
+end;
+
+##  A consistency check for the data, loading AddBrentFactorList() is useful
+##  for the primitivity tests.
+##  
+##  cp:=CONWAYPOLYNOMIALS;;
+##  test := [];
+##  for i in [1..Length(cp)] do 
+##    if IsBound(cp[i]) then
+##      for j in [1..Length(cp[i])] do 
+##        if IsBound(cp[i][j]) then
+##          a := IsConsistentPolynomial(ConwayPolynomial(i,j));
+##          Print(i,"   ",j,"   ", a,"\n");
+##          Add(test, [i, j, a]);
+##        fi;
+##      od;
+##    fi;
+##  od;
+
+##  number of polynomials for GF(p^n) compatible with Conway polynomials for 
+##  all proper subfields.
+BindGlobal("NrCompatiblePolynomials", function(p, n)
+  local ps, lcm;
+  ps := Set(Factors(n));
+  lcm := Lcm(List(ps, r-> p^(n/r)-1));
+  return (p^n-1)/lcm;
+end);
+
+##  list of all cases wich less than 100*10^9 compatible polynomials, sorted
+##  w.r.t. this number
+ConwayCandidates := function()
+  local cand, p, i;
+  cand := [];;
+  for p in Primes{[1..31]} do
+    for i in [1..200] do 
+      if NrCompatiblePolynomials(p,i) < 100000000000 then
+        Add(cand, [NrCompatiblePolynomials(p,i), p, i]);
+      fi;
+    od;
+  od;
+  Sort(cand);
+  cand := Filtered(cand, a-> not IsBound(CONWAYPOLYNOMIALS[a[2]][a[3]]));
+  return cand;
+end;
+
+##  
+##  
+####################   end of list of new polynomials   ####################
 
 ############################################################################
 ##

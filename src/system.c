@@ -86,6 +86,10 @@ extern int    fputs ( const char *, FILE * );
 # include "macintr.h"
 #endif
 
+#if SYS_DARWIN
+#define task_self mach_task_self
+#endif
+
 /****************************************************************************
 **
 
@@ -118,12 +122,12 @@ const Char * SyArchitecture = SYS_ARCH;
 
 /****************************************************************************
 **
-*V  SyBanner  . . . . . . . . . . . . . . . . . . . . . . . . surpress banner
+*V  SyBanner  . . . . . . . . . . . . . . . . . . . . . . . . suppress banner
 **
 **  'SyBanner' determines whether GAP should print the banner.
 **
 **  Per default it  is true,  i.e.,  GAP prints the  nice  banner.  It can be
-**  changed by the '-b' option to have GAP surpress the banner.
+**  changed by the '-b' option to have GAP suppress the banner.
 **
 **  It is copied into the GAP variable 'BANNER', which  is used  in 'init.g'.
 **
@@ -228,38 +232,25 @@ Int SyDebugLoading = 0;
 
 /****************************************************************************
 **
-*V  SyGapRootPath . . . . . . . . . . . . . . . . . . . . . . . . . root path
-**
-**  'SyGapRootPath' conatins the names of the directories where the GAP files
-**  are located.
-**
-**  This is  per default the current  directory.  It  is usually changed with
-**  the '-l' option in the script that starts GAP.
-**
-**  Is copied    into  the  GAP   variable  called    'GAPROOT' and  used  by
-**  'ReadGapRoot'.  This  is also  used in  'GAPROOT/lib/init.g' to find  the
-**  group and table library directories.
-**
-**  It must end with the pathname seperator, eg. if 'init.g' is the name of a
-**  library   file 'strcat( SyGapRootPath,  "lib/init.g" );'  must be a valid
-**  filename.  Further neccessary transformation of  the filename are done in
-**  'SyOpen'.
-**
-**  Put in this package because the command line processing takes place here.
-*/
-Char SyGapRootPath [MAX_GAP_DIRS*256];
-
-
-/****************************************************************************
-**
 *V  SyGapRootPaths  . . . . . . . . . . . . . . . . . . . array of root paths
 **
 **  'SyGapRootPaths' conatins the  names   of the directories where   the GAP
-**  files are located, it is derived from 'SyGapRootPath'.
+**  files are located.
+**
+**  It is modified by the command line option -l.
+**
+**  It  is copied into the GAP  variable  called 'GAP_ROOT_PATHS' and used by
+**  'SyFindGapRootFile'.
+**
+**  Each entry must end  with the pathname seperator, eg.  if 'init.g' is the
+**  name of a library file 'strcat( SyGapRootPaths[i], "lib/init.g" );'  must
+**  be a valid filename.
 **
 **  Put in this package because the command line processing takes place here.
+**
+#define MAX_GAP_DIRS 128
 */
-Char SyGapRootPaths [MAX_GAP_DIRS] [256];
+Char SyGapRootPaths [MAX_GAP_DIRS] [512];
 
 
 /****************************************************************************
@@ -277,13 +268,21 @@ Char SyGapRootPaths [MAX_GAP_DIRS] [256];
 **
 **  For UNIX this list contains 'LIBNAME/init.g' and '$HOME/.gaprc'.
 */
-Char SyInitfiles [16] [256];
+Char SyInitfiles [32] [512];
 
 /****************************************************************************
 **
 *V  SyGapRCFilename . . . . . . . . . . . . . . . filename of the gaprc file
 */
-Char SyGapRCFilename [256];
+Char SyGapRCFilename [512];
+
+/****************************************************************************
+**
+*V  SyHasUserHome . . . . . . . . . .  true if user has HOME in environment
+*V  SyUserHome . . . . . . . . . . . . .  path of users home (it is exists)
+*/
+Int SyHasUserHome = 0;
+Char SyUserHome [256];
 
 /****************************************************************************
 **
@@ -367,14 +366,14 @@ UInt SyNrRowsLocked = 0;
 
 /****************************************************************************
 **
-*V  SyQuiet . . . . . . . . . . . . . . . . . . . . . . . . . surpress prompt
+*V  SyQuiet . . . . . . . . . . . . . . . . . . . . . . . . . suppress prompt
 **
-**  'SyQuit' determines whether GAP should print the prompt and  the  banner.
+**  'SyQuiet' determines whether GAP should print the prompt and the  banner.
 **
 **  Per default its false, i.e. GAP prints the prompt and  the  nice  banner.
 **  It can be changed by the '-q' option to have GAP operate in silent  mode.
 **
-**  It is used by the functions in 'gap.c' to surpress printing the  prompts.
+**  It is used by the functions in 'gap.c' to suppress printing the  prompts.
 **  Is also copied into the GAP variable 'QUIET' which is used  in  'init.g'.
 **
 **  Put in this package because the command line processing takes place here.
@@ -411,16 +410,34 @@ UInt SyInitializing = 0;
 *V  SyStorMax . . . . . . . . . . . . . . . . . . . maximal size of workspace
 **
 **  'SyStorMax' is the maximal size of the workspace allocated by Gasman.
+**  in kilobytes
 **
-**  This is per default 128 MByte,  which is often a  reasonable value.  It is
+**  This is per default 256 MByte,  which is often a  reasonable value.  It is
 **  usually changed with the '-o' option in the script that starts GAP.
 **
 **  This is used in the function 'SyAllocBags'below.
 **
 **  Put in this package because the command line processing takes place here.
 */
-Int SyStorMax = 128 * 1024 * 1024L;
+Int SyStorMax = 256 * 1024L;
 Int SyStorOverrun = 0;
+
+/****************************************************************************
+**
+*V  SyStorKill . . . . . . . . . . . . . . . . . . maximal size of workspace
+**
+**  'SyStorKill' is really the maximal size of the workspace allocated by 
+**  Gasman. GAP exists before trying to allocate more than this amount
+**  of memory.
+**
+**  This is per default disabled (i.e. = 0).
+**  Can be changed with the '-K' option in the script that starts GAP.
+**
+**  This is used in the function 'SyAllocBags'below.
+**
+**  Put in this package because the command line processing takes place here.
+*/
+Int SyStorKill = 0L;
 
 
 /****************************************************************************
@@ -429,7 +446,7 @@ Int SyStorOverrun = 0;
 **
 **  'SyStorMin' is the size of the initial workspace allocated by Gasman.
 **
-**  This is per default  8 Megabyte,  which  is  often  a  reasonable  value.
+**  This is per default  24 Megabyte,  which  is  often  a  reasonable  value.
 **  It is usually changed with the '-m' option in the script that starts GAP.
 **
 **  This value is used in the function 'SyAllocBags' below.
@@ -1002,10 +1019,10 @@ void SyMsgsBags (
 
 /****************************************************************************
 **
-*F  SyAllocBags( <size>, <need> ) . . . allocate memory block of <size> bytes
+*F  SyAllocBags( <size>, <need> ) . . . allocate memory block of <size> kilobytes
 **
 **  'SyAllocBags' is called from Gasman to get new storage from the operating
-**  system.  <size> is the needed amount in bytes (it is always a multiple of
+**  system.  <size> is the needed amount in kilobytes (it is always a multiple of
 **  512 KByte),  and <need> tells 'SyAllocBags' whether  Gasman  really needs
 **  the storage or only wants it to have a reasonable amount of free storage.
 **
@@ -1049,7 +1066,7 @@ void SyMsgsBags (
 extern  char * sbrk ( int );
 #endif
 
-UInt * * * syWorkspace;
+UInt * * * syWorkspace = 0;
 UInt       syWorksize;
 
 
@@ -1058,44 +1075,79 @@ UInt * * * SyAllocBags (
     UInt                need )
 {
     UInt * * *          ret;
+    UInt adjust = 0;
 
     /* force alignment on first call                                       */
     if ( syWorkspace == (UInt***)0 ) {
 #ifdef SYS_IS_64_BIT
-        syWorkspace = (UInt***)sbrk( 8 - (Int)sbrk(0) % 8 );
+        syWorkspace = (UInt***)sbrk( 8 - (UInt)sbrk(0) % 8 );
 #else
-        syWorkspace = (UInt***)sbrk( 4 - (int)sbrk(0) % 4 );
+        syWorkspace = (UInt***)sbrk( 4 - (UInt)sbrk(0) % 4 );
 #endif
         syWorkspace = (UInt***)sbrk( 0 );
     }
 
     /* get the storage, but only if we stay within the bounds              */
     /* if ( (0 < size && syWorksize + size <= SyStorMax) */
-    if ( (0 < size )
-      || (size < 0 && SyStorMin <= syWorksize + size) ) {
-        ret = (UInt***)sbrk( (int)size );
-
-       /* set the overrun flag if we became larger than SyStorMax */
-       if ( syWorksize + size > SyStorMax)  {
-	 SyStorOverrun = -1;
-	 SyStorMax=syWorksize+size+1; /* new maximum */
-	 InterruptExecStat(); /* interrupt at the next possible point */
-       }
+    /* first check if we would get above SyStorKill, if yes exit! */
+    if ( SyStorKill != 0 && 0 < size && SyStorKill < syWorksize + size ) {
+        fputs("gap: will not extend workspace above -K limit, bye!\n",stderr);
+        SyExit( 2 );
+    }
+    if (0 < size )
+      {
+#ifndef SYS_IS_64_BIT
+	while (size > 1024*1024)
+	  {
+	    ret = (UInt ***)sbrk(1024*1024*1024);
+	    if (ret != (UInt ***)-1  && ret != (UInt***)((char*)syWorkspace + syWorksize*1024))
+	      {
+		sbrk(-1024*1024*1024);
+		ret = (UInt ***)-1;
+	      }
+	    if (ret == (UInt ***)-1)
+	      break;
+	    size -= 1024*1024;
+	    syWorksize += 1024*1024;
+	    adjust++;
+	  }
+#endif
+	ret = (UInt ***)sbrk(size*1024);
+	if (ret != (UInt ***)-1  && ret != (UInt***)((char*)syWorkspace + syWorksize*1024))
+	  {
+	    sbrk(-size*1024);
+	    ret = (UInt ***)-1;
+	  }
+	
+      }
+    else if  (size < 0 && SyStorMin <= syWorksize + size)  {
+#ifndef SYS_IS_64_BIT
+      while (size < -1024*1024)
+	{
+	  ret = (UInt ***)sbrk(-1024*1024*1024);
+	  if (ret == (UInt ***)-1)
+	    break;
+	  size += 1024*1024;
+	  syWorksize -= 1024*1024;
+	}
+#endif
+	ret = (UInt ***)sbrk(size*1024);
     }
     else {
-        ret = (UInt***)-1;
+      ret = (UInt***)-1;
     }
+    
 
-    /* the allocation failed if the new area was not adjacent to the old   */
-    if ( ret != (UInt***)-1
-      && ret != (UInt***)((char*)syWorkspace + syWorksize) ) {
-        sbrk( (int)-size );
-        ret = (UInt***)-1;
-    }
 
     /* update the size info                                                */
-    if ( ret == (UInt***)((char*)syWorkspace + syWorksize) ) {
+    if ( ret != (UInt***)-1 ) {
         syWorksize += size;
+       /* set the overrun flag if we became larger than SyStorMax */
+       if ( syWorksize  > SyStorMax)  {
+	 SyStorOverrun = -1;
+	 SyStorMax=syWorksize+1; /* new maximum */
+	 InterruptExecStat(); /* interrupt at the next possible point */
+       }
     }
 
     /* test if the allocation failed                                       */
@@ -1108,7 +1160,7 @@ UInt * * * SyAllocBags (
     if ( ret == (UInt***)-1 )
         return 0;
     else
-        return ret;
+        return (UInt***)(((Char *)ret) - 1024*1024*1024*adjust);
 
 }
 
@@ -1135,6 +1187,7 @@ UInt * * * SyAllocBags (
     UInt * * *          ret;
     vm_address_t        adr;
 
+    size = size*1024;
     /* check that <size> is divisible by <vm_page_size>                    */
     if ( size % vm_page_size != 0 ) {
         fputs( "gap: memory block size is not a multiple of vm_page_size",
@@ -1222,6 +1275,7 @@ char * syWorkspace;
 char * SyGetmem ( size )
     long                size;
 {
+  size = size*1024;
     /* get the memory                                                      */
     /*N 1993/05/29 martin try to make it possible to extend the arena      */
     if ( syWorkspace == 0 ) {
@@ -1259,6 +1313,8 @@ UInt * * * SyAllocBags (
 	long *p;
 	long div, rem;
 	char * q;
+
+	size = size*1024;
 	
     if ( (0 < size && (syWorksize + size <= SyStorMax || 
     				   (need && syWorksize + size <= SyStorLimit)))
@@ -1417,8 +1473,13 @@ void            SyExit ( ret )
 **
 *F  SySetGapRootPath( <string> )  . . . . . . . . .  set the root directories
 **
-**  'SySetGapRootPath' takes a  string and create  a list of root directories
+**  'SySetGapRootPath' takes a string and modifies a list of root directories
 **  in 'SyGapRootPaths'.
+**
+**  A  leading semicolon in  <string> means  that the list  of directories in
+**  <string> is  appended  to the  existing list  of  root paths.  A trailing
+**  semicolon means they are prepended.   If there is  no leading or trailing
+**  semicolon, then the root paths are overwritten.
 */
 
 
@@ -1433,21 +1494,56 @@ void SySetGapRootPath( Char * string )
 {
     Char *          p;
     Char *          q;
+    Int             i;
     Int             n;
 
     /* set string to a default value if unset                              */
     if ( string == 0 ) {
         string = "./";
     }
+ 
+    /* 
+    ** check if we append, prepend or overwrite. 
+    */ 
+    if( string[0] == ';' ) {
+        /* Count the number of root directories already present.           */
+         n = 0; while( SyGapRootPaths[n][0] != '\0' ) n++;
 
-    /* store the string in 'SyGapRootPath'                                 */
-    SyGapRootPath[0] = '\0';
-    SyStrncat( SyGapRootPath, string, sizeof(SyGapRootPath)-2 );
+         /* Skip leading semicolon.                                        */
+         string++;
+
+    }
+    else if( string[ SyStrlen(string) - 1 ] == ';' ) {
+        /* Count the number of directories in 'string'.                    */
+        n = 0; p = string; while( *p ) if( *p++ == ';' ) n++;
+
+        /* Find last root path.                                            */
+        for( i = 0; i < MAX_GAP_DIRS; i++ ) 
+            if( SyGapRootPaths[i][0] == '\0' ) break;
+        i--;
+
+        /* Move existing root paths to the back                            */
+        if( i + n >= MAX_GAP_DIRS ) return;
+        while( i >= 0 ) {
+            SyGapRootPaths[i+n][0] = '\0';
+            SyStrncat( SyGapRootPaths[i+n], SyGapRootPaths[i], 254 );
+            i--;
+        }
+
+        n = 0;
+
+    }
+    else {
+        /* Make sure to wipe out all possibly existing root paths          */
+        for( i = 0; i < MAX_GAP_DIRS; i++ ) SyGapRootPaths[i][0] = '\0';
+        n = 0;
+    }
 
     /* unpack the argument                                                 */
-    p = SyGapRootPath;
-    n = 0;
+    p = string;
     while ( *p ) {
+        if( n >= MAX_GAP_DIRS ) return;
+
         q = SyGapRootPaths[n];
         while ( *p && *p != ';' ) {
             *q = *p++;
@@ -1599,7 +1695,6 @@ void InitSystem (
     UInt                gaprc = 1;      /* read the .gaprc file            */
     Char *              ptr;            /* pointer to the pre'malloc'ated  */
     Char *              ptr1;           /* more pre'malloc'ated  */
-    Char *              gapRoot = 0;    /* gap root directory              */
     UInt                i;              /* loop variable                   */
 #if SYS_MAC_MWC
 	KeyMap				theKeys;
@@ -1816,6 +1911,7 @@ void InitSystem (
 
     SySystemInitFile[0] = '\0';
     SyStrncat( SySystemInitFile, "lib/init.g", 10 );
+    SySetGapRootPath( "./" );
 
     /* scan the command line for options                                   */
     while ( argc > 1 && argv[1][0] == '-' ) {
@@ -1920,6 +2016,9 @@ void InitSystem (
             if ( argv[2][SyStrlen(argv[2])-1] == 'm'
               || argv[2][SyStrlen(argv[2])-1] == 'M' )
                 gPrintBufferSize = gPrintBufferSize * 1024 * 1024;
+            if ( argv[2][SyStrlen(argv[2])-1] == 'g'
+              || argv[2][SyStrlen(argv[2])-1] == 'G' )
+                gPrintBufferSize = gPrintBufferSize * 1024* 1024 * 1024;
             ++argv; --argc;
             break;
 #endif
@@ -1951,6 +2050,9 @@ void InitSystem (
             if ( argv[2][SyStrlen(argv[2])-1] == 'm'
               || argv[2][SyStrlen(argv[2])-1] == 'M' )
                 gMaxLogSize = gMaxLogSize * 1024 * 1024;
+            if ( argv[2][SyStrlen(argv[2])-1] == 'g'
+              || argv[2][SyStrlen(argv[2])-1] == 'G' )
+                gMaxLogSize = gMaxLogSize * 1024*1024 * 1024;
             ++argv; --argc;
             break;
 #endif
@@ -1980,6 +2082,9 @@ void InitSystem (
             if ( argv[2][SyStrlen(argv[2])-1] == 'm'
               || argv[2][SyStrlen(argv[2])-1] == 'M' )
                 pre = pre * 1024 * 1024;
+            if ( argv[2][SyStrlen(argv[2])-1] == 'g'
+              || argv[2][SyStrlen(argv[2])-1] == 'G' )
+                pre = pre * 1024 * 1024 * 1024;
             ++argv; --argc;
             break;
 
@@ -2003,6 +2108,9 @@ void InitSystem (
             if ( argv[2][SyStrlen(argv[2])-1] == 'm'
               || argv[2][SyStrlen(argv[2])-1] == 'M' )
                 SyCacheSize = SyCacheSize * 1024 * 1024;
+            if ( argv[2][SyStrlen(argv[2])-1] == 'g'
+              || argv[2][SyStrlen(argv[2])-1] == 'G' )
+                SyCacheSize = SyCacheSize * 1024* 1024 * 1024;
             ++argv; --argc;
             break;
 
@@ -2047,7 +2155,9 @@ void InitSystem (
                 FPUTS_TO_STDERR("gap: option '-l' must have an argument.\n");
                 goto usage;
             }
-            gapRoot = argv[2];
+            /* set the library path                                        */
+            SySetGapRootPath( argv[2] );
+
             ++argv; --argc;
             break;
 
@@ -2061,10 +2171,16 @@ void InitSystem (
             SyStorMin = atoi(argv[2]);
             if ( argv[2][SyStrlen(argv[2])-1] == 'k'
               || argv[2][SyStrlen(argv[2])-1] == 'K' )
-                SyStorMin = SyStorMin * 1024;
-            if ( argv[2][SyStrlen(argv[2])-1] == 'm'
+	      ;
+            else if ( argv[2][SyStrlen(argv[2])-1] == 'm'
               || argv[2][SyStrlen(argv[2])-1] == 'M' )
-                SyStorMin = SyStorMin * 1024 * 1024;
+                SyStorMin *=  1024;
+            else if ( argv[2][SyStrlen(argv[2])-1] == 'g'
+              || argv[2][SyStrlen(argv[2])-1] == 'G' )
+                SyStorMin *=  1024*1024;
+	    else
+                SyStorMin /=  1024;
+	      
             ++argv; --argc;
             break;
 
@@ -2084,13 +2200,39 @@ void InitSystem (
             SyStorMax = atoi(argv[2]);
             if ( argv[2][SyStrlen(argv[2])-1] == 'k'
               || argv[2][SyStrlen(argv[2])-1] == 'K' )
-                SyStorMax = SyStorMax * 1024;
-            if ( argv[2][SyStrlen(argv[2])-1] == 'm'
+	      ;
+            else if ( argv[2][SyStrlen(argv[2])-1] == 'm'
               || argv[2][SyStrlen(argv[2])-1] == 'M' )
-                SyStorMax = SyStorMax * 1024 * 1024;
+                SyStorMax *=  1024;
+            else if ( argv[2][SyStrlen(argv[2])-1] == 'g'
+              || argv[2][SyStrlen(argv[2])-1] == 'G' )
+                SyStorMax *=  1024 * 1024;
+	    else
+	      SyStorMax /= 1024;
             ++argv; --argc;
             break;
 
+
+        /* '-K <memory>', set the value of 'SyStorKill'                  */
+        case 'K':
+            if ( argc < 3 ) {
+                FPUTS_TO_STDERR("gap: option '-K' must have an argument.\n");
+                goto usage;
+            }
+            SyStorKill = atoi(argv[2]);
+            if ( argv[2][SyStrlen(argv[2])-1] == 'k'
+              || argv[2][SyStrlen(argv[2])-1] == 'K' )
+	      ;
+            else if ( argv[2][SyStrlen(argv[2])-1] == 'm'
+              || argv[2][SyStrlen(argv[2])-1] == 'M' )
+                SyStorKill *=  1024;
+            else if ( argv[2][SyStrlen(argv[2])-1] == 'g'
+              || argv[2][SyStrlen(argv[2])-1] == 'G' )
+                SyStorKill *=  1024*1024;
+	    else
+	      SyStorKill /= 1024;
+            ++argv; --argc;
+            break;
 
 
         /* '-p', start GAP package mode for output                         */
@@ -2183,9 +2325,6 @@ void InitSystem (
         SyCheckCompletionCrcRead = 0;
     }
 
-    /* set the library path                                                */
-    SySetGapRootPath(gapRoot);
-
     /* when running in package mode set ctrl-d and line editing            */
     if ( SyWindow ) {
         SyLineEdit   = 1;
@@ -2271,6 +2410,14 @@ void InitSystem (
         sySetGapRCFile();
     }
 
+#if HAVE_DOTGAPRC || HAVE_GAPRC
+    /* the users home directory                                            */
+    if ( getenv("HOME") != 0 ) {
+        SyStrncat(SyUserHome, getenv("HOME"), sizeof(SyUserHome)-1);
+        SyHasUserHome = 1;
+    }
+#endif
+
     /* use the files from the command line                                 */
     for ( i = 0;  i < sizeof(SyInitfiles)/sizeof(SyInitfiles[0]);  i++ ) {
         if ( SyInitfiles[i][0] == '\0' )
@@ -2332,17 +2479,17 @@ void InitSystem (
     /* print a usage message                                               */
 usage:
  FPUTS_TO_STDERR("usage: gap [OPTIONS] [FILES]\n");
- FPUTS_TO_STDERR("       run the Groups, Algorithms and Programming system,\n");
+ FPUTS_TO_STDERR("       run the Groups, Algorithms and Programming system, Version 4.dev,\n");
  FPUTS_TO_STDERR("       use '-h' option to get help.\n");
  FPUTS_TO_STDERR("\n");
  SyExit( 1 );
   
 fullusage:
  FPUTS_TO_STDERR("usage: gap [OPTIONS] [FILES]\n");
- FPUTS_TO_STDERR("       run the Groups, Algorithms and Programming system.\n");
+ FPUTS_TO_STDERR("       run the Groups, Algorithms and Programming system, Version 4.dev.\n");
  FPUTS_TO_STDERR("\n");
 
- FPUTS_TO_STDERR("  -b          toggle banner supression\n");
+ FPUTS_TO_STDERR("  -b          toggle banner suppression\n");
  FPUTS_TO_STDERR("  -q          toggle quiet mode\n");
  FPUTS_TO_STDERR("  -e          toggle quitting on <ctr>-D\n");
  FPUTS_TO_STDERR("  -f          force line editing\n");
@@ -2354,19 +2501,21 @@ fullusage:
 #endif
 
  FPUTS_TO_STDERR("\n");
- FPUTS_TO_STDERR("  -g          toggle GASMAN messages\n");
+ FPUTS_TO_STDERR("  -g          show GASMAN messages (full garbage collections)\n");
+ FPUTS_TO_STDERR("  -g -g       show GASMAN messages (all garbage collections)\n");
  FPUTS_TO_STDERR("  -m <mem>    set the initial workspace size\n");
- FPUTS_TO_STDERR("  -o <mem>    set the maximal workspace size\n");
+ FPUTS_TO_STDERR("  -o <mem>    set hint for maximal workspace size (GAP may allocate more)\n");
+ FPUTS_TO_STDERR("  -K <mem>    set maximal workspace size (GAP never allocates more)\n");
  FPUTS_TO_STDERR("  -c <mem>    set the cache size value\n");
  FPUTS_TO_STDERR("  -a <mem>    set amount to pre-malloc-ate\n");
- FPUTS_TO_STDERR("              postfix 'k' = *1024, 'm' = *1024*1024\n");
+ FPUTS_TO_STDERR("              postfix 'k' = *1024, 'm' = *1024*1024, 'g' = *1024*1024*1024\n");
 
  FPUTS_TO_STDERR("\n");
  FPUTS_TO_STDERR("  -l <paths>  set the GAP root paths\n");
  FPUTS_TO_STDERR("  -r          toggle reading of the '.gaprc' file \n");
  FPUTS_TO_STDERR("  -A          toggle autoloading of share packages\n");
  FPUTS_TO_STDERR("  -B <name>   current architecture\n");
- FPUTS_TO_STDERR("  -D          toggle debuging the loading of library files\n");
+ FPUTS_TO_STDERR("  -D          toggle debugging the loading of library files\n");
  FPUTS_TO_STDERR("  -M          toggle loading of compiled modules\n");
  FPUTS_TO_STDERR("  -N          toggle check for completion files\n");
  FPUTS_TO_STDERR("  -T          toggle break loop\n");

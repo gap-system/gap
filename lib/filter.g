@@ -285,5 +285,15 @@ BIND_GLOBAL("NICE_FLAGS",QUO_INT(SUM_FLAGS,10));
 
 #############################################################################
 ##
+#V  CANONICAL_BASIS_FLAGS
+##
+##  is the incremental rank used for `Basis' methods that delegate to
+##  `CanonicalBasis'.
+##
+BIND_GLOBAL( "CANONICAL_BASIS_FLAGS", 2 * NICE_FLAGS );
+
+
+#############################################################################
+##
 #E
 

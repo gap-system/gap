@@ -407,10 +407,10 @@ InstallTrueMethod( IsMatrixModule, IsFullMatrixModule );
 #A  DimensionOfVectors( <M> ) . . . . . . . . . .  for row and matrix modules
 ##
 ##  For a left module <M> that consists of row vectors (see~"IsRowModule"),
-##  `DimensionOfVectors' returns the length of each row vector in <M>.
+##  `DimensionOfVectors' returns the common length of all row vectors in <M>.
 ##  For a left module <M> that consists of matrices (see~"IsMatrixModule"),
-##  `DimensionOfVectors' returns the list of dimensions (see~"DimensionsMat")
-##  of each matrix in <M>.
+##  `DimensionOfVectors' returns the common matrix dimensions
+##  (see~"DimensionsMat") of all matrices in <M>.
 ##
 DeclareAttribute( "DimensionOfVectors", IsFreeLeftModule );
 

@@ -258,7 +258,7 @@ InstallTrueMethod( IsFinite, IsHomogeneousList and IsInternalRep );
 ##  but also non-homogeneous lists may be sorted
 ##  (see~"Comparison Operations for Elements").
 ##
-DeclareProperty( "IsSortedList", IsHomogeneousList);
+DeclareProperty( "IsSortedList", IsList);
 
 
 #############################################################################
@@ -285,8 +285,8 @@ DeclareProperty( "IsSortedList", IsHomogeneousList);
 ##  are sorted but not strictly sorted.)
 ##
 
-#DeclareProperty( "IsSSortedList", IsHomogeneousList);
-DeclarePropertyKernel( "IsSSortedList", IsHomogeneousList, IS_SSORT_LIST );
+#DeclareProperty( "IsSSortedList", IsList);
+DeclarePropertyKernel( "IsSSortedList", IsList, IS_SSORT_LIST );
 DeclareSynonym( "IsSet", IsSSortedList );
 
 InstallTrueMethod( IsSortedList, IsSSortedList );
@@ -467,10 +467,30 @@ DeclareOperation( "PositionBound", [ IsList ] );
 ##
 ##  returns the smallest index in the list <list> at which a sublist equal to
 ##  <sub> starts.
-##  If the substring does not occur the operation returns `fail'.
+##  If <sub> does not occur the operation returns `fail'.
 ##  The second version starts searching *after* position <from>.
 ##
+##  To determine whether <sub> matches <list> at a  particular position, use 
+##  `IsMatchingSublist' instead (see "IsMatchingSublist").
+##
 DeclareOperation( "PositionSublist", [ IsList,IsList,IS_INT ] );
+
+#############################################################################
+##
+#O  IsMatchingSublist( <list>, <sub> )
+#O  IsMatchingSublist( <list>, <sub>, <at> )
+##
+##  returns `true' if <sub> matches a sublist of <list> from position 1 (or
+##  position <at>, in the case of the second version), or `false', otherwise. 
+##  If <sub> is empty `true' is returned. If <list> is empty but <sub> is
+##  non-empty `false' is returned.
+##
+##  If you actually want to know whether there is an <at> for which
+##  `IsMatchingSublist( <list>, <sub>, <at> )' is true, use a construction
+##  like `PositionSublist( <list>, <sub> ) <> fail' instead 
+##  (see "PositionSublist"); it's more efficient.
+##
+DeclareOperation( "IsMatchingSublist", [ IsList,IsList,IS_INT ] );
 
 #############################################################################
 ##
@@ -542,8 +562,8 @@ DeclareGlobalFunction( "Apply" );
 ##  Each list may also contain holes, in which case the concatenation also
 ##  contains holes at the corresponding positions.
 ##
-##  In the second form <list> must be a list of lists <list1>, <list2>, etc.,
-##  and `Concatenation' returns the concatenation of those lists.
+##  In the second form <list> must be a dense list of lists <list1>, <list2>,
+##  etc., and `Concatenation' returns the concatenation of those lists.
 ##
 ##  The result is a new mutable list, that is not identical to any other
 ##  list.
@@ -647,7 +667,7 @@ DeclareOperation( "Flat", [ IsList ] );
 
 #############################################################################
 ##
-#O  Reversed( <list> )  . . . . . . . . . . .  reverse the elements in a list
+#F  Reversed( <list> )  . . . . . . . . . . .  reverse the elements in a list
 ##
 ##  returns a new mutable list, containing the elements of the dense list
 ##  <list> in reversed order.
@@ -657,7 +677,22 @@ DeclareOperation( "Flat", [ IsList ] );
 ##  The elements of that list however are identical to the corresponding
 ##  elements of the argument list (see~"Identical Lists").
 ##
-DeclareOperation( "Reversed", [ IsDenseList ] );
+##  `Reversed' implements a special case of list assignment, which can also
+##  be formulated in terms of the `{}' operator (see~"List Assignment").
+##
+DeclareGlobalFunction( "Reversed", [ IsDenseList ] );
+
+
+#############################################################################
+##
+#O  ReversedOp( <list> )  . . . . . . . . . .  reverse the elements in a list
+##
+##  `ReversedOp' is the operation called by `Reversed' if <list> is not
+##  an internal list.
+##  (Note that it would not make sense to turn this into an attribute
+##  because the result shall be mutable.)
+##
+DeclareOperation( "ReversedOp", [ IsDenseList ] );
 
 
 #############################################################################
@@ -681,6 +716,9 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##
 ##  sorts the list <list> in increasing order.
 ##  In the first form `Sort' uses the operator `\<' to compare the elements.
+##  (If the list is not homogeneous it is the users responsibility to ensure
+##  that `\<' is defined for all element pairs, see~"Comparison Operations
+##  for Elements")
 ##  In the second form `Sort' uses the function <func> to compare elements.
 ##  <func> must be a function taking two arguments that returns `true'
 ##  if the first is regarded as strictly smaller than the second,
@@ -702,13 +740,16 @@ DeclareOperation( "Sort", [ IsList and IsMutable ] );
 ##
 #O  Sortex(<list>) . . . sort a list (stable), return the applied permutation
 ##
-##  sorts the list <list> and  returns the  permutation that must be
-##  applied to <list> to obtain the sorted list.
+##  sorts the list <list> via the operator`\<' and  returns the  permutation
+##  that must be applied to <list> to obtain the sorted list.
+##  (If the list is not homogeneous it is the users responsibility to ensure
+##  that `\<' is defined for all element pairs, see~"Comparison Operations
+##  for Elements")
 ##
 ##  `Permuted' (see~"Permuted") allows you to rearrange a list according to
 ##  a given permutation.
 ##
-DeclareOperation( "Sortex", [ IsHomogeneousList and IsMutable ] );
+DeclareOperation( "Sortex", [  IsMutable ] );
 
 
 #############################################################################
@@ -790,9 +831,9 @@ DeclareGlobalFunction( "Minimum" );
 ##  For example, there are special methods to compute the maximum resp.~the
 ##  minimum of a range (see~"Ranges").
 ##
-DeclareOperation( "MaximumList", [ IsHomogeneousList ] );
+DeclareOperation( "MaximumList", [ IsList ] );
 
-DeclareOperation( "MinimumList", [ IsHomogeneousList ] );
+DeclareOperation( "MinimumList", [ IsList ] );
 
 
 #############################################################################
@@ -905,6 +946,16 @@ DeclareOperation( "FirstOp", [ IsListOrCollection, IsFunction ] );
 ##  <f>(..<f>( <f>( <list>[1], <list>[2] ), <list>[3] ),..,<list>[n] ).
 ##
 DeclareOperation( "Iterated", [ IsList, IsFunction ] );
+
+#############################################################################
+##
+#F  ListN( <list1>, <list2>, ..., <listn>, <f> )
+##
+##  Applies the <n>-argument function <func> to the lists.
+##  That is, `ListN' returns the list whose <i>th entry is
+##  <f>(<list1>[<i>], <list2>[<i>], ..., <listn>[<i>]).
+##
+DeclareGlobalFunction( "ListN" );
 
 
 #############################################################################
@@ -1021,6 +1072,33 @@ DeclareOperation( "PositionNonZero", [ IsHomogeneousList ] );
 
 DeclareSynonym("IsDuplicateFreeCollection", IsCollection and IsDuplicateFree);
 
+#############################################################################
+##
+#F  HexStringBlist(<b>)
+##
+##  takes a binary list and returns a hex string representing this blist.
+DeclareGlobalFunction("HexStringBlist");
+
+
+#############################################################################
+##
+#F  HexStringBlistEncode(<b>)
+##
+##  works like `HexStringBlist', but uses `sxx' (xx is a hex number up to
+##  255) to indicate skips of zeroes.
+DeclareGlobalFunction("HexStringBlistEncode");
+
+
+#############################################################################
+##
+#F  BlistStringDecode(<s>,[<l>])
+##
+##  takes a string as produced by `HexStringBlist' and
+##  `HexStringBlistEncode' and returns a binary list. If a length <l> is
+##  given the list is filed with `false' or trimmed to obtain this length,
+##  otherwise the list has the length as given by the string (this might
+##  leave out or add some trailing `false' values.
+DeclareGlobalFunction("BlistStringDecode");
 
 #############################################################################
 ##

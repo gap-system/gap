@@ -24,6 +24,16 @@ extern void RewriteGF2Vec( Obj vec, UInt q);
 
 /****************************************************************************
 **
+*F  IS_VEC8BIT_REP( <obj> )  . . . . . . check that <obj> is in 8bit GFQ vector rep
+*/
+extern Obj IsVec8bitRep;
+
+#define IS_VEC8BIT_REP(obj) \
+  (TNUM_OBJ(obj)==T_DATOBJ && True == DoFilter(IsVec8bitRep,obj))
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 

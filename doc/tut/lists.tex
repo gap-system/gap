@@ -34,7 +34,7 @@ in~"Plain Records".
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Plain Lists}
 
-\atindex{lists!plain}{|indexit}%
+\atindex{lists!plain}{|indexit}
 A *list* is a collection of objects separated by  commas and enclosed  in
 brackets.  Let us for example construct the list `primes' of the first 10
 prime numbers.
@@ -50,7 +50,7 @@ another list the object `primes' is changed.
 \beginexample
 gap> Append(primes, [31, 37]);
 gap> primes;
-[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37 ] 
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37 ]
 \endexample
 You can as well add single new elements to existing lists by the function
 `Add'  which takes  the existing list  as its  first argument  and  a new
@@ -59,14 +59,14 @@ element as  its second argument.  The  new  element  is added to the list
 \beginexample
 gap> Add(primes, 41);
 gap> primes;
-[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41 ] 
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41 ]
 \endexample
 Single elements of a list are referred to by their position in the  list.
 To get the value  of the seventh prime, that is the seventh entry in  our
 list `primes', you simply type
 \beginexample
 gap> primes[7];
-17 
+17
 \endexample
 This value can be handled like any other value, for example multiplied by 2
 or assigned to a  variable. On the other hand  this mechanism allows one to
@@ -80,7 +80,7 @@ gap> Length(primes);
 gap> primes[14]:= 43;
 43
 gap> primes;
-[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43 ] 
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43 ]
 \endexample
 Note that this operation again has changed the object `primes'.  The
 next position after the end of a list is not the only position capable
@@ -94,7 +94,7 @@ gap> primes[20]:= 71;
 gap> primes;
 [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43,,,,,, 71 ]
 gap> Length(primes);
-20 
+20
 \endexample
 The list itself however must  exist before a  value can be  assigned to a
 position of the list.  This list may be the empty list `[ ]'.
@@ -105,7 +105,7 @@ Variable: 'lll' must have a value
 \beginexample
 gap> lll:= []; lll[1]:= 2;
 [  ]
-2 
+2
 \endexample
 Of course  existing entries of a list  can be  changed by this mechanism,
 too. We will not do it here because `primes' then may no longer be a list
@@ -131,7 +131,7 @@ It is not necessary for the objects collected in a list to be of the same
 type.
 \beginexample
 gap> lll:= [true, "This is a String",,, 3];
-[ true, "This is a String",,, 3 ] 
+[ true, "This is a String",,, 3 ]
 \endexample
 In the same way a list may be part of another  list.  A list  may even be
 part of itself.
@@ -139,7 +139,7 @@ part of itself.
 gap> lll[3]:= [4,5,6];; lll;
 [ true, "This is a String", [ 4, 5, 6 ],, 3 ]
 gap> lll[4]:= lll;
-[ true, "This is a String", [ 4, 5, 6 ], ~, 3 ] 
+[ true, "This is a String", [ 4, 5, 6 ], ~, 3 ]
 \endexample
 Now the tilde in the fourth position of `lll'  denotes the object that is
 currently  printed. Note that  the result  of the  last operation is  the
@@ -147,29 +147,24 @@ actual value  of  the  object  `lll'   on  the  right  hand side  of  the
 assignment. In  fact it is  identical to the value  of the whole list
 `lll' on the left hand side of the assignment.
 
-\index{strings}\index{lists!dense}%
-A *string*  is a very  special   type of  list,  which  is  printed in  a
-different way.  A string  is simply  a  dense list of   characters, where
-*dense* means  that the list  has no holes.   Strings are used  mainly in
-filenames and   error messages. A  string  literal can either  be entered
-simply as the  list of characters  or  by writing the characters  between
-doublequotes `\"'.
+\index{strings}\index{lists!dense}
+A *string*  is a  special type  of list,
+namely a dense  list of *characters*, where *dense* means  that the list has
+no  holes. Here,  *characters* are  special {\GAP}  objects representing  an
+element of the character set of the operating system. The input of printable
+characters is  by enclosing them in  single quotes `\pif'. A  string literal
+can either be entered as the list of characters or by writing the characters
+between doublequotes `"'. Strings are  handled specially by `Print'. You can
+learn much more about strings in the reference manual.
+
 \beginexample
 gap> s1 := ['H','a','l','l','o',' ','w','o','r','l','d','.'];
 "Hallo world."
 gap> s1 = "Hallo world.";
 true
 gap> s1[7];
-'w' 
+'w'
 \endexample
-
-%\exercise True or false: A dense list of  characters is always printed as
-%a string by {\GAP}, i.e., between doublequotes, not in square brackets.
-%
-%\answer False, the  empty list  is a string,   but  it is either   always
-%printed `[ ]' or always `\"\"', depending on how it was entered. Also the
-%automatic conversion   into strings  takes   place  only on  the  ``outer
-%level'', not for lists inside lists.
 
 Sublists of lists can easily be extracted and assigned using the operator
 `<list>\{ <positions> \}'.
@@ -179,7 +174,7 @@ gap> sl := lll{ [ 1, 2, 3 ] };
 gap> sl{ [ 2, 3 ] } := [ "New String", false ];
 [ "New String", false ]
 gap> sl;
-[ true, "New String", false ] 
+[ true, "New String", false ]
 \endexample
 This way you get a new list whose <i>th entry is that element of the
 original list whose position is the <i>th entry of the argument in the
@@ -188,7 +183,7 @@ curly braces.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Identical Lists}
 
-\atindex{lists!identical}{|indexit}%
+\atindex{lists!identical}{|indexit}
 This second  section  about lists is dedicated  to  the subtle difference
 between  *equality*  and *identity*  of lists. It is really important to
 understand   this  difference in  order   to  understand how complex data
@@ -203,7 +198,7 @@ and  only if these two lists are of the same length and for each position
 the values in the respective lists are equal.
 \beginexample
 gap> numbers := primes;; numbers = primes;
-true 
+true
 \endexample
 We assigned  the  list `primes' to the variable  `numbers' and, of course
 they are equal as they have  both  the same length  and the same entries.
@@ -211,7 +206,7 @@ Now we  will change the  third number to  4 and  compare the result again
 with `primes'.
 \beginexample
 gap> numbers[3]:= 4;; numbers = primes;
-true 
+true
 \endexample
 You  see that  `numbers' and  `primes'  are still   equal, check this  by
 printing the value of `primes'. The list `primes' is  no longer a list of
@@ -237,7 +232,7 @@ gap> primes[3]:= 5;; primes;
 gap> numbers:= ShallowCopy(primes);; numbers = primes;
 true
 gap> numbers[3]:= 4;; numbers = primes;
-false 
+false
 \endexample
 Now `numbers' is no longer equal to `primes' and `primes' still is a list
 of primes.  Check this by printing the values of `numbers' and `primes'.
@@ -290,9 +285,10 @@ gap> list[3][5] := 'w';; list; copy;
 [ 1, 2, "three", [ 4 ] ]
 gap> copy[3][5] := 'w';
 Lists Assignment: <list> must be a mutable list
-Entering break read-eval-print loop, you can 'quit;' to quit to outer \
-loop,
-or you can return and ignore the assignment to continue
+not in any function
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' and ignore the assignment to continue
 brk> quit;
 \endtt
 As a consequence of  these rules, in the  immutable copy of a list  which
@@ -315,7 +311,7 @@ It should be noted that also other objects than lists can appear in
 mutable or immutable form.
 Records (see Section~"Plain Records") provide another example.
 
-%\indextt{StructuralCopy}%
+%\indextt{StructuralCopy}
 %\exercise How can  you produce  a  mutable ``deep copy'' of  an immutable
 %list?
 %
@@ -340,7 +336,7 @@ Records (see Section~"Plain Records") provide another example.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Sets}
 
-\index{lists!strictly sorted}\index{family}%
+\index{lists!strictly sorted}\index{family}
 {\GAP} knows several special kinds of lists.  A *set* in {\GAP} is a
 list that contains no holes (such a list is called *dense*) and whose
 elements are strictly sorted w.r.t.~`\<'; in particular, a set cannot
@@ -367,7 +363,7 @@ gap> fruits:= ["apple", "strawberry", "cherry", "plum"];
 gap> IsSSortedList(fruits);
 false
 gap> fruits:= Set(fruits);
-[ "apple", "cherry", "plum", "strawberry" ] 
+[ "apple", "cherry", "plum", "strawberry" ]
 \endexample
 Note that the original list `fruits' is not changed by the function
 `Set'.  We have to make a new assignment to the variable `fruits' in
@@ -379,7 +375,7 @@ set.  It returns a boolean value `true' or `false'.
 gap> "apple" in fruits;
 true
 gap> "banana" in fruits;
-false 
+false
 \endexample
 The operator `in' can also be applied to ordinary lists. It is however
 much  faster  to perform  a  membership test for   sets since sets are
@@ -394,7 +390,7 @@ gap> fruits;  #  The banana is inserted in the right place.
 [ "apple", "banana", "cherry", "plum", "strawberry" ]
 gap> AddSet(fruits, "apple");
 gap> fruits;  #  fruits has not changed.
-[ "apple", "banana", "cherry", "plum", "strawberry" ] 
+[ "apple", "banana", "cherry", "plum", "strawberry" ]
 \endexample
 Note that inserting new elements into a set with `AddSet' is usually more
 expensive than simply adding new elements at the end of a list.
@@ -406,7 +402,7 @@ the intersection resp. union of the two sets as a new object.
 gap> breakfast:= ["tea", "apple", "egg"];
 [ "tea", "apple", "egg" ]
 gap> Intersection(breakfast, fruits);
-[ "apple" ] 
+[ "apple" ]
 \endexample
 The  arguments  of the functions  `Intersection'  and `Union' cou;d be
 ordinary lists, while their  result is always  a set. Note that in the
@@ -460,7 +456,7 @@ as it would have in the long representation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{For and While Loops}
 
-\atindex{loops!for}{|indexit}\atindex{loops!while}{|indexit}%
+\atindex{loops!for}{|indexit}\atindex{loops!while}{|indexit}
 
 Given a list `pp' of permutations we can form their product by means of a
 `for' loop instead of writing down the product explicitly.
@@ -614,14 +610,14 @@ produced as follows with the function `cubed' from Section~"Functions".
 \beginexample
 gap> cubed:= x -> x^3;;
 gap> List([2..10], cubed);
-[ 8, 27, 64, 125, 216, 343, 512, 729, 1000 ] 
+[ 8, 27, 64, 125, 216, 343, 512, 729, 1000 ]
 \endexample
 To add all these cubes  we might apply the  function  `Sum' to  the  last
 list.  But we may  as well  give the  function  `cubed' to  `Sum'  as  an
 additional argument.
 \beginexample
 gap> Sum(last) = Sum([2..10], cubed);
-true 
+true
 \endexample
 The  primes less than 30 can  be retrieved out  of the list `primes' from
 Section~"Plain Lists" by the function `Filtered'. This function takes the
@@ -633,14 +629,14 @@ function `x  -> x \<   30' since `x \<   30' will evaluate to `true'  for
 values `x' less than 30 and to `false' otherwise.
 \beginexample
 gap> Filtered(primes, x-> x < 30);
-[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ] 
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ]
 \endexample
 We have already  mentioned the operator `\{  \}' that  forms sublists. It
 takes a  list of positions  as its argument  and will return  the list of
 elements from the original list corresponding to these positions.
 \beginexample
 gap> primes{ [1 .. 10] };
-[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ] 
+[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ]
 \endexample
 
 Finally we mention the function `ForAll' that checks whether a property
@@ -663,7 +659,7 @@ reference manual.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Vectors and Matrices}
 
-\index{vectors!row}\index{matrices}%
+\index{vectors!row}\index{matrices}
 This section describes how {\GAP} uses lists to represent row vectors and
 matrices. A *row vector* is a dense list of elements from a common field.
 A *matrix* is a dense list of row vectors over a common field and of
@@ -676,10 +672,10 @@ Row vectors  may be  added and multiplied   by scalars from  their field.
 Multiplication of   row vectors of  equal length  results in their scalar
 product.
 \beginexample
-gap> 2 * v;  v * 1/3;  v * v;
+gap> 2 * v;  v * 1/3;
 [ 6, 12, 4, 5 ]
 [ 1, 2, 2/3, 5/6 ]
-# the scalar product of `v' with itself
+gap> v * v;   # the scalar product of `v' with itself
 221/4
 \endexample
 Note  that   the expression `v   *  1/3' is   actually evaluated by first
@@ -702,7 +698,7 @@ and that `[ 1 .. 100 ]' is mutable.
 %{\GAP} offers the operation `ListWithIdenticalEntries(<len>,<val>)' that
 %will produce such a mutable list.
 
-%\indextt{ListWithIdenticalEntries}%
+%\indextt{ListWithIdenticalEntries}
 %\exercise  How can  you produce  a mutable  list  with 100~entries  equal
 %to~25?
 %
@@ -830,6 +826,10 @@ rec(
   month := "Jul",
   day := 14 )
 \endexample
+
+Note that the output in the examples of this section have been edited
+with respect to white spaces and line breaks in order to illustrate the
+hierarchy of the record components.
 
 The value of a record component is accessible by  the record name and the
 record  component name separated   by one dot   as  the record  component

@@ -83,6 +83,12 @@
 #endif
 
 /* defualt HZ value                                                        */
+/*  on IRIX we need this include to get the system value                   */
+
+#if HAVE_SYS_SYSMACROS_H
+#include <sys/sysmacros.h>
+#endif
+
 #ifndef  HZ
 # define HZ                     50
 #endif
@@ -114,7 +120,7 @@
 # if SYS_MAC_MPW || SYS_TOS_GCC2
 #  define SY_STOR_MIN   0
 # else
-#  define SY_STOR_MIN   8 * 1024 * 1024
+#  define SY_STOR_MIN   24 * 1024 
 # endif
 #endif
 
@@ -331,7 +337,6 @@ const char * Revision_system_h =
 
 /****************************************************************************
 **
-
 *T  Char, Int1, Int2, Int4, Int, UChar, UInt1, UInt2, UInt4, UInt .  integers
 **
 **  'Char',  'Int1',  'Int2',  'Int4',  'Int',   'UChar',   'UInt1', 'UInt2',
@@ -465,7 +470,7 @@ extern UInt SyCTRD;
 **
 *V  SyCacheSize . . . . . . . . . . . . . . . . . . . . . . size of the cache
 **
-**  'SyCacheSize' is the size of the data cache.
+**  'SyCacheSize' is the size of the data cache, in kilobytes
 **
 **  This is per  default 0, which means that  there is no usuable data cache.
 **  It is usually changed with the '-c' option in the script that starts GAP.
@@ -544,42 +549,27 @@ extern Int SyCompilePlease;
 */
 extern Int SyDebugLoading;
 
-
-/****************************************************************************
-**
-*V  SyGapRootPath . . . . . . . . . . . . . . . . . . . . . . . . . root path
-**
-**  'SyGapRootPath' conatins the names of the directories where the GAP files
-**  are located.
-**
-**  This is  per default the current  directory.  It  is usually changed with
-**  the '-l' option in the script that starts GAP.
-**
-**  Is copied    into  the  GAP   variable  called    'GAPROOT' and  used  by
-**  'ReadGapRoot'.  This  is also  used in  'GAPROOT/lib/init.g' to find  the
-**  group and table library directories.
-**
-**  It must end with the pathname seperator, eg. if 'init.g' is the name of a
-**  library   file 'strcat( SyGapRootPath,  "lib/init.g" );'  must be a valid
-**  filename.  Further neccessary transformation of  the filename are done in
-**  'SyOpen'.
-**
-**  Put in this package because the command line processing takes place here.  */
-#define MAX_GAP_DIRS 256
-
-extern Char SyGapRootPath [MAX_GAP_DIRS*256];
-
-
 /****************************************************************************
 **
 *V  SyGapRootPaths  . . . . . . . . . . . . . . . . . . . array of root paths
 **
 **  'SyGapRootPaths' conatins the  names   of the directories where   the GAP
-**  files are located, it is derived from 'SyGapRootPath'.
+**  files are located.
 **
-**  Put in this package because the command line processing takes place here.  */
-extern Char SyGapRootPaths [MAX_GAP_DIRS] [256];
+**  It is modified by the command line option -l.
+**
+**  It  is copied into the GAP  variable  called 'GAP_ROOT_PATHS' and used by
+**  'SyFindGapRootFile'.
+**
+**  Each entry must end  with the pathname seperator, eg.  if 'init.g' is the
+**  name of a library file 'strcat( SyGapRootPaths[i], "lib/init.g" );'  must
+**  be a valid filename.
+**
+**  Put in this package because the command line processing takes place here.
+*/
+#define MAX_GAP_DIRS 128
 
+extern Char SyGapRootPaths [MAX_GAP_DIRS] [512];
 
 /****************************************************************************
 **
@@ -596,13 +586,21 @@ extern Char SyGapRootPaths [MAX_GAP_DIRS] [256];
 **
 **  For UNIX this list contains 'LIBNAME/init.g' and '$HOME/.gaprc'.
 */
-extern Char SyInitfiles [16] [256];
+extern Char SyInitfiles [32] [512];
 
 /****************************************************************************
 **
 *V  SyGapRCFilename . . . . . . . . . . . . . . . filename of the gaprc file
 */
-extern Char SyGapRCFilename [256];
+extern Char SyGapRCFilename [512];
+
+/****************************************************************************
+**
+*V  SyHasUserHome . . . . . . . . . .  true if user has HOME in environment
+*V  SyUserHome . . . . . . . . . . . . .  path of users home (it is exists)
+*/
+extern Int SyHasUserHome;
+extern Char SyUserHome [256];
 
 
 /****************************************************************************
@@ -698,7 +696,7 @@ extern Char * SyRestoring;
 *V  SyInitializing                               set to 1 during library init
 **
 **  `SyInitializing' is set to 1 during the library intialization phase of
-**  startup. It supresses some ebhaviours that may not be possible so early
+**  startup. It supresses some behaviours that may not be possible so early
 **  such as homogeneity tests in the plist code.
 */
 
@@ -709,9 +707,10 @@ extern UInt SyInitializing;
 *V  SyStorMax . . . . . . . . . . . . . . . . . . . maximal size of workspace
 **
 **  'SyStorMax' is the maximal size of the workspace allocated by Gasman.
+**    this is now in kilobytes.
 **
-**  This is per default 64 MByte,  which is often a  reasonable value.  It is
-**  usually changed with the '-t' option in the script that starts GAP.
+**  This is per default 256 MByte,  which is often a  reasonable value.  It is
+**  usually changed with the '-o' option in the script that starts GAP.
 **
 **  This is used in the function 'SyAllocBags'below.
 **
@@ -720,14 +719,31 @@ extern UInt SyInitializing;
 extern Int SyStorMax;
 extern Int SyStorOverrun;
 
+/****************************************************************************
+**
+*V  SyStorKill . . . . . . . . . . . . . . . . . . maximal size of workspace
+**
+**  'SyStorKill' is really the maximal size of the workspace allocated by 
+**  Gasman. GAP exists before trying to allocate more than this amount
+**  of memory in kilobytes
+**
+**  This is per default disabled (i.e. = 0).
+**  Can be changed with the '-K' option in the script that starts GAP.
+**
+**  This is used in the function 'SyAllocBags'below.
+**
+**  Put in this package because the command line processing takes place here.
+*/
+extern Int SyStorKill;
 
 /****************************************************************************
 **
 *V  SyStorMin . . . . . . . . . . . . . .  default size for initial workspace
 **
 **  'SyStorMin' is the size of the initial workspace allocated by Gasman.
+**  in kilobytes
 **
-**  This is per default  4 Megabyte,  which  is  often  a  reasonable  value.
+**  This is per default  24 Megabyte,  which  is  often  a  reasonable  value.
 **  It is usually changed with the '-m' option in the script that starts GAP.
 **
 **  This value is used in the function 'SyAllocBags' below.
@@ -915,7 +931,7 @@ extern void SyMsgsBags (
 *F  SyAllocBags( <size>, <need> ) . . . allocate memory block of <size> bytes
 **
 **  'SyAllocBags' is called from Gasman to get new storage from the operating
-**  system.  <size> is the needed amount in bytes (it is always a multiple of
+**  system.  <size> is the needed amount in kilobytes (it is always a multiple of
 **  512 KByte),  and <need> tells 'SyAllocBags' whether  Gasman  really needs
 **  the storage or only wants it to have a reasonable amount of free storage.
 **

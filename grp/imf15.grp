@@ -20,8 +20,6 @@ Revision.imf15_grp :=
 ##
 ##  Quadratic form and matrix generators  for the  Q-class representatives of
 ##  the irreducible maximal finite integral matrix groups of dimension 15.
-##  Z-classes  of  maximal  irreducible  finite  integral  matrix  groups  of
-##  dimension 15.
 ##
 IMFList[15].matrices := [
 

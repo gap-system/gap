@@ -12,7 +12,13 @@
 */
 #include        <stdio.h>
 #include        <string.h>              /* memcpy */
+#include        <unistd.h>              /* fstat, write, read              */
+#include        <sys/types.h>
+#include        <sys/stat.h>
 #include        "system.h"              /* system dependent part           */
+#if HAVE_SELECT
+#include        <sys/time.h>
+#endif
 
 const char * Revision_streams_c =
    "@(#)$Id$";
@@ -68,7 +74,7 @@ Int READ_COMMAND ( void ) {
         Pr( "'return' must not be used in file read-eval loop", 0L, 0L );
     }
 
-    /* handle quit command or <end-of-file>                                */
+    /* handle quit command                                 */
     else if (status == STATUS_QUIT) {
         UserHasQuit = 1;
     }
@@ -86,7 +92,7 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo ) {
 
     /* try to open the file                                                */
     if ( ! OpenInputStream(stream) ) {
-        return Fail;
+        return SFail;
     }
 
     if (echo == True)
@@ -98,9 +104,19 @@ Obj FuncREAD_COMMAND ( Obj self, Obj stream, Obj echo ) {
     
     CloseInput();
 
-    if( status == 0 ) return Fail;
+    if( status == 0 ) return SFail;
 
-    return ReadEvalResult ? ReadEvalResult : Fail;
+    if (UserHasQUIT) {
+      UserHasQUIT = 0;
+      return SFail;
+    }
+
+    if (UserHasQuit) {
+      UserHasQuit = 0;
+    }
+    
+    return ReadEvalResult ? ReadEvalResult : SFail;
+    
 }
 
 /****************************************************************************
@@ -118,6 +134,17 @@ Int READ ( void )
     ExecStatus                status;
 
 
+
+    if (UserHasQuit)
+      {
+	Pr("Warning: Entering READ with UserHasQuit set, this should never happen, resetting",0,0);
+	UserHasQuit = 0;
+      }
+    if (UserHasQUIT)
+      {
+	Pr("Warning: Entering READ with UserHasQUIT set, this should never happen, resetting",0,0);
+	UserHasQUIT = 0;
+      }
     MakeReadWriteGVar(LastReadValueGVar);
     AssGVar( LastReadValueGVar, 0);
     MakeReadOnlyGVar(LastReadValueGVar);
@@ -282,7 +309,6 @@ Int READ_GAP_ROOT ( Char * filename )
     Int                 res;
     UInt                type;
     StructInitInfo *    info;
-    Obj                 fname;
 
     /* try to find the file                                                */
     res = SyFindOrLinkGapRootFile( filename, 0L, result, 256 );
@@ -427,12 +453,12 @@ Obj FuncLOG_TO (
         filename = ErrorReturnObj(
             "LogTo: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
     if ( ! OpenLog( CSTR_STRING(filename) ) ) {
         ErrorReturnVoid( "LogTo: cannot log to %s",
                          (Int)CSTR_STRING(filename), 0L,
-                         "you can return" );
+                         "you can 'return;'" );
         return False;
     }
     return True;
@@ -449,7 +475,7 @@ Obj FuncLOG_TO_STREAM (
 {
     if ( ! OpenLogStream(stream) ) {
         ErrorReturnVoid( "LogTo: cannot log to stream", 0L, 0L,
-                         "you can return" );
+                         "you can 'return;'" );
         return False;
     }
     return True;
@@ -499,12 +525,12 @@ Obj FuncINPUT_LOG_TO (
         filename = ErrorReturnObj(
             "InputLogTo: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
     if ( ! OpenInputLog( CSTR_STRING(filename) ) ) {
         ErrorReturnVoid( "InputLogTo: cannot log to %s",
                          (Int)CSTR_STRING(filename), 0L,
-                         "you can return" );
+                         "you can 'return;'" );
         return False;
     }
     return True;
@@ -521,7 +547,7 @@ Obj FuncINPUT_LOG_TO_STREAM (
 {
     if ( ! OpenInputLogStream(stream) ) {
         ErrorReturnVoid( "InputLogTo: cannot log to stream", 0L, 0L,
-                         "you can return" );
+                         "you can 'return;'" );
         return False;
     }
     return True;
@@ -571,12 +597,12 @@ Obj FuncOUTPUT_LOG_TO (
         filename = ErrorReturnObj(
             "OutputLogTo: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
     if ( ! OpenOutputLog( CSTR_STRING(filename) ) ) {
         ErrorReturnVoid( "OutputLogTo: cannot log to %s",
                          (Int)CSTR_STRING(filename), 0L,
-                         "you can return" );
+                         "you can 'return;'" );
         return False;
     }
     return True;
@@ -593,7 +619,7 @@ Obj FuncOUTPUT_LOG_TO_STREAM (
 {
     if ( ! OpenOutputLogStream(stream) ) {
         ErrorReturnVoid( "OutputLogTo: cannot log to stream", 0L, 0L,
-                         "you can return" );
+                         "you can 'return;'" );
         return False;
     }
     return True;
@@ -662,7 +688,7 @@ Obj FuncPRINT_TO (
         filename = ErrorReturnObj(
             "PrintTo: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
 
     /* try to open the file for output                                     */
@@ -793,7 +819,7 @@ Obj FuncAPPEND_TO (
         filename = ErrorReturnObj(
             "AppendTo: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
 
     /* try to open the file for output                                     */
@@ -918,7 +944,7 @@ Obj FuncREAD (
         filename = ErrorReturnObj(
             "READ: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
 
     /* try to open the file                                                */
@@ -962,7 +988,7 @@ Obj FuncREAD_TEST (
         filename = ErrorReturnObj(
             "ReadTest: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
 
     /* try to open the file                                                */
@@ -1006,7 +1032,7 @@ Obj FuncREAD_AS_FUNC (
         filename = ErrorReturnObj(
             "READ_AS_FUNC: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
 
     /* try to open the file                                                */
@@ -1050,7 +1076,7 @@ Obj FuncREAD_GAP_ROOT (
         filename = ErrorReturnObj(
             "READ: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
 
     /* try to open the file                                                */
@@ -1108,7 +1134,7 @@ Obj FuncRemoveFile (
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
     
     /* call the system dependent function                                  */
@@ -1174,12 +1200,12 @@ Obj FuncIsExistingFile (
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
     
     /* call the system dependent function                                  */
     res = SyIsExistingFile( CSTR_STRING(filename) );
-    return res == -1 ? Fail : ( res == 0 ? True : False );
+    return res == -1 ? False : True;
 }
 
 
@@ -1198,12 +1224,12 @@ Obj FuncIsReadableFile (
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
     
     /* call the system dependent function                                  */
     res = SyIsReadableFile( CSTR_STRING(filename) );
-    return res == -1 ? Fail : ( res == 0 ? True : False );
+    return res == -1 ? False : True;
 }
 
 
@@ -1222,12 +1248,12 @@ Obj FuncIsWritableFile (
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
     
     /* call the system dependent function                                  */
     res = SyIsWritableFile( CSTR_STRING(filename) );
-    return res == -1 ? Fail : ( res == 0 ? True : False );
+    return res == -1 ? False : True;
 }
 
 
@@ -1246,12 +1272,12 @@ Obj FuncIsExecutableFile (
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
     
     /* call the system dependent function                                  */
     res = SyIsExecutableFile( CSTR_STRING(filename) );
-    return res == -1 ? Fail : ( res == 0 ? True : False );
+    return res == -1 ? False : True;
 }
 
 
@@ -1270,12 +1296,12 @@ Obj FuncIsDirectoryPath (
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
     
     /* call the system dependent function                                  */
     res = SyIsDirectoryPath( CSTR_STRING(filename) );
-    return res == -1 ? Fail : ( res == 0 ? True : False );
+    return res == -1 ? False : True;
 }
 
 
@@ -1301,7 +1327,7 @@ Obj FuncCLOSE_FILE (
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
             (Int)TNAM_OBJ(fid), 0L,
-            "you can return an integer for <fid>" );
+            "you can replace <fid> via 'return <fid>;'" );
     }
     
     /* call the system dependent function                                  */
@@ -1325,7 +1351,7 @@ Obj FuncINPUT_TEXT_FILE (
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
     
     /* call the system dependent function                                  */
@@ -1352,7 +1378,7 @@ Obj FuncIS_END_OF_FILE (
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
             (Int)TNAM_OBJ(fid), 0L,
-            "you can return an integer for <fid>" );
+            "you can replace <fid> via 'return <fid>;'" );
     }
     
     ret = SyIsEndOfFile( INT_INTOBJ(fid) );
@@ -1376,13 +1402,13 @@ Obj FuncOUTPUT_TEXT_FILE (
         filename = ErrorReturnObj(
             "<filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
-            "you can return a string for <filename>" );
+            "you can replace <filename> via 'return <filename>;'" );
     }
     while ( append != True && append != False ) {
         filename = ErrorReturnObj(
             "<append> must be a boolean (not a %s)",
             (Int)TNAM_OBJ(append), 0L,
-            "you can return a string for <append>" );
+            "you can replace <append> via 'return <append>;'" );
     }
     
     /* call the system dependent function                                  */
@@ -1414,7 +1440,7 @@ Obj FuncPOSITION_FILE (
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
             (Int)TNAM_OBJ(fid), 0L,
-            "you can return an integer for <fid>" );
+            "you can replace <fid> via 'return <fid>;'" );
     }
     
     ret = SyFtell( INT_INTOBJ(fid) );
@@ -1437,7 +1463,7 @@ Obj FuncREAD_BYTE_FILE (
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
             (Int)TNAM_OBJ(fid), 0L,
-            "you can return an integer for <fid>" );
+            "you can replace <fid> via 'return <fid>;'" );
     }
     
     /* Check if we are at the end of the file.                             */
@@ -1453,6 +1479,53 @@ Obj FuncREAD_BYTE_FILE (
 /****************************************************************************
 **
 *F  FuncREAD_LINE_FILE( <self>, <fid> ) . . . . . . . . . . . . . read a line
+**  
+**  This uses fgets and works only if there are no zero characters in <fid>.
+*/
+
+/*  this would be a proper function but it reads single chars and is slower
+Obj FuncREAD_LINE_FILE (
+    Obj             self,
+    Obj             fid )
+{
+    Int             fidc, len, i;
+    Obj             str;
+    UInt1           *p;
+    Int              c;
+
+    while ( ! IS_INTOBJ(fid) ) {
+        fid = ErrorReturnObj(
+            "<fid> must be an integer (not a %s)",
+            (Int)TNAM_OBJ(fid), 0L,
+            "you can replace <fid> via 'return <fid>;'" );
+    }
+    
+    str = NEW_STRING(10);
+    len = 10;
+    i = 0;
+    fidc = INT_INTOBJ(fid);
+    p = CHARS_STRING(str); 
+    while (1) {
+      c = SyGetc(fidc);
+      if (i == len) {
+	len = GrowString(str, len+1);
+	p = CHARS_STRING(str);
+      }
+      if (c == '\n') {
+	p[i++] = (UInt1)c;
+	break;
+      }
+      else if (c == EOF) 
+	break;
+      else {
+	p[i++] = (UInt1)c;
+      }
+    }
+    ResizeBag( str, SIZEBAG_STRINGLEN(i) );
+    SET_LEN_STRING(str, i);
+      
+    return i == 0 ? Fail : str;
+}
 */
 Obj FuncREAD_LINE_FILE (
     Obj             self,
@@ -1460,7 +1533,7 @@ Obj FuncREAD_LINE_FILE (
 {
     Char            buf[256];
     Char *          cstr;
-    Int             len;
+    Int             len, buflen, strlen;
     Obj             str;
 
     /* check the argument                                                  */
@@ -1468,7 +1541,7 @@ Obj FuncREAD_LINE_FILE (
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
             (Int)TNAM_OBJ(fid), 0L,
-            "you can return an integer for <fid>" );
+            "you can replace <fid> via 'return <fid>;'" );
     }
     
     /* read <fid> until we see a newline or eof                            */
@@ -1476,18 +1549,21 @@ Obj FuncREAD_LINE_FILE (
     len = 0;
     while (1) {
         len += 255;
-        ResizeBag( str, 1+len );
+        GROW_STRING( str, len );
         if ( SyFgets( buf, 256, INT_INTOBJ(fid) ) == 0 )
             break;
-        cstr = CSTR_STRING(str);
-        SyStrncat( cstr, buf, 255 );
-        if ( buf[SyStrlen(buf)-1] == '\n' )
+	buflen = SyStrlen(buf);
+	strlen = GET_LEN_STRING(str);
+        cstr = CSTR_STRING(str) + strlen;
+        memcpy( cstr, buf, buflen+1 );
+	SET_LEN_STRING(str, strlen+buflen);
+        if ( buf[buflen-1] == '\n' )
             break;
     }
 
     /* fix the length of <str>                                             */
-    len = SyStrlen( CSTR_STRING(str) );
-    ResizeBag( str, len+1 );
+    len = GET_LEN_STRING(str);
+    ResizeBag( str, SIZEBAG_STRINGLEN(len) );
 
     /* and return                                                          */
     return len == 0 ? Fail : str;
@@ -1510,13 +1586,13 @@ Obj FuncSEEK_POSITION_FILE (
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
             (Int)TNAM_OBJ(fid), 0L,
-            "you can return an integer for <fid>" );
+            "you can replace <fid> via 'return <fid>;'" );
     }
     while ( ! IS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
             "<pos> must be an integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
-            "you can return an integer for <pos>" );
+            "you can replace <pos> via 'return <pos>;'" );
     }
     
     ret = SyFseek( INT_INTOBJ(fid), INT_INTOBJ(pos) );
@@ -1540,13 +1616,13 @@ Obj FuncWRITE_BYTE_FILE (
         fid = ErrorReturnObj(
             "<fid> must be an integer (not a %s)",
             (Int)TNAM_OBJ(fid), 0L,
-            "you can return an integer for <fid>" );
+            "you can replace <fid> via 'return <fid>;'" );
     }
     while ( ! IS_INTOBJ(ch) ) {
         ch = ErrorReturnObj(
             "<ch> must be an integer (not a %s)",
             (Int)TNAM_OBJ(ch), 0L,
-            "you can return an integer for <ch>" );
+            "you can replace <ch> via 'return <ch>;'" );
     }
     
     /* call the system dependent function                                  */
@@ -1563,15 +1639,219 @@ Obj FuncWRITE_STRING_FILE_NC (
     Obj             fid,
     Obj             str )
 {
-    Int             ret;
+    Int             len = 0, ret;
 
     /* don't check the argument                                            */
     
     /* call the system dependent function                                  */
-    SyFputs( CSTR_STRING(str), INT_INTOBJ(fid) );
-    return True;
+    /* SyFputs( CSTR_STRING(str), INT_INTOBJ(fid) ); */
+    len = GET_LEN_STRING(str);
+/*    ret = fwrite(CHARS_STRING(str), 1, len, syBuf[INT_INTOBJ(fid)].fp);*/
+
+    ret = write( fileno(syBuf[INT_INTOBJ(fid)].echo), CHARS_STRING(str), len);
+    return (ret == len)?True : Fail;
 }
 
+
+
+Obj FuncREAD_STRING_FILE (
+    Obj             self,
+    Obj             fid )
+{
+    Char            buf[20001];
+    Int             ret, len, strlen;
+    Obj             str;
+
+    /* check the argument                                                  */
+    while ( ! IS_INTOBJ(fid) ) {
+        fid = ErrorReturnObj(
+            "<fid> must be an integer (not a %s)",
+            (Int)TNAM_OBJ(fid), 0L,
+            "you can replace <fid> via 'return <fid>;'" );
+    }
+
+#if HAS_STAT
+    /* first try to get the whole file as one chunk, this avoids garbage
+       collections because of the GROW_STRING calls below    */
+    {
+        struct stat fstatbuf;
+        if ( fstat( fileno(syBuf[INT_INTOBJ(fid)].echo),  &fstatbuf) == 0 ) {
+            len = fstatbuf.st_size;
+            str = NEW_STRING( len );
+            ret = read( fileno(syBuf[INT_INTOBJ(fid)].echo), 
+                        CHARS_STRING(str), len);
+            CHARS_STRING(str)[ret] = '\0';
+            SET_LEN_STRING(str, ret);
+            if ( ret == len ) {
+                 return str;
+            }
+        }
+    }
+#endif
+
+    /* read <fid> until we see  eof   (in 20kB pieces)                     */
+    str = NEW_STRING(0);
+    len = 0;
+    while (1) {
+        if ( (ret = fread( buf, 1, 20000, syBuf[INT_INTOBJ(fid)].fp )) == 0 )
+            break;
+        len += ret;
+        GROW_STRING( str, len );
+	strlen = GET_LEN_STRING(str);
+        memcpy( CHARS_STRING(str)+strlen, buf, ret );
+	*(CHARS_STRING(str)+strlen+ret) = '\0';
+	SET_LEN_STRING(str, strlen+ret);
+    }
+
+    /* fix the length of <str>                                             */
+    len = GET_LEN_STRING(str);
+    ResizeBag( str, SIZEBAG_STRINGLEN(len) );
+
+    /* and return                                                          */
+    return len == 0 ? Fail : str;
+}
+
+#if SYS_MAC_MWC
+
+/****************************************************************************
+**
+*F  FuncFD_OF_FILE( <fid> )
+*/
+Obj FuncFD_OF_FILE(Obj self,Obj fid)
+{
+  ErrorQuit("FD_OF_FILE is not available on this architecture", (Int)0L, 
+            (Int) 0L);
+  return Fail;
+}
+
+#else
+/****************************************************************************
+**
+*F  FuncFD_OF_FILE( <fid> )
+*/
+Obj FuncFD_OF_FILE(Obj self,Obj fid)
+{
+  Int fd;
+  int fdi;
+  while (fid == (Obj) 0 || !(IS_INTOBJ(fid)))
+    fid = ErrorReturnObj(
+           "<fid> must be a small integer (not a %s)",
+           (Int)TNAM_OBJ(fid),0L,
+           "you can replace <fid> via 'return <fid>;'" );
+
+  fd = INT_INTOBJ(fid);
+  fdi = fileno(syBuf[fd].fp);
+  return INTOBJ_INT(fdi);
+}
+
+#if HAVE_SELECT
+Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist, 
+                   Obj timeoutsec, Obj timeoutusec)
+{
+  fd_set infds,outfds,excfds;
+  struct timeval tv;
+  int n,maxfd;
+  Int i,j;
+  Obj o;
+
+  while (inlist == (Obj) 0 || !(IS_PLIST(inlist)))
+    inlist = ErrorReturnObj(
+           "<inlist> must be a list of small integers (not a %s)",
+           (Int)TNAM_OBJ(inlist),0L,
+           "you can replace <inlist> via 'return <inlist>;'" );
+  while (outlist == (Obj) 0 || !(IS_PLIST(outlist)))
+    outlist = ErrorReturnObj(
+           "<outlist> must be a list of small integers (not a %s)",
+           (Int)TNAM_OBJ(outlist),0L,
+           "you can replace <outlist> via 'return <outlist>;'" );
+  while (exclist == (Obj) 0 || !(IS_PLIST(exclist)))
+    exclist = ErrorReturnObj(
+           "<exclist> must be a list of small integers (not a %s)",
+           (Int)TNAM_OBJ(exclist),0L,
+           "you can replace <exclist> via 'return <exclist>;'" );
+
+  FD_ZERO(&infds);
+  FD_ZERO(&outfds);
+  FD_ZERO(&excfds);
+  maxfd = 0;
+  /* Handle input file descriptors: */
+  for (i = 1;i <= LEN_PLIST(inlist);i++) {
+    o = ELM_PLIST(inlist,i);
+    if (o != (Obj) 0 && IS_INTOBJ(o)) {
+      j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+      FD_SET(j,&infds);
+      if (j > maxfd) maxfd = j;
+    }
+  }
+  /* Handle output file descriptors: */
+  for (i = 1;i <= LEN_PLIST(outlist);i++) {
+    o = ELM_PLIST(outlist,i);
+    if (o != (Obj) 0 && IS_INTOBJ(o)) {
+      j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+      FD_SET(j,&outfds);
+      if (j > maxfd) maxfd = j;
+    }
+  }
+  /* Handle exception file descriptors: */
+  for (i = 1;i <= LEN_PLIST(exclist);i++) {
+    o = ELM_PLIST(exclist,i);
+    if (o != (Obj) 0 && IS_INTOBJ(o)) {
+      j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+      FD_SET(j,&excfds);
+      if (j > maxfd) maxfd = j;
+    }
+  }
+  /* Handle the timeout: */
+  if (timeoutsec != (Obj) 0 && IS_INTOBJ(timeoutsec) &&
+      timeoutusec != (Obj) 0 && IS_INTOBJ(timeoutusec)) {
+    tv.tv_sec = INT_INTOBJ(timeoutsec);
+    tv.tv_usec = INT_INTOBJ(timeoutusec);
+    n = select(maxfd+1,&infds,&outfds,&excfds,&tv);
+  } else {
+    n = select(maxfd+1,&infds,&outfds,&excfds,NULL);
+  }
+    
+  if (n >= 0) {
+    /* Now run through the lists and call functions if ready: */
+
+    for (i = 1;i <= LEN_PLIST(inlist);i++) {
+      o = ELM_PLIST(inlist,i);
+      if (o != (Obj) 0 && IS_INTOBJ(o)) {
+        j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+        if (!(FD_ISSET(j,&infds))) {
+          SET_ELM_PLIST(inlist,i,Fail);
+          CHANGED_BAG(inlist);
+        }
+      }
+    }
+    /* Handle output file descriptors: */
+    for (i = 1;i <= LEN_PLIST(outlist);i++) {
+      o = ELM_PLIST(outlist,i);
+      if (o != (Obj) 0 && IS_INTOBJ(o)) {
+        j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+        if (!(FD_ISSET(j,&outfds))) {
+          SET_ELM_PLIST(outlist,i,Fail);
+          CHANGED_BAG(outlist);
+        }
+      }
+    }
+    /* Handle exception file descriptors: */
+    for (i = 1;i <= LEN_PLIST(exclist);i++) {
+      o = ELM_PLIST(exclist,i);
+      if (o != (Obj) 0 && IS_INTOBJ(o)) {
+        j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+        if (!(FD_ISSET(j,&excfds))) {
+          SET_ELM_PLIST(exclist,i,Fail);
+          CHANGED_BAG(exclist);
+        }
+      }
+    }
+  }
+  return INTOBJ_INT(n);
+}
+#endif
+
+#endif
 
 /****************************************************************************
 **
@@ -1605,31 +1885,31 @@ Obj FuncExecuteProcess (
         dir = ErrorReturnObj(
             "<dir> must be a string (not a %s)",
             (Int)TNAM_OBJ(dir), 0L,
-            "you can return a string for <dir>" );
+            "you can replace <dir> via 'return <dir>;'" );
     }
     while ( ! IsStringConv(prg) ) {
         prg = ErrorReturnObj(
             "<prg> must be a string (not a %s)",
             (Int)TNAM_OBJ(prg), 0L,
-            "you can return a string for <prg>" );
+            "you can replace <prg> via 'return <prg>;'" );
     }
     while ( ! IS_INTOBJ(in) ) {
         in = ErrorReturnObj(
             "<in> must be an integer (not a %s)",
             (Int)TNAM_OBJ(in), 0L,
-            "you can return an integer for <in>" );
+            "you can replace <in> via 'return <in>;'" );
     }
     while ( ! IS_INTOBJ(out) ) {
         out = ErrorReturnObj(
             "<out> must be an integer (not a %s)",
             (Int)TNAM_OBJ(out), 0L,
-            "you can return an integer for <out>" );
+            "you can replace <out> via 'return <out>;'" );
     }
     while ( ! IS_SMALL_LIST(args) ) {
         args = ErrorReturnObj(
             "<args> must be a small list (not a %s)",
             (Int)TNAM_OBJ(args), 0L,
-            "you can return a small list for <args>" );
+            "you can replace <args> via 'return <args>;'" );
     }
 
     /* create an argument array                                            */
@@ -1641,7 +1921,7 @@ Obj FuncExecuteProcess (
             tmp = ErrorReturnObj(
                 "<tmp> must be a string (not a %s)",
                 (Int)TNAM_OBJ(tmp), 0L,
-                "you can return a string for <tmp>" );
+                "you can replace <tmp> via 'return <tmp>;'" );
         }
         ExecArgs[i] = tmp;
     }
@@ -1683,49 +1963,49 @@ static StructGVarFunc GVarFuncs [] = {
       FuncREAD_COMMAND, "src/streams.c:READ_COMMAND" },
 
     { "READ_STREAM", 1L, "stream",
-      FuncREAD_STREAM, "src/sreams.c:READ_STREAM" },
+      FuncREAD_STREAM, "src/streams.c:READ_STREAM" },
 
     { "READ_TEST", 1L, "filename", 
-      FuncREAD_TEST, "src/sreams.c:READ_TEST" },
+      FuncREAD_TEST, "src/streams.c:READ_TEST" },
 
     { "READ_TEST_STREAM", 1L, "stream",
-      FuncREAD_TEST_STREAM, "src/sreams.c:READ_TEST_STREAM" },
+      FuncREAD_TEST_STREAM, "src/streams.c:READ_TEST_STREAM" },
 
     { "READ_AS_FUNC", 1L, "filename",
-      FuncREAD_AS_FUNC, "src/sreams.c:READ_AS_FUNC" },
+      FuncREAD_AS_FUNC, "src/streams.c:READ_AS_FUNC" },
 
     { "READ_AS_FUNC_STREAM", 1L, "stream", 
-      FuncREAD_AS_FUNC_STREAM, "src/sreams.c:READ_AS_FUNC_STREAM" },
+      FuncREAD_AS_FUNC_STREAM, "src/streams.c:READ_AS_FUNC_STREAM" },
 
     { "READ_GAP_ROOT", 1L, "filename",
-      FuncREAD_GAP_ROOT, "src/sreams.c:READ_GAP_ROOT" },
+      FuncREAD_GAP_ROOT, "src/streams.c:READ_GAP_ROOT" },
 
     { "LOG_TO", 1L, "filename", 
-      FuncLOG_TO, "src/sreams.c:LOG_TO" },
+      FuncLOG_TO, "src/streams.c:LOG_TO" },
 
     { "LOG_TO_STREAM", 1L, "filename", 
-      FuncLOG_TO_STREAM, "src/sreams.c:LOG_TO_STREAM" },
+      FuncLOG_TO_STREAM, "src/streams.c:LOG_TO_STREAM" },
 
     { "CLOSE_LOG_TO", 0L, "", 
-      FuncCLOSE_LOG_TO, "src/sreams.c:CLOSE_LOG_TO" },
+      FuncCLOSE_LOG_TO, "src/streams.c:CLOSE_LOG_TO" },
 
     { "INPUT_LOG_TO", 1L, "filename", 
-      FuncINPUT_LOG_TO, "src/sreams.c:INPUT_LOG_TO" },
+      FuncINPUT_LOG_TO, "src/streams.c:INPUT_LOG_TO" },
 
     { "INPUT_LOG_TO_STREAM", 1L, "filename", 
-      FuncINPUT_LOG_TO_STREAM, "src/sreams.c:INPUT_LOG_TO_STREAM" },
+      FuncINPUT_LOG_TO_STREAM, "src/streams.c:INPUT_LOG_TO_STREAM" },
 
     { "CLOSE_INPUT_LOG_TO", 0L, "", 
-      FuncCLOSE_INPUT_LOG_TO, "src/sreams.c:CLOSE_INPUT_LOG_TO" },
+      FuncCLOSE_INPUT_LOG_TO, "src/streams.c:CLOSE_INPUT_LOG_TO" },
 
     { "OUTPUT_LOG_TO", 1L, "filename", 
-      FuncOUTPUT_LOG_TO, "src/sreams.c:OUTPUT_LOG_TO" },
+      FuncOUTPUT_LOG_TO, "src/streams.c:OUTPUT_LOG_TO" },
 
     { "OUTPUT_LOG_TO_STREAM", 1L, "filename", 
-      FuncOUTPUT_LOG_TO_STREAM, "src/sreams.c:OUTPUT_LOG_TO_STREAM" },
+      FuncOUTPUT_LOG_TO_STREAM, "src/streams.c:OUTPUT_LOG_TO_STREAM" },
 
     { "CLOSE_OUTPUT_LOG_TO", 0L, "", 
-      FuncCLOSE_OUTPUT_LOG_TO, "src/sreams.c:CLOSE_OUTPUT_LOG_TO" },
+      FuncCLOSE_OUTPUT_LOG_TO, "src/streams.c:CLOSE_OUTPUT_LOG_TO" },
 
     { "Print", -1L, "args",
       FuncPrint, "src/streams.c:Print" },
@@ -1752,55 +2032,68 @@ static StructGVarFunc GVarFuncs [] = {
       FuncRemoveFile, "src/streams.c:RemoveFile" },
 
     { "LastSystemError", 0L, "", 
-      FuncLastSystemError, "src/sreams.c:LastSystemError" },
+      FuncLastSystemError, "src/streams.c:LastSystemError" },
 
     { "IsExistingFile", 1L, "filename", 
-      FuncIsExistingFile, "src/sreams.c:IsExistingFile" },
+      FuncIsExistingFile, "src/streams.c:IsExistingFile" },
 
     { "IsReadableFile", 1L, "filename",
-      FuncIsReadableFile, "src/sreams.c:IsReadableFile" },
+      FuncIsReadableFile, "src/streams.c:IsReadableFile" },
 
     { "IsWritableFile", 1L, "filename",
-      FuncIsWritableFile, "src/sreams.c:IsWritableFile" },
+      FuncIsWritableFile, "src/streams.c:IsWritableFile" },
 
     { "IsExecutableFile", 1L, "filename",
-      FuncIsExecutableFile, "src/sreams.c:IsExecutableFile" },
+      FuncIsExecutableFile, "src/streams.c:IsExecutableFile" },
 
     { "IsDirectoryPath", 1L, "filename",
-      FuncIsDirectoryPath, "src/sreams.c:IsDirectoryPath" },
+      FuncIsDirectoryPath, "src/streams.c:IsDirectoryPath" },
 
     { "CLOSE_FILE", 1L, "fid",
-      FuncCLOSE_FILE, "src/sreams.c:CLOSE_FILE" },
+      FuncCLOSE_FILE, "src/streams.c:CLOSE_FILE" },
 
     { "INPUT_TEXT_FILE", 1L, "filename",
-      FuncINPUT_TEXT_FILE, "src/sreams.c:INPUT_TEXT_FILE" },
+      FuncINPUT_TEXT_FILE, "src/streams.c:INPUT_TEXT_FILE" },
 
     { "OUTPUT_TEXT_FILE", 2L, "filename, append",
-      FuncOUTPUT_TEXT_FILE, "src/sreams.c:OUTPUT_TEXT_FILE" },
+      FuncOUTPUT_TEXT_FILE, "src/streams.c:OUTPUT_TEXT_FILE" },
 
     { "IS_END_OF_FILE", 1L, "fid",
-      FuncIS_END_OF_FILE, "src/sreams.c:IS_END_OF_FILE" },
+      FuncIS_END_OF_FILE, "src/streams.c:IS_END_OF_FILE" },
 
     { "POSITION_FILE", 1L, "fid",
-      FuncPOSITION_FILE, "src/sreams.c:POSITION_FILE" },
+      FuncPOSITION_FILE, "src/streams.c:POSITION_FILE" },
 
     { "READ_BYTE_FILE", 1L, "fid",
-      FuncREAD_BYTE_FILE, "src/sreams.c:READ_BYTE_FILE" },
+      FuncREAD_BYTE_FILE, "src/streams.c:READ_BYTE_FILE" },
 
     { "READ_LINE_FILE", 1L, "fid",
-      FuncREAD_LINE_FILE, "src/sreams.c:READ_LINE_FILE" },
+      FuncREAD_LINE_FILE, "src/streams.c:READ_LINE_FILE" },
 
     { "SEEK_POSITION_FILE", 2L, "fid, pos",
-      FuncSEEK_POSITION_FILE, "src/sreams.c:SEEK_POSITION_FILE" },
+      FuncSEEK_POSITION_FILE, "src/streams.c:SEEK_POSITION_FILE" },
 
     { "WRITE_BYTE_FILE", 2L, "fid, byte",
-      FuncWRITE_BYTE_FILE, "src/sreams.c:WRITE_BYTE_FILE" },
+      FuncWRITE_BYTE_FILE, "src/streams.c:WRITE_BYTE_FILE" },
 
     { "WRITE_STRING_FILE_NC", 2L, "fid, string",
-      FuncWRITE_STRING_FILE_NC, "src/sreams.c:WRITE_STRING_FILE_NC" },
+      FuncWRITE_STRING_FILE_NC, "src/streams.c:WRITE_STRING_FILE_NC" },
+
+    { "READ_STRING_FILE", 1L, "fid",
+      FuncREAD_STRING_FILE, "src/streams.c:READ_STRING_FILE" },
+
+    { "FD_OF_FILE", 1L, "fid",
+      FuncFD_OF_FILE, "src/streams.c:FD_OF_FILE" },
+
+#if !SYS_MAC_MWC
+#if HAVE_SELECT
+    { "UNIXSelect", 5L, "inlist, outlist, exclist, timeoutsec, timeoutusec",
+      FuncUNIXSelect, "src/streams.c:UNIXSelect" },
+#endif
+#endif
 
     { "ExecuteProcess", 5L, "dir, prg, in, out, args",
-      FuncExecuteProcess, "src/sreams.c:ExecuteProcess" },
+      FuncExecuteProcess, "src/streams.c:ExecuteProcess" },
 
     { 0 }
 

@@ -244,7 +244,8 @@ InstallMethod( ViewObj,
     "for a polynomial ring",
     true,
     [ IsPolynomialRing ],
-    0,
+    # override the higher ranking FLMLOR method
+    RankFilter(IsFLMLOR),
 
 function( obj )
     Print( "PolynomialRing(..., ",
@@ -260,11 +261,19 @@ InstallMethod( PrintObj,
     "for a polynomial ring",
     true,
     [ IsPolynomialRing ],
-    0,
+    # override the higher ranking FLMLOR method
+    RankFilter(IsFLMLOR),
 
 function( obj )
-    Print( "PolynomialRing( ", LeftActingDomain( obj ), ", ",
-        IndeterminatesOfPolynomialRing(obj), " )" );
+local i,f;
+    Print( "PolynomialRing( ", LeftActingDomain( obj ), ", [");
+    f:=false;
+    for i in IndeterminatesOfPolynomialRing(obj) do
+      if f then Print(", ");fi;
+      Print("\"",i,"\"");
+      f:=true;
+    od;
+    Print("] )" );
 end );
 
 

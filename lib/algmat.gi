@@ -1441,6 +1441,24 @@ InstallOtherMethod( DirectSumOfAlgebras,
 
 #############################################################################
 ##
+#M  Units( <A> )  . . . . . . for a full matrix algebra (over a finite field)
+##
+InstallMethod( Units,
+    "for a full matrix algebra (over a finite field)",
+    [ IsAlgebra and IsFullMatrixModule and IsFFECollCollColl ],
+    function( A )
+    local F;
+    F:= LeftActingDomain( A );
+    if IsField( F ) and IsFinite( F ) then
+      return GL( DimensionOfVectors( A )[1], Size( F ) );
+    else
+      TryNextMethod();
+    fi;
+    end );
+
+
+#############################################################################
+##
 #F  EmptyMatrix( <char> )
 ##
 InstallGlobalFunction( EmptyMatrix, function( char )

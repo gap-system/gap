@@ -133,7 +133,14 @@ end );
 ##  (Note that `InstallFlushableValue' makes sense only for *mutable*
 ##  global lists.)
 ##
-BIND_GLOBAL( "InstallValue", CLONE_OBJ );
+BIND_GLOBAL( "InstallValue", function ( gvar, value )
+    if (not IsBound(REREADING) or REREADING = false) and not
+       IsToBeDefinedObj( gvar ) then
+        Error("InstallValue: a value has been installed already");
+    else
+        CLONE_OBJ (gvar, value);
+    fi;
+end);
 
 BIND_GLOBAL( "InstallFlushableValue", function( gvar, value )
     local initval;
@@ -147,7 +154,12 @@ BIND_GLOBAL( "InstallFlushableValue", function( gvar, value )
     
     
     # Initialize the variable.
-    CLONE_OBJ( gvar, value );
+    if (not IsBound(REREADING) or REREADING = false) and not
+       IsToBeDefinedObj( gvar ) then
+        Error("InstallFlushableValue: a value has been installed already");
+    else
+        CLONE_OBJ (gvar, value);
+    fi;
 
     # Install the method to flush the cache.
     InstallMethod( FlushCaches,

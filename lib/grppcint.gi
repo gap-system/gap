@@ -245,6 +245,9 @@ end;
 ZassenhausIntersection := function( pcgs, pcgsN, pcgsU )
     local sw, m, ins, g, new;
 
+    if Length(pcgsN)=0 then
+      return SubgroupByPcgs( GroupOfPcgs( pcgs ), pcgsN );
+    fi;
     # If  <N>  is  composition subgroup, no calculation is needed. We can use
     # weights instead. Otherwise 'IntersectionSumAgGroup' will do the work.
     sw := DepthOfPcElement( pcgs, pcgsN[1] );
@@ -310,8 +313,8 @@ function( U, V )
 
     # compute nice pcgs's
     pcgs  := SpecialPcgs(home);
-    pcgsU := InducedPcgsWrtSpecialPcgs( U );
-    pcgsV := InducedPcgsWrtSpecialPcgs( V );
+    pcgsU := InducedPcgs(pcgs, U );
+    pcgsV := InducedPcgs(pcgs, V );
 
     # test if one the groups is known to be normal
     if IsNormal( G, U ) then

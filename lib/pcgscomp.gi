@@ -139,28 +139,28 @@ end );
 ##
 #M  ExponentsOfPcElement( <pcgs>, <elm> )
 ##
-InstallMethod( ExponentsOfPcElement,
-    "pc series",
-    IsCollsElms,
-    [ IsPcgs,
-      IsObject ],
-    0,
+InstallMethod( ExponentsOfPcElement, "pc series", IsCollsElms,
+    [ IsPcgs, IsObject ], 0,
 
 function( pcgs, elm )
-    local   series,  exps,  id,  depth,  exp;
+local   series,  exps,  id,  depth,  exp,ml;
 
     series := PcSeries(pcgs);
     exps   := ListWithIdenticalEntries(Length(pcgs),0);
     id     := OneOfPcgs(pcgs);
     depth  := 1;
+    ml:=Length(pcgs)+1;
 
     while elm <> id  do
         while elm in series[depth]  do
-            depth := depth + 1;
+	  depth := depth + 1;
         od;
         exp := 0;
         repeat
             exp := exp+1;
+	    if depth<2 or depth>ml then
+	      return fail;
+	    fi;
             elm := LeftQuotient( pcgs[depth-1], elm );
         until elm in series[depth];
         exps[depth-1] := exp;

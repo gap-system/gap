@@ -92,7 +92,7 @@ Revision.ffe_gd :=
 ##
 DeclareCategoryKernel( "IsFFE",
     IsScalar and IsAssociativeElement and IsCommutativeElement
-    and IsAdditivelyCommutativeElement,
+    and IsAdditivelyCommutativeElement and IsZDFRE,
     IS_FFE );
 
 DeclareCategoryCollections( "IsFFE" );
@@ -185,10 +185,11 @@ DeclareGlobalFunction( "LargeGaloisField" );
 ##  and a root of <pol> in the new field is accessible as the value of
 ##  `RootOfDefiningPolynomial' (see~"RootOfDefiningPolynomial").
 ##
-##  Note that the subfield over which a field was constructed determines
-##  over which field the Galois group, conjugates, norm, trace, minimal
-##  polynomial, and trace polynomial are computed (see~"GaloisGroup.field",
-##  "Conjugates", "Norm", "Trace", "MinimalPolynomial", "TracePolynomial").
+##  Note that the subfield over which a field was constructed determines over
+##  which  field  the  Galois  group,  conjugates,   norm,   trace,   minimal
+##  polynomial, and trace polynomial are  computed  (see~"GaloisGroup!of field",
+##  "Conjugates", "Norm", "Trace!for field elements", "MinimalPolynomial!over
+##  a field", "TracePolynomial").
 ##
 ##  The field is regarded as a vector space (see~"Vector Spaces") over the
 ##  given subfield, so this determines the dimension and the canonical basis

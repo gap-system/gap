@@ -1,46 +1,133 @@
 #!/usr/bin/perl -w
 # was: /usr/bin/perl -w
 #
-# Script to convert the GAP manual to HTML
-# usage convert.pl [-cs] [-n sharepkg] <doc-directory> [<html-directory>]
+# Script to convert GAP manual TeX files to HTML
+# Usage:
+#  convert.pl [-csti] [-f <frontpage>] [-n <sharepkg>] <doc-dir> [<html-dir>]
 #
-# Caveats: 
+#  Caveats: 
 #
-#  1. This script assumes that the .toc file is up-to-date with the .tex files
-#     and will almost certainly fail horribly if this is not true
+#  1. This script assumes that the .toc, .lab and .bbl files are up-to-date 
+#     with the .tex files and will almost certainly fail horribly if they
+#     are not.
 #
 #  2. The output files are CxxxSxxx.htm, (not .html) plus chapters.htm,
-#     theindex.htm and biblio.htm. A (front page) 
-#     file index.htm is assumed, but not created
-#     Not all servers will serve .htm files as HTML without adjustments
+#     theindex.htm and biblio.htm, except when called with the -c option
+#     (in which case, there are CHAPxxx.htm files instead of CxxxSxxx.htm).
+#     A (front page) file index.htm is assumed, but not created.
+#     Not all servers will serve .htm files as HTML without adjustments.
 #
-#  3. The script assumes that the .tex files comply with GAP conventions, including
-#     unwritten ones. It tries to follow the behaviour of the on-line browser
+#  3. The script assumes that the .tex files comply with GAP conventions, 
+#     including unwritten ones. It tries to follow the behaviour of TeX
+#     assuming those conventions. The on-line browser attempts to provide
+#     an ASCII equivalent. See BUGS.
+#
+#  4. The hierarchy of the HTML manuals assumed is of the following form:
+#
+#         <GAPDIR>/
+#                 doc/
+#                    htm/
+#                       <main>
+#                 pkg/
+#                    <pkg>/
+#                         htm
+#
+#     for each main manual <main> (in: ref, ext, tut, prg, new) and each
+#     share package <pkg>. To make inter-linking between manuals work,
+#     one should generally use the -c option for everything, (or not use
+#     it for everything). Linking to share package manuals from the main
+#     manual can only be expected to work if the share package manuals
+#     are created using this converter.
+#
+#  5. Only the manual.lab files for books that are referenced via the
+#     \UseReferences commands in the manual.tex file of the book being
+#     converted (and the book's own manual.lab file, of course) are
+#     read. Make sure all the \UseReferences commands needed are present!
+#     (The TeX-produced manuals will be missing lots of cross-references
+#     also, if some are missing.) You will get `Bad link' messages if you
+#     have some missing.
 #
 #  Options:
 #
-#    -c  file-per-chapter mode -- generates one HTML file CHAPxxx.htm for each chapter
-#        sections are level 2 headings and anchors CHAPxxx.htm#SECTxxx. This is intended
-#        for local browsing, especially under MS-DOS
+#    -c  file-per-chapter mode: Generates one HTML file CHAPxxx.htm 
+#        for each chapter; sections are level 2 headings and anchors 
+#        CHAPxxx.htm#SECTxxx.
+#        This is intended for local browsing, especially under MS-DOS.
+#        It may be used with the -n (share package) option.
 # 
-#    -s  silent running. Conversational messages are suppressed.
+#    -f <frontpage> 
+#        Adds a "Top" link to link <frontpage> to each manual page, 
+#        only available if -n option is also used.
+# 
+#    -s  silent running: Conversational messages are suppressed.
 #
-#    -n sharepkg
+#    -n <sharepkg>
 #        We are not building the main manual but the one for the share
 #        package <sharepkg>. To get cross references to the main library
 #        right, it assumes that the share package is in the right place.
+#        The -c option may be used with this option.
 #
-#    -i index: Only one index file is produced.
+#    -i  index: Only one index file is produced.
 #
-#    -t tex-math: run `tth' (which must be installed on the local system) to
-#       produce better HTML code for formulae. (it would be possible to
-#       replace tth by another conversion, for example TeXexplorer).
+#    -t  tex-math: Runs `tth' (which must be installed on the local system)
+#        to produce better HTML code for formulae. (It would be possible to
+#        replace tth by another conversion, for example TeXexplorer, but
+#        (at least) the line calling `tth' would need to be modified.)
 #
-#    html-directory defaults to the current director,
+#    <doc-dir>  The directory where all the needed .tex, .toc, .lab and .bbl
+#               files are located.
+#
+#    <html-dir> The directory (which should already exist) in which to put 
+#               the generated .htm files. Defaults to the current directory,
+#               if omitted.
 #
 #    Example usage:
-#      convert.pl -n mypkg doc htm
+#      convert.pl -n mypkg doc htm       # in directory .../pkg/mypkg
+#      convert.pl -t -n mypkg doc htm    # ditto previous + use tth for maths
+#      convert.pl -t -n mypkg -c doc htm # ditto previous + 1 file per chapter
+#      convert.pl -t -c ../ref ref       # (for Ref manual) in dir .../doc/htm
 #
+#  FEATURES (and intended departures from the TeX behaviour)
+#     .  Now interprets 2nd argument of an \atindex command if it is
+#        of form @... and ignores the first argument, or otherwise it
+#        interprets the first argument. Interprets ! as a comma and
+#        indices output have no sub-headers.
+#     .  The @... component of \> commands is ignored. The assumption
+#        is that for: \>`...'{...}@{...}  the @{...} component is just
+#        the {...} with font changes.
+#     .  In a \beginitems ... \enditems environment everything is indented
+#        except for the item headers, rather than just the paragraph
+#        following the item header.
+#     .  There are spacing differences e.g. \begintt ... \endtt etc.
+#        environments are not indented.
+#     .  Supports all accents of TeX, in probably the best way currently
+#        possible with HTML.
+#     .  Treats PseudoInput chapters in the `same' way as Input chapters.
+#     .  With -t switch announces the version of TtH used.
+#     .  Now supports %display{nontex}, %display{nontext} and
+#        %display{nonhtml} variants of %display environment.
+#
+#  BUGS (and known departures from the TeX behaviour)
+#     .  Doesn't interpret macros in 2nd argument of \atindex.
+#     .  References to subsections are actually interpreted as links
+#        to the start of the section containing the subsection.
+#     .  $a.b$ is only interpreted correctly in -t mode.
+#     .  The citation keys that appear are the .bib file keys rather
+#        than the keys BibTeX constructs with the `alpha' bib-style.
+#
+#  TODO
+#     .  Refine macro_replace subroutine so it can also be used to purge 
+#        2nd arg of \atindex macros.
+#     .  For -t mode, scan for \def commands in manual.tex and write
+#        to TTHIN (tthmacros.tex). Should we only look for a block
+#        demarcated by %mathsmacros ... %endmathsmacros ?
+#        These \def commands are only intended for such font
+#        changing commands as: \def\B{{\cal B}} (`tth' provides a
+#        script-type font).
+#     .  Provide a table environment, if/when a \begintable ...
+#        \endtable environment is added to gapmacro.tex.
+#
+#############################################################################
 
 # Check PERL version
 #
@@ -59,22 +146,56 @@ use Getopt::Std;
 #  IN    -- the current input file (outputfiles are handled by select)
 #  $footer -- the trailer put on every page
 #  $indexcount -- used within chapters to number the index anchors
+#  $lastnumchap -- number of last numerically numbered chapter
 #
 
-
-# getchaps:
-#
-# Scan the .tex and .toc files to get chapter names and numbers, 
-# section names and numbers and associated filenames Loads up chapters and
-# sections_by_name
-#
 
 # These match chapter and section lines in a .toc file
 #
 
-$chapexp = '\\\\chapcontents\s+\{(\d+)\}\s*\{(.+)\}\s*\{\d+\}';
-$secexp = '\\\\seccontents\s+\{(\d+)\.(\d+)\}\s*\{(.+)\}\s*\{\d+\}';
+$chapexp = '\\\\chapcontents\s+\{((?:\d+|[A-Z]))\}\s*\{(.+)\}\s*\{\d+\}';
+$secexp = '\\\\seccontents\s+\{((?:\d+|[A-Z]))\.(\d+)\}\s*\{(.+)\}\s*\{\d+\}';
 #$ignoreexp = '\\\\tocstrut|\\\\appno|\\\\seccontents\s+\{\d+\}';
+$lastnumchap = 0;
+
+# Variable that is set to 2 inside a nest of \itemitem s of a
+# \beginlist ... \endlist environment
+#
+
+$listdepth = 0;
+
+# This is augmented each time a line: \Package{...} is read in a manual.tex
+# file, so that macro_replace knows to set a {\...} macro in sans-serif.
+#
+
+$sharepkg = "";
+
+# sansserif:
+#
+# Used mainly to set GAP in sans serif font. Inside <title> ... </title>
+# there should *not* be any tags, since they are not translated there by
+# web browsers, and hence sansserif should *not* be applied to anything
+# that ends up in the <title> ... </title> field, but *is* quite appropriate
+# for the header in the <h1> ... </h1> field at the top of the body of an
+# HTML file and anywhere else within the body of an HTML file.
+#
+sub sansserif {
+    my ($name) = @_;
+    return "<font face=\"Gill Sans,Helvetica,Arial\">$name</font>";
+}
+
+# booktitle_body:
+#
+# This is for generating the title of a document that goes in the 
+# <h1> ... </h1> field at the top of the body, as opposed to the title 
+# that goes in the <title> ... </title> field which should be unembellished.
+#
+sub booktitle_body {
+    my ($bktitle, $prog_or_pkg) = @_;
+    $newstring = sansserif $prog_or_pkg;
+    $bktitle =~ s/$prog_or_pkg/$newstring/;
+    return $bktitle;
+}
 
 #
 # used to standardize section names for use as hash indices.
@@ -94,13 +215,48 @@ sub kanonize {
     $key;
 }
 
+sub def_section_by_name {
+    my ($sec, $chapno, $secno) = @_;
+    my $secname = canonize $1;
+    if (defined $sections_by_name{$secname}) {
+        if (($sections_by_name{$secname}->{chapnum} ne $chapno) ||
+            ($sections_by_name{$secname}->{secnum}  ne $secno)) {
+            print STDERR "Section: \"$secname\" already defined as: ",
+                         "$sections_by_name{$secname}->{chapnum}.",
+                         "$sections_by_name{$secname}->{secnum}\n";
+            print STDERR "Now being redefined as: $chapno.$secno\n";
+            $redefined_secname{$secname} = 1;
+        } else {
+            return;
+        }
+    }
+    $sections_by_name{$secname}
+         = {chapnum => $chapno,
+            secnum  => $secno};
+}
+
+sub tonum { # Needed since chanu may be A,B,... for appendices
+    my ($chanu) = @_;
+    return $chanu =~ /\d+/ ? $chanu : $lastnumchap + ord($chanu) - ord('A') + 1;
+}
+
+# getchaps:
+#
+# Scan the .tex and .toc files to get chapter names and numbers, 
+# section names and numbers and associated filenames.
+# Loads up chapters and sections_by_name.
+#
+
 sub getchaps {
-    open TOC, ( "${dir}manual.toc" ) || die "Can't open ${dir}manual.toc";
-    my ($chap,$sec,$chapno,$chap_as_sec);
+    open( TOC, "<${dir}manual.toc" ) 
+        || die "Can't open ${dir}manual.toc.\n You can " .
+               "create the .toc file by doing: tex manual (at least once).\n";
+    my ($chap,$sec,$chapno,$chap_as_sec,$chapnam,$chanu);
     while (<TOC>) {
         if ( /$chapexp/o ) {
 	    $chapnam = $2;
 	    $chanu   = $1;
+            $lastnumchap = $chanu if ( $chanu =~ /\d+/ );
 		
 	    # remove `(preliminary)' part that messes everything up
 	    $chapnam =~ s/ \(preliminary\)//g;
@@ -112,57 +268,70 @@ sub getchaps {
                             secnum => 0,
                             chapter => $chap};
             $chap->{sections}[0] = $chap_as_sec;
-            if (defined ($chapters[$chanu])) {
-                die ("chapter number repeated");
-            }
-            $chapters[$chanu] = $chap;
+            defined ($chapters[tonum $chanu]) && die "chapter number repeated";
+            $chapters[tonum $chanu] = $chap;
         } elsif ( /$secexp/o ) {
-            if (not defined ($chapters[$1])) {
-                die ("section $2:$3 in unknown chapter $1");
-            }
-            if (defined ( $chapters[$1]{sections}[$2])) {
-                die "section number repeated";
-            }
+            defined ($chapters[tonum $1])
+                || die "section $2:$3 in unknown chapter $1";
+            defined ($chapters[tonum $1]{sections}[$2]) 
+                && die "section number repeated";
             $sec = {name => $3,
                     secnum => $2, 
                     chapnum => $1,
-                    chapter => $chapters[$1]};
-            $chapters[$1]{sections}[$2] = $sec;
+                    chapter => $chapters[tonum $1]};
+            $chapters[tonum $1]{sections}[$2] = $sec;
 # this would produce warnings from empty chapters. Thus ignore.
 #        } elsif ( $_ !~ /$ignoreexp/o ) {
 #            print STDERR "Bad line: $_";
         }
     }
     close TOC;
-    open TEX, ("${dir}manual.tex") || die "Can't open ${dir}manual.tex";
+    open (TEX, "<${dir}manual.tex") || die "Can't open ${dir}manual.tex";
     $chapno = 0;
     while (<TEX>) {
-        if ( /^[^%]*\\Input\{(.+)\}/ ) {
-            if (not -f "$dir$1.tex" or not -r "$dir$1.tex") {
-                print STDERR "Chapter file $1.tex does not exist in $dir\n";
+        if ( /^[^%]*\\(|Pseudo)Input\{([^}]+)\}(\{([^}]+)\}\{([^}]+)\})?/ ) {
+            if (not -f "$dir$2.tex" or not -r "$dir$2.tex") {
+                print STDERR "Chapter file $2.tex does not exist in $dir\n";
             }
-            $chapters[++$chapno]{file} = $1;
-        }
+            if ($1 eq "") {
+                $chapters[++$chapno]{file} = $2;
+            } else {
+       	        $chapnam = $5;
+	        $chanu   = ++$chapno;
+                $lastnumchap = $chanu;
+
+                $chap = {name => $chapnam,  
+                         number => $chanu};
+                $chap_as_sec = {name => $chapnam,
+                                chapnum => $chanu, 
+                                secnum => 0,
+                                chapter => $chap};
+                if ($4 ne $5) {
+                    def_section_by_name("$book:$chapnam", $chanu, 0);
+                    add_to_index(htm_fname($opt_c,$chanu,0), $4, $chap_as_sec);
+                }
+
+                $chap->{sections}[0] = $chap_as_sec;
+                defined($chapters[$chanu]) && die "chapter number repeated";
+                $chapters[$chanu] = $chap;
+                $chapters[$chanu]{file} = $2;
+            }
+        } 
     }
     close TEX;
 }
 
 sub getlabs {
-    my ($bok) = @_;
-    open LAB, ("$dir../$bok/manual.lab") ||
-        die "Can't open $dir../$bok/manual.lab";
+    my ($bkdir) = @_;
+    open (LAB, "<${bkdir}manual.lab") || die "Can't open ${bkdir}manual.lab";
     while (<LAB>) {
-        if ( /\\makelabel\s*\{([^}]+)\}\s*\{(\d+)\.(\d+)\}/ ) {
-            $sections_by_name{canonize $1} = {chapnum => $2,
-                                              secnum => $3};
-        } elsif ( /\\makelabel\s*\{([^}]+)\}\s*\{(\d+)\.(\d+)\.(\d+)\}/ ) {
-            $sections_by_name{canonize $1} = {chapnum => $2,
-                                              secnum => $3};
-        } elsif ( /\\makelabel\s*\{([^}]+)\}\s*\{(\d+)\}/ ) {
-            $sections_by_name{canonize $1} = {chapnum => $2,
-                                              secnum => 0};
+        if ( /\\setcitlab/ ) {
+            next; # We don't get the bibliography labels from here
+        } elsif (/\\makelabel\s*\{([^}]+)\}\s*\{(\w+)(\.(\d+))?(\.(\d+))?\}/) {
+            def_section_by_name($1, $2, (defined($3) ? $4 : 0));
         } else {
-            print STDERR "Ignored line: $_ in $bok";
+            chomp;
+            print STDERR "Ignored line: $_\n... in ${bkdir}manual.lab\n";
         }
     }
     close LAB;
@@ -191,51 +360,72 @@ sub printchaps {
 }
 
 # Printed at the bottom of every page.
-$footer = "<P>\n<address>GAP 4 manual<br>" .
-    `date +"%B %Y"` . "</address></body></html>";
+$footer = "<P>\n" . sansserif( "GAP 4 manual<br>" . `date +"%B %Y"` ) .
+          "</body></html>";
 
 
-# The names of the section and chapter files are determined by this routine.
-sub name2fn {
-    my ($name,$ischap) = @_;
-    my $bdir = "";
-
-    # : indicates a cross-volume reference
-    if (($name =~ /^(ref):(.+)$/) || ($name =~ /^(tut):(.+)$/) ||($name =~ /^(new):(.+)$/) ||
-	($name =~ /^(ext):(.+)$/) || ($name =~ /^(prg):(.+)$/)) {
-      if ($mainman==1) {
-	$bdir = "../$1/";
-      }
-      else {
-	@word = split /:/ ,$name;
-        $bdir = "../../../doc/htm/$word[0]/";
-      }
-    }
-    elsif ($name =~ /^($book):(.+)$/) {
-      my $bdir = "";
-    } else {
-        $name = "$book:$name";
-    }
-    
-    my $sec = $sections_by_name{canonize $name};
-
-    unless (defined ( $sec)) {
-        return "badlink:$name";
-    }
-    my ($cnum,$snum) = ($sec->{chapnum},$sec->{secnum});
-    if ($ischap == 1) {$snum=0}; # if we want a chapter reference
+# The names of the section and chapter files are determined by this routine
+# directly if the chapter and section number is known.
+sub htm_fname {
+    my ($c_or_main,$cnum,$snum) = @_;
 
     $cnum = "0" x (3 - length $cnum) . $cnum;
     $snum = "0" x (3 - length $snum) . $snum;
-    if ($opt_c) {
+    if ($c_or_main) {
         if ($snum eq "000") {
-            return "${bdir}CHAP${cnum}.htm";
+            return "CHAP${cnum}.htm";
         } else {
-            return "${bdir}CHAP${cnum}.htm#SECT${snum}";
+            return "CHAP${cnum}.htm#SECT${snum}";
         }
     } else {
-        return "${bdir}C${cnum}S$snum.htm";
+        return "C${cnum}S$snum.htm";
     }
+}
+
+# The names of the section and chapter files are determined by this routine
+# when one has to determine the chapter and section number indirectly.
+sub name2fn {
+    my ($name,$ischap) = @_;
+    my $bdir = "";
+    my $c_or_mainref = $opt_c;
+
+    # : indicates a cross-volume reference
+    my $canon_name = canonize $name;
+    if ( $canon_name =~ /^(ref|tut|ext|prg|new):/ ) {
+      if ($mainman==1) {
+	$bdir = "../$1/";
+      } else {
+        $bdir = "../../../doc/htm/$1/";
+        # If this is a cross-reference to a main manual
+        # we have to make an assumption on whether that main manual
+        # was processed with the -c option. We assume it was.
+        $c_or_mainref = 1;
+      }
+    } elsif ($canon_name =~ /^([a-zA-Z_0-9]*):/ ) {
+      # presumably a package name
+      if ($mainman==1) {
+	$bdir = "../../../pkg/$1/htm/";
+      } else {
+	$bdir = "../../$1/htm/";
+      }
+    } elsif ($canon_name !~ /^($book):/) {
+        $name = "$book:$name";
+        $canon_name = canonize $name;
+    }
+    
+    if (exists $redefined_secname{$canon_name}) {
+        print STDERR "Ref to multiply defined label: ",
+                     "\"$name\" at line $. of $chap->{file}.tex\n";
+    }
+    my $sec = $sections_by_name{$canon_name};
+
+    unless (defined ( $sec)) {
+        print STDERR "Bad link: \"$name\" at line $. of $chap->{file}.tex\n";
+        return "badlink:$name";
+    }
+    return $bdir . htm_fname($c_or_mainref,
+                             $sec->{chapnum}, 
+                             ($ischap == 1) ? 0 : $sec->{secnum});
 }
 
 
@@ -247,29 +437,43 @@ sub name2linktext {
   return $name;
 }
 
-# Add an index entry.
+#
+# Add an index entry to the index. 
+# ($hname = $fname or $fname#..., where $fname is a filename)
+sub add_to_index {
+    my ($hname, $key, $sec) = @_;
+    push @{$index{$key}}, [ $hname, "$sec->{chapnum}.$sec->{secnum}" ];
+#   print STDERR "hname = $hname, key = $key, ";
+#   print STDERR "sec = $sec->{chapnum}.$sec->{secnum}\n";
+}
+
+#
+# Create a label for an index entry, add it to the index if new,
+# and return the label (which is an empty string if not new).
 sub inxentry {
     my ($fname,$key,$sec) = @_;
-    my $new=1;
     my $curs="$sec->{chapnum}.$sec->{secnum}";
-    unless (defined $index{$key}) {
+#   print STDERR "curs = $curs\n";
+#   print STDERR "fname = $fname, key = $key, ";
+#   print STDERR "sec = $sec->{chapnum}.$sec->{secnum}\n";
+    my $label = "<a name = \"I$indexcount\"></a>\n";
+    if (defined $index{$key}) {
+        my $ar;
+        foreach $ar (@{$index{$key}}) {
+	    if ( ($ar->[1]) eq $curs ) {
+	       $label="";  # index entry is not new
+               last;
+	    }
+        }
+    } else {
         $index{$key} = [];
     }
-    else {
-      my $ar;
-      for $ar (@{$index{$key}}) {
-	if ( ($ar->[1])==$curs ) {
-	  $new=0;
-	}
-      }
+    if ($label ne "") {
+        add_to_index("$fname#I$indexcount", $key, $sec);
+#       print STDERR "$fname#I$indexcount\n";
+        $indexcount++;
     }
-    my $result="";
-    if ($new==1) {
-      $result = "<a name = \"I$indexcount\"></a>\n";
-      push @{$index{$key}}, [ "$fname#I$indexcount", $curs ];
-    }
-    $indexcount++;
-    $result;
+    return $label;
 } 
 
 
@@ -285,13 +489,17 @@ sub html_literal {
 
 # Gather lines ending in % together.
 sub gather {
-    my ($line) = @_;
+    my ($line, $nontex) = @_;
     my $nextline;
-    while ($line =~ /%+\s*$/ and $nextline = <IN>) {
-	$line = $` . $nextline;
-	chomp $line;
+    while ($line =~ s/%+\s*$// and defined($nextline = <IN>)) {
+        $nextline =~ s/^%// if $nontex;
+        unless ($nextline =~ /^%/) {
+            $nextline =~ s/^\s*//;
+	    $line .= $nextline;
+	    chomp $line;
+        }
     }
-    $line;
+    return $line;
 }
 
 
@@ -299,8 +507,8 @@ sub gather {
 # the output file is assumed to be pre-selected. The input filehandle
 # is simply IN
 # 
-# As we process, we can be in "normal" status (text), "maths" status 
-# inside $ ... $, or "verbatim" status inside a multi-line example
+# As we process, we can be in "normal" mode (text), "maths" mode 
+# inside $ ... $, or "verbatim" mode inside a multi-line example
 #
 # We separately track whether we are in bold or tt, 
 # whether we are in a xxx: .... paragraph and whether we are reading
@@ -311,10 +519,268 @@ sub gather {
 #
 
 
-$LaTeXbinops = "in|wedge|vee|cup|cap|otimes|oplus|le|ge|rightarrow";
-$EndLaTeXMacro = "(?![A-Za-z])";
-$TeXaccents = "\'`\"~^";  # ^ must come last, this is also used as regexp
-@HTMLaccents = ( "acute;", "grave;", "uml;", "tilde;", "circ;", );
+$boldcommands = 'CAS|[A-Z]|danger|exercise';
+$TeXbinops = "in|wedge|vee|cup|cap|otimes|oplus|le|ge|rightarrow";
+$EndTeXMacro = "(?![A-Za-z])";
+$TeXaccents = "\'`~=^";  # ^ must come last, this is also used as regexp
+# From these and the argument following the HTML symbol is built
+# e.g. `a -> &agrave;
+%accents = ( "\'" => "acute",  "19" => "acute",
+             "`"  => "grave",  "18" => "grave", 
+             "~"  => "tilde", "126" => "tilde",
+             "^"  => "circ",   "94" => "circ",
+             "c"  => "cedil",  "48" => "cedil",
+             "H"  => "uml",   "125" => "uml",  "127" => "uml"  );
+# These are the replacements for accents that have an empty argument
+# or for which there is no single HTML symbol (so that the accent must 
+# precede the argument)
+%acc_0arg = ( "\'" => "\'",    "19" => "\'",
+              "`"  => "`",     "18" => "`", 
+              "~"  => "~",    "126" => "~",
+              "="  => "macr",  "22" => "macr",
+              "^"  => "^",     "94" => "^",
+              "c"  => "",      "48" => "",    # too hard ... just omit
+              "d"  => "",                     # too hard ... just omit
+              "b"  => "",                     # too hard ... just omit
+              "t"  => "",                     # too hard ... just omit
+              "u"  => "\\u",   "21" => "\\u", # too hard ... put back
+              "v"  => "\\v",   "20" => "\\v", # too hard ... put back
+              "H"  => "uml",  "125" => "uml",  "127" => "uml"  );
+
+# Calls tth to find out its version number
+sub tth_version {
+    `tth -H >tthout 2> tthout`;
+    open (TTHOUT, "<tthout") || die "Can't read tthout\n";
+    while (<TTHOUT>) {
+        if (s/.*(Version [^ ]*).*/$1/) {
+            close TTHOUT;
+            system("rm tthout");
+            chomp;
+            return $_;
+        }
+    }
+}
+
+
+# We use this routine when using -t option to do any maths translation
+sub tth_math_replace {
+    my ($tth) = @_;
+    open (TTHIN, ">tthin") || die "Can't create tthin";
+#print STDERR "in: ${tth}\n";
+    my $tthorig = $tth;
+    # replace <...> by proper TeX
+    while ($tth =~ /(.*[^\\])<(.*[^\\])>(.*)/) {
+        $tth= $1."{\\it ".$2."\\/}".$3;
+    }
+    # replace `...' by proper TeX
+    while ($tth =~ /(.*[^\\])`(.*[^\\])\'(.*)/) {
+        $tth= $1."{\\tt ".$2."}".$3;
+    }
+    # replace \< by proper TeX
+    while ($tth =~ /(.*[^\\])\\<(.*)/) {
+        $tth= $1."<".$2;
+    }
+    #while ($tth =~ /(.*[^\\])\\>(.*)/) {
+    #	$tth= $1.">".$2;
+    #}
+
+    $tth =~ s/([^\\]|^)([.])/$1\\cdot /g; # . not preceded by \ becomes \cdot
+    $tth =~ s/\\[.]/./g;                  # \. becomes .
+    $tth =~ s/(\\right)\\cdot/$1./g;      # ... except for \right. (leave as is)
+    $tth =~ s/(\\not)\s*/$1/g;
+    $tth =~ s/\\\*/*/g;
+    if ($opt_t < 2.52) {
+        $tth =~ s/\\not\\in(?![a-zA-Z])/\\notin/g;
+        $tth =~ s/\\not\\subset/ not subset/g;
+    }
+    # Ensure display mode used for \buildrel and \choose constructions
+    $tth =~ s/\$/\$\$/g if ($tth =~ /\\buildrel|\\choose/ and $tth !~ /\$\$/);
+    if ($tth =~ /\\[A-Za-z]/) {
+      # there might be macros: Load our macros
+#print STDERR "tth: ${tth}\n";
+      print TTHIN "\\input tthmacros.tex\n";
+    }
+    # we put in TTHBEGIN .. TTHEND
+    # so we can strip out the superfluous <p>s
+    # tth 2.78+ puts in, later.
+    print TTHIN "TTHBEGIN${tth}TTHEND\n";
+    close TTHIN;
+    `tth -r -i <tthin >tthout 2>/dev/null`; 
+    open (TTHOUT, "<tthout") || die "Can't read tthout";
+    $tth="";
+    while ( $tthin = <TTHOUT> ) {
+      chomp($tthin);
+      $tth .= $tthin;
+    }
+    close TTHOUT;
+#print STDERR "out: ${tth}\n";
+    # only the stuff between TTHBEGIN and TTHEND
+    # actually belongs to the formula translated
+    $tth =~ s/.*TTHBEGIN(.*)TTHEND.*/$1/ 
+        || do {print STDERR "!tth failed with input:\n $tthorig\n",
+                            "!Null formula written to HTML file\n";
+               $tth = "";};
+    # tth leaves \mathbin etc. in ... get rid of them if present
+    $tth =~ s/\\math(bin|rel|op)//g;
+    # TtH up to version 2.86 doesn't know the following
+    $tth =~ s/\\wr(?![a-zA-Z])/ wr /g;
+    $tth =~ s/\\vdash(?![a-zA-Z])/ |- /g;
+    $tth =~ s/\\tilde(?![a-zA-Z])/~/g; # needed for in-line maths
+#print STDERR "stripped: ${tth}\n";
+
+    # replace italic typewriter (happens because we force
+    # italic letters) by roman typewriter style
+    while ($tth =~ /(.*)<tt><i>(.*)<\/i><\/tt>(.*)/) {
+      $tth= $1."<tt>".$2."</tt>".$3;
+    }
+
+    # increasing the font size doesn't affect maths displays
+    # ... and `...' markup doesn't get increased in font size
+    # So let's get rid of it.
+    #$tth = "<font size=\"+1\">$tth</font>";
+#print STDERR "enlarged: ${tth}\n";
+    return $tth;
+}
+
+# 
+# Takes a line of form: "<head><spaces>{<arg>}<rest>" 
+# and returns an array with: <rest>, <arg>, <head>
+# i.e. it finds the matching } for {.
+sub get_arg {
+    my ($line) = @_;
+    if ($line =~ /\s*\{([^{}]*)/) {
+        $line = $`;
+        my $arg = $1;
+        my $rest = $';
+        my $nbraces = 1;
+        while ($nbraces) {
+            if ($rest =~ s/^(\{[^{}]*)//) {
+                $arg .= $1;
+                $nbraces++;
+            } elsif ($nbraces == 1 and $rest =~ s/^\}//) {
+                $nbraces--;
+            } elsif ($rest =~ s/^(\}[^{}]*)//) {
+                $arg .= $1;
+                $nbraces--;
+            } else { # abort ... but make sure braces match
+                $rest = "{" x $nbraces . $rest;
+                $arg .= "}" x ($nbraces - 1);
+                $nbraces = 0;
+            }
+        }
+        return ($rest, $arg, $line);
+    } else {
+        print STDERR "line:$line\n";
+        die "Expected argument: at line $. of file";
+    } 
+}
+
+#
+# Given an accent macro with the \ or \accent stripped and the rest
+# of a line with the macro's argument at it beginning return the
+# HTML version of the accented argument and rest after the macro's
+# argument has been stripped from it.
+sub do_accent {
+    my ($rest, $macro) = @_;
+    $rest =~ /^(\w)|\{(\w?)\}/;
+    $rest = $';
+    my $arg = (defined $1) ? $1 : $2;
+    $macro = ($arg eq "") ? $acc_0arg{$macro} : "&$arg$accents{$macro};";
+    return ($rest, $macro);
+}
+
+#
+# Takes rest which has a TeX macro without its \ at its beginning and
+# returns the HTML version of the TeX macro and rest with the TeX macro
+# stripped from it.
+sub macro_replace {
+    my ($rest) = @_;
+    if ($rest =~ /^([$TeXaccents])\s*/) { 
+        return do_accent($', $1);
+    } 
+    if ($rest =~ /^([a-zA-Z]+)\s*/) {
+        $rest = $';
+        my $macro = $1;
+        if ($macro eq "accent") {
+            $rest =~ /^(\d+)\s*/;
+            $rest = $';
+            $macro = $1;
+            $macro = "" unless (defined $acc_0arg{$macro});
+        }
+        if (defined $accents{$macro})     { return do_accent($rest, $macro); }
+        elsif (defined $acc_0arg{$macro}) { return ($rest, $acc_0arg{$macro}); }
+        elsif ($macro eq "aa")            { return ($rest, "&aring;"); }
+        elsif ($macro eq "AA")            { return ($rest, "&Aring;"); }
+        elsif ($macro eq "lq")            { return ($rest, "`"); }
+	elsif ($macro =~ /^(rq|pif)$/)    { return ($rest, "'"); }
+        elsif ($macro =~ /^($boldcommands)$/) 
+          { return ($rest,"<font face=\"helvetica,arial\">".uc($&)."</font>"); }
+        elsif ($macro =~ /^(GAP|ATLAS|MOC$sharepkg)$/)
+          { return ($rest, sansserif $macro); }
+        elsif ($macro eq "package")
+          { my ($last, $arg, $first) = get_arg("$rest"); # $first = ""
+            return ($last, sansserif $arg);}
+        elsif ($macro eq "sf")
+          { my ($last, $arg, $first) = get_arg("{$rest"); # $first = ""
+            return ($last, sansserif $arg);}
+        elsif ($macro =~ /^([hv]box|rm|kernttindent|math(bin|rel|op))$/) 
+          { return ($rest, "");}
+        elsif ($macro =~ /^(obeylines|(begin|end)group)$/) 
+          { return ($rest, "");}
+        elsif ($macro =~ /^hfil(|l)$/)    { return ($rest, " ");}
+        elsif ($macro =~ /^break$/)       { return ($rest, "<br>");}
+        elsif ($macro =~ /^(it|sl)$/) 
+          { my ($last, $arg, $first) = get_arg("{$rest"); # $first = ""
+            return ("$arg}\\emphend $last", "<em>");}
+	# pseudo ``emph'' end token
+        elsif ($macro eq "emphend")      { return ($rest, "</em>");        }
+        elsif ($macro eq "hrule")        { return ($rest, "<hr>");         }
+        elsif ($macro eq "enspace")      { return ($rest, "&nbsp;");       }
+        elsif ($macro eq "quad")         { return ($rest, "&nbsp;");       }
+        elsif ($macro eq "qquad")        { return ($rest, "&nbsp;&nbsp;"); }
+	elsif ($macro eq "ss")           { return ($rest, "&szlig;");      }
+	elsif ($macro eq "o")            { return ($rest, "&oslash;");     }
+	elsif ($macro eq "O")            { return ($rest, "&Oslash;");     }
+        elsif ($macro =~ /^l?dots$/)     { return ($rest, "...");          }
+        elsif ($macro =~ /^bs?f|stars$/) { return ($rest, "<hr>");         }
+        elsif ($macro eq "cr")           { return ($rest, "<br>");         }
+        elsif ($macro eq "fmark")        { return ($rest, "<li>");         }
+        elsif ($macro eq "item" and $rest =~ /^\{([^}]*)\}/) 
+          { if ($listdepth == 2) {
+                $listdepth = 1;
+                return ("$1\\itmnd $'", "\n</dl>\n<dt>");
+            } else {
+                return ("$1\\itmnd $'", "<dt>"); 
+            }
+          }
+        elsif ($macro eq "itemitem" and $rest =~ /^\{([^}]*)\}/) 
+          { if ($listdepth == 2) {
+                return ("$1\\itmnd $'", "<dt>"); 
+            } else {
+                $listdepth = 2;
+                return ("$1\\itmnd $'", "<dl compact>\n<dt>");
+            }
+          }
+	# pseudo ``itemend'' character
+        elsif ($macro eq "itmnd")        { return ($rest, "<dd>");         }
+        elsif ($macro eq "cite" and $rest =~ /^\{\s*(\w+)\s*\}/) 
+          { return ($', "<a href=\"biblio.htm#$1\"><cite>$1</cite></a>"); }
+        elsif ($macro eq "URL" and $rest =~ /^\{([^\}]*)\}/) 
+          { return ($', "<a href=\"$1\">$1</a>"); }
+        elsif ($macro eq "Mailto" and $rest =~ /^\{([^\}]*)\}/) 
+          { return ($', "<a href=\"mailto:$1\">$1</a>"); }
+        else                             { return ($rest, $macro); }
+    } elsif ($rest =~ /^-/) { 
+        return ($', ""); # hyphenation help -- ignore
+    } elsif ($rest =~ /^</) { 
+        return ($', "&lt;");
+    } elsif ($rest =~ /^\&/) { 
+        return ($', "&amp;");
+    } else {
+        $rest =~ /^./;
+        return ($', $&);
+    }
+}
 
 #
 # This could probably be done more cleverly -- this routine is too long
@@ -322,57 +788,78 @@ $TeXaccents = "\'`\"~^";  # ^ must come last, this is also used as regexp
 
 sub convert_text {
     my $fname = $_[0];
-    my $refchars = '[\\w\\s-`\',.:!()?$]'; # these make up cross references
-    my $boldcommands = 'GAP|CAS|ATLAS|MOC|[A-Z]|danger|exercise';
+    my $refchars = '[\\w\\s-`\',./:!()?$]'; # these make up cross references
     my $ref = "";
-    my $endline = "";           # used for </code> at the end of line
-    my $status = "normal";
-    my ($bold,$tt,$it,$sub,$sup) = (0,0,0,0,0);
-    my ($inlist,$inref,$donepar,$skip_lines,$html) = (0,0,0,0,0);
+    my $endline = "";    # used for </code> at the end of line
+    my $mode = "normal"; # $mode can be: 
+                         #  "normal"   : TeX macros need to be interpreted
+                         #  "verbatim" : No interpretation done, except that
+                         #               || is converted to |.
+                         #  "html"     : No interpretation done, except that
+                         #               initial % is removed.
+                         #  "maths"    : A variant of "normal" where inside
+                         #               $...$ or $$...$$ (TeX's math mode)
+    my $ttenv = 0;  # $ttenv is set to 1 in \begintt .. \endtt "verbatim" mode
+    my $nontex = 0; # $nontex is set to 1 in %display{nontex} and 
+                    #  %display{nontext} env'ts, for which $mode is "normal"
+                    #  but initial % of each line is removed.
+    my $skip_lines = 0; # $skip_lines is set non-zero in %display{tex},
+                        #  %display{text}, %display{jpeg}, %display{nonhtml}
+                        #  and \answer env'ts
+    my ($bold,$tt,$it,$sub,$sup,$inlist,$inref,$donepar) = (0,0,0,0,0,0,0);
+    my ($indexarg,$indexarg2,$zwei,$drei,$vier,$macro,$endmath,$endmathstring);
 
     #
     # Now we loop over lines. a line with 16 initial % signs marks 
     # end of section
     #
 
-  LINE: while ($_ = <IN> and not /^\%{16,}/) {
+  LINE: while (defined($_ = <IN>) and not /^\%{16,}/) {
       chomp;                    # drop the trailing newline
       my $rest = $_;            # rest of the line to scan
       my $outline = "";         # build the output in here
 
       # First we deal with various special whole lines.
       # \beginexample, \begintt, %display (this may end a $skip_lines)
-      if ($status eq "normal" and
-          ($_ =~ /^\\begin(example|tt)/ or
-	   $_ =~ /^%display\{text\}/ and !$html)) {
-          $status = "verbatim";
+      if ($mode eq "normal" and /^\\begin(example|tt)/) {
+          if ($_ =~ /^\\begintt/) { # This is to catch a \begintt .. \endtt
+              $ttenv = 1;           # environment enclosing \beginexample ..
+          }                         # \endexample
+          $mode = "verbatim";
           $skip_lines = 0;
           print "<pre>\n";
           next LINE;
-      } elsif ($status eq "normal" and
-          $_ =~ /^%display\{html\}/) {
-	  $status = "html";
-	  $html = 1;  # if there was {html}, ignore subsequence {text}
+      } elsif ($mode eq "normal" and /^%display\{nontex(|t)\}/) {
+	  $nontex = 1;
           $skip_lines = 0;
           next LINE;
-      } elsif ($status eq "html" and 
-          $_ =~ /^%display\{text\}/) {
-	  $status = "text";
-	  $html = 0;  # ignore subsequence {text}
+      } elsif ($mode eq "normal" and /^%display\{(text?|jpeg|nonhtml)\}/) {
+      	  # Paragraphs to be skipped by HTML.
+	  $mode = "normal";
+          $nontex = 0;
+      	  $skip_lines = 2;
+      	  next LINE;
+      } elsif ($mode eq "normal" and /^%display\{html\}/) {
+	  $mode = "html";
           $skip_lines = 0;
+      } elsif ($mode eq "html" and /^%display\{text\}/) {
+	  $mode = "normal";
+          $nontex = 0;
+          $skip_lines = 2;
           next LINE;
-      } elsif (/^%enddisplay/) {
-	  if ($status eq "verbatim") {
+      } elsif (/^%enddisplay/ and !$ttenv) {
+	  if ($mode eq "verbatim") {
 	      print "</pre>\n";
 	  }
-	  $status = "normal";
-	  $html = 0;
+	  $mode = "normal";
+          $nontex = 0;
 	  $skip_lines = 0;
 	  next LINE;
-      } elsif ($status eq "verbatim") {
+      } elsif ($mode eq "verbatim") {
 	  # \endexample, \endtt
-	  if (/^\\end(example|tt)/) {
-	      $status = "normal";
+	  if (/^\\endtt/ or (/^\\endexample/ and !$ttenv)) {
+	      $mode = "normal";
+              $ttenv = 0;
 	      print "</pre>\n";
 	      next LINE;
 	  }
@@ -380,24 +867,29 @@ sub convert_text {
 	  if (/^\|_/) {
 	      next LINE;
 	  }
-      } elsif ($status eq "html") {
-	  if (/^%+/) {
-	      print $';
-	      print "\n";
+      } elsif ($mode eq "html") {
+	  if (/^%/) {
+	      print "$'\n";
 	  } else {
-	      print STDERR "Line $. ignored in %display{html} mode, " .
-		  "because it didn't start with %";
+	      print STDERR "Line $. ignored in \%display{html} mode, " .
+		           "because it didn't start with \%\n";
 	  }
 	  next LINE;
-      } elsif ($status eq "text") {
-	  if (/^%+/) {
-	  } else {
-	      print STDERR "Line $. erraneous in %display{text} mode, " .
-		  "because it didn't start with %";
-	  }
-	  next LINE;
+      } elsif ((!$nontex and /^%/) || 
+               (!/\\(at|)index/ and /^([{}]|\s*\{?\\[a-zA-Z].*)%$/)) {
+          # Ignore lines starting with a % except if in html or verbatim 
+          # modes (dealt with above) or if in nontex mode which we deal 
+          # with below.
+          # Also ignore specific lines ending in a % (we have to be careful 
+          # here -- % also indicates a continuation). The lines we ignore are 
+          # those that match: "{%", "}%", "{\\X..%", "\\X..%" where X denotes
+          # any letter and .. any sequence of chars. This is meant to exclude
+          # lines like "{\obeylines ... %", "\begingroup ... %". If this proves
+          # problematic the .tex files will need to use the %display{tex} env't
+          # to exclude such lines.
+          next LINE;
 
-      # The remaining special whole lines occur only in non-verbatim mode.
+      # All that's left are whole lines that occur in "normal" mode
       } else {
 	  
           # Line skipping.
@@ -407,6 +899,16 @@ sub convert_text {
 	      }
 	      next LINE;
 	  }
+
+          # Remove initial % if there is one when in %display{nontex} or
+          # %display{nontext} environment
+          if ($nontex) {
+              s/^%//;
+              $rest = $_;
+          }
+          # a '%' at end-of-line indicates a continuation
+          $_ = gather($_, $nontex);
+          
       	  # Paragraphs are ended by blank lines.
       	  if (/^\s*$/) {
 	      unless ($donepar) {
@@ -416,21 +918,16 @@ sub convert_text {
     
 	      # If we get to the end of a paragraph we assume that we have
 	      # lost track of what is going on, warn and try to resume.
-	      if ($status eq "maths" or $inref) {
-		  print STDERR "Paragraph ended in status $status at $.\n" .
-		      "reverting to normal\n";
-		  $outline .= "</I>" if ($status eq "maths");
-		  $status = "normal";
+	      if ($mode eq "maths" or $inref) {
+		  print STDERR "Paragraph ended in $mode mode at $.\n" .
+		               "reverting to normal\n";
+		  $outline .= "</I>" if ($mode eq "maths");
+		  $mode = "normal";
 	      }
       	      
 	      print $outline;
       	      next LINE;
       	  }   
-      	  # Paragraphs to be skipped by HTML.
-      	  if (/^%display\{(text?|jpeg)\}/) {
-      	      $skip_lines = 2;
-      	      next LINE;
-      	  }
           # Vertical skips.
       	  if (/^\\(med|big)skip/) {
       	      $outline .= "<p>";
@@ -440,10 +937,26 @@ sub convert_text {
       	  # Index entries --  emit an  anchor  and remember  the index
       	  # keys  for   later there may   be  several on  one line and
       	  # several references to one key
-      	  if  (/^\\index/) {
-      	      while (/\\index\{(.*?)\}/g) {
-      		  #$outline .= inxentry($fname,$1,$sec);
-      		  $bla = inxentry($fname,$1,$sec);
+      	  if  (/^\\(at|)index/) {
+              # $_ = gather($_, $nontex); # already done above
+      	      while (/\\((at|)index(tt|))\{/g) {
+                  ($rest, $indexarg) = (get_arg("{".$'))[0,1];
+                  if ($1 eq "atindex") {
+                    ($indexarg2) = (get_arg($rest))[1];
+                    if ($indexarg2 =~ /^@/) {
+                        $indexarg = $';
+                        $indexarg =~ s/\\noexpand\s*`([^']*)'/$1/g;
+                        $indexarg =~ s/\\noexpand\s*<([^>]*)>/$1/g;
+                        $indexarg =~ s/\\noexpand//g;
+                        $indexarg =~ s/\|.*//; # remove "|indexit" if present
+                        # $indexarg might still have macros ...
+                        # we should do something about these too
+                    }
+                  }
+                  # Just the crudest form of macro removal - probably enough
+                  $indexarg =~ s/\\(.)/$1/g;
+                  $indexarg =~ s/\$//g; #assume $s match in pairs!!
+                  $bla = inxentry($fname,$indexarg,$sec);
       		  $outline .= $bla;
 		  print "$outline\n";
       	      }
@@ -451,57 +964,98 @@ sub convert_text {
       	  }
       	  # \> and \)  lines (joined with next line if ending in %)
 	  if (/^\\[>)]/) {
-	      $_ = gather $_;
-	      # get rid of all `@' entries.
-	      if (/([^@]*)@\{[^\}]*\}\s*([A-Z])/) {
-		  $_ = $1." ".$2;
-	      }
+	      # $_ = gather($_, $nontex); # already done above
+              # if \> with ` or ( without a matching ' or ) gather lines
+              if ( /^\\> *\`/ ) {        # line should have ended in a %
+                  while ( !/\'/ ) { $_ = gather("$_%", $nontex); }
+              } elsif ( /^\\>.*\(/ ) {   # line should have ended in a %
+                  while ( !/\)/ ) { $_ = gather("$_%", $nontex); }
+              }
+	      # get rid of @{...} or @`...' if present.
+              if (/@/) {
+                  # print STDERR "before:$_\n";
+                  if (s/@\s*(\{[^{}]*\}|\`[^\']*\')\s*/ /) { # easy 
+                  } elsif (/@\s*/) { 
+                      # nested braces ... need to find matching brace
+                      $_ = $`;
+                      ($rest) = get_arg($');
+                      $_ .= " $rest";
+                      $rest ="";
+                  }
+                  # print STDERR "after:$_\n";
+                  print STDERR "@ still present at $_" if (/@/);
+              }
 	  }
-	  if (/^\\> *`([^\']+)\'\{([^}]+)\}(!\{.*)?\s*([A-Z])?\s*$/) {
+          # if there is a comment in square brackets we extract it now
+          # ... this way if this feature is undesirable we can easily get
+          #     rid of it
+          my $comment = "";
+          if (/^\\>.*;/) {
+              ;
+          } elsif (/^\\>.*\(/) {
+              if (s/^(\\>[^(]*\([^)]*\)[^\[]*)(\[[^\]]*\])/$1/) {
+                  $comment = " $2";
+              }
+          } elsif (s/^(\\>[^\[]*)(\[[^\]]*\])/$1/) {
+              $comment = " $2";
+          }
+          # \>`<variable>' V
+	  if (/^\\> *`([^\']+)\'\s*(\[[^\]]*\])?\s*V?\s*$/) {
       	      $endline = "</code>";
-              if (!defined($3)) {$drei=""}
-	      else {$drei=$3};
-              if (!defined($4)) {$vier=""}
-	      else {$vier=$4};
-      	      $outline .= inxentry($fname,"$2$drei",$sec);
-#print STDERR "x:$1 - $2 - $drei - $vier\n";
+      	      $outline .= inxentry($fname,$1,$sec); # $1 = <variable>
+              $outline .= "<dt>" if $inlist;
       	      $outline .= "<li><code>";
       	      $tt = 1;
-      	      $rest = $1." ".$vier;
+      	      $rest = $1.$comment." V";
       	  }
-	  elsif (/^\\> *`([^(]+) *(\([^\)]*\))\'[!-~]*( *[A-Z])$/) {
-# entries created when refering to a declaration in a special file
-# by \Declaration{blubber}[flutsch]
+          # \>`<non-func>'{<label>}[!<sub-entry>][ <capital>]
+          # <capital> is usually one of A-Z (but any non-space will be matched)
+	  elsif (/^\\> *`([^\']+)\'\s*\{([^}]+)\}(!\{.*\})?\s*([^\s]+)?\s*$/) {
+              # $1 = <non-func> $2 = <label> [$3 = !<sub-entry>][$4 = <capital>]
       	      $endline = "</code>";
-              if (!defined($2)) {$zwei=""}
-	      else {$zwei=$2};
-              if (!defined($3)) {$drei=""}
-	      else {$drei=$3};
-      	      $outline .= inxentry($fname,"$1",$sec);
+              $drei = defined($3) ? $3 : "";
+              $vier = defined($4) ? " $4" : "";
+	      # $2$drei = <label><sub-entry> 
+      	      $outline .= inxentry($fname,"$2$drei",$sec);
+#print STDERR "non-func:$1 - $2 - $drei - $vier |$2$drei|\n";
+              $outline .= "<dt>" if $inlist;
       	      $outline .= "<li><code>";
       	      $tt = 1;
-      	      $rest = "$1$zwei$drei";
-	  }
-	  elsif (/^\\> *([^!%(]+)(\([^!]*)?(!\{.*)?\s*$/) {
+      	      $rest = $1.$comment.$vier;
+      	  }
+          # \><func>[(<args>)][!{<sub-entry>}][ <capital>]
+          # <capital> is usually one of A-Z (but any non-space will be matched)
+	  elsif (/^\\> *([^(]+)(\([^)]*\))?(!\{.*\})?\s*([^\s]+)?\s*$/) {
+              # $1 = <func> $2 = (<args>) [$3 = !<sub-entry>][$4 = <capital>]
       	      $endline = "</code>";
-              if (!defined($2)) {$zwei=""}
-	      else {$zwei=$2};
-              if (!defined($3)) {$drei=""}
-	      else {$drei=$3};
+              $zwei = defined($2) ? $2 : "";
+              $drei = defined($3) ? $3 : "";
+              $vier = defined($4) ? " $4" : "";
       	      $outline .= inxentry($fname,"$1$drei",$sec);
+	      # $1$drei = <func><sub-entry> 
+#print STDERR "func:$1 - $zwei - $drei - $vier |$1$drei|\n";
+              $outline .= "<dt>" if $inlist;
       	      $outline .= "<li><code>";
       	      $tt = 1;
-      	      $rest = "$1$zwei";
+      	      $rest = $1.$zwei.$comment.$vier;
 
+      	  }
+	  elsif (/^\\\>/) {
+              die "Didn't find an appropriate \\> match for $_ ... syntax?";
       	  }
 	  elsif (/^\\\) *(.*)$/) {
       	      $endline = "</code>";
-      	      $outline .= "<br><code>";
+              $outline .= "<dt>" if $inlist;
+              if ($donepar) {
+      	          $outline .= "<code>";
+              } else {
+      	          $outline .= "<br><code>";
+              }
       	      $tt = 1;
       	      $rest = $1;
           # Skip all other lines starting or ending in % or containing
           # `align'.
-      	  } elsif ($status ne "verbatim" and
+      	  } elsif ($mode ne "verbatim" and
       		   $_ =~ /^\s*%|%\s*$|\\[a-z]+align/) {
       	      next LINE;
           }
@@ -534,6 +1088,9 @@ sub convert_text {
           }
       }
 
+      # || really means | in verbatim mode
+      $rest =~ s/\|\|/\|/g if ($mode eq "verbatim");
+
       # The main case, scan for special characters.
     SPECIAL: while ( $rest =~ /[\\{}\$<>`\'*\"&%~_^]/ ) {
         $outline .= $`;         # the part that we scanned past
@@ -541,7 +1098,7 @@ sub convert_text {
         my $matched = $&;       # the character matched
 
         # In verbatim mode, everything is passed to HTML.
-        if ($status eq "verbatim") {
+        if ($mode eq "verbatim") {
 #            if ($matched ne "%") {
                 $outline .= html_literal $matched;
 #            }
@@ -558,66 +1115,35 @@ sub convert_text {
             elsif ($rest =~ /^enditems/ and $inlist)
                                           { $outline .= "</dl>";
                                             $inlist = 0;         }
-            elsif ($rest =~ /^beginlist/) { $outline .= "<dl compact>";  }
-            elsif ($rest =~ /^endlist/)   { $outline .= "</dl>"; }
+            elsif ($rest =~ /^beginlist/) { $outline .= "<dl compact>";
+                                            $listdepth = 1;      }
+            elsif ($rest =~ /^endlist/)   { $outline .= "</dl>" x $listdepth;
+                                            $listdepth = 0;      }
             elsif ($rest =~ /^answer/)    { $outline = "";
-                                            $skip_lines = 1; }
+                                            $skip_lines = 1;     }
             else  { last NEWLINE; }
             print "$outline\n";
             next LINE;
           }
             # commands that are replaced by HTML text
           REPLACE: {
-	    my $remainder = ""; # remaining stuff to be inserted
-            if    ($rest =~ /^($boldcommands)$EndLaTeXMacro/o) {
-                   $outline .= "<font face=\"helvetica,arial\">"
-		               .uc($&)."</font>"; }
-            elsif ($rest =~ /^([hv]box|rm)/) { }
-            elsif ($rest =~ /^enspace/)    { $outline .= "&nbsp;";       }
-            elsif ($rest =~ /^quad/)       { $outline .= "&nbsp;";       }
-            elsif ($rest =~ /^qquad/)      { $outline .= "&nbsp;&nbsp;"; 
-# we may not replace \" -- its used in strings
-#	    } elsif ($rest =~ /^([$TeXaccents])(\w)/) {
-#		$outline .= "&$2".$HTMLaccents[index($TeXaccents,$1)];
-	    } elsif ($rest =~ /^accent\s*127\s*(\w)/) {
-		$outline .= "&$1uml;";
-	    } elsif ($rest =~ /^ss\s*/) { $outline .= "&szlig;";
-	    } elsif ($rest =~ /^pif/) { $outline .= "'";}
-            elsif ($rest =~ /^l?dots/)     { $outline .= "...";          }
-            elsif ($rest =~ /^bs?f|stars/) { $outline .= "<hr>";         }
-            elsif ($rest =~ /^cr/)         { $outline .= "<br>";         }
-            elsif ($rest =~ /^fmark/)      { $outline .= "<li>";         }
-            elsif ($rest =~ /^item\{([^}]*)\}/) {
-                   $outline .="<dt>";
-		   $remainder = $1."\\itmnd "; }
-            elsif ($rest =~ /^itemitem\{([^}]*)\}/) {
-                   $outline .="<dt>";
-		   $remainder = "\\qquad".$1."\\itmnd "; }
-	    # pseudo ``itemend'' character
-            elsif ($rest =~ /^itmnd/)      { $outline .= "<dd>"; }
-            elsif ($rest =~ /^cite\s*\{\s*(\w+)\s*\}/) {
-                $outline .= "<a href=\"biblio.htm#$1\"><cite>$1</cite></a>"; }
-            elsif ($rest =~ /^URL\{([^\}]*)\}/) {
-                $outline .= "<a href=\"$1\">$1</a>"; }
-            elsif ($rest =~ /^Mailto\{([^\}]*)\}/) {
-                $outline .= "<a href=\"mailto:$1\">$1</a>"; }
-            else  { last REPLACE; }
-            $rest = $remainder.$';
+            ($rest, $macro) = macro_replace($rest);
+            $outline .= $macro;
             next SPECIAL;
           }
             # Try to get nice spacing around certain maths constructs that
             # are used a lot.
-            if ($status eq "maths") {
+            if ($mode eq "maths") {
               MATHREPLACE: {
-                if    ($rest =~/^($LaTeXbinops)$EndLaTeXMacro/o) {
+                if    ($rest =~/^($TeXbinops)$EndTeXMacro/o) {
                        $outline .= " $1 "; }
-                elsif ($rest =~/^backslash$EndLaTeXMacro/o) {
+                elsif ($rest =~/^backslash$EndTeXMacro/o) {
                        $outline .= " \\ "; }
-                elsif ($rest =~/^split$EndLaTeXMacro/o) {
+                elsif ($rest =~/^split$EndTeXMacro/o) {
                        $outline .= ":"; }
-                elsif ($rest =~/^langle$EndLaTeXMacro/o) {
+                elsif ($rest =~/^langle$EndTeXMacro/o) {
                        $outline .= " &lt;"; }
-                elsif ($rest =~ /^rangle$EndLaTeXMacro/o) {
+                elsif ($rest =~ /^rangle$EndTeXMacro/o) {
                        $outline .= "&gt; "; }
                 else  { last MATHREPLACE; }
                 $rest = $';
@@ -633,7 +1159,7 @@ sub convert_text {
         }
 
         # Subscripts and superscripts in math mode.
-        if ($status eq "maths" and !$sub and !$sup) {
+        if ($mode eq "maths" and !$sub and !$sup) {
           SUBSUPER: {
             if    ($matched eq "_" and $rest =~ /^\{/) {
                    $outline .= "<sub>";
@@ -664,6 +1190,7 @@ sub convert_text {
         }
         if ($matched eq "}") {
             if ($tt == 1) {
+                # print STDERR "o:$outline,m:$matched,r:$rest\n";
 		die "Unbalanced braces in `...' ($outline$matched$rest)";
 	    }
             if ($tt) { $tt--; }
@@ -680,111 +1207,64 @@ sub convert_text {
 
         # $ toggles maths mode.
         if ($matched eq "\$") {
+          if ($rest =~ /^\$/) {
+            $rest = $';
+            $endmath = "[\$][\$]";
+            $endmathstring = "\$\$";
+          } else {
+            $endmath = "[\$]";
+            $endmathstring = "\$";
+          }
           if ($opt_t) {
-	    if ($status eq "normal") {
+	    if ($mode eq "normal") {
 	      $tth= "";
-	      if ($rest =~ /^\$/) {
-		$rest = $';
-		$tthdisp=1;
-	      }
-	      else {
-		$tthdisp=0;
-	      }
-	      $status = "tth";
+	      $mode = "tth";
     
-	      while ($status eq "tth") {
-		if ( $rest =~ /[\$]/ ) {
+	      while ($mode eq "tth") {
+		if ( $rest =~ /$endmath/ ) {
 		  $tth .= $`; # the part scanned past
 		  $rest = $';
-		  # remove $$ when ending display mode
-		  if ($rest =~ /^\$/) { $rest = $'; }
 
 		  # make a math mode string
-                  if ($tthdisp eq 1) {
-		    $tth = "\$\$".$tth."\$\$";
-		  }
-		  else {
-		    $tth = "\$".$tth."\$";
-		  }
+		  $tth = "$endmathstring$tth$endmathstring";
 
-		  # replace <...> by proper TeX
-	          while ($tth =~ /(.*[^\\])<(.*[^\\])>(.*)/) {
-		    $tth= $1."{\\it ".$2."\\/}".$3;
-		  }
-
-		  # replace `...' by proper TeX
-	          while ($tth =~ /(.*[^\\])`(.*[^\\])\'(.*)/) {
-		    $tth= $1."{\\tt ".$2."}".$3;
-		  }
-
-		  # replace \<,\> by proper TeX
-	          while ($tth =~ /(.*[^\\])\\<(.*)/) {
-		    $tth= $1."<".$2;
-		  }
-	          while ($tth =~ /(.*[^\\])\\>(.*)/) {
-		    $tth= $1.">".$2;
-		  }
-
-		  # pass to tth to convert to HTML
-		  open TTHIN, ">tthin";
-		  if ($tth =~ /\\/) {
-		    # there might be macros: Load our macros
-#print STDERR "tth: ${tth}\n";
-		    print TTHIN "\\input tthmacros.tex\n";
-		  }
-		  print TTHIN "${tth}\n";
-		  close TTHIN;
-		  `tth -r -i <tthin >tthout 2>/dev/null`;
-		  open TTHOUT, "tthout";
-		  $tth="";
-		  while ( $tthin = <TTHOUT> ) {
-		    chomp($tthin);
-		    $tth .= $tthin;
-		  }
-		  close TTHOUT;
-#print STDERR "out: ${tth}\n";
-
-		  # replace italic typewriter (happens because we force
-		  # italic letters) by roman ones
-	          while ($tth =~ /(.*)<tt><i>(.*)<\/i><\/tt>(.*)/) {
-		    $tth= $1."<tt>".$2."</tt>".$3;
-		  }
-
-		  # append the math stuff
-		  $outline .= "<font size=\"+1\">".$tth."</font>"; 
-		  $status = "normal";
+		  # pass $tth to tth to convert to HTML
+                  # and append the result
+		  $outline .= tth_math_replace($tth);
+		  $mode = "normal";
 		}
 		else {
-		  # we are in tth mode but the line has no $: continue
-		  # into next line
-		  $tth .= $rest." ";
-		  $rest = <IN>;
+		  # we are in tth mode but the line has no terminating
+                  # $ or $$: continue into next line
+                  if ($rest =~ s/%$//) { # Mirror TeX behaviour when
+                      $tth .= $rest;     # line ends in a % ...
+                      $rest = <IN>;      # swallow whitespace at
+                      $rest =~ s/^\s*//; # beginning of next line
+                  } else {
+		      $tth .= $rest." ";
+		      $rest = <IN>;
+                  }
 		  chomp($rest);
 		}
               }
 
 	      next SPECIAL;
-	    }
-	    else {
+	    } else {
 	      die "math mode messup";
 	    }
-	  }
-	  else {
-            if ($rest =~ /^\$/) {
-                $rest = $';
-                $outline .= "<p>";
-            }
-            if ($status eq "maths") {
+	  } else {
+            $outline .= "<p>" if ($endmathstring eq "\$\$");
+            if ($mode eq "maths") {
 		if    ($sub) { die "Math mode ended during subscript ".
 				   "($outline$matched$rest)"; }
 		elsif ($sup) { die "Math mode ended during superscript ".
 				   "($outline$matched$rest)"; }
-                $status = "normal";
+                $mode = "normal";
                 $outline .= "</var>";
                 if ($tt) { $outline .= "<code>"; }
                 next SPECIAL;
             } 
-            $status = "maths";
+            $mode = "maths";
             if ($tt) { $outline .= "</code>"; }
             $outline .= "<var>";
             next SPECIAL;
@@ -815,7 +1295,7 @@ sub convert_text {
 
         # * in normal mode toggles bold-face.
         if ($matched eq "*") {  
-            if ($status eq "normal" and not $tt) {
+            if ($mode eq "normal" and not $tt) {
                 if ($bold) {  
                     $outline .= "</strong>"; 
                     $bold = 0;
@@ -831,17 +1311,14 @@ sub convert_text {
 
         # ` and ' in normal mode control typewriter.
         if ($matched eq "`") {
-            if (not $tt) {
-                $outline .= "<code>";
-                $tt = 1;
-            } else {
-                $tt = 0;
-                if ($outline =~ /<code>$/) {
-                    $outline = substr($outline,0,(length $outline)-6);
-                } else {
-                    $outline .= "</code>";
-                }
+            if ($tt) {
+                $outline .= "`";
+            } elsif ( $rest =~ /^`/ ) {
+                $rest = $';
                 $outline .= "``";
+            } else {
+                $tt = 1;
+                $outline .= "<code>";
             }
             next SPECIAL;
         }
@@ -860,9 +1337,9 @@ sub convert_text {
         # merge adjacent definitions into the same list.
         if ($matched eq "&") {
             if ($inlist) {
-                $outline = "<dt>$outline<dd>";
-            } 
-            next SPECIAL;
+                $outline = "<dt>$outline<dd>"; # Sometimes we get an extra
+            }                                  # <dt> we don't need ...
+            next SPECIAL;                      # but it has no effect :)
         }
 
         # " starts a  cross-reference.  If it ends  on the  same input
@@ -906,6 +1383,12 @@ sub convert_text {
 }
 
 
+sub metaquote {
+    my $name = quotemeta $_[0];
+    $name =~ s/\\ /\\s+/g;
+    return $name;
+}
+
 sub startfile {
     my $sec = $_[0];
     my ($num, $name, $re, $fname, $name1, $name2);
@@ -913,37 +1396,36 @@ sub startfile {
         $sec->{chapnum} = $chap->{number};
         $num = $chap->{number};
         $name = $chap->{name};
-        $name1 = quotemeta $name;
-        $re = "^\\\\(Chapter|FakeChapter|PreliminaryChapter)\\{$name1\\}";
-	$name2 = kanonize $name;
-	$fname = name2fn($sec->{name},1);
+        $name1 = metaquote $name;
+        $re = "^\\\\(Chapter|PreliminaryChapter)\\{$name1\\}";
     } else {
         $num = $sec->{chapnum} . "." .$sec->{secnum};
         $name = $sec->{name};  
-        $name1 = quotemeta $name;
+        $name1 = metaquote $name;
         $re = "^\\\\Section\\{$name1\\}";
-	$name2 = kanonize $name;
-	$fname = name2fn($sec->{name},0);
     }
+    $name2 = kanonize $name;
+    $fname = htm_fname($opt_c, $sec->{chapnum}, $sec->{secnum});
 
-    open OUT, ">${odir}${fname}";
+    open ( OUT, ">${odir}${fname}" ) || die "Can't write to ${odir}${fname}";
     select OUT;
 
     print  "<html><head><title>[$book] $num $name2</title></head>\n";
-    print  "<body bgcolor=\"ffffff\">\n";
-    print  inxentry($fname,$name,$sec);
+    print  "<body text=\"\#000000\" bgcolor=\"\#ffffff\">\n";
+    add_to_index($fname, $name, $sec);
     print "<h1>$num $name2</h1><p>\n";
 
-    ($fname, $re);
+    return ($fname, $re);
 }
 
-sub startsubsec {
+sub startsec {
     my $sec = $_[0];
     my $snum = $sec->{secnum};
+    my $name = $sec->{name};  
+    add_to_index(htm_fname($opt_c, $sec->{chapnum}, $snum), $name, $sec);
     my $num = $sec->{chapnum} . "." .$snum;
     $snum = "0" x (3 - length $snum) . $snum;
-    my $name = $sec->{name};  
-    my $name1 = quotemeta $name;
+    my $name1 = metaquote $name;
     my $name2 = kanonize $name;
     print "<a name=\"SECT$snum\"><h2>$num $name2</h2></a>\n<p>";
     return "^\\\\Section\\{$name1\\}";
@@ -951,12 +1433,12 @@ sub startsubsec {
 
 sub sectionlist {
     my $chap = $_[0];
-    my $subsec;
+    my $sec;
     print  "<P>\n<H3>Sections</H3>\n<oL>\n";
-  SUBSEC: for $subsec (@{$chap->{sections}}) {
-      next SUBSEC if ($subsec->{secnum} == 0);
-      my $link = name2fn($subsec->{name},0);
-      my $name2 = kanonize $subsec->{name};
+  SUBSEC: for $sec (@{$chap->{sections}}) {
+      next SUBSEC if ($sec->{secnum} == 0);
+      my $link = htm_fname($opt_c, $sec->{chapnum}, $sec->{secnum});
+      my $name2 = kanonize $sec->{name};
       print  "<li> <A HREF=\"$link\">$name2</a>\n";
   }
     print  "</ol><p>\n";
@@ -970,28 +1452,41 @@ sub sectionlist {
 sub navigation {
     my $sec = $_[0];
     my $chap = $sec->{chapter};
-    my $cfname = name2fn($chap->{name},0);
+    my $cfname = htm_fname($opt_c, $sec->{chapnum}, 0);
     if ($mainman == 1) {
       print  "[<a href=\"../index.htm\">Top</a>] "
+    } else {
+        if ($opt_f) {
+            print  "[<a href=\"$opt_f\">Top</a>] "
+        }
     };
     if ($sec->{secnum} == 0) {
-        if ($chap->{number} != 1) {
-            my $prev = name2fn($chapters[$chap->{number} - 1]{name},1);
+        print  "[<a href = \"chapters.htm\">Up</a>] ";
+        if (tonum($chap->{number}) != 1) {
+            my $prev = htm_fname($opt_c,
+                                 $chapters[tonum($chap->{number}) - 1]{number},
+                                 0);
             print  "[<a href =\"$prev\">Previous</a>] ";
         }
-        print  "[<a href = \"chapters.htm\">Up</a>] ";
-        if ($chap->{number} != $#chapters) {
-            my $next = name2fn($chapters[$chap->{number} + 1]{name},1);
+        if (tonum($chap->{number}) != $#chapters) {
+            my $next = htm_fname($opt_c,
+                                 $chapters[tonum($chap->{number}) + 1]{number},
+                                 0);
             print  "[<a href =\"$next\">Next</a>] ";
         }
     } else {
+        print  "[<a href = \"$cfname\">Up</a>] ";
         if ($sec->{secnum} != 1) {
-            my $prev = name2fn($chap->{sections}[$sec->{secnum} - 1]{name},0);
+            my $prev = htm_fname($opt_c, $chap->{number}, $sec->{secnum} - 1);
             print  "[<a href =\"$prev\">Previous</a>] ";
         }
-        print  "[<a href = \"$cfname\">Up</a>] ";
         if ($sec->{secnum} != $#{$chap->{sections}}) {
-            my $next = name2fn($chap->{sections}[$sec->{secnum} + 1]{name},0);
+            my $next = htm_fname($opt_c, $chap->{number}, $sec->{secnum} + 1);
+            print  "[<a href =\"$next\">Next</a>] ";
+        } elsif (tonum($chap->{number}) != $#chapters) {
+            my $next = htm_fname($opt_c,
+                                 $chapters[tonum($chap->{number}) + 1]{number},
+                                 0);
             print  "[<a href =\"$next\">Next</a>] ";
         }
     }
@@ -1001,10 +1496,10 @@ sub navigation {
 
 sub convert_chap {
     my ($chap) = @_;
-    my $re;
-    my $fname;
+    my ($re, $startre, $fname, $secline);
     $indexcount = 0;
-    open IN, $dir.$chap->{file}.".tex";
+    open (IN, "<$dir$chap->{file}.tex") 
+        || die "Can't read $dir$chap->{file}.tex";
     $_ = <IN>;
 
     # loop, controlled by the list of sections that we expect
@@ -1014,25 +1509,41 @@ sub convert_chap {
         ($fname,$re) = startfile $chap->{sections}[0];
     }
 
+  # note we *need* $sec to act globally in what follows!
   SECT: for $sec (@{$chap->{sections}}) {
 
       # sort out what we are processing (chapter or section)
       # produce the header of the Web page
 
       if ($opt_c) {
-          $re = startsubsec $sec unless ($sec->{secnum} == 0);
+          $re = startsec $sec unless ($sec->{secnum} == 0);
       } else {
           ($fname, $re) = startfile $sec;
+#         print STDERR "fname: $fname, re: $re\n";
       } 
+      ($startre = $re) =~ s/(^[^\{]*\{).*/$1/;
 
       #
       # Look for the \Chapter or \Section line
       #
 
-      while ( $_ !~ /$re/) {
-          unless ($_ = <IN>) { 
-              die "Missing chapter or section line matching $re" };
+      while ( !/$startre/ ) {
+          unless (defined($_ = <IN>)) { 
+              die "Missing chapter or section line matching $startre" };
       };
+      
+      chomp;
+      $secline = $_;
+      while ( $secline !~ /\}/ ) {
+          unless (defined($_ = <IN>)) { 
+              die "Missing chapter or section line matching $re" };
+          chomp;
+          s/\%.*//;
+          $secline .= " $_";
+      };
+
+      unless ($secline =~ /$re/) {
+          die "Missing chapter or section line matching $re" };
 
       convert_text($fname);
 
@@ -1040,7 +1551,11 @@ sub convert_chap {
       # to it. If it is really a chapter then it gets a list of its sections
 
       if ($sec->{secnum} == 0) {
-          sectionlist $chap;
+          if (defined($chap->{sections}[1])) {
+              sectionlist $chap;
+          } else {
+              print STDERR "Warning: Chapter has no sections\n";
+          }
       }
       unless ($opt_c) {
           navigation $sec;
@@ -1061,19 +1576,23 @@ sub convert_chap {
 
 
 sub chapters_page {
-    open OUT, ">${odir}chapters.htm";
+    open (OUT, ">${odir}chapters.htm") 
+        || die "Can't write to ${odir}chapters.htm";
     select OUT;
 
     print  <<END
 <html><head><title>$booktitle - Chapters</title></head>
-<body bgcolor=\"ffffff\"><h1>$booktitle - Chapters</h1><ol>
+<body text=\"\#000000\" bgcolor=\"\#ffffff\">
+<h1>$booktitle_body - Chapters</h1>
+<ol>
 END
     ;
 
   CHAP: foreach $chap (@chapters) {
       unless (defined $chap) { next CHAP};
-        my $link = name2fn($chap->{name},1);
+        my $link = htm_fname($opt_c, $chap->{number}, 0);
         my $name2 = kanonize $chap->{name};
+        print  "</ol><ol type=\"A\">\n" if ( $chap->{number} eq "A" );
         print  "<li><a href=\"$link\">$name2</a>\n";
     }
 
@@ -1086,8 +1605,11 @@ END
     ;
     if ($mainman == 1) {
       print  "[<a href=\"../index.htm\">Top</a>]<p>"
+    } else {
+        if ($opt_f) {
+            print  "[<a href=\"$opt_f\">Top</a>] "
+        }
     };
-
     print $footer;
     close OUT;
     select STDOUT;
@@ -1099,73 +1621,83 @@ END
     
 sub caseless { lc($a) cmp lc ($b) or $a cmp $b }
 
-sub index_page {
-    my ($ent, $ref, $letter, $bstb, $nextletter, @entries, %letters);
-    foreach $ent (keys %index) {
-      $bstb = uc(substr($ent,0,1));
-      if ($bstb le "A" or $bstb ge "Z") {$betb = "_";}
-      $letters{$bstb} = "";
-    }
-    $letter = "_";
-    $nextletter = "A";
-
-    open OUT, ">${odir}theindex.htm";
-    select OUT;
+sub index_head {
+    my ($letter, @letters) = @_;
+    my ($bstb);
     print <<END
 <html><head><title>$booktitle - Index ${letter}</title></head>
-<body bgcolor=\"ffffff\"><h1>$booktitle - Index ${letter}</h1>
+<body text=\"\#000000\" bgcolor=\"\#ffffff\">
+<h1>$booktitle_body - Index ${letter}</h1>
 <p>
 END
     ;
-    foreach $bstb  (sort keys %letters) {
+#   print STDERR $letter, @letters, "\n";
+    foreach $bstb  (@letters) {
       if ($opt_i) {
-        print  "<a href=\"\#idx${bstb}\">$bstb</A> ";
+        print  "<a href=\"\#idx${bstb}\">$bstb</A>\n";
+      }
+      elsif ($bstb eq "_") {
+        print  "<a href=\"theindex.htm\">$bstb</A>\n";
       }
       else {
-        print  "<a href=\"indx${bstb}.htm\">$bstb</A> ";
+        print  "<a href=\"indx${bstb}.htm\">$bstb</A>\n";
       }
     }
-    print  "\n<dl>\n";
+}
+    
+sub index_end {
+  print  "</dl><p>\n";
+  if ($mainman == 1) {
+    print  "[<a href=\"../index.htm\">Top</a>] "
+  } else {
+      if ($opt_f) {
+          print  "[<a href=\"$opt_f\">Top</a>] "
+      }
+  };
+  print  "[<a href=\"chapters.htm\">Up</a>]";
+  print  "<p>\n$footer";
+}
 
-        
+sub index_page {
+    my ($ent, $ref, $letter, $bstb, $thisletter, @entries, %letters, @letters);
+    %letters = $opt_i ? ()
+                      : ("_" => ""); # With multiple indices, the "_"
+                                     # index is theindex.htm
+    foreach $ent (keys %index) {
+      $bstb = uc(substr($ent,0,1));
+      if ($bstb lt "A" or $bstb gt "Z") {$bstb = "_";}
+      $letters{$bstb} = "";
+    }
+    @letters = sort caseless keys %letters;
+
+    $letter = $opt_i ? "" : "_";
+    open (OUT, ">${odir}theindex.htm")
+        || die "Can't write to ${odir}theindex.htm";
+    select OUT;
+    index_head($letter, @letters);
+
   ENTRY: foreach $ent (sort caseless keys %index) {
-      $letter = uc(substr($ent,0,1));
-      if ($letter ge "A" and $letter le "Z" and $nextletter le "Z") {
-           until ($letter lt $nextletter) {
-	     if ($opt_i) {
-	      $nextletter++;
-	      if ($letter lt $nextletter) {
-		print "</dl><p>\n";
-		print "<H2><A NAME=\"idx${letter}\">$letter</A></H2>\n";
-		print "<dl>\n";
-	      }
-	    }
-	    else {
-	      print  "</dl><p>\n";
-	       if ($mainman == 1) {
-	 	 print  "[<a href=\"../index.htm\">Top</a>] "
-	       };
-	       print  "[<a href=\"chapters.htm\">Up</a>]";
-	       print  "<p>\n$footer";
-               $nextletter++;
-
-	      close OUT;
-	      select STDOUT;
-	      open OUT, ">${odir}indx${letter}.htm";
-	      select OUT;
-	      print <<END
-<html><head><title>$booktitle - Index ${letter}</title></head>
-<body bgcolor=\"ffffff\"><h1>$booktitle - Index ${letter}</h1>
-<p>
-END
-	      ;
-	      foreach $bstb  (sort keys %letters) {
-		  print  "<a href=\"indx${bstb}.htm\">$bstb</A> ";
-	      }
-	      print  "\n<dl>\n";
-	    }
-
-          }
+      $thisletter = uc(substr($ent,0,1));
+      if ($thisletter lt "A" or $thisletter gt "Z") {$thisletter = "_";}
+      if ($letter eq "") { # Only happens first time round for $opt_i
+        $letter = $thisletter; 
+        print "<H2><A NAME=\"idx${letter}\">$letter</A></H2>\n<dl>\n";
+      }
+      elsif ($letter ne $thisletter) {
+        $letter = $thisletter;
+        if ($opt_i) {
+	  print "</dl><p>\n";
+	  print "<H2><A NAME=\"idx${letter}\">$letter</A></H2>\n<dl>\n";
+	}
+	else {
+          index_end;
+	  close OUT;
+	  select STDOUT;
+	  open (OUT, ">${odir}indx${letter}.htm")
+              || die "Can't write to ${odir}indx${letter}.htm";
+	  select OUT;
+	  index_head($letter, @letters);
+	}
       }
       $ent1 = $ent;
       $ent1 =~ s/!/, /g;
@@ -1176,12 +1708,7 @@ END
       }
       print  "\n";
     }
-    print  "</dl><p>\n";
-    if ($mainman == 1) {
-      print  "[<a href=\"../index.htm\">Top</a>] "
-    };
-    print  "[<a href=\"chapters.htm\">Up</a>]";
-    print  "<p>\n$footer";
+    index_end;
     close OUT;
     select STDOUT;
 }
@@ -1189,23 +1716,25 @@ END
 sub biblio_page {
   my $infile = "${dir}manual.bbl";
   my $outfile = "${odir}biblio.htm";
-  open OUT, ">${outfile}";
+  my $macro;
+  open (OUT, ">${outfile}") || die "Can't write to ${outfile}";
   select OUT;
 
   print <<END
 <html><head><title>$booktitle - References</title></head>
-<body bgcolor=\"ffffff\"><h1>$booktitle - References</h1><dl>
+<body text=\"\#000000\" bgcolor=\"\#ffffff\">
+<h1>$booktitle_body - References</h1><dl>
 END
     ;
 
   if (-f $infile and -r $infile) {
-    open IN, $infile;
+    open IN, "<$infile";
     my ($brace,$embrace) = (0,-1);
     while (<IN>) {
         chomp;
         my $outline = "";
-        if (/thebibliography/) { }
-        elsif (/^\\bibitem\[\w+\]\{(\w+)\}/) {
+        if (/newcommand/ || /thebibliography/) { }
+        elsif (/^\\bibitem\[[^\]]+\]\{([^\}]+)\}/) {
             print "<dt><a name=\"$1\"><b>[$1]</b></a><dd>\n";
         } else {
             my $line = $_;
@@ -1215,10 +1744,19 @@ END
                 $outline .= $`;
                 $matched = $&;
                 $line = $';
-                if ($matched eq "\{") {
-                    if ($line =~ /^\\em\s*/) { $embrace = $brace;
-                                               $outline .= "<em>";
-                                               $line = $'; }
+                if ($opt_t and $matched eq "\$" and $line =~ /([^\$]*\$)/) {
+                    # if we are using the -t option and we have 
+                    # detected a *simple* maths formula $...$ pass it
+                    # off directly to tth_math_replace. Bibliographies
+                    # should only have very simple maths formulae. If
+                    # it's broken over a line, we won't detect it.
+                    $matched .= $&;
+                    $outline .= tth_math_replace($matched);
+                    $line = $';
+                } elsif ($matched eq "\{") {
+                    if ($line =~ /^\\(em|it)\s*/) { $embrace = $brace;
+                                                    $outline .= "<em>";
+                                                    $line = $'; }
                     $brace++;
                 } elsif ($matched eq "\}") {
                     $brace--;
@@ -1228,19 +1766,13 @@ END
 		    } elsif ($brace == $embrace) { $outline .= "</em>";
 						   $embrace = -1; }
                 } elsif ($matched eq "\\") {
-                    if ($line =~ /^([$TeXaccents])(\w)/) {
-                        $outline .= "&$2".$HTMLaccents[index($TeXaccents,$1)];
-                    } elsif ($line =~ /^accent\s*127\s*(\w)/) {
-                        $outline .= "&$1uml;";
-                    } elsif ($line =~ /^ss\s*/) { $outline .= "&szlig;";
-                    } elsif ($line =~ /^pif/) {
-                        $outline .= "'";
-		    } elsif ($line =~ /^URL\{([^\}]*)\}/) {
-			$outline .= "<a href=\"$1\">$1</a>"; 
-                    } elsif ($line =~ /^-/) {
-                        $outline .= ""; # hyphenation help -- ignore
-                    } elsif ($line =~ /(.)/) { $outline .= html_literal $1; }
-                    $line = $';
+		    if ($line =~ /^cite\{([^\}]*)\}/) {
+			$outline .= "<a href=\"#$1\"><cite>$1</cite></a>"; 
+                        $line = $';
+		    } else {
+                        ($line, $macro) = macro_replace($line);
+                        $outline .= $macro;
+                    } 
                 } elsif ($matched eq "~" ) {
                     $outline .= "&nbsp;";
                 } elsif ($matched ne "\$") {
@@ -1250,10 +1782,16 @@ END
             print "$outline$line\n";
         }
     }
+  } else {
+      print STDERR "Warning: did not find a .bbl file ... ok?\n";
   }
   print "</dl><p>\n";
   if ($mainman == 1) {
     print  "[<a href=\"../index.htm\">Top</a>] "
+  } else {
+      if ($opt_f) {
+          print  "[<a href=\"$opt_f\">Top</a>] "
+      }
   };
   print "[<a href=\"chapters.htm\">Up</a>]";
   print "<p>\n$footer\n";
@@ -1267,7 +1805,7 @@ END
 # Process option and sort out input and output directories   
 #
 
-getopts('csitn:');
+getopts('csitn:f:');
 
 chomp($dir = shift @ARGV);
 if (substr($dir,0,1) ne "/") {
@@ -1281,25 +1819,49 @@ unless (-d $dir and -r $dir) {
     die "Can't use input directory $dir";
 }
 
+if ($opt_t) {
+  my ($whichtth) = `which tth`;
+  chomp($whichtth);
+  if ($whichtth !~ m+/tth$+) {
+    print STDERR "!! tth: not in path.\n$whichtth\n",
+                 "... Maths formulae will vanish!",
+                 " Install tth or avoid -t option.\n";
+  }
+}
+
 if ($opt_n) {
   # get book title
   $book=$opt_n;
+  #$booktitle = "$opt_n";
   $booktitle = "The $opt_n share package";
+  $booktitle_body = booktitle_body($booktitle, $opt_n);
   $mainman=0;
+  $footer = "<P>\n<address>$opt_n manual<br>" .
+    `date +"%B %Y"` . "</address></body></html>";
 #print "c: $opt_c \n";
-}
-else {
+} else {
+  if ($opt_f) {
+      die "option -f can only be used together with -n ";
+  }
   if ($dir =~ /\/([^\/]+)\/$/) {
       $book = $1;
   } else {
       die "Can't find basename of $dir";
   }
-  if    ($book eq "tut") { $booktitle = "The GAP 4 Tutorial"; }
-  elsif ($book eq "ref") { $booktitle = "The GAP 4 Reference Manual"; }
-  elsif ($book eq "prg") { $booktitle = "The GAP 4 Programming Tutorial"; }
-  elsif ($book eq "ext") { $booktitle = "The GAP 4 Programming Reference Manual"; }
-  elsif ($book eq "new") { $booktitle = "GAP 4: New Features for Developers"; }
-  else  { die "Invalid book, must be tut, ref, prg, new or ext"; }
+  if      ($book eq "tut") { 
+      $booktitle = "The GAP 4 Tutorial";
+  } elsif ($book eq "ref") { 
+      $booktitle = "The GAP 4 Reference Manual"; 
+  } elsif ($book eq "prg") { 
+      $booktitle = "The GAP 4 Programming Tutorial";
+  } elsif ($book eq "ext") { 
+      $booktitle = "The GAP 4 Programming Reference Manual";
+  } elsif ($book eq "new") { 
+      $booktitle = "GAP 4: New Features for Developers"; 
+  } else  { 
+      die "Invalid book, must be tut, ref, prg, new or ext"; 
+  }
+  $booktitle_body = booktitle_body($booktitle, "GAP");
   $mainman=1;
 }
 
@@ -1324,29 +1886,42 @@ print  "Creating output in $odir\n" unless ($opt_s);
 if ($opt_t) {
   # create macro file for our expressions and macros not known to tth in TeX
   # mode.
-  open TTHIN, ">tthmacros.tex";
+  $opt_t = tth_version;
+  print STDERR "Using TtH $opt_t to translate maths formulae.\n";
+  $opt_t =~ s/Version //;
+  open (TTHIN, ">tthmacros.tex") || die "Can't create tthmacros.tex";
   print TTHIN "\\def\\Q{{\\bf Q}}\\def\\Z{{\\bf Z}}\\def\\N{{\\bf N}}\n";
-  print TTHIN "\\def\\frac#1#2{{{#1}\\over{#2}}}\\def\\colon{:}";
+  # \R and \I are used in the last chapter of ext
+  print TTHIN "\\def\\R{{\\cal R}}\\def\\I{{\\cal I}}\\def\\F{{\\bf F}}\n";
+  print TTHIN "\\def\\frac#1#2{{{#1}\\over{#2}}}\\def\\colon{:}\n";
+  print TTHIN "\\def\\longmapsto{\\mapsto}\\def\\lneqq{<}\n";
+  print TTHIN "\\def\\hookrightarrow{\\rightarrow}\n";
+  if ($opt_t < 2.52) {
+     # We work-around most of the deficiencies of versions of TtH
+     # prior to Version 2.52 ... but can't easily fix the lack of
+     # proper treatment of \not.
+     print STDERR 
+           "Your version of TtH does not know many TeX commands.\n",
+           "It is recommended that you upgrade to the latest version from\n",
+           " http://hutchinson.belmont.ma.us/tth/tth-noncom/download.html\n";
+     print TTHIN "\\def\\mid{ | }\\def\\lbrack{[}\\def\\rbrack{]}\n";
+     print TTHIN "\\def\\gets{\\leftarrow}\\def\\land{\\wedge}\n";
+  }
   close TTHIN;
 }
 
 getchaps;
 print  "Processed TOC files\n" unless ($opt_s);
-if ($mainman ==1 ) {
-  getlabs "tut";
-  getlabs "ref";
-  getlabs "prg";
-  getlabs "new";
-  getlabs "ext"; }
-else {
-  getlabs "../../doc/tut";
-  getlabs "../../doc/ref";
-  getlabs "../../doc/prg";
-  getlabs "../../doc/ext"; 
-  getlabs "../../doc/new"; 
-  getlabs "doc"; # our documentation
-}
 
+open (TEX, "<${dir}manual.tex") || die "Can't open ${dir}manual.tex";
+getlabs $dir;
+while (<TEX>) {
+  if (/\\UseReferences{([^}]*)}/) { 
+      getlabs "$dir$1/";
+  } elsif (/\\Package{([^}]*)}/) {
+      $sharepkg .= "|$1"; 
+  }
+}
 print  "Processed LAB files\n" unless ($opt_s);
 
 #
@@ -1357,13 +1932,9 @@ CHAP: foreach $chap (@chapters) {
     unless (defined $chap) {
         next CHAP;
     }
-    print  "$chap->{name}\n" unless ($opt_s);
+    print "$chap->{number}. $chap->{name} ... $chap->{file}.tex\n" 
+        unless ($opt_s);
     convert_chap $chap;
-}
-
-if ($opt_t) {
-  # remove the tth stuff
-  unlink 'tthin','tthout','tthmacros.tex';
 }
 
 print  "and the chapters page\n" unless ($opt_s);
@@ -1372,4 +1943,11 @@ print  "and the index pages\n" unless ($opt_s);
 index_page;
 print  "and the references\n" unless ($opt_s);
 biblio_page;
+
+if ($opt_t) {
+  # remove the tth stuff
+  unlink 'tthin','tthout','tthmacros.tex';
+}
+
 print  "done\n" unless ($opt_s);
+#############################################################################

@@ -111,7 +111,8 @@ DeclareSynonymAttr( "IsLieAlgebra",
 ##
 ##  is `true' if the algebra <A> is simple, and `false' otherwise. This 
 ##  function is only implemented for the cases where <A> is an associative or
-##  a Lie algebra.
+##  a Lie algebra. And for Lie algebras it is only implemented fot the
+##  case where the ground field is of characteristic $0$.
 ##
 DeclareProperty( "IsSimpleAlgebra", IsAlgebra );
 
@@ -363,7 +364,7 @@ DeclareGlobalFunction( "EmptySCTable" );
 ##  `<T>[<j>][<i>]' is set.
 ##
 ##  <list> must be of the form
-##  $[ c_{ij}^{k_1}, k_1, c_{ij}^{k_2}, k_2, ... ]$.
+##  $[ c_{ij}^{k_1}, k_1, c_{ij}^{k_2}, k_2, \ldots ]$.
 ##
 ##  The entries at the odd positions of <list> must be compatible with the
 ##  zero element stored in <T>.
@@ -881,7 +882,11 @@ DeclareCategoryCollections( "IsQuaternionCollection" );
 ##  $i i = <a> e$, $i j = - j i = k$, $i k = - k i = <a> j$,
 ##  $j j = <b> e$, $j k = - k j = <b> i$,
 ##  $k k = - <a> <b> e$.
-##  The default values for <a> and <b> are $-1$ in <F>.
+##  The default value for both <a> and <b> is $-1 \in <F>$.
+##
+##  The `GeneratorsOfAlgebra' (see~"GeneratorsOfAlgebra") and
+##  `CanonicalBasis' (see~"CanonicalBasis") value of an algebra constructed
+##  with `QuaternionAlgebra' is the list $[ e, i, j, k ]$.
 ##
 ##  The embedding of the field `GaussianRationals' into a quaternion algebra
 ##  $A$ over `Rationals' is not uniquely determined.
@@ -915,9 +920,11 @@ DeclareGlobalFunction( "QuaternionAlgebra" );
 ##
 ##  Then `ComplexificationQuat(<v>)*ComplexificationQuat(<M>)=
 ##        ComplexificationQuat(<v>*<M>)', since
-##  $$ v M = v_1 M_1 + v_2 j M_1 + v_1 M_2 j + v_2 j M_2 j
-##         =   ( v_1 M_1 - v_2 \overline{M_2} )
-##           + ( v_1 M_2 + v_2 \overline{M_1} ) j . $$
+##  $$
+##  v M = v_1 M_1 + v_2 j M_1 + v_1 M_2 j + v_2 j M_2 j
+##      =   ( v_1 M_1 - v_2 \overline{M_2} ) %
+##        + ( v_1 M_2 + v_2 \overline{M_1} ) j\.
+##  $$
 ##             
 DeclareGlobalFunction( "ComplexificationQuat" );
 

@@ -99,6 +99,22 @@ extern void ReadEvalError ( void );
 extern Obj StackNams;
 extern UInt CountNams;
 
+/****************************************************************************
+**
+*F  Call0ArgsInNewReader(Obj f)  . . . . . . . . . . . . call a GAP function
+**
+**  The current reader context is saved and a new one is started.
+*/
+void Call0ArgsInNewReader(Obj f);
+
+/****************************************************************************
+**
+*F  Call1ArgsInNewReader(Obj f,Obj a) . . . . . . . . . . call a GAP function
+**
+**  The current reader context is saved and a new one is started.
+*/
+void Call1ArgsInNewReader(Obj f,Obj a);
+
 
 /****************************************************************************
 **

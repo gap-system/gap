@@ -100,11 +100,15 @@ DeclareCategory(
 
 #############################################################################
 ##
-
 #O  PolycyclicFactorGroup( <fgrp>, <rels> )
+#O  PolycyclicFactorGroupNC( <fgrp>, <rels> )
 ##
 DeclareOperation(
     "PolycyclicFactorGroup",
+    [ IsObject, IsList ] );
+
+DeclareOperation(
+    "PolycyclicFactorGroupNC",
     [ IsObject, IsList ] );
 
 
@@ -112,6 +116,12 @@ DeclareOperation(
 ##
 #O  PolycyclicFactorGroupByRelators( <fam>, <gens>, <rels> )
 ##
+DeclareGlobalFunction( "SingleCollectorByRelators" );
+
+DeclareOperation(
+    "PolycyclicFactorGroupByRelatorsNC",
+    [ IsFamily, IsList, IsList ] );
+
 DeclareOperation(
     "PolycyclicFactorGroupByRelators",
     [ IsFamily, IsList, IsList ] );

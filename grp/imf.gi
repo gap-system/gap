@@ -634,7 +634,7 @@ InstallGlobalFunction( "OrbitShortVectors", function ( gens, rep )
     if rep > null then
         images := [ Immutable( rep ) ];
     else
-        images := [ -rep ];
+        images := [ Immutable( -rep ) ];
     fi;
     while images <> [ ] do
         Append( orbit, images );
@@ -655,7 +655,9 @@ InstallGlobalFunction( "OrbitShortVectors", function ( gens, rep )
     od;
 
     Append( orbit, -orbit );
-    return Set( orbit );
+    # The function Immutable in the following statement essentially speeds
+    # up the function PositionSorted in IsomorphismPermGroupImfGroup.  
+    return Immutable( Set( orbit ) );
 end );
 
 

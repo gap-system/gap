@@ -154,8 +154,7 @@ DeclareGlobalVariable( "CharTableWeylD",
 
 #############################################################################
 ##
-#F  CharValueWreathSymmetric( <sub>, <n>, <beta>, <pi> ) . .
-#F                                        . . . . character value in G wr Sn.
+#F  CharValueWreathSymmetric(<sub>,<n>,<beta>,<pi>) . char. value in G wr Sn.
 ##
 DeclareGlobalFunction( "CharValueWreathSymmetric" );
 
@@ -169,7 +168,8 @@ DeclareGlobalFunction( "CharValueWreathSymmetric" );
 ##  where <tbl> is the character table of $G$.
 ##
 ##  The result has values for `ClassParameters' and `CharacterParameters'
-##  (see~"ClassParameters", "CharacterParameters") stored,
+##  (see~"ctbllib:ClassParameters", "ctbllib:CharacterParameters" in the
+##  manual for the {\GAP} Character Table Library) stored,
 ##  the entries in these lists are sequences of partitions.
 ##  Note that this parametrization prevents the principal character from
 ##  being the first one in the list of irreducibles.

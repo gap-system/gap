@@ -1,11 +1,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %W  streams.tex               GAP documentation              Frank Celler
-%W                                                     & Martin Schoenert
+%W                                                       Martin Schoenert
+%W                                                         & Steve Linton
 %%
 %H  @(#)$Id$
 %%
 %Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%Y  Copyright 2000,  St Andrews
 %%
 %%  This file contains the description of streams.
 %%
@@ -33,6 +35,32 @@
 \Section{Operations applicable to All Streams}
 
 \Declaration{CloseStream}
+
+\Declaration{FileDescriptorOfStream}
+
+\>UNIXSelect( <inlist>, <outlist>, <exclist>, <timeoutsec>, <timeoutusec> ) F
+
+makes the UNIX C-library function `select' accessible from {\GAP}
+for streams. The functionality is as described in the man page (see
+`man select'). The first three arguments must be lists containing
+UNIX file descriptors (integers) for streams. They can be obtained via
+`FileDescriptorOfStream' (see~"FileDescriptorOfStream") for streams
+to local processes and to local files. The argument <timeoutsec> is a
+timeout in seconds as in the `struct timeval' on the C level. The argument
+<timeoutusec> is
+analogously in microseconds. The total timeout is the sum of both. If
+one of those timeout arguments is not a small integer then no timeout is
+applicable (`fail' is allowed for the timeout arguments).
+
+The return value is the number of streams that are ready, this may be
+0 if a timeout was specified. All file descriptors in the three lists
+that are not yet ready are replaced by `fail' in this function. So 
+the lists are changed!
+
+This function is not available on the Macintosh architecture and is
+only available if your operating system has `select', which is detected
+during compilation of {\GAP}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operations for Input Streams}
@@ -71,14 +99,16 @@ See "File Operations" for details.
 *Example*
 
 \beginexample
-# as function with local `a' does not change the global one
+# a function with local `a' does not change the global one
 gap> a := 1;;
 gap> i := InputTextString( "local a; a := 10; return a*10;" );;
 gap> ReadAsFunction(i)();
 100
 gap> a;
 1
+\endexample
 
+\beginexample
 # reading it via `Read' does
 gap> i := InputTextString( "a := 10;" );;                      
 gap> Read(i);
@@ -160,9 +190,9 @@ gap> Print( str, "\n" );
 (1,2,3):Z(3)
 \endexample
 
-\Declaration{LogTo}
-\Declaration{InputLogTo}
-\Declaration{OutputLogTo}
+\Declaration{LogTo}!{for streams}
+\Declaration{InputLogTo}!{for streams}
+\Declaration{OutputLogTo}!{for streams}
 
 
 When  text is being  sent to an output text   stream via `PrintTo', `AppendTo',
@@ -302,17 +332,84 @@ gap> Print( str );
 \endtt
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Input-Output Streams}
+
+\FileHeader{streams}[2]
+
+\Declaration{IsInputOutputStream}
+
+\FileHeader{streams}[3]
+
+\Declaration{InputOutputLocalProcess}
+
+\beginexample
+gap> d := DirectoryCurrent();
+dir("./")
+gap> f := Filename(DirectoriesSystemPrograms(), "rev");
+"/usr/bin/rev"
+gap> s := InputOutputLocalProcess(d,f,[]);
+< input/output stream to rev >
+gap> WriteLine(s,"The cat sat on the mat");
+true
+gap> Print(ReadLine(s));
+tam eht no tas tac ehT
+gap> ReadLine(s);
+fail
+gap> x := ListWithIdenticalEntries(10000,'x');;
+gap> ConvertToStringRep(x);
+gap> WriteLine(s,x);
+fail
+gap> WriteByte(s,INT_CHAR('\n'));
+true
+gap> y := ReadAll(s);;
+gap> Length(y);      
+4095
+gap> CloseStream(s);
+gap> s;
+< closed input/output stream to rev >
+\endexample
+
+\Declaration{ReadAllLine}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Dummy Streams}
 
 The following  two commands create  dummy streams  which will consume all
 characters and never deliver one.
 
-
 \Declaration{InputTextNone}
 
 \Declaration{OutputTextNone}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Handling of Streams in the Background}
 
+This section describes a feature of the {\GAP} kernel that can be used
+to handle pending streams somehow ``in the background''. This is currently
+not available on the Macintosh architecture and only on operating
+systems that have `select'.
+
+Right before {\GAP} reads a keypress from the keyboard it calls a little
+subroutine that can handle streams that are ready to be read or ready to
+be written. This means that {\GAP} can handle these streams during
+user input on the command line. Note that this does not work when {\GAP}
+is in the middle of some calculation.
+
+This feature is used in the following way. One can install handler
+functions for reading or writing streams. This is done via:
+
+\Declaration{InstallCharReadHookFunc}
+
+Handlers can be removed via:
+
+\Declaration{UnInstallCharReadHookFunc}
+
+Note that handler functions must not return anything and get one integer
+argument, which refers to an index in one of the following arrays
+(according to whether the function was installed for input, output or
+exceptions on the stream). Handler functions usually should not output
+anything on the standard output because this ruins the command line
+during command line editing.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

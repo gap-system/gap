@@ -1,4 +1,4 @@
 @msfiles = ("fpsemi");
-@gdfiles  = ("fpsemi","kbsemi","tcsemi","rwssmg");
+@gdfiles  = ("fpsemi","kbsemi","tcsemi","rwssmg","rws","fpmon");
 $DIR = "../ref";
 $LIB = "../../lib";

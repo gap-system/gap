@@ -214,8 +214,9 @@ TRANSLENGTHS := [ 1, 1, 2, 5, 5, 16, 7, 50, 34, 45, 8, 301, 9, 63, 104 ];
 TRANSNONDISCRIM := [[],[],[],[],[],[],[],[],[],[],[],[[273,292]],[],
 [[42,51]],[[37,58],[38,59],[57,67],[65,74],[66,74]]];
 
-TRANSSELECT := [];
-TRANSSIZES  := [];
+TRANSSELECT :=[];
+TRANSSIZES  :=[];
+TRANSPARTNUM:=[];
 
 if not IsBound(TRANSDEGREES) then
   TRANSDEGREES :=7;
@@ -279,8 +280,14 @@ local Tbak,Fbak,flg,sel,i,fname;
       TRANSSIZES[deg]:=List(TRANSPROPERTIES[deg],i->i[1]);
       sel:=[1..TRANSLENGTHS[deg]];
     fi;
+    # make blists those which are
     ForAll(TRANSPROPERTIES[deg]{sel},i->IsBound(i[5]) and IsBlist(i[5]));
   fi;
+  for i in sel do
+    MakeImmutable(TRANSGRP[deg][i]);
+    MakeImmutable(TRANSPROPERTIES[deg][i]);
+  od;
+  TRANSPARTNUM[deg]:=NrPartitions(deg);
 end);
 
 BIND_GLOBAL("TRANSGrp",function(deg,nr)
@@ -297,6 +304,7 @@ BIND_GLOBAL("TRANSGrp",function(deg,nr)
 end);
 
 BIND_GLOBAL("TRANSProperties",function(deg,nr)
+local l;
   if not IsBound(TRANSPROPERTIES[deg]) or
     not IsBound(TRANSPROPERTIES[deg][nr]) then
     TransGrpLoad(deg,nr);
@@ -307,7 +315,15 @@ BIND_GLOBAL("TRANSProperties",function(deg,nr)
   if nr>TRANSLENGTHS[deg] then
     return "fail";
   fi;
-  return TRANSPROPERTIES[deg][nr];
+  l:=TRANSPROPERTIES[deg][nr];
+  if IsBound(l[5]) and IsString(l[5]) then
+    # translate string to blist
+    l:=ShallowCopy(l);
+    l[5]:=BlistStringDecode(l[5],TRANSPARTNUM[deg]-1);
+    MakeImmutable(l);
+    TRANSPROPERTIES[deg][nr]:=l;
+  fi;
+  return l;
 end);
 
 InstallGlobalFunction(NrTransitiveGroups, function(deg)
@@ -332,7 +348,7 @@ InstallGlobalFunction( TransitiveGroup, function(deg,num)
     Error("maximal number of groups of degree ",deg," is ",
            TRANSLENGTHS[deg]);
   fi;
-
+ 
   # special case: Symmetric and Alternating Group
   s:=Factorial(deg);
   if TRANSProperties(deg,num)[1]=s then
@@ -370,12 +386,57 @@ InstallGlobalFunction( TransitiveGroup, function(deg,num)
   SetTransitiveIdentification(g,num);
   return g;
 end );
- 
-CntOp := function(grp,orb,op)
-local l,i;
+
+InstallFlushableValue(TRANSCOMBCACHE,[[0],[0],[0]]);
+BindGlobal("TransCombinat",function(m,n)
+local i,l;
+  for i in [1..3] do
+    if TRANSCOMBCACHE[i][1]=m and TRANSCOMBCACHE[i][2]=n then
+      return TRANSCOMBCACHE[i][3];
+    fi;
+  od;
+  TRANSCOMBCACHE[3]:=TRANSCOMBCACHE[2];
+  TRANSCOMBCACHE[2]:=TRANSCOMBCACHE[1];
+  l:=Combinations(m,n);
+  for i in l do MakeImmutable(i);od;
+  Sort(l);
+  IsSet(l);
+  TRANSCOMBCACHE[1]:=[m,n,l];
+  return l;
+end);
+
+InstallFlushableValue(TRANSARRCACHE,[[0],[0],[0]]);
+BindGlobal("TransArrange",function(m,n)
+local i,l;
+  for i in [1..3] do
+    if TRANSARRCACHE[i][1]=m and TRANSARRCACHE[i][2]=n then
+      return TRANSARRCACHE[i][3];
+    fi;
+  od;
+  TRANSARRCACHE[3]:=TRANSARRCACHE[2];
+  TRANSARRCACHE[2]:=TRANSARRCACHE[1];
+  l:=Arrangements(m,n);
+  for i in l do MakeImmutable(i);od;
+  Sort(l);
+  IsSet(l);
+  TRANSARRCACHE[1]:=[m,n,l];
+  return l;
+end);
+
+BindGlobal("CntOp",function(grp,orb,op)
+local l,i,j,sgn;
   l:=[];
   for i in orb do
-    Add(l,SignPermGroup(Action(grp,i,op))*Length(i));
+    i:=Set(Immutable(i));
+    sgn:=1;
+    j:=1;
+    while sgn=1 and j<=Length(GeneratorsOfGroup(grp)) do
+      if SignPerm(Permutation(GeneratorsOfGroup(grp)[j],i,op))<0 then 
+        sgn:=-1;
+      fi;
+      j:=j+1;
+    od;
+    Add(l,sgn*Length(i));
   od;
   l:=Collected(l);
   for i in [1..Length(l)] do
@@ -383,27 +444,34 @@ local l,i;
   od;
   Sort(l);
   return l;
-end;
+end);
 
-NumBol := function(b)
+BindGlobal("NumBol",function(b)
   if b then return 1;
        else return 0;
   fi;
-end;
+end);
 
-SetsOrbits := function(g,n)
-  return Orbits(g,Combinations(MovedPoints(g),n),
-                OnSets);
-end; 
+BindGlobal("SetsOrbits",function(g,n)
+local l,i;
+  l:=TransCombinat(MovedPoints(g),n);
+  for i in l do MakeImmutable(i);od;
+  Sort(l);
+  return Orbits(g,l,OnSets);
+end); 
 
-SeqsOrbits := function(g,n)
-  return Orbits(g,Arrangements(MovedPoints(g),n),
-                OnTuples);
-end; 
+BindGlobal("SeqsOrbits",function(g,n)
+local l,i;
+  l:=TransArrange(MovedPoints(g),n);
+  for i in l do MakeImmutable(i);od;
+  Sort(l);
+  return Orbits(g,l,OnTuples);
+end); 
 
 InstallMethod(TransitiveIdentification,"generic",true,[IsPermGroup],0,
 function(ogrp)
-local dom,p,s,t,a,cand,i,grp,deg,aiso,piso;
+local dom,p,s,t,a,cand,i,grp,deg,aiso,piso,co,cheap;
+  cheap:=ValueOption("cheap")<>fail;
   grp:=ogrp;
   dom:=MovedPoints(grp);
   if not IsTransitive(grp,dom) then
@@ -421,13 +489,16 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso;
     cand:=Filtered([1..TRANSLENGTHS[deg]],i->TRANSProperties(deg,i)[1]=s);
   fi;
   if Length(cand)>1 and deg>4 then
-    cand:=Filtered(cand,
-     i->TRANSProperties(deg,i)[6]
-        =CntOp(grp,Orbits(grp,Combinations(dom,2),OnSets),OnSets)
-     and TRANSProperties(deg,i)[7]
-        =CntOp(grp,Orbits(grp,Arrangements(dom,2),OnTuples),OnTuples)
-     and TRANSProperties(deg,i)[8]
-        =CntOp(grp,Orbits(grp,Combinations(dom,3),OnSets),OnSets) );
+    co:=CntOp(grp,Orbits(grp,TransCombinat(dom,2),OnSets),OnSets);
+    cand:=Filtered(cand,i->TRANSProperties(deg,i)[6]=co);
+    if Length(cand)>1 then
+      co:=CntOp(grp,Orbits(grp,TransArrange(dom,2),OnTuples),OnTuples);
+      cand:=Filtered(cand,i->TRANSProperties(deg,i)[7]=co);
+    fi;
+    if Length(cand)>1 then
+      co:=CntOp(grp,Orbits(grp,TransCombinat(dom,3),OnSets),OnSets);
+      cand:=Filtered(cand,i->TRANSProperties(deg,i)[8]=co);
+    fi;
   fi;
 
   Pcgs(grp); # try to enforce solvable calculations further on.
@@ -510,20 +581,31 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso;
   fi;  
 
   # maximal subgroups
-  if IsSolvableGroup(grp) and Length(cand)>1 then
-    t:=Collected(List(Filtered(MaximalSubgroupClassReps(grp),
-                i->Length(Orbits(i,MovedPoints(grp)))=1),
-		TransitiveIdentification));
-    s:=Filtered([1..Length(cand)],
-        k->Collected(List(Filtered(MaximalSubgroupClassReps(p[k]),
-                i->Length(Orbits(i,MovedPoints(p[k])))=1),
-		TransitiveIdentification))=t);
+  if not cheap and IsSolvableGroup(grp) and Length(cand)>1 then
+    t:=Collected(List(MaximalSubgroupClassReps(grp),
+      i->[Size(i),Collected(List(Orbits(i,MovedPoints(grp)),Length))]));
+    s:=Filtered([1..Length(cand)],k->
+         Collected(List(MaximalSubgroupClassReps(p[k]),
+	   i->[Size(i),Collected(List(Orbits(i,MovedPoints(grp)),Length))]))=t);
     cand:=cand{s};
     p:=p{s};
+    if Length(cand)>1 then
+      a:=Filtered(t,i->i[2]<=5 and Length(i[1][2])=1 and i[1][2][1][2]=1);
+      a:=List(a,i->i[1][1]);
+      t:=Collected(List(Filtered(MaximalSubgroupClassReps(grp),
+		  i->Size(i) in a and Length(Orbits(i,MovedPoints(grp)))=1),
+		  x->TransitiveIdentification(x:cheap)));
+      s:=Filtered([1..Length(cand)],
+	  k->Collected(List(Filtered(MaximalSubgroupClassReps(p[k]),
+		  i->Size(i) in a and Length(Orbits(i,MovedPoints(p[k])))=1),
+		  x->TransitiveIdentification(x:cheap)))=t);
+      cand:=cand{s};
+      p:=p{s};
+    fi;
   fi;
 
-  if Length(cand)>1 then
-    # NormalSubgroups
+  if not cheap and Length(cand)>1 and not IsSolvableGroup(grp) then
+    # NormalSubgroups (some solvable groups have too many)
     t:=Collected(List(NormalSubgroups(grp),Size));
     s:=Filtered([1..Length(cand)],
                 i->Collected(List(NormalSubgroups(p[i]),Size))=t);
@@ -531,9 +613,9 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso;
     p:=p{s};
   fi;  
 
-  if Length(cand)>1 and Size(grp)<3000 then
+  if not cheap and Length(cand)>1 and Size(grp)<3000 then
     # Subgroups
-    Print("#I  Subgroups ",cand,"\n");
+    Info(InfoWarning,2,"TransId: test Subgroups ",cand);
     t:=Collected(List(ConjugacyClassesSubgroups(Group(GeneratorsOfGroup(grp))),
                       i->[Size(Representative(i)),Size(i)]));
     s:=Filtered([1..Length(cand)],i->Collected(List(
@@ -543,9 +625,9 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso;
     p:=p{s};
   fi;  
 
-  if Length(cand)>1 then
+  if not cheap and Length(cand)>1 then
     # now finally the hard test: Test for conjugacy
-    Print("#I  Conjugacy Test",cand,"\n");
+    Info(InfoWarning,2,"TransId: test Conjugacy Test",cand);
     s:=SymmetricGroup(Maximum(dom));
 #    if IsSolvableGroup(grp) then
 #      grp:=PreImage(aiso,grp);
@@ -560,6 +642,8 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso;
 
   if Length(cand)=1 then
     return cand[1];
+  elif cheap then
+    return fail;
   else
     Error("Uh-Oh, this should never happen ",cand);
   fi;

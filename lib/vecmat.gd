@@ -63,6 +63,14 @@ DeclareGlobalVariable(
     "TYPE_LIST_GF2VEC_IMM_LOCKED",
     "type of a packed, immutable GF2 vector with representation lock" );
 
+#############################################################################
+##
+#V  TYPE_LIST_GF2VEC_LOCKED . . . . . . . . type of mutable GF2 vectors
+##
+DeclareGlobalVariable(
+    "TYPE_LIST_GF2VEC_LOCKED",
+    "type of a packed, mutable GF2 vector with representation lock" );
+
 
 #############################################################################
 ##
@@ -81,8 +89,11 @@ DeclareSynonym( "ConvertToGF2VectorRep", CONV_GF2VEC );
 ##
 ##  `ConvertToVectorRep( <list> , <field> )' converts <list> to an
 ##  internal vector representation appropriate for a vector over
-##  <field>. It is forbidden to call this function unless all elements
-##  of <list> lie in <field>.
+##  <field>.
+##  It is forbidden to call this function unless <list> is a plain
+##  list or a vector, <field> a field, and all elements
+##  of <list> lie in <field>, violation of this condition can lead to
+##  unpredictable behaviour or a system crash.
 ##
 ##  Instead of a <field> also its size <fieldsize> may be given.
 ##

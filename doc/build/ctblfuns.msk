@@ -71,7 +71,7 @@ gap> t2:= CharacterTable( grps[2] );  SetName( t2, "t2" );
 CharacterTable( <pc group of size 8 with 3 generators> )
 gap> irr1:= Irr( grps[1] );
 [ Character( t1, [ 1, 1, 1, 1, 1 ] ), Character( t1, [ 1, 1, -1, 1, -1 ] ), 
-  Character( t1, [ 1, -1, 1, 1, -1 ] ), Character( t1, [ 1, -1, -1, 1, 1 ] ),
+  Character( t1, [ 1, -1, 1, 1, -1 ] ), Character( t1, [ 1, -1, -1, 1, 1 ] ), 
   Character( t1, [ 2, 0, 0, -2, 0 ] ) ]
 gap> irr2:= Irr( grps[2] );
 [ Character( t2, [ 1, 1, 1, 1, 1 ] ), Character( t2, [ 1, 1, -1, 1, -1 ] ), 
@@ -195,11 +195,12 @@ Character( CharacterTable( Sym( [ 1 .. 3 ] ) ), [ 2, 0, 2 ] )
 \Declaration{IsVirtualCharacter}
 \Declaration{IsIrreducibleCharacter}
 \beginexample
+gap> S4:= SymmetricGroup( 4 );;  SetName( S4, "S4" );
 gap> psi:= ClassFunction( S4, [ 1, 1, 1, -2, 1 ] );
 ClassFunction( CharacterTable( S4 ), [ 1, 1, 1, -2, 1 ] )
 gap> IsVirtualCharacter( psi );
 true
-gap> IsCharacter( psi );       
+gap> IsCharacter( psi );
 false
 gap> chi:= ClassFunction( S4, SizesCentralizers( CharacterTable( S4 ) ) );
 ClassFunction( CharacterTable( S4 ), [ 24, 4, 8, 3, 4 ] )
@@ -221,24 +222,24 @@ gap> nat[1];
 4
 \endexample
 
-\Declaration{ScalarProduct}[ctblfuns]
+\Declaration{ScalarProduct}[ctblfuns]!{for characters}
 \Declaration{MatScalarProducts}
-\Declaration{Norm}[ctblfuns]
+\Declaration{Norm}[ctblfuns]!{of character}
 \beginexample
 gap> tbl:= CharacterTable( "A5" );;
 gap> ScalarProduct( TrivialCharacter( tbl ), Sum( Irr( tbl ) ) );
 1
 gap> ScalarProduct( tbl, [ 1, 1, 1, 1, 1 ], Sum( Irr( tbl ) ) );
 1
-gap> chars:= Irr( tbl ){ [ 2 .. 4 ] };;           
+gap> chars:= Irr( tbl ){ [ 2 .. 4 ] };;
 gap> chars:= Set( Tensored( chars, chars ) );;
-gap> MatScalarProducts( Irr( tbl ), chars );          
+gap> MatScalarProducts( Irr( tbl ), chars );
 [ [ 0, 0, 0, 1, 1 ], [ 1, 1, 0, 0, 1 ], [ 1, 0, 1, 0, 1 ], [ 0, 1, 0, 1, 1 ], 
   [ 0, 0, 1, 1, 1 ], [ 1, 1, 1, 1, 1 ] ]
-gap> MatScalarProducts( tbl, chars );       
+gap> MatScalarProducts( tbl, chars );
 [ [ 2 ], [ 1, 3 ], [ 1, 2, 3 ], [ 2, 2, 1, 3 ], [ 2, 1, 2, 2, 3 ], 
   [ 2, 3, 3, 3, 3, 5 ] ]
-gap> List( chars, Norm );                     
+gap> List( chars, Norm );
 [ 2, 3, 3, 3, 3, 5 ]
 \endexample
 
@@ -256,20 +257,20 @@ gap> ConstituentsOfCharacter( nat );
 \beginexample
 gap> List( Irr( S4 ), KernelOfCharacter );
 [ Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]), 
-  Group([ (), (1,2)(3,4), (1,2,3) ]), Group([ (1,2)(3,4), (1,3)(2,4) ]), 
+  Group([ (), (1,2)(3,4), (1,2,3) ]), Group([ (1,2)(3,4), (1,4)(2,3) ]), 
   Group(()), Group(()) ]
 gap> List( Irr( S4 ), ClassPositionsOfKernel );
 [ [ 1, 2, 3, 4, 5 ], [ 1, 3, 4 ], [ 1, 3 ], [ 1 ], [ 1 ] ]
 \endexample
 
 \Declaration{CentreOfCharacter}
-\Declaration{ClassPositionsOfCentre}[ctblfuns]
+\Declaration{ClassPositionsOfCentre}[ctblfuns]!{for characters}
 \beginexample
 gap> List( Irr( S4 ), CentreOfCharacter );
 [ Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]), 
   Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]), 
-  Group([ (1,2)(3,4), (1,3)(2,4) ]), Group(()), Group(()) ]
-gap> List( Irr( S4 ), ClassPositionsOfCentre );           
+  Group([ (1,2)(3,4), (1,4)(2,3) ]), Group(()), Group(()) ]
+gap> List( Irr( S4 ), ClassPositionsOfCentre );
 [ [ 1, 2, 3, 4, 5 ], [ 1, 2, 3, 4, 5 ], [ 1, 3 ], [ 1 ], [ 1 ] ]
 \endexample
 
@@ -289,8 +290,8 @@ gap> List( [ 1 .. 5 ], i -> CycleStructureClass( nat, i ) );
 [ [  ], [ 1 ], [ 2 ], [ , 1 ], [ ,, 1 ] ]
 \endexample
 
-\Declaration{IsTransitive}[ctblfuns]
-\Declaration{Transitivity}[ctblfuns]
+\Declaration{IsTransitive}[ctblfuns]!{for characters}
+\Declaration{Transitivity}[ctblfuns]!{for characters}
 \beginexample
 gap> IsTransitive( nat );  Transitivity( nat );
 true
@@ -346,7 +347,7 @@ gap> Tensored( chars1, chars2 );
 gap> a5:= CharacterTable( "A5" );;  s5:= CharacterTable( "S5" );;
 gap> RestrictedClassFunction( Irr( s5 )[2], a5 );
 Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] )
-gap> RestrictedClassFunctions( Irr( s5 ), a5 );   
+gap> RestrictedClassFunctions( Irr( s5 ), a5 );
 [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
   Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
   Character( CharacterTable( "A5" ), [ 6, -2, 0, 1, 1 ] ), 
@@ -395,9 +396,9 @@ gap> InducedCyclic( a5, "all" );
 \Declaration{ReducedCharacters}
 \beginexample
 gap> tbl:= CharacterTable( "A5" );;
-gap> chars:= Irr( tbl ){ [ 2 .. 4 ] };;           
+gap> chars:= Irr( tbl ){ [ 2 .. 4 ] };;
 gap> chars:= Set( Tensored( chars, chars ) );;
-gap> red:= ReducedClassFunctions( chars );    
+gap> red:= ReducedClassFunctions( chars );
 rec( remainders := [  ], 
   irreducibles := [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
       Character( CharacterTable( "A5" ), 
@@ -418,19 +419,19 @@ gap> IrreducibleDifferences( a5, chars, "triangle" );
 
 \Declaration{LLL}
 \beginexample
-gap> s4:= CharacterTable( "Symmetric", 4 );;                                
-gap> chars:= [ [ 8, 0, 0, -1, 0 ], [ 6, 0, 2, 0, 2 ],                       
->     [ 12, 0, -4, 0, 0 ], [ 6, 0, -2, 0, 0 ], [ 24, 0, 0, 0, 0 ],          
->     [ 12, 0, 4, 0, 0 ], [ 6, 0, 2, 0, -2 ], [ 12, -2, 0, 0, 0 ],          
->     [ 8, 0, 0, 2, 0 ], [ 12, 2, 0, 0, 0 ], [ 1, 1, 1, 1, 1 ] ];;          
-gap> LLL( s4, chars );                                                      
-rec(                                                                        
-  irreducibles := [ Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0
-         ] ), Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ),
-      Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ),
-      Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ),
-      Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ) ],       
-  remainders := [  ], norms := [  ] )                                       
+gap> s4:= CharacterTable( "Symmetric", 4 );;
+gap> chars:= [ [ 8, 0, 0, -1, 0 ], [ 6, 0, 2, 0, 2 ],
+>     [ 12, 0, -4, 0, 0 ], [ 6, 0, -2, 0, 0 ], [ 24, 0, 0, 0, 0 ],
+>     [ 12, 0, 4, 0, 0 ], [ 6, 0, 2, 0, -2 ], [ 12, -2, 0, 0, 0 ],
+>     [ 8, 0, 0, 2, 0 ], [ 12, 2, 0, 0, 0 ], [ 1, 1, 1, 1, 1 ] ];;
+gap> LLL( s4, chars );
+rec( 
+  irreducibles := [ Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 
+         ] ), Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
+      Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ), 
+      Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
+      Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ) ], 
+  remainders := [  ], norms := [  ] )
 \endexample
 
 \Declaration{Extract}
@@ -448,12 +449,12 @@ rec(
   choice := [ [ 2, 5, 3, 4, 1 ] ] )
 gap> Decreased( s4, red, ext.solution[1], ext.choice[1] );
 rec( 
-  irreducibles := [
-     Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ),
-     Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ),
-     Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ),
-     Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ), 
-     Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ) ], 
+  irreducibles := [ 
+      Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
+      Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
+      Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
+      Character( CharacterTable( "Sym(4)" ), [ 3, 1, -1, 0, -1 ] ), 
+      Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ) ], 
   remainders := [  ], matrix := [  ] )
 \endexample
 
@@ -490,8 +491,8 @@ rec( vectors := [ [ -1, 0, 1, 0, 1, 0, 1, 0 ], [ 1, 0, 0, 1, 0, 1, 0, 0 ],
       [ 1, 2, 4, 8, 10, 12, 13, 14 ], [ 1, 2, 5, 6, 9, 12, 13, 16 ] ] )
 gap> emb2:= OrthogonalEmbeddingsSpecialDimension( s6, rem, gram, 8 );
 rec( 
-  irreducibles := [
-      Character( CharacterTable( "A6.2_1" ),
+  irreducibles := [ 
+      Character( CharacterTable( "A6.2_1" ), 
         [ 5, 1, -1, 2, -1, 0, 1, -3, -1, 1, 0 ] ), 
       Character( CharacterTable( "A6.2_1" ), 
         [ 5, 1, 2, -1, -1, 0, -3, 1, -1, 0, 1 ] ), 
@@ -499,7 +500,7 @@ rec(
         [ 10, -2, 1, 1, 0, 0, -2, 2, 0, 1, -1 ] ), 
       Character( CharacterTable( "A6.2_1" ), 
         [ 10, -2, 1, 1, 0, 0, 2, -2, 0, -1, 1 ] ) ], 
-  remainders := [
+  remainders := [ 
       VirtualCharacter( CharacterTable( "A6.2_1" ), 
         [ 0, 0, 3, -3, 0, 0, 4, -4, 0, 1, -1 ] ), 
       VirtualCharacter( CharacterTable( "A6.2_1" ), 
@@ -525,7 +526,7 @@ rec( vectors := [ [ -1, 1, 1, 0 ], [ -1, 1, 0, 1 ], [ 1, -1, 0, 0 ],
   solutions := [ [ 1, 6, 7, 12 ], [ 2, 5, 8, 11 ], [ 3, 4, 9, 10 ] ] )
 gap> Decreased( s4, red, emb.vectors{ emb.solutions[1] } );
 rec( 
-  irreducibles := [
+  irreducibles := [ 
       Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
@@ -546,8 +547,8 @@ gap> gram:= MatScalarProducts( s4, red, red );
 [ [ 2, 1, 0, 0 ], [ 1, 2, 1, -1 ], [ 0, 1, 2, 0 ], [ 0, -1, 0, 2 ] ]
 gap> dn:= DnLattice( s4, gram, red );
 rec( gram := [  ], remainders := [  ], 
-  irreducibles := [
-      Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ),
+  irreducibles := [ 
+      Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ) ] )
@@ -560,8 +561,8 @@ gap> red:= [ [ 2, 0, 2, 2, 0 ], [ 4, 0, 0, 1, 2 ],
 >            [ 5, -1, 1, -1, 1 ], [ -1, 1, 3, -1, -1 ] ];;
 gap> dn:= DnLatticeIterative( s4, red );
 rec( 
-  irreducibles := [
-      Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ),
+  irreducibles := [ 
+      Character( CharacterTable( "Sym(4)" ), [ 2, 0, 2, -1, 0 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 1, -1, 1, 1, -1 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 1, 1, 1, 1, 1 ] ), 
       Character( CharacterTable( "Sym(4)" ), [ 3, -1, -1, 0, 1 ] ) ], 
@@ -612,9 +613,9 @@ gap> AntiSymmetricParts( tbl, Irr( tbl ), 3 );
 \Declaration{OrthogonalComponents}
 \index{symmetrizations!orthogonal}%
 \index{Frame}%
-\index{Murnaghan components}
+\atindex{Murnaghan components}{@Murnaghan components}
 \beginexample
-gap> tbl:= CharacterTable( "A8" );;  chi:= Irr( tbl )[2];                      
+gap> tbl:= CharacterTable( "A8" );;  chi:= Irr( tbl )[2];
 Character( CharacterTable( "A8" ), [ 7, -1, 3, 4, 1, -1, 1, 2, 0, -1, 0, 0, 
   -1, -1 ] )
 gap> OrthogonalComponents( tbl, [ chi ], 3 );
@@ -630,12 +631,12 @@ gap> OrthogonalComponents( tbl, [ chi ], 3 );
 
 \Declaration{SymplecticComponents}
 \index{symmetrizations!symplectic}%
-\index{Murnaghan components}
+\atindex{Murnaghan components}{@Murnaghan components}
 \beginexample
-gap> tbl:= CharacterTable( "U3(3)" );;  chi:= Irr( tbl )[2];                   
+gap> tbl:= CharacterTable( "U3(3)" );;  chi:= Irr( tbl )[2];
 Character( CharacterTable( "U3(3)" ), [ 6, -2, -3, 0, -2, -2, 2, 1, -1, -1, 
   0, 0, 1, 1 ] )
-gap> SymplecticComponents( tbl, [ chi ], 3 );                                 
+gap> SymplecticComponents( tbl, [ chi ], 3 );
 [ ClassFunction( CharacterTable( "U3(3)" ), [ 14, -2, 5, -1, 2, 2, 2, 1, 0, 
       0, 0, 0, -1, -1 ] ), ClassFunction( CharacterTable( "U3(3)" ), 
     [ 21, 5, 3, 0, 1, 1, 1, -1, 0, 0, -1, -1, 1, 1 ] ), 
@@ -653,16 +654,16 @@ gap> SymplecticComponents( tbl, [ chi ], 3 );
 \Declaration{MolienSeries}
 \beginexample
 gap> t:= CharacterTable( AlternatingGroup( 5 ) );;
-gap> psi:= First( Irr( t ), x -> Degree( x ) = 3 );;                            
-gap> mol:= MolienSeries( psi );                                                 
-( 1-z^2-z^3+z^6+z^7-z^9 ) / ( (1-z^5)*(1-z^3)*(1-z^2)^2 )                       
+gap> psi:= First( Irr( t ), x -> Degree( x ) = 3 );;
+gap> mol:= MolienSeries( psi );
+( 1-z^2-z^3+z^6+z^7-z^9 ) / ( (1-z^5)*(1-z^3)*(1-z^2)^2 )
 \endexample
 
 \Declaration{MolienSeriesInfo}
 \beginexample
 gap> HasMolienSeriesInfo( mol );
 true
-gap> MolienSeriesInfo( mol );   
+gap> MolienSeriesInfo( mol );
 rec( summands := [ rec( numer := [ -24, -12, -24 ], r := 5, k := 1 ), 
       rec( numer := [ -20 ], r := 3, k := 1 ), 
       rec( numer := [ -45/4, 75/4, -15/4, -15/4 ], r := 2, k := 2 ), 
@@ -677,13 +678,13 @@ rec( summands := [ rec( numer := [ -24, -12, -24 ], r := 5, k := 1 ),
 
 \Declaration{ValueMolienSeries}
 \beginexample
-gap> List( [ 0 .. 20 ], i -> ValueMolienSeries( mol, i ) );                     
+gap> List( [ 0 .. 20 ], i -> ValueMolienSeries( mol, i ) );
 [ 1, 0, 1, 0, 1, 0, 2, 0, 2, 0, 3, 0, 4, 0, 4, 1, 5, 1, 6, 1, 7 ]
 \endexample
 
 \Declaration{MolienSeriesWithGivenDenominator}
 \beginexample
-gap> MolienSeriesWithGivenDenominator( mol, [ 2, 6, 10 ] );       
+gap> MolienSeriesWithGivenDenominator( mol, [ 2, 6, 10 ] );
 ( 1+z^15 ) / ( (1-z^10)*(1-z^6)*(1-z^2) )
 \endexample
 
@@ -733,6 +734,25 @@ gap> PermCharInfo( j1, psi ).ATLAS;
 [ "1a+56aabb+76aaab+77aabbcc+120aaabbbccc+133a^{4}bbcc+209a^{5}" ]
 \endexample
 
+\Declaration{PermCharInfoRelative}
+\beginexample
+gap> t:= CharacterTable( "A5" );;
+gap> t2:= CharacterTable( "A5.2" );;
+gap> List( Irr( t2 ), x -> x[1] );
+[ 1, 1, 6, 4, 4, 5, 5 ]
+gap> List( Irr( t ), x -> x[1] );
+[ 1, 3, 3, 4, 5 ]
+gap> permchars:= List( [ [1], [1,2], [1,7], [1,3,4,4,6,6,7] ],
+>                      l -> Sum( Irr( t2 ){ l } ) );
+[ Character( CharacterTable( "A5.2" ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
+  Character( CharacterTable( "A5.2" ), [ 2, 2, 2, 2, 0, 0, 0 ] ), 
+  Character( CharacterTable( "A5.2" ), [ 6, 2, 0, 1, 0, 2, 0 ] ), 
+  Character( CharacterTable( "A5.2" ), [ 30, 2, 0, 0, 6, 0, 0 ] ) ]
+gap> info:= PermCharInfoRelative( t, t2, permchars );;
+gap> info.ATLAS;
+[ "1a^+", "1a^{\\pm}", "1a^++5a^-", "1a^++3ab+4(a^+)^{2}+5a^{\\pm}a^+" ]
+\endexample
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Computing Possible Permutation Characters}
@@ -747,12 +767,12 @@ gap> PermCharInfo( j1, psi ).ATLAS;
 \Declaration{TestPerm1}
 \beginexample
 gap> tbl:= CharacterTable( "A5" );;
-gap> rat:= RationalizedMat( Irr( tbl ) );          
+gap> rat:= RationalizedMat( Irr( tbl ) );
 [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
   Character( CharacterTable( "A5" ), [ 6, -2, 0, 1, 1 ] ), 
   Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
   Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ) ]
-gap> tup:= Filtered( Tuples( [ 0, 1 ], 4 ), x -> not IsZero( x ) );  
+gap> tup:= Filtered( Tuples( [ 0, 1 ], 4 ), x -> not IsZero( x ) );
 [ [ 0, 0, 0, 1 ], [ 0, 0, 1, 0 ], [ 0, 0, 1, 1 ], [ 0, 1, 0, 0 ], 
   [ 0, 1, 0, 1 ], [ 0, 1, 1, 0 ], [ 0, 1, 1, 1 ], [ 1, 0, 0, 0 ], 
   [ 1, 0, 0, 1 ], [ 1, 0, 1, 0 ], [ 1, 0, 1, 1 ], [ 1, 1, 0, 0 ], 
@@ -771,7 +791,7 @@ gap> perms:= PermChars( tbl, rec( degree:= 315 ) );
   Character( CharacterTable( "A7" ), [ 315, 15, 0, 0, 1, 0, 0, 0, 0 ] ) ]
 gap> TestPerm4( tbl, perms );
 [ Character( CharacterTable( "A7" ), [ 315, 15, 0, 0, 1, 0, 0, 0, 0 ] ) ]
-gap> perms:= PermChars( tbl, rec( degree:= 15 ) ); 
+gap> perms:= PermChars( tbl, rec( degree:= 15 ) );
 [ Character( CharacterTable( "A7" ), [ 15, 3, 0, 3, 1, 0, 0, 1, 1 ] ), 
   Character( CharacterTable( "A7" ), [ 15, 3, 3, 0, 1, 0, 3, 1, 1 ] ) ]
 gap> TestPerm5( tbl, perms, tbl mod 5 );
@@ -793,13 +813,13 @@ gap> g:= SL(2,4);;           # 2-dim. irreducible representation of A5
 gap> ccl:= ConjugacyClasses( g );;
 gap> rep:= List( ccl, Representative );;
 gap> List( rep, Order );
-[ 1, 2, 3, 5, 5 ]
+[ 1, 2, 5, 5, 3 ]
 gap> phi:= List( rep, BrauerCharacterValue );
-[ 2, fail, -1, E(5)^2+E(5)^3, E(5)+E(5)^4 ]
+[ 2, fail, E(5)^2+E(5)^3, E(5)+E(5)^4, -1 ]
 gap> List( phi{ [ 1, 3, 4, 5 ] }, x -> FrobeniusCharacterValue( x, 2 ) );
-[ 0*Z(2), Z(2)^0, Z(2^2), Z(2^2)^2]
+[ 0*Z(2), Z(2^2), Z(2^2)^2, Z(2)^0 ]
 gap> List( rep{ [ 1, 3, 4, 5 ] }, TraceMat );
-[ 0*Z(2), Z(2)^0, Z(2^2), Z(2^2)^2]
+[ 0*Z(2), Z(2^2), Z(2^2)^2, Z(2)^0 ]
 \endexample
 
 \Declaration{SizeOfFieldOfDefinition}

@@ -93,7 +93,7 @@ Obj SCTableEntryHandler (
         table = ErrorReturnObj(
             "SCTableEntry: <table> must be a small list (not a %s)",
             (Int)TNAM_OBJ(table), 0L,
-            "you can return a list for <table>" );
+            "you can replace <table> via 'return <table>;'" );
         return SCTableEntryHandler( self, table, i, j, k );
     }
     dim = LEN_LIST(table) - 2;
@@ -101,7 +101,7 @@ Obj SCTableEntryHandler (
         table = ErrorReturnObj(
             "SCTableEntry: <table> must be a list with at least 3 elements",
             0L, 0L,
-            "you can return a list for <table>" );
+            "you can replace <table> via 'return <table>;'" );
         return SCTableEntryHandler( self, table, i, j, k );
     }
 
@@ -110,7 +110,7 @@ Obj SCTableEntryHandler (
         i = ErrorReturnObj(
             "SCTableEntry: <i> must be an integer between 0 and %d",
             dim, 0L,
-            "you can return an integer for <i>" );
+            "you can replace <i> via 'return <i>;'" );
         return SCTableEntryHandler( self, table, i, j, k );
     }
 
@@ -120,7 +120,7 @@ Obj SCTableEntryHandler (
         table = ErrorReturnObj(
             "SCTableEntry: <table>[%d] must be a list with %d elements",
             INT_INTOBJ(i), dim,
-            "you can return a list for <table>" );
+            "you can replace <table> via 'return <table>;'" );
         return SCTableEntryHandler( self, table, i, j, k );
 
     }
@@ -130,7 +130,7 @@ Obj SCTableEntryHandler (
         j = ErrorReturnObj(
             "SCTableEntry: <j> must be an integer between 0 and %d",
             dim, 0L,
-            "you can return an integer for <j>" );
+            "you can replace <j> via 'return <j>;'" );
         return SCTableEntryHandler( self, table, i, j, k );
     }
 
@@ -140,7 +140,7 @@ Obj SCTableEntryHandler (
         table = ErrorReturnObj(
             "SCTableEntry: <table>[%d][%d] must be a basis/coeffs list",
             0L, 0L,
-            "you can return a list for <table>" );
+            "you can replace <table> via 'return <table>;'" );
         return SCTableEntryHandler( self, table, i, j, k );
     }
 
@@ -150,7 +150,7 @@ Obj SCTableEntryHandler (
         table = ErrorReturnObj(
             "SCTableEntry: <table>[%d][%d][1] must be a basis list",
             0L, 0L,
-            "you can return a list for <table>" );
+            "you can replace <table> via 'return <table>;'" );
         return SCTableEntryHandler( self, table, i, j, k );
     }
 
@@ -160,7 +160,7 @@ Obj SCTableEntryHandler (
         table = ErrorReturnObj(
             "SCTableEntry: <table>[%d][%d][2] must be a coeffs list",
             0L, 0L,
-            "you can return a list for <table>" );
+            "you can replace <table> via 'return <table>;'" );
         return SCTableEntryHandler( self, table, i, j, k );
     }
 
@@ -170,7 +170,7 @@ Obj SCTableEntryHandler (
         table = ErrorReturnObj(
             "SCTableEntry: <table>[%d][%d][1], ~[2] must have equal length",
             0L, 0L,
-            "you can return a list for <table>" );
+            "you can replace <table> via 'return <table>;'" );
         return SCTableEntryHandler( self, table, i, j, k );
     }
 
@@ -179,7 +179,7 @@ Obj SCTableEntryHandler (
         k = ErrorReturnObj(
             "SCTableEntry: <k> must be an integer between 0 and %d",
             dim, 0L,
-            "you can return an integer for <k>" );
+            "you can replace <k> via 'return <k>;'" );
         return SCTableEntryHandler( self, table, i, j, k );
     }
 
@@ -261,15 +261,15 @@ Obj SCTableProductHandler (
         table = ErrorReturnObj(
             "SCTableProduct: <table> must be a list (not a %s)",
             (Int)TNAM_OBJ(table), 0L,
-            "you can return a list for <table>" );
+            "you can replace <table> via 'return <table>;'" );
         return SCTableProductHandler( self, table, list1, list2 );
     }
     dim = LEN_LIST(table) - 2;
     if ( dim <= 0 ) {
         table = ErrorReturnObj(
-            "SCTableProduct: <table> must be a list with at least 3 element",
+            "SCTableProduct: <table> must be a list with at least 3 elements",
             0L, 0L,
-            "you can return a list for <table>" );
+            "you can replace <table> via 'return <table>;'" );
         return SCTableProductHandler( self, table, list1, list2 );
     }
     zero = ELM_LIST( table, dim+2 );
@@ -277,14 +277,14 @@ Obj SCTableProductHandler (
         list1 = ErrorReturnObj(
             "SCTableProduct: <list1> must be a list with %d elements",
             dim, 0L,
-            "you can return a list for <list1>" );
+            "you can replace <list1> via 'return <list1>;'" );
         return SCTableProductHandler( self, table, list1, list2 );
     }
     if ( ! IS_SMALL_LIST(list2) || LEN_LIST(list2) != dim ) {
         list2 = ErrorReturnObj(
             "SCTableProduct: <list2> must be a list with %d elements",
             dim, 0L,
-            "you can return a list for <list2>" );
+            "you can replace <list2> via 'return <list2>;'" );
         return SCTableProductHandler( self, table, list1, list2 );
     }
 

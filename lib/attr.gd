@@ -15,7 +15,7 @@ Revision.attr_gd :=
 ##  value the setter of the attribute is called, to (possibly) store the
 ##  computed value. In special circumstances, this behaviour can be altered
 ##  dynamically on an attribute-by-attribute basis, using the functions
-## `DisableAttributeValueStoring' and `EnableAttributeValueStoring'.
+##  `DisableAttributeValueStoring' and `EnableAttributeValueStoring'.
 ##
 ##  In general, the code in the library assumes, for efficiency, but not for
 ##  correctness, that attribute values *will* be stored (in suitable
@@ -27,40 +27,38 @@ Revision.attr_gd :=
 ##
 #V  InfoAttributes . . . info class for reporting on attribute tweaking
 ##
-##  This info class (together with InfoWarning) is used for messages
-##  about attribute storing being disabled (at level 2) or enabled
-##  (level 3). It may be used in the future for other messages concerning
-##  changes to attribute behaviour.
+##  This info class (together with `InfoWarning'; see~"InfoWarning") is  used
+##  for messages about attribute storing  being  disabled  (at  level  2)  or
+##  enabled (level 3). It may be  used  in  the  future  for  other  messages
+##  concerning changes to attribute behaviour.
 ##
 
 DeclareInfoClass("InfoAttributes");
 
-
-
 #############################################################################
 ##
-#F  EnableAttributeValueStoring( <attr> ) tell the attribute to resume 
-##                                           storing values
+#F  EnableAttributeValueStoring( <attr> ) tell attr. to resume storing values
 ##
-##  'EnableAttributeValueStoring( <attr> )' enables the usual call of
-##  'Setter( <attr> )' when a method for <attr> returns a value.  In
-##  consequence the values may be stored.  This will usually have no
-##  effect unless 'DisableAttributeValueStoring' has previously been
-##  used for <attr>. <attr> must be an attribute and *not* a property.
-##  
+##  enables the usual call of `Setter( <attr> )' when  a  method  for  <attr>
+##  returns a value. In consequence the  values  may  be  stored.  This  will
+##  usually  have  no  effect   unless   `DisableAttributeValueStoring'   has
+##  previously been used for <attr>. Note that <attr> must  be  an  attribute
+##  and *not* a property.
 ##
 
 DeclareGlobalFunction("EnableAttributeValueStoring");
 
 #############################################################################
 ##
-#F  DisableAttributeValueStoring( <attr> ) tell the attribute to resume 
-##                                           storing values
+#F  DisableAttributeValueStoring( <attr> ) tell attr. to stop storing values
 ##
-##  'DisableAttributeValueStoring( <attr> )' disables the usual call
-##  of 'Setter( <attr> )' when a method for <attr> returns a value.
-##  In consequence the values will never be stored. <attr> must be an 
-##  attribute and *not* a property.
+##  disables the usual call of `Setter( <attr> )' when a  method  for  <attr>
+##  returns a value. In consequence the values will  never  be  stored.  Note
+##  that <attr> must be an attribute and *not* a property.
 ##
 
 DeclareGlobalFunction("DisableAttributeValueStoring");
+
+#############################################################################
+##
+#E

@@ -10,6 +10,12 @@ Revision.grppcfp_gd :=
 
 #############################################################################
 ##
+#I  InfoSQ
+##
+DeclareInfoClass( "InfoSQ" );
+
+#############################################################################
+##
 #F  PcGroupFpGroup( <G> )
 ##
 ##  creates a PcGroup <P> from an FpGroup (see Chapter "Finitely Presented
@@ -20,23 +26,35 @@ Revision.grppcfp_gd :=
 ##  occurs.
 #T  should this become a method?
 DeclareGlobalFunction( "PcGroupFpGroup" );
+DeclareGlobalFunction( "PcGroupFpGroupNC" );
 
 #############################################################################
 ##
 #F  SmithNormalFormSQ( mat ) 
 ##
+##  Obsolete function. Use NormalFormIntMat instead.
 DeclareGlobalFunction( "SmithNormalFormSQ" );
 
 #############################################################################
 ##
 #F  InitEpimorphismSQ( F )
+#F  InitEpimorphismSQ(<hom>)
 ##
+##  If <F> is a finitiely presented group, this operation returns the SQ
+##  epimorphism system corresponding to the largest abelian quotient of <F>.
+##  If <hom> is a epimorphism from a finitely presented group to a pc
+##  group, it returns the system coresponding to this epimorphism.
+##  No argument checking is performed.
+##  
 DeclareGlobalFunction( "InitEpimorphismSQ" );
 
 #############################################################################
 ##
 #F  LiftEpimorphismSQ( epi, M, c )
 ##
+##  if c is an integer, split extensions are searched. if c=0 only one is
+##  returned, otherwise the subdirect product of all such extensions is
+##  found.
 DeclareGlobalFunction( "LiftEpimorphismSQ" );
 
 #############################################################################
@@ -64,3 +82,18 @@ DeclareGlobalFunction( "TryLayerSQ" );
 ##
 DeclareGlobalFunction( "SolvableQuotient" );
 DeclareSynonym( "SQ", SolvableQuotient);
+
+#############################################################################
+##
+#F  AllModulesSQ( epi, M )
+##
+##  returns a list of all permissible extensions of <epi> with the module
+##  <M>.
+DeclareGlobalFunction("AllModulesSQ");
+
+#############################################################################
+##
+#F  EAPrimeLayerSQ( epi, prime )
+##
+##  returns the largest elementary abelian <prime> layer extending <epi>.
+DeclareGlobalFunction("EAPrimeLayerSQ");

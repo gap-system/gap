@@ -1038,6 +1038,51 @@ InstallGlobalFunction( CharacterTableWreathSymmetric, function( sub, n )
     return tbl;
 end );
 
+#############################################################################
+##
+#M  Irr(<Sn>)
+##
+InstallMethod( Irr,
+    "ordinary characters for natural symmetric group",
+    [ IsNaturalSymmetricGroup, IsZeroCyc ],
+function( G, zero )
+local irr,c,deg,dom,cG,cp,clasperm,i,pow,inv;
+  dom:=MovedPoints(G);
+  deg:=Length(dom);
+  if deg = 0 then
+    deg:= 1;
+    dom:= [ 1 ];
+  fi;
+  cG:=CharacterTable(G);
+  c:=CharacterTable("Symmetric",deg);
+  # if necessary permute the classes
+  cp:=List(ClassParameters(c),i->i[2]); # partitions
+  clasperm:=[];
+  for i in ConjugacyClasses(G) do
+    i:=List(Orbits(Subgroup(G,[Representative(i)]),dom),Length);
+    Sort(i);
+    i:=Reversed(i);
+    Add(clasperm,Position(cp,i));
+  od;
+  irr:=[];
+  for i in Irr(c) do
+    Add(irr,Character(cG,AsList(i){clasperm}));
+  od;
+  SetIrr( cG , irr );
+  SetCharacterParameters(cG,CharacterParameters(c));
+  SetClassParameters(cG,ClassParameters(c){clasperm});
+  cp:=ComputedPowerMaps(cG);
+  pow:=ComputedPowerMaps(c);
+  inv:=[];
+  inv{clasperm}:=[1..Length(clasperm)];
+  for i in [1..Length(pow)] do
+    if IsBound(pow[i]) and not IsBound(cp[i]) then
+      cp[i]:=inv{pow[i]{clasperm}};
+    fi;
+  od;
+  return irr;
+end );
+
 
 #############################################################################
 ##

@@ -474,5 +474,25 @@ end );
 
 #############################################################################
 ##
+#M  LaTeXObj
+##
+InstallMethod(LaTeXObj,"rational",true,
+  [IsRat],0,
+function(r)
+local n,d;
+  if IsInt(r) then
+    return String(r);
+  fi;
+  n:=NumeratorRat(r);
+  d:=DenominatorRat(r);
+  if AbsInt(n)<5 and AbsInt(d)<5 then
+    return Concatenation(String(n),"/",String(d));
+  else
+    return Concatenation("\\frac{",String(n),"}{",String(d),"}");
+  fi;
+end);
+
+#############################################################################
+##
 #E
 

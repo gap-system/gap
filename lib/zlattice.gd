@@ -67,11 +67,11 @@ DeclareGlobalFunction( "StandardScalarProduct" );
 ##  Define $b_0 = b$, and then iteratively compute
 ##  $$
 ##  x_i = (b_i A^{\prime}) \bmod p,\ \ b_{i+1} = \frac{1}{p} (b_i - x_i A),
-##    i = 0, 1, 2, \ldots \ .
+##    i = 0, 1, 2, \ldots \.
 ##  $$
 ##  By induction, we get                                                     
 ##  $$
-##  p^{i+1} b_{i+1} + \left( \sum_{j=0}^{i} p^j x_j \right) A = b .
+##  p^{i+1} b_{i+1} + \left( \sum_{j=0}^{i} p^j x_j \right) A = b\.
 ##  $$
 ##  If there is an integral solution $x$ then it is unique,
 ##  and there is an index $l$ such that $b_{l+1}$ is zero
@@ -280,7 +280,7 @@ DeclareGlobalFunction( "LLLReducedBasis" );
 ##  such that $\sum_{i=1}^n x_i b_i$ is zero,
 ##  and `transformation' gives the expression of the new lattice basis in
 ##  terms of the old, i.e., `transformation' is the matrix $T$ such that
-##  $T \cdot <G> \cdot T^{tr}$ is the `remainder' component of the result.
+##  $T . <G> . T^{tr}$ is the `remainder' component of the result.
 ##
 ##  The optional argument <y> denotes the ``sensitivity'' of the algorithm,
 ##  it must be a rational number between $\frac{1}{4}$ and $1$; the default
@@ -315,7 +315,7 @@ DeclareGlobalFunction( "LLLReducedGramMat" );
 ##  Let <G> be a regular matrix of a symmetric bilinear form,
 ##  and <m> a nonnegative integer.
 ##  `ShortestVectors' computes the vectors $x$ that satisfy
-##  $x \cdot <G> \cdot x^{tr} \leq <m>$,
+##  $x . <G> . x^{tr} \leq <m>$,
 ##  and returns a record describing these vectors.
 ##  The result record has the components
 ##  \beginitems
@@ -348,7 +348,7 @@ DeclareGlobalFunction( "ShortestVectors" );
 ##  Gram matrix <gram>, which must be a regular matrix.
 ##  In other words, all solutions $X$ of the problem
 ##  $$
-##  X^{tr} \cdot X = <gram>
+##  X^{tr} . X = <gram>
 ##  $$
 ##  are calculated (see~\cite{Ple90}).
 ##  Usually there are many solutions $X$
@@ -360,17 +360,17 @@ DeclareGlobalFunction( "ShortestVectors" );
 ##       the list $L = [ x_1, x_2, \ldots, x_n ]$ of vectors
 ##       that may be rows of a solution;
 ##       these are exactly those vectors that fulfill the condition
-##       $x_i \cdot <gram>^{-1} \cdot x_i^{tr} \leq 1$
+##       $x_i . <gram>^{-1} . x_i^{tr} \leq 1$
 ##       (see~"ShortestVectors"),
-##       and we have $<gram> = \sum^n_{i=1} x_i^{tr} \cdot x_i$,
+##       and we have $<gram> = \sum^n_{i=1} x_i^{tr} . x_i$,
 ##
 ##  `norms' &
-##       the list of values $x_i \cdot <gram>^{-1} \cdot x_i^{tr}$, and
+##       the list of values $x_i . <gram>^{-1} . x_i^{tr}$, and
 ##
 ##  `solutions' &
-##       a list <S> of lists; the <i>--th solution matrix is
+##       a list <S> of lists; the <i>-th solution matrix is
 ##       `<L>{ <S>[<i>] }',
-##       so the dimension of the <i>--th solution is the length of
+##       so the dimension of the <i>-th solution is the length of
 ##       `<S>[<i>]'.
 ##  \enditems
 ##

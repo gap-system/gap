@@ -283,9 +283,13 @@ InstallOtherMethod( CentralizerOp,
 ##
 InstallMethod( Centre,
     "for a magma",
-    true,
-    [ IsMagma ], 0,
-    M -> Centralizer( M, M ) );
+    [ IsMagma ],
+    function( M )
+    M:= Centralizer( M, M );
+    Assert( 1, IsAbelian( M ) );
+    SetIsAbelian( M, true );
+    return M;
+    end );
 
 InstallMethod( Centre,
     "for a commutative magma",
@@ -294,6 +298,24 @@ InstallMethod( Centre,
     SUM_FLAGS, # for commutative magmas this is best possible
     IdFunc );
 
+
+#############################################################################
+##
+#A  Idempotents( <M> ) . .  . . . . . . . . . . . . . . idempotents of a magma
+##
+InstallMethod(Idempotents,"for finite magmas", true,
+               [IsMagma], 0,
+     function(M)
+     local I, m;
+     I := [];
+
+     for m in AsList(M) do  
+         if m*m=m then     
+             Add(I,m);    
+         fi;
+     od;
+     return I;
+end);
 
 #############################################################################
 ##
@@ -648,7 +670,8 @@ InstallMethod( TrivialSubmagmaWithOne,
     "for magma-with-one",
     true,
     [ IsMagmaWithOne ], 0,
-    M -> SubmagmaWithOneNC( M, [] ) );
+    # use the `Parent' to avoid too many nonmaximal parents
+    M -> SubmagmaWithOneNC( Parent(M), [] ) );
 
 
 #############################################################################
@@ -676,15 +699,31 @@ InstallMethod( GeneratorsOfMagma,
     "for a magma-with-one with known generators",
     true,
     [ IsMagmaWithOne and HasGeneratorsOfMagmaWithOne ], 0,
-    M -> Set( Concatenation( GeneratorsOfMagmaWithOne( M ), [ One(M) ] ) ) );
+function(M)
+local c;
+  c:=Concatenation( GeneratorsOfMagmaWithOne( M ), [ One(M) ] );
+  if CanEasilyCompareElements(One(M)) then
+    return Set(c);
+  else
+    return Unique(c);
+  fi;
+end);
 
 InstallMethod( GeneratorsOfMagma,
     "for a magma-with-inverses with known generators",
     true,
     [ IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses ], 0,
-    M -> Set( Concatenation( GeneratorsOfMagmaWithInverses( M ),
-                [ One( M ) ],
-                List( GeneratorsOfMagmaWithInverses( M ), Inverse ) ) ) );
+function(M)
+local c;
+  c:=Concatenation( GeneratorsOfMagmaWithInverses( M ),
+	      [ One( M ) ],
+	      List( GeneratorsOfMagmaWithInverses( M ), Inverse ) );
+  if CanEasilyCompareElements(One(M)) then
+    return Set(c);
+  else
+    return Unique(c);
+  fi;
+end);
 
 InstallMethod( GeneratorsOfMagma,
     "for a magma-with-one with generators, all elms. of finite order",
@@ -742,8 +781,16 @@ InstallMethod( GeneratorsOfMagmaWithOne,
     "for a magma-with-inverses with generators",
     true,
     [ IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses ], 0,
-    M -> Set( Concatenation( GeneratorsOfMagmaWithInverses( M ),
-                List( GeneratorsOfMagmaWithInverses( M ), x -> x^-1 ) ) ) );
+function(M)
+local c;
+  c:=Concatenation( GeneratorsOfMagmaWithInverses( M ),
+	      List( GeneratorsOfMagmaWithInverses( M ), Inverse ) );
+  if CanEasilyCompareElements(One(M)) then
+    return Set(c);
+  else
+    return Unique(c);
+  fi;
+end);
 
 InstallMethod( GeneratorsOfMagmaWithOne,
     "for a magma-with-inv. with gens., all elms. of finite order",

@@ -140,7 +140,10 @@ of the type of the argument has the value `true' at all of these positions.
 The intersection (or meet) of two filters <filt1>, <filt2> is again a
 filter, it can be formed as
 
-\>`<filt1> and <filt2>'{and!for filters}
+\atindex{and!for filters}{@\noexpand`and'!for filters}
+\){\fmark}<filt1> and <filt2>
+
+See "and!for filters" for more details.
 
 For example, `IsList and IsEmpty' is a filter that returns `true' if
 its argument is an empty list, and `false' otherwise.  The filter
@@ -449,7 +452,8 @@ gap> KnownAttributesOfObject(g);
 \endexample
 
 Several attributes have methods for more than one argument.  For example
-`IsTransitive' (see~"IsTransitive.oprt") is an attribute for a $G$-set that
+`IsTransitive' (see~"IsTransitive!for group actions") is an attribute for 
+a $G$-set that
 can also be called for the two arguments, being a group $G$ and its operation
 domain.  If attributes are called with more than one argument then the
 return value is not stored in any of the arguments.

@@ -10,6 +10,11 @@
 %%
 \Chapter{Functions}
 
+\index{functions}
+The section~"Function" describes how to define a function. In this chapter
+we describe functions that give information about functions, and various
+utility functions used either when defining functions or calling functions.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Information about a function}
 
@@ -42,7 +47,7 @@ gap> NumberArgumentsFunction(Sum);
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Calling an function with a variable number of arguments}
+\Section{Calling a function with a variable number of arguments}
 
 \Declaration{CallFuncList}
 \beginexample

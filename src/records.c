@@ -193,7 +193,7 @@ UInt            RNamObj (
         obj = ErrorReturnObj(
             "Record: '<rec>.(<obj>)' <obj> must be a string or an integer",
             0L, 0L,
-            "you can return a string or an integer for <obj>" );
+            "you can replace <obj> via 'return <obj>;'" );
         return RNamObj( obj );
     }
 }
@@ -241,7 +241,7 @@ Obj             NameRNamHandler (
         rnam = ErrorReturnObj(
             "NameRName: <rnam> must be a record name (not a %s)",
             (Int)TNAM_OBJ(rnam), 0L,
-            "you can return a record name for <rnam>" );
+            "you can replace <rnam> via 'return <rnam>;'" );
     }
     name = NEW_STRING( SyStrlen( NAME_RNAM( INT_INTOBJ(rnam) ) ) );
     SyStrncat( CSTR_STRING(name),
@@ -331,7 +331,7 @@ Obj             ElmRecError (
     rec = ErrorReturnObj(
         "Record Element: <rec> must be a record (not a %s)",
         (Int)TNAM_OBJ(rec), 0L,
-        "you can return a record for <rec>" );
+        "you can replace <rec> via 'return <rec>;'" );
     return ELM_REC( rec, rnam );
 }
 
@@ -343,7 +343,7 @@ Obj             ElmRecObject (
   elm = DoOperation2Args( ElmRecOper, obj, INTOBJ_INT(rnam) );
   while (elm == 0)
     elm =  ErrorReturnObj("Record access method must return a value",0L,0L,
-                          "you can return a value or quit");
+                          "you can supply a value <val> via 'return <val>;'");
   return elm;
 
 }
@@ -384,7 +384,7 @@ Int             IsbRecError (
     rec = ErrorReturnObj(
         "IsBound: <rec> must be a record (not a %s)",
         (Int)TNAM_OBJ(rec), 0L,
-        "you can return a record for <rec>" );
+        "you can replace <rec> via 'return <rec>;'" );
     return ISB_REC( rec, rnam );
 }
 
@@ -431,7 +431,7 @@ void            AssRecError (
     rec = ErrorReturnObj(
         "Record Assignment: <rec> must be a record (not a %s)",
         (Int)TNAM_OBJ(rec), 0L,
-        "you can return a record for <rec>" );
+        "you can replace <rec> via 'return <rec>;'" );
     ASS_REC( rec, rnam, obj );
 }
 
@@ -479,7 +479,7 @@ void            UnbRecError (
     rec = ErrorReturnObj(
         "Unbind: <rec> must be a record (not a %s)",
         (Int)TNAM_OBJ(rec), 0L,
-        "you can return a record for <rec>" );
+        "you can replace <rec> via 'return <rec>;'" );
     UNB_REC( rec, rnam );
 }
         

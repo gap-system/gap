@@ -8,16 +8,9 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  Free groups are treated as   special cases of finitely presented  groups.
-##  This  is done by making  the elements (more specifically, the generators)
-##  of  a  free group to   have  the property   IsElementOfFpGroup.  See  the
-##  function  FreeGroup().    In addition,   elements  of  a free   group are
+##  In addition,   elements  of  a free   group are
 ##  (associative) words, that is they have a normal  form that allows an easy
 ##  equalitity test.  
-##
-##  The methods for  testing equality, multiplying,  etc. are the same as for
-##  IsAssocWordWithInverse.  However,  these methods   have to   be installed
-##  again  for IsElementOfFpGroup in order   to  guarantee that they will  be
-##  chosen over methods for elements of a finitely presented group.
 ##
 Revision.grpfree_gd :=
     "$Id$";
@@ -27,17 +20,17 @@ Revision.grpfree_gd :=
 ##
 #F  IsElementOfFreeGroup  . . . . . . . . . . . . .  elements in a free group
 ##
-DeclareSynonym( "IsElementOfFreeGroup",
-    IsAssocWordWithInverse and IsElementOfFpGroup );
+DeclareSynonym( "IsElementOfFreeGroup", IsAssocWordWithInverse );
+DeclareSynonym( "IsElementOfFreeGroupFamily",IsAssocWordWithInverseFamily );
 
 
 #############################################################################
 ##
-#F  FreeGroup( <rank> )
-#F  FreeGroup( <rank>, <name> )
-#F  FreeGroup( <name1>, <name2>, ... )
-#F  FreeGroup( <names> )
-#F  FreeGroup( infinity, <name>, <init> )
+#F  FreeGroup( [<wfilt>,]<rank> )
+#F  FreeGroup( [<wfilt>,]<rank>, <name> )
+#F  FreeGroup( [<wfilt>,]<name1>, <name2>, ... )
+#F  FreeGroup( [<wfilt>,]<names> )
+#F  FreeGroup( [<wfilt>,]infinity, <name>, <init> )
 ##
 ##  Called in the first form, `FreeGroup' returns a free group on
 ##  <rank> generators.
@@ -52,6 +45,13 @@ DeclareSynonym( "IsElementOfFreeGroup",
 ##  infinitely many generators, where the first generators are printed
 ##  by the names in the list <init>, and the other generators by <name>
 ##  and an appended number.
+##
+##  If the extra argument <wfilt> is given, it must be either
+##  `IsSyllableWordsFamily' or `IsLetterWordsFamily' or
+##  `IsWLetterWordsFamily' or `IsBLetterWordsFamily'. The filter then
+##  specifies the representation used for the elements of the free group
+##  (see~"Representations for Associative Words"). If no such filter is
+##  given, a letter representation is used.
 ##
 DeclareGlobalFunction( "FreeGroup" );
 

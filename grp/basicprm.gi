@@ -130,7 +130,9 @@ function( filter, dom )
             Add( g, (dom[l-2],dom[l-1],dom[l]) );
         fi;
         alt := GroupByGenerators(g);
-        SetSize( alt, Factorial(Length(dom))/2 );
+	if Length(dom)<5000 then
+	  SetSize( alt, Factorial(Length(dom))/2 );
+	fi;
         SetMovedPoints( alt, dom );
         SetNrMovedPoints( alt, Length(dom) );
         if 4 < Length(dom)  then
@@ -368,7 +370,9 @@ function( filters, dom )
             Add( g, ( dom[1], dom[2] ) );
         fi;
         sym := GroupByGenerators( g );
-        SetSize( sym, Factorial(Length(dom)) );
+	if Length(dom)<5000 then
+	  SetSize( sym, Factorial(Length(dom)) );
+	fi;
         SetMovedPoints(   sym, dom );
         SetNrMovedPoints( sym, Length(dom) );
     fi;

@@ -54,6 +54,16 @@ IdentifierLetters :=
 
 #############################################################################
 ##
+#F  IsValidIdentifier( <str> ) . . .  check if a string is a valid identifier
+##
+
+InstallGlobalFunction("IsValidIdentifier", function(str)
+    return ForAll(str, c -> c in IdentifierLetters) and
+           ForAny(str, c -> not (c in "0123456789") );
+end);
+
+#############################################################################
+##
 #F  CheckGlobalName( <name> ) . . . check global variable name -- warn if odd
 ##
 ##

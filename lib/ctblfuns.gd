@@ -33,6 +33,7 @@ Revision.ctblfuns_gd :=
 ##
 #C  IsClassFunction( <obj> )
 ##
+##  \index{class function}\index{class function objects}
 ##  A *class function* (in characteristic $p$) of a finite group $G$ is a map
 ##  from the set of ($p$-regular) elements in $G$ to the cyclotomics that is
 ##  constant on conjugacy classes of $G$.
@@ -337,6 +338,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  [ 2, 2, 2, 2, 2 ]
 ##  \endexample
 ##
+##  \index{class functions!as ring elements}
 ##  Class functions are *ring elements*,
 ##  the product of two class functions of the same character table is the
 ##  tensor product (pointwise product) of these class functions.
@@ -360,6 +362,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  4
 ##  \endexample
 ##
+##  \index{inverse!of class function}
 ##  Class functions without zero values are invertible,
 ##  the *inverse* is defined pointwise.
 ##  As a consequence, for example groups of linear characters can be formed.
@@ -369,6 +372,9 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  Character( S4, [ 6, 0, -2, 0, 0 ] )
 ##  \endexample
 ##
+##  \index{character value!of group element using powering operator}
+##  \index{power!meaning for class functions}
+##  \indextt{\^{}!for class functions}
 ##  The *powering* operator `\\^' has several meanings for class functions.
 ##  The power of a class function by a nonnegative integer is clearly the
 ##  tensor power.
@@ -403,6 +409,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  E(3)^2
 ##  \endexample
 ##
+##  \index{characteristic!for class functions}
 ##  The *characteristic* of class functions is zero,
 ##  as for all list of cyclotomics.
 ##  For class functions of a $p$-modular character table, such as Brauer
@@ -422,6 +429,9 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  2
 ##  \endexample
 ##
+##  \indextt{ComplexConjugate!for class functions}
+##  \indextt{GaloisCyc!for class functions}
+##  \indextt{Permuted!for class functions}
 ##  The operations `ComplexConjugate', `GaloisCyc', and `Permuted' return
 ##  a class function when they are called with a class function;
 ##  The complex conjugate of a class function that is known to be a (virtual)
@@ -438,7 +448,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  ClassFunction( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, E(3)^2, 1, E(3) ] )
 ##  \endexample
 ##
-##  \index{Order!of a class function}
+##  \indextt{Order!of a class function}
 ##  By definition of `Order' for arbitrary monoid elements,
 ##  the determinantal order (see~"DeterminantOfCharacter") of characters
 ##  cannot be the return value of `Order' for characters.
@@ -514,7 +524,7 @@ DeclareOperation( "CorrespondingPermutations",
 ##
 ##  5. Printing Class Functions
 #5
-##  \index{ViewObj!for class functions}
+##  \indextt{ViewObj!for class functions}
 ##  The default `ViewObj' (see~"ViewObj") methods for class functions
 ##  print one of the strings `\"ClassFunction\"', `\"VirtualCharacter\"',
 ##  `\"Character\"' (depending on whether the class function is known to be a
@@ -525,7 +535,7 @@ DeclareOperation( "CorrespondingPermutations",
 ##  functions of different underlying characteristic
 ##  (see~"UnderlyingCharacteristic").
 ##
-##  \index{PrintObj!for character tables}
+##  \indextt{PrintObj!for character tables}
 ##  The default `PrintObj' (see~"PrintObj") method for class functions
 ##  does the same as `ViewObj',
 ##  except that the character table is is `Print'-ed instead of `View'-ed.
@@ -539,7 +549,7 @@ DeclareOperation( "CorrespondingPermutations",
 ##  it may be useful to give a name (see~"Name") to the underlying character
 ##  table.
 ##
-##  \index{Display!for character tables}
+##  \indextt{Display!for character tables}
 ##  The default `Display' (see~"Display") method for a class function <chi>
 ##  calls `Display' for its underlying character table
 ##  (see~"Printing Character Tables"), with <chi> as the only entry in the
@@ -711,9 +721,11 @@ DeclareOperation( "PermutationCharacter", [ IsGroup, IsGroup ] );
 ##
 #P  IsCharacter( [<tbl>, ]<chi> )
 ##
+##  \index{ordinary character}
 ##  An *ordinary character* of a group $G$ is a class function of $G$ whose
 ##  values are the traces of a complex matrix representation of $G$.
 ##
+##  \atindex{Brauer character}{@Brauer character}
 ##  A *Brauer character* of $G$ in characteristic $p$ is a class function of
 ##  $G$ whose values are the complex lifts of a matrix representation of $G$
 ##  with image a finite field of characteristic $p$.
@@ -726,6 +738,7 @@ DeclareOperation( "IsCharacter", [ IsCharacterTable, IsHomogeneousList ] );
 ##
 #P  IsVirtualCharacter( [<tbl>, ]<chi> )
 ##
+##  \index{virtual character}
 ##  A *virtual character* is a class function that can be written as the
 ##  difference of two proper characters (see~"IsCharacter").
 ##
@@ -747,10 +760,11 @@ InstallTrueMethod( IsVirtualCharacter, IsCharacter and IsClassFunction );
 ##
 #P  IsIrreducibleCharacter( [<tbl>, ]<chi> )
 ##
+##  \index{irreducible character}
 ##  A character is *irreducible* if it cannot be written as the sum of two
 ##  characters.
 ##  For ordinary characters this can be checked using the scalar product
-##  of class functions (see~"ScalarProduct.ctblfuns").
+##  of class functions (see~"ScalarProduct!for characters").
 ##  For Brauer characters there is no generic method for checking
 ##  irreducibility.
 ##
@@ -816,6 +830,7 @@ DeclareOperation( "Norm", [ IsOrdinaryTable, IsHomogeneousList ] );
 ##
 #A  CentreOfCharacter( [<tbl>, ]<chi> )
 ##
+##  \index{centre!of a character}
 ##  For a character <chi> of the group $G$, say, `CentreOfCharacter' returns
 ##  the *centre* of <chi>, that is,
 ##  the normal subgroup of all those elements of $G$ for which the quotient
@@ -823,7 +838,7 @@ DeclareOperation( "Norm", [ IsOrdinaryTable, IsHomogeneousList ] );
 ##
 ##  If the underlying character table of <psi> does not store the group $G$
 ##  then an error is signalled.
-##  (See~"ClassPositionsOfCentre.ctblfuns" for a way to handle the centre
+##  (See~"ClassPositionsOfCentre!for characters" for a way to handle the centre
 ##  implicitly, by listing the positions of conjugacy classes in the centre.)
 ##
 DeclareAttribute( "CentreOfCharacter", IsClassFunction );
@@ -937,8 +952,7 @@ DeclareOperation( "CycleStructureClass", [ IsClassFunction, IsPosInt ] );
 ##
 #P  IsTransitive( [<tbl>, ]<chi> )
 ##
-##  \index{IsTransitive!for class functions}
-##
+##  \indextt{IsTransitive!for class functions}
 ##  For a permutation character <chi> of the group $G$ that corresponds
 ##  to an action on the $G$-set $\Omega$ (see~"PermutationCharacter"),
 ##  `IsTransitive' returns `true' if the action of $G$ on $\Omega$ is
@@ -952,8 +966,7 @@ DeclareOperation( "IsTransitive", [ IsCharacterTable, IsHomogeneousList ] );
 ##
 #A  Transitivity( [<tbl>, ]<chi> )
 ##
-##  \index{Transitivity!for class functions}
-##
+##  \indextt{Transitivity!for class functions}
 ##  For a permutation character <chi> of the group $G$ that corresponds
 ##  to an action on the $G$-set $\Omega$ (see~"PermutationCharacter"),
 ##  `Transitivity' returns the maximal nonnegative integer $k$ such that
@@ -967,6 +980,7 @@ DeclareOperation( "Transitivity", [ IsOrdinaryTable, IsHomogeneousList ] );
 ##
 #A  CentralCharacter( [<tbl>, ]<chi> )
 ##
+##  \index{central character}
 ##  For a character <chi> of the group $G$, say, `CentralCharacter' returns
 ##  the *central character* of <chi>.
 ##
@@ -983,6 +997,7 @@ DeclareOperation( "CentralCharacter",
 ##
 #A  DeterminantOfCharacter( [<tbl>, ]<chi> )
 ##
+##  \index{determinant character}
 ##  `DeterminantOfCharacter' returns the *determinant character* of the
 ##  character <chi>.
 ##  This is defined to be the character obtained by taking the determinant of
@@ -1267,7 +1282,7 @@ DeclareOperation( "InducedCyclic", [ IsOrdinaryTable, IsList, IsString ] );
 ##  Let `rems' be the set of nonzero class functions obtained by subtraction
 ##  of
 ##  $$
-##     \sum_{\chi} \frac{[<reducibles>[i], \chi]}{[\chi,\chi]} \cdot \chi
+##  \sum_{\chi} \frac{[<reducibles>[i], \chi]}{[\chi,\chi]} . \chi
 ##  $$
 ##  from $<reducibles>[i]$,
 ##  where the summation runs over <constituents> and $[\chi,\psi]$ denotes
@@ -1353,8 +1368,8 @@ DeclareGlobalFunction( "IrreducibleDifferences" );
 ##  with the character $\lambda$ of the symmetric group $S_n$ of degree $n$
 ##  is defined by
 ##  $$
-##    \chi^{[\lambda]}(g) = \frac{1}{n!} \sum_{\rho \in S_n}
-##                \lambda(\rho) \prod_{k=1}^{n} \chi(g^k)^{a_k(\rho)},
+##  \chi^{[\lambda]}(g) = \frac{1}{n!} \sum_{\rho \in S_n}
+##                        \lambda(\rho) \prod_{k=1}^{n} \chi(g^k)^{a_k(\rho)},
 ##  $$
 ##  where $a_k(\rho)$ is the number of cycles of length $k$ in $\rho$.
 ##
@@ -1418,7 +1433,7 @@ DeclareSynonym( "RefinedSymmetrisations", RefinedSymmetrizations );
 ##
 ##  \index{symmetrizations!orthogonal}%
 ##  \index{Frame}%
-##  \index{Murnaghan components}
+##  \atindex{Murnaghan components}{@Murnaghan components}
 ##
 ##  If $\chi$ is a nonlinear character with indicator $+1$,
 ##  a splitting of the tensor power $\chi^m$ is given by the so-called
@@ -1488,7 +1503,31 @@ DeclareGlobalFunction( "SymplecticComponents" );
 ##  corresponding to the Brauer character value <value>,
 ##  where <p> is the characteristic of the field.
 ##
+##  The result can be described as the image of <value> under the
+##  ring homomorphism from $\Z[\zeta]$ to the field with $<p>^n$ elements,
+##  where $\zeta = `E'(<p>^n)$ and <value> is contained in $\Z[\zeta]$.
+##  This map is defined with the help of Conway polynomials
+##  (see~"ConwayPolynomial"), more information can be found in Sections~2--5
+##  of~\cite{JLPW95}.
+##
+##  If the result of `FrobeniusCharacterValue' cannot be expressed as an
+##  element of a finite field in {\GAP} (see Chapter~"Finite Fields")
+##  then `FrobeniusCharacterValue' returns `fail'.
+##
+##  \indextt{TryConwayPolynomialForFrobeniusCharacterValue}
+##  If the Conway polynomial of degree $n$ is required for the computation
+##  but not yet stored in the global list of {\GAP} then it is computed only
+##  if the global function `TryConwayPolynomialForFrobeniusCharacterValue'
+##  returns `true' when it is called with <p> and $n$.
+##
 DeclareGlobalFunction( "FrobeniusCharacterValue" );
+
+
+#############################################################################
+##
+#F  TryConwayPolynomialForFrobeniusCharacterValue( <p>, <n> )
+##
+DeclareGlobalFunction( "TryConwayPolynomialForFrobeniusCharacterValue" );
 
 
 #############################################################################

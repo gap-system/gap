@@ -25,16 +25,21 @@ component consists of the name, the assignment operator `:=', and the value.
 The *empty record*, i.e., the record with no components, is written as
 `rec()'.
 
+Note that the examples in the first sections of this chapter have been
+edited with respect to white spaces and line breaks in order to illustrate
+the hierarchy of the record components. Normally, when displaying records
+{\GAP} saves lines by printing in each line as many components as possible.
+
 \beginexample
 gap> rec( a := 1, b := "2" ); # a record with two components
 rec(
- a := 1,
- b := "2" )
+  a := 1,
+  b := "2" )
 gap> rec( a := 1, b := rec( c := 2 ) ); # record may contain records
 rec(
- a := 1,
- b := rec(
-       c := 2 ) ) 
+  a := 1,
+  b := rec(
+         c := 2 ) )
 \endexample
 
 Records usually contain elements of various types, i.e., they are usually
@@ -53,7 +58,7 @@ false
 \beginexample
 gap> r := rec( a := 1, b := 2 );;
 gap> RecNames( r );
-[ "a", "b" ] 
+[ "a", "b" ]
 \endexample
 
 Note that you cannot use the string result in the ordinary way to access
@@ -90,15 +95,14 @@ to the element of the record <rec> whose name is, as a string, equal to
 \beginexample
 gap> old := rec( a := 1, b := 2 );;
 gap> new := rec();
-rec(
-   )
+rec(  )
 gap> for i in RecNames( old ) do
 >  new.(i) := old.(i);
 > od;
 gap> new;
 rec(
   a := 1,
-  b := 2 ) 
+  b := 2 )
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -125,7 +129,7 @@ gap> r.c := 3;; r;
 rec(
   a := 10,
   b := 2,
-  c := 3 ) 
+  c := 3 )
 \endexample
 
 Note that assigning to a record changes the record.
@@ -139,7 +143,7 @@ gap> IsBound(r.a);
 true
 gap> IsBound(r.d);
 false
-gap> Unbind(r.b);r;
+gap> Unbind(r.b); r;
 rec(
   a := 10,
   c := 3 )
@@ -349,11 +353,9 @@ otherwise an error is signalled.
 \beginexample
 gap> r := rec( a := 1, b := 2 );;
 gap> Unbind( r.a ); r;
-rec(
-b := 2 )
+rec( b := 2 )
 gap> Unbind( r.c ); r;
-rec(
- b := 2 )
+rec( b := 2 )
 \endexample
 
 Note that `IsBound' and `Unbind' are special in that they do not evaluate

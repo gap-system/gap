@@ -23,6 +23,19 @@ OnBreak := Where;
 
 #############################################################################
 ##
+#F  OnBreakMessage( ) . . . . . . function to call at entry to the break loop
+##  . . . . . . . . . . . . . . . after  execution  of  OnBreak  when   error
+##  . . . . . . . . . . . . . . . condition is  caused  by  an  execution  of
+##  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Error
+##
+##
+OnBreakMessage := function()
+  Print("you can 'quit;' to quit to outer loop, or\n",
+        "you can 'return;' to continue\n");
+end;
+
+#############################################################################
+##
 #F  Ignore( <arg> ) . . . . . . . . . . . . ignore but evaluate the arguments
 ##
 #T  1996/08/07 M.Schoenert 'Ignore' should be in the kernel
@@ -248,7 +261,7 @@ BIND_GLOBAL("ReadAndCheckFunc",function( arg )
     fi;
 
     return function( arg )
-        local  name,  ext,  libname, error;
+        local  name,  ext,  libname, error, rflc, rfc;
 
 	error:=false;
 	name:=arg[1];
@@ -260,12 +273,24 @@ BIND_GLOBAL("ReadAndCheckFunc",function( arg )
         # we are completing, store the filename and filter ranks
         if IS_READ_OR_COMPLETE  then
             ADD_LIST( READED_FILES, libname );
+            if IsBound(RANK_FILTER_LIST_CURRENT) then
+                rflc := RANK_FILTER_LIST_CURRENT;
+            fi;
+            if IsBound(RANK_FILTER_COUNT) then
+                rfc := RANK_FILTER_COUNT;
+            fi;
             RANK_FILTER_LIST_CURRENT := [];
             RANK_FILTER_COUNT := 0;
             ADD_LIST( RANK_FILTER_LIST, RANK_FILTER_LIST_CURRENT );
             error:=not READ_GAP_ROOT(libname);
             Unbind(RANK_FILTER_LIST_CURRENT);
+            if IsBound(rflc) then
+                RANK_FILTER_LIST_CURRENT := rflc;
+            fi;
             Unbind(RANK_FILTER_COUNT);
+            if IsBound(rfc) then
+                RANK_FILTER_COUNT := rfc;
+            fi;
         else
             error:=not READ_GAP_ROOT(libname);
         fi;
@@ -300,8 +325,6 @@ end);
 ##
 #F  ReadLib( <name> ) . . . . . . . . . . . . . . . . . . . . . library files
 #F  ReadGrp( <name> ) . . . . . . . . . . . . . . . . . . group library files
-#F  ReadTbl( <name> ) . . . . . . . . . . . . . . . .  character tables files
-#F  ReadTom( <name> ) . . . . . . . . . . . . . . . . .  table of marks files
 #F  ReadSmall( <name> ) . . . . . . . . . . . . .  small groups library files
 #F  ReadTrans( <name> ) . . . . . . . .  transitive perm groups library files
 #F  ReadPrim( <name> )  . . . . . . . . . primitive perm groups library files
@@ -312,8 +335,6 @@ end);
 ##
 BIND_GLOBAL("ReadLib",ReadAndCheckFunc("lib"));
 BIND_GLOBAL("ReadGrp",ReadAndCheckFunc("grp"));
-BIND_GLOBAL("ReadTbl",ReadAndCheckFunc("tbl"));
-BIND_GLOBAL("ReadTom",ReadAndCheckFunc("tom"));
 BIND_GLOBAL("ReadSmall",ReadAndCheckFunc("small"));
 BIND_GLOBAL("ReadTrans",ReadAndCheckFunc("trans"));
 BIND_GLOBAL("ReadPrim",ReadAndCheckFunc("prim"));
@@ -325,16 +346,29 @@ BIND_GLOBAL("DoReadPkg",ReadAndCheckFunc("pkg"));
 ##  Define functions which may not be available to avoid syntax errors
 ##
 NONAVAILABLE_FUNC:=function(arg)
-  Error("this function is not available");
+local s;
+  if LENGTH(arg)=0 then
+    return function(arg)
+	    Error("this function is not available");
+	  end;
+  else
+    s:=arg[1];
+    return function(arg)
+	    Error("the ",s," is required but not installed");
+	  end;
+  fi;
 end;
-IdGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded
-SmallGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded
-NumberSmallGroups:=NONAVAILABLE_FUNC; # will be overwritten if loaded
-AllGroups:=NONAVAILABLE_FUNC; # will be overwritten if loaded
-OneGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded
-IdsOfAllGroups:=NONAVAILABLE_FUNC; # will be overwritten if loaded      
-Gap3CatalogueIdGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded
-PrimitiveGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded           
+
+# these functions will be overwritten if loaded
+IdGroup:=NONAVAILABLE_FUNC("Small Groups identification");
+SmallGroup:=NONAVAILABLE_FUNC("Small Groups library");
+NumberSmallGroups:=NONAVAILABLE_FUNC("Small Groups library");
+AllGroups:=NONAVAILABLE_FUNC("Small Groups library");
+OneGroup:=NONAVAILABLE_FUNC();
+IdsOfAllGroups:=NONAVAILABLE_FUNC();
+Gap3CatalogueIdGroup:=NONAVAILABLE_FUNC();
+IdStandardPresented512Group:=NONAVAILABLE_FUNC();
+PrimitiveGroup:=NONAVAILABLE_FUNC("Primitive Groups library");
 
 #############################################################################
 ##  
@@ -347,12 +381,8 @@ ID_AVAILABLE := x -> fail;
 ##                              
 #V  PRIM_AVAILABLE   variables for data libraries. Will be set during loading
 #V  TRANS_AVAILABLE
-#V  TBL_AVAILABLE                                                            
-#V  TOM_AVAILABLE
 PRIM_AVAILABLE:=false;
 TRANS_AVAILABLE:=false;
-TBL_AVAILABLE:=false;
-TOM_AVAILABLE:=false;
 
 #############################################################################
 ##
@@ -407,10 +437,20 @@ HIDDEN_IMPS:=HIDDEN_IMPS{[Length(HIDDEN_IMPS),Length(HIDDEN_IMPS)-1..1]};
 
 # we cannot complete the following command because printing may mess up the
 # backslash-masked characters!
-BIND_GLOBAL("VIEW_STRING_SPECIAL_CHARACTERS",
+BIND_GLOBAL("VIEW_STRING_SPECIAL_CHARACTERS_OLD",
   # The first list is sorted an contains special characters. The second list
   # contains characters that should instead be printed after a `\'.
   Immutable([ "\c\b\n\r\"\\", "cbnr\"\\" ]));
+BIND_GLOBAL("SPECIAL_CHARS_VIEW_STRING",
+[ List(Concatenation([0..31],[34,92],[127..159]), CHAR_INT), [
+"\\000", "\\>", "\\<", "\\c", "\\004", "\\005", "\\006", "\\007", "\\b", "\\t",
+"\\n", "\\013", "\\014", "\\r", "\\016", "\\017", "\\020", "\\021", "\\022",
+"\\023", "\\024", "\\025", "\\026", "\\027", "\\030", "\\031", "\\032", "\\033",
+"\\034", "\\035", "\\036", "\\037", "\\\"", "\\\\", "\\177", "\\200", "\\201", 
+"\\202", "\\203", "\\204", "\\205", "\\206", "\\207", "\\210", "\\211", 
+"\\212", "\\213", "\\214", "\\215", "\\216", "\\217", "\\220", "\\221", 
+"\\222", "\\223", "\\224", "\\225", "\\226", "\\227", "\\230", "\\231", 
+"\\232", "\\233", "\\234", "\\235", "\\236", "\\237"]]);
 
 ReadOrComplete( "lib/read5.g" );
 
@@ -457,21 +497,6 @@ PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.gi",
                                      "primitive groups" );
 ReadPrim( "irredsol.grp","irreducible solvable groups" );
 ReadPrim( "cohorts.grp","irreducible solvable groups" );
-
-#############################################################################
-##
-#X  character table library
-##
-TBL_AVAILABLE:=ReadTbl( "ctadmin.tbd","character tables");
-TBL_AVAILABLE:=TBL_AVAILABLE and ReadTbl( "ctadmin.tbi","character tables");
-
-
-#############################################################################
-##
-#X  table of marks library
-##
-TOM_AVAILABLE:=ReadTom( "tmadmin.tmd","tables of marks");
-TOM_AVAILABLE:=TOM_AVAILABLE and ReadTom( "tmadmin.tmi","tables of marks");
 
 
 #############################################################################
@@ -535,20 +560,33 @@ AUTOLOAD_PACKAGES:= AutoloadablePackagesList();
 
 #############################################################################
 ##
+##  ParGAP/MPI slave hook
+##
+##  A ParGAP slave redefines this as a function if the ParGAP share  paackage
+##  is loaded. It is called just once at  the  end  of  GAP's  initialisation
+##  process i.e. at the end of this file.
+##
+PAR_GAP_SLAVE_START := fail;
+
+#############################################################################
+##
 ##  Read the .gaprc file
 ##
 READ(GAP_RC_FILE);
 
 #############################################################################
 ##
-##  Autoload packages
+##  Autoload packages (suppressing banners)
 ##
+BANNER_ORIG := BANNER;
+MakeReadWriteGVar("BANNER"); BANNER := false;
 IS_IN_AUTOLOAD:=true;
 for COMPONENTNAME in AUTOLOAD_PACKAGES do
   Info(InfoWarning,2,"autoloading:",COMPONENTNAME,"\n");
   RequirePackage(COMPONENTNAME);
 od;
 IS_IN_AUTOLOAD:=false;
+BANNER := BANNER_ORIG; MakeReadOnlyGVar("BANNER");
 
 #############################################################################
 ##
@@ -606,9 +644,24 @@ BIND_GLOBAL( "NamesUserGVars", function()
     return names;
 end);
 
+#############################################################################
+##
+##  Initialize the help books of the library
+##
+HELP_ADD_BOOK("Tutorial", "GAP 4 Tutorial", "doc/tut");
+HELP_ADD_BOOK("Reference", "GAP 4 Reference Manual", "doc/ref");
+HELP_ADD_BOOK("Extending", "Extending GAP 4 Reference Manual", "doc/ext");
+HELP_ADD_BOOK("Prg Tutorial", "Programmers Tutorial", "doc/prg");
+HELP_ADD_BOOK("New Features", "New Features for Developers", "doc/new");
+
+
+#############################################################################
+##
+##  ParGAP/MPI slave hook
+##
+if PAR_GAP_SLAVE_START <> fail then PAR_GAP_SLAVE_START(); fi;
 
 #############################################################################
 ##
 #E
-##
 

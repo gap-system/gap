@@ -38,7 +38,7 @@ DeclareSynonym("IsPcGroupHomomorphismByImages",
 ##  is the representation for mappings to a pc group
 DeclareRepresentation( "IsToPcGroupGeneralMappingByImages",
       IsGroupGeneralMappingByImages,
-      [ "generators", "genimages", "imagePcgs", "imagePcgsPreimages" ] );
+      [ "generators", "genimages", "rangePcgs", "rangePcgsPreimages" ] );
 DeclareSynonym("IsToPcGroupHomomorphismByImages",
   IsToPcGroupGeneralMappingByImages and IsMapping);
 
@@ -56,7 +56,18 @@ DeclareOperation( "NaturalIsomorphismByPcgs", [ IsGroup, IsPcgs ] );
 DeclareRepresentation( "IsNaturalHomomorphismPcGroupRep",
       IsGroupHomomorphism and IsSurjective and IsSPGeneralMapping and
       IsAttributeStoringRep,
-      [ "pcgsSource", "pcgsRange" ] );
+      [ "sourcePcgs", "rangePcgs" ] );
+
+#############################################################################
+##
+#R  IsPcgsToPcgsGeneralMappingByImages(<obj>)
+##
+DeclareRepresentation( "IsPcgsToPcgsGeneralMappingByImages",
+      IsPcGroupGeneralMappingByImages and IsToPcGroupGeneralMappingByImages,
+      [ "generators", "genimages", "sourcePcgs", "sourcePcgsImages",
+        "rangePcgs", "rangePcgsPreimages" ] );
+DeclareSynonym( "IsPcgsToPcgsHomomorphism",
+  IsPcgsToPcgsGeneralMappingByImages and IsMapping);
 
 
 #############################################################################

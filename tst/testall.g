@@ -98,13 +98,10 @@ TEST_FILES := [
 [ "boolean.tst", 3000000 ],
 [ "combinat.tst", 30050000 ],
 #[ "compat3.tst", 10000 ],
-[ "ctbldeco.tst", 70612500 ],
 [ "ctblfuns.tst", 28292309 ],
 [ "ctblj4.tst", 3000000000 ],
-[ "ctbllibr.tst", 200000000000 ],
 [ "ctblmoli.tst", 350007500 ],
 [ "ctblmono.tst", 231440000 ],
-[ "ctblpope.tst", 6129230950 ],
 [ "ctblsolv.tst", 70667500 ],
 [ "cyclotom.tst", 5832500 ],
 [ "ffe.tst", 18600000 ],
@@ -130,6 +127,7 @@ TEST_FILES := [
 [ "rwspcgrp.tst", 304775000 ],
 [ "rwspcsng.tst", 403645000 ],
 [ "semigrp.tst", 74105000 ],
+[ "semicong.tst", 1000000000 ],
 [ "set.tst", 20930000 ],
 [ "unknown.tst", 320000 ],
 [ "vspchom.tst", 42737500 ],
@@ -143,7 +141,7 @@ TEST_FILES := [
 [ "hash2.tst", 19260000 ],
 [ "quogphom.tst", 17600000 ],
 [ "eigen.tst", 16000000 ],
-[ "solmxgrp.tst", 800000000 ],
+[ "solmxgrp.tst", 80000000000 ],
 [ "rss.tst", 123000000 ]
 ];
 

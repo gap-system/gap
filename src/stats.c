@@ -66,6 +66,7 @@ const char * Revision_stats_c =
 **  If this causes the execution of a return-void-statement, then 'EXEC_STAT'
 **  returns 2.  If  this causes execution  of a break-statement (which cannot
 **  happen if <stat> is the body of a  function), then 'EXEC_STAT' returns 4.
+**  Similarly, for a continue-statement, EXEC_STAT returns 8
 **  Otherwise 'EXEC_STAT' returns 0.
 **
 **  'EXEC_STAT'  causes  the  execution  of  <stat>  by dispatching   to  the
@@ -469,12 +470,14 @@ UInt            ExecFor (
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
             if ( SyIsIntr() ) {
-                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
                 return (leave & 3);
             }
 
@@ -500,12 +503,14 @@ UInt            ExecFor (
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
             if ( SyIsIntr() ) {
-                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
                 return (leave & 3);
             }
 
@@ -574,15 +579,19 @@ UInt            ExecFor2 (
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
             if ( SyIsIntr() ) {
-                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
                 return (leave & 3);
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
                 return (leave & 3);
             }
 
@@ -608,15 +617,19 @@ UInt            ExecFor2 (
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
             if ( SyIsIntr() ) {
-                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
                 return (leave & 3);
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
                 return (leave & 3);
             }
 
@@ -687,18 +700,24 @@ UInt            ExecFor3 (
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
             if ( SyIsIntr() ) {
-                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
                 return (leave & 3);
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
                 return (leave & 3);
             }
             if ( (leave = EXEC_STAT( body3 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
                 return (leave & 3);
             }
 
@@ -725,18 +744,24 @@ UInt            ExecFor3 (
 #if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
             if ( SyIsIntr() ) {
-                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
             }
 #endif
 
             /* execute the statements in the body                          */
             if ( (leave = EXEC_STAT( body1 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
                 return (leave & 3);
             }
             if ( (leave = EXEC_STAT( body2 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
                 return (leave & 3);
             }
             if ( (leave = EXEC_STAT( body3 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
                 return (leave & 3);
             }
 
@@ -794,7 +819,7 @@ UInt            ExecForRange (
         elm = ErrorReturnObj(
             "Range: <first> must be an integer (not a %s)",
             (Int)TNAM_OBJ(elm), 0L,
-            "you can return an integer for <first>" );
+            "you can replace <first> via 'return <first>;'" );
     }
     first = INT_INTOBJ(elm);
     elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[1] );
@@ -802,7 +827,7 @@ UInt            ExecForRange (
         elm = ErrorReturnObj(
             "Range: <last> must be an integer (not a %s)",
             (Int)TNAM_OBJ(elm), 0L,
-            "you can return an integer for <last>" );
+            "you can replace <last> via 'return <last>;'" );
     }
     last  = INT_INTOBJ(elm);
 
@@ -819,13 +844,15 @@ UInt            ExecForRange (
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
 
         /* execute the statements in the body                              */
         if ( (leave = EXEC_STAT( body )) != 0 ) {
-            return (leave & 3);
+	  if (leave == 8) 
+	    continue;
+	  return (leave & 3);
         }
 
     }
@@ -856,7 +883,7 @@ UInt            ExecForRange2 (
         elm = ErrorReturnObj(
             "Range: <first> must be an integer (not a %s)",
             (Int)TNAM_OBJ(elm), 0L,
-            "you can return an integer for <first>" );
+            "you can replace <first> via 'return <first>;'" );
     }
     first = INT_INTOBJ(elm);
     elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[1] );
@@ -864,7 +891,7 @@ UInt            ExecForRange2 (
         elm = ErrorReturnObj(
             "Range: <last> must be an integer (not a %s)",
             (Int)TNAM_OBJ(elm), 0L,
-            "you can return an integer for <last>" );
+            "you can replace <last> via 'return <last>;'" );
     }
     last  = INT_INTOBJ(elm);
 
@@ -882,15 +909,19 @@ UInt            ExecForRange2 (
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
 
         /* execute the statements in the body                              */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
 
@@ -923,7 +954,7 @@ UInt            ExecForRange3 (
         elm = ErrorReturnObj(
             "Range: <first> must be an integer (not a %s)",
             (Int)TNAM_OBJ(elm), 0L,
-            "you can return an integer for <first>" );
+            "you can replace <first> via 'return <first>;'" );
     }
     first = INT_INTOBJ(elm);
     elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[1] );
@@ -931,7 +962,7 @@ UInt            ExecForRange3 (
         elm = ErrorReturnObj(
             "Range: <last> must be an integer (not a %s)",
             (Int)TNAM_OBJ(elm), 0L,
-            "you can return an integer for <last>" );
+            "you can replace <last> via 'return <last>;'" );
     }
     last  = INT_INTOBJ(elm);
 
@@ -950,18 +981,24 @@ UInt            ExecForRange3 (
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
 
         /* execute the statements in the body                              */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body3 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
 
@@ -1009,12 +1046,14 @@ UInt ExecWhile (
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         SET_BRK_CURR_STAT( stat );
@@ -1045,15 +1084,19 @@ UInt ExecWhile2 (
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         SET_BRK_CURR_STAT( stat );
@@ -1086,18 +1129,24 @@ UInt ExecWhile3 (
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body3 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         SET_BRK_CURR_STAT( stat );
@@ -1146,12 +1195,14 @@ UInt ExecRepeat (
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         SET_BRK_CURR_STAT( stat );
@@ -1182,15 +1233,19 @@ UInt ExecRepeat2 (
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         SET_BRK_CURR_STAT( stat );
@@ -1223,18 +1278,24 @@ UInt ExecRepeat3 (
 #if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
         }
 #endif
 
         /* execute the body                                                */
         if ( (leave = EXEC_STAT( body1 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body2 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         if ( (leave = EXEC_STAT( body3 )) != 0 ) {
+	        if (leave == 8) 
+		  continue;
             return (leave & 3);
         }
         SET_BRK_CURR_STAT( stat );
@@ -1263,6 +1324,25 @@ UInt            ExecBreak (
 {
     /* return to the next loop                                             */
     return 4;
+}
+
+/****************************************************************************
+**
+*F  ExecContinue(<stat>) . . . . . . . . . . . . . . . execute a continue-statement
+**
+**  'ExecContinue' executes the continue-statement <stat>.
+**
+**  This  is done   by  returning 8 (to tell  the   calling executor that  a
+**  continue-statement was executed).
+**
+**  A continue-statement is  represented  by a bag of   type 'T_CONTINUE' with   no
+**  subbags.
+*/
+UInt            ExecContinue (
+    Stat                stat )
+{
+    /* return to the next loop                                             */
+    return 8;
 }
 
 /****************************************************************************
@@ -1354,10 +1434,10 @@ UInt ExecAssert2Args (
          decision = ErrorReturnObj(
           "Assertion condition must evaluate to 'true' or 'false', not a %s",
           (Int)TNAM_OBJ(decision), 0L,
-          "you may return 'true' or 'false' or you may quit");
+          "you may 'return true;' or 'return false;'");
         }
         if ( decision == False ) {
-            ErrorReturnVoid( "Assertion failure", 0L, 0L, "you may return");
+            ErrorReturnVoid( "Assertion failure", 0L, 0L, "you may 'return;'");
         }
 
         /* decision must be 'True' here                                    */
@@ -1391,12 +1471,17 @@ UInt ExecAssert3Args (
          decision = ErrorReturnObj(
          "Assertion condition must evaluate to 'true' or 'false', not a %s",
          (Int)TNAM_OBJ(decision), 0L,
-         "you may return 'true' or 'false' or you may quit");
+         "you may 'return true;' or 'return false;'");
         }
         if ( decision == False ) {
             message = EVAL_EXPR(ADDR_STAT( stat )[2]);
-            if ( message != (Obj) 0 ) 
-                PrintObj(message);
+            if ( message != (Obj) 0 )
+	      {
+		if (IS_STRING_REP( message ))
+		  PrintString1( message );
+		else
+		  PrintObj(message);
+	      }
         }
         return 0;
     }
@@ -1424,7 +1509,7 @@ UInt            ExecReturnObj (
 #if ! HAVE_SIGNAL
     /* test for an interrupt                                               */
     if ( SyIsIntr() ) {
-        ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+        ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
     }
 #endif
 
@@ -1456,7 +1541,7 @@ UInt            ExecReturnVoid (
 #if ! HAVE_SIGNAL
     /* test for an interrupt                                               */
     if ( SyIsIntr() ) {
-        ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+        ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
     }
 #endif
 
@@ -1500,10 +1585,10 @@ UInt ExecIntrStat (
       SyStorOverrun = 0; /* reset */
       ErrorReturnVoid(
         "exceeded the permitted memory (`-o' command line option)",
-	0L, 0L, "you can return" );
+	0L, 0L, "you can 'return;'" );
     }
     else {
-      ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+      ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
     }
 
     /* continue at the interrupted statement                               */
@@ -1782,6 +1867,18 @@ void            PrintBreak (
 
 /****************************************************************************
 **
+*F  PrintContinue(<stat>)  . . . . . . . . . . . . . . . print a continue-statement
+**
+**  'PrintContinue' prints the continue-statement <stat>.
+*/
+void            PrintContinue (
+    Stat                stat )
+{
+    Pr( "continue;", 0L, 0L );
+}
+
+/****************************************************************************
+**
 *F  PrintEmpty(<stat>)
 **
 */
@@ -1964,6 +2061,7 @@ static Int InitKernel (
     ExecStatFuncs [ T_REPEAT2        ] = ExecRepeat2;
     ExecStatFuncs [ T_REPEAT3        ] = ExecRepeat3;
     ExecStatFuncs [ T_BREAK          ] = ExecBreak;
+    ExecStatFuncs [ T_CONTINUE       ] = ExecContinue;
     ExecStatFuncs [ T_INFO           ] = ExecInfo;
     ExecStatFuncs [ T_ASSERT_2ARGS   ] = ExecAssert2Args;
     ExecStatFuncs [ T_ASSERT_3ARGS   ] = ExecAssert3Args;
@@ -2000,6 +2098,7 @@ static Int InitKernel (
     PrintStatFuncs[ T_REPEAT2        ] = PrintRepeat;
     PrintStatFuncs[ T_REPEAT3        ] = PrintRepeat;
     PrintStatFuncs[ T_BREAK          ] = PrintBreak;
+    PrintStatFuncs[ T_CONTINUE       ] = PrintContinue;
     PrintStatFuncs[ T_INFO           ] = PrintInfo;
     PrintStatFuncs[ T_ASSERT_2ARGS   ] = PrintAssert2Args;
     PrintStatFuncs[ T_ASSERT_3ARGS   ] = PrintAssert3Args;

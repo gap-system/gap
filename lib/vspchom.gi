@@ -170,10 +170,11 @@ InstallMethod( LeftModuleGeneralMappingByImages,
                          and IsLeftModuleGeneralMapping
                          and IsLinearGeneralMappingByImagesDefaultRep ),
                      rec(
-                          generators := gens,
-                          genimages  := imgs
+#                          generators := gens,
+#                          genimages  := imgs
                          ) );
 
+    SetMappingGeneratorsImages(map,[gens,imgs]);
     # Handle the case that `gens' is a basis.
     if IsBasis( gens ) then
       map!.basispreimage       := gens;
@@ -250,7 +251,7 @@ InstallMethod( ImagesSource,
     if IsBound( map!.basisimage ) then
       return UnderlyingLeftModule( map!.basisimage );
     else
-      return SubmoduleNC( Range( map ), map!.genimages );
+      return SubmoduleNC( Range( map ), MappingGeneratorsImages(map)[2] );
     fi;
     end );
 
@@ -267,7 +268,7 @@ InstallMethod( PreImagesRange,
     if IsBound( map!.basispreimage ) then
       return UnderlyingLeftModule( map!.basispreimage );
     else
-      return SubmoduleNC( Source( map ), map!.generators );
+      return SubmoduleNC( Source( map ), MappingGeneratorsImages(map)[1] );
     fi;
     end );
 
@@ -283,9 +284,11 @@ MakeImagesInfoLinearGeneralMappingByImages := function( map )
 
     local preimage,
           ech,
+	  mapi,
           B;
 
     preimage:= PreImagesRange( map );
+    mapi:=MappingGeneratorsImages(map);
 
     if IsGaussianRowSpace( Source( map ) ) then
 #T operation MakeImagesInfo( map, source )
@@ -296,17 +299,17 @@ MakeImagesInfoLinearGeneralMappingByImages := function( map )
       # forming the linear combinations of images of generators
       # given by `ech.coeffs'.
 
-      ech:= SemiEchelonMatTransformation( map!.generators );
+      ech:= SemiEchelonMatTransformation( mapi[1] );
       map!.basispreimage       := Immutable( SemiEchelonBasisNC(
                                       preimage, ech.vectors ) );
       map!.corelations         := Immutable( ech.relations );
-      map!.imagesbasispreimage := Immutable( ech.coeffs * map!.genimages );
+      map!.imagesbasispreimage := Immutable( ech.coeffs * mapi[2] );
 
     else
 
       # Delegate the work to the associated row space.
       B:= Basis( preimage );
-      ech:= SemiEchelonMatTransformation( List( map!.generators,
+      ech:= SemiEchelonMatTransformation( List( mapi[1],
                      x -> Coefficients( B, x ) ) );
       map!.basispreimage       := Immutable( BasisNC(
                                       preimage,
@@ -315,7 +318,7 @@ MakeImagesInfoLinearGeneralMappingByImages := function( map )
       map!.corelations         := Immutable( ech.relations );
       map!.imagesbasispreimage := Immutable( List( ech.coeffs,
                                         x -> LinearCombination( x,
-                                                 map!.genimages ) ) );
+                                                 mapi[2] ) ) );
 
     fi;
 end;
@@ -332,8 +335,10 @@ MakePreImagesInfoLinearGeneralMappingByImages := function( map )
 
     local image,
           ech,
+	  mapi,
           B;
 
+    mapi:=MappingGeneratorsImages(map);
     image:= ImagesSource( map );
 
     if IsGaussianRowSpace( Range( map ) ) then
@@ -342,17 +347,17 @@ MakePreImagesInfoLinearGeneralMappingByImages := function( map )
       # forming the linear combinations of preimages of genimages
       # given by `ech.coeffs'.
 
-      ech:= SemiEchelonMatTransformation( map!.genimages );
+      ech:= SemiEchelonMatTransformation( mapi[2] );
       map!.basisimage          := Immutable( SemiEchelonBasisNC(
                                       image, ech.vectors ) );
       map!.relations           := Immutable( ech.relations );
-      map!.preimagesbasisimage := Immutable( ech.coeffs * map!.generators );
+      map!.preimagesbasisimage := Immutable( ech.coeffs * mapi[1]);
 
     else
 
       # Delegate the work to the associated row space.
       B:= Basis( image );
-      ech:= SemiEchelonMatTransformation( List( map!.genimages,
+      ech:= SemiEchelonMatTransformation( List( mapi[2],
                      x -> Coefficients( B, x ) ) );
       map!.basisimage          := Immutable( BasisNC(
                                       image,
@@ -361,7 +366,7 @@ MakePreImagesInfoLinearGeneralMappingByImages := function( map )
       map!.relations           := Immutable( ech.relations );
       map!.preimagesbasisimage := Immutable( List( ech.coeffs,
                                       row -> LinearCombination(
-                                                 row, map!.generators ) ) );
+                                                 row, mapi[1] ) ) );
 
     fi;
 end;
@@ -384,7 +389,7 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
     if not IsBound( map!.corelations ) then
       MakeImagesInfoLinearGeneralMappingByImages( map );
     fi;
-    genimages:= map!.genimages;
+    genimages:= MappingGeneratorsImages(map)[2];
     return SubmoduleNC( Range( map ),
                List( map!.corelations,
                      r -> LinearCombination( genimages, r ) ) );
@@ -405,7 +410,7 @@ InstallMethod( IsSingleValued,
     if not IsBound( map!.corelations ) then
       MakeImagesInfoLinearGeneralMappingByImages( map );
     fi;
-    genimages:= map!.genimages;
+    genimages:= MappingGeneratorsImages(map)[2];
     return ForAll( map!.corelations,
                    r -> IsZero( LinearCombination( genimages, r ) ) );
     end );
@@ -428,7 +433,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
     if not IsBound( map!.relations ) then
       MakePreImagesInfoLinearGeneralMappingByImages( map );
     fi;
-    generators:= map!.generators;
+    generators:= MappingGeneratorsImages(map)[1];
     return SubmoduleNC( Source( map ),
                List( map!.relations,
                      r -> LinearCombination( generators, r ) ) );
@@ -449,7 +454,7 @@ InstallMethod( IsInjective,
     if not IsBound( map!.relations ) then
       MakePreImagesInfoLinearGeneralMappingByImages( map );
     fi;
-    generators:= map!.generators;
+    generators:= MappingGeneratorsImages(map)[1];
     return ForAll( map!.relations,
                    r -> IsZero( LinearCombination( generators, r ) ) );
     end );
@@ -501,38 +506,40 @@ InstallMethod( PreImagesRepresentative,
 ##
 #M  ViewObj( <map> )  . . . . . . . . . . . . . . .  for left module g.m.b.i.
 ##
-InstallMethod( ViewObj,
-    "for a left module g.m.b.i",
-    true,
+InstallMethod( ViewObj, "for a left module g.m.b.i", true,
     [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
-    function( map )
-    Print( map!.generators, " -> ", map!.genimages );
-    end );
+function( map )
+local mapi;
+  mapi:=MappingGeneratorsImages(map);
+  View(mapi[1]);
+  Print(" -> ");
+  View(mapi[2]);
+end );
 
 
 #############################################################################
 ##
 #M  PrintObj( <map> ) . . . . . . . . . . . . . . .  for left module g.m.b.i.
 ##
-InstallMethod( PrintObj,
-    "for a left module g.m.b.i",
-    true,
+InstallMethod( PrintObj, "for a left module g.m.b.i", true,
     [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
-    function( map )
-    Print( "LeftModuleGeneralMappingByImages( ",
-           Source( map ), ", ", Range( map ), ", ",
-           map!.generators, ", ", map!.genimages, " )" );
-    end );
+function( map )
+local mapi;
+  mapi:=MappingGeneratorsImages(map);
+  Print( "LeftModuleGeneralMappingByImages( ",
+	  Source( map ), ", ", Range( map ), ", ",
+	  mapi[1], ", ", mapi[2], " )" );
+end );
 
-InstallMethod( PrintObj,
-    "for a left module hom. b.i",
-    true,
+InstallMethod( PrintObj, "for a left module hom. b.i", true,
     [ IsMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
-    function( map )
-    Print( "LeftModuleHomomorphismByImages( ",
-           Source( map ), ", ", Range( map ), ", ",
-           map!.generators, ", ", map!.genimages, " )" );
-    end );
+function( map )
+local mapi;
+  mapi:=MappingGeneratorsImages(map);
+  Print( "LeftModuleHomomorphismByImages( ",
+	  Source( map ), ", ", Range( map ), ", ",
+	  mapi[1], ", ", mapi[2], " )" );
+end );
 
 
 #############################################################################
@@ -547,6 +554,7 @@ InstallMethod( \*,
     function( scalar, map )
 
     local mult,   # the multiple of `map', result
+	  mapi,	  # generators and images
           F;      # left acting domain
 
     # Check the scalar.
@@ -557,10 +565,11 @@ InstallMethod( \*,
       TryNextMethod();
     fi;
 
+    mapi:=MappingGeneratorsImages(map);
     # Construct the linear general mapping (if possible).
     mult:= LeftModuleGeneralMappingByImages(
-               Source( map ), Range( map ), map!.generators,
-               List( map!.genimages, v -> scalar * v ) );
+               Source( map ), Range( map ), mapi[1],
+               List( mapi[2], v -> scalar * v ) );
 
     # Maintain info on the preimage side of the general mapping.
     if IsBound( map!.basispreimage ) then
@@ -614,12 +623,14 @@ InstallMethod( AdditiveInverseOp,
     [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
     function( map )
 
-    local ainv;   # the additive inverse of `map', result
+    local ainv,   # the additive inverse of `map', result
+          mapi;
 
+    mapi:=MappingGeneratorsImages(map);
     # Construct the linear general mapping (if possible).
     ainv:= LeftModuleGeneralMappingByImages(
-               Source( map ), Range( map ), map!.generators,
-               List( map!.genimages, AdditiveInverse ) );
+               Source( map ), Range( map ), mapi[1],
+               List( mapi[2], AdditiveInverse ) );
 
     # Maintain images and preimages info.
     if IsBound( map!.basispreimage ) then
@@ -675,22 +686,24 @@ InstallMethod( CompositionMapping2,
       and IsLinearGeneralMappingByImagesDefaultRep ], 0,
     function( map2, map1 )
     local comp,        # composition of <map2> and <map1>, result
+	  mapi1,
           gens,
           genimages;
 
     # Check that the linear mappings can be composed.
 
+    mapi1:=MappingGeneratorsImages(map1);
     # Compute images for the generators of `map1'.
     if     IsLinearGeneralMappingByImagesDefaultRep( map2 )
-       and map1!.genimages = map2!.generators then
+       and mapi1[2] = MappingGeneratorsImages(map2)[1] then
 
-      gens      := map1!.generators;
-      genimages := map2!.genimages;
+      gens      := mapi1[1];
+      genimages := MappingGeneratorsImages(map2)[2];
 
     else
 
-      gens:= map1!.generators;
-      genimages:= List( map1!.genimages,
+      gens:= mapi1[1];
+      genimages:= List( mapi1[2],
                         v -> ImagesRepresentative( map2, v ) );
 
     fi;
@@ -731,6 +744,7 @@ InstallOtherMethod( \+,
 
     local gens,
           genimages,
+	  mapi1,
           sum;
 
     # Check that the linear mappings can be added.
@@ -741,22 +755,24 @@ InstallOtherMethod( \+,
       Error( "<map1> and <map2> must have same preimage" );
     fi;
 
+    mapi1:=MappingGeneratorsImages(map1);
+
     if     IsLinearGeneralMappingByImagesDefaultRep( map2 )
-       and map1!.generators = map2!.generators then
+       and mapi1[1] = MappingGeneratorsImages(map2)[1] then
 
       # If the generators in both general mappings are the same,
       # it suffices to add the images.
-      gens      := map1!.generators;
-      genimages := map1!.genimages + map2!.genimages;
+      gens      := mapi1[1];
+      genimages := mapi1[2] + MappingGeneratorsImages(map2)[2];
 
     else
 
       # Compute images of the generators of `map1' under `map2'.
       # (Note that both general mappings must be described in terms of
       # `generators' in order to keep the meaning of `corelations'.)
-      gens:= map1!.generators;
-      genimages:=   map1!.genimages
-                  + List( map1!.generators,
+      gens:= mapi1[1];
+      genimages:=   mapi1[2]
+                  + List( mapi1[1],
                           v -> ImagesRepresentative( map2, v ) );
 
     fi;
@@ -791,6 +807,7 @@ InstallOtherMethod( \+,
 
     local gens,
           genimages,
+	  mapi2,
           sum;
 
     # Check that the linear mappings can be added.
@@ -801,23 +818,25 @@ InstallOtherMethod( \+,
       Error( "<map1> and <map2> must have same preimage" );
     fi;
 
+    mapi2:=MappingGeneratorsImages(map2);
+
     if     IsLinearGeneralMappingByImagesDefaultRep( map1 )
-       and map1!.generators = map2!.generators then
+       and MappingGeneratorsImages(map1)[1]= mapi2[1] then
 
       # If the generators in both general mappings are the same,
       # it suffices to add the images.
-      gens      := map1!.generators;
-      genimages := map1!.genimages + map2!.genimages;
+      gens      := mapi2[1];
+      genimages := MappingGeneratorsImages(map1)[2] + mapi2[2];
 
     else
 
       # Compute images of the generators of `map1' under `map2'.
       # (Note that both general mappings must be described in terms of
       # `generators' in order to keep the meaning of `corelations'.)
-      gens:= map2!.generators;
-      genimages:=   List( map2!.generators,
+      gens:= mapi2[1];
+      genimages:=   List( mapi2[1],
                           v -> ImagesRepresentative( map1, v ) )
-                  + map2!.genimages;
+                  + mapi2[2];
 
     fi;
 
@@ -860,6 +879,7 @@ InstallOtherMethod( \+,
 
     local gens,
           genimages,
+	  mapi1,
           sum;
 
     # Check that the linear mappings can be added.
@@ -890,24 +910,29 @@ InstallOtherMethod( \+,
 
       fi;
 
-    elif     IsLinearGeneralMappingByImagesDefaultRep( map2 )
-         and map1!.generators = map2!.generators then
-
-      # If the generators in both general mappings are the same,
-      # it suffices to add the images.
-      gens      := map1!.generators;
-      genimages := map1!.genimages + map2!.genimages;
-
     else
 
-      # Compute images of the generators of `map1' under `map2'.
-      # (Note that both general mappings must be described in terms of
-      # `generators' in order to keep the meaning of `corelations'.)
-      gens:= map1!.generators;
-      genimages:=   map1!.genimages
-                  + List( map1!.generators,
-                          v -> ImagesRepresentative( map2, v ) );
+      mapi1:=MappingGeneratorsImages(map1);
 
+      if     IsLinearGeneralMappingByImagesDefaultRep( map2 )
+	  and mapi1[1] = MappingGeneratorsImages(map2)[1] then
+
+	# If the generators in both general mappings are the same,
+	# it suffices to add the images.
+	gens      := mapi1[1];
+	genimages := mapi1[2] + MappingGeneratorsImages(map2)[2];
+
+      else
+
+	# Compute images of the generators of `map1' under `map2'.
+	# (Note that both general mappings must be described in terms of
+	# `generators' in order to keep the meaning of `corelations'.)
+	gens:= mapi1[1];
+	genimages:=   mapi1[2]
+		    + List( mapi1[1],
+			    v -> ImagesRepresentative( map2, v ) );
+
+      fi;
     fi;
 
     # Construct the linear mapping.
@@ -927,6 +952,7 @@ InstallOtherMethod( \+,
 
     local gens,
           genimages,
+	  mapi1,mapi2,
           sum;
 
     # Check that the linear mappings can be added.
@@ -956,23 +982,29 @@ InstallOtherMethod( \+,
 
       fi;
 
-    elif     IsLinearGeneralMappingByImagesDefaultRep( map1 )
-         and map1!.generators = map2!.generators then
-
-      # If the generators in both general mappings are the same,
-      # it suffices to add the images.
-      gens      := map1!.generators;
-      genimages := map1!.genimages + map2!.genimages;
-
     else
 
-      # Compute images of the generators of `map2' under `map1'.
-      # (Note that both general mappings must be described in terms of
-      # `generators' in order to keep the meaning of `corelations'.)
-      gens:= map2!.generators;
-      genimages:=   List( map2!.generators,
-                          v -> ImagesRepresentative( map1, v ) )
-                  + map2!.genimages;
+      mapi2:=MappingGeneratorsImages(map2);
+
+      if     IsLinearGeneralMappingByImagesDefaultRep( map1 )
+	  and MappingGeneratorsImages(map1)[1] = mapi2[1] then
+
+	# If the generators in both general mappings are the same,
+	# it suffices to add the images.
+	gens      := mapi2[1];
+	genimages := MappingGeneratorsImages(map1)[2] + mapi2[2];
+
+      else
+
+	# Compute images of the generators of `map2' under `map1'.
+	# (Note that both general mappings must be described in terms of
+	# `generators' in order to keep the meaning of `corelations'.)
+	gens:= mapi2[1];
+	genimages:=   List( mapi2[1],
+			    v -> ImagesRepresentative( map1, v ) )
+		    + mapi2[2];
+
+      fi;
 
     fi;
 
@@ -1225,9 +1257,11 @@ InstallMethod( ViewObj,
     true,
     [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep ], 0,
     function( map )
-    Print( "<linear mapping by matrix, ",
-           UnderlyingLeftModule( map!.basissource ), " -> ",
-           UnderlyingLeftModule( map!.basisrange ), ">" );
+    Print( "<linear mapping by matrix, " );
+    View( UnderlyingLeftModule( map!.basissource ) );
+    Print( " -> " );
+    View( UnderlyingLeftModule( map!.basisrange ) );
+    Print( ">" );
     end );
 
 
@@ -1945,12 +1979,19 @@ ViewFullHomModule := function( M )
     local info;
     info:= NiceFreeLeftModuleInfo( M );
     if IsIdenticalObj( info.basissource, info.basisrange ) then
-      Print( "End( ", LeftActingDomain( M ), ", ",
-             UnderlyingLeftModule( info.basissource  ), " )" );
+      Print( "End( " );
+      View( LeftActingDomain( M ) );
+      Print( ", " );
+      View( UnderlyingLeftModule( info.basissource  ) );
+      Print( " )" );
     else
-      Print( "Hom( ", LeftActingDomain( M ), ", ",
-             UnderlyingLeftModule( info.basissource ), ", ",
-             UnderlyingLeftModule( info.basisrange  ), " )" );
+      Print( "Hom( " );
+      View( LeftActingDomain( M ) );
+      Print( ", " );
+      View( UnderlyingLeftModule( info.basissource ) );
+      Print( ", " );
+      View( UnderlyingLeftModule( info.basisrange  ) );
+      Print( " )" );
     fi;
 end;
 

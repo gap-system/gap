@@ -54,11 +54,29 @@ end);
 ##
 #F  PopOptions( )                                              remove options
 ##
-
 InstallGlobalFunction( PopOptions,
         function()
-    Unbind(OptionsStack[Length(OptionsStack)]);
-    Info(InfoOptions, 1, "Popping");
+    if Length(OptionsStack)=0 then
+      Info(InfoWarning,1,"Options stack is already empty");
+    else
+      Unbind(OptionsStack[Length(OptionsStack)]);
+      Info(InfoOptions, 1, "Popping");
+    fi;
+end);
+
+#############################################################################
+##
+#F  ResetOptionsStack( )                                   remove all options
+##
+InstallGlobalFunction( ResetOptionsStack,
+        function()
+    if Length(OptionsStack)=0 then
+      Info(InfoWarning,1,"Options stack is already empty");
+    else
+      repeat
+        PopOptions();
+      until IsEmpty(OptionsStack);
+    fi;
 end);
 
 #############################################################################

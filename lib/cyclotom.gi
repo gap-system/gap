@@ -399,7 +399,7 @@ InstallGlobalFunction( DescriptionOfRootOfUnity, function( root )
     # `num' is equal to `1' if and only if `root' or its negative
     # belongs to the basis.
     # (The coefficient is equal to `-1' if and only if either
-    # `n' is a power of $2$ or
+    # `n' is a multiple of $4$ or
     # `n' is odd and `root' is a primitive $2 `n'$-th root of unity.)
     if num = 1 then
       if coeff < 0 then
@@ -408,11 +408,10 @@ InstallGlobalFunction( DescriptionOfRootOfUnity, function( root )
         else
           sum:= 2*sum + n;
           n:= 2*n;
-          sum:= sum mod n;
         fi;
       fi;
       Assert( 1, root = E(n)^sum );
-      return [ n, sum ];
+      return [ n, sum mod n ];
     fi;
 
     # Let $N$ be `n' if `n' is even, and equal to $2 `n'$ otherwise.
@@ -425,7 +424,6 @@ InstallGlobalFunction( DescriptionOfRootOfUnity, function( root )
       if root <> E(n)^exp then
         exp:= 2*exp + n;
         n:= 2*n;
-        exp:= exp mod n;
       fi;
 
     elif g = 2 then
@@ -433,7 +431,7 @@ InstallGlobalFunction( DescriptionOfRootOfUnity, function( root )
       # `n' is even, and again `root' is determined up to its sign.
       exp:= ( sum / num ) mod ( n / 2 );
       if root <> E(n)^exp then
-        exp:= ( exp + n / 2 ) mod n;
+        exp:= exp + n / 2;
       fi;
 
     else
@@ -447,13 +445,13 @@ InstallGlobalFunction( DescriptionOfRootOfUnity, function( root )
         exp:= 2*exp;
         n:= 2*n;
       fi;
-      exp:= ( exp + groot[2] * n / groot[1] ) mod n;
+      exp:= exp + groot[2] * n / groot[1];
 
     fi;
 
     # Return the result.
     Assert( 1, root = E(n)^exp );
-    return [ n, exp ];
+    return [ n, exp mod n ];
 end );
 
 
@@ -1387,7 +1385,7 @@ InstallMethod( FactorsSquarefree,
     function( R, U, opt )
 
     local coeffring, theta, xind, yind, x, y, T, coeffs, G, powers, pow, i,
-          B, c, val, j, k, N;
+          B, c, val, j, k, N, factors;
 
     if IsRationalsPolynomialRing( R ) then
       TryNextMethod();
@@ -1417,7 +1415,7 @@ InstallMethod( FactorsSquarefree,
     else
       powers:= [ 1 ];
       pow:= 1;
-      for i in [ 2 .. DegreeOverPrimeField( coeffring ) - 1 ] do
+      for i in [ 2 .. DegreeOverPrimeField( coeffring ) ] do
         pow:= pow * theta;
         powers[i]:= pow;
       od;
@@ -1446,15 +1444,16 @@ InstallMethod( FactorsSquarefree,
     T:= MinimalPolynomial( Rationals, theta, yind );
     repeat
       k:= k+1;
-      N:= Resultant( T, Value( U, x-k*y ), y );
+      N:= Resultant( T, Value( G, [ x, y ], [ x-k*y, y ] ), y );
     until DegreeOfUnivariateLaurentPolynomial( Gcd( N, Derivative(N) ) ) = 0;
 
     # Let $N = \prod_{i=1}^g N_i$ be a factorization of $N$.
     # For $1 \leq i \leq g$, set $A_i(X) = \gcd( U(X), N_i(X + k \theta) )$.
     # The desired factorization of $U(X)$ is $\prod_{i=1}^g A_i$.
-    R:= PolynomialRing( Rationals, [ xind ] );
-    return List( Factors( R, N ),
-                 f -> Gcd( R, U, Value( f, x + k*theta ) ) );
+    factors:= List( Factors( PolynomialRing( Rationals, [ xind ] ), N ),
+                    f -> Gcd( R, U, Value( f, x + k*theta ) ) );
+    return Filtered( factors,
+                     x -> DegreeOfUnivariateLaurentPolynomial( x ) <> 0 );
     end );
 
 
@@ -1565,6 +1564,16 @@ InstallMethod( Factors,
     # Return the factorization.
     return factors;
     end );
+
+InstallGlobalFunction(DenominatorCyc,function(c)
+local n;
+  n:=Conductor(c);
+  if n=1 then
+     return DenominatorRat(c);
+  else
+     return Lcm(List(CoeffsCyc(c,n),DenominatorRat));
+  fi;
+end);
 
 
 #############################################################################

@@ -11,7 +11,7 @@
 ##
 ##  This file defines some functions associated with method selection,
 ##  which do not need to be compiled by default. More performance critical
-##  functions are found in methsel2.g
+##  functions are found in methsel1.g
 ##
 Revision.methsel2_g :=
   "@(#)$Id$";

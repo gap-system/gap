@@ -19,9 +19,18 @@ Revision.tuples_gd :=
 ##
 #C  IsTuple( <obj> )  . . . . . . . . . . . . . . . . . .  category of tuples
 ##
-
+##  `IsTuple' is a subcategory of the meet of `IsDenseList'
+##  (see~"IsDenseList"), `IsMultiplicativeElementWithInverse'
+##  (see~"IsMultiplicativeElementWithInverse"),
+##  and `IsAdditiveElementWithInverse' (see~"IsAdditiveElementWithInverse"),
+##  where the arithmetic operations (addition, zero, additive inverse,
+##  multiplication, one, inverse) are defined componentwise.
+##
+##  Note that each of these operations will cause an error message if
+##  its result for at least one component cannot be formed.
 DeclareCategory( "IsTuple",
-    IsDenseList and IsMultiplicativeElementWithInverse );
+    IsDenseList and IsMultiplicativeElementWithInverse
+    and IsAdditiveElementWithInverse );
 
 
 #############################################################################

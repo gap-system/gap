@@ -23,15 +23,6 @@ Revision.utils_gd :=
 
 #############################################################################
 ##
-#F  ListTwo( <list1>, <list2>, <fnc> )
-##
-##  Return the list [ fnc( list1[i], list2[i] ) : i in 1..Length(list1) ]
-##  Should be ListN, but I don't know how to implement that.
-##
-DeclareGlobalFunction( "ListTwo", [ IsList, IsList, IsFunction ] );
-
-#############################################################################
-##
 #F  UseSubsetRelationNC( <super>, <sub> )
 ##
 ##  This would be a useful GAP fnc.  For UseSubsetRelation,

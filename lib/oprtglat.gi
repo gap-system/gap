@@ -25,19 +25,56 @@ end );
 #M  MinimumGroupOnSubgroupsOrbit(G,H [,N_G(H)]) minimum of orbit of H under G
 ##
 InstallGlobalFunction( MinimumGroupOnSubgroupsOrbit, function(arg)
-local s,i,m,Hc;
-  s:=ConjugacyClassSubgroups(arg[1],arg[2]);
-  if Length(arg)>2 then
-    SetStabilizerOfExternalSet(s,arg[3]);
+local cont,lim,s,i,j,m,Hc,o,og;
+  # try some orbit calculation first (at most orbit of length 20) to avoid
+  # normalizer calculations.
+  cont:=true;
+  lim:=QuoInt(Size(arg[1]),Size(arg[2]));
+  if lim>20 then
+    cont:=lim<200000; # otherwise give up at once
+    lim:=20;
   fi;
-  s:=Enumerator(s);
-  m:=s[1];
-  for i in [2..Length(s)] do
-    Hc:=s[i];
-    if Hc<m then
-      m:=Hc;
-    fi;
+
+  if cont then
+    o:=[arg[2]];
+  else
+    o:=[];
+  fi;
+  m:=arg[2];
+  i:=1;
+  while cont and i<=Length(o) do
+    for j in GeneratorsOfGroup(arg[1]) do
+      if not ForAny(o,x->ForAll(GeneratorsOfGroup(o[i]),y->y^j in x)) then
+	Hc:=o[i]^j;
+	Add(o,Hc);
+	if Hc<m then
+	  m:=Hc;
+	fi;
+	cont:=Length(o)<lim;
+      fi;
+    od;
+    i:=i+1;
   od;
+
+  if not cont then
+    # orbit is longer -- have to work
+    s:=ConjugacyClassSubgroups(arg[1],arg[2]);
+    if Length(arg)>2 then
+      SetStabilizerOfExternalSet(s,arg[3]);
+    fi;
+    s:=Enumerator(s);
+    if Length(s)>2*lim then
+      o:=[]; # the orbit is not worth keeping -- test would be too expensive
+    fi;
+    for i in [1..Length(s)] do
+      Hc:=s[i];
+      if not ForAny(o,x->ForAll(GeneratorsOfGroup(Hc),y-> y in x)) then
+	if Hc<m then
+	  m:=Hc;
+	fi;
+      fi;
+    od;
+  fi;
   return m;
 end );
 

@@ -62,8 +62,7 @@ BindGlobal( "GeneratorsListTom", function( G, classes )
 ##
 InstallMethod( TableOfMarks,
     "for a cyclic group",
-    true,
-    [ IsGroup and IsCyclic ], 0,
+    [ IsGroup and IsCyclic ],
     function( G )
 
     local n, tom, gens, gen, subs, marks, classNames,
@@ -326,20 +325,17 @@ end );
 
 InstallMethod( TableOfMarks,
     "for a group with lattice",
-    true,
     [ IsGroup and HasLatticeSubgroups ], 10,
     TableOfMarksByLattice );
 
 InstallMethod( TableOfMarks,
     "for solvable groups (call `LatticeSubgroups' and use the lattice)",
-    true,
-    [ IsSolvableGroup ], 0,
+    [ IsSolvableGroup ],
     TableOfMarksByLattice );
 
 InstallMethod( TableOfMarks,
     "cyclic extension method",
-    true,
-    [ IsGroup ], 0,
+    [ IsGroup ],
     function( G )
 
     local factors,           # factorization of <G>'s size
@@ -865,8 +861,7 @@ end );
 ##
 InstallMethod( TableOfMarks,
     "for a matrix or a lower triangular matrix",
-    true,
-    [ IsHomogeneousList ], 0,
+    [ IsTable ],
     function( mat )
     local i, j, val, subs, marks, tom;
 
@@ -929,6 +924,28 @@ InstallMethod( TableOfMarks,
 
 #############################################################################
 ##
+#F  TableOfMarksFromLibrary( <name> )
+##
+##  The `TableOfMarks' method for a string calls `TableOfMarksFromLibrary'.
+##  We bind this to a dummy function that signals an error.
+##
+BindGlobal( "TableOfMarksFromLibrary", function( arg )
+    Error( "sorry, the GAP Tables Of Marks Library is not installed" );
+    end );
+
+
+#############################################################################
+##
+#M  TableOfMarks( <name> )  . . . . . . . . . . library table with given name
+##
+InstallMethod( TableOfMarks,
+    "for a string (dispatch to `TableOfMarksFromLibrary')",
+    [ IsString ],
+    str -> TableOfMarksFromLibrary( str ) );
+
+
+#############################################################################
+##
 #M  LatticeSubroups( <G> )
 ##
 ##  method for a group with table of marks
@@ -961,14 +978,12 @@ InstallGlobalFunction( LatticeSubgroupsByTom, function( G )
 
 InstallMethod( LatticeSubgroups,
     "for a group with table of marks",
-    true,
     [ IsGroup and HasTableOfMarks ], 10,
     LatticeSubgroupsByTom );
 
 InstallMethod( LatticeSubgroups,
     "for a cyclic group",
-    true,
-    [ IsGroup and IsCyclic ], 0,
+    [ IsGroup and IsCyclic ],
     LatticeSubgroupsByTom );
 
 
@@ -983,8 +998,7 @@ InstallMethod( LatticeSubgroups,
 #M  ViewObj( <tom> ) . . . . . . . . . . . . . . . . . print a table of marks
 ##
 InstallMethod( ViewObj,
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
     Print( "TableOfMarks( " );
     if   HasIdentifier( tom ) then
@@ -1005,8 +1019,7 @@ InstallMethod( ViewObj,
 #M  PrintObj( <tom> )
 ##
 InstallMethod( ViewObj,
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
     Print( "TableOfMarks( " );
     if   HasIdentifier( tom ) then
@@ -1028,16 +1041,14 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( Display,
     "for a table of marks (add empty options record)",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
     Display( tom, rec() );
     end );
 
 InstallOtherMethod( Display,
     "for a table of marks and an options record",
-    true,
-    [ IsTableOfMarks, IsRecord ], 0,
+    [ IsTableOfMarks, IsRecord ],
     function( tom, options )
 
     local i, j, k, l, pr1, ll, lk, von, bis, pos, llength, pr, vals, subs,
@@ -1133,8 +1144,7 @@ InstallOtherMethod( Display,
 #M  SortedTom( <tom>, <perm> )  . . . . . . . . . . . . sorted table of marks
 ##
 InstallMethod( SortedTom,
-    true,
-    [ IsTableOfMarks, IsPerm ], 0,
+    [ IsTableOfMarks, IsPerm ],
     function( tom, perm )
     local i, components;
 
@@ -1231,8 +1241,7 @@ InstallGlobalFunction( ConvertToTableOfMarks, function( record )
 ##
 InstallMethod( MarksTom,
     "for a table of marks with known `NrSubsTom' and `OrdersTom'",
-    true,
-    [ IsTableOfMarks and HasNrSubsTom and HasOrdersTom ], 0,
+    [ IsTableOfMarks and HasNrSubsTom and HasOrdersTom ],
     function( tom )
 
     local i, j, ll, order, length, nrSubs, subs, marks, ord;
@@ -1268,8 +1277,7 @@ InstallMethod( MarksTom,
 ##
 InstallMethod( NrSubsTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
 
     local i, j, nrSubs, subs, marks, length, index;
@@ -1306,8 +1314,7 @@ InstallMethod( NrSubsTom,
 ##
 InstallMethod( OrdersTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
     local subs, marks;
     subs:= SubsTom( tom );
@@ -1323,8 +1330,7 @@ InstallMethod( OrdersTom,
 ##
 InstallMethod( LengthsTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
     local nrSubs;
     nrSubs:= NrSubsTom( tom );
@@ -1338,8 +1344,7 @@ InstallMethod( LengthsTom,
 ##
 InstallMethod( ClassTypesTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
     local i, j, done, nrsubs, subs, order, type, struct, nrtypes;
 
@@ -1387,8 +1392,7 @@ InstallMethod( ClassTypesTom,
 ##
 InstallMethod( ClassNamesTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
     local i, c, classes, type, name, count, ord, alp, la;
 
@@ -1475,8 +1479,7 @@ InstallMethod( ClassNamesTom,
 ##
 InstallMethod( FusionsTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     x -> [] );
 
 
@@ -1486,8 +1489,7 @@ InstallMethod( FusionsTom,
 ##
 InstallMethod( IdempotentsTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
 
     local i, c, classes, p, ext, marks;
@@ -1518,8 +1520,7 @@ InstallMethod( IdempotentsTom,
 ##
 InstallMethod( IdempotentsTomInfo,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
 
     local ext, ll, result, class, idem;
@@ -1548,8 +1549,7 @@ InstallMethod( IdempotentsTomInfo,
 ##
 InstallMethod( MatTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
     local i, j, subs, marks, ll, res;
 
@@ -1575,8 +1575,7 @@ InstallMethod( MatTom,
 ##
 InstallMethod( MoebiusTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
 
     local i, j, mline, nline, ll, mdec, ndec, expec, done, no, comsec,
@@ -1701,8 +1700,7 @@ InstallMethod( MoebiusTom,
 ##
 InstallMethod( WeightsTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
     local subs, marks;
 
@@ -1731,8 +1729,7 @@ InstallMethod( WeightsTom,
 ##
 InstallMethod( IsAbelianTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
     local marks, subs, nrSubs, order, result, sub, number, sub1;
 
@@ -1769,7 +1766,6 @@ InstallMethod( IsAbelianTom,
 
 InstallMethod( IsAbelianTom,
     "for a table of marks and a positive integer",
-    true,
     [ IsTableOfMarks, IsPosInt ], 10,
     function( tom, sub )
     sub:= DerivedSubgroupTom( tom, sub );
@@ -1784,7 +1780,6 @@ InstallMethod( IsAbelianTom,
 
 InstallMethod( IsAbelianTom,
     "for a table of marks with known der. subgroups, and a positive integer",
-    true,
     [ IsTableOfMarks and HasDerivedSubgroupsTomUnique, IsPosInt ], 1000,
     function( tom, sub )
     return DerivedSubgroupsTomUnique( tom )[ sub ] = 1;
@@ -1792,8 +1787,7 @@ InstallMethod( IsAbelianTom,
 
 InstallMethod( IsAbelianTom,
     "for a table of marks with generators, and a positive integer",
-    true,
-    [ IsTableOfMarks and IsTableOfMarksWithGens, IsPosInt ], 0,
+    [ IsTableOfMarks and IsTableOfMarksWithGens, IsPosInt ],
     function( tom, sub )
     return IsAbelian( RepresentativeTom( tom, sub ) );
     end );
@@ -1809,14 +1803,12 @@ InstallMethod( IsAbelianTom,
 ##
 InstallMethod( IsCyclicTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     tom -> IsCyclicTom( tom, Length( SubsTom( tom ) ) ) );
 
 InstallMethod( IsCyclicTom,
     "for a table of marks and a positive integer",
-    true,
-    [ IsTableOfMarks, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt ],
     function( tom, sub )
 
     local mline;
@@ -1835,14 +1827,12 @@ InstallMethod( IsCyclicTom,
 ##
 InstallMethod( IsNilpotentTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     tom -> IsNilpotentTom( tom, Length( SubsTom( tom ) ) ) );
 
 InstallMethod( IsNilpotentTom,
     "for a table of marks and a positive integer",
-    true,
-    [ IsTableOfMarks, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt ],
     function( tom, sub )
     local  factors, primes, exponents, i, pos;
 
@@ -1873,22 +1863,19 @@ InstallMethod( IsNilpotentTom,
 ##
 InstallMethod( IsPerfectTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     tom -> IsPerfectTom( tom, Length( SubsTom( tom ) ) ) );
 
 InstallMethod( IsPerfectTom,
     "for a table of marks with known der. subgroups, and a positive integer",
-    true,
-    [ IsTableOfMarks and HasDerivedSubgroupsTomUnique, IsPosInt ], 0,
+    [ IsTableOfMarks and HasDerivedSubgroupsTomUnique, IsPosInt ],
     function( tom, sub )
     return DerivedSubgroupsTomUnique( tom )[ sub ] = sub;
     end );
 
 InstallMethod( IsPerfectTom,
     "for a table of marks and a positive integer",
-    true,
-    [ IsTableOfMarks, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt ],
     function( tom, sub )
     local ext, pos;
     ext:=CyclicExtensionsTom(tom);
@@ -1903,14 +1890,12 @@ InstallMethod( IsPerfectTom,
 ##
 InstallMethod( IsSolvableTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     tom -> IsSolvableTom( tom, Length( SubsTom( tom ) ) ) );
 
 InstallMethod( IsSolvableTom,
     "for a table of marks and a positive integer",
-    true,
-    [ IsTableOfMarks, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt ],
     function( tom, sub )
     local ext, pos;
 
@@ -1979,8 +1964,7 @@ end );
 
 InstallMethod( IsInternallyConsistent,
     "for a table of marks, decomposition test",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
     local i, test;
 
@@ -2002,8 +1986,7 @@ InstallMethod( IsInternallyConsistent,
 ##
 InstallMethod( DerivedSubgroupTom,
     "for a table of marks, and a positive integer",
-    true,
-    [ IsTableOfMarks, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt ],
     function( tom, sub )
 
     local set, primes, normalsubs, minindex, p, nrsubs, ext, pos, extp,
@@ -2275,8 +2258,7 @@ InstallGlobalFunction( DerivedSubgroupsTom,
 ##
 InstallMethod( DerivedSubgroupsTomPossible,
     "for a table of marks (initialize with empty list)",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     tom -> [] );
 
 
@@ -2286,8 +2268,7 @@ InstallMethod( DerivedSubgroupsTomPossible,
 ##
 InstallMethod( NormalizerTom,
     "for a table of marks, and a positive integer",
-    true,
-    [ IsTableOfMarks, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt ],
     function( tom, sub )
 
     local nord, subs, order, nrsubs, length, ll, res, i, nn;
@@ -2379,8 +2360,7 @@ InstallMethod( NormalizerTom,
 ##
 InstallMethod( NormalizersTom,
     "all normalizers of a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
 
     local result, subs, order, nrsubs, length, ll, impr, d, der, bool,
@@ -2476,8 +2456,7 @@ InstallMethod( NormalizersTom,
 ##  How many subgroups of class <sub1> lie in one subgroup of class <sub2>?
 ##
 InstallMethod( ContainedTom,
-    true,
-    [ IsTableOfMarks, IsPosInt, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt, IsPosInt ],
     function( tom, sub1, sub2 )
 
     if sub1 in SubsTom( tom )[ sub2 ] then
@@ -2496,8 +2475,7 @@ InstallMethod( ContainedTom,
 ##  How many subgroups of class <sub2> contain one subgroup of class <sub1>?
 ##
 InstallMethod( ContainingTom,
-    true,
-    [ IsTableOfMarks, IsPosInt, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt, IsPosInt ],
     function( tom, sub1, sub2 )
 
     if sub1 in SubsTom( tom )[ sub2 ] then
@@ -2518,22 +2496,19 @@ InstallMethod( ContainingTom,
 ##
 InstallMethod( CyclicExtensionsTom,
     "for a table of marks (classes for all prime div. of the group order)",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     tom -> CyclicExtensionsTom( tom, Set( Factors(MarksTom(tom)[1][1]) ) ) );
 
 InstallMethod( CyclicExtensionsTom,
     "for a table of marks, and a prime",
-    true,
-    [ IsTableOfMarks, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt ],
     function( tom, p )
     return CyclicExtensionsTom( tom, [ p ] );
     end );
 
 InstallMethod( CyclicExtensionsTom,
     "for a table of marks, and a list (of primes)",
-    true,
-    [ IsTableOfMarks, IsList ], 0,
+    [ IsTableOfMarks, IsList ],
     function( tom, list )
     local pos, computed, primes, factors, value;
 
@@ -2566,8 +2541,7 @@ InstallMethod( CyclicExtensionsTom,
 #M  ComputedCyclicExtensionsTom( <tom> )
 ##
 InstallMethod( ComputedCyclicExtensionsTom,
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     x -> [] );
 
 
@@ -2578,8 +2552,7 @@ InstallMethod( ComputedCyclicExtensionsTom,
 ##
 InstallMethod( CyclicExtensionsTomOp,
     "for one prime",
-    true,
-    [ IsTableOfMarks, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt ],
     function( tom, p )
     local i, j, h, ll, done, classes, pos, val, marks, subs;
 
@@ -2626,8 +2599,7 @@ InstallMethod( CyclicExtensionsTomOp,
 
 InstallMethod( CyclicExtensionsTomOp,
     "for a table of marks, and a list (of primes)",
-    true,
-    [ IsTableOfMarks, IsList ], 0,
+    [ IsTableOfMarks, IsList ],
     function( tom, primes )
     local p, ext, c, i, comp, classes;
 
@@ -2662,8 +2634,7 @@ InstallMethod( CyclicExtensionsTomOp,
 #M  DecomposedFixedPointVector( <tom>, <fix> )  . . . . . . . decompose marks
 ##
 InstallMethod( DecomposedFixedPointVector,
-    true,
-    [ IsTableOfMarks, IsList ], 0,
+    [ IsTableOfMarks, IsList ],
     function( tom, fixpointvector )
 
     local fix, i, j, dec, marks, subs, working, oo;
@@ -2708,15 +2679,13 @@ InstallMethod( DecomposedFixedPointVector,
 #M  EulerianFunctionByTom( <tom>, <s>, <sub> )
 ##
 InstallMethod( EulerianFunctionByTom,
-    true,
-    [ IsTableOfMarks, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt ],
     function( tom, s )
     return EulerianFunctionByTom( tom, s, Length( SubsTom( tom ) ) );
     end );
 
 InstallMethod( EulerianFunctionByTom,
-    true,
-    [ IsTableOfMarks, IsPosInt, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt, IsPosInt ],
     function( tom, s, sub )
     local subs, orders, nrSubs, eulerian, i;
 
@@ -2742,7 +2711,6 @@ InstallMethod( EulerianFunctionByTom,
 ##
 InstallMethod( EulerianFunction,
     "for a group with table of marks",
-    true,
     [ IsGroup and HasTableOfMarks, IsPosInt ], 10,
     function( G, s )
     return EulerianFunctionByTom( TableOfMarks( G ), s );
@@ -2754,8 +2722,7 @@ InstallMethod( EulerianFunction,
 #M  IntersectionsTom( <tom>, <a>, <b> ) . . . . .  intersections of subgroups
 ##
 InstallMethod( IntersectionsTom,
-    true,
-    [ IsTableOfMarks, IsPosInt, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt, IsPosInt ],
     function(tom,a,b)
     local i, j, k, h, line, dec, marks, subs;
 
@@ -2794,8 +2761,7 @@ InstallMethod( IntersectionsTom,
 ##
 InstallMethod( FactorGroupTom,
     "for a table of marks, and a positive integer",
-    true,
-    [ IsTableOfMarks, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt ],
     function( tom, nor )
 
     local marks, subs, sub, pos, pos1, subsf, marksf, facmarks, facsubs,
@@ -2883,14 +2849,12 @@ InstallMethod( FactorGroupTom,
 ##
 InstallMethod( MaximalSubgroupsTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     tom -> MaximalSubgroupsTom( tom, Length( SubsTom( tom ) ) ) );
 
 InstallMethod( MaximalSubgroupsTom,
     "for a table of marks, and a positive integer",
-    true,
-    [ IsTableOfMarks, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt ],
     function( tom, sub )
     local subs1, s, max, subs;
 
@@ -2914,8 +2878,7 @@ InstallMethod( MaximalSubgroupsTom,
 ##
 InstallMethod( MinimalSupergroupsTom,
     "for a table of marks",
-    true,
-    [ IsTableOfMarks, IsPosInt ], 0,
+    [ IsTableOfMarks, IsPosInt ],
     function( tom, sub )
     local subs, i, pos, sups, nrSups;
 
@@ -2958,8 +2921,7 @@ InstallMethod( MinimalSupergroupsTom,
 ##
 InstallMethod( GeneratorsSubgroupsTom,
     "default method for a table of marks",
-    true,
-    [ IsTableOfMarks ], 0,
+    [ IsTableOfMarks ],
     function( tom )
 
     local sub, gen, pos;
@@ -2984,8 +2946,7 @@ InstallMethod( GeneratorsSubgroupsTom,
 ##
 InstallMethod( RepresentativeTom,
     "for a table of marks with stored `GeneratorsSubgroupsTom' value",
-    true,
-    [ IsTableOfMarks and HasGeneratorsSubgroupsTom, IsPosInt ], 0,
+    [ IsTableOfMarks and HasGeneratorsSubgroupsTom, IsPosInt ],
     function( tom, sub )
 
     local gens, result;
@@ -3003,8 +2964,7 @@ InstallMethod( RepresentativeTom,
 
 InstallMethod( RepresentativeTom,
     "for a table of marks with stored `StraightLineProgramsTom' value",
-    true,
-    [ IsTableOfMarks and HasStraightLineProgramsTom, IsPosInt ], 0,
+    [ IsTableOfMarks and HasStraightLineProgramsTom, IsPosInt ],
     function( tom, sub )
 
     local gens, subgroup, group;
@@ -3034,9 +2994,8 @@ InstallMethod( RepresentativeTom,
 #M  RepresentativeTomByGeneratorsNC( <tom>, <sub>, <gens> )
 ##
 InstallMethod( RepresentativeTomByGenerators,
-    true,
     [ IsTableOfMarks and HasStraightLineProgramsTom,
-      IsPosInt, IsHomogeneousList ], 0,
+      IsPosInt, IsHomogeneousList ],
     function( tom, sub, gens )
     local gr, iso;
 
@@ -3055,9 +3014,8 @@ InstallMethod( RepresentativeTomByGenerators,
     end );
 
 InstallMethod( RepresentativeTomByGeneratorsNC,
-    true,
     [ IsTableOfMarks and HasStraightLineProgramsTom,
-      IsPosInt, IsHomogeneousList ], 0,
+      IsPosInt, IsHomogeneousList ],
     function( tom, sub, gens )
     local prog;
     prog:= StraightLineProgramsTom( tom )[ sub ];
@@ -3069,7 +3027,12 @@ InstallMethod( RepresentativeTomByGeneratorsNC,
                    x -> ResultOfStraightLineProgram( x, gens ) ) );
       fi;
     else
-      gens:= GroupByGenerators( ResultOfStraightLineProgram( prog, gens ) );
+      gens:= ResultOfStraightLineProgram( prog, gens );
+      if IsEmpty( gens ) then
+        gens:= TrivialSubgroup( UnderlyingGroup( tom ) );
+      else
+        gens:= GroupByGenerators( gens );
+      fi;
     fi;
     SetSize( gens, OrdersTom( tom )[ sub ] );
     return gens;
@@ -3082,8 +3045,7 @@ InstallMethod( RepresentativeTomByGeneratorsNC,
 ##
 InstallMethod( WordsTom,
     "for a table of marks with known straight line programs",
-    true,
-    [ IsTableOfMarks and HasStraightLineProgramsTom ], 0,
+    [ IsTableOfMarks and HasStraightLineProgramsTom ],
     function( tom )
 
     local progs,
@@ -3156,8 +3118,7 @@ InstallMethod( WordsTom,
 ##
 InstallMethod( PossibleFusionsCharTableTom,
     "for ordinary character table and table of marks",
-    true,
-    [ IsOrdinaryTable, IsTableOfMarks ], 0,
+    [ IsOrdinaryTable, IsTableOfMarks ],
     function( tbl, tom )
     return PossibleFusionsCharTableTom( tbl, tom, false );
     end );
@@ -3169,8 +3130,7 @@ InstallMethod( PossibleFusionsCharTableTom,
 ##
 InstallMethod( PossibleFusionsCharTableTom,
     "for ordinary character table, table of marks, and boolean",
-    true,
-    [ IsOrdinaryTable, IsTableOfMarks, IsBool ], 0,
+    [ IsOrdinaryTable, IsTableOfMarks, IsBool ],
     function( tbl, tom, quick )
 
     local fus,
@@ -3598,8 +3558,7 @@ InstallMethod( PossibleFusionsCharTableTom,
 ##
 InstallMethod( FusionCharTableTom,
     "for ordinary character table and table of marks",
-    true,
-    [ IsOrdinaryTable, IsTableOfMarks ], 0,
+    [ IsOrdinaryTable, IsTableOfMarks ],
     function( tbl, tom )
     local fus;
     fus:= PossibleFusionsCharTableTom( tbl, tom );
@@ -3619,8 +3578,7 @@ InstallMethod( FusionCharTableTom,
 ##
 InstallMethod( PermCharsTom,
     "for explicit fusion map and table of marks",
-    true,
-    [ IsList, IsTableOfMarks ], 0,
+    [ IsList, IsTableOfMarks ],
     function( fus, tom )
 
     local pc, i, j, line, marks, subs;
@@ -3651,8 +3609,7 @@ InstallMethod( PermCharsTom,
 
 InstallMethod( PermCharsTom,
     "for character table and table of marks",
-    true,
-    [ IsOrdinaryTable, IsTableOfMarks ], 0,
+    [ IsOrdinaryTable, IsTableOfMarks ],
     function( tbl, tom )
     local fus;
     fus:= FusionCharTableTom( tbl, tom );
@@ -3677,8 +3634,7 @@ InstallMethod( PermCharsTom,
 ##
 InstallMethod( TableOfMarksCyclic,
     "for a positive integer",
-    true,
-    [ IsPosInt ], 0,
+    [ IsPosInt ],
     function( n )
 
     local obj, progs, subs, marks, classNames, derivedSubgroups,
@@ -3739,8 +3695,7 @@ InstallMethod( TableOfMarksCyclic,
 ##
 InstallMethod( TableOfMarksDihedral,
     "for a positive integer",
-    true,
-    [ IsPosInt ], 0,
+    [ IsPosInt ],
     function( m )
 
     local i, j, divs, n, name, marks, subs, type, nrs, pt, d, construct, ord,
@@ -3879,8 +3834,7 @@ InstallMethod( TableOfMarksDihedral,
 ##
 InstallMethod( TableOfMarksFrobenius,
     "tom of a Frobenius group",
-    true,
-    [ IsPosInt, IsPosInt ], 0,
+    [ IsPosInt, IsPosInt ],
     function( p, q )
 
     local tom, classNames,marks, subs, normalizers,

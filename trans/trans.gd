@@ -32,3 +32,6 @@ DeclareGlobalFunction("TransitiveGroup");
 ##  library of transitive groups. The function returns `fail' if <deg> is
 ##  beyond the range of the library.
 DeclareGlobalFunction("NrTransitiveGroups");
+
+DeclareGlobalVariable( "TRANSCOMBCACHE", "combinations cache" );
+DeclareGlobalVariable( "TRANSARRCACHE", "arrangements cache" );

@@ -21,7 +21,7 @@ Operations for *characters* (or, more general, *class functions*) are
 described in Chapter~"Class Functions".
 
 For a description of the {\GAP} library of character tables,
-see Chapter~"The Character Table Library".
+see the separate manual for this library.
 
 %%  The Character Theory in {\GAP} was designed and implemented by Thomas
 %%  Breuer.
@@ -33,13 +33,20 @@ see Chapter~"The Character Table Library".
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{History of Character Theory Stuff in GAP}
+
+This section still has to be written
+(by Thomas Breuer who promised to do this for GAP 4.3).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Creating Character Tables}
 
-\index{tables}%
-\index{character tables}%
-\index{library tables}%
-\index{character tables!access to}%                                      
-\index{character tables!calculate}%                                      
+\index{tables}
+\index{character tables}
+\index{library tables}
+\index{character tables!access to}
+\index{character tables!calculate}
 \index{character tables!of groups}
 
 \FileHeader[10]{ctbl}
@@ -119,9 +126,10 @@ The following few conventions should be noted.
     yet known.
 \item{-}
     For a stored class fusion, the image table is denoted by its `Identifier'
-    value (see~"Identifier");
+    value (see~"Identifier!for character tables");
     each library table has a unique identifier by which it can be accessed
-    (see~"Access to Library Character Tables"),
+    (see~"ctbllib:Access to Library Character Tables" in the manual for the
+    {\GAP} Character Table Library),
     tables constructed from groups get an identifier that is unique in the
     current {\GAP} session.
 \endlist
@@ -132,8 +140,8 @@ The following few conventions should be noted.
 
 \FileHeader[2]{ctbl}
 
-\Declaration{UnderlyingGroup}
-\Declaration{ConjugacyClasses}[ctbl]{for character tables}
+\Declaration{UnderlyingGroup}!{for character tables}
+\Declaration{ConjugacyClasses}[ctbl]!{for character tables}
 \Declaration{IdentificationOfConjugacyClasses}
 \beginexample
 gap> g:= SymmetricGroup( 4 );;
@@ -201,23 +209,28 @@ gap> CharacterDegrees( CharacterTable( "A5" ) mod 2 );
 \endexample
 
 \Declaration{Irr}
+
+In the following example we temporarily increase the line length limit from
+its default value 80 to 85 in order to get a nicer output format.
+
 \beginexample
 gap> Irr( SymmetricGroup( 4 ) );
-[ Character( CharacterTable ( Sym( [ 1 .. 4 ] )), [ 1, 1, 1, 1, 1 ] ), 
-  Character( CharacterTable ( Sym( [ 1 .. 4 ] )), [ 1, -1, 1, 1, -1 ] ), 
-  Character( CharacterTable ( Sym( [ 1 .. 4 ] )), [ 2, 0, 2, -1, 0 ] ), 
-  Character( CharacterTable ( Sym( [ 1 .. 4 ] )), [ 3, -1, -1, 0, 1 ] ), 
-  Character( CharacterTable ( Sym( [ 1 .. 4 ] )), [ 3, 1, -1, 0, -1 ] ) ]
+[ Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1, 1 ] ), 
+  Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, -1, 1, 1, -1 ] ), 
+  Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 2, 0, 2, -1, 0 ] ), 
+  Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 3, -1, -1, 0, 1 ] ), 
+  Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 3, 1, -1, 0, -1 ] ) ]
 gap> Irr( SymmetricGroup( 4 ), 2 );
 [ Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 1, 1 ] ), 
   Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 2, -1 ] ) ]
+gap> SizeScreen([ 85, ]);;
 gap> Irr( CharacterTable( "A5" ) );
 [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-  Character( CharacterTable( "A5" ), [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 
-     ] ), Character( CharacterTable( "A5" ), 
-    [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ), 
+  Character( CharacterTable( "A5" ), [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ), 
+  Character( CharacterTable( "A5" ), [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ), 
   Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
   Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ) ]
+gap> SizeScreen([ 80, ]);;
 gap> Irr( CharacterTable( "A5" ) mod 2 );
 [ Character( BrauerTable( "A5", 2 ), [ 1, 1, 1, 1 ] ), 
   Character( BrauerTable( "A5", 2 ), [ 2, -1, E(5)+E(5)^4, E(5)^2+E(5)^3 ] ), 
@@ -228,8 +241,8 @@ gap> Irr( CharacterTable( "A5" ) mod 2 );
 \Declaration{LinearCharacters}
 \beginexample
 gap> LinearCharacters( SymmetricGroup( 4 ) );
-[ Character( CharacterTable ( Sym( [ 1 .. 4 ] )), [ 1, 1, 1, 1, 1 ] ), 
-  Character( CharacterTable ( Sym( [ 1 .. 4 ] )), [ 1, -1, 1, 1, -1 ] ) ]
+[ Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1, 1 ] ), 
+  Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, -1, 1, 1, -1 ] ) ]
 \endexample
 
 \Declaration{OrdinaryCharacterTable}
@@ -245,7 +258,7 @@ true
 \FileHeader[5]{ctbl}
 \beginexample
 gap> tables:= [ CharacterTable( CyclicGroup( 3 ) ),
->               CharacterTable( SymmetricGroup( 4 ) ), 
+>               CharacterTable( SymmetricGroup( 4 ) ),
 >               CharacterTable( AlternatingGroup( 5 ) ) ];;
 gap> List( tables, AbelianInvariants );
 [ [ 3 ], [ 2 ], [  ] ]
@@ -323,7 +336,7 @@ gap> tbl.2a;
 2
 \endexample
 
-\Declaration{Identifier}
+\Declaration{Identifier}!{for character tables}
 \beginexample
 gap> Identifier( CharacterTable( "A5" ) );
 "A5"
@@ -372,7 +385,7 @@ gap> ClassRoots( CharacterTable( "Cyclic", 6 ) );
 
 \Declaration{ClassPositionsOfNormalSubgroups}
 \Declaration{ClassPositionsOfAgemo}
-\Declaration{ClassPositionsOfCentre}[ctbl]
+\Declaration{ClassPositionsOfCentre}[ctbl]!{for character tables}
 \Declaration{ClassPositionsOfDirectProductDecompositions}
 \Declaration{ClassPositionsOfDerivedSubgroup}
 \Declaration{ClassPositionsOfElementaryAbelianSeries}
@@ -533,7 +546,7 @@ gap> NrPolyhedralSubgroups( tbl, 2, 2, 4 );
 rec( number := 21, type := "D8" )
 \endexample
 
-\Declaration{ClassMultiplicationCoefficient}[ctbl]
+\Declaration{ClassMultiplicationCoefficient}[ctbl]!{for character tables}
 \Declaration{ClassStructureCharTable}
 \Declaration{MatClassMultCoeffsCharTable}
 \beginexample
@@ -596,7 +609,6 @@ A5
        2P 3a 5b
        2
 X.4    +   1 -1
-
 \endexample
 
 \Declaration{PrintCharacterTable}
@@ -652,26 +664,32 @@ but explicitly calling one of them will *not* set the `Irr' value of $G$.
 \Declaration{IrrDixonSchneider}
 \Declaration{IrrConlon}
 \Declaration{IrrBaumClausen}
+
+In the following example we temporarily increase the line length limit from
+its default value 80 to 87 in order to get a nicer output format.
+
 \beginexample
 gap> g:= SL(2,3);;
+gap> SizeScreen([ 87, ]);;
 gap> irr1:= IrrDixonSchneider( g );
-[ Character(CharacterTable(SL(2,3)),[ 1, 1, 1, 1, 1, 1, 1 ]), 
-  Character(CharacterTable(SL(2,3)),[ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ]),
-  Character(CharacterTable(SL(2,3)),[ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ]), 
-  Character(CharacterTable(SL(2,3)),[ 2, 0, 1, -1, 1, -1, -2 ]), 
-  Character(CharacterTable(SL(2,3)),[ 2, 0, E(3), -E(3)^2,E(3)^2, -E(3), -2 ]),
-  Character(CharacterTable(SL(2,3)),[ 2, 0, E(3)^2, -E(3),E(3), -E(3)^2, -2 ]), 
-  Character(CharacterTable(SL(2,3)),[ 3, -1, 0, 0, 0, 0, 3 ]) ]
+[ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 2, -2, 1, 1, -1, -1, 0 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 2, -2, E(3), E(3)^2, -E(3)^2, -E(3), 0 ] ),
+  Character( CharacterTable( SL(2,3) ), [ 2, -2, E(3)^2, E(3), -E(3), -E(3)^2, 0 ] ),
+  Character( CharacterTable( SL(2,3) ), [ 3, 3, 0, 0, 0, 0, -1 ] ) ]
 gap> irr2:= IrrConlon( g );
-[ Character(CharacterTable(SL(2,3)),[ 1, 1, 1, 1, 1, 1, 1 ] ), 
-  Character(CharacterTable(SL(2,3)),[ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ] ), 
-  Character(CharacterTable(SL(2,3)),[ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ] ), 
-  Character(CharacterTable(SL(2,3)),[ 3, -1, 0, 0, 0, 0, 3 ] ) ]
+[ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 3, 3, 0, 0, 0, 0, -1 ] ) ]
 gap> irr3:= IrrBaumClausen( g );
-[ Character(CharacterTable(SL(2,3)),[ 1, 1, 1, 1, 1, 1, 1 ] ), 
-  Character(CharacterTable(SL(2,3)),[ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ] ), 
-  Character(CharacterTable(SL(2,3)),[ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ] ), 
-  Character(CharacterTable(SL(2,3)), [ 3, -1, 0, 0, 0, 0, 3 ] ) ]
+[ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 3, 3, 0, 0, 0, 0, -1 ] ) ]
+gap> SizeScreen([ 80, ]);;
 gap> chi:= irr2[4];;  HasTestMonomial( chi );
 true
 \endexample
@@ -703,6 +721,18 @@ gap>  List( gens, x -> x^repr[4] );
   [ [ 0, 1, 0 ], [ 0, 0, 1 ], [ 1, 0, 0 ] ] ]
 \endexample
 
+\Declaration{IrreducibleRepresentationsDixon}
+\beginexample
+gap> m11:=TransitiveGroup(11,6);
+M(11)
+gap> char:=First(Irr(m11),i->i[1]=10);
+Character( CharacterTable( M(11) ), [ 10, 2, 2, -1, 1, -1, -1, 0, 0, 0 ] )
+gap> hom:=IrreducibleRepresentationsDixon(m11,char);;
+gap> Order(m11.1*m11.2)=Order(Image(hom,m11.1)*Image(hom,m11.2)); 
+true
+gap> TraceMat(Image(hom,(1,6,11,9)(2,3,8,7)));    
+2
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Dixon-Schneider Algorithm}
@@ -738,6 +768,7 @@ information about the progress of splitting is printed.
 \Declaration{DixonInit}
 \Declaration{DixontinI}
 \Declaration{DixonSplit}
+\Declaration{BestSplittingMatrix}
 \Declaration{DxIncludeIrreducibles}
 \Declaration{SplitCharacters}
 \Declaration{IsDxLargeGroup}
@@ -795,7 +826,7 @@ After the initialisation, one structure matrix is evaluated,
 yielding smaller spaces and several irreducible characters.
 \beginexample
 gap> DixonSplit( d );
-#I  Matrix 7,Representative of Order 3,Centralizer: 5832
+#I  Matrix 19,Representative of Order 3,Centralizer: 5832
 #I  Dimensions: [ 1, 12, 2, 2, 4, 2, 1, 1, 1, 1, 1 ]
 #I  Two-dim space split
 #I  Two-dim space split
@@ -861,9 +892,9 @@ So we convert them to a list of values
 before feeding them in the machinery of the Dixon-algorithm.
 \beginexample
 gap> l.irreducibles[1];
-Character(CharacterTable(PSL(4,3)), [ 640,E(13)^7+E(13)^8+E(13)^11,
-E(13)+E(13)^3+E(13)^9,E(13)^2+E(13)^5+E(13)^6,E(13)^4+E(13)^10+E(13)^12,
-0,-8,0,0,-8,1,0,0,-8,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1 ])
+Character( CharacterTable( PSL(4,3) ), [ 640, 0, -8, 0, 0, 0, 0, 0, 0, 0, 0, 
+  0, E(13)^7+E(13)^8+E(13)^11, E(13)+E(13)^3+E(13)^9, E(13)^2+E(13)^5+E(13)^6,
+  E(13)^4+E(13)^10+E(13)^12, 0, 0, -8, 0, 0, 0, 0, -8, 1, 0, 1, 1, 0 ] )
 gap> l:=List(l.irreducibles,ValuesOfClassFunction);;
 gap> DxIncludeIrreducibles( d, l );
 gap> Length( d.irreducibles );
@@ -877,7 +908,7 @@ group.
 This makes them available also to the character table.
 \beginexample
 gap> irrs:= DixontinI( d );;
-#I  Total:1 matrices,[ 3 ]
+#I  Total:1 matrices,[ 19 ]
 gap> SetIrr(g,irrs);
 gap> Length(Irr(c));
 29
@@ -997,6 +1028,7 @@ gap> CharacterParameters( wr )[1];
 \Declaration{CharacterTableWithSortedClasses}
 \Declaration{SortedCharacterTable}
 \Declaration{ClassPermutation}
+
 \beginexample
 gap> tbl:= CharacterTable( "Symmetric", 4 );
 CharacterTable( "Sym(4)" )
@@ -1015,7 +1047,9 @@ X.2     3 -1 -1  .  1
 X.3     2  .  2 -1  .
 X.4     3  1 -1  . -1
 X.5     1  1  1  1  1
+\endexample
 
+\beginexample
 gap> srt1:= CharacterTableWithSortedCharacters( tbl );
 CharacterTable( "Sym(4)" )
 gap> List( Irr( srt1 ), Degree );
@@ -1047,7 +1081,9 @@ X.2     1  1  1 -1 -1
 X.3     2  2 -1  .  .
 X.4     3 -1  . -1  1
 X.5     3 -1  .  1 -1
+\endexample
 
+\beginexample
 gap> ClassPermutation( srt3 );
 (2,4,3)
 \endexample
@@ -1106,7 +1142,8 @@ rec( columns := (2,3), rows := (1,3,2), group := Group(()) )
 
 \Declaration{CASString}
 
-\index{CAS tables}\index{CAS format}\index{CAS}
+\atindex{CAS tables}{@CAS tables}\atindex{CAS format}{@CAS format}
+\atindex{CAS}{@CAS}
 \beginexample
 gap> Print( CASString( CharacterTable( "Cyclic", 2 ) ), "\n" );
 'C2'
@@ -1229,19 +1266,19 @@ gap> irr:= Irr( g );
   Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ), 
   Character( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] ) ]
 gap> kernel:= KernelOfCharacter( irr[3] );
-Group([ (1,2)(3,4), (1,3)(2,4) ])
+Group([ (1,2)(3,4), (1,4)(2,3) ])
 gap> HasNormalSubgroupClassesInfo( tbl );
 true
 gap> NormalSubgroupClassesInfo( tbl );
-rec( nsg := [ Group([ (1,2)(3,4), (1,3)(2,4) ]) ], nsgclasses := [ [ 1, 3 ] ],
+rec( nsg := [ Group([ (1,2)(3,4), (1,4)(2,3) ]) ], nsgclasses := [ [ 1, 3 ] ],
   nsgfactors := [  ] )
 gap> ClassPositionsOfNormalSubgroup( tbl, kernel );
 [ 1, 3 ]
 gap> FactorGroupNormalSubgroupClasses( tbl, [ 1, 3 ] );
-<pc group of size 6 with 2 generators>
+Group([ f1, f2 ])
 gap> NormalSubgroupClassesInfo( tbl );
-rec( nsg := [ Group([ (1,2)(3,4), (1,3)(2,4) ]) ], nsgclasses := [ [ 1, 3 ] ],
-  nsgfactors := [ <pc group of size 6 with 2 generators> ] )
+rec( nsg := [ Group([ (1,2)(3,4), (1,4)(2,3) ]) ], nsgclasses := [ [ 1, 3 ] ],
+  nsgfactors := [ Group([ f1, f2 ]) ] )
 \endexample
 
 

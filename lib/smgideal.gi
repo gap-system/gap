@@ -23,23 +23,25 @@ Revision.smgideal_gi :=
 ##
 #############################################################################
 InstallImmediateMethod(IsLeftSemigroupIdeal, 
-IsLeftMagmaIdeal and HasParentAttr and IsAttributeStoringRep, 0,
+IsLeftMagmaIdeal and HasLeftActingDomain and IsAttributeStoringRep, 0,
 function(I)
-	return HasIsSemigroup(Parent(I)) and IsSemigroup(Parent(I));
+	return HasIsSemigroup(LeftActingDomain(I)) and 
+		IsSemigroup(LeftActingDomain(I));
 end);
 
 
 InstallImmediateMethod(IsRightSemigroupIdeal, 
-IsRightMagmaIdeal and HasParentAttr and IsAttributeStoringRep, 0,
+IsRightMagmaIdeal and HasRightActingDomain and IsAttributeStoringRep, 0,
 function(I)
-	return HasIsSemigroup(Parent(I)) and IsSemigroup(Parent(I));
+	return HasIsSemigroup(RightActingDomain(I)) and 
+		IsSemigroup(RightActingDomain(I));
 end);
 
 
 InstallImmediateMethod(IsSemigroupIdeal, 
-IsMagmaIdeal and HasParentAttr and IsAttributeStoringRep, 0,
+IsMagmaIdeal and HasActingDomain and IsAttributeStoringRep, 0,
 function(I)
-	return HasIsSemigroup(Parent(I)) and IsSemigroup(Parent(I));
+	return HasIsSemigroup(ActingDomain(I)) and IsSemigroup(ActingDomain(I));
 end);
 
 
@@ -52,17 +54,6 @@ end);
 ##                                                                         ##
 #############################################################################
 #############################################################################
-
-#############################################################################
-##
-#R	IsRightSemigroupIdealEnumRep( <R> )
-##
-##	Representation for enumerators of right, left and two sided semigroup
-##	ideals.
-##
-DeclareRepresentation("IsSemigroupIdealEnumRep",
-	IsDomainEnumerator and IsAttributeStoringRep,
-	["currentlist", "gens", "nextelm", "orderedlist"]);
 
 #############################################################################
 ##
@@ -225,7 +216,7 @@ function(I)
 
 	local s, enum, enumdata;
 
-	s:= Parent(I);
+	s:= RightActingDomain(I);
 	if not HasGeneratorsOfSemigroup(s) then
 		TryNextMethod();
 	fi;
@@ -239,7 +230,7 @@ function(I)
 
 	enum:=  Objectify(NewType(FamilyObj(s), IsRightSemigroupIdealEnumerator
 	 and IsSemigroupIdealEnumRep), enumdata);
-	SetUnderlyingCollection( enum, I);
+      	SetUnderlyingCollection( enum, I);
 	return enum;
 end);
 
@@ -255,7 +246,7 @@ function(I)
 
 	local s, enum, enumdata;
 
-	s:= Parent(I);
+	s:= LeftActingDomain(I);
 	if not HasGeneratorsOfSemigroup(s) then
 		TryNextMethod();
 	fi;
@@ -285,7 +276,7 @@ function(I)
 
 	local s, enum, enumdata;
 
-	s:= Parent(I);
+	s:= ActingDomain(I);
 	if not HasGeneratorsOfSemigroup(s) then
 		TryNextMethod();
 	fi;
@@ -413,6 +404,88 @@ function(enum, n)
 	return pair[1];
 end);
 
+#############################################################################
+#############################################################################
+##
+##  The following Length and \in methods are needed because of an
+##  infinite recursion which is caused by the method 
+##  Size  "for a collection" calling 
+##  Length "for domain enumerator with underlying collection"
+##  which in turn calls Size "for a collection" for the underlying collection.
+##  This sets up the recursion.
+##
+##  The methods below insure we never get into this infinite recursion
+##  with Semigroup enumerators.
+##
+##  Example:
+##
+##  f:=FreeSemigroup("a","b","c");
+##  x:=GeneratorsOfSemigroup(f);
+##  a:=x[1];;b:=x[2];;c:=x[3];;
+##  r:= [ [a*b,b*a],[a*c,c*a],[b*c,c*b],[a*a,a],[b*b,b],[c*c,c] ];
+##  s := f/r;
+##  Size(s);
+##
+##  recursion depth trap (5000)
+##  at
+##  return Size( UnderlyingCollection( enum ) );
+##  Length( Enumerator( C ) ) called from
+##  Size( UnderlyingCollection( enum ) ) called from
+##  Length( Enumerator( C ) ) called from
+##  Size( UnderlyingCollection( enum ) ) called from
+##  Length( Enumerator( C ) ) called from
+##
+##  
+#############################################################################
+##
+#M  Length(<semigroupenum>)
+##                
+##  Find the length of the enumerator of a semigroup ideal enumerator.
+##
+InstallMethod( Length, "for a semigroup ideal enumerator", true,
+        [IsSemigroupIdealEnumRep],0,
+    function(e)
+        local n;
+        n:=1;
+
+        while IsBound(e[n]) do
+            n := n+1;
+        od;
+        return n-1;
+    end);
+
+#############################################################################
+##
+#M  \in (obj, semigroupenum) 
+##
+##  Needed only for infinite semigroups which do not have their own \in 
+##  method e.g. finitely presented semigroups.
+##  For example a semigroup of matrices over a infinite domain. 
+##  
+##  m := [[2,3],[4,5]];
+##  s := Semigroup(m);
+##  [[2,3],[4,5]] in s;
+##
+##  Without the \in method below we would use the default case which 
+##  implicitly requires the Length of the semigroup to be computed never
+##  terminating. 
+## 
+InstallMethod( \in, "for a semigroup ideal emunerator", true,
+        [IsObject, IsSemigroupIdealEnumRep],0,
+    function(obj, enum)
+        local i;
+
+        i := 1;
+        while IsBound(enum[i]) do
+            if obj = enum[i] then 
+                return true;
+            fi; 
+            i := i +1;
+        od;
+        return false; 
+    end);
+#############################################################################
+#############################################################################
 
 #############################################################################
 ##

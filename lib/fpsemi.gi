@@ -36,6 +36,18 @@ InstallMethod( UnderlyingElement,
     0,
     obj -> obj![1] );
 
+#############################################################################
+##
+#M  FpSemigroupOfElementOfFpSemigroup( <elm> )
+##
+##  returns the fp semigroup to which <elm> belongs to
+##
+InstallMethod( FpSemigroupOfElementOfFpSemigroup,
+	"for an element of an fp semigroup",
+	true,
+	[IsElementOfFpSemigroup],
+	0,
+	elm -> CollectionsFamily(FamilyObj(elm))!.wholeSemigroup);
 
 #############################################################################
 ##
@@ -96,19 +108,35 @@ InstallMethod( \=,
 ##
 #M  PrintObj( <elm> )
 ##
-InstallMethod( PrintObj,
-    "for an f.p. semigroup element",
-    true,
-    [ IsElementOfFpSemigroup],
-    0,
-    function( elm )
-      PrintObj(elm![1]);
-    end );
+InstallMethod( PrintObj, "for an f.p. semigroup element",
+    true, [ IsElementOfFpSemigroup], 0,
+function( elm )
+  PrintObj(elm![1]);
+end );
+
+#############################################################################
+##
+#M  String( <elm> )
+##
+InstallMethod( String, "for an f.p. semigroup element",
+    true, [ IsElementOfFpSemigroup], 0,
+function( elm )
+  return String(elm![1]);
+end );
+
+#############################################################################
+##
+#M FpGrpMonSmgOfFpGrpMonSmgElement(<elm>)
+##
+InstallMethod(FpGrpMonSmgOfFpGrpMonSmgElement,
+  "for an element of an fp semigroup", true,
+  [IsElementOfFpSemigroup], 0,
+  x -> CollectionsFamily(FamilyObj(x))!.wholeSemigroup);
+
 
 #############################################################################
 ##
 #M  FactorFreeSemigroupByRelations(<F>,<rels>) .. Create an FpSemigroup
-#M  FactorFreeMonoidByRelations(<F>,<rels>) .. Create an FpMonoid
 ##
 ##  Note: If the semigroup has fewer relations than generators, 
 ##  then the semigroup is certainly infinite.
@@ -159,97 +187,6 @@ function( F, rels )
     return S;
 end);
 
-InstallGlobalFunction(FactorFreeMonoidByRelations,
-function( fm, rels )
-
-	local
-			fs, 				# free semigroup preimage of the free monoid
-			fp,					# the fp semigroup resulting
-			idgen, 			# free semigroup generator corresponding to id of monoid
-			g, 					# a generator
-			i, 					# an integer
-			semirel,		# A monoid relation converted into a semigroup relation
-			rel,				# a monoid relation 
-			newrels,		# the relations for a free monoid as a semigroup
-			semigroup_gens,	# generators of the free semigroup
-			monword2semiword;	# word in the free monoid is mapped to its preimage
-
-	################################################
-	# monword2semiword
-	# Change a word in the free monoid into a word
-	# in the free semigroup. Just increment the generators
-	# by one to shift past the identity generator
-	################################################
-	monword2semiword := function(idgen, w)
-		local
-				wlist, 		# external rep of the word
-				i;				# loop variable
-
-		wlist := ShallowCopy(ExtRepOfObj(w));
-
-		if Length(wlist) = 0 then # it is the identity
-			return idgen; 
-		fi;
-
-		for i in [1 .. Length(wlist)/2] do
-			wlist[2*i-1] := wlist[2*i-1] + 1;
-		od;
-		return ObjByExtRep(FamilyObj(idgen), wlist);
-	end;
-	
-
-	###############################################
-	#
-	#  function proper
-	#
-
-	# Check that the relations are all lists of length 2
-	for rel in rels do
-		if Length(rel) <> 2 then
-			Error("A relation should be a list of length 2");
-		fi;
-	od;
-
-	# First create the free semigroup fs
-	# This involves making a new set of generators ...
-
-	# the identity is always the first
-
-	fs := FreeSemigroup(List( Set(GeneratorsOfSemigroup(fm)), x->String(x)));
-	# the call to Set ensures that the identity comes first.
-
-	semigroup_gens := GeneratorsOfSemigroup(fs);
-	idgen := semigroup_gens[1];
-
-
-	# ... and relations from the old one.
-	newrels := [[idgen*idgen,idgen]];
-	for i in [2 .. Length(semigroup_gens)] do
-		g := semigroup_gens[i];
-		Add(newrels, [idgen*g, g]);
-		Add(newrels, [g*idgen, g]);
-	od;
-
-	# Now convert the relations over the monoid generators 
-	# into relations over the semigroup generators
-	# and add them to the newrels
-	for rel in rels do
-			semirel := [monword2semiword(idgen, rel[1]),
-				monword2semiword(idgen, rel[2])];
-			Add(newrels, semirel);
-	od;
-
-	# finally create the fp semigroup
-	fp:=FactorFreeSemigroupByRelations(fs,newrels);
-
-	# the first generator of fp is a multiplicative neutral element for fp
-	SetMultiplicativeNeutralElement(fp,GeneratorsOfSemigroup(fp)[1]);
-
-	return fp;
-
-end);
-
-
 #############################################################################
 ##
 #M  HomomorphismFactorSemigroup(<F>, <C> ) 
@@ -272,29 +209,6 @@ function(s, c)
 	return MagmaHomomorphismByFunctionNC(s, fp, 
 		x->ElementOfFpSemigroup(ElementsFamily(FamilyObj(fp)),x) );
 	
-end);
-
-#############################################################################
-##
-#M  HomomorphismFactorSemigroup(<F>, <C> ) 
-##
-##  for free monoid and congruence 
-##
-InstallMethod(HomomorphismFactorSemigroup, 
-    "for a free semigroup and a congruence",
-    true,
-    [ IsFreeMonoid, IsSemigroupCongruence ],
-    0,
-function(s, c)
-	local
-		fp;			# the semigroup under construction
-
-	if not s = Source(c) then
-		TryNextMethod();
-	fi;
-	fp := FactorFreeMonoidByRelations(s, GeneratingPairsOfMagmaCongruence(c));
-	return MagmaHomomorphismByFunctionNC(s, fp, 
-		x->ElementOfFpSemigroup(ElementsFamily(FamilyObj(fp)),x) );
 end);
 
 #############################################################################

@@ -20,14 +20,14 @@ local s,c,mp,o,i,step;
   c:=[G];
   repeat
     mp:=MovedPoints(s);
-    o:=ShallowCopy(Orbits(s,mp));
+    o:=ShallowCopy(OrbitsDomain(s,mp));
     Sort(o,function(a,b) return Length(a)<Length(b);end);
     i:=1;
     step:=false;
     while i<=Length(o) and step=false do
       if not IsTransitive(U,o[i]) then
 	Info(InfoCoset,2,"AC: orbit");
-	o:=ShallowCopy(Orbits(U,o[i]));
+	o:=ShallowCopy(OrbitsDomain(U,o[i]));
 	Sort(o,function(a,b) return Length(a)<Length(b);end);
 	s:=Stabilizer(s,Set(o[1]),OnSets);
 	step:=true;
@@ -45,6 +45,9 @@ local s,c,mp,o,i,step;
   until step=false or Index(s,U)=1; # we could not refine better
   if Index(s,U)>1 then
     Add(c,U);
+  fi;
+  if InfoLevel(InfoCoset)>1 then
+    Print("Indices",List([1..Length(c)-1],i->Index(c[i],c[i+1])),"\n");
   fi;
   return RefinedChain(G,Reversed(c));
 end);

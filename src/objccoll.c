@@ -505,6 +505,7 @@ Int C8Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
     return SC_NUMBER_RWS_GENERATORS(sc);
 }
 #undef SC_PUSH_WORD
+#undef SC_PUSH_GEN
 #undef SC_POP_WORD
 
 /****************************************************************************
@@ -965,6 +966,7 @@ Int C16Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
     return SC_NUMBER_RWS_GENERATORS(sc);
 }
 #undef SC_PUSH_WORD
+#undef SC_PUSH_GEN
 #undef SC_POP_WORD
 
 /****************************************************************************
@@ -1425,6 +1427,7 @@ Int C32Bits_CombiCollectWord ( Obj sc, Obj vv, Obj w )
     return SC_NUMBER_RWS_GENERATORS(sc);
 }
 #undef SC_PUSH_WORD
+#undef SC_PUSH_GEN
 #undef SC_POP_WORD
 
 

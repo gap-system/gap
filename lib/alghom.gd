@@ -38,7 +38,7 @@ Revision.alghom_gd :=
 ##  For constructing a linear map that is not
 ##  necessarily multiplicative, we refer to `LeftModuleHomomorphismByImages'
 ##  ("ref:leftmodulehomomorphismbyimages").
-##  
+##
 DeclareOperation( "AlgebraGeneralMappingByImages",
     [ IsFLMLOR, IsFLMLOR, IsHomogeneousList, IsHomogeneousList ] );
 
@@ -160,8 +160,8 @@ DeclareOperation( "NaturalHomomorphismByIdeal",
 ##
 ##  `OperationAlgebraHomomorphism' returns an algebra homomorphism from the
 ##  $F$-algebra <A> into a matrix algebra over $F$ that describes the
-##  $F$-linear action of <A> on the basis <B> of a free left module 
-##  respectively on the free left module <V> (in which case some basis of <V> 
+##  $F$-linear action of <A> on the basis <B> of a free left module
+##  respectively on the free left module <V> (in which case some basis of <V>
 ##  is chosen), via the operation <opr>.
 ##
 ##  The homomorphism need not be surjective.
@@ -225,6 +225,25 @@ DeclareSynonymAttr( "IsomorphismMatrixAlgebra", IsomorphismMatrixFLMLOR );
 
 #############################################################################
 ##
+#A  IsomorphismSCAlgebra( <B> )
+#A  IsomorphismSCAlgebra( <A> )
+##
+##  For a basis <B> of an algebra $A$, say, `IsomorphismSCAlgebra' returns an
+##  algebra isomorphism from $A$ to an algebra $S$ given by structure
+##  constants (see~"Constructing Algebras by Structure Constants"),
+##  such that the canonical basis of $S$ is the image of <B>.
+##
+##  For an algebra <A>, `IsomorphismSCAlgebra' chooses a basis of <A> and
+##  returns the `IsomorphismSCAlgebra' value for that basis.
+##
+DeclareAttribute( "IsomorphismSCFLMLOR", IsBasis );
+DeclareAttribute( "IsomorphismSCFLMLOR", IsFLMLOR );
+
+DeclareSynonymAttr( "IsomorphismSCAlgebra", IsomorphismSCFLMLOR );
+
+
+#############################################################################
+##
 #O  RepresentativeLinearOperation( <A>, <v>, <w>, <opr> )
 ##
 ##  is an element of the algebra <A> that maps the vector <v>
@@ -240,5 +259,5 @@ DeclareOperation( "RepresentativeLinearOperation",
 
 #############################################################################
 ##
-#E  alghom.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

@@ -49,7 +49,7 @@
 %F  FrontMatter . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
 %%
 \FrontMatter
-\immediate\write\citeout{\bs bibdata{mrabbrev,../manual}}
+\immediate\write\citeout{\bs bibdata{../mrabbrev,../manual}}
 \input ../ref/copyrigh
 %
 %
@@ -65,11 +65,9 @@
 \Input{quogphom}
 \Input{gptransv}
 \Input{grpchain}
-%
-\Input{iostream}
 
 % create chapter index entry for copyright
-\PseudoInput{copyrigh}{Copyright}
+\PseudoInput{../ref/copyrigh}{Copyright}{Copyright Notice}
 
 % fill doublepage before appendix
 \ifodd\pageno\else\null\vfill\eject\headlinefalse\fi

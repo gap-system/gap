@@ -152,15 +152,15 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
     Print(" ) ... end");
 end);
 
-InstallMethod( ViewObj, "for an operation", true, [IsOperation], 0,
-        function ( op )
+    
+BIND_GLOBAL( "PRINT_OPERATION",    function ( op )
     Print("<Operation \"",NAME_FUNC(op),"\">");
-end);
-
-
+         end);  
+    
+    InstallMethod( ViewObj, "for an operation", true, [IsOperation], 0,
+        PRINT_OPERATION);
 
 #############################################################################
 ##
-
 #E  function.g	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

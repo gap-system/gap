@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  rwssmg.gd           GAP library          										Isabel Araujo
+#W  rwssmg.gd           GAP library                             Isabel Araujo
 ##
 #H  @(#)$Id$
 ##
@@ -13,42 +13,52 @@ Revision.rwssmg_gd :=
     "@(#)$Id$";
 
 
-#############################################################################
-##
-#A  SemigroupOfRewritingSystem( <rws> )
-##
-##  returns the semigroup over which <rws> is
-##  a rewriting system
-##
-DeclareAttribute("SemigroupOfRewritingSystem",IsRewritingSystem and 
-IsBuiltFromSemigroup);
-
-
 ############################################################################
 ##
 #A  ReducedConfluentRewritingSystem( <S> )
-#A  ReducedConfluentRewritingSystem( <S> , <lessthanorequal> )
+#A  ReducedConfluentRewritingSystem( <S> , <ordering> )
 ##
-##  returns a reduced confluent rewriting system of the finitely presented  semigroup
-##  <S> with respect to the lexicorgraphic ordering on words.
+##  in the first form returns a reduced confluent rewriting system 
+##  of the finitely presented semigroup or monoid <S> with respect 
+##  to the length plus lexicographic ordering on words (also
+##  called the shortlex ordering; for the definition see for example
+##  Sims \cite{Sims94}).
 ##
-##  In the second form it returns a reduced confluent rewriting system of the 
-##  finitely presented  semigroup <S> with respect to the
-##  reduction ordering given by <lessthanorequal>
-##  (<lessthanorequal>(<a>,<b>) returns true iff <a> is less than  <b> in the order
-##  corresponding to <lessthanorequal>).
+##  In the second form it returns a reduced confluent rewriting system of
+##  the finitely presented semigroup or monoid <S> with respect to the 
+##  reduction ordering <ordering> (see "Orderings"). 
 ##
-##  Note that, in this case, the object returned is an immutable 
-##  rewriting system. This is so because once we have a confluent
-##	rewriting system for a finitely presented semigroup we do not want
-##	to allow it to change (it was most probably very time consuming to
-##  get it in the first place). Furthermore, this is also
-##  an attribute storing object.
-##  Also this might not terminate. In particular, if the semigroup
-##  <S> does not have a solvable word problem then it this will
+##  Notice that this might not terminate. In particular, if the semigroup or 
+##  monoid <S> does not have a solvable word problem then it this will
 ##  certainly never end.
+##  Also, in this case, the object returned is an immutable 
+##  rewriting system, because once we have a confluent
+##  rewriting system for a finitely presented semigroup or monoid we do 
+##  not want to allow it to change (as it was most probably very time 
+##  consuming to get it in the first place). Furthermore, this is also
+##  an attribute storing object (see "Representation").
 ##
-DeclareAttribute("ReducedConfluentRewritingSystem",IsFpSemigroup);
+DeclareAttribute("ReducedConfluentRewritingSystem",IsSemigroup);
+
+#############################################################################
+##
+#A  FreeMonoidOfRewritingSystem(<rws>)
+##
+##  returns the free monoid over which <rws> is
+##  a rewriting system
+##
+DeclareAttribute("FreeMonoidOfRewritingSystem",
+  IsRewritingSystem);
+
+#############################################################################
+##
+#A  FamilyForRewritingSystem(<rws>)
+##
+##  returns the family of words over which <rws> is
+##  a rewriting system
+##
+DeclareAttribute("FamilyForRewritingSystem",
+  IsRewritingSystem);
 
 
 #############################################################################
@@ -60,6 +70,19 @@ DeclareAttribute("ReducedConfluentRewritingSystem",IsFpSemigroup);
 ##
 DeclareAttribute("FreeSemigroupOfRewritingSystem",
   IsRewritingSystem);
+
+#############################################################################
+##
+#F  ReduceLetterRepWordsRewSys (<tzrules>,<w>)
+##
+##  w is a word of a free monoid or a free semigroup in tz represenattion,
+##  tzrules are rules in tzrepresentation. This function returns the reduced
+##  word in tz representation.
+##
+##  All lists in <tzrules> as well as <w> must be plain lists, the entries
+##  must be small integers. (The behaviour otherwise is unpredictable.)
+##
+DeclareGlobalFunction("ReduceLetterRepWordsRewSys");
 
 
 #############################################################################

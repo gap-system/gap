@@ -165,7 +165,7 @@ In this situation one has to install a method *without* the additional
 property (so it can be tried even if the property is not yet known) and at high
 rank (so it will be used before other methods). The first thing to do in the
 actual function then is to test the property and to bail out with
-`TryNextMethod()' if it turns out to be `false'.
+`TryNextMethod()' (see~"TryNextMethod") if it turns out to be `false'.
 
 The above `Exponent' example thus would become:
 %T The above example mentioned nilpotency ...
@@ -225,34 +225,37 @@ second argument gets specified only as positive integer:
 \begintt
 SylowNormalizer:=NewOperation("SylowNormalizer",[IsGroup,IsPosInt]);
 \endtt
-(Note that we are using `NewOperation' instead of `DeclareOperation' as used
-in the library. The only difference is that `DeclareOperation' saves typing,
-but protects the variables against overwriting. When testing code (when one
-probably wants to change things) this might be restricting. If this does not
-bother you, you can use
+(Note that we are using `NewOperation' (see~"NewOperation") instead of 
+`DeclareOperation' (see~"DeclareOperation") as used in the library.
+The only difference other than that `DeclareOperation' saves some typing,
+is that it also protects the variables against overwriting. 
+When testing code (when one probably wants to change things) 
+this might be restricting. If this does not bother you, you can use
 \begintt
 DeclareOperation("SylowNormalizer",[IsGroup,IsPosInt]);
 \endtt
 as well.)
 
 The filters `IsGroup' and `IsPosInt' given are *only* used to test that
-`InstallMethod' installes methods with suitable arguments and will be
-completely ignored when using `InstallOtherMethod'. Technically one could
+`InstallMethod' (see~"InstallMethod") installs methods with suitable 
+arguments and will be completely ignored when using `InstallOtherMethod'
+(see~"InstallOtherMethod"). Technically one could
 therefore simply use `IsObject' for all arguments in the declaration. The
 main point of using more specific filters here is to help documenting with
 which arguments the function is to be used (so for example a call
 `SylowNormalizer(5,G)' would be invalid).
 
 Of course initially there are no useful methods for newly declared
-operations, but you will have to write and install them yourself.
+operations; you will have to write and install them yourself.
 
 If the operation only takes one argument and has reproducible results
 without side effects, it might be worth declaring it as an attribute
-instead.
+instead; see the next section ("Adding a new Attribute").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Adding a new Attribute}
 
+\indextt{NewAttribute!example}\indextt{DeclareAttribute!example}
 Now we look at an example of how to add a new attribute. As example we
 consider the set of all primes that divide the size of a group.
 
@@ -260,13 +263,15 @@ First we have to declare the attribute:
 \begintt
 PrimesDividingSize:=NewAttribute("PrimesDividingSize",IsGroup);
 \endtt
+(See~"NewAttribute").
 This implicitly declares attribute tester and setter, it is convenient
 however to assign these to variables as well:
 \begintt
 HasPrimesDividingSize:=Tester(PrimesDividingSize);
 SetPrimesDividingSize:=Setter(PrimesDividingSize);
 \endtt
-Alternatively, there is a declaration command that executes all three
+Alternatively, there is a declaration command 
+`DeclareAttribute' (see~"DeclareAttribute") that executes all three
 assignments simultaneously and protects the variables against overwriting:
 \begintt
 DeclareAttribute("PrimesDividingSize",IsGroup);
@@ -286,19 +291,22 @@ function(G)
   else return Set(Factors(Size(G)));fi;
 end);
 \endtt
+\indextt{IsAttributeStoringRep}
 The function installed *must* always return a value (or call
-`TryNextMethod'. If the object is in the represenattion
+`TryNextMethod'; see~"TryNextMethod"). If the object is in the representation
 `IsAttributeStoringRep' this return value once computed will be automatically
 stored and retrieved if the attribute is called a second time. We don't have
 to call setter or tester ourselves. (This storage happens by {\GAP}
 internally calling the attribute setter with the return value of the
-function. Retreival is by a high-ranking method which is installed under the
+function. Retrieval is by a high-ranking method which is installed under the
 condition `HasPrimesDividingSize'. This method was installed automatically
 when the attribute was declared.)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Adding a new Representation}
 
+\indextt{NewRepresentation!example}\indextt{DeclareRepresentation!example}
+\indextt{IsComponentObjectRep}\indextt{IsAttributeStoringRep}
 Next, we look at the implementation of a new representation of existing
 objects. In most cases we want to implement this representation only for
 efficiency reasons while keeping all the existing functionality.
@@ -461,7 +469,7 @@ The set of objects which is defined to be a (\GAP)-category does
 not need to be a category in the mathematical sense, vice versa not every
 mathematical category is declared as a (\GAP) category.)
 \enditems
-Eventually the coice between category and property often  becomes a matter of
+Eventually the choice between category and property often  becomes a matter of
 taste or style.
 
 Sometimes there is even a third possiblity (if you have {\GAP} 3 experience
@@ -547,6 +555,7 @@ words in cosets.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Example: Groups with a decomposition as semidirect product}
 
+\indextt{DeclareAttribute!example}
 The third example is groups which have a (nontrivial) decomposition as a
 semidirect product. If this information has been found out, we want to be
 able to use it in algorithms. (Thus we do not only need the fact *that*
@@ -559,9 +568,9 @@ Instead we simply declare an attribute `SemidirectProductDecomposition' for
 groups.
 (again, in this manual we don't go in the details of how such an
 decomposition would look like).
-\beginexample
+\begintt
 DeclareAttribute("SemidirectProductDecomposition",IsGroup);
-\endexample
+\endtt
 If a decomposition has been found, it can be stored in a group using
 `SetSemidirectProductDecomposition'. (At the moment all groups in {\GAP} are
 attribute storing.)

@@ -2,9 +2,13 @@
 #W  make_doc						     Alexander Hulpke
 ##  this shell script TeXs the documentation 
 ##
-echo "Cleaning auxilliary files"
+echo "Cleaning auxiliary files"
 
 rm -f {ref,tut,prg,ext,new}/manual.{toc,lab,ind,dvi,log,ps,pdf}
+
+# ensure that .tex files built from .msk files are re-generated
+# ... in case there have been changes to .gd files etc.
+rm -f build/._*
 
 echo "TeXing documentation"
 # build the ref. manual
@@ -36,6 +40,8 @@ echo "TeXing documentation"
 tex fullindex
 pdftex fullindex
 dvips -D300 fullindex -o fullindex.ps
+
+(cd ../pkg/ctbllib; make manual)
 
 # The HTML versions
 cd htm

@@ -84,10 +84,14 @@ local n, tupfams, freepos, len, i, fam, tuplespos,
       Info( InfoTuples, 1, "Created new tuples family, length ", n );
       filter:=IsTuple;
       filter2:=IsTupleFamily;
-      if ForAll(famlist,i->CanEasilySortElements(i)) then
+      # inherit positive element comparison from the families but do not
+      # trigger the computation. 
+      if ForAll(famlist,i->HasCanEasilyCompareElements(i) and 
+       CanEasilySortElements(i)) then
         filter:=filter and CanEasilySortElements;
         filter2:=filter2 and CanEasilySortElements;
-      elif ForAll(famlist,i->CanEasilyCompareElements(i)) then
+      elif ForAll(famlist,i->HasCanEasilyCompareElements(i) and 
+        CanEasilyCompareElements(i)) then
         filter:=filter and CanEasilyCompareElements;
         filter2:=filter2 and CanEasilyCompareElements;
       fi;
@@ -176,8 +180,7 @@ end);
 ##
 ##
 
-InstallMethod( \<,
-    "for two tuples",
+InstallMethod( \<, "for two tuples",
     IsIdenticalObj, [ IsTuple, IsTuple ], 0,
         function (tuple1, tuple2) 
     local i;
@@ -322,6 +325,35 @@ InstallMethod( \^,
 function( elm, x )
     return Tuple( List( elm, y -> y^x ) );
 end);
+
+##############################################################################
+##
+#M  AdditiveInverse( <tuple> )
+##
+InstallMethod( AdditiveInverseOp, "for a tuple", true, [ IsTuple ], 0,
+function( elm )
+  return Tuple( List( elm, AdditiveInverse ) );
+end );
+
+##############################################################################
+##
+#M  Zero( <tuple> )
+##
+InstallMethod( ZeroOp, "for a tuple", true, [ IsTuple ], 0,
+function( elm )
+  return Tuple( List( elm, Zero ) );
+end);
+
+##############################################################################
+##
+#M  \+( <tuple>, <tuple> )
+##
+InstallMethod( \+, "for two tuples", true, [ IsTuple, IsTuple ], 0,
+function( elm1, elm2 )
+local n;
+  n := Length( elm1 );
+  return Tuple( List( [1..n], x -> elm1[x]+elm2[x] ) );
+end );
 
 
 #############################################################################

@@ -135,6 +135,36 @@ DeclareGlobalFunction( "PermCharInfo" );
 
 #############################################################################
 ##
+#F  PermCharInfoRelative( <tbl>, <tbl2>, <permchars> )
+##
+##  Let <tbl> and <tbl2> be the ordinary character tables of two groups $H$
+##  and $G$, respectively, where $H$ is of index $2$ in $G$,
+##  and <permchars> either the permutation character $(1_U)^G$,
+##  for a subgroup $U$ of $G$, or a list of such permutation characters.
+##  `PermCharInfoRelative' returns a record with the same components as
+##  `PermCharInfo' (see~"PermCharInfo"), the only exception is that the
+##  entries of the `ATLAS' component are names relative to <tbl>.
+##
+##  More precisely, the $i$-th entry of the `ATLAS' component is a string
+##  describing the decomposition of the $i$-th entry in <permchars>.
+##  The degrees and distinguishing letters of the constituents refer to
+##  the irreducibles of <tbl>, as follows.
+##  The two irreducible characters of <tbl2> of degree $N$, say, that extend
+##  the irreducible character $N `a'$ of <tbl> are denoted by $N `a'^+$ and
+##  $N `a'^-$.
+##  The irreducible character of <tbl2> of degree $2N$, say, whose
+##  restriction to <tbl> is the sum of the irreducible characters $N `a'$ and
+##  $N `b'$ is denoted as $N `ab'$.
+##  Multiplicities larger than $1$ of constituents are denoted by exponents.
+##
+##  (This format is useful mainly for multiplicity free permutation
+##  characters.)
+##
+DeclareGlobalFunction( "PermCharInfoRelative" );
+
+
+#############################################################################
+##
 #F  TestPerm1( <tbl>, <char> ) . . . . . . . . . . . . . . . .  test permchar
 #F  TestPerm2( <tbl>, <char> ) . . . . . . . . . . . . . . . .  test permchar
 #F  TestPerm3( <tbl>, <chars> )  . . . . . . . . . . . . . . . test permchars

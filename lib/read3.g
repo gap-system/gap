@@ -3,7 +3,6 @@
 #X  now read all the definition parts
 ##
 ReadLib( "tuples.gd"   );
-
 ReadLib( "rvecempt.gd" );
 
 ReadLib( "domain.gd"   );
@@ -69,6 +68,7 @@ ReadLib( "polyfinf.gd"  );
 ReadLib( "polyrat.gd"  );
 ReadLib( "polyconw.gd" );
 ReadLib( "algfld.gd"   );
+ReadLib( "meataxe.gd"  );
 
 ReadLib( "unknown.gd"  );
 
@@ -117,6 +117,7 @@ ReadLib( "pquot.gd" );
 ReadLib( "fampred.g"   );
 
 ReadLib( "oprt.gd"     );
+ReadLib( "partitio.gd" );
 ReadLib( "stbc.gd"     );
 ReadLib( "clas.gd"     );
 ReadLib( "clashom.gd"  );
@@ -133,18 +134,22 @@ ReadLib( "grppcext.gd");
 ReadLib( "grppcfp.gd");
 ReadLib( "randiso.gd");
 
+ReadLib( "schur.gd" );
+
 ReadLib( "grplatt.gd"  );
 ReadLib( "oprtglat.gd" );
 ReadLib( "grppclat.gd" );
 
 ReadLib( "grppcaut.gd" );
 
+ReadLib( "straight.gd");
+
 # files dealing with fp groups
 ReadLib( "grpfp.gd"    );
 ReadLib( "grpfree.gd"  );
 ReadLib( "sgpres.gd" );
 ReadLib( "tietze.gd" );
-
+ReadLib( "ghomfp.gd" );
 
 # files dealing with trees and hash tables
 ReadLib( "hash.gd"     );
@@ -154,6 +159,7 @@ ReadLib( "hash.gd"     );
 ReadLib( "dt.g" );
 
 
+ReadLib( "integer.gi"  ); # needed for CoefficientsQadic
 ReadLib( "list.gi"     ); # was too early
 ReadLib( "set.gi"      );
 ReadLib( "wpobj.gi"    );
@@ -176,11 +182,14 @@ ReadGrp( "perf.gd"     );
 ReadGrp( "suzuki.gd"   );
 ReadGrp( "imf.gd"      );
 
+
+ReadLib( "orders.gd"  );
+
 # files dealing with semigroups - second layer
-ReadLib( "inflist.gd"  );
 ReadLib( "trans.gd");
 ReadLib( "fastendo.gd");
 ReadLib( "fpsemi.gd");
+ReadLib( "fpmon.gd");
 ReadLib( "rwssmg.gd");
 ReadLib( "kbsemi.gd");
 ReadLib( "tcsemi.gd");
@@ -189,8 +198,22 @@ ReadLib( "semitran.gd");
 ReadLib( "reesmat.gd");
 ReadLib("semiquo.gd");
 
+# the help system
+ReadLib( "pager.gd"    );
+ReadLib( "helpbase.gd" );
+ReadLib( "helpview.gd" );
+ReadLib( "helpt2t.gd" );
+ReadLib( "helpdef.gd" );
+
+#X  files dealing with character tables and class functions
+# (this needs to be here for using `CharacterDegrees' in the library.)
+ReadLib( "ctbl.gd"     );
+
 # prototyping utilities
 ReadLib("proto.gd");
+
+ReadLib("other.gd");
+
 
 #############################################################################
 ##

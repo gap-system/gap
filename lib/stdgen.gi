@@ -195,6 +195,7 @@ InstallGlobalFunction( ScriptFromString, function( string )
     local gensnames,
           gensorder,
           lines,
+          nrlines,
           k,
           line,
           pos,
@@ -218,12 +219,13 @@ InstallGlobalFunction( ScriptFromString, function( string )
     gensnames:= [];
     gensorder:= [];
     lines:= SplitString( string, ",", " " );
+    nrlines:= Length( lines );
 
     # Loop over the lines.
     script:= [];
     nrgens:= 0;
     k:= 1;
-    while k <= Length( lines ) do
+    while k <= nrlines do
 
       line:= lines[k];
 
@@ -237,28 +239,40 @@ InstallGlobalFunction( ScriptFromString, function( string )
         # This entry belongs to a definition
         # (perhaps of an auxiliary element) via order.
         pos:= Position( line, '|', 1 );
-        if pos = fail or line[ pos+1 ] <> '=' then return fail; fi;
+        if pos = fail or line[ pos+1 ] <> '=' then
+          return fail;
+        fi;
         Add( gensnames, line{ [ 2 .. pos-1 ] } );
         int:= Int( line{ [ pos+2 .. Length( line ) ] } );
-        if int = fail then return fail; fi;
+        if int = fail then
+          return fail;
+        fi;
         Add( gensorder, int );
         len:= Length( gensnames );
         nrgens:= nrgens + 1;
 
         # Check whether this was an auxiliary element,
-        # and the next line defines a generator relative to this one.
-        if lines[ k+1 ][1] <> '|' and not '(' in lines[ k+1 ] then
+        # and the next line (if there is one)
+        # defines a generator relative to this one.
+        if k < nrlines and lines[ k+1 ][1] <> '|'
+                       and not '(' in lines[ k+1 ] then
 
           # This line belongs to a definition via a power.
           k:= k+1;
           line:= lines[k];
           pos:= Position( line, '^' );
-          if pos = fail then return fail; fi;
+          if pos = fail then
+            return fail;
+          fi;
           aux:= line{ [ 1 .. pos-1 ] };
-          if gensnames[ len ] <> aux then return fail; fi;
+          if gensnames[ len ] <> aux then
+            return fail;
+          fi;
           pos2:= Position( line, '=' );
           int:= Int( line{ [ pos+1 .. pos2-1 ] } );
-          if int = fail then return fail; fi;
+          if int = fail then
+            return fail;
+          fi;
           gensnames[ len ]:= line{ [ pos2+1 .. Length( line ) ] };
 
           # Add the definition to the script.
@@ -274,9 +288,13 @@ InstallGlobalFunction( ScriptFromString, function( string )
       else
 
         pos:= Position( line, '=' );
-        if pos = fail then return fail; fi;
+        if pos = fail then
+          return fail;
+        fi;
         int:= Int( line{ [ pos+1 .. Length( line ) ] } );
-        if int = fail then return fail; fi;
+        if int = fail then
+          return fail;
+        fi;
 
         # Check whether the line matches the first part of a function string.
         found:= false;
@@ -321,12 +339,20 @@ InstallGlobalFunction( ScriptFromString, function( string )
         if not found then
 
           # Check for a relation.
-          if line[1] <> '|' then return fail; fi;
+          if line[1] <> '|' then
+            return fail;
+          fi;
           pos:= Position( line, '=' );
-          if pos = fail then return fail; fi;
-          if line[ pos-1 ] <> '|' then return fail; fi;
+          if pos = fail then
+            return fail;
+          fi;
+          if line[ pos-1 ] <> '|' then
+            return fail;
+          fi;
           int:= Int( line{ [ pos+1 .. Length( line ) ] } );
-          if int = fail then return fail; fi;
+          if int = fail then
+            return fail;
+          fi;
           word:= [];
           if not StringToStraightLineProgram( line{ [ 2 .. pos-2 ] },
                                               gensnames, word ) then

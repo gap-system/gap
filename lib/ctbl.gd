@@ -113,7 +113,7 @@ Revision.ctbl_gd :=
 ##  For  example, the scalar product of two characters $\chi$, $\psi$ of $G$
 ##  given by
 ##  $$
-##     [\chi,\psi] = \frac{1}{|G|} \sum_{g\in G} \chi(g) \psi(g^{-1})
+##  [\chi,\psi] = \frac{1}{|G|} \sum_{g\in G} \chi(g) \psi(g^{-1})
 ##  $$
 ##  can be written as
 ##  \begintt
@@ -224,13 +224,13 @@ DeclareInfoClass( "InfoCharacterTable" );
 ##  A Brauer table is constructed from an ordinary table and stores this
 ##  table upon construction (see~"OrdinaryCharacterTable").
 ##
-##  Furthermore, `IsOrdinaryTable' and `IsBrauerTable' denote character
-##  tables that provide enough information to compute all power maps
-##  and irreducible characters (and in the case of Brauer tables to get the
-##  ordinary table),
-##  for example because the underlying group (see~"UnderlyingGroup") is known
-##  or because the table is a library table
-##  (see Chapter~"The Character Table Library").
+##  Furthermore,  `IsOrdinaryTable'  and  `IsBrauerTable'  denote   character
+##  tables that provide enough information to  compute  all  power  maps  and
+##  irreducible characters (and in the case  of  Brauer  tables  to  get  the
+##  ordinary   table),   for   example   because   the    underlying    group
+##  (see~"UnderlyingGroup!for character tables")  is  known  or  because  the
+##  table is a library table
+##  (see the manual of the {\GAP} Character Table Library).
 ##  We want to distinguish these tables from partially known ordinary tables
 ##  that cannot be asked for all power maps or all irreducible characters.
 ##
@@ -367,11 +367,11 @@ end );
 ##
 ##  3. The Interface between Character Tables and Groups
 #2
-##  For a character table with underlying group (see~"UnderlyingGroup"),
-##  the interface between table and group consists of three attribute values,
-##  namely the *group*, the *conjugacy classes* stored in the table
-##  (see `ConjugacyClasses' below)
-##  and the *identification* of the conjugacy classes of table and group
+##  For a character table  with  underlying  group  (see~"UnderlyingGroup!for
+##  character tables"), the interface between table  and  group  consists  of
+##  three attribute values,  namely  the  *group*,  the  *conjugacy  classes*
+##  stored  in   the   table   (see   `ConjugacyClasses'   below)   and   the
+##  *identification*  of  the  conjugacy   classes   of   table   and   group
 ##  (see~`IdentificationOfConjugacyClasses' below).
 ##
 ##  Character tables constructed from groups know these values upon
@@ -526,13 +526,22 @@ DeclareGlobalFunction( "ConnectGroupAndCharacterTable" );
 ##  \item{4.} symmetries of the table (see~"AutomorphismsOfTable").
 ##  \endlist
 ##
-##  If the optional argument <arec> is present then it must be a record.
-##  Its components describe additional information for the class
+##  If the optional argument <arec> is present then it must be a record
+##  whose components describe additional information for the class
 ##  identification.
-##  If $G$ is a permutation group or matrix group and the
-##  component `natchar' is bound in <arec> then its value is regarded as the
-##  list of values of the natural character (see~"NaturalCharacter") of <G>,
-##  w.r.t.~the ordering of classes in <tbl>.
+##  The following components are supported.
+##  \beginitems
+##  `natchar' &
+##      if $G$ is a permutation group or matrix group then the value of this
+##      component is regarded as the list of values of the natural character
+##      (see~"NaturalCharacter") of <G>,
+##      w.r.t.~the ordering of classes in <tbl>,
+##
+##  `bijection' &
+##      a list describing a partial bijection; the $i$-th entry, if bound,
+##      is the position of the $i$-th conjugacy class of <tbl> in the list
+##      <ccl>.
+##  \enditems
 ##
 DeclareOperation( "CompatibleConjugacyClasses",
     [ IsGroup, IsList, IsOrdinaryTable ] );
@@ -560,9 +569,9 @@ DeclareGlobalFunction( "CompatibleConjugacyClassesDefault" );
 ##
 ##  4. Operators for Character Tables
 #3
-##  \index{\*!for character tables}%
-##  \index{/!for character tables}%
-##  \index{mod!for character tables}%
+##  \indextt{\*!for character tables}
+##  \indextt{/!for character tables}
+##  \indextt{mod!for character tables}
 ##  \index{character tables!infix operators}
 ##
 ##  The following infix operators are defined for character tables.
@@ -576,7 +585,7 @@ DeclareGlobalFunction( "CompatibleConjugacyClassesDefault" );
 ##      the classes in the list <list> (see~"CharacterTableFactorGroup"),
 ##
 ##  `<tbl> mod <p>' &
-##      the <p>--modular Brauer character table corresponding to the ordinary
+##      the <p>-modular Brauer character table corresponding to the ordinary
 ##      character table <tbl> (see~"CharacterTable"),
 ##
 ##  `<tbl>.<name>' &
@@ -731,34 +740,48 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  and mean the same for a character table as for the group;
 ##  see the chapter about groups for the definition.
 ##  \beginlist
+##  \indextt{AbelianInvariants!for character tables}
 ##  \item{}
-##      `AbelianInvariants'\index{AbelianInvariants!for character tables}
+##      `AbelianInvariants'
+##  \indextt{CommutatorLength!for character tables}
 ##  \item{}
-##      `CommutatorLength'\index{CommutatorLength!for character tables}
+##      `CommutatorLength'
+##  \indextt{Exponent!for character tables}
 ##  \item{}
-##      `Exponent'\index{Exponent!for character tables}
+##      `Exponent'
+##  \indextt{IsAbelian!for character tables}
 ##  \item{}
-##      `IsAbelian'\index{IsAbelian!for character tables}
+##      `IsAbelian'
+##  \indextt{IsCyclic!for character tables}
 ##  \item{}
-##      `IsCyclic'\index{IsCyclic!for character tables}
+##      `IsCyclic'
+##  \indextt{IsFinite!for character tables}
 ##  \item{}
-##      `IsFinite'\index{IsFinite!for character tables}
+##      `IsFinite'
+##  \indextt{IsMonomial!for character tables}
 ##  \item{}
-##      `IsMonomial'\index{IsMonomial!for character tables}
+##      `IsMonomial'
+##  \indextt{IsNilpotent!for character tables}
 ##  \item{}
-##      `IsNilpotent'\index{IsNilpotent!for character tables}
+##      `IsNilpotent'
+##  \indextt{IsPerfect!for character tables}
 ##  \item{}
-##      `IsPerfect'\index{IsPerfect!for character tables}
+##      `IsPerfect'
+##  \indextt{IsSimple!for character tables}
 ##  \item{}
-##      `IsSimple'\index{IsSimple!for character tables}
+##      `IsSimple'
+##  \indextt{IsSolvable!for character tables}
 ##  \item{}
-##      `IsSolvable'\index{IsSolvable!for character tables}
+##      `IsSolvable'
+##  \indextt{IsSupersolvable!for character tables}
 ##  \item{}
-##      `IsSupersolvable'\index{IsSupersolvable!for character tables}
+##      `IsSupersolvable'
+##  \indextt{NrConjugacyClasses!for character tables}
 ##  \item{}
-##      `NrConjugacyClasses'\index{NrConjugacyClasses!for character tables}
+##      `NrConjugacyClasses'
+##  \indextt{Size!for character tables}
 ##  \item{}
-##      `Size'\index{Size!for character tables}
+##      `Size'
 ##  \endlist
 ##  These operations are mainly useful for selecting character tables with
 ##  certain properties, also for character tables without access to a group.
@@ -948,7 +971,9 @@ DeclareAttributeSuppCT( "UnderlyingCharacteristic",
 ##  The default method for `ClassNames' computes class names consisting of
 ##  the order of an element in the class and at least one distinguishing
 ##  letter.
-##  There is no default method for `CharacterNames'.
+##  The default method for `CharacterNames' returns the list
+##  $[ `\"X.1\"', `\"X.2\"', \ldots ]$, whose length is the number of
+##  irreducible characters of <tbl>.
 ##
 ##  The position of the class with name <name> in <tbl> can be accessed as
 ##  `<tbl>.<name>'.
@@ -957,11 +982,23 @@ DeclareAttributeSuppCT( "UnderlyingCharacteristic",
 ##  string `\"ATLAS\"', the class names returned obey the convention used in
 ##  Chapter~7, Section~5 of the {\ATLAS} of Finite Groups~\cite{CCN85}.
 ##
-DeclareAttribute( "ClassNames", IsNearlyCharacterTable );
+DeclareAttributeSuppCT( "ClassNames", IsNearlyCharacterTable,
+    [ "class" ] );
 
 DeclareOperation( "ClassNames", [ IsNearlyCharacterTable, IsString ] );
 
-DeclareAttribute( "CharacterNames", IsNearlyCharacterTable );
+DeclareAttributeSuppCT( "CharacterNames", IsNearlyCharacterTable,
+    [ "character" ] );
+
+
+#############################################################################
+##
+##  The following declaration is made here because several library functions
+##  have to be aware of the attribute values when constructing new tables,
+##  for example `CharacterTableDirectProduct'.
+##  The documentation, however, is referenced from the {\GAP} Character Table
+##  Library, hence the explicit reference in the text.
+##
 
 
 #############################################################################
@@ -982,7 +1019,8 @@ DeclareAttribute( "CharacterNames", IsNearlyCharacterTable );
 ##  parameters stored.
 ##
 ##  If <tbl> is a $p$-modular Brauer table such that class parameters are
-##  stored in the underlying ordinary table (see~"OrdinaryCharacterTable")
+##  stored in the underlying ordinary table
+##  (see~"ref:OrdinaryCharacterTable" in the {\GAP} Reference Manual)
 ##  of <tbl> then `ClassParameters' returns the sublist of class parameters
 ##  of the ordinary table, for $p$-regular classes.
 ##
@@ -1043,8 +1081,9 @@ InstallFlushableValue( LARGEST_IDENTIFIER_NUMBER, [ 0 ] );
 ##  is a mutable string with information about the character table <tbl>.
 ##  There is no default method to create an info text.
 ##
-##  Usual parts of the information are the origin of the table
-##  (see~"The Character Table Library"),
+##  This attribute is used mainly for library tables (see the manual of the
+##  {\GAP} Character Table Library).
+##  Usual parts of the information are the origin of the table,
 ##  tests it has passed (`1.o.r.' for the test of orthogonality,
 ##  `pow[<p>]' for the construction of the <p>-th power map,
 ##  `DEC' for the decomposition of ordinary into Brauer characters,
@@ -1263,6 +1302,16 @@ DeclareAttribute( "ClassPositionsOfLowerCentralSeries", IsOrdinaryTable );
 ##  for the group of the ordinary character table <ordtbl>.
 ##
 DeclareAttribute( "ClassPositionsOfUpperCentralSeries", IsOrdinaryTable );
+
+
+#############################################################################
+##
+#A  ClassPositionsOfSolvableResiduum( <ordtbl> )
+##
+##  corresponds to `SolvableResiduum' (see~"SolvableResiduum")
+##  for the group of the ordinary character table <ordtbl>.
+##
+DeclareAttribute( "ClassPositionsOfSolvableResiduum", IsOrdinaryTable );
 
 
 #############################################################################
@@ -1492,11 +1541,12 @@ DeclareOperation( "DecompositionMatrix", [ IsBrauerTable, IsPosInt ] );
 ##  decomposition matrix in question, in this case the matrix is not computed
 ##  from the information in <modtbl>.
 ##
-##  For those character tables from the {\GAP} table library
-##  (see Chapter~"The Character Table Library") that belong to the {\ATLAS}
-##  of Finite Groups~\cite{CCN85} (see~"ATLAS Tables"),
-##  `AtlasLabelsOfIrreducibles' (see~"AtlasLabelsOfIrreducibles") constructs
-##  character labels that are compatible with those used in the {\ATLAS}.
+##  For those character tables from the {\GAP} table library that belong to
+##  the {\ATLAS} of Finite Groups~\cite{CCN85},
+##  `AtlasLabelsOfIrreducibles' constructs character labels that are
+##  compatible with those used in the {\ATLAS}
+##  (see~"ctbllib:ATLAS Tables" and ~"ctbllib:AtlasLabelsOfIrreducibles"
+##  in the manual of the {\GAP} Character Table Library).
 ##
 DeclareGlobalFunction( "LaTeXStringDecompositionMatrix" );
 
@@ -1508,8 +1558,7 @@ DeclareGlobalFunction( "LaTeXStringDecompositionMatrix" );
 ##  In the following, we list operations for character tables that are not
 ##  attributes.
 ##
-##  \index{IsInternallyConsistent!for character tables}
-##  \>IsInternallyConsistent( <tbl> ) O
+##  \>IsInternallyConsistent( <tbl> )!{for character tables} O
 ##
 ##  For an *ordinary* character table <tbl>, `IsInternallyConsistent'
 ##  checks the consistency of the following attribute values (if stored).
@@ -1631,7 +1680,8 @@ DeclareAttributeSuppCT( "ComputedIndicators", IsCharacterTable, "mutable",
 ##  According to p.~233 in~\cite{NPP84}, the number of polyhedral subgroups
 ##  of isomorphism type $V_4$, $D_{2n}$, $A_4$, $S_4$, and $A_5$
 ##  can be derived from the class multiplication coefficient
-##  (see~"ClassMultiplicationCoefficient.ctbl") and the number of Galois
+##  (see~"ClassMultiplicationCoefficient!for character tables")
+##  and the number of Galois
 ##  conjugates of a class (see~"ClassOrbit").
 ##
 ##  The classes <c1>, <c2> and <c3> in the parameter list must be ordered
@@ -1644,7 +1694,7 @@ DeclareGlobalFunction( "NrPolyhedralSubgroups" );
 ##
 #O  ClassMultiplicationCoefficient( <tbl>, <i>, <j>, <k> )
 ##
-##  \index{class multiplication coefficient}%
+##  \index{class multiplication coefficient}
 ##  \index{structure constant}
 ##
 ##  returns the class multiplication coefficient of the classes <i>, <j>,
@@ -1659,18 +1709,16 @@ DeclareGlobalFunction( "NrPolyhedralSubgroups" );
 ##  coefficients of the decomposition of the product of two class sums $K_i$
 ##  and $K_j$ into class sums,
 ##  $$
-##    K_i K_j = \sum_k c_{ijk} K_k.
+##  K_i K_j = \sum_k c_{ijk} K_k\.
 ##  $$
-##
 ##  Given the character table of a finite group $G$,
 ##  whose classes  are $C_1, \dots, C_r$ with representatives $g_i \in C_i$,
 ##  the class multiplication coefficient $c_{ijk}$ can be computed
 ##  by the following formula.
 ##  $$
-##    c_{ijk} = \frac{\|C_i\|\|C_j\|}{\|G\|}
-##  %          \sum_{\chi \in \mbox{\footnotesize Irr}(G)}
-##             \sum_{\chi \in Irr(G)}
-##             \frac{\chi(g_i) \chi(g_j) \overline{\chi(g_k)}}{\chi(1)} .
+##  c_{ijk} = \frac{\|C_i\|\|C_j\|}{\|G\|}
+##            \sum_{\chi \in Irr(G)}
+##            \frac{\chi(g_i) \chi(g_j) \overline{\chi(g_k)}}{\chi(1)}\.
 ##  $$
 ##  On the other hand the knowledge of the class multiplication coefficients
 ##  admits the computation of the irreducible characters of $G$.
@@ -1684,13 +1732,13 @@ DeclareOperation( "ClassMultiplicationCoefficient",
 ##
 #F  MatClassMultCoeffsCharTable( <tbl>, <i> )
 ##
-##  \index{structure constant}%
+##  \index{structure constant}
 ##  \index{class multiplication coefficient}
 ##
 ##  For an ordinary character table <tbl> and a class position <i>,
 ##  `MatClassMultCoeffsCharTable' returns the matrix
 ##  $[ a_{ijk} ]_{j,k}$ of structure constants
-##  (see~"ClassMultiplicationCoefficient.ctbl").
+##  (see~"ClassMultiplicationCoefficient!for character tables").
 ##
 DeclareGlobalFunction( "MatClassMultCoeffsCharTable" );
 
@@ -1699,7 +1747,7 @@ DeclareGlobalFunction( "MatClassMultCoeffsCharTable" );
 ##
 #F  ClassStructureCharTable( <tbl>, <classes> ) . . gener. class mult. coeff.
 ##
-##  \index{class multiplication coefficient}%
+##  \index{class multiplication coefficient}
 ##  \index{structure constant}
 ##
 ##  returns the so-called class structure of the classes in the list
@@ -1713,14 +1761,14 @@ DeclareGlobalFunction( "MatClassMultCoeffsCharTable" );
 ##  $g_i\in C_i$ with $g_1 g_2 \cdots g_n = 1$.
 ##  Note the difference to the definition of the class multiplication
 ##  coefficients in `ClassMultiplicationCoefficient'
-##  (see~"ClassMultiplicationCoefficient.ctbl").
+##  (see~"ClassMultiplicationCoefficient!for character tables").
 ##
 ##  $n(C_1, C_2, \ldots, C_n)$ is computed using the formula
 ##  $$
-##    n(C_1, C_2, \ldots, C_n) = \frac{\|C_1\|\|C_2\|\cdots\|C_n\|}{\|G\|}
-##  %        \sum_{\chi \in \mbox{\footnotesize Irr}(G)}
+##  n(C_1, C_2, \ldots, C_n) 
+##         = \frac{\|C_1\|\|C_2\|\cdots\|C_n\|}{\|G\|}
 ##           \sum_{\chi \in Irr(G)}
-##           \frac{\chi(g_1)\chi(g_2)\cdots\chi(g_n)}{\chi(1)^{n-2}} .
+##           \frac{\chi(g_1)\chi(g_2)\cdots\chi(g_n)}{\chi(1)^{n-2}}.
 ##  $$
 ##
 DeclareGlobalFunction( "ClassStructureCharTable" );
@@ -1751,10 +1799,11 @@ DeclareGlobalFunction( "ClassStructureCharTable" );
 ##  In 1., the computation of the irreducible characters is the hardest part;
 ##  the different algorithms available for this are described
 ##  in~"Computing the Irreducible Characters of a Group".
-##  Possibility 2.~is used for the character tables in the {\GAP} table
-##  library, see Chapter~"The Character Table Library".
+##  Possibility 2.~is used for the character tables in the {\GAP} Character 
+##  Table Library, see the manual of this library.
 ##  Generic character tables --as addressed by 3.-- are described
-##  in~"Generic Character Tables".
+##  in~"ctbllib:Generic Character Tables" in the manual of the {\GAP}
+##  Character Table Library.
 ##  Several occurrencies of 4.~are described
 ##  in~"Constructing Character Tables from Others".
 ##  The last of the above possibilities
@@ -1779,9 +1828,9 @@ DeclareGlobalFunction( "ClassStructureCharTable" );
 ##  <ordtbl>, and second argument a prime <p>, `CharacterTable' calls
 ##  the operation `BrauerTable' (see~"BrauerTable").
 ##  Called with a string <name> and perhaps optional parameters <param>,
-##  `CharacterTable' delegates to `CharacterTableFromLibrary'
-##  (see~"CharacterTableFromLibrary" for an overview of admissible strings
-##  <name>).
+##  `CharacterTable' delegates to `CharacterTableFromLibrary', which
+##  tries to access the {\GAP} Character Table Library (see the manual of
+##  this library for an overview of admissible strings <name>).
 ##
 ##  Probably the most interesting information about the character table is
 ##  its list of irreducibles, which can be accessed as the value of the
@@ -1919,14 +1968,16 @@ DeclareGlobalFunction( "ConvertToCharacterTableNC" );
 ##  character table that knows to belong to the {\GAP} character table
 ##  library, `ConvertToLibraryCharacterTableNC' does the same as
 ##  `ConvertToOrdinaryTableNC', except that additionally the filter
-##  `IsLibraryCharacterTableRep' is set (see~"The Character Table Library").
+##  `IsLibraryCharacterTableRep' is set
+##  (see the manual of the {\GAP} Character Table Library).
 ##
 ##  But if <record> has the component `isGenericTable', with value `true',
 ##  then no attribute values are set.
 ##
 ##  (The handling of generic character tables may change in the future.
 ##  Currently they are used just just for specialization,
-##  see~"Generic Character Tables".)
+##  see~"ctbllib:Generic Character Tables" in the manual of the {\GAP}
+##  Character Table Library.)
 ##
 DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 
@@ -1935,21 +1986,20 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##
 ##  9. Printing Character Tables
 #11
-##  \index{ViewObj!for character tables}
-##  The default `ViewObj' (see~"ViewObj") method for ordinary character
-##  tables prints the string `\"CharacterTable\"',
-##  followed by the identifier (see~"Identifier") or, if known,
-##  the group of the character table enclosed in brackets.
-##  `ViewObj' for Brauer tables does the same, except that the first string
-##  is replaced by `\"BrauerTable\"', and that the characteristic is also
-##  shown.
+##  \indextt{ViewObj!for character tables}
+##  The default  `ViewObj'  (see~"ViewObj")  method  for  ordinary  character
+##  tables prints the string `\"CharacterTable\"', followed by the identifier
+##  (see~"Identifier!for character tables") or, if known, the  group  of  the
+##  character table enclosed in brackets. `ViewObj' for  Brauer  tables  does
+##  the same, except that the first string is replaced by  `\"BrauerTable\"',
+##  and that the characteristic is also shown.
 ##
-##  \index{PrintObj!for character tables}
+##  \indextt{PrintObj!for character tables}
 ##  The default `PrintObj' (see~"PrintObj") method for character tables
 ##  does the same as `ViewObj',
 ##  except that the group is is `Print'-ed instead of `View'-ed.
 ##
-##  \index{Display!for character tables}
+##  \indextt{Display!for character tables}
 ##  The default `Display' (see~"Display") method for a character table <tbl>
 ##  prepares the data contained in <tbl> for a pretty columnwise output.
 ##  The number of columns printed at one time depends on the actual
@@ -2167,6 +2217,18 @@ DeclareOperation( "CharacterTableDirectProduct",
 
 #############################################################################
 ##
+#F  CharacterTableHeadOfFactorGroupByFusion( <tbl>, <factorfusion> )
+##
+##  is the character table of the factor group of the ordinary character
+##  table <tbl> defined by the list <factorfusion> that describes the
+##  factor fusion.
+##  The irreducible characters of the factor group are *not* computed.
+##
+DeclareGlobalFunction( "CharacterTableHeadOfFactorGroupByFusion" );
+
+
+#############################################################################
+##
 #O  CharacterTableFactorGroup( <tbl>, <classes> )
 ##
 ##  is the character table of the factor group of the ordinary character
@@ -2375,7 +2437,8 @@ DeclareGlobalFunction( "PermutationToSortCharacters" );
 ##  is a character table that differs from <tbl> only by the succession of
 ##  its irreducible characters.
 ##  This affects the values of the attributes `Irr' (see~"Irr") and
-##  `CharacterParameters' (see~"CharacterParameters").
+##  `CharacterParameters' (see~"ctbllib:CharacterParameters" in the manual
+##  for the {\GAP} Character Table Library).
 ##  Namely, these lists are permuted by the permutation <perm>.
 ##
 ##  If no second argument is given then a permutation is used that yields

@@ -17,7 +17,7 @@ Revision.primitiv_gd :=
 ##  to conjugacy  in the corresponding symmetric group)
 ##  \beginlist
 ##    \item{$\bullet$} the  non-affine primitive permutation groups of degree
-##      $\<=999$,   described    in  \cite{DixonMortimer88},  with generators
+##      $\le999$,   described    in  \cite{DixonMortimer88},  with generators
 ##      calculated in \cite{Theissen97},
 ##    \item{$\bullet$} all  primitive  permutation groups of  degree $\<256$,
 ##      in particular,
@@ -77,27 +77,6 @@ DeclareComponent("prim","2.0");
 ##  returns the primitive permutation  group of degree <deg> with number <nr>
 ##  from the list. 
 ##
-##  % this arrangement might not be true any more. Ignore
-##  %255$ first  come affine groups. If <deg> is a prime <p> it starts with the
-##  %one-dimensional affine  groups over the field $F_p$, that is Frobenius
-##  %groups of the  form $ F_p{:}A$ for a  subgroup $A\le{\rm Aut}(F_p)$.  Then
-##  %come the other solvable  affine groups, in the same order as in the list of
-##  %M.~Short (who did not include the Frobenius groups).  Next  in the list
-##  %come the insolvable affine primitive  permutation groups.
-##  %
-##  %Then come the   non-affine primitive permutation  groups  of degree <deg>.
-##  %They have been  classified  into cohorts in  \cite{DixonMortimer88},  and
-##  %{\GAP}    represents a     cohort   as a     homomorphism   $\kappa\colon
-##  %N=N_{S_{<deg>}}(S)\to A$ whose kernel $S$  is the socle  of $N$ and every
-##  %primitive group in that cohort is the preimage of a subgroup of $A$ (only
-##  %one from   each conjugacy  class)  under $\kappa$.   For the  degrees  in
-##  %question,  $A$ is solvable. All  primitive groups in  the cohort $\kappa$
-##  %have the same socle, namely~$S$. The groups  of each cohort appear in the
-##  %list consecutively.
-##  %
-##  %(The functions `NrAffinePrimitiveGroups and `NrSolvablePrimitiveGroups' can
-##  %be used to determine where the different parts of the lists start.)
-##  %
 ##  The arrangement of the groups differs from the arrangement of primitive
 ##  groups in the list of C.~Sims, which was used in {\GAP}~3. See
 ##  `SimsNo' ("SimsNo").
@@ -177,6 +156,21 @@ DeclareAttribute( "SimsNo", IsPermGroup );
 ##  of guardian.)
 ##
 DeclareGlobalFunction( "IrreducibleSolvableGroup" );
+
+#############################################################################
+##
+#F  MaximalSubgroupsSymmAlt( <grp> [,<onlyprimitive>] )
+##
+##  For a symmetric or alternating group <grp>, this function returns
+##  representatives of the classes of maximal subgroups.
+##
+##  If the parameter <onlyprimitive> is given and set to `true' only the
+##  primitive maximal subgroups are computed.
+##
+##  No parameter test is performed. (The function relies on the primitive
+##  groups library for its functionality.)
+##
+DeclareGlobalFunction("MaximalSubgroupsSymmAlt");
 
 #############################################################################
 ##

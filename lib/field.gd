@@ -132,7 +132,7 @@ DeclareSynonymAttr( "GeneratorsOfField", GeneratorsOfDivisionRing );
 ##  `LeftActingDomain( <F> )'.
 ##  Then `NormalBase' returns a list of elements in <F> that form a normal
 ##  basis of <F>, that is, a vector space basis that is closed under the
-##  action of the Galois group (see~"GaloisGroup.field") of <F>.
+##  action of the Galois group (see~"GaloisGroup!of field") of <F>.
 ##
 ##  If a second argument <elm> is given,
 ##  it is used as a hint for the algorithm to find a normal basis with the
@@ -249,7 +249,7 @@ DeclareOperation( "FieldExtension", [ IsField, IsUnivariatePolynomial ] );
 ##  the *trace* of $\alpha$ is defined as the trace of $M_{\alpha}$,
 ##  the *minimal polynomial* $\mu_{\alpha}$ and the
 ##  *trace polynomial* $\chi_{\alpha}$ of $\alpha$
-##  are defined as the minimal polynomial (see~"MinimalPolynomial")
+##  are defined as the minimal polynomial (see~"MinimalPolynomial!over a field")
 ##  and the characteristic polynomial (see~"CharacteristicPolynomial" and
 ##  "TracePolynomial") of $M_{\alpha}$.
 ##  (Note that $\mu_{\alpha}$ depends only on $K$ whereas $\chi_{\alpha}$
@@ -539,17 +539,18 @@ DeclareGlobalFunction( "SubfieldNC" );
 ##
 #A  FrobeniusAutomorphism( <F> )  .  Frobenius automorphism of a finite field
 ##
-##  `FrobeniusAutomorphism' returns the Frobenius automorphism of the finite
+##  returns the Frobenius automorphism of the finite
 ##  field <F> as a field homomorphism (see~"Ring Homomorphisms").
 ##
-##  The Frobenius automorphism $f$ of a finite field $F$ of characteristic
+##  \atindex{Frobenius automorphism}{@Frobenius automorphism}
+##  The *Frobenius automorphism* $f$ of a finite field $F$ of characteristic
 ##  $p$ is the function that takes each element $z$ of $F$ to its $p$-th
 ##  power.
 ##  Each automorphism of $F$ is a power of $f$.
 ##  Thus $f$ is a generator for the Galois group of $F$ relative to the prime
 ##  field of $F$,
 ##  and an appropriate power of $f$ is a generator of the Galois group of $F$
-##  over a subfield (see~"GaloisGroup.field").
+##  over a subfield (see~"GaloisGroup!of field").
 ##
 ##  \beginexample
 ##  gap> f := GF(16);
@@ -593,6 +594,14 @@ DeclareAttribute( "FrobeniusAutomorphism", IsField );
 ##
 DeclareHandlingByNiceBasis( "IsFieldElementsSpace",
     "for free left modules of field elements" );
+
+#############################################################################
+##
+#O  NthRoot( <F>, <a>, <n> )
+##
+##  returns one <n>th root of <a> if such a root exists in <F> and returns
+##  `fail' otherwise.
+DeclareOperation( "NthRoot", [ IsField, IsScalar, IsPosInt ] );
 
 
 #############################################################################

@@ -333,6 +333,18 @@ InstallGlobalFunction( Submodule, function( arg )
         UseBasis( S, gens );
       fi;
       UseSubsetRelation( M, S );
+      
+      #
+      # These cannot be handled by UseSubsetRelation, because they
+      # depend on M and S having the same LeftActingDomain
+      #
+      if IsRowModule(M) then
+          SetIsRowModule(S, true);
+          SetDimensionOfVectors(S,DimensionOfVectors(M));
+      fi;
+      if IsGaussianSpace(M) then
+          SetFilterObj(S, IsGaussianSpace);
+      fi;
       return S;
     fi;
 
@@ -357,6 +369,18 @@ InstallGlobalFunction( SubmoduleNC, function( arg )
     fi;
     SetParent( S, arg[1] );
     UseSubsetRelation( arg[1], S );
+      
+    #
+    # These cannot be handled by UseSubsetRelation, because they
+    # depend on M and S having the same LeftActingDomain
+    #
+    if IsRowModule(arg[1]) then
+        SetIsRowModule(S, true);
+        SetDimensionOfVectors(S, DimensionOfVectors(arg[1]));
+    fi;
+    if IsGaussianSpace(arg[1]) then
+        SetFilterObj(S, IsGaussianSpace);
+    fi;
     return S;
 end );
 
@@ -381,11 +405,12 @@ InstallMethod( DimensionOfVectors,
     true,
     [ IsFreeLeftModule ], 0,
     function( M )
+
     M:= Representative( M );
-    if IsRowVector( M ) then
-      return Length( M );
-    elif IsMatrix( M ) then
+    if IsMatrix( M ) then
       return DimensionsMat( M );
+    elif IsRowVector( M ) then
+      return Length( M );
     else
       TryNextMethod();
     fi;

@@ -1,0 +1,274 @@
+\documentclass{article}
+\usepackage{times}
+\usepackage{a4wide}
+\usepackage{amsfonts}
+\parindent 0pt
+\parskip0.5\medskipamount
+\title{Arithmetic of Lists and Matrices}
+\author{Steve Linton, based on a proposal by Steve, Frank L\"ubeck,
+Thomas and Max}
+\begin{document}
+\maketitle
+
+\section{Categories}
+
+
+There are two different uses of Categories that are relevant to this
+proposal (and maybe more generally): a \emph{descriptive} Category is
+one which specifies that objects lying in it should supply methods for 
+certain operations which should obey certain specifications; a
+\emph{prescriptive} Category is one which specifies that certain
+default methods may be correctly applied to objects lying in it.  The
+difference here is that if an object o lies in a prescriptive Category
+relating to, for instance, list addition, then the default method may correctly
+return a plain list for o+o.  A descriptive Category merely guarantees
+that there is a method for computing o+o and that (o+o)[1] = o[1]+o[1] 
+etc.
+
+Lie matrices, for instance, cannot lie in a prescriptive category for
+list addition, since a plain list result for l+l would have the wrong
+multiplicative behaviour, but they can lie in a descriptive category,
+since they do add like vectors.
+
+We have a prescriptive Category \verb|IsListDefault|. I propose to add 
+two new descriptive categories \verb|IsGeneralizedRowVector| and
+\verb|IsMultiplicativeGeneralizedRowVector|.
+These separates the data structure behaviour of lists, such as element
+access, from the arithmetic behaviour. That is objects in
+\verb|IsList| support element access and (if mutable) assignment,
+\verb|Length| and so on. They may support
+\verb|TransposedMat| if they are nested deeply enough, but this is not 
+mandatory. Objects in
+\verb|IsGeneralizedRowVector| are necessarily also in \verb|IsList|
+and have the behaviour set out in this document for the Operations
+\verb|+|, \verb|-| (unary and binary), \verb|Zero|, multiplication by
+integers, \verb|TransposedMat| and (for
+convenience) \verb|mod|.
+
+Objects in \verb|IsMultiplicativeGeneralizedRowVector| support all the 
+arithmetic defined in this paper. Objects in \verb|IsListDefault| all
+lie in \verb|IsMultiplicativeGeneralizedRowVector|.
+
+
+\begin{description}
+\item[in \texttt{IsList} but not in \texttt{IsGeneralizedRowVector}]
+strings, blists
+\item[in \texttt{IsGeneralizedRowVector} but not in
+\texttt{IsMultiplicativeGeneralizedRowVector}] Lie matrices
+\item[in \texttt{IsMultiplicativeGeneralizedRowVector} but not in
+\texttt{IsListDefault}]  nothing at present
+\item[in \texttt{IsListDefault}] normal plain lists, vectors and
+matrices, compressed matrices, etc.
+\end{description}
+
+
+\section{Preliminary Definitions}
+
+
+
+For the purposes of this document a ``grv'' will be something in
+\verb|IsGeneralizedRowVector| and a ``non-grv'' will be anything else.
+
+Now we can define the \emph{nesting depth} of a grv $v$ as
+follows: define $v_1 = v$ and $v_{i+1}$ to be the first bound entry of
+$v_i$, if any, else as \verb|fail|. Now the nesting depth of $v$ is
+the greatest $i$ such that $v_i$ is a grv.
+
+Remark: for sensible matrices etc. the nesting depth will be uniform,
+so the choice of 1st bound entry is arbitrary. For things with unequal
+nesting, it is at least precise.
+
+
+
+\section{Definitions of Return Values}
+
+\subsection{Addition}
+
+The sum of two non-grvs is outside the scope of this document.
+
+The sum of two grvs of the \emph{same} nesting depth is defined as the
+point-wise sum, with the addition that if either summand is unbound at 
+a position where the other is bound, the sum is taken to be the bound
+value. Note that order of summands should never be swapped, as
+addition is \emph{not} always abelian.
+
+The sum of a grv $x$ and either a non-grv or a grv of \emph{lower}
+nesting depth $y$ is defined as the list with $x[i] + y$ in position
+$i$ whenever $x[i]$ is bound, and no value in position $i$ when $x[i]$
+is unbound. The equivalent holds in the reversed case.
+
+\subsection{Subtraction}
+
+$x-y$ is always defined as $x+(-y)$ (although it may be implemented
+more directly).
+
+The unary negation of any grv $v$ has $-v[i]$ in position $i$ whenever
+$v[i]$ is bound, and nothing bound in any position $i$ where $v[i]$ is 
+unbound.
+
+\subsection{Multiplication}
+
+These rules only apply to grvs in
+\verb|IsMultiplicativeGeneralizedRowVector|. For brevity we call these
+mgrvs. We define the multiplicative nesting depth of an mgrv like the
+regular nesting depth of a grv, but stopping when we hit a
+non-mgrv. For instance a list of Lie matrices has nesting depth 3 but
+multiplicative nesting depth 1.
+
+There are, in fact, three possible computations that might be
+triggered by a multiplication involving an mgrv: \verb|x*y| might be
+the inner product $x[1]*y[1] + x[2]*y[2] + ....+ x[n]*y[n]$, or the
+left scalar multiple $[x*y[1], ... x*y[n]]$ (assuming $y[1]$ and
+$y[n]$ bound) or the corresponding right scalar multiple. Call these
+I, L and R respectively. Once again, we take care to preserve order of 
+multiplication as we recurse.
+
+\textbf{late addition:} 
+In defining the inner product, we treat holes as ``universal zeroes''
+so that we simply skip the summands corresponding to holes in either
+list. If this leaves no summands then the multiplication is an error.
+
+To get the basic arithmetic of simple row vectors and matrices working
+correctly, we need to follow the following table. The issues later
+will be the rules for deciding which table entry applies.
+
+\begin{tabular}{c|ccc}
+&scal&vec&mat\\
+\hline
+scal & X & L & L\\
+vec & R & I & I\\
+mat & R & R & R\\
+\end{tabular}
+
+Note that this is asymmetric.
+
+The rule is then as follows. In computing $x\times y$, first consider the
+parity of the multiplicative nesting depth of each of $x$ and $y$. If either has odd
+parity, then it will be treated as a vector. Thus, if both have odd
+parity, we specify result I.
+
+If exactly one has odd parity, then we treat the other as a scalar if
+it has lower multiplicative nesting depth, giving result L or R
+depending on ordering. If it has higher multiplicative nesting depth,
+we treat it as a matrix, giving result I or R depending on ordering.
+
+If neither has odd parity, then if the multiplicative nesting depths
+differ, we treat the less deeply nested as a scalar and the other as a
+matrix, getting results L or R. If they are both multiplicatively
+nested to depth zero, we are outside the scope of this document. If
+they are multiplicatively nested to the same non-zero depth, then we
+treat the computation as matrix multiplication and require result R.
+
+\subsection{Other Binary Operations}
+
+We define division and left quotient by reference to multiplication
+and multiplicative inverse in the obvious way.
+
+We define \verb|mod| exactly like \verb|+|
+
+\subsection{Other Unary Operations}
+
+We define the zero of a grv to be the list of zeros of the entries,
+respecting holes (as for unary -).
+
+We define the one of an mgrv as producing an element which is
+multiplicatively neutral on both sides with respect to its argument,
+if there is one, and fail otherwise.  
+
+We define the inverse of an mgrv of multiplicative nesting depth two as the usual
+matrix inverse, and as fail in all other cases.
+
+We define the transpose of any list of depth greater than one as the
+transpose at the topmost two nesting levels, respecting unbound
+entries. 
+
+\subsection{IsMatrix}
+
+IsMatrix is no longer used to define arithmetic behaviour, but only,
+for instance, to decide whether an algebra can be formed. There is
+still a problem with, for instance, a matrix of matrices, caused by
+IsMatrix being a Category, and there being no nice way to check
+quickly whether a list is really a matrix of matrices, or just
+something similar. This remains to be resolved outside the scope of
+this document.
+
+\section{Restricted Mutability}
+
+We agreed not to define a general RestrictedMutability concept, but
+rather to define specific filters imposing the mutability
+restrictions needed in specific contexts. In the compressed matrix
+concept, we extend the definition of IsLockedRepresentationVector to
+mutable vectors, in which case it also implies that the length must
+not change.
+
+
+This allows fully mutable fully compressed matrices.
+
+\section{Mutability Rule}
+
+We define the immutability level of a grv as the number of levels of
+grv, starting at the innermost, which are immutable on the ``1st
+unbound'' branch defined above, except that, for fully immutable
+objects (whether grvs or not) we define the immutability level as
+infinite. 
+
+The immutability level of the result of any of the operations
+discussed here should be the minimum of the immutability levels of any 
+argument.
+
+\section{Compression Rule}
+
+Compressed representations exist only for depth one and two
+structures. In these cases, we define the compression level bottom-up
+as for immutability, and insist that. when everything involved is
+compressed over the same field, then the compression level of the
+result should be the minimum of the compression levels of the
+arguments. In other cases, nothing is defined, and a compression level 
+of 0 is always acceptable.
+
+\section{Implied Changes to Existing Behaviour}
+
+
+\begin{itemize}
+\item The scope of the arithmetic operations is extended to some objects for 
+which it is currently undefined, or unimplemented.
+
+\item The mutability of many results is changed, and so the relationship
+between $0*x$ and $ZeroOp(x)$ and so on, will change. The new
+definitions will be:
+\begin{description} 
+\item[Fully immutable results (attributes)] \verb|One|, \verb|Zero|,
+\verb|Inverse|, \verb|AdditiveInverse|
+\item[Fully mutable results] \verb|OneOp|, \verb|ZeroOp|,
+\verb|InverseOp|, \verb|AdditiveInverseOp|
+\item[Same mutability level as input grv] \verb|^0|, \verb|*0|,
+\verb|^-1|, unary minus.
+\end{description}
+
+This is compatible with the rules above, as 0 and -1 are immutable. It 
+remains the case that the normal thing to implement for new objects is 
+XxxOp, giving a mutable result, and default methods should compute the 
+others in terms of it.
+
+\item The behaviour under multiplication of lists of nesting depth three or
+more is changed. 
+\end{itemize}
+
+\section{What is a GRV?}
+
+Thomas suggests: plain lists, compressed vectors and matrices, Lie
+matrices, block matrices. I would add all row vectors. What about
+class functions? 
+
+Strings and blists are not grvs.
+
+More?
+
+
+\end{document}
+
+
+
+
+
+

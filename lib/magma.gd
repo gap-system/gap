@@ -34,10 +34,11 @@ DeclareCategory( "IsMagma", IsDomain and IsMultiplicativeElementCollection );
 ##  (or `One') that yields the identity of $M$.
 ##
 ##  So a magma-with-one <M> does always contain a unique multiplicatively
-##  neutral element $e$, i.e., $e \* m = m = m \* e$ holds for all $m \in M$
+##  neutral element <e>, i.e., `<e> \* <m> = <m> = <m> \* <e>' holds for all 
+##  `<m> $\in$ <M>'
 ##  (see~"MultiplicativeNeutralElement").
-##  This element $e$ can be computed with the operation `One' (see~"One")
-##  as `One( <M> )', and $e$ is also equal to `One( <elm> )' and to
+##  This element <e> can be computed with the operation `One' (see~"One")
+##  as `One( <M> )', and <e> is also equal to `One( <elm> )' and to
 ##  `<elm>^0' for each element <elm> in <M>.
 ##
 ##  *Note* that a magma may contain a multiplicatively neutral element
@@ -299,8 +300,8 @@ DeclareAttribute( "TrivialSubmagmaWithOne", IsMagmaWithOne );
 ##
 #P  IsAssociative( <M> )  . . . . . . . . test whether a magma is associative
 ##
-##  A magma  <M> is *associative* if for all elements $a, b, c \in M$  the
-##  equality $( a \* b ) \* c = a \* ( b \* c )$ holds.
+##  A magma <M> is *associative* if for all elements `<a>, <b>, <c> $\in$ <M>'
+##  the equality `(<a> \* <b>) \* <c> = <a> \* (<b> \* <c>)' holds.
 ##
 ##  An associative magma is called a *semigroup* (see~"Semigroups"),
 ##  an associative magma-with-one is called a *monoid* (see~"Monoids"),
@@ -326,8 +327,8 @@ InstallTrueMethod( IsAssociative, IsMagma and IsTrivial );
 #P  IsCommutative( <M> )  . . . . . . . . test whether a magma is commutative
 #P  IsAbelian( <M> )
 ##
-##  A magma <M> is *commutative* if for all elements $a, b \in M$ the
-##  equality $a \* b = b \* a$ holds.
+##  A magma <M> is *commutative* if for all elements `<a>, <b> $\in$ <M>' the
+##  equality `<a> \* <b> = <b> \* <a>' holds.
 ##  `IsAbelian' is a synonym of `IsCommutative'.
 ##
 ##  Note that the commutativity of the *addition* `+' in an additive
@@ -354,8 +355,8 @@ InstallTrueMethod( IsCommutative, IsMagma and IsTrivial );
 ##
 #A  MultiplicativeNeutralElement( <M> )
 ##
-##  returns the element $e$ in the magma <M> with the property that
-##  $e \* m = m = m \* e$ holds for all $m \in <M>$,
+##  returns the element <e> in the magma <M> with the property that
+##  `<e> \* <m> = <m> = <m> \* <e>' holds for all `<m> $\in$ <M>',
 ##  if such an element exists.
 ##  Otherwise `fail' is returned.
 ##
@@ -372,14 +373,28 @@ DeclareAttribute( "MultiplicativeNeutralElement", IsMagma );
 #A  Center( <M> ) . . . . . . . . . . . . . . . . . . . . . centre of a magma
 ##
 ##  `Centre' returns the *centre* of the magma <M>, i.e., the domain
-##  of those elements $m \in <M>$ that commute with all elements of <M>.
+##  of those elements `<m> $\in$ <M>' that commute with all elements of <M>.
 ##  `Center' is just a synonym for `Centre'.
 ##
 ##  We have `Centre( <M> ) = Centralizer( <M>, <M> )', see~"Centralizer".
 ##
+##  The centre of a magma is always commutative (see~"IsCommutative").
+##  (When one installs a new method for `Centre', one should set the
+##  `IsCommutative' value of the result to `true',
+##  in order to make this information available.)
+##
 DeclareAttribute( "Centre", IsMagma );
 
-DeclareSynonym( "Center", Centre );
+DeclareSynonymAttr( "Center", Centre );
+
+
+#############################################################################
+##
+#A  Idempotents( <M> )
+##
+##  The set of elements of <M> which are their own squares.
+##
+DeclareAttribute( "Idempotents", IsMagma );
 
 
 #############################################################################
@@ -394,26 +409,28 @@ DeclareOperation( "IsCentral", [ IsMagma, IsObject ] );
 
 #############################################################################
 ##
-#F  Centralizer( <M>, <elm> )
-#F  Centralizer( <M>, <S> )
-#F  Centralizer( <M>, <class> )
+#O  Centralizer( <M>, <elm> )
+#O  Centralizer( <M>, <S> )
+#O  Centralizer( <class> )
 ##
 ##  For an element <elm> of the magma <M> this operation returns the 
 ##  *centralizer* of <elm>.
-##  This is the domain of those elements $m \in <M>$ that commute with <elm>.
+##  This is the domain of those elements `<m> $\in$ <M>' that commute 
+##  with <elm>.
 ##
 ##  For a submagma <S> it returns the domain of those elements that commute
 ##  with *all* elements <s> of <S>.
 ##
-##  If <class> is a class of objects of <M>
-##  (such as given by `ConjugacyClass', see~"ConjugacyClass"),
+##  If <class> is a class of objects of a magma (this magma then is stored
+##  as the `ActingDomain' of <class>)
+##  such as given by `ConjugacyClass' (see~"ConjugacyClass"),
 ##  `Centralizer' returns the centralizer of
 ##  `Representative(<class>)' (which is a slight abuse of the notation).
 #T do we really want this?
 #T (we may be interested in using the *attribute* also for conjugacy classes,
 #T but also the *function*?)
 ##
-InParentFOA( "Centralizer", IsMagma, IsObject, NewAttribute );
+InParentFOA( "Centralizer", IsMagma, IsObject, DeclareAttribute );
 
 
 #############################################################################

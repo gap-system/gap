@@ -1,75 +1,128 @@
 # usage: onehtmlindex <letter> <file>
 # produces a file <file> composed from {ref,tut,ext,prg,new}/<file>.
-echo "<html><head><title>The GAP 4 Manual - Full Index $1</title></head>\
-<body bgcolor="ffffff"><h1>The GAP 4 Manual - Full Index $1</h1>\
-<p>\
-<a href="theindex.htm">_</A> <a href="indxA.htm">A</A> <a href="indxB.htm">B</A> <a href="indxC.htm">C</A> <a href="indxD.htm">D</A> <a href="indxE.htm">E</A> <a href="indxF.htm">F</A> <a href="indxG.htm">G</A> <a href="indxH.htm">H</A> <a href="indxI.htm">I</A> <a href="indxJ.htm">J</A> <a href="indxK.htm">K</A> <a href="indxL.htm">L</A> <a href="indxM.htm">M</A> <a href="indxN.htm">N</A> <a href="indxO.htm">O</A> <a href="indxP.htm">P</A> <a href="indxQ.htm">Q</A> <a href="indxR.htm">R</A> <a href="indxS.htm">S</A> <a href="indxT.htm">T</A> <a href="indxU.htm">U</A> <a href="indxV.htm">V</A> <a href="indxW.htm">W</A> <a href="indxX.htm">X</A> <a href="indxY.htm">Y</A> <a href="indxZ.htm">Z</A>\
-<ul>" > $2
+echo "Creating $1 all manuals index."
+echo "<html><head><title>The GAP 4 Manual - Full Index $1</title></head>" > $2
+echo "<body bgcolor=\"ffffff\"><h1>The GAP 4 Manual - Full Index $1</h1>" >> $2
+echo "<p>" >> $2
+echo "<a href=\"theindex.htm\">_</A>" >> $2 
+echo "<a href=\"indxA.htm\">A</A>" >> $2
+echo "<a href=\"indxB.htm\">B</A>" >> $2
+echo "<a href=\"indxC.htm\">C</A>" >> $2
+echo "<a href=\"indxD.htm\">D</A>" >> $2
+echo "<a href=\"indxE.htm\">E</A>" >> $2
+echo "<a href=\"indxF.htm\">F</A>" >> $2
+echo "<a href=\"indxG.htm\">G</A>" >> $2
+echo "<a href=\"indxH.htm\">H</A>" >> $2
+echo "<a href=\"indxI.htm\">I</A>" >> $2
+echo "<a href=\"indxJ.htm\">J</A>" >> $2
+echo "<a href=\"indxK.htm\">K</A>" >> $2
+echo "<a href=\"indxL.htm\">L</A>" >> $2
+echo "<a href=\"indxM.htm\">M</A>" >> $2
+echo "<a href=\"indxN.htm\">N</A>" >> $2
+echo "<a href=\"indxO.htm\">O</A>" >> $2
+echo "<a href=\"indxP.htm\">P</A>" >> $2
+echo "<a href=\"indxQ.htm\">Q</A>" >> $2
+echo "<a href=\"indxR.htm\">R</A>" >> $2
+echo "<a href=\"indxS.htm\">S</A>" >> $2
+echo "<a href=\"indxT.htm\">T</A>" >> $2
+echo "<a href=\"indxU.htm\">U</A>" >> $2
+echo "<a href=\"indxV.htm\">V</A>" >> $2
+echo "<a href=\"indxW.htm\">W</A>" >> $2
+echo "<a href=\"indxX.htm\">X</A>" >> $2
+echo "<a href=\"indxY.htm\">Y</A>" >> $2
+echo "<a href=\"indxZ.htm\">Z</A>" >> $2
+echo "<dl>" >> $2
 
 fgrep "<dt>" ref/$2 > tempfile
-awk '{i=0;out="";str=$0;match(str,/href="/);rs=RSTART;\
+awk '{i=0;out="";str=$0;rs=index(str,"href=\"");\
       while (rs!=0) {\
 	a=substr(str,rs+6);\
-	match(a,/>/);\
-	out=out substr(str,1,rs+5) "ref/" substr(a,1,RSTART) "R ";\
-	str=substr(a,RSTART+1);\
-        match(str,/href="/);rs=RSTART;\
+	posbr=index(a,">");\
+	out=out substr(str,1,rs+5) "ref/" substr(a,1,posbr) "R ";\
+	str=substr(a,posbr+1);\
+        rs=index(str,"href=\"");\
       }\
       print out str;}'\
   tempfile >tempfile2
 
 fgrep "<dt>" tut/$2 > tempfile
-awk '{i=0;out="";str=$0;match(str,/href="/);rs=RSTART;\
+awk '{i=0;out="";str=$0;rs=index(str,"href=\"");\
       while (rs!=0) {\
 	a=substr(str,rs+6);\
-	match(a,/>/);\
-	out=out substr(str,1,rs+5) "tut/" substr(a,1,RSTART) "T ";\
-	str=substr(a,RSTART+1);\
-        match(str,/href="/);rs=RSTART;\
+	posbr=index(a,">");\
+	out=out substr(str,1,rs+5) "tut/" substr(a,1,posbr) "T ";\
+	str=substr(a,posbr+1);\
+        rs=index(str,"href=\"");\
       }\
       print out str;}'\
   tempfile >>tempfile2
 
 fgrep "<dt>" ext/$2 > tempfile
-awk '{i=0;out="";str=$0;match(str,/href="/);rs=RSTART;\
+awk '{i=0;out="";str=$0;rs=index(str,"href=\"");\
       while (rs!=0) {\
 	a=substr(str,rs+6);\
-	match(a,/>/);\
-	out=out substr(str,1,rs+5) "ext/" substr(a,1,RSTART) "E ";\
-	str=substr(a,RSTART+1);\
-        match(str,/href="/);rs=RSTART;\
+	posbr=index(a,">");\
+	out=out substr(str,1,rs+5) "ext/" substr(a,1,posbr) "E ";\
+	str=substr(a,posbr+1);\
+        rs=index(str,"href=\"");\
       }\
       print out str;}'\
   tempfile >>tempfile2
 
 fgrep "<dt>" prg/$2 > tempfile
-awk '{i=0;out="";str=$0;match(str,/href="/);rs=RSTART;\
+awk '{i=0;out="";str=$0;rs=index(str,"href=\"");\
       while (rs!=0) {\
 	a=substr(str,rs+6);\
-	match(a,/>/);\
-	out=out substr(str,1,rs+5) "prg/" substr(a,1,RSTART) "P ";\
-	str=substr(a,RSTART+1);\
-        match(str,/href="/);rs=RSTART;\
+	posbr=index(a,">");\
+	out=out substr(str,1,rs+5) "prg/" substr(a,1,posbr) "P ";\
+	str=substr(a,posbr+1);\
+        rs=index(str,"href=\"");\
       }\
       print out str;}'\
   tempfile >>tempfile2
 
 fgrep "<dt>" new/$2 > tempfile
-awk '{i=0;out="";str=$0;match(str,/href="/);rs=RSTART;\
+awk '{i=0;out="";str=$0;rs=index(str,"href=\"");\
       while (rs!=0) {\
 	a=substr(str,rs+6);\
-	match(a,/>/);\
-	out=out substr(str,1,rs+5) "new/" substr(a,1,RSTART) "N ";\
-	str=substr(a,RSTART+1);\
-        match(str,/href="/);rs=RSTART;\
+	posbr=index(a,">");\
+	out=out substr(str,1,rs+5) "new/" substr(a,1,posbr) "N ";\
+	str=substr(a,posbr+1);\
+        rs=index(str,"href=\"");\
       }\
       print out str;}'\
   tempfile >>tempfile2
 
-sort tempfile2 >>$2
+#sort tempfile2 >> $2
+#... we use perl here since the UNIX sort -f command folds lowercase
+#to uppercase putting special characters last. We want the effect of
+#folding uppercase to lowercase, but we also want sorting by main entry
+#and then subentry. Also, perl uses quicksort, whereas awk uses insertion
+#sort. The multiple -e usage is necessary (at least on my machine);
+#continuation via end-of-line \ inside a -e expression doesn't work ??? - GG
+perl -e 'while (<>) { push(@index, $_) } print (sort sortfunc @index);'\
+     -e 'sub sortfunc {'\
+     -e '  $a =~ /<dt>\s*([^,]*)(,\s*(.*))?<a href/;'\
+     -e '  my ($maina, $suba) = ($1, (defined $3 ? $3 : "") );'\
+     -e '  $b =~ /<dt>\s*([^,]*)(,\s*(.*))?<a href/;'\
+     -e '  my ($mainb, $subb) = ($1, (defined $3 ? $3 : "") );'\
+     -e '  $maina =~ s/\s*$//; $mainb =~ s/\s*$//;'\
+     -e '  $suba =~ s/\s*$//; $subb =~ s/\s*$//;'\
+     -e '  return lc($maina) cmp lc($mainb)'\
+     -e '           or'\
+     -e '         $maina cmp $mainb'\
+     -e '           or'\
+     -e '         lc($suba) cmp lc($subb)'\
+     -e '           or'\
+     -e '         $suba cmp $subb'\
+     -e '           or'\
+     -e '         $a cmp $b;'\
+     -e '}'\
+      tempfile2 >>$2
 
-echo "</ul><p>\
-[<a href="../index.html">Top</a>] [<a href="chapters.htm">Up</a>]<p>\
-<P>\
-<address>GAP 4 manual<br>\
-</address></body></html>" >>$2
+echo "</dl><p>" >> $2
+echo "[<a href=\"../index.html\">Top</a>]" >> $2
+echo "[<a href=\"chapters.htm\">Up</a>]" >> $2
+echo "<p><P>" >> $2
+echo "<address>GAP 4 manual<br></address>" >> $2
+echo "</body></html>" >>$2

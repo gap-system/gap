@@ -118,7 +118,7 @@ DeclareRepresentation(
 ##
 #M  Embedding( <D>, <i> ) . . . . . . . . . . . . . . . . . .  make embedding
 ##
-InstallMethod( Embedding, true,
+InstallMethod( Embedding,"perm direct product", true,
       [ IsPermGroup and HasDirectProductInfo,
         IsPosInt ], 0,
     function( D, i )
@@ -141,16 +141,17 @@ end );
 ##
 #M  Source( <emb> ) . . . . . . . . . . . . . . . . . . . . . .  of embedding
 ##
-InstallMethod( Source, true, [ IsEmbeddingDirectProductPermGroup ], 0,
+InstallMethod( Source,"perm direct product embedding", true,
+  [ IsEmbeddingDirectProductPermGroup ], 0,
     emb -> DirectProductInfo( Range( emb ) ).groups[ emb!.component ] );
 
 #############################################################################
 ##
 #M  ImagesRepresentative( <emb>, <g> )  . . . . . . . . . . . .  of embedding
 ##
-InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
-        [ IsEmbeddingDirectProductPermGroup,
-          IsMultiplicativeElementWithInverse ], 0,
+InstallMethod( ImagesRepresentative,"perm direct product embedding",
+  FamSourceEqFamElm, [ IsEmbeddingDirectProductPermGroup,
+		       IsMultiplicativeElementWithInverse ], 0,
     function( emb, g )
     return g ^ DirectProductInfo( Range( emb ) ).perms[ emb!.component ];
 end );
@@ -159,7 +160,8 @@ end );
 ##
 #M  PreImagesRepresentative( <emb>, <g> ) . . . . . . . . . . .  of embedding
 ##
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+InstallMethod( PreImagesRepresentative, "perm direct product embedding",
+  FamRangeEqFamElm,
         [ IsEmbeddingDirectProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( emb, g )
@@ -173,7 +175,8 @@ end );
 ##
 #M  ImagesSource( <emb> ) . . . . . . . . . . . . . . . . . . .  of embedding
 ##
-InstallMethod( ImagesSource, true, [ IsEmbeddingDirectProductPermGroup ], 0,
+InstallMethod( ImagesSource,"perm direct product embedding", true,
+ [ IsEmbeddingDirectProductPermGroup ], 0,
     function( emb )
     local   D,  I, info;
     
@@ -227,7 +230,7 @@ DeclareRepresentation( "IsProjectionDirectProductPermGroup",
 ##
 #M  Projection( <D>, <i> )  . . . . . . . . . . . . . . . . . make projection
 ##
-InstallMethod( Projection, true,
+InstallMethod( Projection,"perm direct product", true,
       [ IsPermGroup and HasDirectProductInfo,
         IsPosInt ], 0,
     function( D, i )
@@ -248,14 +251,16 @@ end );
 ##
 #M  Range( <prj> )  . . . . . . . . . . . . . . . . . . . . . . of projection
 ##
-InstallMethod( Range, true, [ IsProjectionDirectProductPermGroup ], 0,
+InstallMethod( Range, "perm direct product projection",true, 
+  [ IsProjectionDirectProductPermGroup ], 0,
     prj -> DirectProductInfo( Source( prj ) ).groups[ prj!.component ] );
 
 #############################################################################
 ##
 #M  ImagesRepresentative( <prj>, <g> )  . . . . . . . . . . . . of projection
 ##
-InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
+InstallMethod( ImagesRepresentative,"perm direct product projection",
+  FamSourceEqFamElm,
         [ IsProjectionDirectProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( prj, g )
@@ -269,7 +274,8 @@ end );
 ##
 #M  PreImagesRepresentative( <prj>, <g> ) . . . . . . . . . . . of projection
 ##
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+InstallMethod( PreImagesRepresentative,"perm direct product projection",
+  FamRangeEqFamElm,
         [ IsProjectionDirectProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( prj, g )
@@ -281,6 +287,7 @@ end );
 #M  KernelOfMultiplicativeGeneralMapping( <prj> ) . . . . . . . of projection
 ##
 InstallMethod( KernelOfMultiplicativeGeneralMapping,
+  "perm direct product projection",
     true, [ IsProjectionDirectProductPermGroup ], 0,
     function( prj )
     local   D,  gens,  i,  K, info;
@@ -331,7 +338,7 @@ end );
 ##
 #M  SubdirectProduct( <G1>, <G2>, <phi1>, <phi2> )  . . . . . . . constructor
 ##
-InstallMethod( SubdirectProduct, true,
+InstallMethod( SubdirectProductOp,"permgroup", true,
   [ IsPermGroup, IsPermGroup, IsGroupHomomorphism, IsGroupHomomorphism ], 0,
     function( G1, G2, phi1, phi2 )
     local   S,          # subdirect product of <G1> and <G2>, result
@@ -369,22 +376,9 @@ InstallMethod( SubdirectProduct, true,
                  olds  := Dinfo.olds,
                  news  := Dinfo.news,
                  perms := Dinfo.perms,
-                 embeddings := [],
                  projections := [] );
     SetSubdirectProductInfo( S, info );
     return S;
-end );
-
-#############################################################################
-##
-#M  Size( <S> ) . . . . . . . . . . . . . . . . . . . .  of subdirect product
-##
-InstallMethod( Size, true, [ IsPermGroup and HasSubdirectProductInfo ], 0,
-    function( S )
-    local info;
-    info := SubdirectProductInfo( S );
-    return Size( info.groups[ 1 ] ) * Size( info.groups[ 2 ] )
-           / Size( ImagesSource( info.homomorphisms[ 1 ] ) );
 end );
 
 #############################################################################
@@ -400,7 +394,7 @@ DeclareRepresentation( "IsProjectionSubdirectProductPermGroup",
 ##
 #M  Projection( <S>, <i> )  . . . . . . . . . . . . . . . . . make projection
 ##
-InstallMethod( Projection, true,
+InstallMethod( Projection,"perm subdirect product",true,
       [ IsPermGroup and HasSubdirectProductInfo,
         IsPosInt ], 0,
     function( S, i )
@@ -422,14 +416,16 @@ end );
 ##
 #M  Range( <prj> )  . . . . . . . . . . . . . . . . . . . . . . of projection
 ##
-InstallMethod( Range, true, [ IsProjectionSubdirectProductPermGroup ], 0,
+InstallMethod( Range,"perm subdirect product projection",
+  true, [ IsProjectionSubdirectProductPermGroup ], 0,
     prj -> SubdirectProductInfo( Source( prj ) ).groups[ prj!.component ] );
 
 #############################################################################
 ##
 #M  ImagesRepresentative( <prj>, <g> )  . . . . . . . . . . . . of projection
 ##
-InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
+InstallMethod( ImagesRepresentative,"perm subdirect product projection",
+  FamSourceEqFamElm,
         [ IsProjectionSubdirectProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( prj, g )
@@ -443,7 +439,8 @@ end );
 ##
 #M  PreImagesRepresentative( <prj>, <g> ) . . . . . . . . . . . of projection
 ##
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+InstallMethod( PreImagesRepresentative,"perm subdirect product projection",
+  FamRangeEqFamElm,
         [ IsProjectionSubdirectProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( prj, img )
@@ -477,7 +474,7 @@ end );
 #M  KernelOfMultiplicativeGeneralMapping( <prj> ) . . . . . . . of projection
 ##
 InstallMethod( KernelOfMultiplicativeGeneralMapping,
-    true,
+    "perm subdirect product projection",true,
     [ IsProjectionSubdirectProductPermGroup ], 0,
     function( prj )
     local   D,  i, info;
@@ -651,10 +648,11 @@ local	G,H,	    # factors
     return grp;
 end);
 
-InstallMethod( WreathProduct, true, [ IsPermGroup, IsPermGroup ], 0,
+InstallMethod( WreathProduct,"permgroups: imprimitive",
+  true, [ IsPermGroup, IsPermGroup ], 0,
   WreathProductImprimitiveAction);
 
-InstallOtherMethod( WreathProduct, true,
+InstallOtherMethod( WreathProduct,"permgroups and action", true,
  [ IsPermGroup, IsPermGroup, IsSPGeneralMapping ], 0,
   WreathProductImprimitiveAction);
 
@@ -662,7 +660,7 @@ InstallOtherMethod( WreathProduct, true,
 ##
 #M  Embedding( <W>, <i> ) . . . . . . . . . . . . . . . . . .  make embedding
 ##
-InstallMethod( Embedding, true,
+InstallMethod( Embedding,"perm wreath product", true,
   [ IsPermGroup and HasWreathProductInfo,
     IsPosInt ], 0,
 function( W, i )
@@ -699,14 +697,16 @@ end );
 ##
 #M  Source( <emb> ) . . . . . . . . . . . . . . . . . . . . . .  of embedding
 ##
-InstallMethod( Source, true, [ IsEmbeddingWreathProductPermGroup ], 0,
+InstallMethod( Source,"perm wreath product embedding",
+  true, [ IsEmbeddingWreathProductPermGroup ], 0,
     emb -> WreathProductInfo( Range( emb ) ).groups[1] );
 
 #############################################################################
 ##
 #M  ImagesRepresentative( <emb>, <g> )  . . . . . . . . . . . .  of embedding
 ##
-InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
+InstallMethod( ImagesRepresentative,
+  "imprim perm wreath product embedding",FamSourceEqFamElm,
         [ IsEmbeddingImprimitiveWreathProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( emb, g )
@@ -717,7 +717,8 @@ end );
 ##
 #M  PreImagesRepresentative( <emb>, <g> ) . . . . . . . . . . .  of embedding
 ##
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+InstallMethod( PreImagesRepresentative,
+  "imprim perm wreath product embedding", FamRangeEqFamElm,
         [ IsEmbeddingImprimitiveWreathProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( emb, g )
@@ -761,7 +762,7 @@ end );
 ##
 #M  Projection( <W> ) . . . . . . . . . . . . . . projection of wreath on top
 ##
-InstallOtherMethod( Projection, true,
+InstallOtherMethod( Projection,"perm wreath product", true,
   [ IsPermGroup and HasWreathProductInfo ],0,
 function( W )
 local  info,proj,H;
@@ -769,7 +770,7 @@ local  info,proj,H;
   if IsBound( info.projection ) then return info.projection; fi;
 
   if IsBound(info.permimpr) and info.permimpr=true then
-    proj:=ActionHomomorphism(W,info.components,OnSets);
+    proj:=ActionHomomorphism(W,info.components,OnSets,"surjective");
   else
     H:=info.groups[2];
     proj:=List(info.basegens,i->One(H));

@@ -461,7 +461,10 @@ InstallTrueMethod( IsScalar, IsRecord );
 InstallTrueMethod( IsScalarCollection, IsRecordCollection );
 InstallTrueMethod( IsScalarCollColl, IsRecordCollColl );
 
-RecordsFamily!.TYPES_LIST_FAM  := [,,,,,,,,,,,,,,,,,,,,,,,,,,false]; # list with 26 holes
+# for chaching types of homogeneous lists, assigned in kernel when needed 
+RecordsFamily!.TYPES_LIST_FAM  := [];
+# for efficiency
+RecordsFamily!.TYPES_LIST_FAM[27] := 0;
 
 Fam:= CollectionsFamily( RecordsFamily );
 Fam!.IMP_FLAGS := AND_FLAGS( Fam!.IMP_FLAGS,

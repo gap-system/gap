@@ -86,7 +86,8 @@ DeclareAttribute("Zuppos",IsGroup);
 ##  for the construction must also fulfill <func> as well.
 ##  (In fact the filter <func> will simply discard subgroups in the cyclic
 ##  extension algorithm. Therefore the trivial subgroup will always be
-##  included.)
+##  included.) Also note, that for such a partial lattice
+##  maximality/minimality inclusion relations cannot be computed.
 ##
 ##  The cyclic extension algorithm requires the perfect subgroups of <G>.
 ##  However {\GAP} cannot analyze the function <func> for its implication

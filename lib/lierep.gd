@@ -1,6 +1,7 @@
 #############################################################################
 ##
 #W  lierep.gd                   GAP library               Willem de Graaf
+#W                                                    and Craig A. Struble
 ##
 #H  @(#)$Id$
 ##
@@ -16,48 +17,48 @@ Revision.lierep_gd :=
 
 #1
 ##
-## An $s$-cochain of a module $V$ over a Lie algebra $L$, is an $s$-linear map
+##  An $s$-cochain of a module $V$ over a Lie algebra $L$, is an $s$-linear
+##  map
+##  $$
+##  c: L\times\cdots\times L \to V  \hbox{ ($s$ factors $L$)}
+##  $$
+##  that is skew-symmetric (meaning that if any of the arguments are
+##  interchanged, $c$ changes to $-c$).
 ##
-##      $$c: L\times\cdots\times L \to V$$  ($s$ factors $L$)
+##  Let $\{x_1,\ldots,x_n\}$ be a basis of $L$. Then any $s$-cochain is 
+##  determined by the values $c( x_{i_1},\ldots, x_{i_s} )$, where
+##  $1\le i_1 \< i_2 \< \cdots \< i_s \le \dim L$.
+##  Now this value again is a linear combination of basis elements of $V$:
+##  $c( x_{i_1},\ldots, x_{i_s} ) = \sum \lambda^k_{i_1,\ldots, i_s} v_k$.
+##  Denote the dimension of $V$ by $r$.
+##  Then we represent an $s$-cocycle by a list of $r$ lists.
+##  The $j$-th of those lists consists of entries of the form
+##  $$
+##  [  [i_1,i_2,\ldots,i_s], \lambda^j_{i_1,\ldots, i_s} ]
+##  $$
+##  where the coefficient on the second position is non-zero.
+##  (We only store those entries for which this coefficient is non-zero.)
+##  It follows that every $s$-tuple $(i_1,\ldots,i_s)$ gives rise to $r$ 
+##  basis elements.
 ##
-## that is skew-symmetric (meaning that if any of the arguments are
-## interchanged, $c$ changes to $-c$).
+##  So the zero cochain is represented by a list of the form
+##  $[ [ ], [ ], \ldots , [ ] ]$. Furthermore, if $V$ is, e.g., 
+##  $4$-dimensional, then the $2$-cochain represented by
 ##
-## Let $\{x_1,...,x_n\}$ be a basis of $L$. Then any $s$-cochain is determined
-## by the values $c( x_{i_1}, ..., x_{i_s} )$, where
-## $1\le i_1 \< i_2 \< \cdots \< i_s \le \dim L$.
-## Now this value again is a linear combination of basis elements of $V$:
-## $c( x_{i_1}, ..., x_{i_s} ) = \sum \lambda^k_{i_1,\ldots, i_s} v_k$.
-## Denote the dimension of $V$ by $r$. Then we represent an $s$-cocycle by a
-## list
-## of $r$ lists. The $j$-th of those lists consists of entries of the form
+##  \begintt
+##  [  [ [ [1,2], 2] ], [ ], [ [ [1,2], 1/2 ] ], [ ] ]
+##  \endtt
 ##
-##    $$   [  [i_1,i_2,..,i_s], \lambda^j_{i_1,\ldots, i_s} ]$$
+##  maps the pair $(x_1,x_2)$ to $2v_1+1/2 v_3$ (where $v_1$ is the first
+##  basis element of $V$, and $v_3$ the third), and all other pairs to zero.
 ##
-## where the coefficient on the second position is non-zero.
-## (We only store those entries for which this coefficient is non-zero.)
-## It follows that every $s$-tuple $(i_1,...,i_s)$ gives rise to $r$ basis
-## elements.
+##  By definition, $0$-cochains are constant maps $c( x ) = v_c\in V$ for all
+##  $x \in L$. So $0$-cochains have a different representation: they are just
+##  represented by the list $[ v_c ]$.
 ##
-## So the zero cochain is represented by a list of the form
-## [ [ ], [ ], ...., [ ] ]. Furthermore, if $V$ is, e.g., $4$-dimensional,
-## then the $2$-cochain represented by
-##
-##     \begintt
-##        [  [ [ [1,2], 2] ], [ ], [ [ [1,2], 1/2 ] ], [ ] ]
-##     \endtt
-##
-## maps the pair $(x_1,x_2)$ to $2v_1+1/2 v_3$ (where $v_1$ is the first basis
-## element of $V$, and $v_3$ the third), and all
-## other pairs to zero.
-##
-## By definition, $0$-cochains are constant maps $c( x ) = v_c\in V$ for all
-## $x \in L$. So $0$-cochains have a different representation: they are just
-## represented by the list $[ v_c ]$.
-##
-## Cochains are constructed using the function `Cochain' (see below),
-## if `c' is a cochain, then its corresponding list is returned by
-## `ExtRepOfObj( c )'.
+##  Cochains are constructed using the function `Cochain' (see~"Cochain"),
+##  if <c> is a cochain, then its corresponding list is returned by
+##  `ExtRepOfObj( <c> )'.
 ##
 
 
@@ -97,7 +98,7 @@ DeclareOperation( "CochainSpace", [ IsAlgebraModule, IS_INT ] );
 ##  <c> when applied to the <s> elements <y1> to <ys> (that lie in the
 ##  Lie algebra acting on the module corresponding to <c>). It is also
 ##  possible to call this function with two arguments: first <c> and then
-##  the list containing <y1>,...,<ys>.
+##  the list containing `<y1>,...,<ys>'.
 ##
 DeclareGlobalFunction( "ValueCochain" );
 
@@ -245,6 +246,7 @@ DeclareOperation( "DominantWeights", [ IsRootSystem, IsList ] );
 ############################################################################
 ##
 #O  DominantCharacter( <L>, <maxw> )
+#O  DominantCharacter( <R>, <maxw> )
 ##
 ##  For a highest weight <maxw> and a semisimple Lie algebra <L>, this
 ##  returns the dominant weights of the highest-weight module over <L>,
@@ -252,7 +254,11 @@ DeclareOperation( "DominantWeights", [ IsRootSystem, IsList ] );
 ##  first list contains the dominant weights; the second list contains
 ##  their multiplicities.
 ##
-DeclareOperation( "DominantCharacter", [ IsLieAlgebra, IsList ] );
+##  The first argument can also be a root system, in which case 
+##  the dominant character of the highest-weight module over the
+##  corresponding semisimple Lie algebra is returned. 
+##
+DeclareOperation( "DominantCharacter", [ IsRootSystem, IsList ] );
 
 
 #############################################################################
@@ -291,18 +297,26 @@ DeclareOperation( "DimensionOfHighestWeightModule", [ IsLieAlgebra, IsList ] );
 ##  respectively, both from a fixed Chevalley basis of $L$. Furthermore,
 ##  $h_1,\ldots, h_l$ are the Cartan elements from the same Chevalley
 ##  basis. Also we set
-##  $$ x_{\alpha}^{(n)} = {x_{\alpha}^n \over n!}, ~~~~~
-##     y_{\alpha}^{(n)} = {y_{\alpha}^n \over n!}.$$
+##  $$
+##  x_{\alpha}^{(n)} = {x_{\alpha}^n \over n!}, \qquad
+##  y_{\alpha}^{(n)} = {y_{\alpha}^n \over n!}\.
+##  $$
 ##  Furthermore, let $\alpha_1,\ldots, \alpha_s$ denote the positive roots
 ##  of $R$. For multi-indices $N=(n_1,\ldots, n_s)$, $M=(m_1,\ldots, m_s)$
 ##  and $K=(k_1,\ldots, k_s)$ (where $n_i,m_i,k_i\geq 0$) set
-##  $$ x^N = x_{\alpha_1}^{(n_1)}\cdots x_{\alpha_s}^{(n_s)},$$
-##  $$ y^M= y_{\alpha_1}^{(m_1)}\cdots y_{\alpha_s}^{(m_s)},$$
-##  $$ h^K= {h_1\choose k_1}\cdots {h_l\choose k_l}$$
+##  $$
+##  \matrix{
+##  x^N &=& x_{\alpha_1}^{(n_1)}\cdots x_{\alpha_s}^{(n_s)},\cr
+##  y^M &=& y_{\alpha_1}^{(m_1)}\cdots y_{\alpha_s}^{(m_s)},\cr
+##  h^K &=& {h_1\choose k_1}\cdots {h_l\choose k_l}\cr
+##  }
+##  $$
 ##  Then by a theorem of Kostant, the $x_{\alpha}^{(n)}$ and
 ##  $y_{\alpha}^{(n)}$ generale a subring of the universal enveloping algebra
 ##  $U(L)$ spanned (as a free $Z$-module) by the elements
-##  $$ y^Mh^Kx^N $$
+##  $$
+##  y^Mh^Kx^N
+##  $$
 ##  (see, e.g., J. E. Humphreys, Introduction to Lie Algebras and
 ##  Representation Theory, \S 26). So by the Poincare-Birkhoff-Witt theorem
 ##  this subring is a lattice in $U(L)$. Furthermore, this lattice is
@@ -338,8 +352,14 @@ DeclareCategoryFamily( "IsUEALatticeElement" );
 ##  First are listed the negative root vectors (denoted by $y_1,\ldots, y_s$),
 ##  then the positive root vectors (denoted by $x_1,\ldots, x_s$). At the
 ##  end of the list there are the Cartan elements. They are printed as
-##  `( hi/1 )', which means $${h_i\choose 1}.$$ In general the printed form
-##  `( hi/ k )' means $${h_i\choose k}.$$
+##  `( hi/1 )', which means
+##  $$
+##  {h_i\choose 1}\.
+##  $$
+##  In general the printed form `( hi/ k )' means 
+##  $$
+##  {h_i\choose k}\.
+##  $$
 ##
 ##  Also $y_i^{(m)}$ is printed as `yi^(m)', which means that entering
 ##  `yi^m' at the {\GAP} prompt results in the output `m!*yi^(m)'.
@@ -347,7 +367,7 @@ DeclareCategoryFamily( "IsUEALatticeElement" );
 ##  Products of lattice generators are collected using the following order:
 ##  first come the $y_i^{(m_i)}$ (in the same order as the positive roots),
 ##  then
-##  the ${h_i\choose k_i}$, and then the $x_i^{(n_i)}$ (in the same order as
+##  the ${h_i\choose k_i},$ and then the $x_i^{(n_i)}$ (in the same order as
 ##  the positive roots).
 ##
 DeclareAttribute( "LatticeGeneratorsInUEA", IsLieAlgebra );
@@ -419,7 +439,7 @@ DeclareCategory( "IsBasisOfWeightRepElementSpace", IsBasis );
 ##  in the category `IsWeightRepElement'). However, if `v' is an element
 ##  of such a module, then `ExtRepOfObj( v )' is a WeightRepElement.
 ##
-DeclareGlobalFunction( "HighestWeightModule" );
+DeclareOperation( "HighestWeightModule", [ IsAlgebra, IsList ] );
 
 #############################################################################
 ##
@@ -462,6 +482,73 @@ DeclareGlobalFunction( "ExtendRepresentation" );
 ##
 DeclareHandlingByNiceBasis( "IsCochainsSpace",
     "for free left modules of cochains" );
+
+
+#############################################################################
+##
+#V  InfoSearchTable
+##
+##  is the info class for methods and functions applicable to search tables.
+##  (see~"Info Functions").
+##
+DeclareInfoClass( "InfoSearchTable" );
+
+#############################################################################
+##
+#C  IsSearchTable( <obj> )
+##
+##  A search table stores elements and provides methods for efficient
+##  search of particular kinds of elements.
+##
+DeclareCategory( "IsSearchTable", IsObject );
+
+
+#############################################################################
+##
+#O  Search( <T>, <key> )
+##
+##  is the operation for finding element labelled with <key> in table <T>.
+##  The return value depends on the specific implementation of the search
+##  table, but this will always return `fail' if an element in $T$ does not
+##  satisfy the necessary criterion for <key>.
+##
+DeclareOperation( "Search", [ IsSearchTable, IsObject ] );
+
+#############################################################################
+##
+#O  Insert( <T>, <key>, <data> )
+##
+##  is the operation for inserting data into the search table. 
+##  The data <data> is stored in the table under the key <key>.
+##  The operation returns `true' if the insertion occurs, and
+##  `false' otherwise.
+##
+DeclareOperation( "Insert", [ IsSearchTable, IsObject, IsObject ] );
+
+
+#############################################################################
+##
+#C  IsVectorSearchTable( <obj> )
+##
+##  is a search table encoding integer vectors representing a 
+##  variable/exponent pair for monomials in a commutative polynomial ring
+##  or in a semisimple Lie algebra given by a PBW basis.
+##
+DeclareCategory( "IsVectorSearchTable", IsSearchTable );
+
+
+#############################################################################
+##
+#F VectorSearchTable( )
+#F VectorSearchTable( <keys>, <data> )
+##
+## construct an empty search table or a search table containing <data> 
+## keyed by <keys>. The list <keys> must contain integer lists which are
+## interpreted as exponents for variables. 
+##
+## The lists <keys> and <data> must be the same length as well.
+## 
+DeclareGlobalFunction( "VectorSearchTable" );
 
 
 #############################################################################

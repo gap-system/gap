@@ -72,7 +72,7 @@ hash table with non-positive integers.
 The crucial step of hashing is to transform key objects into integers such
 that equal objects produce the same integer.
 
-\Declaration{IntKeyFun}
+\Declaration{TableHasIntKeyFun}
 
 The actual function used will vary very much on the type of objects. However
 {\GAP} provides already key functions for some commonly encountered objects.

@@ -29,8 +29,9 @@ gap> PrimeResidues( 0 );  PrimeResidues( 1 );  PrimeResidues( 20 );
 \endexample
 
 \Declaration{Phi}
-\index{order!of the prime residue group}%
-\index{prime residue group!order}\index{Eulers totient function}
+\index{order!of the prime residue group}
+\index{prime residue group!order}
+\atindex{Euler's totient function}{@Euler's totient function}
 
 \beginexample
 gap> Phi( 12 );  Phi( 2^13-1 );  Phi( 2^15-1 );
@@ -40,7 +41,8 @@ gap> Phi( 12 );  Phi( 2^13-1 );  Phi( 2^15-1 );
 \endexample
 
 \Declaration{Lambda}
-\index{Carmichaels lambda function}\index{prime residue group!exponent}%
+\atindex{Carmichael's lambda function}{@Carmichael's lambda function}
+\index{prime residue group!exponent}
 \index{exponent!of the prime residue group}
 
 \beginexample
@@ -60,7 +62,7 @@ rec( primes := [  ], exponents := [  ], generators := [  ] )
 gap> GeneratorsPrimeResidues( 4*3 );
 rec( primes := [ 2, 3 ], exponents := [ 2, 1 ], generators := [ 7, 5 ] )
 gap> GeneratorsPrimeResidues( 8*9*5 );
-rec( primes := [ 2, 3, 5 ], exponents := [ 3, 2, 1 ],
+rec( primes := [ 2, 3, 5 ], exponents := [ 3, 2, 1 ], 
   generators := [ [ 271, 181 ], 281, 217 ] )
 \endexample
 
@@ -90,8 +92,8 @@ fail
 \endexample
 
 \Declaration{PrimitiveRootMod}
-\index{primitive root modulo an integer}%
-\index{prime residue group!generator}%
+\index{primitive root modulo an integer}
+\index{prime residue group!generator}
 \index{generator!of the prime residue group}
 
 \beginexample
@@ -104,8 +106,8 @@ fail        # there exists no primitive root modulo 30
 \endexample
 
 \Declaration{IsPrimitiveRootMod}
-\index{test!for a primitive root}%
-\index{prime residue group!generator}%
+\index{test!for a primitive root}
+\index{prime residue group!generator}
 \index{generator!of the prime residue group}
 
 \beginexample
@@ -123,7 +125,7 @@ false        # there does not exist a primitive root modulo 30
 \Section{Roots Modulo Integers}
 
 \Declaration{Jacobi}
-\index{quadratic residue}%
+\index{quadratic residue}
 \index{residue!quadratic}
 
 \beginexample
@@ -136,7 +138,7 @@ gap> Jacobi( 3, 35 );
 \endexample
 
 \Declaration{Legendre}
-\index{quadratic residue}%
+\index{quadratic residue}
 \index{residue!quadratic}
 
 \beginexample
@@ -149,8 +151,8 @@ gap> Legendre( 3, 35 );
 \endexample
 
 \Declaration{RootMod}
-\index{quadratic residue}%
-\index{residue!quadratic}%
+\index{quadratic residue}
+\index{residue!quadratic}
 \index{root!of an integer modulo another}
 
 \beginexample
@@ -179,7 +181,7 @@ gap> RootsMod( 1, 5, 7*31 );
 \endexample
 
 \Declaration{RootsUnityMod}
-\index{modular roots}%
+\index{modular roots}
 \index{root!of 1 modulo an integer}
 
 \beginexample
@@ -201,7 +203,9 @@ gap> List( RootMod( 64, 1009 ) * RootsUnityMod( 1009 ),
 
 \begintt
 gap> Sigma( 0 );
-Error, Sigma: <n> must not be 0
+Error, Sigma: <n> must not be 0 called from
+... 4 lines omitted here ...
+brk> quit;
 \endtt
 \beginexample
 gap> Sigma( 1 );  Sigma( 1009 );  Sigma( 8128 ) = 2*8128;
@@ -215,7 +219,9 @@ true        # thus 8128 is a perfect number
 
 \begintt
 gap> Tau( 0 );
-Error, Tau: <n> must not be 0
+Error, Tau: <n> must not be 0 called from
+... 4 lines omitted here ...
+brk> quit;
 \endtt
 \beginexample
 gap> Tau( 1 );  Tau( 1013 );  Tau( 8128 );  Tau( 36 );
@@ -252,6 +258,7 @@ gap> TwoSquares( 125 );  TwoSquares( 13*17 );
 [ 2, 11 ]        # not [ 5, 10 ] because this has not minimal gcd
 [ 5, 14 ]        # [10,11] would be the other possible representation
 gap> TwoSquares( 848654483879497562821 );
+#I  beyond the guaranteed bound of the probabilistic primality test
 [ 6305894639, 28440994650 ]        # 848654483879497562821 is prime
 \endexample
 

@@ -271,6 +271,14 @@ DeclareOperation( "ClosureRing", [ IsRing, IsObject ] );
 ##  Unique in this context means unique up to permutations of the factors and
 ##  up to multiplication of the factors by units (see~"Units").
 ##
+##  Mathematically, a field should therefore also be a  unique factorization
+##  ring, since every element is a unit. In GAP, however, at least at present
+##  fields do not lie in the filter "IsUniqueFactorizationRing", since 
+##  Operations such as Factors, Gcd, StandardAssociate and so on do
+##  not apply to fields (the results would be trivial, and not
+##  especially useful) and Methods which require their arguments to
+##  lie in IsUniqueFactorizationRing expect these Operations to work.
+##
 ##  (Note that we cannot install a subset maintained method for this category
 ##  since the factorization of an element needs not exist in a subring.
 ##  As an example, consider the subring $4 \N + 1$ of the ring $4 \Z + 1$;
@@ -477,8 +485,9 @@ DeclareOperation( "IsUnit", [ IsRing, IsRingElement ] );
 ##
 ##  `InterpolatedPolynomial' returns, for given lists <x>, <y> of elements in
 ##  a ring <R> of the same length $n$, say, the unique  polynomial of  degree
-##  less than $n$ which has value <y>[i] at <x>[i], for all $i=1,...,n$. Note
-##  that the elements in <x> must be distinct.
+##  less than $n$ which has value <y>[$i$] at <x>[$i$], 
+##  for all $i\in\{1,\ldots,n\}$. 
+##  Note that the elements in <x> must be distinct.
 ##
 DeclareOperation( "InterpolatedPolynomial",
     [ IsRing, IsHomogeneousList, IsHomogeneousList ] );
@@ -595,7 +604,7 @@ DeclareOperation( "EuclideanRemainder",
 #O  EuclideanQuotient( <r>, <m> )
 ##
 ##  In the first form `EuclideanQuotient' returns the Euclidean quotient of
-##  the ring elements <r>and <m> in the ring <R>.
+##  the ring elements <r> and <m> in the ring <R>.
 ##  In the second form `EuclideanQuotient' returns the Euclidean quotient of
 ##  the ring elements <r> and <m> in their default ring.
 ##  The ring <R> must be a Euclidean ring (see "IsEuclideanRing") otherwise
@@ -695,11 +704,13 @@ DeclareOperation( "PowerMod",
 ##  `Gcd' returns the standard associate (see "StandardAssociate") of the
 ##  greatest common divisors.
 ##
-##  A greatest common divisor of the elements $r_1$, $r_2$... etc. of the
+##  A greatest common divisor of the elements $r_1, r_2, \ldots$ of the
 ##  ring $R$ is an element of largest Euclidean degree (see
-##  "EuclideanDegree") that is a divisor of $r_1$, $r_2$... etc.
-##  We define $gcd( r, 0_R ) = gcd( 0_R, r ) = StandardAssociate( r )$
-##  and $gcd( 0_R, 0_R ) = 0_R$.
+##  "EuclideanDegree") that is a divisor of $r_1, r_2, \ldots$ .
+##
+##  We define 
+##  `Gcd( <r>, $0_{<R>}$ ) = Gcd( $0_{<R>}$, <r> ) = StandardAssociate( <r> )'
+##  and `Gcd( $0_{<R>}$, $0_{<R>}$ ) = $0_{<R>}$'.
 ##
 DeclareGlobalFunction( "Gcd" );
 
@@ -734,9 +745,9 @@ DeclareOperation( "GcdOp",
 ##  <R> must be a Euclidean ring (see "IsEuclideanRing") so that
 ##  `Gcd' (see "Gcd") can be applied to its elements.
 ##
-##  The representation of the gcd  $g$ of  the elements $r_1$, $r_2$...  etc.
-##  of a ring $R$ is a list of ring elements $s_1$, $s_2$... etc. of $R$,
-##  such that $g = s_1 r_1 + s_2  r_2 ...$.
+##  The representation of the gcd  $g$ of  the elements $r_1, r_2, \ldots$
+##  of a ring $R$ is a list of ring elements $s_1, s_2, \ldots$ of $R$,
+##  such that $g = s_1 r_1 + s_2  r_2 + \cdots$.
 ##  That this representation exists can be shown using the Euclidean
 ##  algorithm, which in fact can compute those coefficients.
 ##
@@ -776,11 +787,13 @@ DeclareOperation( "GcdRepresentationOp",
 ##  `Lcm' returns the standard associate (see~"StandardAssociate") of the
 ##  least common multiples.
 ##
-##  A least common multiple of the elements $r_1$, $r_2$... etc. of the
+##  A least common multiple of the elements $r_1, r_2, \ldots$ of the
 ##  ring $R$ is an element of smallest Euclidean degree
-##  (see~"EuclideanDegree") that is a multiple of $r_1$, $r_2$... etc.
-##  We define $lcm( r, 0_R ) = lcm( 0_R, r ) = StandardAssociate( r )$
-##  and $Lcm( 0_R, 0_R ) = 0_R$.
+##  (see~"EuclideanDegree") that is a multiple of $r_1, r_2, \ldots$ .
+##
+##  We define 
+##  `Lcm( <r>, $0_{<R>}$ ) = Lcm( $0_{<R>}$, <r> ) = StandardAssociate( <r> )'
+##  and `Lcm( $0_{<R>}$, $0_{<R>}$ ) = $0_{<R>}$'.
 ##
 ##  `Lcm' uses the equality $lcm(m,n) = m\*n / gcd(m,n)$ (see~"Gcd").
 ##

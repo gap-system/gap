@@ -218,6 +218,9 @@
 **
 **  HISTORY
 *H  $Log$
+*H  Revision 4.4  2000/05/29 08:56:57  sal
+*H  Remove all the \ continuation lines -- who needs the hassle.	SL
+*H
 *H  Revision 4.3  1999/10/27 08:51:11  sal
 *H  Fix date problem on alphas (I hope)	SL
 *H
@@ -469,8 +472,7 @@ FILE *          ReadBinr;
 #ifdef  SYS_IS_VMS
 #include        <file.h>
 long            WritBinr;
-#define OPEN_WRIT_BINR(patl)    ((WritBinr = creat( (patl), 0, \
-                                               "rfm=fix", "mrs=512" )) != -1)
+#define OPEN_WRIT_BINR(patl)    ((WritBinr = creat( (patl), 0, "rfm=fix", "mrs=512" )) != -1)
 #define BLCK_WRIT_BINR(blk,len) VmsBlckWritBinr( WritBinr, (blk), (len) )
 #define CLOS_WRIT_BINR()        (close( WritBinr ) == 0)
 #endif
@@ -2101,9 +2103,7 @@ int             DecodeLzh ()
     unsigned long       bitc;           /* number of bits that are valid   */
 
 #define PEEK_BITS(N)            ((bits >> (bitc-(N))) & ((1L<<(N))-1))
-#define FLSH_BITS(N)            if ( (bitc -= (N)) < 16 ) {              \
-                                    bits  = (bits<<16) + FlahReadArch(); \
-                                    bitc += 16;                          }
+#define FLSH_BITS(N)            if ( (bitc -= (N)) < 16 ) { bits  = (bits<<16) + FlahReadArch(); bitc += 16; }
 
     /* initialize bit source, output pointer, and crc                      */
     bits = 0;  bitc = 0;  FLSH_BITS(0);

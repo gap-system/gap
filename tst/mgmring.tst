@@ -22,7 +22,7 @@ gap> ElementOfMagmaRing( ElementsFamily( FamilyObj( rm ) ), 0*Z(3),
 gap> IsGroupRing( rm );
 true
 gap> centre:= Centre( rm );
-<algebra of dimension 3 over GF(3)>
+<algebra-with-one of dimension 3 over GF(3)>
 gap> GeneratorsOfAlgebra( centre );
 [ (Z(3)^0)*(), (Z(3)^0)*(1,2,3)+(Z(3)^0)*(1,3,2), 
   (Z(3)^0)*(2,3)+(Z(3)^0)*(1,2)+(Z(3)^0)*(1,3) ]

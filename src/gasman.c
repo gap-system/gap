@@ -781,13 +781,13 @@ void StartRestoringBags( UInt nBags, UInt maxSize)
   target = (8*nBags)/7 + (8*maxSize)/7; /* ideal workspace size */
   if ((EndBags - MptrBags) < target)
     {
-      newmem  = (*AllocFuncBags)(sizeof(Bag)*(target- (EndBags - MptrBags)),
+      newmem  = (*AllocFuncBags)(sizeof(Bag)*(target- (EndBags - MptrBags))/1024,
                                  0);
       if (newmem == 0)
         {
           target = nBags + maxSize; /* absolute requirement */
           if ((EndBags - MptrBags) < target)
-            (*AllocFuncBags)(sizeof(Bag)*(target- (EndBags - MptrBags)), 1);
+            (*AllocFuncBags)(sizeof(Bag)*(target- (EndBags - MptrBags))/1024, 1);
         }
       EndBags = MptrBags + target;
     }
@@ -945,36 +945,36 @@ void            InitBags (
     StackAlignBags  = stack_align;
 
     /* first get some storage from the operating system                    */
-    initial_size    = (initial_size + (512*1024L-1)) & ~(512*1024L-1);
+    initial_size    = (initial_size + 511) & ~(511);
     MptrBags = (*AllocFuncBags)( initial_size, 1 );
     if ( MptrBags == 0 )
         (*AbortFuncBags)("cannot get storage for the initial workspace.");
-    EndBags = MptrBags + initial_size / sizeof(Bag*);
+    EndBags = MptrBags + 1024*initial_size / sizeof(Bag*);
 
     /* 1/8th of the storage goes into the masterpointer area               */
     FreeMptrBags = (Bag)MptrBags;
     for ( p = MptrBags;
-          p + 2*(SIZE_MPTR_BAGS) <= MptrBags+initial_size/8/sizeof(Bag*);
+          p + 2*(SIZE_MPTR_BAGS) <= MptrBags+1024*initial_size/8/sizeof(Bag*);
           p += SIZE_MPTR_BAGS )
     {
         *p = (Bag)(p + SIZE_MPTR_BAGS);
     }
 
     /* the rest is for bags                                                */
-    OldBags   = MptrBags + initial_size/8/sizeof(Bag*);
+    OldBags   = MptrBags + 1024*initial_size/8/sizeof(Bag*);
     YoungBags = OldBags;
     AllocBags = OldBags;
 
     /* remember the cache size                                             */
     CacheSizeBags = cache_size;
     if ( ! CacheSizeBags ) {
-        AllocSizeBags = 256*1024L;
+        AllocSizeBags = 256;
         StopBags = EndBags;
     }
     else {
-        AllocSizeBags = CacheSizeBags;
-        StopBags  = AllocBags + WORDS_BAG(AllocSizeBags) <= EndBags ?
-                    AllocBags + WORDS_BAG(AllocSizeBags) :  EndBags;
+        AllocSizeBags = (CacheSizeBags+1023)/1024;
+        StopBags  = AllocBags + WORDS_BAG(1024*AllocSizeBags) <= EndBags ?
+                    AllocBags + WORDS_BAG(1024*AllocSizeBags) :  EndBags;
     }
 
     /* remember whether bags should be clean                               */
@@ -1468,6 +1468,7 @@ void            RetypeBag (
 **
 **
 **  Otherwise, if the  link word contains the  identifier of the bag  itself,
+
 **  marked dead,  'CollectBags' first adds the masterpointer   to the list of
 **  available masterpointers (see  "FreeMptrBags") and then simply  moves the
 **  source pointer to the next bag.
@@ -2026,22 +2027,22 @@ again:
 		 
 		 /* The test below should stop AllocSizeBags growing uncontrollably when
 		    all bags are big */
-		 && StopBags > OldBags + 4*WORDS_BAG(AllocSizeBags))
-                AllocSizeBags += 256*1024L;
+		 && StopBags > OldBags + 4*1024*WORDS_BAG(AllocSizeBags))
+                AllocSizeBags += 256L;
             else if ( 4096 < nrLiveBags+nrDeadBags+nrHalfDeadBags
-                   && 256*1024L < AllocSizeBags )
-                AllocSizeBags -= 256*1024L;
+                   && 256 < AllocSizeBags )
+                AllocSizeBags -= 256;
         }
         else {
             if ( nrLiveBags+nrDeadBags < 512 )
-                AllocSizeBags += CacheSizeBags;
+                AllocSizeBags += CacheSizeBags/1024;
             else if ( 4096 < nrLiveBags+nrDeadBags+nrHalfDeadBags
                    && CacheSizeBags < AllocSizeBags )
-                AllocSizeBags -= CacheSizeBags;
+                AllocSizeBags -= CacheSizeBags/1024;
         }
 
         /* if we dont get enough free storage or masterpointers do full gc */
-        if ( EndBags < StopBags + WORDS_BAG(AllocSizeBags)
+        if ( EndBags < StopBags + WORDS_BAG(1024*AllocSizeBags)
           || (OldBags-MptrBags)
              <
 	     /*	     nrLiveBags+nrDeadBags+nrHalfDeadBags+ 4096 */
@@ -2052,7 +2053,7 @@ again:
 		     but I wasn't sure it always made sense         SL */
 
 	     /* change the test to avoid subtracting unsigned integers */
-	     WORDS_BAG(AllocSizeBags)/7 +(NrLiveBags + NrHalfDeadBags) 
+	     WORDS_BAG(AllocSizeBags*1024)/7 +(NrLiveBags + NrHalfDeadBags) 
 	     ) {
             done = 0;
         }
@@ -2076,7 +2077,7 @@ again:
 
         /* get the storage we absolutly need                               */
         while ( EndBags < StopBags
-             && (*AllocFuncBags)(512*1024L,1) )
+             && (*AllocFuncBags)(512,1) )
             EndBags += WORDS_BAG(512*1024L);
 
         /* if not enough storage is free, fail                             */
@@ -2086,7 +2087,7 @@ again:
         /* if less than 1/8th is free, get more storage (in 1/2 MBytes)    */
         while ( ( EndBags < StopBags + (StopBags-OldBags)/7 ||
 		  EndBags - StopBags < WORDS_BAG(AllocSizeBags) )
-             && (*AllocFuncBags)(512*1024L,0) )
+             && (*AllocFuncBags)(512,0) )
             EndBags += WORDS_BAG(512*1024L);
 
 	/* If we are having trouble, then cut our cap to fit our cloth *.
@@ -2102,7 +2103,7 @@ again:
         /* if more than 1/8th is free, give back storage (in 1/2 MBytes)   */
         while ( StopBags+(StopBags-OldBags)/7 <= EndBags-WORDS_BAG(512*1024L)
 		&& EndBags - StopBags > WORDS_BAG(AllocSizeBags) + WORDS_BAG(512*1024L)
-             && (*AllocFuncBags)(-512*1024L,0) )
+             && (*AllocFuncBags)(-512,0) )
             EndBags -= WORDS_BAG(512*1024L);
 
         /* if we want to increase the masterpointer area                   */
@@ -2158,7 +2159,7 @@ again:
     if ( ! CacheSizeBags || EndBags < StopBags+WORDS_BAG(AllocSizeBags) )
         StopBags = EndBags;
     else
-        StopBags = StopBags + WORDS_BAG(AllocSizeBags);
+        StopBags = StopBags + WORDS_BAG(1024*AllocSizeBags);
 
     /* if we are not done, then true again                                 */
     if ( ! done ) {

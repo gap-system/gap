@@ -5,16 +5,17 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1995,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  2000,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This is the main secondary file of the GAP library of irreducible maximal
 ##  finite (imf) integral matrix groups. It contains a list IMFList of length
-##  24 and a record IMFRec.
+##  31 and a record IMFRec.
 ##
 ##  Each entry IMFList[dim] of IMFList is a record which contains information
 ##  about the  Z-class  representative groups  (in case  dim < 12  or  dim in
 ##  {13,17,19,23}, or about the Q-class representative groups (in case dim in
-##  {12,14,15,16,18,20,21,22,24})  of diminsion dim.  More precisely, each of
-##  these records contains the following components:
+##  {12,14,15,16,18,20,21,22,24,25,26,27,28,29,30,31}) of diminsion dim. More
+##  precisely, each of these records contains the following components:
 ##
 ##  IMFList[dim].size               the group size,
 ##  IMFList[dim].isomorphismType    the isomorphism type,
@@ -31,13 +32,13 @@
 ##                                  short vectors.
 ##
 ##  Additional lists with the associated  Gram matrices and matrix generators
-##  are provided in the files  imf1to9.grp to  imf24.grp  of this library and
+##  are provided in the files  imf1to9.grp to  imf31.grp  of this library and
 ##  will be loaded only if necessary.
 ##
 ##  The record IMFRec contains the following components:
 ##
 ##  IMFRec.maximalDimension the  maximal dimension  covered  by the  library,
-##                          i.e., 24,
+##                          i.e., 31,
 ##  IMFRec.numberQQClasses  a list  containing  for each  dimension  dim  the
 ##                          number   of   Q-classes   of   imf  subgroups  of
 ##                          GL(dim,Q),
@@ -45,11 +46,12 @@
 ##                          number of Q-classes of imf subgroups of dimension
 ##                          dim available in the library,  i. e.,  the number
 ##                          of Q-classes of  imf subgroups of  GL(dim,Z),  if
-##                          dim is at most  11  or a prime,  or the number of
-##                          Q-classes of imf subgroups of GL(dim,Q), else,
+##                          dim is at most 11  or a prime at most 23,  or the
+##                          number   of   Q-classes   of  imf  subgroups   of
+##                          GL(dim,Q), else,
 ##  IMFRec.repsAreZReps     a list  containing  for each dimension dim a flag
-##                          which is true,  if dim is at most  11 or a prime,
-##                          or false, else,
+##                          which is true, if dim is at most 11 or a prime at
+##                          most 23, or false, else,
 ##  IMFRec.bNumbers         a list  containing  for each dimension dim a list
 ##                          of lists which, for each available Q-class,  give
 ##                          the  list   of  the   position  numbers   of  its
@@ -69,17 +71,18 @@ Revision.imf_grp :=
 ##
 BindGlobal( "IMFRec", rec( ) );
 
-IMFRec.maximalDimension := 24;
+IMFRec.maximalDimension := 31;
 
 IMFRec.numberQQClasses :=
- [1,2,1,3,2,6,2,9,2,8,2,19,4,12,6,31,3,17,2,31,8,12,4,65];
+ [1,2,1,3,2,6,2,9,2,8,2,19,4,12,6,31,3,17,2,31,8,12,4,65,5,16,5,37,2,33,4];
 
 IMFRec.numberQClasses :=
- [1,2,1,5,2,9,3,16,8,21,2,19,4,12,6,31,6,17,2,31,8,12,7,65];
+ [1,2,1,5,2,9,3,16,8,21,2,19,4,12,6,31,6,17,2,31,8,12,7,65,5,16,5,37,2,33,4];
 
 IMFRec.repsAreZReps :=
- [true,true,true,true,true,true,true,true,true,true,true,false,true,
-  false,false,false,true,false,true,false,false,false,true,false];
+ [true,true,true,true,true,true,true,true,true,true,true,false,true,false,
+  false,false,true,false,true,false,false,false,true,false,false,false,
+  false,false,false,false,false];
 
 IMFRec.bNumbers := [
  [[1]],
@@ -117,7 +120,18 @@ IMFRec.bNumbers := [
   [17],[18],[19],[20],[21],[22],[23],[24],[25],[26],[27],[28],[29],[30],[31],
   [32],[33],[34],[35],[36],[37],[38],[39],[40],[41],[42],[43],[44],[45],[46],
   [47],[48],[49],[50],[51],[52],[53],[54],[55],[56],[57],[58],[59],[60],[61],
-  [62],[63],[64],[65]]];
+  [62],[63],[64],[65]],
+ [[1],[2],[3],[4],[5]],
+ [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]],
+ [[1],[2],[3],[4],[5]],
+ [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16],
+  [17],[18],[19],[20],[21],[22],[23],[24],[25],[26],[27],[28],[29],[30],[31],
+  [32],[33],[34],[35],[36],[37]],
+ [[1],[2]],
+ [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16],
+  [17],[18],[19],[20],[21],[22],[23],[24],[25],[26],[27],[28],[29],[30],[31],
+  [32],[33]],
+ [[1],[2],[3],[4]]];
 
 IMFRec.maximalQClasses := [
  [1],
@@ -143,7 +157,14 @@ IMFRec.maximalQClasses := [
  [1..8],
  [1..12],
  [1,2,3,4,1,2,2],
- [1..65]];
+ [1..65],
+ [1..5],
+ [1..16],
+ [1..5],
+ [1..37],
+ [1,2],
+ [1..33],
+ [1..4]];
 
 
 if IsBound( i ) then
@@ -152,7 +173,7 @@ fi;
 
 BindGlobal( "IMFList", [ ] );
 
-for i in [ 1 .. 24 ] do
+for i in [ 1 .. 31 ] do
   IMFList[i] := rec( );
 od;
 
@@ -634,6 +655,122 @@ IMFList[24].size := [ # Q-classes of dimension 24
  31680,
  2640];
 
+IMFList[25].size := [ # Q-classes of dimension 25
+ 520469842636666622693081088000000,
+ 743008370688000000,
+ 2073600,
+ 235200,
+ 806582922253211271168000000];
+
+IMFList[26].size := [ # Q-classes of dimension 26
+ 27064431817106664380040216576000000,
+ 666248915354153228697600,
+ 1009262592,
+ 1946880000,
+ 60800435652415979520000,
+ 18720000,
+ 1268047872,
+ 24261120,
+ 55024220160,
+ 18720000,
+ 62400,
+ 31200,
+ 31200,
+ 187200,
+ 1046139494400,
+ 21777738900836704321536000000];
+
+IMFList[27].size := [ # Q-classes of dimension 27
+ 1461479318123759876522171695104000000,
+ 2293666840313856000000,
+ 725760,
+ 22464,
+ 609776689223427721003008000000];
+
+IMFList[28].size := [ # Q-classes of dimension 28
+ 81842841814930553085241614925824000000,
+ 111929817779497742421196800,
+ 13570563765858519346053120,
+ 231158159769600000000,
+ 1704603285530812549693440000,
+ 606790169395200,
+ 144207476195328,
+ 203212800,
+ 13005619200,
+ 4682022912,
+ 38158848,
+ 9539712,
+ 38158848,
+ 13680098021793595392000000,
+ 55024220160,
+ 29030400,
+ 2090188800,
+ 349440,
+ 1672151040,
+ 2419200,
+ 101896704,
+ 1161216,
+ 290304,
+ 504000,
+ 348364800,
+ 80640,
+ 2419200,
+ 60480,
+ 15692092416000,
+ 483840,
+ 52416,
+ 26208,
+ 26208,
+ 26208,
+ 26208,
+ 48720,
+ 17683523987479403909087232000000];
+
+IMFList[29].size := [ # Q-classes of dimension 29
+ 4746884825265972078944013665697792000000,
+ 530505719624382117272616960000000];
+
+IMFList[30].size := [ # Q-classes of dimension 30
+ 284813089515958324736640819941867520000000,
+ 20147367200309593635815424000,
+ 6419592322744320000000,
+ 1437659997167803170816000000,
+ 12487741686153216000000,
+ 16444762714275840,
+ 95551488000000,
+ 180551034077184000,
+ 17915904000,
+ 3052870564457742336000000,
+ 110398464000,
+ 110398464000,
+ 16855282483200,
+ 21499084800,
+ 203212800,
+ 3502105093579160420352000000,
+ 103680,
+ 78382080,
+ 251073478656000,
+ 67184640,
+ 8640,
+ 74649600,
+ 483840,
+ 17418240,
+ 172800,
+ 60480,
+ 30240,
+ 7257600,
+ 483840,
+ 48720,
+ 29760,
+ 59520,
+ 16445677308355845635451125760000000];
+
+IMFList[31].size := [ # Q-classes of dimension 31
+ 17658411549989416133671730836395786240000000,
+ 327360,
+ 1488000,
+ 526261673867387060334436024320000000];
+
 
 #############################################################################
 ##
@@ -966,7 +1103,7 @@ IMFList[20].elementaryDivisors := [ # Q-classes of dimension 20
  [1,10,2,10],
  [1,12,3,8],
  [1,10,3,10],
- [1,6,2,4,3,10],
+ [1,10,3,6,6,4],
  [1,16,6,4],
  [1,8,2,8,6,2,12,2],
  [1,14,6,5,54,1],
@@ -1113,6 +1250,122 @@ IMFList[24].elementaryDivisors := [ # Q-classes of dimension 24
  [1,12,22,12],
  [1,16,11,7,55,1]];
 
+IMFList[25].elementaryDivisors := [ # Q-classes of dimension 25
+ [1,25],
+ [1,20,6,5],
+ [1,16,6,8,36,1],
+ [1,16,7,8,14,1],
+ [1,24,26,1]];
+
+IMFList[26].elementaryDivisors := [ # Q-classes of dimension 26
+ [1,26],
+ [1,13,3,13],
+ [1,12,3,14],
+ [1,2,2,16,10,8],
+ [1,24,14,2],
+ [1,26],
+ [1,1,3,25],
+ [1,19,3,7],
+ [1,13,3,13],
+ [1,13,5,13],
+ [1,16,5,9,15,1],
+ [1,12,2,8,10,6],
+ [1,13,3,3,15,10],
+ [1,13,3,5,15,6,30,2],
+ [1,13,3,11,42,2],
+ [1,25,27,1]];
+
+IMFList[27].elementaryDivisors := [ # Q-classes of dimension 27
+ [1,27],
+ [1,24,10,3],
+ [1,19,7,7,28,1],
+ [1,16,13,10,52,1],
+ [1,26,28,1]];
+
+IMFList[28].elementaryDivisors := [ # Q-classes of dimension 28
+ [1,28],
+ [1,14,3,14],
+ [1,14,2,14],
+ [1,21,5,7],
+ [1,24,2,4],
+ [1,14,3,10,6,4],
+ [1,14,3,14],
+ [1,16,5,10,15,2],
+ [1,16,2,10,30,2],
+ [1,16,2,8,6,4],
+ [1,14,13,14],
+ [1,14,3,8,39,6],
+ [1,18,13,8,39,2],
+ [1,26,15,2],
+ [1,2,2,26],
+ [1,2,2,26],
+ [1,2,2,26],
+ [1,2,2,26],
+ [1,12,2,14,4,2],
+ [1,2,3,26],
+ [1,14,3,14],
+ [1,4,3,22,6,2],
+ [1,12,3,4,6,10,18,2],
+ [1,19,5,9],
+ [1,21,5,3,10,4],
+ [1,21,5,1,10,6],
+ [1,1,3,13,15,13,45,1],
+ [1,13,3,3,15,11,45,1],
+ [1,13,3,13,15,1,45,1],
+ [1,2,5,10,10,1,30,14,90,1],
+ [1,20,13,6,26,2],
+ [1,14,3,8,39,6],
+ [1,13,3,5,39,9,117,1],
+ [1,14,39,14],
+ [1,4,2,10,78,14],
+ [1,9,29,19],
+ [1,27,29,1]];
+
+IMFList[29].elementaryDivisors := [ # Q-classes of dimension 29
+ [1,29],
+ [1,28,30,1]];
+
+IMFList[30].elementaryDivisors := [ # Q-classes of dimension 30
+ [1,30],
+ [1,15,3,15],
+ [1,6,6,24],
+ [1,25,3,5],
+ [1,5,7,25],
+ [1,15,7,15],
+ [1,15,5,15],
+ [1,15,3,9,6,6],
+ [1,18,6,12],
+ [1,27,11,3],
+ [1,21,11,9],
+ [1,15,11,15],
+ [1,18,2,10,6,2],
+ [1,20,3,10],
+ [1,20,7,10],
+ [1,28,16,2],
+ [1,24,4,1,12,5],
+ [1,15,3,15],
+ [1,15,3,13,48,2],
+ [1,24,2,1,6,5],
+ [1,12,2,11,6,7],
+ [1,20,3,4,6,5,18,1],
+ [1,12,2,3,6,15],
+ [1,14,3,4,6,11,18,1],
+ [1,15,5,9,30,6],
+ [1,15,3,5,21,10],
+ [1,15,3,3,21,12],
+ [1,24,6,1,42,5],
+ [1,15,7,9,42,6],
+ [1,15,29,15],
+ [1,23,31,7],
+ [1,15,31,15],
+ [1,29,31,1]];
+
+IMFList[31].elementaryDivisors := [ # Q-classes of dimension 31
+ [1,31],
+ [1,20,2,10,4,1],
+ [1,19,5,12],
+ [1,30,32,1]];
+
 
 #############################################################################
 ##
@@ -1140,14 +1393,8 @@ IMFList[4].isSolvable := [ # Z-classes of dimension 4
  false,
  false];
 
-IMFList[5].isSolvable := [ # Z-classes of dimension 5
- false,
- false,
- false,
- false,
- false,
- false,
- false];
+IMFList[5].isSolvable := # Z-classes of dimension 5
+ ListWithIdenticalEntries( 7, false );
 
 IMFList[6].isSolvable := [ # Z-classes of dimension 6
  false,
@@ -1168,14 +1415,8 @@ IMFList[6].isSolvable := [ # Z-classes of dimension 6
  false,
  false];
 
-IMFList[7].isSolvable := [ # Z-classes of dimension 7
- false,
- false,
- false,
- false,
- false,
- false,
- false];
+IMFList[7].isSolvable := # Z-classes of dimension 7
+ ListWithIdenticalEntries( 7, false );
 
 IMFList[8].isSolvable := [ # Z-classes of dimension 8
  false,
@@ -1227,64 +1468,11 @@ IMFList[9].isSolvable := [ # Z-classes of dimension 9
  false,
  false];
 
-IMFList[10].isSolvable := [ # Z-classes of dimension 10
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false];
+IMFList[10].isSolvable := # Z-classes of dimension 10
+ ListWithIdenticalEntries( 46, false );
 
-IMFList[11].isSolvable := [ # Z-classes of dimension 11
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false];
+IMFList[11].isSolvable := # Z-classes of dimension 11
+ ListWithIdenticalEntries( 9, false );
 
 IMFList[12].isSolvable := [ # Q-classes of dimension 12
  false,
@@ -1307,46 +1495,14 @@ IMFList[12].isSolvable := [ # Q-classes of dimension 12
  false,
  false];
 
-IMFList[13].isSolvable := [ # Z-classes of dimension 13
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false];
+IMFList[13].isSolvable := # Z-classes of dimension 13
+ ListWithIdenticalEntries( 17, false );
 
-IMFList[14].isSolvable := [ # Q-classes of dimension 14
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false];
+IMFList[14].isSolvable := # Q-classes of dimension 14
+ ListWithIdenticalEntries( 12, false );
 
-IMFList[15].isSolvable := [ # Q-classes of dimension 15
- false,
- false,
- false,
- false,
- false,
- false];
+IMFList[15].isSolvable := # Q-classes of dimension 15
+ ListWithIdenticalEntries( 6, false );
 
 IMFList[16].isSolvable := [ # Q-classes of dimension 16
  false,
@@ -1407,122 +1563,23 @@ IMFList[17].isSolvable := [ # Z-classes of dimension 17
  false,
  false];
 
-IMFList[18].isSolvable := [ # Q-classes of dimension 18
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false];
+IMFList[18].isSolvable := # Q-classes of dimension 18
+ ListWithIdenticalEntries( 17, false );
 
-IMFList[19].isSolvable := [ # Z-classes of dimension 19
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false];
+IMFList[19].isSolvable := # Z-classes of dimension 19
+ ListWithIdenticalEntries( 9, false );
 
-IMFList[20].isSolvable := [ # Q-classes of dimension 20
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false];
+IMFList[20].isSolvable := # Q-classes of dimension 20
+ ListWithIdenticalEntries( 31, false );
 
-IMFList[21].isSolvable := [ # Q-classes of dimension 21
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false];
+IMFList[21].isSolvable := # Q-classes of dimension 21
+ ListWithIdenticalEntries( 8, false );
 
-IMFList[22].isSolvable := [ # Q-classes of dimension 22
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false];
+IMFList[22].isSolvable := # Q-classes of dimension 22
+ ListWithIdenticalEntries( 12, false );
 
-IMFList[23].isSolvable := [ # Z-classes of dimension 23
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false,
- false];
+IMFList[23].isSolvable := # Z-classes of dimension 23
+ ListWithIdenticalEntries( 28, false );
 
 IMFList[24].isSolvable := [ # Q-classes of dimension 24
  false,
@@ -1590,6 +1647,27 @@ IMFList[24].isSolvable := [ # Q-classes of dimension 24
  false,
  false,
  false];
+
+IMFList[25].isSolvable := # Q-classes of dimension 25
+ ListWithIdenticalEntries( 5, false );
+
+IMFList[26].isSolvable := # Q-classes of dimension 26
+ ListWithIdenticalEntries( 16, false );
+
+IMFList[27].isSolvable := # Q-classes of dimension 27
+ ListWithIdenticalEntries( 5, false );
+
+IMFList[28].isSolvable := # Q-classes of dimension 28
+ ListWithIdenticalEntries( 37, false );
+
+IMFList[29].isSolvable := # Q-classes of dimension 29
+ ListWithIdenticalEntries( 2, false );
+
+IMFList[30].isSolvable := # Q-classes of dimension 30
+ ListWithIdenticalEntries( 33, false );
+
+IMFList[31].isSolvable := # Q-classes of dimension 31
+ ListWithIdenticalEntries( 4, false );
 
 
 #############################################################################
@@ -1808,7 +1886,7 @@ IMFList[14].isomorphismType := [ # Q-classes of dimension 14
  "C2 wr S14 = W(B14)",
  "W(E7) wr C2",
  "(C2 x S3) wr S7 = D12 wr S7 = (C2 x W(A2)) wr S7",
- "C2 x G(2,3)",
+ "C2 x G2(3)",
  "(SU(3,3) x C4).C2",
  "S3 x W(E7) = W(A2) x W(E7)",
  "C2 x S15 = C2 x W(A14)",
@@ -1889,7 +1967,7 @@ IMFList[18].isomorphismType := [ # Q-classes of dimension 18
  "C2 wr S18 = W(B18)",
  "(C2 x Sp(4,4)).C2",
  "(C2 x W(E6)) wr S3",
- "(C2 x 3^(1+4):Sp(4,3)).C2",
+ "(C2 x 3+^(1+4):Sp(4,3)).C2",
  "(C2 x S3) wr S9 = (C2 x W(A2)) wr S9",
  "(C2 x S5) wr S3",
  "(C2 x S10) wr C2 = (C2 x W(A9)) wr C2",
@@ -1929,7 +2007,7 @@ IMFList[20].isomorphismType := [ # Q-classes of dimension 20
  "(C2 x S6) wr C2",
  "(SU(4,2) x C6).C2",
  "(C2 x S5) wr S5 = (C2 x W(A4)) wr S5",
- "C2 x 5^(1+2):GL(2,5)",
+ "C2 x 5+^(1+2):GL(2,5)",
  "C2 x S5 x S6 = C2 x W(A4) x W(A5)",
  "(C2.PSL(3,4)).(C2 x C2)",
  "C2.M22.C2",
@@ -2011,11 +2089,11 @@ IMFList[24].isomorphismType := [ # Q-classes of dimension 24
  "(C6 x PSU(4,3).C2 Y SL(2,3)).C2",
  "(C2 x W(E6)) wr S4",
  "((C2 x C3.A6).C2 Y SL(2,3)).C2",
- "(Sp(4,3) x 3^(1+2):SL(2,3)).C2",
+ "(Sp(4,3) x 3+^(1+2):SL(2,3)).C2",
  "(C2 x S3) wr S12 = (C2 x W(A2)) wr S12",
  "(C6.PSU(4,3).(C2 x C2)) wr C2",
  "W(F4) x W(E6)",
- "((3^(1+2):SL(2,3) x SL(2,3)).C2) wr C2",
+ "((3+^(1+2):SL(2,3) x SL(2,3)).C2) wr C2",
  "(C3.S6 x D8).C2",
  "(S3 x W(F4)) wr S3",
  "(C6.PSL(3,4).C2 Y D8).C2",
@@ -2030,7 +2108,7 @@ IMFList[24].isomorphismType := [ # Q-classes of dimension 24
  "(SL(2,5) Y (D8 Y Q8).A5).C2",
  "(((SL(2,5) Y SL(2,5)):C2) x A5):C2",
  "W(F4) x S5",
- "(SL(2,5) Y (C2 x 3^(1+2)).GL(2,3)).C2",
+ "(SL(2,5) Y (C2 x 3+^(1+2)).GL(2,3)).C2",
  "(C2 x S3 x S5) wr C2",
  "((C2 x C3.A6).(C2 x C2)) wr C2",
  "S3 x (SL(2,5) Y SL(2,3)).C2",
@@ -2068,6 +2146,122 @@ IMFList[24].isomorphismType := [ # Q-classes of dimension 24
  "C2 x S5 x PGL(2,7)",
  "(SL(2,11) Y SL(2,3)).C2",
  "C2 x PSL(2,11):C2"];
+
+IMFList[25].isomorphismType := [ # Q-classes of dimension 25
+ "C2 wr S25 = W(B25)",
+ "(C2 x W(A5)) wr S5 = (C2 x S6) wr S5",
+ "C2 x (S6 x S6):C2",
+ "C2 x PGL(2,49)",
+ "C2 x S26 = C2 x W(A25)"];
+
+IMFList[26].isomorphismType := [ # Q-classes of dimension 26
+ "C2 wr S26 = W(B26)",
+ "(C2 x S3) wr S13 = (C2 x W(A2)) wr S13",
+ "(C2 x PGL(3,3):C2) wr C2",
+ "(C2 x PSL(2,25):C2) wr C2",
+ "(C2 x S14) wr C2 = (C2 x W(A13)) wr C2",
+ "(C2 x PSp(4,5)).C2",
+ "C2 x 3D4(2):C3",
+ "C2 x PGL(4,3)",
+ "(C2 x PSp(6,3) x C3).C2",
+ "C2 x PSp(4,5):C2",
+ "C2 x PGL(2,25):C2",
+ "C2 x PSL(2,25):C2",
+ "C2 x PSL(2,25):C2",
+ "C2 x S3 x PSL(2,25):C2",
+ "C2 x S3 x S14 = C2 x W(A2) x W(A13)",
+ "C2 x S27 = C2 x W(A26)"];
+
+IMFList[27].isomorphismType := [ # Q-classes of dimension 27
+ "C2 wr S27 = W(B27)",
+ "(C2 x S10) wr S3 = (C2 x W(A9)) wr S3",
+ "C2 x S9",
+ "C2 x PGL(3,3):C2",
+ "C2 x S28 = C2 x W(A27)"];
+
+IMFList[28].isomorphismType := [ # Q-classes of dimension 28
+ "C2 wr S28 = W(B28)",
+ "(C2 x S3) wr S14 = (C2 x W(A2)) wr S14",
+ "W(F4) wr S7",
+ "(C2 x S5) wr S7 = (C2 x W(A4)) wr S7",
+ "W(E7) wr S4",
+ "(W(A2) x W(E7)) wr C2",
+ "(C2 x G2(3)) wr C2",
+ "(C2 x S7) wr C2",
+ "(C2 x S8) wr C2",
+ "((SU(3,3) x C4).C2) wr C2",
+ "(C2 x PGL(2,13)) wr C2",
+ "(C2 x PSL(2,13)) wr C2",
+ "(C2 x PGL(2,13)) wr C2",
+ "(C2 x S15) wr C2 = (C2 x W(A14)) wr C2",
+ "(Sp(6,3) x C3).C2",
+ "(C2.J2 Y SL(2,3)).C2",
+ "(C2 x PO+(8,2)):S3",
+ "Sz(8):C3 x C4",
+ "W(F4) Y W(E7)",
+ "(C2 x J2).C2",
+ "(C2 x S3 x G2(3)).C2",
+ "(PSU(3,3) x (Q8 Y C4).S3).C2",
+ "S3 x (PSU(3,3) x C4).C2",
+ "C2 x PSU(3,5):C2",
+ "W(A4) x W(E7)",
+ "C2 x S8",
+ "C2 x J2:C2",
+ "C2 x W(A2) x S7",
+ "C2 x W(A2) x W(A14)",
+ "C2 x W(A2) x S8",
+ "(SL(2,13) Y SL(2,3)).C2",
+ "(C2 x W(A2) x PSL(2,13)).C2",
+ "C2 x W(A2) x PGL(2,13)",
+ "C2 x W(A2) x PGL(2,13)",
+ "(C2 x PSL(2,13) x S3).C2",
+ "C2 x PGL(2,29)",
+ "C2 x S29 = C2 x W(A28)"];
+
+IMFList[29].isomorphismType := [ # Q-classes of dimension 29
+ "C2 wr S29 = W(B29)",
+ "C2 x S30 = C2 x W(A29)"];
+
+IMFList[30].isomorphismType := [ # Q-classes of dimension 30
+ "C2 wr S30 = W(B30)",
+ "(C2 x W(A2)) wr S15",
+ "(C2 x W(A5)) wr S6",
+ "(C2 x W(E6)) wr S5",
+ "(C2 x W(A6)) wr S5",
+ "(C2 x PGL(2,7)) wr S5",
+ "(C2 x S5) wr S5",
+ "((C6 x PSU(4,2)).C2) wr S3",
+ "(C2 x S6) wr S3",
+ "(C2 x W(A10)) wr S3",
+ "(C2 x PGL(2,11)) wr S3",
+ "(C2 x PGL(2,11)) wr S3",
+ "(C2 x Sp(6,2)) wr C2",
+ "(C2 x W(E6)) wr C2",
+ "(C2 x W(A6)) wr C2",
+ "(C2 x W(A15)) wr C2",
+ "(C2 x PSU(4,2)):C2",
+ "(C2 x C3.PSU(4,3)).(C2 x C2)",
+ "C2 x W(A2) x W(A15)",
+ "(C2 x PSU(4,2) x 3+^(1+2):SL(2,3)).C2",
+ "(C2 x C3.S6).C2",
+ "C2 x W(A5) x W(E6)",
+ "(C2 x C3.PSL(3,4)).(C2 x C2)",
+ "C2 x W(A2) x Sp(6,2)",
+ "C2 x W(A5) x S5",
+ "C2 x W(A2) x W(A6)",
+ "C2 x C3.S7",
+ "C2 x W(A5) x W(A6)",
+ "C2 x W(A5) x PGL(2,7)",
+ "C2 x PGL(2,29)",
+ "C2 x PSL(2,31)",
+ "C2 x PGL(2,31)",
+ "C2 x S31 = C2 x W(A30)"];
+
+IMFList[31].isomorphismType := [ # Q-classes of dimension 31
+ "C2 wr S31 = W(B31)",
+ "C2 x PSL(2,32):C5",
+ "C2 x PSL(3,5):C2",
+ "C2 x S32 = C2 x W(A31)"];
 
 
 #############################################################################
@@ -2149,6 +2343,28 @@ IMFList[23].minimalNorm := [ # Z-classes of dimension 23
 IMFList[24].minimalNorm := [ # Q-classes of dimension 24
  1,2,4,4,2,4,2,4,4,2,4,4,4,4,4,8,8,2,2,3,4,8,4,4,6,8,6,8,6,8,8,2,4,4,8,4,4,8,
  8,12,4,4,8,10,16,4,8,8,16,2,4,4,6,4,4,8,8,6,4,4,4,4,8,12,6];
+
+IMFList[25].minimalNorm := [ # Q-classes of dimension 25
+ 1,2,4,6,2];
+
+IMFList[26].minimalNorm := [ # Q-classes of dimension 26
+ 1,2,3,5,2,3,8,4,6,5,6,4,6,8,4,2];
+
+IMFList[27].minimalNorm := [ # Q-classes of dimension 27
+ 1,2,4,6,2];
+
+IMFList[28].minimalNorm := [ # Q-classes of dimension 28
+ 1,2,2,2,2,4,4,4,4,3,7,6,6,2,6,6,6,6,4,8,6,8,6,4,4,4,16,8,4,24,6,8,12,14,26,
+ 28,2];
+
+IMFList[29].minimalNorm := [ # Q-classes of dimension 29
+ 1,2];
+
+IMFList[30].minimalNorm := [ # Q-classes of dimension 30
+ 1,2,5,2,6,4,3,4,3,2,4,6,3,3,3,2,3,6,4,4,4,4,8,6,6,6,10,4,8,15,8,16,2];
+
+IMFList[31].minimalNorm := [ # Q-classes of dimension 31
+ 1,4,5,2];
 
 
 #############################################################################
@@ -2627,6 +2843,122 @@ IMFList[24].degrees := [ # Q-classes of dimension 24
  420,
  1320,
  [220,220,660]];
+
+IMFList[25].degrees := [ # Q-classes of dimension 25
+ 50,
+ 150,
+ 450,
+ [350,2450],
+ 650];
+
+IMFList[26].degrees := [ # Q-classes of dimension 26
+ 52,
+ 78,
+ 104,
+ 104,
+ 364,
+ 3120,
+ 1638,
+ 4212,
+ 21840,
+ 312,
+ [2600,3900],
+ 130,
+ 130,
+ [390,1950],
+ 546,
+ 702];
+
+IMFList[27].degrees := [ # Q-classes of dimension 27
+ 54,
+ 270,
+ 756,
+ 468,
+ 756];
+
+IMFList[28].degrees := [ # Q-classes of dimension 28
+ 56,
+ 84,
+ 168,
+ 140,
+ 504,
+ 756,
+ 1512,
+ 420,
+ [840,1680],
+ 224,
+ 312,
+ 364,
+ [364,728],
+ 420,
+ 6720,
+ 6720,
+ 6720,
+ 6720,
+ 1512,
+ 1260,
+ 17472,
+ 1512,
+ 336,
+ 350,
+ 1260,
+ 1260,
+ 630,
+ 630,
+ 630,
+ 210,
+ 2184,
+ 1092,
+ [546,1092],
+ 468,
+ 168,
+ 870,
+ 812];
+
+IMFList[29].degrees := [ # Q-classes of dimension 29
+ 58,
+ 870];
+
+IMFList[30].degrees := [ # Q-classes of dimension 30
+ 60,
+ 90,
+ 72,
+ 360,
+ 70,
+ 210,
+ 100,
+ 810,
+ 120,
+ 330,
+ [330,330],
+ 330,
+ 480,
+ 480,
+ 140,
+ 480,
+ 240,
+ [3240,10080],
+ 720,
+ 3240,
+ 180,
+ 1080,
+ 3780,
+ 720,
+ 300,
+ 210,
+ 630,
+ 630,
+ 630,
+ 812,
+ [930,1860,3720,3720,7440],
+ 930,
+ 930];
+
+IMFList[31].degrees := [ # Q-classes of dimension 31
+ 62,
+ 2046,
+ 372,
+ 992];
 
 
 #############################################################################
@@ -3130,7 +3462,130 @@ IMFList[24].orbitReps := [ # Q-classes of dimension 24
  i[1],
  [i[2],i[3],i[1]]];
 
-for i in [ 1 .. 24 ] do
+i := IdentityMat( 25 );
+IMFList[25].orbitReps := [ # Q-classes of dimension 25
+ i[1],
+ i[1],
+ i[1],
+ [i[23],i[1]],
+ i[1]];
+
+i := IdentityMat( 26 );
+IMFList[26].orbitReps := [ # Q-classes of dimension 26
+ i[1],
+ i[1],
+ i[1]-i[3]+i[6],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ [i[1],i[2]],
+ i[1],
+ i[1],
+ [i[22]+i[23]+i[26],i[1]],
+ i[1],
+ i[1]];
+
+i := IdentityMat( 27 );
+IMFList[27].orbitReps := [ # Q-classes of dimension 27
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1]];
+
+i := IdentityMat( 28 );
+IMFList[28].orbitReps := [ # Q-classes of dimension 28
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ [i[1],i[28]],
+ i[1],
+ i[1],
+ i[1],
+ [i[2],i[1]],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ [i[1],i[28]],
+ i[1],
+ i[1],
+ i[1],
+ i[1]];
+
+i := IdentityMat( 29 );
+IMFList[29].orbitReps := [ # Q-classes of dimension 29
+ i[1],
+ i[1]];
+
+i := IdentityMat( 30 );
+IMFList[30].orbitReps := [ # Q-classes of dimension 30
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ [i[1],i[2]],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ [i[28],i[1]],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ i[1],
+ [i[5],i[1],i[2],i[7],i[3]],
+ i[1],
+ i[1]];
+
+i := IdentityMat( 31 );
+IMFList[31].orbitReps := [ # Q-classes of dimension 31
+ i[1],
+ i[1],
+ i[1],
+ i[1]];
+
+for i in [ 1 .. 31 ] do
   MakeImmutable( IMFList[i].size );
   MakeImmutable( IMFList[i].elementaryDivisors );
   MakeImmutable( IMFList[i].isSolvable );

@@ -27,38 +27,31 @@ DeclareRepresentation( "IsRightCosetEnumerator",
     IsDomainEnumerator and IsAttributeStoringRep,
     [ "groupEnumerator", "representative" ] );
 
-InstallMethod( HomeEnumerator,
-    "for a right coset",
-    true,
-    [ IsRightCoset ], 0,
-    function( C )
-    local   enum;
+InstallMethod( Enumerator, "for a right coset", true, [ IsRightCoset ], 0,
+function( C )
+local   enum;
     
-    enum := Objectify( NewType( FamilyObj( C ), IsRightCosetEnumerator ),
-            rec( groupEnumerator := Enumerator( ActingDomain( C ) ),
-                  representative := Representative( C ) ) );
-    SetUnderlyingCollection( enum, C );
-    if HasIsFinite( C ) then
-      SetIsFinite( enum, IsFinite( C ) );
-    fi;
-    return enum;
+  enum := Objectify( NewType( FamilyObj( C ), IsRightCosetEnumerator ),
+          rec( groupEnumerator := Enumerator( ActingDomain( C ) ),
+                representative := Representative( C ) ) );
+  SetUnderlyingCollection( enum, C );
+  if HasIsFinite( C ) then
+    SetIsFinite( enum, IsFinite( C ) );
+  fi;
+  return enum;
 end );
 
-InstallMethod( \[\],
-    "for right coset enumerator",
-    true,
-    [ IsRightCosetEnumerator, IsPosInt ], 0,
-    function( enum, pos )
-    return enum!.groupEnumerator[ pos ] * enum!.representative;
+InstallMethod( \[\], "for right coset enumerator", true,
+  [ IsRightCosetEnumerator, IsPosInt ], 0,
+function( enum, pos )
+  return enum!.groupEnumerator[ pos ] * enum!.representative;
 end );
 
-InstallMethod( Position,
-    "for right coset enumerator",
-    true,
-    [ IsRightCosetEnumerator, IsMultiplicativeElementWithInverse, IsInt ], 0,
-    function( enum, elm, after )
-    return Position( enum!.groupEnumerator, elm / enum!.representative,
-                   after );
+InstallMethod( Position, "for right coset enumerator", true,
+  [ IsRightCosetEnumerator, IsMultiplicativeElementWithInverse, IsInt ], 0,
+function( enum, elm, after )
+  return Position( enum!.groupEnumerator, elm / enum!.representative,
+		  after );
 end );
 
 #############################################################################
@@ -104,7 +97,7 @@ local o,b,img;
   if U=G then
     return fail;
   fi;
-  o:=ActionHomomorphism(G,RightTransversal(G,U),OnRight);
+  o:=ActionHomomorphism(G,RightTransversal(G,U),OnRight,"surjective");
   img:=ImagesSource(o);
   b:=Blocks(img,MovedPoints(img));
   if Length(b)=1 then
@@ -120,25 +113,19 @@ end );
 ##
 #F  RefinedChain(<G>,<c>) . . . . . . . . . . . . . . . .  refine chain links
 ##
-##  <c> is an ascending chain in the Group <G>. The task of this routine is
-##  to refine c, i.e. if there is a "link" U>L in c with [U:L] too big,
-##  this procedure tries to find Subgroups G_0,...,G_n of G; such that 
-##  U=G_0>...>G_n=L. This is done by extending L inductively: Since normal
-##  steps can help in further calculations, the routine first tries to
-##  extend to the normalizer in U. If the subgroup is self-normalizing,
-##  the group is extended via a random element. If this results in a step
-##  too big, it is repeated several times to find hopefully a small
-##  extension!
-##
-BindGlobal("RefinedChain",function(G,cc)
+InstallGlobalFunction(RefinedChain,function(G,cc)
 local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens;
   bound:=(10*LogInt(Size(G),10)+1)*Maximum(Factors(Size(G)));
-  bound:=200;
+  bound:=Minimum(bound,20000);
+  c:=ValueOption("refineIndex");
+  if IsInt(c) then
+    bound:=c;
+  fi;
   c:=[];  
   for i in [2..Length(cc)] do  
     Add(c,cc[i-1]);
     if Index(cc[i],cc[i-1]) > bound then
-      a:=cc[i-1];
+      a:=AsSubgroup(Parent(cc[i]),cc[i-1]);
       while Index(cc[i],a)>bound do
 	# try extension via normalizer
 	b:=Normalizer(cc[i],a);
@@ -167,6 +154,7 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens;
 		r:=Random(bb);
 	      until not(r in a);
 	      if normalStep then
+		# NC is safe
 		b:=ClosureSubgroupNC(a,r);
               else
 		# self normalizing subgroup: thus every element not in <a>
@@ -178,6 +166,7 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens;
                 until not(gens[j]^r in a);
 		r:=gens[j]^r;
 
+		# NC is safe
 		b:=ClosureSubgroupNC(a,r);
 	      fi;
 	      if Size(b)<Size(bb) then
@@ -264,6 +253,18 @@ function(d)
         RightActingGroup(d),")");
 end);
 
+InstallMethod(Random,"double coset",true,[IsDoubleCoset],0,
+function(d)
+  return Random(LeftActingGroup(d))*Representative(d)
+         *Random(RightActingGroup(d));
+end);
+
+InstallMethod(PseudoRandom,"double coset",true,[IsDoubleCoset],0,
+function(d)
+  return PseudoRandom(LeftActingGroup(d))*Representative(d)
+         *PseudoRandom(RightActingGroup(d));
+end);
+
 InstallMethod(RepresentativesContainedRightCosets,"generic",true,
   [IsDoubleCoset],0,
 function(c)
@@ -298,9 +299,57 @@ end);
 
 InstallMethod(AsList,"double coset",true,[IsDoubleCoset],0,
 function(d)
-  return Union(List(RepresentativesContainedRightCosets(d),
+local l;
+  l:=Union(List(RepresentativesContainedRightCosets(d),
                     i->RightCoset(LeftActingGroup(d),i)));
+  return l;
 end);
+
+#############################################################################
+##
+#R  IsDoubleCosetEnumerator
+##
+DeclareRepresentation( "IsDoubleCosetEnumerator",
+    IsDomainEnumerator and IsAttributeStoringRep,
+    [ "leftgroupEnumerator", "leftgroup", "rightCosetReps", "leftsize" ] );
+
+InstallMethod(Enumerator, "for a double coset",true,[IsDoubleCoset],0,
+function( d )
+local   enum;
+  enum := Objectify( NewType( FamilyObj(d), IsDoubleCosetEnumerator ),
+	  rec( leftgroupEnumerator := Enumerator( LeftActingGroup( d ) ),
+		leftgroup := LeftActingGroup( d ),
+		leftsize := Size( LeftActingGroup( d ) ),
+		rightCosetReps := RepresentativesContainedRightCosets(d) ) );
+  SetUnderlyingCollection( enum, d );
+  if HasIsFinite( d ) then
+    SetIsFinite( enum, IsFinite( d ) );
+  fi;
+  return enum;
+end );
+
+InstallMethod( \[\], "for double coset enumerator", true,
+  [ IsDoubleCosetEnumerator, IsPosInt ], 0,
+function( enum, pos )
+  pos:=pos-1;
+  return enum!.leftgroupEnumerator[ (pos mod enum!.leftsize)+1] 
+        * enum!.rightCosetReps[QuoInt(pos,enum!.leftsize)+1];
+end );
+
+InstallMethod( Position, "for double coset enumerator", true,
+  [ IsRightCosetEnumerator, IsMultiplicativeElementWithInverse, IsInt ], 0,
+function( enum, elm, after )
+local p;
+  p:=First([1..Length(enum!.rightCosetReps)],
+       i->elm/enum!.rightCosetReps[i] in enum!.leftgroup);
+  p:=(p-1)*enum!.leftsize
+          +Position(enum!.leftgroupEnumerator,elm/enum!.rightCosetReps[p],0);
+  if p<=after then
+    return fail; # no double elements
+  else
+    return p; 
+  fi;
+end );
 
 RightCosetCanonicalRepresentativeDeterminator := 
 function(U,a)
@@ -359,6 +408,16 @@ function(d)
   Print("RightCoset(",ActingDomain(d),",",Representative(d),")");
 end);
 
+InstallMethod(Random,"RightCoset",true,[IsRightCoset],0,
+function(d)
+  return Random(ActingDomain(d))*Representative(d);
+end);
+
+InstallMethod(PseudoRandom,"RightCoset",true,[IsRightCoset],0,
+function(d)
+  return PseudoRandom(ActingDomain(d))*Representative(d);
+end);
+
 InstallMethod(\=,"RightCosets",IsIdenticalObj,[IsRightCoset,IsRightCoset],0,
 function(a,b)
   return ActingDomain(a)=ActingDomain(b) and
@@ -384,15 +443,15 @@ end);
 #end);
 
 InstallGlobalFunction( DoubleCosets, function(G,U,V)
-  if not IsSubgroup(G,U) and IsSubgroup(G,V) then
-    Error("not subgroups");
+  if not IsSubset(G,U) and IsSubset(G,V) then
+    Error("not contained");
   fi;
   return DoubleCosetsNC(G,U,V);
 end );
 
 InstallGlobalFunction( RightCosets, function(G,U)
-  if not IsSubgroup(G,U) then
-    Error("not subgroups");
+  if not IsSubset(G,U) then
+    Error("not contained");
   fi;
   return RightCosetsNC(G,U);
 end );
@@ -414,14 +473,14 @@ end);
 ##  double coset is an union of right cosets
 ##
 BindGlobal("CalcDoubleCosets",function(G,a,b)
-local c,a1,a2,r,s,t,rg,st,i,j,nr,o,oi,nu,step,p,img,rep,
+local c,a1,a2,r,s,t,rg,st,i,j,nr,o,oi,nu,step,p,pinv,img,rep,
       sifa,stabs,nstab,lst,compst,e,cnt,rt,flip,dcs,unten,normal,
-      lstgens,lstgensop,siz,ps,blist,bsz,indx,ep;
+      lstgens,lstgensop,siz,ps,blist,bsz,indx,ep,hom;
 
   # if a is small and b large, compute cosets b\G/a and take inverses of the
   # representatives: Since we compute stabilizers in b and a chain down to
   # a, this is notably faster
-  if 3*Size(a)<2*Size(b) then
+  if ValueOption("noflip")<>true and 3*Size(a)<2*Size(b) then
     c:=b;
     b:=a;
     a:=c;
@@ -458,13 +517,27 @@ local c,a1,a2,r,s,t,rg,st,i,j,nr,o,oi,nu,step,p,img,rep,
     compst:=(not unten) or normal;
 
     t:=RightTransversal(a1,a2);
+
+    # is it worth using a permutation representation?
+    if Length(r)>4 and Length(t)<50000 and IsPermGroup(G) and not normal then
+      # in this case, we can beneficially compute the action once and then use
+      # homomorphism methods to obtain the permutation image
+      Info(InfoCoset,2,"using perm action");
+      hom:=Subgroup(G,SmallGeneratingSet(a1));
+      hom:=ActionHomomorphism(hom,t,OnRight);
+    else
+      hom:=fail;
+    fi;
+
     s:=[];
     nr:=[];
     nstab:=[];
     for nu in [1..Length(r)] do
+      Info(InfoCoset,4,"number ",nu);
       lst:=stabs[nu];
       sifa:=Size(a2)*Size(b)/Size(lst); 
       p:=r[nu];
+      pinv:=p^-1;
       blist:=BlistList([1..indx],[]);
       bsz:=indx;
 
@@ -487,43 +560,88 @@ local c,a1,a2,r,s,t,rg,st,i,j,nr,o,oi,nu,step,p,img,rep,
 	ps:=Position(blist,false);
 	blist[ps]:=true;
 	bsz:=bsz-1;
-	e:=t[ps];
-	o:=[e];
-	oi:=[];
-	oi[ps]:=1; # reverse index
-	ep:=e*p;
-	Add(nr,ep);
 
-	lstgens:=GeneratorsOfGroup(lst);
-	if Length(lstgens)>2 then
-	  lstgens:=SmallGeneratingSet(lst);
-	fi;
-	lstgensop:=List(lstgens,i->p*i/p); # conjugate generators: operation
-	# is on cosets a.p; we keep original cosets: Ua.p.g/p, this
-	# corresponds to conjugate operation
-	rep := [ One(b) ];
-	st := TrivialSubgroup(G);
-	i:=1;
-	while i<=Length(o) do
-	  for j in [1..Length(lstgens)] do
-	    img:=o[i]*lstgensop[j];
-	    ps:=PositionCanonical(t,img);
-	    if blist[ps] then
-	      if compst then
-		# known image
-		st := ClosureSubgroupNC(st,rep[i]*lstgens[j]/rep[oi[ps]]);
+	if hom=fail then
+	  # no homomorphism -- act on cosets
+	  e:=t[ps];
+	  o:=[e];
+	  oi:=[];
+	  oi[ps]:=1; # reverse index
+	  ep:=e*p;
+	  Add(nr,ep);
+
+	  lstgens:=GeneratorsOfGroup(lst);
+	  if Length(lstgens)>2 then
+	    lstgens:=SmallGeneratingSet(lst);
+	  fi;
+	  lstgensop:=List(lstgens,i->i^pinv); # conjugate generators: operation
+	  # is on cosets a.p; we keep original cosets: Ua.p.g/p, this
+	  # corresponds to conjugate operation
+	  rep := [ One(b) ];
+	  st := TrivialSubgroup(G);
+	  i:=1;
+	  while i<=Length(o) do
+	    for j in [1..Length(lstgens)] do
+	      img:=o[i]*lstgensop[j];
+	      ps:=PositionCanonical(t,img);
+	      if blist[ps] then
+		if compst then
+		  # known image
+		  #NC is safe (initializing as TrivialSubgroup(G)
+		  st := ClosureSubgroupNC(st,rep[i]*lstgens[j]/rep[oi[ps]]);
+		fi;
+	      else
+		# new image
+		blist[ps]:=true;
+		bsz:=bsz-1;
+		Add(o,img);
+		Add(rep,rep[i]*lstgens[j]);
+		oi[ps]:=Length(o);
 	      fi;
-	    else
-	      # new image
-	      blist[ps]:=true;
-	      bsz:=bsz-1;
-	      Add(o,img);
-	      Add(rep,rep[i]*lstgens[j]);
-	      oi[ps]:=Length(o);
-	    fi;
+	    od;
+	    i:=i+1;
 	  od;
-	  i:=i+1;
-	od;
+	else
+	  # homomorphism -- act on points
+	  e:=t[ps];
+	  o:=[ps];
+	  oi:=[];
+	  oi[ps]:=1; # reverse index
+	  ep:=e*p;
+	  Add(nr,ep);
+
+	  lstgens:=GeneratorsOfGroup(lst);
+	  if Length(lstgens)>2 then
+	    lstgens:=SmallGeneratingSet(lst);
+	  fi;
+	  lstgensop:=List(lstgens,i->Image(hom,i^pinv));
+	  # conjugate generators: operation
+	  # is on cosets a.p; we keep original cosets: Ua.p.g/p, this
+	  # corresponds to conjugate operation
+	  rep := [ One(b) ];
+	  st := TrivialSubgroup(G);
+	  i:=1;
+	  while i<=Length(o) do
+	    for j in [1..Length(lstgens)] do
+	      ps:=o[i]^lstgensop[j];
+	      if blist[ps] then
+		if compst then
+		  # known image
+		  #NC is safe (initializing as TrivialSubgroup(G)
+		  st := ClosureSubgroupNC(st,rep[i]*lstgens[j]/rep[oi[ps]]);
+		fi;
+	      else
+		# new image
+		blist[ps]:=true;
+		bsz:=bsz-1;
+		Add(o,ps);
+		Add(rep,rep[i]*lstgens[j]);
+		oi[ps]:=Length(o);
+	      fi;
+	    od;
+	    i:=i+1;
+	  od;
+	fi;
 
 	siz:=sifa*Length(o); #order
 
@@ -544,28 +662,33 @@ local c,a1,a2,r,s,t,rg,st,i,j,nr,o,oi,nu,step,p,img,rep,
       if normal then
 	# in the normal case, we can obtain the other orbits easily via
 	# the orbit theorem (same stabilizer)
-	if Length(o)>1 then
-	  rt:=RightTransversal(a1,
-	        ClosureSubgroupNC(a2,t{Filtered([1..Length(oi)],
-		                     i->IsBound(oi[i]))}));
-	else
-	  rt:=t;
-	fi;
+	rt:=RightTransversal(lst,st);
+	Assert(1,Length(rt)=Length(o));
 
-	for rg in rt do
-          if not IsOne(rg) then
-	    ps:=e*rg*p;
-	    Add(nr,ps);
-	    Add(nstab,st);
-	    if unten then
-	      if flip then
-		Add(dcs,[ps^(-1),siz]);
-	      else
-		Add(dcs,[ps,siz]);
-	      fi;
+	while bsz>0 do
+	  ps:=Position(blist,false);
+	  e:=t[ps];
+	  blist[ps]:=true;
+	  ep:=e*p;
+	  Add(nr,ep);
+	  Add(nstab,st);
+
+	  if unten then
+	    if flip then
+	      Add(dcs,[ep^(-1),siz]);
+	    else
+	      Add(dcs,[ep,siz]);
 	    fi;
 	  fi;
+
+	  # tick off the orbit
+	  for i in rt do
+	    ps:=PositionCanonical(t,e*p*i/p);
+	    blist[ps]:=true;
+	  od;
+	  bsz:=bsz-Length(rt);
 	od;
+
       fi;
 
     od;
@@ -618,25 +741,29 @@ InstallMethod(DoubleCosetRepsAndSizes,"generic",true,
 ##
 #M  RightTransversal   generic
 ##
+DeclareRepresentation( "IsRightTransversalViaCosetsRep",
+    IsRightTransversalRep,
+    [ "group", "subgroup", "cosets" ] );
+
 InstallMethod(RightTransversalOp, "generic, use RightCosets",
   IsIdenticalObj,[IsGroup,IsGroup],0,
 function(G,U)
   return Objectify( NewType( FamilyObj( G ),
-		    IsRightTransversalRep and IsList and 
+		    IsRightTransversalViaCosetsRep and IsList and 
 		    IsDuplicateFreeList and IsAttributeStoringRep ),
           rec( group := G,
             subgroup := U,
             cosets:=RightCosets(G,U)));
 end);
 
-InstallMethod( \[\], "right transversal rep", true,
-    [ IsList and IsRightTransversalRep, IsPosInt ], 0,
+InstallMethod( \[\], "rt via coset", true,
+    [ IsList and IsRightTransversalViaCosetsRep, IsPosInt ], 0,
 function( cs, num )
   return Representative(cs!.cosets[num]);
 end );
 
-InstallMethod( PositionCanonical,"RightTransversalRep", IsCollsElms,
-    [ IsList and IsRightTransversalRep,
+InstallMethod( PositionCanonical,"rt via coset", IsCollsElms,
+    [ IsList and IsRightTransversalViaCosetsRep,
     IsMultiplicativeElementWithInverse ], 0,
 function( cs, elm )
   return First([1..Index(cs!.group,cs!.subgroup)],i->elm in cs!.cosets[i]);
@@ -671,9 +798,12 @@ InstallMethod( RightTransversalOp,
     IsIdenticalObj,
     [ IsGroup, IsGroup and IsTrivial ],
     100,   # the method for pc groups has this offset but shall be avoided
-    function( G, U )
-    return EnumeratorSorted( G );
-    end );
+function( G, U )
+  if IsSubgroupFpGroup(G) then
+    TryNextMethod(); # this method is bad for the fp groups.
+  fi;
+  return EnumeratorSorted( G );
+end );
 
 
 #############################################################################

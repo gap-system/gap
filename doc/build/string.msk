@@ -46,6 +46,10 @@ true
 gap> IsString( [ '1', '2', , '4' ] );  IsString( [ '1', '2', 3 ] );
 false        # strings must be dense
 false        # strings must only contain characters
+gap> s := "\007";
+"\007"
+gap> Print(s); # rings bell in many terminals
+gap> 
 \endexample
 
 Note that a string is just a special case of a list.
@@ -75,15 +79,23 @@ gap> Concatenation( s1{ [ 1 .. 6 ] }, s1{ [ 1 .. 4 ] } );
 "Hello Hell"
 \endexample
 
-If a string is displayed by `View', for example as result of an
-evaluation (see~"Main Loop"), or by `ViewObj' and `PrintObj',
-it is displayed with enclosing doublequotes.
-However, if a string is displayed by `Print', `PrintTo', or `AppendTo'
-(see~"View and Print", "PrintTo", "AppendTo")
-the enclosing doublequotes are dropped.
-So strings behave differently from other {\GAP} objects
-w.r.t. printing in the sense that the output of `Print' for a string
-is not equal to the output of `PrintObj'.
+If a string is  displayed by `View', for example as  result of an evaluation
+(see~"Main  Loop"), or  by `ViewObj'  and `PrintObj',  it is  displayed with
+enclosing doublequotes. (But  note that there is an ambiguity  for the empty
+string which is also  an empty list of arbitrary {\GAP}  objects; it is only
+printed like  a string if  it was  input as empty  string or converted  to a
+string  with "ConvertToStringRep".)  The  difference  between `ViewObj'  and
+`PrintObj'  is that  the  latter prints  *all*  non-printable and  non-ASCII
+characters  in  three  digit  octal  notation,  while  `ViewObj'  sends  all
+printable characters to  the output stream. The output of  `PrintObj' can be
+read back into {\GAP}.
+
+Strings  behave  differently  from  other {\GAP}  objects  with  respect  to
+`Print', `PrintTo',  or `AppendTo'. These  commands *interpret* a  string in
+the sense that  they essentially send the characters of  the string directly
+to the output stream/file. (But depending on  the type of the stream and the
+presence of some special characters used  as hints for line breaks there may
+be sent some additional newline (or backslash and newline) characters.
 
 \beginexample
 gap> s4:= "abc\"def\nghi";;
@@ -96,6 +108,12 @@ gap> PrintObj( s4 );  Print( "\n" );
 gap> Print( s4 );  Print( "\n" );
 abc"def
 ghi
+gap> s := "German uses strange characters: \344\366\374\337\n";
+"German uses strange characters: äöüß\n"
+gap> PrintObj(s);
+"German uses strange characters: \344\366\374\337\n"gap> 
+gap> Print(s);
+German uses strange characters: äöüß
 \endexample
 
 Note that only those line breaks are printed by `Print' that are contained
@@ -116,73 +134,88 @@ gap>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Special Characters}
 
+\index{escaped characters}
 \index{special character sequences}
-\index{newline character}
-\index{doublequote character}
-\index{singlequote character}
-\index{backslash character}
-\index{backspace character}
-\index{carriage return character}
-\index{flush character}
 
 There are a number of *special character sequences* that can be used
 between the singlequotes of a character literal or between the
-doublequotes of a string literal to specify characters, which may
-otherwise be inaccessible. They consist of two characters. The first is
-a backslash $\backslash$. The second may be any character. The meaning
+doublequotes of a string literal to specify characters. 
+They consist of two characters. The first is
+a backslash $\backslash$. The second may be any character. If it is an octal
+digit (from `0' to `7') there must be two more such digits. The meaning
 is given in the following list
 
 \beginlist
-\item{`$\backslash$n'}
+
+\indextt{\\n}\index{newline character}
+\item{`\\n'}
     *newline character*.
     This is the character that, at least on UNIX systems,
     separates lines in a text file.
     Printing of this character in a string has the effect of moving
     the cursor down one line and back to the beginning of the line.
 
-\item{`$\backslash$\"'}
+\indextt{\\\"}\index{doublequote character}
+\item{`\\\"'}
     *doublequote character*.
     Inside a string a doublequote must be escaped by the backslash,
     because it is otherwise interpreted as end of the string.
 
-\item{`$\backslash${'}'}
+\atindex{\\'}{@\noexpand`\\\pif'}\index{singlequote character}
+\item{`\\\pif'}
     *singlequote character*.
     Inside a character a singlequote must escaped by the backslash,
     because it is otherwise interpreted as end of the character.
 
-\item{$\backslash${$\backslash$}}
+\indextt{\\\\}\index{backslash character}
+\item{`\\\\'}
     *backslash character*.
     Inside a string a backslash must be escaped by another backslash,
     because it is otherwise interpreted as first character of
     an escape sequence.
 
-\item{`$\backslash$b'}
+\indextt{\\b}\index{backspace character}
+\item{`\\b'}
     *backspace character*.
     Printing this character should have the effect of moving the cursor
     back one character.  Whether it works or not is system dependent
     and should not be relied upon.
 
-\item{`$\backslash$r'}
+\indextt{\\r}\index{carriage return character}
+\item{`\\r'}
     *carriage return character*.
     Printing this character should have the effect of moving the cursor
     back to the beginning of the same line.  Whether this works or not
     is again system dependent.
 
-\item{`$\backslash$c'}
+\indextt{\\c}\index{flush character}
+\item{`\\c'}
     *flush character*.
     This character is not printed.
     Its purpose is to flush the output queue.
     Usually {\GAP} waits until it sees a <newline> before it prints a string.
     If you want to display a string that does not include this character
-    use `$\backslash$c'.
+    use `\\c'.
 
+\indextt{\\XYZ}\index{octal character codes}
+\item{`\\XYZ'}
+    with X, Y, Z three octal digits. This is translated to the character
+    correponding to the number X*64+Y*8+Z modulo 256. This can be used to 
+    specify and store  arbitrary binary data as a string in  {\GAP}.
+
+\index{escaping non-special characters}
 \item{other}
     For any other character the backslash is simply ignored.
+
 \endlist
 
 Again, if the line is displayed as result of an evaluation, those escape
-sequences are displayed in the same way that they are input. They are
-displayed in their special way only by `Print', `PrintTo', or `AppendTo'.
+sequences are displayed in the same way that they are input. 
+
+Only  `Print', `PrintTo', or `AppendTo' send the characters directly to the
+output stream.
+
+% XXX Should the characters \< and \> and their use with `Print' be documented?
 
 \beginexample
 gap> "This is one line.\nThis is another line.\n";
@@ -192,30 +225,59 @@ This is one line.
 This is another line.
 \endexample
 
-It is not allowed to enclose a <newline> inside the string. You can use
-the special character sequence `$\backslash$n' to write strings that
-include <newline> characters.
-If, however, an input string is too long to fit on a single line it is
-possible to *continue* it over several lines.
-In this case the last character of each input line, except the last line
-must be a backslash.
-Both backslash and <newline> are thrown away.
-Note that the same continuation mechanism is available for identifiers
-and integers.
+Note in particular that it is not  allowed to enclose a <newline> inside the
+string. You can use the  special character sequence `$\backslash$n' to write
+strings that include  <newline> characters. If, however, an  input string is
+too  long to  fit on  a single  line it  is possible  to *continue*  it over
+several lines.  In this case the  last character of each  input line, except
+the last line  must be a backslash. Both backslash  and <newline> are thrown
+away by  {\GAP} while reading  the string.  Note that the  same continuation
+mechanism is available for identifiers and integers.
 
 \beginexample
 gap> "This is a very long string that does not fit on a line \
 gap> and is therefore continued on the next line.";
-"This is a very long string that does not fit on a line and is therefo\
-re continued on the next line."
+"This is a very long string that does not fit on a line and is therefore conti\
+nued on the next line."
 \endexample
 
 Note that the output is also continued, but at a different place
 that is determined by the value of `SizeScreen' (see~"SizeScreen").
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Internally Represented Strings}
+
+\index{convert!to a string}
+
+\Declaration{IsStringRep}
+\Declaration{ConvertToStringRep}
+\Declaration{IsEmptyString}
+\beginexample
+gap> l:= [];;  IsString( l );  IsEmptyString( l );  IsEmpty( l );
+true
+false
+true
+gap> l;  ConvertToStringRep( l );  l;
+[  ]
+""
+gap> IsEmptyString( l );  IsEmptyString( "" );  IsEmptyString( "abc" );
+true
+true
+false
+gap> ll:= [ 'a', 'b' ];  IsStringRep( ll );  ConvertToStringRep( ll );
+"ab"
+false
+gap> ll;  IsStringRep( ll );
+"ab"
+true
+\endexample
+
+\Declaration{CharsFamily}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Recognizing Characters}%
+\Section{Recognizing Characters}
 
 \Declaration{IsDigitChar}
 \Declaration{IsLowerAlphaChar}
@@ -224,7 +286,7 @@ that is determined by the value of `SizeScreen' (see~"SizeScreen").
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Comparisons of Strings}%
+\Section{Comparisons of Strings}
 
 \>`<string1> = <string2>'{comparison!strings}
 \>`<string1> \<> <string2>'{comparison!strings}
@@ -268,7 +330,7 @@ strings, see~"Comparisons" for the details.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Operations to Produce Strings}
+\Section{Operations to Produce or Manipulate Strings}
 
 \Declaration{String}
 
@@ -277,6 +339,12 @@ gap> String(123);String([1,2,3]);
 "123"
 "[ 1, 2, 3 ]"
 \endexample
+
+\>HexStringInt( <int> ) F
+
+returns a string which represents the integer <int> with hexa-decimal
+digits (using `A-F' as digits `10-15'). The inverse translation can be achieved
+with "IntHexString".
 
 \Declaration{StringPP}
 \beginexample
@@ -316,24 +384,57 @@ gap> ReplacedString("abacab","a","ba");
 "babbacbab"
 \endexample
 
+
+\>NormalizeWhitespace( <string> ) F
+
+This  function changes  the string  <string> in  place. The  characters `  '
+(space), `\\n', `\\r' and `\\t' are considered as *white space*. Leading and
+trailing white space characters in  <string> are removed. Sequences of white
+space characters  between other  characters are replaced  by a  single space
+character.
+
+See "NormalizedWhitespace" for a non-destructive version.
+
+\beginexample 
+gap> s := "   x y \n\n\t\r  z\n   \n"; 
+"   x y \n\n\t\r  z\n   \n"
+gap> NormalizeWhitespace(s);
+gap> s;
+"x y z"
+\endexample
+
+\Declaration{NormalizedWhitespace}
+
 For the possibility to print {\GAP} objects to strings, see~"String Streams".
 
+\Declaration{JoinStringsWithSeparator}
+\Declaration{Chomp}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operations to Evaluate Strings}
 
-\){\fmark Int(<str>)}\index{evaluation!strings}
-\){\fmark Rat(<str>)}
-\index{Val}
+\index{evaluation!strings}
+\>Int( <str> )!{for strings} A
+\>Rat( <str> )!{for strings} A
+\>IntHexString( <str> ) F
 
-return an integer, respectively a rational as represented by the string
-<str>.
+return either an integer (`Int' and `IntHexString'), or a rational (`Rat')
+as represented by the string <str>.
 `Int' returns `fail' if non-digit characters occur in <str>.
 For `Rat', the argument string may start with the sign character `{'}-{'}',
 followed by either a sequence of digits or by two sequences of digits
 that are separated by one of the characters `{'}/{'}' or `{'}.{'}',
 where the latter stands for a decimal dot.
 (The methods only evaluate numbers but do *not* perform arithmetic!)
+
+`IntHexString' evaluates an integer written with hexa-decimal digits. Here
+the letters <a-f> or <A-F> are used as *digits* <10-15>. An error occurs
+when a wrong character is found in the string. This function can be used
+(together with "HexStringInt") for efficiently storing and reading large
+integers from respectively into {\GAP}. Note that the translation between
+integers and their hexa-decimal representation costs linear computation time
+in terms of the number of digits, while translation from and into decimal
+representation needs substantial computations.
 
 \beginexample
 gap> Int("12345")+1;
@@ -348,6 +449,10 @@ gap> Rat("123/45");
 41/15
 gap> Rat( "123.45" );
 2469/20
+gap> IntHexString("-abcdef0123456789");
+-12379813738877118345
+gap> HexStringInt(last);
+"-ABCDEF0123456789"
 \endexample
 
 \Declaration{Ordinal}
@@ -359,6 +464,7 @@ gap> Ordinal(2);  Ordinal(21);  Ordinal(33);  Ordinal(-33);
 "-33th"
 \endexample
 
+\Declaration{EvalString}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Calendar Arithmetic}
@@ -401,37 +507,6 @@ gap> SecHMSM([1,10,5,13]);
 gap> StringTime([1,10,5,13]);
 " 1:10:05.013"
 \endexample
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Internally Represented Strings}
-
-\index{convert!to a string}
-
-\Declaration{IsStringRep}
-\Declaration{ConvertToStringRep}
-\Declaration{IsEmptyString}
-\beginexample
-gap> l:= [];;  IsString( l );  IsEmptyString( l );  IsEmpty( l );
-true
-false
-true
-gap> l;  ConvertToStringRep( l );  l;
-[  ]
-""
-gap> IsEmptyString( l );  IsEmptyString( "" );  IsEmptyString( "abc" );
-true
-true
-false
-gap> ll:= [ 'a', 'b' ];  IsStringRep( ll );  ConvertToStringRep( ll );
-"ab"
-false
-gap> ll;  IsStringRep( ll );
-"ab"
-true
-\endexample
-
-\Declaration{CharsFamily}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

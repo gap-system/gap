@@ -24,15 +24,6 @@ Revision.utils_gi :=
 
 #############################################################################
 ##
-#F  ListTwo( <list1>, <list2>, <fnc> )
-##
-InstallGlobalFunction( ListTwo,
-function(list1, list2, fnc)
-    return List( [1..Length(list1)], i->fnc(list1[i],list2[i]) );
-end );
-
-#############################################################################
-##
 #F  UseSubsetRelationNC( <super>, <sub> )
 ##
 InstallGlobalFunction( UseSubsetRelationNC, function ( super, sub )

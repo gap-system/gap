@@ -21,27 +21,40 @@ gap> Size( G );
 8
 gap> IsHandledByNiceMonomorphism( G );
 true
-gap> NiceObject( G );
-Group([ (1,7,6,8)(2,5,3,4), (1,2,6,3)(4,8,5,7) ])
 gap> pcgs := Pcgs( G );;
 gap> Print(pcgs,"\n");
 Pcgs([ [ [ 0, 1 ], [ -1, 0 ] ], [ [ E(4), 0 ], [ 0, -E(4) ] ], 
   [ [ -1, 0 ], [ 0, -1 ] ] ])
 gap> cl := ConjugacyClasses( G );;
-gap> Print(cl,"\n");
-[ ConjugacyClass( Q8, [ [ 1, 0 ], [ 0, 1 ] ] ), 
-  ConjugacyClass( Q8, [ [ -1, 0 ], [ 0, -1 ] ] ), 
-  ConjugacyClass( Q8, [ [ 0, -1 ], [ 1, 0 ] ] ), 
-  ConjugacyClass( Q8, [ [ 0, -E(4) ], [ -E(4), 0 ] ] ), 
-  ConjugacyClass( Q8, [ [ -E(4), 0 ], [ 0, E(4) ] ] ) ]
-gap> List( cl, c -> ExponentsOfPcElement( pcgs, Representative( c ) ) );
-[ [ 0, 0, 0 ], [ 0, 0, 1 ], [ 1, 0, 1 ], [ 1, 1, 0 ], [ 0, 1, 1 ] ]
+gap> Collected(List(cl,i->[Size(i),Order(Representative(i))]));
+[ [ [ 1, 1 ], 1 ], [ [ 1, 2 ], 1 ], [ [ 2, 4 ], 3 ] ]
+gap> Set(List( cl, c -> ExponentsOfPcElement( pcgs, Representative( c ) )));
+[ [ 0, 0, 0 ], [ 0, 0, 1 ], [ 0, 1, 1 ], [ 1, 0, 1 ], [ 1, 1, 0 ] ]
 gap> Size( AutomorphismGroup( G ) );
 24
-gap> Length(ConjugacyClasses(GL(4,3)));
+gap> g:=GL(4,3);;
+gap> Length(ConjugacyClasses(g));
 78
+gap> gd:=DerivedSubgroup(g);;
+gap> Index(g,gd);
+2
+gap> Length(ConjugacyClasses(gd));
+51
+gap> hom:=NaturalHomomorphismByNormalSubgroup(gd,Centre(gd));;
+gap> u:=PreImage(hom,SylowSubgroup(Image(hom),3));;
+gap> Size(u);
+1458
+gap> Index(u,DerivedSubgroup(u));
+54
+gap> g:= DerivedSubgroup( SO( 1, 8, 4 ) );;
+gap> Collected( Factors( Size( g ) ) );
+[ [ 2, 24 ], [ 3, 5 ], [ 5, 4 ], [ 7, 1 ], [ 13, 1 ], [ 17, 2 ] ]
+gap> iso:= IsomorphismPermGroup( g );;
+gap> img:=Image( iso );;
+gap> Size(img);
+67010895544320000
 
-gap> STOP_TEST( "grpmat.tst", 102570000 );
+gap> STOP_TEST( "grpmat.tst", 1553569776 );
 
 #############################################################################
 ##

@@ -372,6 +372,31 @@ DeclareSynonym( "IsVectorTable",
 ##
 DeclareSynonym( "IsRowVector", IsVector and IsHomogeneousList );
 
+#############################################################################
+##
+#C  IsGeneralizedRowVector( <obj> ) . . . . objects that comply with new list
+##                                            addition rules
+##
+##  This Category is a descriptive one, objects lying in it, must be lists,
+##  and must have methods for addition, subtraction, unary negation, 
+##  multiplication by integers, Zero, TransposedMat and mod complying
+##  with the specification in dev/listmat.tex
+
+DeclareCategory( "IsGeneralizedRowVector", IsList );
+
+#############################################################################
+##
+#C  IsMultiplicativeGeneralizedRowVector( <obj> ) . . . . 
+##          objects that comply with new list multiplication rules
+##
+##  This Category is a descriptive one, objects lying in it, must be
+##  also lie in IsGeneralizedRowVector and comply with all the requirements
+##  of that Category. In addition, such objects must have methods for 
+##  multiplication, Inverse, One and division complying with
+##  the specification in dev/listmat.tex
+
+DeclareCategory( "IsMultiplicativeGeneralizedRowVector", IsGeneralizedRowVector );
+
 
 #############################################################################
 ##
@@ -561,6 +586,18 @@ DeclareSynonym( "IsScalarCollColl",   IsRingElementWithInverseCollColl );
 DeclareSynonym( "IsScalarList",       IsRingElementWithInverseList );
 DeclareSynonym( "IsScalarTable",      IsRingElementWithInverseTable );
 
+#############################################################################
+##
+#C  IsZDFRE( <obj> )
+##
+##  This category (``is zero divisor free ring element'') indicates elements
+##  from a ring which contains no zero divisors. For matrix operations over
+##  this ring, a standard Gauss algorithm can be used.
+##
+DeclareCategory("IsZDFRE",IsRingElementWithInverse);
+DeclareCategoryCollections("IsZDFRE");
+DeclareCategoryCollections("IsZDFRECollection");
+
 
 #############################################################################
 ##
@@ -608,6 +645,9 @@ DeclareCategory( "IsOrdinaryMatrix", IsMatrix );
 DeclareCategoryCollections( "IsOrdinaryMatrix" );
 
 InstallTrueMethod( IsOrdinaryMatrix, IsMatrix and IsInternalRep );
+InstallTrueMethod( IsGeneralizedRowVector, IsMatrix );
+InstallTrueMethod( IsMultiplicativeGeneralizedRowVector,
+        IsOrdinaryMatrix );
 
 
 #############################################################################
@@ -1261,6 +1301,19 @@ DeclareAttribute("AdditiveElementAsMultiplicativeElement",
 ##  Let <elm> be an object which builds on elements of another domain and
 ##  just wraps these up to provide another arithmetic.
 DeclareOperation( "UnderlyingElement", [ IsObject ] );
+
+
+
+#############################################################################
+##
+#P  IsIdempotent( <elt> )
+##
+##  true iff <elt> is its own square. 
+##  (Even if IsZero(<elt>) is also true.)
+##
+DeclareProperty("IsIdempotent", IsMultiplicativeElement);
+
+
 
 #############################################################################
 ##

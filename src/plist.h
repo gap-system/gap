@@ -107,9 +107,14 @@ extern  Int             GrowPlist (
 **
 **  Note that 'SET_ELM_PLIST' is a  macro, so do not  call it  with arguments
 **  that have sideeffects.
-*/
+**
+** old version that causes problems if val can trigger a garbage collection
+**
 #define SET_ELM_PLIST(list,pos,val)     (ADDR_OBJ(list)[pos] = (val))
-
+**
+** New version should be safe
+*/
+#define SET_ELM_PLIST(list, pos, val) do { Obj sep_Obj = (val); ADDR_OBJ(list)[pos] = sep_Obj; } while (0)
 
 /****************************************************************************
 **
@@ -145,12 +150,16 @@ extern  Int             GrowPlist (
 **
 
 *F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list
+*F  UnbPlistImm( <list>, <pos> ) . . . . . unbind an element from a plain list
 */
 extern void AssPlistEmpty (
     Obj                 list,
     Int                 pos,
     Obj                 val );
 
+void            UnbPlistImm (
+    Obj                 list,
+    Int                 pos );
 
 /****************************************************************************
 **

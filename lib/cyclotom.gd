@@ -123,20 +123,20 @@ DeclareGlobalFunction( "DescriptionOfRootOfUnity" );
 ##
 ##  $$
 ##  \matrix{
-##  `EB(<N>)' & = & b_N & = & \frac{1}{2}\sum_{j=1}^{N-1}z^{j^{2}} &
-##   (N\equiv 1\bmod 2)\cr
-##  `EC(<N>)' & = & c_N & = & \frac{1}{3}\sum_{j=1}^{N-1}z^{j^{3}} &
-##   (N\equiv 1\bmod 3)\cr
-##  `ED(<N>)' & = & d_N & = & \frac{1}{4}\sum_{j=1}^{N-1}z^{j^{4}} &
-##   (N\equiv 1\bmod 4)\cr
-##  `EE(<N>)' & = & e_N & = & \frac{1}{5}\sum_{j=1}^{N-1}z^{j^{5}} &
-##   (N\equiv 1\bmod 5)\cr
-##  `EF(<N>)' & = & f_N & = & \frac{1}{6}\sum_{j=1}^{N-1}z^{j^{6}} &
-##   (N\equiv 1\bmod 6)\cr
-##  `EG(<N>)' & = & g_N & = & \frac{1}{7}\sum_{j=1}^{N-1}z^{j^{7}} &
-##   (N\equiv 1\bmod 7)\cr
-##  `EH(<N>)' & = & h_N & = & \frac{1}{8}\sum_{j=1}^{N-1}z^{j^{8}} &
-##   (N\equiv 1\bmod 8)\cr
+##  `EB(<N>)' &=& b_N &=& \frac{1}{2}\sum_{j=1}^{N-1}z^{j^{2}},& %
+##   N \equiv 1 \pmod 2\cr
+##  `EC(<N>)' &=& c_N &=& \frac{1}{3}\sum_{j=1}^{N-1}z^{j^{3}},& %
+##   N \equiv 1 \pmod 3\cr
+##  `ED(<N>)' &=& d_N &=& \frac{1}{4}\sum_{j=1}^{N-1}z^{j^{4}},& %
+##   N \equiv 1 \pmod 4\cr
+##  `EE(<N>)' &=& e_N &=& \frac{1}{5}\sum_{j=1}^{N-1}z^{j^{5}},& %
+##   N \equiv 1 \pmod 5\cr
+##  `EF(<N>)' &=& f_N &=& \frac{1}{6}\sum_{j=1}^{N-1}z^{j^{6}},& %
+##   N \equiv 1 \pmod 6\cr
+##  `EG(<N>)' &=& g_N &=& \frac{1}{7}\sum_{j=1}^{N-1}z^{j^{7}},& %
+##   N \equiv 1 \pmod 7\cr
+##  `EH(<N>)' &=& h_N &=& \frac{1}{8}\sum_{j=1}^{N-1}z^{j^{8}},& %
+##   N \equiv 1 \pmod 8\cr
 ##  }
 ##  $$
 ##
@@ -170,11 +170,12 @@ DeclareGlobalFunction( "EH" );
 ##  $$
 ##  b_N = \left\{
 ##  \matrix{
-##  \frac{1}{2}(-1+\sqrt{N}) & {\rm if} & N\equiv 1 & \bmod 4\cr
-##  \frac{1}{2}(-1+i\sqrt{N}) & {\rm if} & N\equiv -1 & \bmod 4\cr
-##  }\right. ,
+##  \frac{1}{2}(-1+\sqrt{N})    &{\rm if} &N \equiv 1  &\pmod 4\cr
+##  \frac{1}{2}(-1+i \sqrt{N})  &{\rm if} &N \equiv -1 &\pmod 4\cr
+##  }
+##  \right.
 ##  $$
-##  so $\sqrt{N}$ can be computed from $b_N$ (see~"EB").
+##  So $\sqrt{N}$ can be computed from $b_N$ (see~"EB").
 ##  
 DeclareGlobalFunction( "EI" );
 DeclareGlobalFunction( "ER" );
@@ -194,21 +195,21 @@ DeclareGlobalFunction( "ER" );
 ##  multiplicative order exactly <k> modulo <N>,
 ##  chosen in the order of preference
 ##  $$
-##  1, -1, 2, -2, 3, -3, 4, -4, \ldots .
+##  1, -1, 2, -2, 3, -3, 4, -4, \ldots \.
 ##  $$
 ##  
 ##  We define
 ##  $$
 ##  \matrix{
-##  `EY(<N>)' & = & y_n & = & z+z^n &(n = n_2)\cr
-##  `EX(<N>)' & = & x_n & = & z+z^n+z^{n^2} &(n=n_3)\cr
-##  `EW(<N>)' & = & w_n & = & z+z^n+z^{n^2}+z^{n^3} &(n=n_4)\cr
+##  `EY(<N>)' & = & y_n & = & z+z^n                         &(n=n_2)\cr
+##  `EX(<N>)' & = & x_n & = & z+z^n+z^{n^2}                 &(n=n_3)\cr
+##  `EW(<N>)' & = & w_n & = & z+z^n+z^{n^2}+z^{n^3}         &(n=n_4)\cr
 ##  `EV(<N>)' & = & v_n & = & z+z^n+z^{n^2}+z^{n^3}+z^{n^4} &(n=n_5)\cr
-##  `EU(<N>)' & = & u_n & = & z+z^n+z^{n^2}+\ldots +z^{n^5} &(n=n_6)\cr
-##  `ET(<N>)' & = & t_n & = & z+z^n+z^{n^2}+\ldots +z^{n^6} &(n=n_7)\cr
-##  `ES(<N>)' & = & s_n & = & z+z^n+z^{n^2}+\ldots +z^{n^7} &(n=n_8)\cr
+##  `EU(<N>)' & = & u_n & = & z+z^n+z^{n^2}+  \ldots  +z^{n^5} &(n=n_6)\cr
+##  `ET(<N>)' & = & t_n & = & z+z^n+z^{n^2}+  \ldots  +z^{n^6} &(n=n_7)\cr
+##  `ES(<N>)' & = & s_n & = & z+z^n+z^{n^2}+  \ldots  +z^{n^7} &(n=n_8)\cr
 ##  }
-##  $$              
+##  $$
 ##
 DeclareGlobalFunction( "EY" );
 DeclareGlobalFunction( "EX" );
@@ -228,10 +229,10 @@ DeclareGlobalFunction( "ES" );
 ##
 ##  $$
 ##  \matrix{
-##  `EM(<N>)' & = & m_n & = & z-z^n &(n=n_2)\cr
+##  `EM(<N>)' & = & m_n & = & z-z^n                 &(n=n_2)\cr
 ##  `EL(<N>)' & = & l_n & = & z-z^n+z^{n^2}-z^{n^3} &(n=n_4)\cr
-##  `EK(<N>)' & = & k_n & = & z-z^n+\ldots -z^{n^5} &(n=n_6)\cr
-##  `EJ(<N>)' & = & j_n & = & z-z^n+\ldots -z^{n^7} &(n=n_8)\cr
+##  `EK(<N>)' & = & k_n & = & z-z^n+  \ldots  -z^{n^5} &(n=n_6)\cr
+##  `EJ(<N>)' & = & j_n & = & z-z^n+  \ldots  -z^{n^7} &(n=n_8)\cr
 ##  }
 ##  $$
 ##
@@ -257,7 +258,7 @@ DeclareGlobalFunction( "EJ" );
 ##  The algebraic numbers
 ##  $$
 ##  y_N^{\prime}=y_N^{(1)},y_N^{\prime\prime}=y_N^{(2)},\ldots,
-##  x_N^{\prime},x_N^{\prime\prime},\ldots,
+##  x_N^{\prime},x_N^{\prime\prime},\ldots,%
 ##  j_N^{\prime},j_N^{\prime\prime},\ldots
 ##  $$
 ##  are obtained on replacing $n_k$ in the above
@@ -266,10 +267,10 @@ DeclareGlobalFunction( "EJ" );
 ##  
 ##  $$
 ##  \matrix{
-##  `EY(<N>,<d>)' & = & y_N^{(d)}\cr
-##  `EX(<N>,<d>)' & = & x_N^{(d)}\cr
-##   & \vdots &\cr
-##  `EJ(<N>,<d>)' & = & j_n^{(d)}\cr
+##  `EY(<N>,<d>)' &=& y_N^{(d)}\cr
+##  `EX(<N>,<d>)' &=& x_N^{(d)}\cr
+##                &\vdots&\cr
+##  `EJ(<N>,<d>)' &=& j_n^{(d)}\cr
 ##  }
 ##  $$
 ##
@@ -389,6 +390,15 @@ DeclareAttribute( "GaloisMat", IsMatrix );
 ##  Note that no two rows of <mat> should be equal.
 ##
 DeclareAttribute( "RationalizedMat", IsMatrix );
+
+#############################################################################
+##
+#F  DenominatorCyc( <cyc> )
+##
+##  for a cyclotomic number <cyc> this function returns the smallest integer
+##  <n> such that `CoeffsCyc(<cyc>,Conductor(<cyc>))' consists of
+##  integers.
+DeclareGlobalFunction( "DenominatorCyc" );
 
 
 #############################################################################

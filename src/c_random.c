@@ -1,6 +1,6 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
-#include "compiled.h"
+#include "src/compiled.h"
 
 /* global variables used in handlers */
 static GVar G_QUO__INT;
@@ -323,13 +323,13 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "RANDOM_SEED", &GF_RANDOM__SEED );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "random.g:DefaultName(-113419180)" );
- InitHandlerFunc( HdlrFunc1, "random.g:HdlrFunc1(-113419180)" );
- InitGlobalBag( &(NameFunc[1]), "random.g:NameFunc[1](-113419180)" );
- InitHandlerFunc( HdlrFunc2, "random.g:HdlrFunc2(-113419180)" );
- InitGlobalBag( &(NameFunc[2]), "random.g:NameFunc[2](-113419180)" );
- InitHandlerFunc( HdlrFunc3, "random.g:HdlrFunc3(-113419180)" );
- InitGlobalBag( &(NameFunc[3]), "random.g:NameFunc[3](-113419180)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/random.g:DefaultName(-113419180)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/random.g:HdlrFunc1(-113419180)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/random.g:NameFunc[1](-113419180)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/random.g:HdlrFunc2(-113419180)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/random.g:NameFunc[2](-113419180)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/random.g:HdlrFunc3(-113419180)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/random.g:NameFunc[3](-113419180)" );
  
  /* return success */
  return 0;

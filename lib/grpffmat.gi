@@ -1,7 +1,8 @@
 #############################################################################
 ##
 #W  grpffmat.gi                 GAP Library                      Frank Celler
-#W                                                              Frank Luebeck
+#W                                                               Frank Lübeck
+#W                                                                Stefan Kohl
 ##
 #H  @(#)$Id$
 ##
@@ -120,36 +121,38 @@ function( grp )
 end );
 
 
+# obsolete
 #############################################################################
 ##
 #M  IsomorphismPermGroup( <grp> ) . . . . . . . . . operation on vector space
 ##
-InstallMethod( IsomorphismPermGroup, "ffe matrix group", true,
-        [ IsFFEMatrixGroup and IsFinite ], 0,
-function( grp )
-local   nice;
-  if Size(FieldOfMatrixGroup(Parent(grp)))^DimensionOfMatrixGroup(grp)
-    >10000 then
-      # if the permutation image would be too large, compute the orbit.
-      TryNextMethod();
-  fi;
-    
-  nice := NicomorphismOfFFEMatrixGroup( grp );
-  SetRange( nice, Image( nice ) );
-  SetIsBijective( nice, true );
-  return nice;
-end );
+#InstallMethod( IsomorphismPermGroup, "ffe matrix group", true,
+#        [ IsFFEMatrixGroup and IsFinite ], 0,
+#function( grp )
+#local   nice;
+#  if Size(FieldOfMatrixGroup(Parent(grp)))^DimensionOfMatrixGroup(grp)
+#    >10000 then
+#      # if the permutation image would be too large, compute the orbit.
+#      TryNextMethod();
+#  fi;
+#    
+#  nice := NicomorphismOfFFEMatrixGroup( grp );
+#  SetRange( nice, Image( nice ) );
+#  SetIsBijective( nice, true );
+#  return nice;
+#end );
 
 #############################################################################
 ##
 #M  ProjectiveActionOnFullSpace(<G>,<f>,<n>)
 ##
 InstallGlobalFunction(ProjectiveActionOnFullSpace,function(g,f,n)
-local o,i;
+local o,i,s;
   # as the groups are large, we can take all normed vectors
-  o:=NormedVectors(f^n);
+  o:=NormedRowVectors(f^n);
+  s:=Size(f);
   for i in o do
-    ConvertToVectorRep(i,f);
+    ConvertToVectorRep(i,s);
     MakeImmutable(i);
   od;
   o:=Set(o);
@@ -434,9 +437,15 @@ InstallMethod( Random,
     "for natural GL",
     true,
     [ IsFFEMatrixGroup and IsFinite and IsNaturalGL ],
-    0,
-    G -> RandomInvertibleMat( DimensionOfMatrixGroup( G ),
-                              FieldOfMatrixGroup( G ) ) );
+        0,
+        function(G)
+    local m;
+    m := RandomInvertibleMat( DimensionOfMatrixGroup( G ),
+                 FieldOfMatrixGroup( G ) );
+    MakeImmutable(m);
+    ConvertToMatrixRep(m, FieldOfMatrixGroup(G));
+    return m;
+    end         );
 
 
 #############################################################################
@@ -452,13 +461,223 @@ InstallMethod( Random,
     true,
     [ IsFFEMatrixGroup and IsFinite and IsNaturalSL ],
     0,
-    function( G )
-    G:= RandomInvertibleMat( DimensionOfMatrixGroup( G ),
-                             FieldOfMatrixGroup( G ) );
-    G[1]:= G[1] / DeterminantMat( G );
-    return G;
+        function( G )
+    local m;
+    m:= RandomInvertibleMat( DimensionOfMatrixGroup( G ),
+                FieldOfMatrixGroup( G ) );
+    MultRowVector(m[1], DeterminantMat(m)^-1);
+    MakeImmutable(m);
+    ConvertToMatrixRep(m, FieldOfMatrixGroup(G));
+    return m;
     end );
 
+#############################################################################
+##
+#F  Phi2( <n> ) . . . . . . . . . . . .  Modification of Euler's Phi function
+##
+##  This is needed for the computation of the class numbers of SL(n,q),
+##  PSL(n,q), SU(n,q) and PSU(n,q)
+##
+InstallGlobalFunction(Phi2,
+n -> n^2 * Product(Set(Filtered(FactorsInt(n), m -> m <> 1)),
+                   p -> (1 - 1/p^2)));
+
+#############################################################################
+##
+#F  NrConjugacyClassesGL( <n>, <q> ) . . . . . . . . Class number for GL(n,q)
+##
+##  This is also needed for the computation of the class numbers of PGL(n,q),
+##  SL(n,q) and PSL(n,q)
+##
+InstallGlobalFunction(NrConjugacyClassesGL,
+function(n,q)
+  return Sum(Partitions(n),
+             v -> Product(List(Set(v), i -> Number(v, j -> j = i)),
+                          n_i -> q^n_i - q^(n_i - 1)));
+end);
+
+#############################################################################
+##
+#F  NrConjugacyClassesSLIsogeneous( <n>, <q>, <f> )  
+##
+##  Class number for group isogeneous to SL(n,q)
+##
+InstallGlobalFunction(NrConjugacyClassesSLIsogeneous,
+function(n,q,f)
+  return Sum(Cartesian(DivisorsInt(Gcd(  f,q - 1)),
+                       DivisorsInt(Gcd(n/f,q - 1))),
+             d ->   Phi(d[1]) * Phi2(d[2]) 
+                  * NrConjugacyClassesGL(n/Product(d),q))/(q - 1);
+end);
+
+#############################################################################
+##
+#F  NrConjugacyClassesSL( <n>, <q> )  . . . . . . .  Class number for SL(n,q)
+##
+InstallGlobalFunction(NrConjugacyClassesSL,
+function(n,q)
+  return NrConjugacyClassesSLIsogeneous(n,q,1);
+end);
+
+#############################################################################
+##
+#F  NrConjugacyClassesPGL( <n>, <q> ) . . . . . . . Class number for PGL(n,q)
+##
+InstallGlobalFunction(NrConjugacyClassesPGL,
+function(n,q)
+  return NrConjugacyClassesSLIsogeneous(n,q,n);
+end);
+
+#############################################################################
+##
+#F  NrConjugacyClassesPSL( <n>, <q> ) . . . . . . . Class number for PSL(n,q)
+##
+InstallGlobalFunction(NrConjugacyClassesPSL,
+function(n,q)
+  return Sum(Filtered(Cartesian(DivisorsInt(q - 1),DivisorsInt(q - 1)),
+                      d -> n mod Product(d) = 0),
+             d -> Phi(d[1]) * Phi2(d[2])
+                * NrConjugacyClassesGL(n/Product(d),q)/(q - 1))/Gcd(n,q - 1);
+end);
+
+#############################################################################
+##
+#F  NrConjugacyClassesGU( <n>, <q> ) . . . . . . . . Class number for GU(n,q)
+##
+##  This is also needed for the computation of the class numbers of PGU(n,q),
+##  SU(n,q) and PSU(n,q)
+##
+InstallGlobalFunction(NrConjugacyClassesGU,
+function(n,q)
+  return Sum(Partitions(n),
+             v -> Product(List(Set(v), i -> Number(v, j -> j = i)),
+                          n_i -> q^n_i + q^(n_i - 1)));
+end);
+
+#############################################################################
+##
+#F  NrConjugacyClassesSUIsogeneous( <n>, <q>, <f> ) 
+##
+##  Class number for group isogeneous to SU(n,q)
+##
+InstallGlobalFunction(NrConjugacyClassesSUIsogeneous,
+function(n,q,f)
+  return Sum(Cartesian(DivisorsInt(Gcd(  f,q + 1)),
+                       DivisorsInt(Gcd(n/f,q + 1))),
+             d ->   Phi(d[1]) * Phi2(d[2]) 
+                  * NrConjugacyClassesGU(n/Product(d),q))/(q + 1);
+end);
+
+#############################################################################
+##
+#F  NrConjugacyClassesSU( <n>, <q> )  . . . . . . .  Class number for SU(n,q)
+##
+InstallGlobalFunction(NrConjugacyClassesSU,
+function(n,q)
+  return NrConjugacyClassesSUIsogeneous(n,q,1);
+end);
+
+#############################################################################
+##
+#F  NrConjugacyClassesPGU( <n>, <q> ) . . . . . . . Class number for PGU(n,q)
+##
+InstallGlobalFunction(NrConjugacyClassesPGU,
+function(n,q)
+  return NrConjugacyClassesSUIsogeneous(n,q,n);
+end);
+
+#############################################################################
+##
+#F  NrConjugacyClassesPSU( <n>, <q> ) . . . . . . . Class number for PSU(n,q)
+##
+InstallGlobalFunction(NrConjugacyClassesPSU,
+function(n,q)
+  return Sum(Filtered(Cartesian(DivisorsInt(q + 1),DivisorsInt(q + 1)),
+                      d -> n mod Product(d) = 0),
+             d -> Phi(d[1]) * Phi2(d[2])
+                * NrConjugacyClassesGU(n/Product(d),q)/(q + 1))/Gcd(n,q + 1);
+end);
+
+#############################################################################
+##
+#M  NrConjugacyClasses( <G> ) . . . . . . . . . .  Method for natural GL(n,q)
+##
+InstallMethod( NrConjugacyClasses,
+               "for natural GL",
+               true,
+               [ IsGroup and IsFinite and IsNaturalGL ],
+               0,
+function ( G )
+
+  local  n,q;
+
+  n := DimensionOfMatrixGroup(G);
+  q := Size(FieldOfMatrixGroup(G));
+
+  return NrConjugacyClassesGL(n,q);
+end );
+
+#############################################################################
+##
+#M  NrConjugacyClasses( <G> ) . . . . . . . . . .  Method for natural SL(n,q)
+##
+InstallMethod( NrConjugacyClasses,
+               "for natural SL",
+               true,
+               [ IsGroup and IsFinite and IsNaturalSL ],
+               0,
+function ( G )
+
+  local  n,q;
+
+  n := DimensionOfMatrixGroup(G);
+  q := Size(FieldOfMatrixGroup(G));
+
+  return NrConjugacyClassesSL(n,q);
+end );
+
+#############################################################################
+##
+#M  NrConjugacyClasses( <G> ) . . . . . . . . . . . . . .  Method for GU(n,q)
+##
+InstallMethod( NrConjugacyClasses,
+               "for GU(n,q)",
+               true,
+               [ IsGroup and IsFinite 
+                 and IsFullSubgroupGLorSLRespectingSesquilinearForm ],
+               0,
+function ( G )
+
+  local  n,q;
+
+  if IsSubgroupSL(G) then TryNextMethod(); fi;
+
+  n := DimensionOfMatrixGroup(G);
+  q := RootInt(Size(FieldOfMatrixGroup(G)));
+
+  return NrConjugacyClassesGU(n,q);
+end );
+
+#############################################################################
+##
+#M  NrConjugacyClasses( <G> ) . . . . . . . . . .  Method for natural SU(n,q)
+##
+InstallMethod( NrConjugacyClasses,
+               "for natural SU",
+               true,
+               [ IsGroup and IsFinite 
+                 and IsFullSubgroupGLorSLRespectingSesquilinearForm
+                 and IsSubgroupSL ],
+               0,
+function ( G )
+
+  local  n,q;
+
+  n := DimensionOfMatrixGroup(G);
+  q := RootInt(Size(FieldOfMatrixGroup(G)));
+
+  return NrConjugacyClassesSU(n,q);
+end );
 
 #############################################################################
 ##

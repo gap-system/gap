@@ -16,7 +16,7 @@ Revision.grpramat_gi :=
 ##
 #M  IsRationalMatrixGroup( G )
 ##
-InstallMethod( IsRationalMatrixGroup, true, [ IsCyclotomicMatrixGroup ], 0,
+InstallMethod( IsRationalMatrixGroup, [ IsCyclotomicMatrixGroup ],
     G -> ForAll( Flat( GeneratorsOfGroup( G ) ), IsRat ) );
 
 InstallTrueMethod( IsRationalMatrixGroup, IsIntegerMatrixGroup );
@@ -25,7 +25,7 @@ InstallTrueMethod( IsRationalMatrixGroup, IsIntegerMatrixGroup );
 ##
 #M  IsIntegerMatrixGroup( G )
 ##
-InstallMethod( IsIntegerMatrixGroup, true, [ IsCyclotomicMatrixGroup ], 0,
+InstallMethod( IsIntegerMatrixGroup, [ IsCyclotomicMatrixGroup ],
     function( G )
     local gen;
     gen := GeneratorsOfGroup( G );
@@ -38,8 +38,8 @@ InstallMethod( IsIntegerMatrixGroup, true, [ IsCyclotomicMatrixGroup ], 0,
 ##
 #M  GeneralLinearGroupCons(IsMatrixGroup,n,Integers)
 ##
-InstallOtherMethod(GeneralLinearGroupCons,"some generators for GL_n(Z)",true,
-  [IsMatrixGroup,IsPosInt,IsIntegers],0,
+InstallOtherMethod(GeneralLinearGroupCons,"some generators for GL_n(Z)",
+  [IsMatrixGroup,IsPosInt,IsIntegers],
 function(fil,n,ints)
 local gens,mat,G;
   # permutations
@@ -66,7 +66,7 @@ end);
 #M  Normalizer( GLnZ, G ) . . . . . . . . . . . . . . . . .Normalizer in GLnZ
 ##
 InstallMethod( NormalizerOp, IsIdenticalObj,
-    [ IsNaturalGLnZ, IsCyclotomicMatrixGroup ], 0, 
+    [ IsNaturalGLnZ, IsCyclotomicMatrixGroup ],
 function( GLnZ, G )
     return NormalizerInGLnZ( G );
 end );
@@ -76,7 +76,7 @@ end );
 #M  Centralizer( GLnZ, G ) . . . . . . . . . . . . . . . .Centralizer in GLnZ
 ##
 InstallMethod( CentralizerOp, IsIdenticalObj,
-    [ IsNaturalGLnZ, IsCyclotomicMatrixGroup ], 0, 
+    [ IsNaturalGLnZ, IsCyclotomicMatrixGroup ], 
 function( GLnZ, G )
     return CentralizerInGLnZ( G );
 end );
@@ -110,7 +110,7 @@ end );
 #M  IsBravaisGroup( <G> ) . . . . . . . . . . . . . . . . . . .IsBravaisGroup
 ##
 InstallMethod( IsBravaisGroup, 
-    true, [ IsCyclotomicMatrixGroup ], 0,
+    [ IsCyclotomicMatrixGroup ],
 function( G )
     return G = BravaisGroup( G );
 end );
@@ -120,7 +120,7 @@ end );
 #M  InvariantLattice( G ) . . . . .invariant lattice of rational matrix group
 ##
 InstallMethod( InvariantLattice, "for rational matrix groups", 
-    true, [ IsCyclotomicMatrixGroup ], 0,
+    [ IsCyclotomicMatrixGroup ],
 function( G )
 
     local gen, dim, trn, rnd, tab, den;
@@ -183,15 +183,20 @@ end );
 ##
 #T  This method should evetually be replaced or complemented by the methods
 #T  used in GRIM!
-InstallMethod( IsFinite, "via Minkowski kernel (short but not too efficient)",
-  true, [ IsCyclotomicMatrixGroup ], 0,
-function( G )
+InstallMethod( IsFinite,
+    "via Minkowski kernel (short but not too efficient)",
+    [ IsCyclotomicMatrixGroup ],
+    function( G )
 
     local lat, grp, stb, orb, rep, gen, pnt, img, sch, size, dim, basis, i;
 
-    # if not rational, try something else
+    # if not rational, use the nice monomorphism into a rational matrix group
     if not IsRationalMatrixGroup( G ) then
-        TryNextMethod();
+
+      size:= Size( Image( NiceMonomorphism( G ) ) );
+      SetSize( G, size );
+      return IsInt( size );
+
     fi;
 
     # if not integral, choose basis in which it is integral
@@ -246,73 +251,150 @@ function( G )
 
 end );
 
+
 #############################################################################
 ##
-#M  Size( G ) . . . . . . . . . . . . . . . . .Size for rational matrix group
+#M  Size( <G> ) . . . . . . . . . . . . . . . . . . for rational matrix group
 ##
-InstallMethod( Size, "via Minkowski kernel (short but not too efficient)",
-  true, [ IsCyclotomicMatrixGroup ], 0,
-function( G )
-  if not IsRationalMatrixGroup( G ) then
-     TryNextMethod();
-  else
-     IsFinite( G );
-     return Size( G );
-  fi;
-end );
-
-
-# enforce redispatching on finiteness conditions
-
-RedispatchOnCondition(\in,true,
-  [IsCyclotomicMatrixGroup,IsMatrix],
-  [IsRationalMatrixGroup and IsFinite],0);
-
-RedispatchOnCondition(\=,IsIdenticalObj,
-  [IsCyclotomicMatrixGroup,IsCyclotomicMatrixGroup],
-  [IsRationalMatrixGroup and IsFinite,IsRationalMatrixGroup and IsFinite],0);
-
-RedispatchOnCondition(IndexOp,IsIdenticalObj,
-  [IsCyclotomicMatrixGroup,IsCyclotomicMatrixGroup],
-  [IsRationalMatrixGroup and IsFinite,IsRationalMatrixGroup and IsFinite],0);
-
-RedispatchOnCondition(NormalizerOp,IsIdenticalObj,
-  [IsCyclotomicMatrixGroup,IsCyclotomicMatrixGroup],
-  [IsRationalMatrixGroup and IsFinite,IsRationalMatrixGroup and IsFinite],0);
-
-RedispatchOnCondition(NormalClosureOp,IsIdenticalObj,
-  [IsCyclotomicMatrixGroup,IsCyclotomicMatrixGroup],
-  [IsRationalMatrixGroup and IsFinite,IsRationalMatrixGroup and IsFinite],0);
-
-RedispatchOnCondition(CentralizerOp,true,
-  [IsCyclotomicMatrixGroup,IsObject],
-  [IsRationalMatrixGroup and IsFinite],0);
-
-RedispatchOnCondition(ClosureGroup,true,
-  [IsCyclotomicMatrixGroup,IsObject],
-  [IsRationalMatrixGroup and IsFinite],0);
-
-RedispatchOnCondition(SylowSubgroupOp,true,
-  [IsCyclotomicMatrixGroup,IsPosInt],
-  [IsRationalMatrixGroup and IsFinite],0);
-
-RedispatchOnCondition(ConjugacyClasses,true,
-  [IsCyclotomicMatrixGroup],
-  [IsRationalMatrixGroup and IsFinite],0);
-
-RedispatchOnCondition(IsomorphismPermGroup,true,
-  [IsCyclotomicMatrixGroup],
-  [IsRationalMatrixGroup and IsFinite],0);
-
-RedispatchOnCondition(IsomorphismPcGroup,true,
-  [IsCyclotomicMatrixGroup],
-  [IsRationalMatrixGroup and IsFinite],0);
-
-RedispatchOnCondition(CompositionSeries,true,[IsCyclotomicMatrixGroup],
-    [IsRationalMatrixGroup and IsFinite],0);
+InstallMethod( Size,
+    "via Minkowski kernel (short but not too efficient)",
+    [ IsCyclotomicMatrixGroup ],
+    function( G )
+    IsFinite( G );
+#T dangerous because it assumes that the above method is used
+#T that explicitly sets the `Size' value
+    return Size( G );
+    end );
 
 
 #############################################################################
 ##
-#E  grpramat.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  NiceMonomorphism( <G> ) . . . . . . . . . . for a cyclotomic matrix group
 ##
+##  For a *nonrational* cyclotomic matrix group, the nice monomorphism is
+##  defined as an isomorphism to a rational matrix group.
+##
+##  Note that a stored nice monomorphism does *not* imply that the group is
+##  handled by the nice monomorphism; as for matrix groups in general,
+##  we want to set `IsHandledByNiceMonomorphism' only for *finite* matrix
+##  groups.
+##
+InstallMethod( NiceMonomorphism,
+    "for a (nonrational) cyclotomic matrix group",
+    [ IsCyclotomicMatrixGroup ],
+    function( G )
+    if IsRationalMatrixGroup( G ) then
+      TryNextMethod();
+    else
+      return BlowUpIsomorphism( G, Basis( FieldOfMatrixGroup( G ) ) );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  IsHandledByNiceMonomorphism( <G> )  . . . . for a cyclotomic matrix group
+##
+##  A matrix group shall be handled via nice monomorphism if and only if it
+##  is finite.
+##  We install the method here because for cyclotomic matrix groups,
+##  we can decide finiteness.
+##
+##  (Note that nice monomorphisms may be used also for infinite groups,
+##  for example for non-rational matrix groups over the cyclotomics.)
+##
+InstallMethod( IsHandledByNiceMonomorphism, 
+    "for a cyclotomic matrix group",
+    [ IsCyclotomicMatrixGroup ], 
+    IsFinite );
+
+
+#############################################################################
+##
+#M  IsomorphismPermGroup( <G> ) . . . . . . . . . . for rational matrix group
+##
+##  The only difference to the method installed for matrix groups is that
+##  finiteness of (finitely generated) matrix groups over the cyclotomics can
+##  be decided and hence no warning need to be issued.
+##
+InstallMethod( IsomorphismPermGroup,
+    "cyclotomic matrix group",
+    [ IsCyclotomicMatrixGroup ], 10,
+    function( G )
+    if HasNiceMonomorphism(G) and IsPermGroup(Range(NiceMonomorphism(G))) then
+      return RestrictedMapping(NiceMonomorphism(G),G);
+    elif not IsFinite(G) then
+      Error("Cannot compute permutation representation of infinite group");
+    else
+      return NicomorphismOfGeneralMatrixGroup(G,false,false);
+    fi;
+    end);
+
+
+#############################################################################
+##
+##  *Finite* matrix groups lie in the filter `IsHandledByNiceMonomorphism'.
+##  In order to make the corresponding methods for the operations involved in
+##  the following `RedispatchOnCondition' calls applicable for finite
+##  matrix groups over the cyclotomics,
+##  we force a finiteness check as ``last resort''.
+##
+RedispatchOnCondition( \in, true,
+    [ IsMatrix, IsCyclotomicMatrixGroup ],
+    [ IsObject, IsFinite ], 0 );
+
+RedispatchOnCondition( \=, IsIdenticalObj,
+    [ IsCyclotomicMatrixGroup, IsCyclotomicMatrixGroup ],
+    [ IsFinite, IsFinite ], 0 );
+
+RedispatchOnCondition( IndexOp, IsIdenticalObj,
+    [ IsCyclotomicMatrixGroup, IsCyclotomicMatrixGroup ],
+    [ IsFinite, IsFinite ], 0 );
+
+RedispatchOnCondition( IndexNC, IsIdenticalObj,
+    [ IsCyclotomicMatrixGroup, IsCyclotomicMatrixGroup ],
+    [ IsFinite, IsFinite ], 0 );
+
+RedispatchOnCondition( NormalizerOp, IsIdenticalObj,
+    [ IsCyclotomicMatrixGroup, IsCyclotomicMatrixGroup ],
+    [ IsFinite, IsFinite ], 0 );
+
+RedispatchOnCondition( NormalClosureOp, IsIdenticalObj,
+    [ IsCyclotomicMatrixGroup, IsCyclotomicMatrixGroup ],
+    [ IsFinite, IsFinite ], 0 );
+
+RedispatchOnCondition( CentralizerOp, true,
+    [ IsCyclotomicMatrixGroup, IsObject ],
+    [ IsFinite ], 0 );
+
+RedispatchOnCondition( ClosureGroup, true,
+    [ IsCyclotomicMatrixGroup, IsObject ],
+    [ IsFinite ], 0 );
+
+RedispatchOnCondition( SylowSubgroupOp, true,
+    [ IsCyclotomicMatrixGroup, IsPosInt ],
+    [ IsFinite ], 0 );
+
+RedispatchOnCondition( ConjugacyClasses, true,
+    [ IsCyclotomicMatrixGroup ],
+    [ IsFinite ], 0 );
+
+#T as we have installed a method for this situation,
+#T no fallback is needed
+# RedispatchOnCondition( IsomorphismPermGroup, true,
+#     [ IsCyclotomicMatrixGroup ],
+#     [ IsFinite ], 0 );
+
+RedispatchOnCondition( IsomorphismPcGroup, true,
+    [ IsCyclotomicMatrixGroup ],
+    [ IsFinite ], 0 );
+
+RedispatchOnCondition( CompositionSeries, true,
+    [ IsCyclotomicMatrixGroup ],
+    [ IsFinite ], 0 );
+
+
+#############################################################################
+##
+#E
+

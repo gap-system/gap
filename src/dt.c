@@ -10,12 +10,12 @@
 **  This file implements the part of the deep thought package which deals
 **  with computing the deep thought polynomials.
 **
-**  Deep Thought deals with trees.  A tree < tree > is a concatenation of 
+**  Deep Thought deals with trees.  A tree <tree> is a concatenation of 
 **  several nodes where each node is a 5-tuple of immediate integers.  If
-**  < tree > is an atom it contains only one node,  thus it is itself a
-**  5-tuple. If < tree > is not an atom we obtain its list representation by
+**  <tree> is an atom it contains only one node,  thus it is itself a
+**  5-tuple. If <tree> is not an atom we obtain its list representation by
 **
-**  < tree >  :=  topnode(<tree>) concat left(<tree>) concat right(<tree>) .
+**  <tree>  :=  topnode(<tree>) concat left(<tree>) concat right(<tree>) .
 **
 **  Let us denote the i-th node of <tree> by (<tree>, i)  and the tree rooted 
 **  at (<tree>, i) by tree(<tree>, i).  Let <a> be tree(<tree>, i)
@@ -101,7 +101,7 @@ const char * Revision_dt_c =
 **  integer less or equal to the number of nodes of <tree>
 */
 #define  SET_DT_POS(tree, index, obj) \
-              (SET_ELM_PLIST(tree, (index-1)*5 + 1, obj) )
+              SET_ELM_PLIST(tree, (index-1)*5 + 1, obj) 
 
 
 /***************************************************************************
@@ -148,7 +148,7 @@ const char * Revision_dt_c =
 **  integer less or equal to the number of nodes of <tree>.
 */
 #define  DT_MARK(tree, index) \
-              (SET_ELM_PLIST(tree, (index-1)*5 + 3, INTOBJ_INT(1) ) )
+              SET_ELM_PLIST(tree, (index-1)*5 + 3, INTOBJ_INT(1) ) 
 
 
 /**************************************************************************
@@ -160,7 +160,7 @@ const char * Revision_dt_c =
 **  <tree>.
 */
 #define  DT_UNMARK(tree, index) \
-              (SET_ELM_PLIST(tree, (index-1)*5 + 3, INTOBJ_INT(0) ) )
+              SET_ELM_PLIST(tree, (index-1)*5 + 3, INTOBJ_INT(0) ) 
 
 
 /****************************************************************************
@@ -699,7 +699,7 @@ Obj    FuncMakeFormulaVector(
 {
     if  (LEN_PLIST(tree) == 5)
         ErrorReturnVoid("<tree> has to be a non-atom", 0L, 0L,
-                        "you can return");
+                        "you can 'return;'");
     return  MakeFormulaVector(tree, pr);
 }
 
@@ -921,8 +921,8 @@ Obj      FuncGetPols(
     void    GetPols();
 
     if  (LEN_PLIST(list) != 4)
-        ErrorReturnVoid("<list> must be a generalised representativ not a tree"
-                        ,0L, 0L, "you can return");
+        ErrorReturnVoid("<list> must be a generalised representative not a tree"
+                        ,0L, 0L, "you can 'return;'");
     GetPols(list, pr, pols);
     return (Obj) 0;
 }
@@ -1357,7 +1357,7 @@ Obj    FuncFindNewReps(
     /* TestTree(tree);                                                     */
     if  ( LEN_PLIST(tree) < 15 )  
         ErrorReturnVoid("<tree> must be a tree not a plain list", 0L, 0L,
-                        "you can return");
+                        "you can 'return;'");
     FindNewReps(tree, reps, pr, max);   
     return  0;
 }
@@ -1375,32 +1375,32 @@ void  TestTree(
 {
 
     if ( TNUM_OBJ(tree) != T_PLIST || LEN_PLIST(tree) % 7 != 0)
-        ErrorReturnVoid("<tree> must be a plain list,  whose length is a multiple of 7", 0L, 0L, "you can return");
+        ErrorReturnVoid("<tree> must be a plain list,  whose length is a multiple of 7", 0L, 0L, "you can 'return;'");
     if ( DT_LENGTH(tree, 1) != LEN_PLIST(tree)/7 )
         ErrorReturnVoid("<tree> must be a tree, not a plain list.", 0L, 0L,
-                        "you can return");
+                        "you can 'return;'");
     if ( DT_SIDE(tree, 1) >= DT_LENGTH(tree, 1) )
         ErrorReturnVoid("<tree> must be a tree, not a plain list.", 0L, 0L,
-                        "you can return");        
+                        "you can 'return;'");        
     if ( DT_LENGTH(tree, 1) == 1)
     {
         if ( DT_SIDE(tree, 1) != LEFT && DT_SIDE(tree, 1) != RIGHT )
             ErrorReturnVoid("<tree> must be a tree, not a plain list.", 0L, 0L,
-                            "you can return");
+                            "you can 'return;'");
         return;
     }
     if ( DT_SIDE(tree, 1) <= 1 )
         ErrorReturnVoid("<tree> must be a tree, not a plain list.", 0L, 0L,
-                        "you can return");
+                        "you can 'return;'");
     if (DT_LENGTH(tree, 1) !=
           DT_LENGTH(tree, DT_LEFT(tree, 1)) + 
           DT_LENGTH(tree, DT_RIGHT(tree, 1)) +  
           1                                           )
-        ErrorReturnVoid(" < tree > must be a tree, not a plain list.", 0L, 0L,
-                        "you can return");
+        ErrorReturnVoid("<tree> must be a tree, not a plain list.", 0L, 0L,
+                        "you can 'return;'");
     if ( DT_SIDE(tree, 1) != DT_LENGTH(tree, DT_LEFT(tree, 1) ) + 1 )
         ErrorReturnVoid("<tree> must be a tree, not a plain list.", 0L, 0L,
-                        "you can return");
+                        "you can 'return;'");
     TestTree( Part(tree, (DT_LEFT(tree, 1) - 1)*7, 
                          (DT_RIGHT(tree, 1) - 1)*7                    )    );
     TestTree( Part(tree, (DT_RIGHT(tree, 1) - 1)*7,  LEN_PLIST(tree) ) );

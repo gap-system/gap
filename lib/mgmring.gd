@@ -84,6 +84,7 @@
 ##  but many unnecessary intermediate elements are created this way.)
 
 #3
+##  \atindex{Embedding!for magma rings}{@\noexpand`Embedding'!for magma rings}
 ##  Neither the coefficient ring $R$ nor the magma $M$
 ##  are regarded as subsets of the magma ring $RM$,
 ##  so one has to use *embeddings* (see~"Embedding") explicitly

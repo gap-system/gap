@@ -20,10 +20,9 @@ Revision.ctblsolv_gi :=
 ##
 InstallMethod( CharacterDegrees,
     "for an abelian group, and an integer p (just strip off the p-part)",
-    true,
     [ IsGroup and IsAbelian, IsInt ],
-    SIZE_FLAGS(FLAGS_FILTER(IsZeroCyc)), # There is a method for groups for
-                                         # the integer zero which is worse
+    RankFilter(IsZeroCyc), # There is a method for groups for
+			   # the integer zero which is worse
     function( G, p )
     G:= Size( G );
     if p <> 0 then
@@ -202,8 +201,8 @@ InstallGlobalFunction( ProjectiveCharDeg, function( G, z, q )
                    x -> TransposedMat( List( Ppcgs,
                    y -> ExponentsConjugateLayer( Ppcgs, y,x ) )*Z(p)^0 ) );
         orbs:= ExternalOrbitsStabilizers( G,
-                   Enumerator( FullRowModule( GF(p), Length( Ppcgs ) ) ),
-                   Gpcgs, mats, OnRight );
+                   NormedRowVectors( GF(p)^Length( Ppcgs ) ),
+                   Gpcgs, mats, OnLines );
         orbs:= Filtered( orbs,
               o -> not IsZero( CanonicalRepresentativeOfExternalSet( o ) ) );
 
@@ -271,8 +270,8 @@ InstallGlobalFunction( ProjectiveCharDeg, function( G, z, q )
                  x -> TransposedMat( List( Opcgs,
                       y -> ExponentsConjugateLayer( Opcgs, y,x ) ) * Z(p)^0 ) );
     orbs:= ExternalOrbitsStabilizers( G,
-               Enumerator( GF(p)^Length( Opcgs ) ),
-               Gpcgs, mats, OnRight );
+               NormedRowVectors( GF(p)^Length( Opcgs ) ),
+               Gpcgs, mats, OnLines );
     orbs:= Filtered( orbs,
               o -> not IsZero( CanonicalRepresentativeOfExternalSet( o ) ) );
 
@@ -300,12 +299,31 @@ end );
 ##
 #M  CharacterDegrees( <G>, <p> )  . . . . . . . . . . .  for a solvable group
 ##
-##  The used algorithm is described in
+##  The algorithm used is based on~\cite{Con90b},
+##  its main tool is Clifford theory.
 ##
-##      S. B. Conlon, J. Symbolic Computation (1990) 9, 551-570.
+##  Given a solvable group $G$ and a nonnegative integer $q$,
+##  we first choose an elementary abelian normal subgroup $N$.
+##  (Note that $N$ need not be a *minimal* normal subgroup, this requirement
+##  in~\cite{Con90b} applies only to the computation of projective degrees
+##  where nonabelian normal subgroups $N$ occur.)
+##  By recursion, the $q$-modular character degrees of the factor group $G/N$
+##  are computed next.
+##  So it remains to compute the degrees of those $q$-modular irreducible
+##  characters whose kernels do not contain $N$.
+##  This last step follows~\cite{Con90b}, for the special case of a *trivial*
+##  central subgroup $Z$.
+##  Namely, we compute the $G$-orbits on the linear spaces of the nontrivial
+##  irreducible characters of $N$, under projective action.
+##  (The orbit consisting of the trivial character corresponds to those
+##  $q$-modular irreducible $G$-characters with $N$ in their kernels.)
+##  For each orbit, we use the function `ProjectiveCharDeg' to compute the
+##  degrees arising from a representative $\chi$,
+##  in the group $S/K$ with central cyclic subgroup $N/K$,
+##  where $S$ is the (subspace) stabilizer of $\chi$ and $K$ is the kernel of
+##  $\chi$.
 ##
-##  The main theoretic tool for the algorithm is Clifford theory.
-##  One recursive step of the algorithm will be described.
+##  One recursive step of the algorithm is described in the following.
 ##
 ##  Let $G$ be a solvable group, $z$ a central element in $G$,
 ##  and let $q$ be the characteristic of the algebraic closed field $F$.
@@ -332,8 +350,9 @@ end );
 ##  inertia subgroups with respect to the action of $G$ on those irreducible
 ##  characters of $P$ that restrict to multiples of $\lambda_P$.
 ##  For that, we distinguish three cases.
-##
-##  (a) $z$ is a $p^{\prime}$ element.
+##  \beginlist
+##  \item{(a)}
+##      $z$ is a $p^{\prime}$ element.
 ##      Then we compute first the character degrees $(G/P,zP,q)$,
 ##      corresponding to the (orbit of the) trivial character.
 ##      The action on the nontrivial irreducible characters of $P$
@@ -342,30 +361,28 @@ end );
 ##      For each representative, we compute the kernel $K$, and the degrees
 ##      $(S/K,zK,q)$, where $S$ denotes the inertia subgroup.
 ##
-##  (b) $z$ is not a $p^{\prime}$ element, and $P$ cyclic (not prime order).
+##  \item{(b)}
+##      $z$ is not a $p^{\prime}$ element, and $P$ cyclic (not prime order).
 ##      Let $y$ be a generator of $P$.
 ##      If $y$ is central in $G$ then we have to return $p$ copies of the
 ##      degrees $(G,zy,q)$.
 ##      Otherwise we compute the degrees $(C_G(y),zy,q)$, and multiply
 ##      each with $p$.
 ##
-##  (c) $z$ is not a $p^{\prime}$ element, and $P$ is not cyclic.
+##  \item{(c)}
+##      $z$ is not a $p^{\prime}$ element, and $P$ is not cyclic.
 ##      We compute $O = \Omega(P)$.
 ##      As above, we consider the dual operation to that in $O$,
 ##      and for each orbit representative we check whether its restriction
 ##      to $O$ is a multiple of $\lambda_O$, and if yes compute the degrees
 ##      $(S/K,zK,q)$.
-##
-##  Note that only those cases of the algorithm `ProjectiveCharDeg'
-##  are needed that occur for trivial $z$.
-##  In particular, $N$ is elementary abelian.
+##  \endlist
 ##
 InstallMethod( CharacterDegrees,
-    "method for a solvable group and an integer (Conlon's algorithm)",
-    true,
+    "for a solvable group and an integer (Conlon's algorithm)",
     [ IsGroup and IsSolvableGroup, IsInt ],
-    SIZE_FLAGS(FLAGS_FILTER(IsZeroCyc)), # There is a method for groups for
-                                         # the integer zero which is worse
+    RankFilter(IsZeroCyc), # There is a method for groups for
+			   # the integer zero which is worse
     function( G, q )
 
     local r,      # list of degrees, result
@@ -435,9 +452,9 @@ InstallMethod( CharacterDegrees,
       mats:= List( Gpcgs, x -> TransposedMat( List( Npcgs,
                  y -> ExponentsConjugateLayer( Npcgs, y,x ) ) * Z(p)^0 )^-1 );
       orbs:= ExternalOrbitsStabilizers( G,
-                 Enumerator( GF( p )^Length( Npcgs ) ),
-                 Gpcgs, mats, OnRight );
-#T may fail because the blist is too long!
+                 NormedRowVectors( GF( p )^Length( Npcgs ) ),
+                 Gpcgs, mats, OnLines );
+#T may fail because the list is too long!
       orbs:= Filtered( orbs,
               o -> not IsZero( CanonicalRepresentativeOfExternalSet( o ) ) );
 
@@ -555,8 +572,8 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
                    x -> TransposedMat( List( Ppcgs,
                    y -> ExponentsConjugateLayer( Ppcgs, y,x ) )*Z(p)^0 ) );
         orbs:= ExternalOrbitsStabilizers( G,
-                   Enumerator( FullRowModule( GF(p), Length( Ppcgs ) ) ),
-                   Gpcgs, mats, OnRight );
+                   NormedRowVectors( GF(p)^Length( Ppcgs ) ),
+                   Gpcgs, mats, OnLines );
         orbs:= Filtered( orbs,
               o -> not IsZero( CanonicalRepresentativeOfExternalSet( o ) ) );
 
@@ -601,8 +618,8 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
                  x -> TransposedMat( List( Opcgs,
                       y -> ExponentsConjugateLayer( Opcgs, y,x ) )*Z(p)^0 ) );
     orbs:= ExternalOrbitsStabilizers( G,
-               Enumerator( FullRowModule( GF(p), Length( Opcgs ) ) ),
-               Gpcgs, mats, OnRight );
+               NormedRowVectors( GF(p)^Length( Opcgs ) ),
+               Gpcgs, mats, OnLines );
     orbs:= Filtered( orbs,
               o -> not IsZero( CanonicalRepresentativeOfExternalSet( o ) ) );
 
@@ -645,8 +662,7 @@ end );
 ##
 InstallMethod( IrrConlon,
     "for a group",
-    true,
-    [ IsGroup ], 0,
+    [ IsGroup ],
     function( G )
 
     local mulmoma,    # local function: multiply monomial matrices
@@ -782,18 +798,22 @@ InstallMethod( IrrConlon,
 ##
 InstallMethod( Irr,
     "for a supersolvable group (Conlon's algorithm)",
-    true,
-    [ IsGroup and IsSupersolvableGroup, IsZeroCyc ], 0,
+    [ IsGroup and IsSupersolvableGroup, IsZeroCyc ],
     function( G, zero )
-    return IrrConlon( G );
+    local irr;
+    irr:= IrrConlon( G );
+    SetIrr( OrdinaryCharacterTable( G ), irr );
+    return irr;
     end );
 
 InstallMethod( Irr,
     "for a supersolvable group with known `IrrConlon'",
-    true,
-    [ IsGroup and IsSupersolvableGroup and HasIrrConlon, IsZeroCyc ], 0,
+    [ IsGroup and IsSupersolvableGroup and HasIrrConlon, IsZeroCyc ],
     function( G, zero )
-    return IrrConlon( G );
+    local irr;
+    irr:= IrrConlon( G );
+    SetIrr( OrdinaryCharacterTable( G ), irr );
+    return irr;
     end );
 
 
@@ -803,55 +823,81 @@ InstallMethod( Irr,
 ##
 InstallMethod( Irr,
     "for a supersolvable group (Baum-Clausen algorithm)",
-    true,
-    [ IsGroup and IsSupersolvableGroup, IsZeroCyc ], 0,
+    [ IsGroup and IsSupersolvableGroup, IsZeroCyc ],
     function( G, zero )
-    return IrrBaumClausen( G );
+    local irr;
+    irr:= IrrBaumClausen( G );
+    SetIrr( OrdinaryCharacterTable( G ), irr );
+    return irr;
     end );
 
 InstallMethod( Irr,
     "for a supersolvable group with known `IrrBaumClausen'",
-    true,
-    [ IsGroup and IsSupersolvableGroup and HasIrrBaumClausen, IsZeroCyc ], 0,
+    [ IsGroup and IsSupersolvableGroup and HasIrrBaumClausen, IsZeroCyc ],
     function( G, zero )
-    return IrrBaumClausen( G );
+    local irr;
+    irr:= IrrBaumClausen( G );
+    SetIrr( OrdinaryCharacterTable( G ), irr );
+    return irr;
     end );
+
+
+#############################################################################
+##
+#V  BaumClausenInfoDebug  . . . . . . . . . . . . . . testing BaumClausenInfo
+##
+InstallValue( BaumClausenInfoDebug, rec(
+    makemat:= function( record, e )
+        local dim, mat, i;
+        dim:= Length( record.diag );
+        mat:= NullMat( dim, dim );
+        e:= E(e);
+        for i in [ 1 .. dim ] do
+          mat[i][ record.perm[i] ]:= e^record.diag[ record.perm[i] ];
+        od;
+        return mat;
+    end,
+
+    testrep:= function( pcgs, rep, e )
+        local images, hom;
+        images:= List( rep,
+                       record -> BaumClausenInfoDebug.makemat( record, e ) );
+        hom:= GroupGeneralMappingByImages( Group( pcgs ), Group( images ),
+                                           pcgs, images );
+        return IsGroupHomomorphism( hom );
+    end,
+
+    checkconj:= function( pcgs, i, lg, j, rep1, rep2, X, e )
+        local ii, exps, mat, jj;
+        X:= BaumClausenInfoDebug.makemat( X, e );
+        for ii in [ i .. lg ] do
+          exps:= ExponentsOfPcElement( pcgs, pcgs[ii]^pcgs[j], [ i .. lg ] );
+          mat:= One( X );
+          for jj in [ 1 .. lg-i+1 ] do
+            mat:= mat * BaumClausenInfoDebug.makemat( rep1[jj], e )^exps[jj];
+          od;
+          if X * mat <>
+             BaumClausenInfoDebug.makemat( rep2[ ii-i+1 ], e ) * X then
+            return false;
+          fi;
+        od;
+        return true;
+    end ) );
+
 
 
 #############################################################################
 ##
 #M  BaumClausenInfo( <G> )  . . . . .  info about irreducible representations
 ##
-#T makemat := function( record, e  )
-#T     local dim, mat, i;
-#T     dim:= Length( record.diag );
-#T     mat:= List( [ 1 .. dim ], x -> List( [ 1 .. dim ], y -> 0 ) );
-#T     for i in [ 1 .. dim ] do
-#T       mat[i][ record.perm[i] ]:= E(e)^record.diag[ record.perm[i] ];
-#T     od;
-#T     return mat;
-#T end;
-#T 
-#T testrep := function( pcgs, rep, e, str )
-#T     local images, hom;
-#T     images:= List( rep, record -> makemat( record, e ) );
-#T     hom:= GroupGeneralMappingByImages( Group( pcgs ), Group( images ), pcgs, images );
-#T     Print( "test repres.: ", IsGroupHomomorphism( hom ), " ", str, "\n" );
-#T     if not IsGroupHomomorphism( hom ) then
-#T       Error( "not a representation!" );
-#T     fi;
-#T end;
-#T 
-#T #T generalize to characteristic p !!
-#T 
+#T generalize to characteristic p !!
+##
 InstallMethod( BaumClausenInfo,
-    "method for a (solvable) group",
-    true,
-    [ IsGroup ], 0,
+    "for a (solvable) group",
+    [ IsGroup ],
     function( G )
 
     local e,             # occurring roots of unity are `e'-th roots
-#T ii,jj,matt,kk,exps,
           pcgs,          # Pcgs of `G'
           lg,            # length of `pcgs'
           cs,            # composition series of `G' corresp. to `pcgs'
@@ -906,6 +952,7 @@ InstallMethod( BaumClausenInfo,
           D_gi,          #
           hom,           # homomorphism to adjust the composition series
           orb,           #
+          Forb,          #
           sigma, pi,     # permutations needed in the fusion case
           constants,     # vector $(c_0, c_1, \ldots, c_{p-1})$
           kernel;        # kernel of `hom'
@@ -919,7 +966,7 @@ InstallMethod( BaumClausenInfo,
     # Treat the case of the trivial group,
     # and initialize some variables.
 
-    pcgs:= SpecialPcgs( Pcgs( G ) );
+    pcgs:= SpecialPcgs( G );
 #T because I need a ``prime orders pcgs''
     lg:= Length( pcgs );
 
@@ -975,17 +1022,16 @@ InstallMethod( BaumClausenInfo,
       # `SupersolvableResiduumDefault' contains a component `ds',
       # a list of subgroups such that any composition series through
       # `ds' from `G' down to the residuum is a chief series.
-      pcgs:= [ 0 ];
+      pcgs:= [];
       for i in [ 2 .. Length( ssr.ds ) ] do
-        Unbind( pcgs[ Length( pcgs ) ] );
         j:= NaturalHomomorphismByNormalSubgroupNC( ssr.ds[ i-1 ], ssr.ds[i] );
-        Append( pcgs, List( SpecialPcgs( Pcgs( ImagesSource( j ) ) ),
+        Append( pcgs, List( SpecialPcgs( ImagesSource( j ) ),
                             x -> PreImagesRepresentative( j, x ) ) );
       od;
-      Append( pcgs, SpecialPcgs( Pcgs( ssr.ds[ Length( ssr.ds ) ] ) ) );
-      Unbind( pcgs[ Length( pcgs ) ] );
+      Append( pcgs, SpecialPcgs( ssr.ds[ Length( ssr.ds ) ]) );
       G:= ImagesSource( hom );
       pcgs:= List( pcgs, x -> ImagesRepresentative( hom, x ) );
+      pcgs:= Filtered( pcgs, x -> Order( x ) <> 1 );
       pcgs:= PcgsByPcSequence( ElementsFamily( FamilyObj( G ) ), pcgs );
       cs:= PcSeries( pcgs );
       lg:= Length( pcgs );
@@ -1024,6 +1070,7 @@ InstallMethod( BaumClausenInfo,
       else
 
         pexp:= pexp{ [ i+1 .. lg ] };
+#T cut this outside the function!
         for rep in linear do
 
           # Compute the value of `rep' on $g_i^p$.
@@ -1171,132 +1218,454 @@ InstallMethod( BaumClausenInfo,
       # `p'-th roots of unity
       roots:= [ 0 .. p-1 ] * ( e/p );
 
-      # A list of length $n$ that contains all of the numbers
-      # $1, 2, \ldots, n$ is a range if and only if it has the
-      # form $[ 1, 2, \ldots, n ]$ or $[ n, n-1, \ldots, 1 ]$.
-      if     pilinear[i][1] = 1 and IsRange( pilinear[i] )
-         and pinonlin[i][1] = 1 and IsRange( pinonlin[i] ) then
+      Info( InfoGroup, 2,
+            "BaumClausenInfo: compute repr. of step ", i );
 
-        # $g_i$ acts trivially, every representation of $G_{i+1}$
-        # is extendible to $G_i$.
-        Info( InfoGroup, 2,
-              "BaumClausenInfo: compute repr. of step ", i,
-              " (centralizing element)" );
+      # Step A:
+      # Compute representations of $G_i$ arising from *linear*
+      # representations of $G_{i+1}$.
 
-        # Compute the extensions of linear representations.
-        linear:= ExtLinRep( i, linear, pexp, roots );
+      used        := BlistList( [ 1 .. Length( linear ) ], [] );
+      nextlinear  := [];
+      nextnonlin1 := [];
+      d           := 1;
 
-        # Compute the extensions of the nonlinear representations
-        # in the list `nonlin'.
-        # (Note that `pinonlin[i]' is the trivial permutation.)
-        # Each conjugating matrix is a scalar matrix, the scalar is
-        # determined from $`rep'(g_i^p)$ (which is also a scalar matrix).
-        # So again we just compute $p$-th roots in the field.
-        nextnonlin1:= [];
+      pexp:= pexp{ [ i+1 .. lg ] };
 
-        for rep in nonlin do
+      # At position `d', store the position of either the first extension
+      # of `linear[d]' in `nextlinear' or the position of the induced
+      # representation of `linear[d]' in `nextnonlin1'.
+      Dpos1:= [];
 
-          constants:= [ 1 .. Length( rep[1].perm ) ] * 0;
+      while d <> fail do
 
-          # Compute one entry in the diagonal of `rep( g_i^p )'.
-          image:= 1;
-          value:= 0;
-          for k in poli do
-            image:= rep[k].perm[ image ];
-            value:= rep[k].diag[ image ] + value;
+        rep:= linear[d];
+        used[d]:= true;
+
+        # `root' is the value of `rep' on $g_i^p$.
+        root:= ( pexp * rep ) mod e;
+
+        if pilinear[i][d] = d then
+
+          # `linear[d]' extends to $G_i$.
+          Dpos1[d]:= Length( nextlinear ) + 1;
+
+          # Take a `p'-th root.
+          root:= root / p;
+#T enlarge the exponent if necessary!
+
+          for j in roots do
+            Add( nextlinear, Concatenation( [ root+j ], rep ) );
           od;
 
-          value:= value / p;
-#T enlarge `e' if necessary!
-          for k in value + roots do
-#T change!
+        else
 
-            Add( nextnonlin1,
-                 Concatenation( [ rec( perm:= [ 1 .. Length( constants ) ],
-#T better share `perm'!
-                                       diag:= constants + k ) ], rep ) );
-#T testrep( pcgs{[i..lg]}, nextnonlin1[ Length( nextnonlin1 ) ], e, "1" );
+          # We must fuse the representations in the orbit of `d'
+          # under `pilinear[i]';
+          # so we construct the induced representation `D'.
 
-          od;
+          Dpos1[d]:= Length( nextnonlin1 ) + 1;
 
-        od;
+          D:= List( rep, x -> rec( perm := [ 1 .. p ],
+                                   diag := [ x ]
+                                  ) );
+          pos:= d;
+          for j in [ 2 .. p ] do
 
-        nonlin:= nextnonlin1;
-
-        # Compute `Xlist' for the next step.
-        # The old conjugating matrices also work for the extension.
-        for j in [ 1 .. i-1 ] do
-          next:= [];
-          for k in [ 1 .. Length( nonlin ) / p ] do
-            for u in [ 1 .. p ] do
-              next[ (k-1)*p + u ]:= Xlist[j][k];
+            pos:= pilinear[i][ pos ];
+            for k in [ 1 .. Length( rep ) ] do
+              D[k].diag[j]:= linear[ pos ][k];
             od;
+            used[ pos ]:= true;
+            Dpos1[ pos ]:= Length( nextnonlin1 ) + 1;
+
           od;
-          Xlist[j]:= next;
-        od;
 
-        # Compute `pilinear' and `pinonlin' for the next step.
-        # (At position $j$, the action of $g_j$ is stored.)
-        for j in [ 1 .. i-1 ] do
+          Add( nextnonlin1,
+               Concatenation( [ rec( perm := Concatenation( [p], [1..p-1]),
+                                     diag := Concatenation( [ 1 .. p-1 ] * 0,
+                                                            [ root ] ) ) ],
+                              D ) );
+          Assert( 2, BaumClausenInfoDebug.testrep( pcgs{ [ i .. lg ] },
+                              nextnonlin1[ Length( nextnonlin1 ) ], e ),
+                  Concatenation( "BaumClausenInfo: failed assertion in ",
+                      "inducing linear representations ",
+                      "(i = ", String( i ), ")\n" ) );
 
-          cexp:= ExponentsOfPcElement( pcgs, pcgs[i]^pcgs[j], [ i .. lg ] );
+        fi;
 
-          # Compute the action of $g_j$ on `linear'.
-          next:= [];
-          for k in [ 1 .. Length( linear ) / p ] do
+        d:= Position( used, false, d );
 
-            # Let $F$ extend to
-            # $D_0, D_1, \ldots, D_{p-1}$, $C$ the first extension
-            # of $\pi_j(F)$.
+      od;
+
+
+      # Step B:
+      # Now compute representations of $G_i$ arising from *nonlinear*
+      # representations of $G_{i+1}$ (if there are some).
+
+      used:= BlistList( [ 1 .. Length( nonlin ) ], [] );
+      nextnonlin2:= [];
+      if Length( nonlin ) = 0 then
+        d:= fail;
+      else
+        d:= 1;
+      fi;
+
+      # At position `d', store the position of the first extension resp.
+      # of the induced representation of `nonlin[d]'in `nextnonlin2'.
+      Dpos2:= [];
+
+      while d <> fail do
+
+        used[d]:= true;
+        rep:= nonlin[d];
+
+        if pinonlin[i][d] = d then
+
+          # The representation $F = `rep'$ has `p' different extensions.
+          # For `X = Xlist[i][d]', we have $`rep ^ X' = `rep'^{g_i}$,
+          # i.e., $X^{-1} F X = F^{g_i}$.
+          # Representing matrix $F(g_i)$ is $c X$ with $c^p X^p = F(g_i^p)$,
+          # so $c^p X^p.diag[k] = F(g_i^p).diag[k]$ for all $k$ ;
+          # for determination of $c$ we look at `k = X^p.perm[1]'.
+
+          X:= Xlist[i][d];
+          image:= X.perm[1];
+          value:= X.diag[ image ];
+          for j in [ 2 .. p ] do
+
+            image:= X.perm[ image ];
+            value:= X.diag[ image ] + value;
+            # now `image = X^j.perm[1]', `value = X^j.diag[ image ]'
+
+          od;
+
+          # Subtract this from $F(g_i^p).diag[k]$;
+          # note that `image' is the image of 1 under `X^p', so also
+          # under $F(g_i^p)$.
+          value:= - value;
+          image:= 1;
+          for j in poli do
+            image:= rep[j].perm[ image ];
+            value:= rep[j].diag[ image ] + value;
+          od;
+
+          value:= ( value / p ) mod e;
+#T enlarge the exponent if necessary!
+
+          Dpos2[d]:= Length( nextnonlin2 ) + 1;
+
+          # Compute the `p' extensions.
+          for k in roots do
+            Add( nextnonlin2, Concatenation(
+                    [ rec( perm := X.perm,
+                      diag := List( X.diag,
+                             x -> ( x  + k + value ) mod e ) ) ], rep ) );
+            Assert( 2, BaumClausenInfoDebug.testrep( pcgs{ [ i .. lg ] },
+                                nextnonlin2[ Length( nextnonlin2 ) ], e ),
+                    Concatenation( "BaumClausenInfo: failed assertion in ",
+                        "extending nonlinear representations ",
+                        "(i = ", String( i ), ")\n" ) );
+          od;
+
+        else
+
+          # `$F$ = nonlin[d]' fuses with `p-1' partners given by the orbit
+          # of `d' under `pinonlin[i]'.
+          # The new irreducible representation of $G_i$ will be
+          # $X Ind( F ) X^{-1}$ with $X$ the block diagonal matrix
+          # consisting of blocks $X_{i,F}^{(k)}$ defined by
+          # $X_{i,F}^{(0)} = Id$,
+          # and $X_{i,F}^{(k)} = X_{i,\pi_i^{k-1} F} X_{i,F}^{(k-1)}$
+          # for $k > 0$.
+
+          # The matrix for $g_i$ in the induced representation $Ind( F )$ is
+          # of the form
+          #       | 0   F(g_i^p) |
+          #       | I      0     |
+          # Thus $X Ind(F) X^{-1} ( g_i )$ is the block diagonal matrix
+          # consisting of the blocks
+          # $X_{i,F}, X_{i,\pi_i F}, \ldots, X_{i,\pi_i^{p-2} F}$, and
+          # $F(g_i^p) \cdot ( X_{i,F}^{(p-1)} )^{-1}$.
+
+          dim:= Length( rep[1].diag );
+          Dpos2[d]:= Length( nextnonlin2 ) + 1;
+
+          # We make a copy of `rep' because we want to change it.
+          D:= List( rep, record -> rec( perm := ShallowCopy( record.perm ),
+                                        diag := ShallowCopy( record.diag )
+                                       ) );
+
+          # matrices for $g_j, i\< j \leq n$
+          pos:= d;
+          for j in [ 1 .. p-1 ] * dim do
+            pos:= pinonlin[i][ pos ];
+            for k in [ 1 .. Length( rep ) ] do
+              Append( D[k].diag, nonlin[ pos ][k].diag );
+              Append( D[k].perm, nonlin[ pos ][k].perm + j );
+            od;
+
+            used[ pos ]:= true;
+            Dpos2[ pos ]:= Length( nextnonlin2 ) + 1;
+
+          od;
+
+          # The matrix of $g_i$ is a block-cycle with blocks
+          # $X_{i,\pi_i^k(F)}$ for $0 \leq k \leq p-2$,
+          # and $F(g_i^p) \cdot (X_{i,F}^{(p-1)})^{-1}$.
+
+          X:= Xlist[i][d];      # $X_{i,F}$
+          pos:= d;
+          for j in [ 1 .. p-2 ] do
+            pos:= pinonlin[i][ pos ];
+            X:= mulmoma( Xlist[i][ pos ], X );
+          od;
+
+          # `invX' is the inverse of `X'.
+          invX:= rec( perm := [], diag := [] );
+          for j in [ 1 .. Length( X.diag ) ] do
+            invX.perm[ X.perm[j] ]:= j;
+            invX.diag[j]:= e - X.diag[ X.perm[j] ];
+          od;
+#T improve this using the {} operator!
+
+          X:= mulmoma( poweval( rep, poli ), invX );
+          D_gi:= rec( perm:= List( X.perm, x -> x  + ( p-1 ) * dim ),
+                      diag:= [] );
+
+          pos:= d;
+          for j in [ 0 .. p-2 ] * dim do
+
+            # $X_{i,\pi_i^j F}$
+            Append( D_gi.diag, Xlist[i][ pos ].diag);
+            Append( D_gi.perm, Xlist[i][ pos ].perm + j);
+            pos:= pinonlin[i][ pos ];
+
+          od;
+
+          Append( D_gi.diag, X.diag );
+
+          Add( nextnonlin2, Concatenation( [ D_gi ], D ) );
+          Assert( 2, BaumClausenInfoDebug.testrep( pcgs{ [ i .. lg ] },
+                              nextnonlin2[ Length( nextnonlin2 ) ], e ),
+                  Concatenation( "BaumClausenInfo: failed assertion in ",
+                      "inducing nonlinear representations ",
+                      "(i = ", String( i ), ")\n" ) );
+
+        fi;
+
+        d:= Position( used, false, d );
+
+      od;
+
+
+      # Step C:
+      # Compute `pilinear', `pinonlin', and `Xlist'.
+
+      pinextlinear  := [];
+      pinextnonlin1 := [];
+      nextXlist1    := [];
+
+      pinextnonlin2 := [];
+      nextXlist2    := [];
+
+      for j in [ 1 .. i-1 ] do
+
+        pinextlinear[j]  := [];
+        pinextnonlin1[j] := [];
+        nextXlist1[j]    := [];
+
+        # `cexp' describes $g_i^{g_j}$.
+        cexp:= ExponentsOfPcElement( pcgs, pcgs[i]^pcgs[j], [ i .. lg ] );
+
+        # Compute `pilinear', and the parts of `pinonlin', `Xlist'
+        # arising from *linear* representations for the next step,
+        # that is, compute the action of $g_j$ on `nextlinear' and
+        # `nextnonlin1'.
+
+        for k in [ 1 .. Length( linear ) ] do
+
+          if pilinear[i][k] = k then
+
+            # Let $F = `linear[k]'$ extend to
+            # $D = D_0, D_1, \ldots, D_{p-1}$,
+            # $C$ the first extension of $\pi_j(F)$.
             # We have $D( g_i^{g_j} ) = D^{g_j}(g_i) = ( C \chi^l )(g_i)$
             # where $\chi^l(g_i)$ is the $l$-th power of the chosen
             # primitive $p$-th root of unity.
-            D:= linear[ p*(k-1) + 1 ];
 
-            # `pos' is the position of the first extension of $\pi_j(F)$
-            # in `linear'.
-            pos:= p * ( pilinear[j][k] - 1 ) + 1;
+            D:= nextlinear[ Dpos1[k] ];
 
-            l:= ( (  cexp * D             # $D( g_i^{g_j} )$
-                   - linear[ pos ][1] )   # $C(g_i)$
+            # `pos' is the position of $C$ in `nextlinear'.
+            pos:= Dpos1[ pilinear[j][k] ];
+            l:= ( (  cexp * D                   # $D( g_i^{g_j} )$
+                     - nextlinear[ pos ][1] )   # $C(g_i)$
                   * p / e ) mod p;
 
             for u in [ 0 .. p-1 ] do
-              Add( next, pos + ( ( l + u * cexp[1] ) mod p ) );
+              Add( pinextlinear[j], pos + ( ( l + u * cexp[1] ) mod p ) );
             od;
 
-          od;
-          pilinear[j]:= next;
+          elif not IsBound( pinextnonlin1[j][ Dpos1[k] ] ) then
 
-          # Compute the action of $g_j$ on `nonlin'.
-          # We just have to calculate which extension of a
-          # representation $F$ is mapped to which extension of $\pi_j F$.
-          next:= [];
-          for k in [ 1 .. Length( nonlin ) / p ] do
+            # $F$ fuses with its conjugates under $g_i$,
+            # the conjugating matrix describing the action of $g_j$
+            # is a permutation matrix.
+            # Let $D = F^{g_j}$, then the permutation corresponds to
+            # the mapping between the lists
+            # $[ D, (F^{g_i})^{g_j}, \ldots, (F^{g_i^{p-1}})^{g_j} ]$
+            # and $[ D, D^{g_i}, \ldots, D^{g_i^{p-1}} ]$;
+            # The constituents in the first list are the images of
+            # the induced representation of $F$ under $g_j$,
+            # and those in the second list are the constituents of the
+            # induced representation of $D$.
 
-            # Let $F$ extend to $D = D_0, D_1, \ldots, D_{p-1}$,
+            # While `u' runs from $1$ to $p$,
+            # `pos' runs over the positions of $(F^{g_i^u})^{g_j}$ in
+            # `linear'.
+            # `orb' is the list of positions of the $(F^{g_j})^{g_i^u}$,
+            # cyclically permuted such that the smallest entry is the
+            # first.
+
+            pinextnonlin1[j][ Dpos1[k] ]:= Dpos1[ pilinear[j][k] ];
+            pos:= pilinear[j][k];
+            orb:= [ pos ];
+            min:= 1;
+            minval:= pos;
+            for u in [ 2 .. p ] do
+              pos:= pilinear[i][ pos ];
+              orb[u]:= pos;
+              if pos < minval then
+                minval:= pos;
+                min:= u;
+              fi;
+            od;
+            if 1 < min then
+              orb:= Concatenation( orb{ [ min .. p ] },
+                                   orb{ [ 1 .. min-1 ] } );
+            fi;
+
+            # Compute the conjugating matrix `X'.
+            # Let $C$ be the stored representation $\tau_j D$
+            # equivalent to $D^{g_j}$.
+            # Compute the position of $C$ in `pinextnonlin1'.
+
+            C:= nextnonlin1[ pinextnonlin1[j][ Dpos1[k] ] ];
+            D:= nextnonlin1[ Dpos1[k] ];
+
+            # `sigma' is the bijection of constituents in the restrictions
+            # of $D$ and $\tau_j D$ to $G_{i-1}$.
+            # More precisely, $\pi_j(\pi_i^{u-1} F) = \Phi_{\sigma(u-1)}$.
+            sigma:= [];
+            pos:= k;
+            for u in [ 1 .. p ] do
+              sigma[u]:= Position( orb, pilinear[j][ pos ] );
+              pos:= pilinear[i][ pos ];
+            od;
+
+            # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$.
+            pi:= [];
+            pi[ sigma[p] ]:= sigma[1];
+            for u in [ 1 .. p-1 ] do
+              pi[ sigma[u] ]:= sigma[ u+1 ];
+            od;
+
+            # Compute the values $c_{\pi^u(0)}$, for $0 \leq u \leq p-1$.
+            # Note that $c_0 = 1$.
+            # (Here we encode of course the exponents.)
+            constants:= [ 0 ];
+            l:= 1;
+
+            for u in [ 1 .. p-1 ] do
+
+              # Compute $c_{\pi^u(0)}$.
+              # (We have $`l' = 1 + \pi^{u-1}(0)$.)
+              # Note that $B_u = [ [ 1 ] ]$ for $0\leq u\leq p-2$,
+              # and $B_{p-1} = \Phi_0(g_i^p)$.
+
+              # Next we compute the image under $A_{u-1}$;
+              # this matrix is in the $u$-th column block
+              # and in the $\pi(u-1)$-th row block of $D$.
+              # Since we do not have this matrix explicitly,
+              # we use the conjugate representation and the action
+              # encoded by `cexp'.
+              # Note the necessary initial shift because we use the
+              # whole representation $D$ and not a single constituent;
+              # so we shift by `pi[u] - 1'.
+#T `perm' is nontrivial only for v = 1, this should make life easier.
+              value:= 0;
+              image:= pi[u];
+              for v in [ 1 .. lg-i+1 ] do
+                for w in [ 1 .. cexp[v] ] do
+                  image:= D[v].perm[ image ];
+                  value:= value + D[v].diag[ image ];
+                od;
+              od;
+
+              # Next we divide by the corresponding value in
+              # the image of the first standard basis vector under
+              # $B_{\sigma\pi^{u-1}(0)}$.
+              value:= value - C[1].diag[ sigma[l] ];
+              constants[ pi[l] ]:= ( constants[l] - value ) mod e;
+              l:= pi[l];
+
+            od;
+
+            # Put the conjugating matrix together.
+            X:= rec( perm := [],
+                     diag := constants );
+            for u in [ 1 .. p ] do
+              X.perm[ sigma[u] ]:= u;
+            od;
+
+            Assert( 2, BaumClausenInfoDebug.checkconj( pcgs, i, lg, j,
+                         nextnonlin1[ Dpos1[k] ],
+                         nextnonlin1[ pinextnonlin1[j][ Dpos1[k] ] ],
+                         X, e ),
+                  Concatenation( "BaumClausenInfo: failed assertion on ",
+                      "conjugating matrices for linear repres. ",
+                      "(i = ", String( i ), ")\n" ) );
+            nextXlist1[j][ Dpos1[k] ]:= X;
+
+          fi;
+
+        od;
+
+
+        # Compute the remaining parts of `pinonlin' and `Xlist' for
+        # the next step, namely for those *nonlinear* representations
+        # arising from *nonlinear* ones.
+
+        nextXlist2[j]    := [];
+        pinextnonlin2[j] := [];
+
+        # `cexp' describes $g_i^{g_j}$.
+        cexp:= ExponentsOfPcElement( pcgs, pcgs[i]^pcgs[j], [ i .. lg ] );
+
+        # Compute the action of $g_j$ on `nextnonlin2'.
+
+        for k in [ 1 .. Length( nonlin ) ] do
+
+          if pinonlin[i][k] = k then
+
+            # Let $F = `nonlin[k]'$ extend to
+            # $D = D_0, D_1, \ldots, D_{p-1}$,
             # $C$ the first extension of $\pi_j(F)$.
-            # We have $D( g_i^{g_j} ) = D^{g_j}(g_i)$ equivalent to
-            # $( C \chi^l )(g_i)$
+            # We have $X_{j,F} \cdot F^{g_j} = \pi_j(F) \cdot X_{j,F}$,
+            # thus $X_{j,F} \cdot D( g_i^{g_j} )
+            # = X_{j,F} \cdot D^{g_j}(g_i)
+            # = ( C \chi^l )(g_i) \cdot X_{j,F}$
             # where $\chi^l(g_i)$ is the $l$-th power of the chosen
             # primitive $p$-th root of unity.
 
-            # In terms of the conjugating matrices:
-            # We have $X_{j,F} F^{g_j} = \pi_j F X_{j,F}$,
-            # $X_{j,F} D_0^{g_j} = C \chi^l X_{j,F}$ for $0\leq l \leq p-1$,
-            # i.e., $`Xlist[j][kk]' = X_{j,F}$ for
-            # `kk = p * ( k - 1 ) + 1', and
-            # `next[kk] = p * ( pinonlin[j][k] - 1 ) + 1 + l'.
+            D:= nextnonlin2[ Dpos2[k] ];
 
-            D:= nonlin[ p*(k-1) + 1 ];
+            # `pos' is the position of $C$ in `nextnonlin2'.
+            pos:= Dpos2[ pinonlin[j][k] ];
 
-            # Compute the position of the first extension of $\pi_j(F)$
-            # in `nonlin'.
-            pos:= p * ( pinonlin[j][k] - 1 ) + 1;
-
-            # Find a nonzero entry in $D( g_i^{g_j} )$.
-            value:= 0;
-            image:= 1;
+            # Find a nonzero entry in $X_{j,F} \cdot D( g_i^{g_j} )$.
+            image:= Xlist[j][k].perm[1];
+            value:= Xlist[j][k].diag[ image ];
             for u in [ 1 .. lg-i+1 ] do
               for v in [ 1 .. cexp[u] ] do
                 image:= D[u].perm[ image ];
@@ -1304,617 +1673,180 @@ InstallMethod( BaumClausenInfo,
               od;
             od;
 
-            # Subtract the corresponding value in $C(g_i)$.
-            value:= value - nonlin[ pos ][1].diag[ image ];
+            # Subtract the corresponding value in $C(g_i) \cdot X_{j,F}$.
+            C:= nextnonlin2[ pos ];
+            Assert( 2, image = Xlist[j][k].perm[ C[1].perm[1] ],
+                    "BaumClausenInfo: failed assertion on conj. matrices" );
+            value:= value -
+                ( C[1].diag[ C[1].perm[1] ] + Xlist[j][k].diag[ image ] );
             l:= ( value * p / e ) mod p;
 
             for u in [ 0 .. p-1 ] do
-              Add( next, pos + ( ( l + u * cexp[1] ) mod p ) );
+              pinextnonlin2[j][ Dpos2[k] + u ]:=
+                     pos + ( ( l + u * cexp[1] ) mod p );
+              nextXlist2[j][ Dpos2[k] + u ]:= Xlist[j][k];
             od;
 
-          od;
-          pinonlin[j]:= next;
+            Assert( 2, BaumClausenInfoDebug.checkconj( pcgs, i, lg, j,
+                         nextnonlin2[ Dpos2[k] ],
+                         nextnonlin2[ pinextnonlin2[j][ Dpos2[k] ] ],
+                         Xlist[j][k], e ),
+                  Concatenation( "BaumClausenInfo: failed assertion on ",
+                      "conjugating matrices for nonlinear repres. ",
+                      "(i = ", String( i ), ")\n" ) );
 
-        od;
+          elif not IsBound( pinextnonlin2[j][ Dpos2[k] ] ) then
 
-      else
+            # $F$ fuses with its conjugates under $g_i$, yielding $D$.
 
-        # $g_i$ acts nontrivially on the representations of $G_{i+1}$.
-        Info( InfoGroup, 2,
-              "BaumClausenInfo: compute repr. of step ", i,
-              " (not centralizing element)" );
+            dim:= Length( nonlin[k][1].diag );
 
-        # Step A:
-        # Compute representations of $G_i$ arising from *linear*
-        # representations of $G_{i+1}$.
+            # Let $C$ be the stored representation $\tau_j D$
+            # equivalent to $D^{g_j}$.
+            # Compute the position of $C$ in `pinextnonlin2'.
+            pinextnonlin2[j][ Dpos2[k] ]:= Dpos2[ pinonlin[j][k] ];
 
-        used        := BlistList( [ 1 .. Length( linear ) ], [] );
-        nextlinear  := [];
-        nextnonlin1 := [];
-        d           := 1;
+            C:= nextnonlin2[ pinextnonlin2[j][ Dpos2[k] ] ];
+            D:= nextnonlin2[ Dpos2[k] ];
 
-        pexp:= pexp{ [ i+1 .. lg ] };
+            # Compute the positions of the constituents;
+            # `orb[k]' is the position of $\Phi_{k-1}$ in `nonlin'.
+            pos:= pinonlin[j][k];
+            orb:= [ pos ];
+            min:= 1;
+            minval:= pos;
+            for u in [ 2 .. p ] do
+              pos:= pinonlin[i][ pos ];
+              orb[u]:= pos;
+              if pos < minval then
+                minval:= pos;
+                min:= u;
+              fi;
+            od;
+            if 1 < min then
+              orb:= Concatenation( orb{ [ min .. p ] },
+                                   orb{ [ 1 .. min-1 ] } );
+            fi;
 
-        # At position `d', store the position of either the first extension
-        # of `linear[d]' in `nextlinear' or the position of the induced
-        # representation of `linear[d]' in `nextnonlin1'.
-        Dpos1:= [];
-
-        while d <> fail do
-
-          rep:= linear[d];
-          used[d]:= true;
-
-          # `root' is the value of `rep' on $g_i^p$.
-          root:= ( pexp * rep ) mod e;
-
-          if pilinear[i][d] = d then
-
-            # `linear[d]' extends to $G_i$.
-            Dpos1[d]:= Length( nextlinear ) + 1;
-
-            # Take a `p'-th root.
-            root:= root / p;
-#T enlarge the exponent if necessary!
-
-            for j in roots do
-              Add( nextlinear, Concatenation( [ root+j ], rep ) );
+            # `sigma' is the bijection of constituents in the restrictions
+            # of $D$ and $\tau_j D$ to $G_{i-1}$.
+            # More precisely, $\pi_j(\pi_i^{u-1} F) = \Phi_{\sigma(u-1)}$.
+            sigma:= [];
+            pos:= k;
+            for u in [ 1 .. p ] do
+              sigma[u]:= Position( orb, pinonlin[j][ pos ] );
+              pos:= pinonlin[i][ pos ];
             od;
 
-          else
+            # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$.
+            pi:= [];
+            pi[ sigma[p] ]:= sigma[1];
+            for u in [ 1 .. p-1 ] do
+              pi[ sigma[u] ]:= sigma[ u+1 ];
+            od;
 
-            # We must fuse the representations in the orbit of `d'
-            # under `pilinear[i]';
-            # so we construct the induced representation `D'.
+            # Compute the positions of the constituents
+            # $F_0, F_{\pi(0)}, \ldots, F_{\pi^{p-1}(0)}$.
+            Forb:= [ k ];
+            pos:= k;
+            for u in [ 2 .. p ] do
+              pos:= pinonlin[i][ pos ];
+              Forb[u]:= pos;
+            od;
 
-            Dpos1[d]:= Length( nextnonlin1 ) + 1;
+            # Compute the values $c_{\pi^u(0)}$, for $0 \leq u \leq p-1$.
+            # Note that $c_0 = 1$.
+            # (Here we encode of course the exponents.)
+            constants:= [ 0 ];
+            l:= 1;
 
-            D:= List( rep, x -> rec( perm := [ 1 .. p ],
-                                     diag := [ x ]
-                                    ) );
-            pos:= d;
-            for j in [ 2 .. p ] do
+            for u in [ 1 .. p-1 ] do
 
-              pos:= pilinear[i][ pos ];
-              for k in [ 1 .. Length( rep ) ] do
-                D[k].diag[j]:= linear[ pos ][k];
+              # Compute $c_{\pi^u(0)}$.
+              # (We have $`l' = 1 + \pi^{u-1}(0)$.)
+              # Note that $B_u = X_{j,\pi_j^u \Phi_0}$ for $0\leq u\leq p-2$,
+              # and $B_{p-1} =
+              #      \Phi_0(g_i^p) \cdot ( X_{j,\Phi_0}^{(p-1)} )^{-1}$
+
+              # First we get the image and diagonal value of
+              # the first standard basis vector under $X_{j,\pi^u(0)}$.
+              image:= Xlist[j][ Forb[ pi[l] ] ].perm[1];
+              value:= Xlist[j][ Forb[ pi[l] ] ].diag[ image ];
+
+              # Next we compute the image under $A_{u-1}$;
+              # this matrix is in the $u$-th column block
+              # and in the $\pi(u-1)$-th row block of $D$.
+              # Since we do not have this matrix explicitly,
+              # we use the conjugate representation and the action
+              # encoded by `cexp'.
+              # Note the necessary initial shift because we use the
+              # whole representation $D$ and not a single constituent;
+              # so we shift by `dim * ( pi[u] - 1 )'.
+              image:= dim * ( pi[u] - 1 ) + image;
+              for v in [ 1 .. lg-i+1 ] do
+                for w in [ 1 .. cexp[v] ] do
+                  image:= D[v].perm[ image ];
+                  value:= value + D[v].diag[ image ];
+                od;
               od;
-              used[ pos ]:= true;
-              Dpos1[ pos ]:= Length( nextnonlin1 ) + 1;
+
+              # Next we divide by the corresponding value in
+              # the image of the first standard basis vector under
+              # $B_{\sigma\pi^{u-1}(0)} X_{j,\pi^{u-1}(0)}$.
+              # Note that $B_v$ is in the $(v+2)$-th row block for
+              # $0 \leq v \leq p-2$, in the first row block for $v = p-1$,
+              # and in the $(v+1)$-th column block of $C$.
+              v:= sigma[l];
+              if v = p then
+                image:= C[1].perm[1];
+              else
+                image:= C[1].perm[ v*dim + 1 ];
+              fi;
+              value:= value - C[1].diag[ image ];
+              image:= Xlist[j][ Forb[l] ].perm[ image - ( v - 1 ) * dim ];
+              value:= value - Xlist[j][ Forb[l] ].diag[ image ];
+              constants[ pi[l] ]:= ( constants[l] - value ) mod e;
+              l:= pi[l];
 
             od;
 
-            Add( nextnonlin1,
-                 Concatenation( [ rec( perm := Concatenation( [p], [1..p-1]),
-                                       diag := Concatenation( [ 1 .. p-1 ] * 0,
-                                                              [ root ] ) ) ],
-                                D ) );
-#T testrep( pcgs{[i..lg]}, nextnonlin1[ Length( nextnonlin1 ) ], e, "2" );
+            # Put the conjugating matrix together.
+            X:= rec( perm:= [],
+                     diag:= [] );
+            pos:= k;
+            for u in [ 1 .. p ] do
+              Append( X.diag, List( Xlist[j][ pos ].diag,
+                                    x -> ( x + constants[u] ) mod e ) );
+              X.perm{ [ ( sigma[u] - 1 )*dim+1 .. sigma[u]*dim ] }:=
+                  Xlist[j][ pos ].perm + (u-1) * dim;
+              pos:= pinonlin[i][ pos ];
+            od;
+
+            Assert( 2, BaumClausenInfoDebug.checkconj( pcgs, i, lg, j,
+                         nextnonlin2[ Dpos2[k] ],
+                         nextnonlin2[ pinextnonlin2[j][ Dpos2[k] ] ],
+                         X, e ),
+                  Concatenation( "BaumClausenInfo: failed assertion on ",
+                      "conjugating matrices for nonlinear repres. ",
+                      "(i = ", String( i ), ")\n" ) );
+            nextXlist2[j][ Dpos2[k] ]:= X;
 
           fi;
 
-          d:= Position( used, false, d );
-
         od;
 
-
-        # Step B:
-        # Now compute representations of $G_i$ arising from *nonlinear*
-        # representations of $G_{i+1}$ (if there are some).
-
-        used:= BlistList( [ 1 .. Length( nonlin ) ], [] );
-        nextnonlin2:= [];
-        if Length( nonlin ) = 0 then
-          d:= fail;
-        else
-          d:= 1;
-        fi;
-
-        # At position `d', store the position of the first extension resp.
-        # of the induced representation of `nonlin[d]'in `nextnonlin2'.
-        Dpos2:= [];
-
-        while d <> fail do
-
-          used[d]:= true;
-          rep:= nonlin[d];
-
-          if pinonlin[i][d] = d then
-
-            # The representation $F = `rep'$ has `p' different extensions.
-            # For `X = Xlist[i][d]', we have $`rep ^ X' = `rep'^{g_i}$,
-            # i.e., $X^{-1} F X = F^{g_i}$.
-            # Representing matrix $F(g_i)$ is $c X$ with $c^p X^p = F(g_i^p)$,
-            # so $c^p X^p.diag[k] = F(g_i^p).diag[k]$ for all $k$ ;
-            # for determination of $c$ we look at `k = X^p.perm[1]'.
-
-            X:= Xlist[i][d];
-            image:= X.perm[1];
-            value:= X.diag[ image ];
-            for j in [ 2 .. p ] do
-
-              image:= X.perm[ image ];
-              value:= X.diag[ image ] + value;
-              # now `image = X^j.perm[1]', `value = X^j.diag[ image ]'
-
-            od;
-
-            # Subtract this from $F(g_i^p).diag[k]$;
-            # note that `image' is the image of 1 under `X^p', so also
-            # under $F(g_i^p)$.
-            value:= - value;
-            image:= 1;
-            for j in poli do
-              image:= rep[j].perm[ image ];
-              value:= rep[j].diag[ image ] + value;
-            od;
-
-            value:= ( value / p ) mod e;
-#T enlarge the exponent if necessary!
-
-            Dpos2[d]:= Length( nextnonlin2 ) + 1;
-
-            # Compute the `p' extensions.
-            for k in roots do
-              Add( nextnonlin2, Concatenation(
-                      [ rec( perm := X.perm,
-                        diag := List( X.diag,
-                               x -> ( x  + k + value ) mod e ) ) ], rep ) );
-#T testrep( pcgs{[i..lg]}, nextnonlin2[ Length( nextnonlin2 ) ], e, "3" );
-            od;
-
-          else
-
-            # `$F$ = nonlin[d]' fuses with `p-1' partners given by the orbit
-            # of `d' under `pinonlin[i]'.
-            # The new irreducible representation of $G_i$ will be
-            # $X Ind( F ) X^{-1}$ with $X$ the block diagonal matrix
-            # consisting of blocks $X_{i,F}^{(k)}$ defined by
-            # $X_{i,F}^{(0)} = Id$,
-            # and $X_{i,F}^{(k)} = X_{i,\pi_i^{k-1} F} X_{i,F}^{(k-1)}$
-            # for $k > 0$.
-
-            # The matrix for $g_i$ in the induced representation $Ind( F )$ is
-            # of the form
-            #       | 0   F(g_i^p) |
-            #       | I      0     |
-            # Thus $X Ind(F) X^{-1} ( g_i )$ is the block diagonal matrix
-            # consisting of the blocks
-            # $X_{i,F}, X_{i,\pi_i F}, \ldots, X_{i,\pi_i^{p-2} F}$, and
-            # $F(g_i^p) ( X_{i,F}^(p-1) )^{-1}$.
-
-            dim:= Length( rep[1].diag );
-            Dpos2[d]:= Length( nextnonlin2 ) + 1;
-
-            # We make a copy of `rep' because we want to change it.
-            D:= List( rep, record -> rec( perm := ShallowCopy( record.perm ),
-                                          diag := ShallowCopy( record.diag )
-                                         ) );
-
-            # matrices for $g_j, i\< j \leq n$
-            pos:= d;
-            for j in [ 1 .. p-1 ] * dim do
-              pos:= pinonlin[i][ pos ];
-              for k in [ 1 .. Length( rep ) ] do
-                Append( D[k].diag, nonlin[ pos ][k].diag );
-                Append( D[k].perm, nonlin[ pos ][k].perm + j );
-              od;
-
-              used[ pos ]:= true;
-              Dpos2[ pos ]:= Length( nextnonlin2 ) + 1;
-
-            od;
-
-            # The matrix of $g_i$ is a block-cycle with blocks
-            # $X_{i,\pi_i^k(F)$ for $0 \leq k \leq p-2$,
-            # and $F(g_i^p) \cdot (X_{i,F}^{(p-1)})^{-1}$.
-
-            X:= Xlist[i][d];      # $X_{i,F}$
-            pos:= d;
-            for j in [ 1 .. p-2 ] do
-              pos:= pinonlin[i][ pos ];
-              X:= mulmoma( Xlist[i][ pos ], X );
-            od;
-
-            # `invX' is the inverse of `X'.
-            invX:= rec( perm := [], diag := [] );
-            for j in [ 1 .. Length( X.diag ) ] do
-              invX.perm[ X.perm[j] ]:= j;
-              invX.diag[j]:= e - X.diag[ X.perm[j] ];
-            od;
-
-            X:= mulmoma( poweval( rep, poli ), invX );
-            D_gi:= rec( perm:= List( X.perm, x -> x  + ( p-1 ) * dim ),
-                        diag:= [] );
-
-            pos:= d;
-            for j in [ 0 .. p-2 ] * dim do
-
-              # $X_{i,\pi_i^j F}$
-              Append( D_gi.diag, Xlist[i][ pos ].diag);
-              Append( D_gi.perm, Xlist[i][ pos ].perm + j);
-              pos:= pinonlin[i][ pos ];
-
-            od;
-
-            Append( D_gi.diag, X.diag );
-
-            Add( nextnonlin2, Concatenation( [ D_gi ], D ) );
-#T testrep( pcgs{[i..lg]}, nextnonlin2[ Length( nextnonlin2 ) ], e, "4" );
-
-          fi;
-
-          d:= Position( used, false, d );
-
-        od;
-
-
-        # Step C:
-        # Compute `pilinear', `pinonlin', and `Xlist'.
-
-        pinextlinear  := [];
-        pinextnonlin1 := [];
-        nextXlist1    := [];
-
-        pinextnonlin2 := [];
-        nextXlist2    := [];
-
-        for j in [ 1 .. i-1 ] do
-
-          pinextlinear[j]  := [];
-          pinextnonlin1[j] := [];
-          nextXlist1[j]    := [];
-
-          # `cexp' describes $g_i^{g_j}$.
-          cexp:= ExponentsOfPcElement( pcgs, pcgs[i]^pcgs[j], [ i .. lg ] );
-
-          # Compute `pilinear', and the parts of `pinonlin', `Xlist'
-          # arising from *linear* representations for the next step,
-          # that is, compute the action of $g_j$ on `nextlinear' and
-          # `nextnonlin1'.
-
-          for k in [ 1 .. Length( linear ) ] do
-
-            if pilinear[i][k] = k then
-
-              # Let $F = `linear[k]'$ extend to
-              # $D = D_0, D_1, \ldots, D_{p-1}$,
-              # $C$ the first extension of $\pi_j(F)$.
-              # We have $D( g_i^{g_j} ) = D^{g_j}(g_i) = ( C \chi^l )(g_i)$
-              # where $\chi^l(g_i)$ is the $l$-th power of the chosen
-              # primitive $p$-th root of unity.
-
-              D:= nextlinear[ Dpos1[k] ];
-
-              # `pos' is the position of $C$ in `nextlinear'.
-              pos:= Dpos1[ pilinear[j][k] ];
-              l:= ( (  cexp * D                   # $D( g_i^{g_j} )$
-                       - nextlinear[ pos ][1] )   # $C(g_i)$
-                    * p / e ) mod p;
-
-              for u in [ 0 .. p-1 ] do
-                Add( pinextlinear[j], pos + ( ( l + u * cexp[1] ) mod p ) );
-              od;
-
-            elif not IsBound( pinextnonlin1[j][ Dpos1[k] ] ) then
-
-              # $F$ fuses with its conjugates under $g_i$,
-              # the conjugating matrix describing the action of $g_j$
-              # is a permutation matrix.
-              # Let $D = F^{g_j}$, then the permutation corresponds to
-              # the mapping between the lists
-              # $[ D, (F^{g_i})^{g_j}, \ldots, (F^{g_i^{p-1}})^{g_j} ]$
-              # and $[ D, D^{g_i}, \ldots, D^{g_i^{p-1}} ]$;
-              # The constituents in the first list are the images of
-              # the induced representation of $F$ under $g_j$,
-              # and those in the second list are the constituents of the
-              # induced representation of $D$.
-
-              # While `u' runs from $1$ to $p$,
-              # `pos' runs over the positions of $(F^{g_i^u})^{g_j}$ in
-              # `linear'.
-              # `orb' is the list of positions of the $(F^{g_j})^{g_i^u}$,
-              # cyclically permuted such that the smallest entry is the
-              # first.
-
-              pinextnonlin1[j][ Dpos1[k] ]:= Dpos1[ pilinear[j][k] ];
-              pos:= pilinear[j][k];
-              orb:= [ pos ];
-              min:= 1;
-              minval:= pos;
-              for u in [ 2 .. p ] do
-                pos:= pilinear[i][ pos ];
-                orb[u]:= pos;
-                if pos < minval then
-                  minval:= pos;
-                  min:= u;
-                fi;
-              od;
-              if 1 < min then
-                orb:= Concatenation( orb{ [ min .. p ] },
-                                     orb{ [ 1 .. min-1 ] } );
-              fi;
-
-              # Compute the conjugating matrix `X'.
-              # Let $C$ be the stored representation $\tau_j D$
-              # equivalent to $D^{g_j}$.
-              # Compute the position of $C$ in `pinextnonlin1'.
-
-              C:= nextnonlin1[ pinextnonlin1[j][ Dpos1[k] ] ];
-              D:= nextnonlin1[ Dpos1[k] ];
-
-              # `sigma' is the bijection of constituents in the restrictions
-              # of $D$ and $\tau_j D$ to $G_{i-1}$.
-              # More precisely, $\pi_j(\pi_i^{u-1} F) = \Phi_{\sigma(u-1)}$.
-              sigma:= [];
-              pos:= k;
-              for u in [ 1 .. p ] do
-                sigma[u]:= Position( orb, pilinear[j][ pos ] );
-                pos:= pilinear[i][ pos ];
-              od;
-
-              # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$.
-              pi:= [];
-              pi[ sigma[p] ]:= sigma[1];
-              for u in [ 1 .. p-1 ] do
-                pi[ sigma[u] ]:= sigma[ u+1 ];
-              od;
-
-              # Compute the values $c_{\pi^u(0)}$, for $0 \leq u \leq p-1$.
-              # Note that $c_0 = 1$.
-              # (Here we encode of course the exponents.)
-              constants:= [ 0 ];
-              l:= 1;
-
-              for u in [ 1 .. p-1 ] do
-
-                # Compute $c_{\pi^u(0)}$.
-                # (We have $`l' = 1 + \pi^{u-1}(0)$.)
-                # Note that $B_u = [ [ 1 ] ]$ for $0\leq u\leq p-2$,
-                # and $B_{p-1} = \Phi_0(g_i^p)$.
-
-                # Next we compute the image under $A_{u-1}$;
-                # this matrix is in the $u$-th column block
-                # and in the $\pi(u-1)$-th row block of $D$.
-                # Since we do not have this matrix explicitly,
-                # we use the conjugate representation and the action
-                # encoded by `cexp'.
-                # Note the necessary initial shift because we use the
-                # whole representation $D$ and not a single constituent;
-                # so we shift by `pi[u] - 1'.
-#T `perm' is nontrivial only for v = 1, this should make life easier.
-                value:= 0;
-                image:= pi[u];
-                for v in [ 1 .. lg-i+1 ] do
-                  for w in [ 1 .. cexp[v] ] do
-                    image:= D[v].perm[ image ];
-                    value:= value + D[v].diag[ image ];
-                  od;
-                od;
-
-                # Next we divide by the corresponding value in
-                # the image of the first standard basis vector under
-                # $B_{\sigma\pi^{u-1}(0)}$.
-                value:= value - C[1].diag[ sigma[l] ];
-                constants[ pi[l] ]:= ( constants[l] - value ) mod e;
-                l:= pi[l];
-
-              od;
-
-              # Put the conjugating matrix together.
-              X:= rec( perm := [],
-                       diag := constants );
-              for u in [ 1 .. p ] do
-                X.perm[ sigma[u] ]:= u;
-              od;
-
-#T check that the matrices really  do what they shall do.
-#T 
-#T for ii in [ i .. lg ] do
-#T   exps:= ExponentsOfPcElement( pcgs, pcgs[ii]^pcgs[j], [ i .. lg ] );
-#T   matt:= rec( perm:= [ 1..p ], diag:= [1..p]*0 );
-#T   for jj in [ 1 .. lg-i+1 ] do
-#T     for kk in [ 1 .. exps[jj] ] do
-#T       matt:= mulmoma( matt, nextnonlin1[ Dpos1[k] ][jj] );
-#T     od;
-#T   od;
-#T   if mulmoma( X, matt ) <> mulmoma( nextnonlin1[ pinextnonlin1[j][Dpos1[k]] ][ii-i+1], X ) then
-#T Error( "wrong X" );
-#T   fi;
-#T od;
-
-              nextXlist1[j][ Dpos1[k] ]:= X;
-
-            fi;
-
-          od;
-
-
-          # Compute the remaining parts of `pinonlin' and `Xlist' for
-          # the next step, namely for those *nonlinear* representations
-          # arising from *nonlinear* ones.
-
-          nextXlist2[j]    := [];
-          pinextnonlin2[j] := [];
-
-          # `cexp' describes $g_i^{g_j}$.
-          cexp:= ExponentsOfPcElement( pcgs, pcgs[i]^pcgs[j], [ i .. lg ] );
-
-          # Compute the action of $g_j$ on `nextnonlin2'.
-
-          for k in [ 1 .. Length( nonlin ) ] do
-
-            if pinonlin[i][k] = k then
-
-              # Let $F = `nonlin[k]'$ extend to
-              # $D = D_0, D_1, \ldots, D_{p-1}$,
-              # $C$ the first extension of $\pi_j(F)$.
-              # We have $D( g_i^{g_j} ) = D^{g_j}(g_i) = ( C \chi^l )(g_i)$
-              # where $\chi^l(g_i)$ is the $l$-th power of the chosen
-              # primitive $p$-th root of unity.
-
-              D:= nextnonlin2[ Dpos2[k] ];
-
-              # `pos' is the position of $C$ in `nextnonlin2'.
-              pos:= Dpos2[ pinonlin[j][k] ];
-
-              # Find a nonzero entry in $D( g_i^{g_j} )$.
-              value:= 0;
-              image:= 1;
-              for u in [ 1 .. lg-i+1 ] do
-                for v in [ 1 .. cexp[u] ] do
-                  image:= D[u].perm[ image ];
-                  value:= value + D[u].diag[ image ];
-                od;
-              od;
-
-              # Subtract the corresponding value in $C(g_i)$.
-              value:= value - nextnonlin2[ pos ][1].diag[ image ];
-              l:= ( value * p / e ) mod p;
-
-              for u in [ 0 .. p-1 ] do
-                pinextnonlin2[j][ Dpos2[k] + u ]:=
-                       pos + ( ( l + u * cexp[1] ) mod p );
-                nextXlist2[j][ Dpos2[k] + u ]:= Xlist[j][k];
-              od;
-
-            else
-
-              # $F$ fuses with its conjugates under $g_i$, yielding $D$.
-
-              dim:= Length( nonlin[k][1].diag );
-
-              # Let $C$ be the stored representation $\tau_j D$
-              # equivalent to $D^{g_j}$.
-              # Compute the position of $C$ in `pinextnonlin2'.
-              pinextnonlin2[j][ Dpos2[k] ]:= Dpos2[ pinonlin[j][k] ];
-
-              C:= nextnonlin2[ pinextnonlin2[j][ Dpos2[k] ] ];
-              D:= nextnonlin2[ Dpos2[k] ];
-
-              # Compute the positions of the constituents;
-              # `orb[k]' is the position of $\Phi_{k-1}$ in `nonlin'.
-              pos:= pinonlin[j][k];
-              orb:= [ pos ];
-              min:= 1;
-              minval:= pos;
-              for u in [ 2 .. p ] do
-                pos:= pinonlin[i][ pos ];
-                orb[u]:= pos;
-                if pos < minval then
-                  minval:= pos;
-                  min:= u;
-                fi;
-              od;
-              if 1 < min then
-                orb:= Concatenation( orb{ [ min .. p ] },
-                                     orb{ [ 1 .. min-1 ] } );
-              fi;
-
-              # `sigma' is the bijection of constituents in the restrictions
-              # of $D$ and $\tau_j D$ to $G_{i-1}$.
-              # More precisely, $\pi_j(\pi_i^{u-1} F) = \Phi_{\sigma(u-1)}$.
-              sigma:= [];
-              pos:= k;
-              for u in [ 1 .. p ] do
-                sigma[u]:= Position( orb, pinonlin[j][ pos ] );
-                pos:= pinonlin[i][ pos ];
-              od;
-
-              # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$.
-              pi:= [];
-              pi[ sigma[p] ]:= sigma[1];
-              for u in [ 1 .. p-1 ] do
-                pi[ sigma[u] ]:= sigma[ u+1 ];
-              od;
-
-              # Compute the values $c_{\pi^u(0)}$, for $0 \leq u \leq p-1$.
-              # Note that $c_0 = 1$.
-              # (Here we encode of course the exponents.)
-              constants:= [ 0 ];
-              l:= 1;
-
-              for u in [ 1 .. p-1 ] do
-
-                # Compute $c_{\pi^u(0)}$.
-                # (We have $`l' = 1 + \pi^{u-1}(0)$.)
-                # Note that $B_u = X_{j,\pi_j^u \Phi_0}$ for $0\leq u\leq p-2$,
-                # and $B_{p-1} =
-                #      \Phi_0(g_i^p) \cdot ( X_{j,\Phi_0}^{(p-1)} )^{-1}$
-
-                # First we get the image and diagonal value of
-                # the first standard basis vector under $X_{j,\pi^u(0)}$.
-                image:= Xlist[j][ pi[l] ].perm[1];
-                value:= Xlist[j][ pi[l] ].diag[ image ];
-
-                # Next we compute the image under $A_{u-1}$;
-                # this matrix is in the $u$-th column block
-                # and in the $\pi(u-1)$-th row block of $D$.
-                # Since we do not have this matrix explicitly,
-                # we use the conjugate representation and the action
-                # encoded by `cexp'.
-                # Note the necessary initial shift because we use the
-                # whole representation $D$ and not a single constituent;
-                # so we shift by `dim * ( pi[u] - 1 )'.
-                image:= dim * ( pi[u] - 1 ) + image;
-                for v in [ 1 .. lg-i+1 ] do
-                  for w in [ 1 .. cexp[v] ] do
-                    image:= D[v].perm[ image ];
-                    value:= value + D[v].diag[ image ];
-                  od;
-                od;
-
-                # Next we divide by the corresponding value in
-                # the image of the first standard basis vector under
-                # $B_{\sigma\pi^{u-1}(0)} X_{j,\pi^{u-1}(0)}$.
-                # Note that $B_v$ is in the $(v+2)$-th row block for
-                # $0 \leq v \leq p-2$, in the first row block for $v = p-1$,
-                # and in the $(v+1)$-th column block of $C$.
-                v:= sigma[l];
-                if v = p then
-                  image:= C[1].perm[1];
-                else
-                  image:= C[1].perm[ v*dim + 1 ];
-                fi;
-                value:= value - C[1].diag[ image ];
-                image:= Xlist[j][l].perm[ image - ( v - 1 ) * dim ];
-                value:= value - Xlist[j][l].diag[ image ];
-                constants[ pi[l] ]:= ( constants[l] - value ) mod e;
-                l:= pi[l];
-
-              od;
-
-              # Put the conjugating matrix together.
-              X:= rec( perm:= [],
-                       diag:= [] );
-              pos:= k;
-              for u in [ 1 .. p ] do
-                Append( X.diag, List( Xlist[j][ pos ].diag,
-                                      x -> ( x + constants[u] ) mod e ) );
-                X.perm{ [ ( sigma[u] - 1 )*dim+1 .. sigma[u]*dim ] }:=
-                    Xlist[j][ pos ].perm + (u-1) * dim;
-                pos:= pinonlin[i][ pos ];
-              od;
-              nextXlist2[j][ Dpos2[k] ]:= X;
-
-            fi;
-
-          od;
-
-        od;
-
-        # Finish the update for the next index.
-        linear   := nextlinear;
-        pilinear := pinextlinear;
-
-        nonlin   := Concatenation( nextnonlin1, nextnonlin2 );
-        pinonlin := List( [ 1 .. i-1 ],
-                         j -> Concatenation( pinextnonlin1[j],
-                           pinextnonlin2[j] + Length( pinextnonlin1[j] ) ) );
-        Xlist    := List( [ 1 .. i-1 ],
-                      j -> Concatenation( nextXlist1[j], nextXlist2[j] ) );
-
-      fi;
+      od;
+
+      # Finish the update for the next index.
+      linear   := nextlinear;
+      pilinear := pinextlinear;
+
+      nonlin   := Concatenation( nextnonlin1, nextnonlin2 );
+      pinonlin := List( [ 1 .. i-1 ],
+                       j -> Concatenation( pinextnonlin1[j],
+                         pinextnonlin2[j] + Length( pinextnonlin1[j] ) ) );
+      Xlist    := List( [ 1 .. i-1 ],
+                    j -> Concatenation( nextXlist1[j], nextXlist2[j] ) );
 
     od;
 
@@ -2008,33 +1940,43 @@ BindGlobal( "IrreducibleRepresentationsByBaumClausen", function( G )
 
 #############################################################################
 ##
-#M  IrreducibleRepresentations( <G> ) . . . . . . . for a supersolvable group
-##
-##  Currently only the Baum/Clausen method is available.
+#M  IrreducibleRepresentations( <G> ) . for an abelian by supersolvable group
 ##
 InstallMethod( IrreducibleRepresentations,
-    "method for a (solvable) group",
-    true,
-    [ IsGroup ], 0,
+    "(abelian by supersolvable) finite group",
+    [ IsGroup and IsFinite ], 1, # higher than Dixon's method
     function( G )
     if IsAbelian( SupersolvableResiduum( G ) ) then
-      G:= IrreducibleRepresentationsByBaumClausen( G );
+      return IrreducibleRepresentationsByBaumClausen( G );
     else
       TryNextMethod();
     fi;
-    return G;
     end );
 
 
 #############################################################################
 ##
-#M  IrreducibleRepresentations( <G>, <f> ). . . . . . . .for a solvable group
+#M  IrreducibleRepresentations( <G>, <F> )  . . for a group and `Cyclotomics'
 ##
-InstallOtherMethod( IrreducibleRepresentations,
-    "method for a group over finite field",         
-    true,
-    [ IsGroup, IsField and IsFinite],                         
-    0,
+InstallMethod( IrreducibleRepresentations,
+    "finite group, Cyclotomics",
+    [ IsGroup and IsFinite, IsCyclotomicCollection and IsField ],
+    function( G, F )
+    if F <> Cyclotomics then
+      TryNextMethod();
+    else
+      return IrreducibleRepresentations( G );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  IrreducibleRepresentations( <G>, <f> )
+##
+InstallMethod( IrreducibleRepresentations,
+    "for a finite group over a finite field",
+    [ IsGroup and IsFinite, IsField and IsFinite ],
     function( G, f )
 
     local md, hs, gens, M, mats, H, hom;
@@ -2050,7 +1992,7 @@ InstallOtherMethod( IrreducibleRepresentations,
         Add( hs, hom );
     od;
     return hs;
-end );
+    end );
 
 
 #############################################################################
@@ -2059,8 +2001,7 @@ end );
 ##
 InstallMethod( IrrBaumClausen,
     "for a (solvable) group",
-    true,
-    [ IsGroup ], 0,
+    [ IsGroup ],
     function( G )
 
     local mulmoma,        # local function  to multiply monomial matrices
@@ -2260,8 +2201,7 @@ end );
 ##
 InstallOtherMethod( \^,
     "for group homomorphism and group (induction)",
-    true,
-    [ IsGroupHomomorphism, IsGroup ], 0,
+    [ IsGroupHomomorphism, IsGroup ],
     function( rep, G )
     if IsMatrixGroup( Range( rep ) ) and IsSubset( Source( rep ), G ) then
       return InducedRepresentation( rep, G );

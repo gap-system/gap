@@ -30,6 +30,7 @@ const char * Revision_sysfiles_c =
 #include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "gvars.h"               /* global variables                */
+#include        "calls.h"               /* generic call mechanism          */
 
 #include        "lists.h"               /* generic lists                   */
 #include        "listfunc.h"            /* functions for generic lists     */
@@ -38,6 +39,16 @@ const char * Revision_sysfiles_c =
 #include        "string.h"              /* strings                         */
 
 #include        "records.h"             /* generic records                 */
+
+#if !SYS_MAC_MWC
+#if HAVE_SELECT
+/* Only for the Hook handler calls: */
+#include        "read.h"                /* reader                          */
+
+#include        <sys/time.h>
+#include        <sys/types.h>
+#endif
+#endif
 
 #ifndef SYS_STDIO_H                     /* standard input/output functions */
 # include <stdio.h>
@@ -89,6 +100,13 @@ extern int write ( int, char *, int );
 #if HAVE_VFORK_H
 # include <vfork.h>
 #endif
+
+#if HAVE_ERRNO_H
+#include <errno.h>
+#else
+extern int errno;
+#endif
+
 
 /* HP-UX already defines SYS_FORK */
 
@@ -1218,7 +1236,11 @@ Int SyFclose (
 
     /* try to close the file                                               */
     if ( (syBuf[fid].pipe == 0 && fclose( syBuf[fid].fp ) == EOF)
-      || (syBuf[fid].pipe == 1 && pclose( syBuf[fid].fp ) == -1) )
+      || (syBuf[fid].pipe == 1 && pclose( syBuf[fid].fp ) == -1
+#ifdef ECHILD
+	  && errno != ECHILD
+#endif
+	  ) )
     {
         fputs("gap: 'SyFclose' cannot close file, ",stderr);
         fputs("maybe your file system is full?\n",stderr);
@@ -2208,7 +2230,6 @@ extern  long            time ( long * buf );
 
 UInt            syLastIntr;             /* time of the last interrupt      */
 
-extern void     InterruptExecStat ( void );
 
 
 SYS_SIG_T syAnswerIntr (
@@ -3028,7 +3049,7 @@ void syEchos (
 **  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
 */
 UInt   syNrchar;                        /* nr of chars already on the line */
-Char   syPrompt [256];                  /* characters alread on the line   */
+Char   syPrompt [256];                  /* characters already on the line   */
 
 
 
@@ -3867,8 +3888,148 @@ Char   syHistory [8192];                /* history of command lines        */
 Char * syHi = syHistory;                /* actual position in history      */
 UInt   syCTRO;                          /* number of '<ctr>-O' pending     */
 
-
 #if !SYS_MAC_MWC
+
+#if HAVE_SELECT
+Obj OnCharReadHookActive = 0;  /* if bound the hook is active */
+Obj OnCharReadHookInFds = 0;   /* a list of UNIX file descriptors for reading */
+Obj OnCharReadHookInFuncs = 0; /* a list of GAP functions with 0 args */
+Obj OnCharReadHookOutFds = 0;  /* a list of UNIX file descriptors for writing */
+Obj OnCharReadHookOutFuncs = 0;/* a list of GAP functions with 0 args */
+Obj OnCharReadHookExcFds = 0;  /* a list of UNIX file descriptors */
+Obj OnCharReadHookExcFuncs = 0;/* a list of GAP functions with 0 args */
+
+
+void HandleCharReadHook(int stdinfd)
+/* This is called directly before a character is read from stdin in the case
+ * of an interactive session with command line editing. We have to return
+ * as soon as stdin is ready to read! We just use `select' and care for
+ * handlers for streams. */
+{
+  fd_set infds,outfds,excfds;
+  int n,maxfd;
+  Int i,j;
+  Obj o;
+  static int WeAreAlreadyInHere = 0;
+
+  /* Just to make sure: */
+  if (WeAreAlreadyInHere) return;
+  WeAreAlreadyInHere = 1;
+
+  while (1) {  /* breaks when fd becomes ready */
+    FD_ZERO(&infds);
+    FD_ZERO(&outfds);
+    FD_ZERO(&excfds);
+    FD_SET(stdinfd,&infds);
+    maxfd = stdinfd;
+    /* Handle input file descriptors: */
+    if (OnCharReadHookInFds != (Obj) 0 &&
+        IS_PLIST(OnCharReadHookInFds) &&
+        OnCharReadHookInFuncs != (Obj) 0 &&
+        IS_PLIST(OnCharReadHookInFuncs)) {
+      for (i = 1;i <= LEN_PLIST(OnCharReadHookInFds);i++) {
+        o = ELM_PLIST(OnCharReadHookInFds,i);
+        if (o != (Obj) 0 && IS_INTOBJ(o)) {
+          j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+          FD_SET(j,&infds);
+          if (j > maxfd) maxfd = j;
+        }
+      }
+    }
+    /* Handle output file descriptors: */
+    if (OnCharReadHookOutFds != (Obj) 0 &&
+        IS_PLIST(OnCharReadHookOutFds) &&
+        OnCharReadHookOutFuncs != (Obj) 0 &&
+        IS_PLIST(OnCharReadHookOutFuncs)) {
+      for (i = 1;i <= LEN_PLIST(OnCharReadHookOutFds);i++) {
+        o = ELM_PLIST(OnCharReadHookOutFds,i);
+        if (o != (Obj) 0 && IS_INTOBJ(o)) {
+          j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+          FD_SET(j,&outfds);
+          if (j > maxfd) maxfd = j;
+        }
+      }
+    }
+    /* Handle exception file descriptors: */
+    if (OnCharReadHookExcFds != (Obj) 0 &&
+        IS_PLIST(OnCharReadHookExcFds) &&
+        OnCharReadHookExcFuncs != (Obj) 0 &&
+        IS_PLIST(OnCharReadHookExcFuncs)) {
+      for (i = 1;i <= LEN_PLIST(OnCharReadHookExcFds);i++) {
+        o = ELM_PLIST(OnCharReadHookExcFds,i);
+        if (o != (Obj) 0 && IS_INTOBJ(o)) {
+          j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+          FD_SET(j,&excfds);
+          if (j > maxfd) maxfd = j;
+        }
+      }
+    }
+
+    n = select(maxfd+1,&infds,&outfds,&excfds,NULL);
+    if (n >= 0) {
+      /* Now run through the lists and call functions if ready: */
+
+      if (OnCharReadHookInFds != (Obj) 0 &&
+          IS_PLIST(OnCharReadHookInFds) &&
+          OnCharReadHookInFuncs != (Obj) 0 &&
+          IS_PLIST(OnCharReadHookInFuncs)) {
+        for (i = 1;i <= LEN_PLIST(OnCharReadHookInFds);i++) {
+          o = ELM_PLIST(OnCharReadHookInFds,i);
+          if (o != (Obj) 0 && IS_INTOBJ(o)) {
+            j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+            if (FD_ISSET(j,&infds)) {
+              o = ELM_PLIST(OnCharReadHookInFuncs,i);
+              if (o != (Obj) 0 && IS_FUNC(o))
+                Call1ArgsInNewReader(o,INTOBJ_INT(i));
+            }
+          }
+        }
+      }
+      /* Handle output file descriptors: */
+      if (OnCharReadHookOutFds != (Obj) 0 &&
+          IS_PLIST(OnCharReadHookOutFds) &&
+          OnCharReadHookOutFuncs != (Obj) 0 &&
+          IS_PLIST(OnCharReadHookOutFuncs)) {
+        for (i = 1;i <= LEN_PLIST(OnCharReadHookOutFds);i++) {
+          o = ELM_PLIST(OnCharReadHookOutFds,i);
+          if (o != (Obj) 0 && IS_INTOBJ(o)) {
+            j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+            if (FD_ISSET(j,&outfds)) {
+              o = ELM_PLIST(OnCharReadHookOutFuncs,i);
+              if (o != (Obj) 0 && IS_FUNC(o))
+                Call1ArgsInNewReader(o,INTOBJ_INT(i));
+            }
+          }
+        }
+      }
+      /* Handle exception file descriptors: */
+      if (OnCharReadHookExcFds != (Obj) 0 &&
+          IS_PLIST(OnCharReadHookExcFds) &&
+          OnCharReadHookExcFuncs != (Obj) 0 &&
+          IS_PLIST(OnCharReadHookExcFuncs)) {
+        for (i = 1;i <= LEN_PLIST(OnCharReadHookExcFds);i++) {
+          o = ELM_PLIST(OnCharReadHookExcFds,i);
+          if (o != (Obj) 0 && IS_INTOBJ(o)) {
+            j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+            if (FD_ISSET(j,&excfds)) {
+              o = ELM_PLIST(OnCharReadHookExcFuncs,i);
+              if (o != (Obj) 0 && IS_FUNC(o))
+                Call1ArgsInNewReader(o,INTOBJ_INT(i));
+            }
+          }
+        }
+      }
+
+      if (FD_ISSET(stdinfd,&infds)) {
+        WeAreAlreadyInHere = 0;
+        break;
+      }
+    } else
+      break;
+  } /* while (1) */
+}
+#endif   /* HAVE_SELECT */
+
 Char * SyFgets (
     Char *              line,
     UInt                length,
@@ -3884,6 +4045,7 @@ Char * SyFgets (
     Char                buffer [512];
     Int                 rn;
     Int			rubdel;
+    UInt                len;
 
     /* check file identifier                                               */
     if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
@@ -3896,6 +4058,21 @@ Char * SyFgets (
     /* no line editing if the file is not '*stdin*' or '*errin*'           */
     if ( fid != 0 && fid != 2 ) {
         p = fgets( line, (int)length, syBuf[fid].fp );
+#if ! (SYS_BSD||SYS_MACH||SYS_USG)
+    /* A hack for non ANSI-C confirming systems which deliver \r or \r\n
+     * line ends. These are translated to \n here.
+     */
+        if (p) {
+           len = SyStrlen(p);
+           if (len > 1 && p[len-2] == '\r' && p[len-1] == '\n') {
+              p[len-2] = '\n';
+              p[len-1] = '\0';
+           } 
+           else if (p[len-1] == '\r') {
+              p[len-1] = '\n';
+           }
+        }
+#endif  /* line end hack */
         return p;
     }
 
@@ -3932,7 +4109,13 @@ Char * SyFgets (
         do {
             if ( syCTRO % 2 == 1  )  { ch = CTR('N'); syCTRO = syCTRO - 1; }
             else if ( syCTRO != 0 )  { ch = CTR('O'); rep = syCTRO / 2; }
-            else ch = syGetch(fid);
+            else {
+#if HAVE_SELECT
+              if (OnCharReadHookActive != (Obj) 0)
+                HandleCharReadHook(fileno(syBuf[fid].fp));
+#endif
+              ch = syGetch(fid);
+            }
             if ( ch2==0        && ch==CTR('V') ) {             ch2=ch; ch=0;}
             if ( ch2==0        && ch==CTR('[') ) {             ch2=ch; ch=0;}
             if ( ch2==0        && ch==CTR('U') ) {             ch2=ch; ch=0;}
@@ -4336,6 +4519,8 @@ Char * SyFgets (
         }
 
         if ( ch==EOF || ch=='\n' || ch=='\r' || ch==CTR('O') ) {
+            /* if there is a hook for line ends, call it before echoing */
+            if ( EndLineHook ) CALL_0ARGS( EndLineHook );
             syEchoch('\r',fid);  syEchoch('\n',fid);  break;
         }
 
@@ -4571,14 +4756,6 @@ Char SyLastErrorMessage [ 1024 ];
 **
 *F  SyClearErrorNo()  . . . . . . . . . . . . . . . . .  clear error messages
 */
-#if !SYS_MAC_MWC  /* for the Mac, we use syMacErr, this is declared above */
-extern int errno;
-
-# ifndef SYS_ERRNO_H
-#  include <sys/errno.h>
-# endif
-
-#endif
 
 void SyClearErrorNo ( void )
 {
@@ -4849,7 +5026,7 @@ UInt syExecuteProcess (   /* version which returns Mac i/o errors */
 	while (FindProcess (&PSN, &appFSS)) 
 #if GAPVER == 4
         ErrorReturnVoid( "Application %s is already running. Please quit it and try again", (long) fname, 0L, 
-        	"you can return" );
+        	"you can 'return;'" );
 #elif GAPVER == 3
 		Error ("Application %s is already running. Please quit it and try again", (long) fname, 0L);
 #endif
@@ -4907,7 +5084,7 @@ UInt syExecuteProcess (   /* version which returns Mac i/o errors */
 		if (!appDied) 
            if ( SyIsIntr() )  
 #if GAPVER == 4
-                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
+                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
 #elif GAPVER == 3
            		Error("user interrupt",0L,0L); 
 #endif
@@ -4966,7 +5143,7 @@ void SyExec (
 	if ((err = syExec (cmd))) 
 #if GAPVER == 4
             ErrorReturnVoid( "GAP: could not execute '%s' (error code %d) \n", (long)cmd, err,
-            	 "you can return" );
+            	 "you can 'return;'" );
 #elif GAPVER == 3
 			Error ("GAP: could not execute '%s' (error code %d) \n", (long)cmd, err);
 #endif
@@ -5050,18 +5227,25 @@ UInt SyExecuteProcess (
     Int                     tin;                    /* temp in             */
     Int                     tout;                   /* temp out            */
     SYS_SIG_T               (*func)(int);
+    SYS_SIG_T               (*func2)(int);
 
 #if defined(SYS_HAS_WAIT4) || HAVE_WAIT4
     struct rusage           usage;
 #endif
 
 
+    /* turn off the SIGCHLD handling, so that we can be sure to collect this child
+       `After that, we call the old signal handler, in case any other children have died in the
+       meantime. This resets the handler */
+    
+    func2 = signal( SIGCHLD, SIG_DFL );
+
     /* clone the process                                                   */
     pid = SYS_MY_FORK();
     if ( pid == -1 ) {
         return -1;
     }
-
+    
     /* we are the parent                                                   */
     if ( pid != 0 ) {
 
@@ -5073,26 +5257,32 @@ UInt SyExecuteProcess (
 
         if ( wait4( pid, &status, 0, &usage ) == -1 ) {
             signal( SIGINT, func );
+	    (*func2)(SIGCHLD);
             return -1;
         }
         if ( WIFSIGNALED(status) ) {
             signal( SIGINT, func );
+	    (*func2)(SIGCHLD);
             return -1;
         }
         signal( SIGINT, func );
-        return WEXITSTATUS(status);
+	(*func2)(SIGCHLD);
+	return WEXITSTATUS(status);
 
 #else
 
         if ( waitpid( pid, &status, 0 ) == -1 ) {
             signal( SIGINT, func );
+	    (*func2)(SIGCHLD);
             return -1;
         }
         if ( WIFSIGNALED(status) ) {
             signal( SIGINT, func );
+	    (*func2)(SIGCHLD);
             return -1;
         }
         signal( SIGINT, func );
+	(*func2)(SIGCHLD);
         return WEXITSTATUS(status);
 
 #endif
@@ -5179,12 +5369,7 @@ Int SyIsExistingFile ( Char * name )
     SyClearErrorNo();
     res = access( name, F_OK );
     if ( res == -1 ) {
-        if ( errno != ENOENT ) {
-            SySetErrorNo();
-        }
-        else {
-            res = 1;
-        }
+        SySetErrorNo();
     }
     return res;
 }
@@ -5202,7 +5387,7 @@ Int SyIsExistingFile ( Char * name )
 		if (err = PathToFSSpec (name, &fsspec, false, false)) {
 			if (syMacErr == fnfErr || err == fnfErr) {
 				syMacErr = fnfErr;
-				return 1;
+				return -1;
 			} else {
             	SySetErrorNo();
             	return -1;
@@ -5265,7 +5450,7 @@ Int SyIsReadableFile ( Char * name )
 	else syMacErr = FSClose (ref);
 	if (syMacErr) {
 		SySetErrorNo();
-		return 1;
+		return -1;
 	} else {
 	    SyClearErrorNo();
 		return 0;
@@ -5295,12 +5480,7 @@ Int SyIsWritableFile ( Char * name )
     SyClearErrorNo();
     res = access( name, W_OK );
     if ( res == -1 ) {
-        if ( errno != EROFS && errno != EACCES ) {
-            SySetErrorNo();
-        }
-        else {
-            res = 1;
-        }
+        SySetErrorNo();
     }
     return res;
 }
@@ -5323,7 +5503,7 @@ Int SyIsWritableFile ( Char * name )
 	else syMacErr = FSClose (ref);
 	if (syMacErr) {
 		SySetErrorNo();
-		return 1;
+		return -1;
 	} else {
 	    SyClearErrorNo();
 		return 0;
@@ -5353,18 +5533,7 @@ Int SyIsExecutableFile ( Char * name )
     SyClearErrorNo();
     res = access( name, X_OK );
     if ( res == -1 ) {
-        if ( errno == EACCES ) {
-            if ( SyIsExistingFile(name) == 0 ) {
-                res = 1;
-            }
-            else {
-                errno = EACCES;
-                SySetErrorNo();
-            }
-        }
-        else {
-            SySetErrorNo();
-        }
+        SySetErrorNo();
     }
     return res;
 }
@@ -5389,7 +5558,7 @@ Int SyIsExecutableFile ( Char * name )
 	}
 	else {
 		SyClearErrorNo ();
-		return finfo.fdType == 'APPL' ? 0 : 1;
+		return finfo.fdType == 'APPL' ? 0 : -1;
 	}
 }
 #endif
@@ -5425,7 +5594,7 @@ Int SyIsDirectoryPath ( Char * name )
         SySetErrorNo();
         return -1;
     }
-    return S_ISDIR(buf.st_mode) ? 0 : 1;
+    return S_ISDIR(buf.st_mode) ? 0 : -1;
 }
 
 #endif
@@ -5447,7 +5616,7 @@ Int SyIsDirectoryPath ( Char * name )
 		return -1;
 	}
 	SyClearErrorNo ();
-	return isFolder ? 0 : 1;
+	return isFolder ? 0 : -1;
 }
 #endif
 
@@ -5640,10 +5809,10 @@ Char * SyTmpname ( void )
 	}
     if (syMacErr) {
 #if GAPVER == 4
-        ErrorReturnVoid( "could not create temopary file", 0L, 0L, 
-        	"you can return" );
+        ErrorReturnVoid( "could not create temporary file", 0L, 0L, 
+        	"you can 'return;'" );
 #elif GAPVER == 3
-		Error ("could not create temopary file", 0L, 0L );
+		Error ("could not create temporary file", 0L, 0L );
 #endif
     	return (char*) 0;
     } else
@@ -5721,10 +5890,10 @@ Char * SyTmpdir ( Char * hint )
 		}
     if (syMacErr) {
 #if GAPVER == 4
-        ErrorReturnVoid( "could not create temopary directory", 0L, 0L, 
-        	"you can return" );
+        ErrorReturnVoid( "could not create temporary directory", 0L, 0L, 
+        	"you can 'return;'" );
 #elif GAPVER == 3
-		Error ("could not create temopary file", 0L, 0L );
+		Error ("could not create temporary file", 0L, 0L );
 #endif
     	return (char*) 0;
     } else
@@ -5831,6 +6000,21 @@ static Int postRestore (
     MakeReadWriteGVar( gvar);
     AssGVar( gvar, tmp );
     MakeReadOnlyGVar(gvar);
+
+    /* User home, if available */
+    if (SyHasUserHome) {
+        tmp = NEW_STRING(SyStrlen(SyUserHome));
+        RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+        SyStrncat( CSTR_STRING(tmp), SyUserHome, SyStrlen(SyUserHome) );
+    }
+    else {
+        tmp = NEW_STRING(0);
+    }
+    gvar = GVarName("USER_HOME");
+    MakeReadWriteGVar( gvar);
+    AssGVar( gvar, tmp );
+    MakeReadOnlyGVar(gvar);
+        
 
     /* return success                                                      */
     return 0;

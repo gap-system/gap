@@ -13,59 +13,6 @@
 Revision.tietze_gi :=
     "@(#)$Id$";
 
-
-#############################################################################
-##
-#M  AbstractWordTietzeWord( <word>, <fgens> )  . . . .  convert a Tietze word
-#M                                                        to an abstract word
-##
-##  `AbstractWordTietzeWord'  assumes  <fgens>  to be  a list  of  free group
-##  generators and  <word> to be a Tietze word in these generators,  i. e., a
-##  list of positive or negative generator numbers.  It converts <word> to an
-##  abstract word,
-##
-InstallGlobalFunction( AbstractWordTietzeWord,
-function ( word, fgens )
-local ind,e,lg,i,num,mex;
-
-   # index the generators
-   ind:=List(fgens,i->GeneratorSyllable(i,1));
-
-   # first generate an external representation
-   e:=[];
-   mex:=1;
-   lg:=0;
-   i:=0;
-   for num in word do
-     if num<0 then
-       if -num=lg then
-	 # increase exponent
-         e[i]:=e[i]-1;
-	 mex:=Maximum(mex,-e[i]);
-       else
-	 # add new generator/exponent pair
-         Append(e,[ind[-num],-1]);
-	 lg:=-num;
-	 i:=i+2;
-       fi;
-     else
-       if num=lg then
-	 # increase exponent
-         e[i]:=e[i]+1;
-	 mex:=Maximum(mex,e[i]);
-       else
-	 # add new generator/exponent pair
-         Append(e,[ind[num],1]);
-	 lg:=num;
-	 i:=i+2;
-       fi;
-     fi;
-   od;
-   # then build a word from it
-   e:=ObjByExtRep(FamilyObj(fgens[1]),mex,mex,e);
-   return e;
-end );
-
 #############################################################################
 ##
 #F  TzTestInitialSetup(<Tietze object>)
@@ -263,10 +210,12 @@ end );
 ##  `FpGroupPresentation'  constructs the group  defined by the  given Tietze
 ##  presentation and returns the group record.
 ##
-InstallGlobalFunction( FpGroupPresentation, function ( P )
+InstallGlobalFunction( FpGroupPresentation, function (arg)
 
-    local F, fgens, freegens, frels, G, gens, names, numgens, origin,
-          redunds, rels, T, tietze, tzword;
+local P,F, fgens, freegens, frels, G, gens, names, numgens, origin,
+      redunds, rels, T, tietze, tzword;
+
+    P:=arg[1];
 
     if TzOptions(P).printLevel >= 3 then
         Print( "#I  converting the Tietze presentation to a group\n" );
@@ -293,7 +242,13 @@ InstallGlobalFunction( FpGroupPresentation, function ( P )
     freegens := tietze[TZ_FREEGENS];
     names := List( gens, g ->
         FamilyObj( gens[1] )!.names[Position( freegens, g )] );
-    F := FreeGroup( names );
+
+    if Length(arg)>1 then
+      F:=FreeGroup(Length(names),arg[2]);
+    else
+      F := FreeGroup( names );
+    fi;
+
     fgens := GeneratorsOfGroup( F );
 
     # convert the relators from Tietze words to words in the generators of F.
@@ -356,7 +311,7 @@ InstallGlobalFunction( PresentationFpGroup, function ( arg )
     # initialize the Tietze stack.
     fggens := FreeGeneratorsOfFpGroup( G );
     grels := RelatorsOfFpGroup( G );
-    F := FreeGroup( infinity, "_x",
+    F := FreeGroup( IsLetterWordsFamily,infinity, "_x",
         ElementsFamily( FamilyObj( FreeGroupOfFpGroup( G ) ) )!.names );
     freegens := GeneratorsOfGroup( F );
     tietze[TZ_FREEGENS] := freegens;
@@ -423,6 +378,7 @@ InstallMethod( PrintObj,
 
 end );
 
+
 #############################################################################
 ##
 #M  ShallowCopy( <T> )
@@ -430,6 +386,254 @@ end );
 InstallMethod( ShallowCopy,
     "for a presentation in default representation", true,
     [ IsPresentation and IsPresentationDefaultRep ], 0, StructuralCopy );
+
+
+#############################################################################
+##
+#M  PresentationRegularPermutationGroup(<G>)  . . .  construct a presentation
+#M                                           from a regular permutation group
+##
+##  `PresentationRegularPermutationGroup'  constructs a presentation from the
+##  given  regular permutation group  using  John Cannon's  relations finding
+##  algorithm.
+##
+InstallGlobalFunction( PresentationRegularPermutationGroup, function ( G )
+
+    # check G to be a regular permutation group.
+    if not ( IsPermGroup( G ) and IsRegular( G ) ) then
+        Error( "the given group must be a regular permutation group" );
+    fi;
+    return PresentationRegularPermutationGroupNC( G );
+end );
+
+
+#############################################################################
+##
+#M  PresentationRegularPermutationGroupNC(<G>)  . .  construct a presentation
+#M                                           from a regular permutation group
+##
+##  `PresentationRegularPermutationGroupNC' constructs a presentation from
+##  the given regular permutation group using John Cannon's relations finding
+##  algorithm.
+##
+##  In this NC version it is assumed, but not checked that G is a regular
+##  permutation group.
+##
+InstallGlobalFunction( PresentationRegularPermutationGroupNC, function ( G )
+    local   cosets,       # right cosets of G by its trivial subgroup H
+            F,            # given free group
+            R,            # record containing an fp group isomorphic to G
+            P,            # presentation to be consructed
+            ng1,          # position number of identity element in G
+            idword,       # identity element of F
+            table,        # columns in the table for gens
+            rels,         # representatives of the relators
+            relsGen,      # relators sorted by start generator
+            subgroup,     # rows for the subgroup gens
+            i, j,         # loop variables
+            gen,          # loop variables for generator
+            gen0, inv0,   # loop variables for generator cols
+            g, g1,        # loop variables for generator cols
+            c,            # loop variable for coset
+            rel,          # loop variables for relator
+            rels1,        # list of relators
+            app,          # arguments list for `MakeConsequences'
+            index,        # index of the table
+            col,          # generator col in auxiliary table
+            perm,         # variable for permutations
+            fgens,        # generators of F
+            gens2,        # the above abstract gens and their inverses
+            perms,        # permutation generators of G
+            moved,        # list of points on which G acts,
+            ngens,        # number of generators of G
+            ngens2,       # twice the above number
+            order,        # order of a generator
+            actcos,       # part 1 of Schreier vector of G by H
+            actgen,       # part 2 of Schreier vector of G by H
+            tab0,         # auxiliary table in parallel to table <table>
+            cosRange,     # range from 1 to index (= number of cosets)
+            genRange,     # range of the odd integers from 1 to 2*ngens-1
+            geners,       # order in which the table cols are worked off
+            next,         # local coset number
+            n;            # number of subgroup element
+
+    # initialize some local variables.
+    perms := GeneratorsOfGroup( G );
+    ngens := Length( perms );
+    ngens2 := ngens * 2;
+    ng1 := 1;
+    index := NrMovedPoints( perms );
+    tab0 := [];
+    table := [];
+    subgroup := [];
+    cosRange := [ 1 .. index ];
+    genRange := List( [ 1 .. ngens ], i -> 2*i-1 );
+    rels := [];
+    F := FreeGroup( ngens );
+    fgens := GeneratorsOfGroup( F );
+    gens2 := [];
+    idword := One( fgens[1] );
+
+    # ensure that the permutations act on the points 1 to index (note that
+    # index is the degree of G).
+    if LargestMovedPoint( perms ) > index then
+        moved := MovedPoints( perms );
+        perm := MappingPermListList( moved, [ 1 .. index ] );
+        perms := OnTuples( perms, perm );
+    fi;
+
+    # get a coset table from the permutations,
+    # and introduce appropriate relators for the involutory generators
+    for i in [ 1 .. ngens ] do
+        Add( gens2, fgens[i] );
+        Add( gens2, fgens[i]^-1 );
+        perm := perms[i];
+        col := OnTuples( cosRange, perm );
+        gen := ListWithIdenticalEntries( index, 0 );
+        Add( tab0, col );
+        Add( table, gen );
+        order := Order( perms[i] );
+        if order = 2 then
+            Add( rels, fgens[i]^2 );
+        else
+            col := OnTuples( cosRange, perm^-1 );
+            gen := ListWithIdenticalEntries( index, 0 );
+        fi;
+        Add( tab0, col );
+        Add( table, gen );
+    od;
+
+    # define an appropriate ordering of the cosets,
+    # enter the definitions in the table,
+    # and construct the Schreier vector,
+    cosets := ListWithIdenticalEntries( index, 0 );
+    actcos := ListWithIdenticalEntries( index, 0 );
+    actgen := ListWithIdenticalEntries( index, 0 );
+    cosets[1] := ng1;
+    actcos[ng1] := ng1;
+    j := 1;
+    i := 0;
+    while i < index do
+        i := i + 1;
+        c := cosets[i];
+        g := 0;
+        while g < ngens2 do
+            g := g + 1;
+            next := tab0[g][c];
+            if next > 0 and actcos[next] = 0 then
+                g1 := g + 2*(g mod 2) - 1;
+                table[g][c] := next;
+                table[g1][next] := c;
+                tab0[g][c] := 0;
+                tab0[g1][next] := 0;
+                actcos[next] := c;
+                actgen[next] := g;
+                j := j + 1;
+                cosets[j] := next;
+                if j = index then
+                    g := ngens2;
+                    i := index;
+                fi;
+            fi;
+        od;
+    od;
+
+    # compute the representatives for the relators
+    rels := RelatorRepresentatives( rels );
+
+    # make the structure that is passed to `MakeConsequences'
+    app := ListWithIdenticalEntries( 12, 0 );
+
+    # note: we have, in particular, set app[12] to zero as we do not want
+    # minimal gaps to be marked in the coset table
+
+    app[1] := table;
+    app[5] := subgroup;
+
+    # run through the coset table and find the next undefined entry
+    geners := [ 1 .. ngens2 ];
+    for i in cosets do
+        for j in geners do
+            if table[j][i] <= 0 then
+
+                # define the entry appropriately,
+                g := j + 2*(j mod 2) - 1;
+                c := tab0[j][i];
+                table[j][i] := c;
+                table[g][c] := i;
+                tab0[j][i] := 0;
+                tab0[g][c] := 0;
+
+                # construct the associated relator
+                rel := idword;
+                while c <> ng1 do
+                    g := actgen[c];
+                    rel := rel * gens2[g]^-1;
+                    c := actcos[c];
+                od;
+                rel := rel^-1 * gens2[j]^-1;
+                c := i;
+                while c <> ng1 do
+                    g := actgen[c];
+                    rel := rel * gens2[g]^-1;
+                    c := actcos[c];
+                od;
+
+                # compute its representative,
+                # and add it to the set of relators
+                rels1 := RelatorRepresentatives( [ rel ] );
+                if Length( rels1 ) > 0 then
+                    rel := rels1[1];
+                    if not rel in rels then
+                        Add( rels, rel );
+                    fi;
+                fi;
+
+                # make the rows for the relators and distribute over relsGen
+                relsGen := RelsSortedByStartGen( fgens, rels, table, true );
+                app[4] := relsGen;
+
+                # mark all already defined entries of table by a zero in
+                # tab0
+                for g in genRange do
+                    gen := table[g];
+                    gen0 := tab0[g];
+                    inv0 := tab0[g+1];
+                    for c in cosRange do
+                        if gen[c] > 0 then
+                            gen0[c] := 0;
+                            inv0[gen[c]] := 0;
+                        fi;
+                    od;
+                od;
+
+                # continue the enumeration and find all consequences
+                for g in genRange do
+                    gen0 := tab0[g];
+                    for c in cosRange do
+                        if gen0[c] = 0 then
+                            app[10] := g;
+                            app[11] := c;
+                            n := MakeConsequences( app );
+                        fi;
+                    od;
+                od;
+            fi;
+        od;
+    od;
+
+    # construct a finitely presented group from the relations,
+    # add the Schreier vector to its components, and return it
+    P := PresentationFpGroup( F / rels, 0 );
+    TzOptions(P).protected := ngens;
+    TzGoGo( P );
+    TzOptions(P).protected := 0;
+    TzOptions(P).printLevel := 1;
+
+    # return the resulting presentation
+    return P;
+end );
+
 
 #############################################################################
 ##
@@ -475,9 +679,10 @@ InstallGlobalFunction( PresentationViaCosetTable, function ( arg )
             thgens,     # tidied up list of generators of H
             ngens,      # number of generators of G
             one,        # identity element of G
+            size,       # size of G
             F1,         # free group with same number of generators as H
             FP2,        # fp group isomorphic to G
-            i;       # loop variables
+            i;          # loop variable
 
     # check the first argument to be a group
     G := arg[1];
@@ -493,6 +698,17 @@ InstallGlobalFunction( PresentationViaCosetTable, function ( arg )
         # apply the single stage algorithm
         Info( InfoFpGroup, 1,
             "calling the single stage relations finding algorithm" );
+
+        # use a special method for regular permutation groups
+        if IsPermGroup( G ) then
+            # compute the size of G to speed up the regularity check
+            size := Size( G );
+            if IsRegular( G ) then
+                return PresentationRegularPermutationGroupNC( G );
+            fi;
+        fi;
+
+        # construct a presentation for G
         elts := AsSSortedList( G );
         F := FreeGroup( ngens );
         R2 := RelsViaCosetTable( G, elts, F );
@@ -585,6 +801,7 @@ end );
 ##  input and output are specifically designed only for this purpose,  and it
 ##  does not check the arguments.
 ##
+
 InstallGlobalFunction( RelsViaCosetTable, function ( arg )
     local   G,            # given group
             cosets,       # right cosets of G with respect to H
@@ -598,6 +815,8 @@ InstallGlobalFunction( RelsViaCosetTable, function ( arg )
             fhgens,       # generators of F1
             hrels,        # relators of F1
             helts,        # list of elements of H
+            ng1,          # position number of identity element in G
+            nh1,          # position number of identity element in H
             idword,       # identity element of F
             perms,        # permutations induced by the gens on the cosets
             stage,        # 1 or 2
@@ -611,6 +830,7 @@ InstallGlobalFunction( RelsViaCosetTable, function ( arg )
             g, g1,        # loop variables for generator cols
             c,            # loop variable for coset
             rel,          # loop variables for relator
+            rels1,        # list of relators
             app,          # arguments list for `MakeConsequences'
             index,        # index of the table
             col,          # generator col in auxiliary table
@@ -646,6 +866,11 @@ InstallGlobalFunction( RelsViaCosetTable, function ( arg )
     fi;
     ngens := Length( ggens );
     ngens2 := ngens * 2;
+    if cosets[1] in G then
+        ng1 := PositionSorted( cosets, cosets[1]^0 );
+    else
+        ng1 := 1;
+    fi;
     index := Length( cosets );
     tab0 := [];
     table := [];
@@ -661,6 +886,7 @@ InstallGlobalFunction( RelsViaCosetTable, function ( arg )
         words := arg[4];
         H := arg[5];
         helts := AsSSortedList( H );
+        nh1 := PositionSorted( helts, helts[1]^0 );
         R1 := arg[6];
         FP1 := R1.fpGroup;
         F1 := FreeGroupOfFpGroup( FP1 );
@@ -715,8 +941,8 @@ InstallGlobalFunction( RelsViaCosetTable, function ( arg )
     cosets := ListWithIdenticalEntries( index, 0 );
     actcos := ListWithIdenticalEntries( index, 0 );
     actgen := ListWithIdenticalEntries( index, 0 );
-    cosets[1] := 1;
-    actcos[1] := 1;
+    cosets[1] := ng1;
+    actcos[ng1] := ng1;
     j := 1;
     i := 0;
     while i < index do
@@ -792,14 +1018,14 @@ InstallGlobalFunction( RelsViaCosetTable, function ( arg )
 
                 # construct the associated relator
                 rel := idword;
-                while c <> 1 do
+                while c <> ng1 do
                     g := actgen[c];
                     rel := rel * gens2[g]^-1;
                     c := actcos[c];
                 od;
                 rel := rel^-1 * gens2[j]^-1;
                 c := i;
-                while c <> 1 do
+                while c <> ng1 do
                     g := actgen[c];
                     rel := rel * gens2[g]^-1;
                     c := actcos[c];
@@ -807,7 +1033,7 @@ InstallGlobalFunction( RelsViaCosetTable, function ( arg )
                 if stage = 2 then
                     h := MappedWord( rel, fgens, ggens );
                     n := PositionSorted( helts, h );
-                    while n <> 1 do
+                    while n <> nh1 do
                         g := right1[n];
                         rel := rel * words2[g]^-1;
                         n := left1[n];
@@ -816,8 +1042,13 @@ InstallGlobalFunction( RelsViaCosetTable, function ( arg )
 
                 # compute its representative,
                 # and add it to the set of relators
-                rels := Concatenation(
-                    rels, RelatorRepresentatives( [ rel ] ) );
+                rels1 := RelatorRepresentatives( [ rel ] );
+                if Length( rels1 ) > 0 then
+                    rel := rels1[1];
+                    if not rel in rels then
+                        Add( rels, rel );
+                    fi;
+                fi;
 
                 # make the rows for the relators and distribute over relsGen
                 relsGen := RelsSortedByStartGen( fgens, rels, table, true );
@@ -944,38 +1175,13 @@ end );
 
 #############################################################################
 ##
-#M  TietzeWordAbstractWord( <word>, <fgens> ) . . .  convert an abstract word
-#M                                                           to a Tietze word
+#M  AbstractWordTietzeWord( <word>, <fgens> )  . . . .  convert a Tietze word
+#M                                                        to an abstract word
 ##
-##  `TietzeWordAbstractWord'  assumes  <fgens>  to be a  list  of  free group
-##  generators  and  <word>  to be an abstract word  in these generators.  It
-##  converts <word> into a Tietze word, i. e., a list of positive or negative
-##  generator numbers.
-##
-InstallGlobalFunction( TietzeWordAbstractWord, function ( word, generators )
-local ind,n,i,e,l,g;
-
-  ind:=[];
-  n:=1;
-  for i in generators do
-    ind[GeneratorSyllable(i,1)]:=n;
-    n:=n+1;
-  od;
-
-  e:=ExtRepOfObj(word);
-  l:=[];
-  for i in [1,3..Length(e)-1] do
-    g:=ind[e[i]];
-    n:=e[i+1];
-    if n<0 then
-      g:=-g;
-      n:=-n;
-    fi;
-    Append(l,ListWithIdenticalEntries(n,g));
-  od;
-  return l;
-
-end );
+InstallGlobalFunction( AbstractWordTietzeWord,
+function(w,gens)
+  return AssocWordByLetterRep(FamilyObj(gens[1]),w,gens);
+end);
 
 
 #############################################################################
@@ -1026,7 +1232,8 @@ end );
 ##  possible, i. e. if it can be isolated in some appropriate relator.  If no
 ##  generator  has  been  specified ,   then  `TzEliminate'  eliminates  some
 ##  appropriate  generator  if possible  and if the resulting total length of
-##  the relators will not exceed the parameter TzOptions(T).lengthLimit.
+##  the relators will not exceed  the parameter  TzOptions(T).lengthLimit  or
+##  the value 2^31-1.
 ##
 InstallGlobalFunction( TzEliminate, function ( arg )
 
@@ -1097,7 +1304,7 @@ end );
 ##  extending  the  set  of  Tietze generators  appropriately,  if necessary.
 ##  However,  the elimination  will not be  performed  if the resulting total
 ##  length of the relators  cannot be guaranteed  to not exceed the parameter
-##  TzOptions(T).lengthLimit.
+##  TzOptions(T).lengthLimit or the value 2^31-1.
 ##
 InstallGlobalFunction( TzEliminateFromTree, function ( T )
 
@@ -1130,7 +1337,7 @@ InstallGlobalFunction( TzEliminateFromTree, function ( T )
     treeNums := tree[TR_TREENUMS];
     pointers := tree[TR_TREEPOINTERS];
 
-    spacelimit := TzOptions(T).lengthLimit;
+    spacelimit := Minimum( TzOptions(T).lengthLimit, 2^31 - 1 );
     tietze[TZ_MODIFIED] := false;
     occTotal := 0;
 
@@ -1294,6 +1501,8 @@ InstallGlobalFunction( TzEliminateFromTree, function ( T )
             trlast := trlast - 1;
         od;
         tree[TR_TREELAST] := trlast;
+    elif TzOptions(T).printLevel >= 1 then
+        Print( "#I  replacement of generators stopped by length limit\n" );
     fi;
 end );
 
@@ -1306,7 +1515,7 @@ end );
 ##  if possible, i. e. if that generator can be isolated  in some appropriate
 ##  Tietze relator.  However,  the elimination  will not be  performed if the
 ##  resulting total length of the relators cannot be guaranteed to not exceed
-##  the parameter TzOptions(T).lengthLimit.
+##  the parameter TzOptions(T).lengthLimit or the value 2^31-1.
 ##
 InstallGlobalFunction( TzEliminateGen, function ( T, num )
 
@@ -1319,7 +1528,7 @@ InstallGlobalFunction( TzEliminateGen, function ( T, num )
     fi;
     TzTestInitialSetup(T); # run `1Or2Relators' if not yet done
     tietze := T!.tietze;
-    spacelimit := TzOptions(T).lengthLimit;
+    spacelimit := Minimum( TzOptions(T).lengthLimit, 2^31 - 1 );
 
     tietze[TZ_MODIFIED] := false;
 
@@ -1386,6 +1595,8 @@ InstallGlobalFunction( TzEliminateGen, function ( T, num )
             invs[numgens+1-num] := 0;
             tietze[TZ_NUMREDUNDS] := tietze[TZ_NUMREDUNDS] + 1;
             tietze[TZ_MODIFIED] := true;
+        elif TzOptions(T).printLevel >= 1 then
+            Print( "#I  replacement of generators stopped by length limit\n" );
         fi;
     fi;
 end );
@@ -1401,7 +1612,7 @@ end );
 ##  defining word  and the  number of its  occurrences  is minimal.  However,
 ##  the elimination  will not be performed  if the resulting  total length of
 ##  the  relators   cannot  be  guaranteed   to  not  exceed   the  parameter
-##  TzOptions(T).lengthLimit.
+##  TzOptions(T).lengthLimit or the value 2^31-1.
 ##
 InstallGlobalFunction( TzEliminateGen1, function ( T )
 
@@ -1417,7 +1628,7 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
     TzTestInitialSetup(T); # run `1Or2Relators' if not yet done
     tietze := T!.tietze;
     protected := TzOptions(T).protected;
-    spacelimit := TzOptions(T).lengthLimit;
+    spacelimit := Minimum( TzOptions(T).lengthLimit, 2^31 - 1 );
 
     gens := tietze[TZ_GENERATORS];
     numgens := tietze[TZ_NUMGENS];
@@ -1447,7 +1658,8 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
         fi;
     od;
 
-    if num > 0 and tietze[TZ_TOTAL] + space <= spacelimit then
+    if num > 0 then
+      if tietze[TZ_TOTAL] + space <= spacelimit then
 
         # if there is a tree of generators and if the generator to be deleted
         # is not the last generator, then delete the tree.
@@ -1488,6 +1700,9 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
         invs[numgens+1-num] := 0;
         tietze[TZ_NUMREDUNDS] := tietze[TZ_NUMREDUNDS] + 1;
         modified := true;
+      elif TzOptions(T).printLevel >= 1 then
+        Print( "#I  replacement of generators stopped by length limit\n" );
+      fi;
     fi;
 
     tietze[TZ_MODIFIED] := modified;
@@ -1509,7 +1724,8 @@ end );
 ##  (3) The  total length of the relators  has not yet grown  to a percentage
 ##      greater than the parameter TzOptions(T).expandLimit.
 ##  (4) The  next  elimination  will  not  extend the total length to a value
-##      greater than the parameter TzOptions(T).lengthLimit.
+##      greater  than  the parameter  TzOptions(T).lengthLimit  or  the value 
+##      2^31-1.
 ##
 ##  If a  second argument  has been  specified,  then it is  assumed  that we
 ##  are in the process of decoding a tree.
@@ -1747,7 +1963,7 @@ InstallGlobalFunction( TzFindCyclicJoins, function ( T )
                          tietze[TZ_MODIFIED] := true;
                          j := numrels;
                          i := numrels;
-                         if TZ_NUMGENS < numgens then
+                         if tietze[TZ_NUMGENS] < numgens then
                             newstart := true;
                          fi;
                       fi;
@@ -1971,9 +2187,10 @@ InstallGlobalFunction( TzHandleLength1Or2Relators, function ( T )
     local absrep2, done, flags, gens, i, idword, invs, length, lengths,
           numgens, numgens1, numrels, pointers, protected, ptr, ptr1, ptr2,
           redunds, rels, rep, rep1, rep2, tietze, tracingImages, tree,
-          treelength, treeNums;
+          treelength, treeNums,topl;
 
-    if TzOptions(T).printLevel >= 3 then  Print( "#I  handling short relators\n" );  fi;
+    topl:=TzOptions(T).printLevel;
+    if topl >= 3 then  Print( "#I  handling short relators\n" );  fi;
 
     # check the given argument to be a Presentation.
     if not IsPresentation( T ) then
@@ -2033,7 +2250,7 @@ InstallGlobalFunction( TzHandleLength1Or2Relators, function ( T )
                             pointers[ptr1] := 0;
                             treeNums[rep1] := 0;
                         fi;
-                        if TzOptions(T).printLevel >= 2 then
+                        if topl >= 2 then
                             Print( "#I  eliminating ", gens[rep1],
                                 " = idword\n" );
                         fi;
@@ -2070,7 +2287,7 @@ InstallGlobalFunction( TzHandleLength1Or2Relators, function ( T )
                                 pointers[ptr2] := 0;
                                 treeNums[rep2] := 0;
                             fi;
-                            if TzOptions(T).printLevel >= 2 then
+                            if topl >= 2 then
                                 Print( "#I  eliminating ", gens[rep2],
                                     " = idword\n" );
                             fi;
@@ -2123,11 +2340,11 @@ InstallGlobalFunction( TzHandleLength1Or2Relators, function ( T )
                                 pointers[ptr2] := ptr1;
                                 treeNums[absrep2] := 0;
                              fi;
-                             if tracingImages or TzOptions(T).printLevel >= 2 then
+                             if tracingImages or topl >= 2 then
                                 if rep2 > 0 then
                                     rep1 := invs[numgens1+rep1];
                                 fi;
-                                if TzOptions(T).printLevel >= 2 then
+                                if topl >= 2 then
                                     Print( "#I  eliminating ", gens[absrep2],
                                         " = ", AbstractWordTietzeWord(
                                         [ rep1 ], gens ), "\n");
@@ -2233,7 +2450,11 @@ end);
 InstallGlobalFunction(TzImagesOldGens,function(T)
 local g;
   g:=GeneratorsOfPresentation(T);
-  return List(T!.imagesOldGens,i->AbstractWordTietzeWord(i,g));
+  if Length(g)>0 then
+    return List(T!.imagesOldGens,i->AbstractWordTietzeWord(i,g));
+  else
+    return List(T!.imagesOldGens,i->One(T));
+  fi;
 end);
 
 
@@ -2608,7 +2829,7 @@ function(P)
     eliminationsLimit := 100,
     expandLimit := 150,
     generatorsLimit := 0,
-    lengthLimit := infinity,
+    lengthLimit := 2^31 - 1,
     loopLimit := infinity,
     printLevel := 0,
     saveLimit := 10,
@@ -2836,23 +3057,41 @@ end );
 ##  relator, i.e. a free and cyclically reduced Tietze word.
 ##
 InstallGlobalFunction( TzRelator, function ( T, word )
-local gens, i1, i2,  tietze;
+local gens, i, invs, j, length, numgens1, tietze;
 
     # get some local variables
     tietze := T!.tietze;
     gens := tietze[TZ_GENERATORS];
+    invs := tietze[TZ_INVERSES];
+    numgens1 := tietze[TZ_NUMGENS] + 1;
 
-    # make tietze word from it
-    word:=TietzeWordAbstractWord(word,gens);
-    # cyclically reduce the given word
-    i1 := 1;
-    i2 := Length( word );
-    while i1 < i2 and word[i1] = -word[i2] do
-        i1 := i1 + 1;
-        i2 := i2 - 1;
+    # make a tietze word from the given abstract word
+    word := ShallowCopy(TietzeWordAbstractWord( word, gens ));
+
+    # adjust the occurring inverses of involutory generators and reduce
+    # the word by squares of these generators
+    length := Length( word );
+    j := 0;
+    for i in [ 1 .. length ] do
+        if invs[numgens1+invs[numgens1+word[i]]] <> word[i] then
+            word[i] := -word[i];
+        fi;
+        if j > 0 and word[j] = invs[numgens1+word[i]] then
+            j := j - 1;
+        else
+            j := j + 1;
+            word[j] := word[i];
+        fi;
     od;
 
-    return word{[i1..i2]};
+    # cyclically reduce the word
+    i := 1;
+    while i < j and word[i] = invs[numgens1+word[j]] do
+        i := i + 1;
+        j := j - 1;
+    od;
+
+    return word{ [ i .. j ] };
 end );
 
 
@@ -3528,8 +3767,7 @@ end );
 ##  Hence it does not check the arguments.
 ##
 InstallGlobalFunction( TzUpdateGeneratorImages, function ( T, n, word )
-    
-    local i, image, invword, j, newim, num, oldnumgens;
+local i, image, invword, j, newim, num, oldnumgens,replace,mn,oldi;
 
     if n = 0 then
 
@@ -3546,23 +3784,43 @@ InstallGlobalFunction( TzUpdateGeneratorImages, function ( T, n, word )
 
     elif n > 0 then
 
+	mn:=-n;
         # update the images of the old generators:
         # run through all images and replace the n-th generator by word.
         invword := -1 * Reversed( word );
-        oldnumgens := Length( T!.imagesOldGens );
+	oldi:=T!.imagesOldGens;
+        oldnumgens := Length( oldi );
         for i in [ 1 .. oldnumgens ] do
-            image := T!.imagesOldGens[i];
-            newim := [];
-            for j in [ 1 .. Length( image ) ] do
-                if image[j] = n then
-                    Append( newim, word );
-                elif image[j] = -n then
-                    Append( newim, invword );
-                else
-                    Add( newim, image[j] );
-                fi;
-            od;
-            T!.imagesOldGens[i] := ReducedRrsWord( newim );
+            image := oldi[i];
+	    if Length(image)=1 then
+	      # the image is a single generator. This happens often.
+	      if image[1]=n then
+	        oldi[i]:=ReducedRrsWord(word);
+	      elif image[1]=mn then
+	        oldi[i]:=ReducedRrsWord(invword);
+	      fi;
+	    else
+	      replace:=false;
+	      j:=1;
+	      while replace=false and j<=Length(image) do
+		replace:=image[j]=n or image[j]=mn;
+		j:=j+1;
+	      od;
+	      if replace then
+		newim := [];
+		replace:=false;
+		for j in [ 1 .. Length( image ) ] do
+		    if image[j] = n then
+			Append( newim, word );
+		    elif image[j] = mn then
+			Append( newim, invword );
+		    else
+			Add( newim, image[j] );
+		    fi;
+		od;
+		oldi[i] := ReducedRrsWord( newim );
+	      fi;
+	    fi;
         od;
 
     else
@@ -3584,4 +3842,3 @@ end );
 #############################################################################
 ##
 #E  tietze.gi  . . . . . . . . . . . . . . . . . . . . . . . . . .. ends here
-

@@ -24,7 +24,7 @@ pairwise disjoint subsets.
 gap> List( [0..10], Factorial );
 [ 1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800 ]
 gap> Factorial( 30 );
-265252859812191058636308480000000 
+265252859812191058636308480000000
 \endexample
 
 `PermutationsList'  (see~"PermutationsList") computes  the  set  of all
@@ -32,7 +32,7 @@ permutations of a list.
 
 \Declaration{Binomial}
 
-\index{coefficient!binomial}\index{number!binomial}
+\index{coefficient!binomial}\atindex{number!binomial}{@number!binomial}
 
 \beginexample
 gap> List( [0..4], k->Binomial( 4, k ) );
@@ -47,7 +47,7 @@ gap> PrintArray( last );
   [   1,   5,  10,  10,   5,   1,   0 ],
   [   1,   6,  15,  20,  15,   6,   1 ] ]
 gap> Binomial( 50, 10 );
-10272278170 
+10272278170
 \endexample
 
 `NrCombinations' (see "Combinations") is the generalization of `Binomial'
@@ -56,18 +56,18 @@ all combinations of a multiset.
 
 \Declaration{Bell}
 
-\index{number!Bell}
+\atindex{number!Bell}{@number!Bell}
 
 \beginexample
 gap> List( [0..6], n -> Bell( n ) );
 [ 1, 1, 2, 5, 15, 52, 203 ]
 gap> Bell( 14 );
-190899322 
+190899322
 \endexample
 
 \Declaration{Bernoulli}
 
-\index{sequence!bernoulli}
+\atindex{sequence!Bernoulli}{@sequence!Bernoulli}
 
 \beginexample
 gap> Bernoulli( 4 );
@@ -82,8 +82,9 @@ gap> Bernoulli( 50 );
 
 \Declaration{Stirling1}
 
-\index{Stirling number of the first kind}%
-\index{number!Stirling, of the first kind}
+\atindex{Stirling number of the first kind}{@Stirling number of the first kind}
+\atindex{number!Stirling, of the first kind}%
+{@number!Stirling, of the first kind}
 
 \beginexample
 gap> List( [0..4], k -> Stirling1( 4, k ) );
@@ -98,13 +99,15 @@ gap> PrintArray( last );
   [    0,   24,   50,   35,   10,    1,    0 ],
   [    0,  120,  274,  225,   85,   15,    1 ] ]
 gap> Stirling1(50,10);
-101623020926367490059043797119309944043405505380503665627365376 
+101623020926367490059043797119309944043405505380503665627365376
 \endexample
 
 \Declaration{Stirling2}
 
-\index{Stirling number of the second kind}%
-\index{number!Stirling, of the second kind}
+\atindex{Stirling number of the second kind}%
+{@Stirling number of the second kind}
+\atindex{number!Stirling, of the second kind}%
+{@number!Stirling, of the second kind}
 
 \beginexample
 gap> List( [0..4], k->Stirling2( 4, k ) );
@@ -119,7 +122,7 @@ gap> PrintArray( last );
   [   0,   1,  15,  25,  10,   1,   0 ],
   [   0,   1,  31,  90,  65,  15,   1 ] ]
 gap> Stirling2( 50, 10 );
-26154716515862881292012777396577993781727011 
+26154716515862881292012777396577993781727011
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -128,12 +131,12 @@ gap> Stirling2( 50, 10 );
 \Declaration{Combinations}
 \Declaration{NrCombinations}
 
-\index{NrCombinations}\index{powerset}\index{subsets}
+\index{powerset}\index{subsets}
 
 \beginexample
 gap> Combinations( [1,2,2,3] );
-[ [  ], [ 1 ], [ 1, 2 ], [ 1, 2, 2 ], [ 1, 2, 2, 3 ], [ 1, 2, 3 ],
-  [ 1, 3 ], [ 2 ], [ 2, 2 ], [ 2, 2, 3 ], [ 2, 3 ], [ 3 ] ]
+[ [  ], [ 1 ], [ 1, 2 ], [ 1, 2, 2 ], [ 1, 2, 2, 3 ], [ 1, 2, 3 ], [ 1, 3 ], 
+  [ 2 ], [ 2, 2 ], [ 2, 2, 3 ], [ 2, 3 ], [ 3 ] ]
 gap> NrCombinations( [1..52], 5 );
 2598960    # number of different hands in a game of poker 
 \endexample
@@ -165,7 +168,7 @@ order as they appear in the dictionary.
 
 \beginexample
 gap> NrArrangements( ["s","e","t","t","l","e"] );
-523 
+523
 \endexample
 
 The   function  `Combinations'  (see  "Combinations")  computes unordered
@@ -204,10 +207,10 @@ computes ordered   selections without  repetitions   and   `Tuples'  (see
 
 \beginexample
 gap> Tuples( [1,2,3], 2 );
-[ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], 
-  [ 3, 1 ], [ 3, 2 ], [ 3, 3 ] ]
+[ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], [ 3, 1 ], 
+  [ 3, 2 ], [ 3, 3 ] ]
 gap> NrTuples( [1..10], 5 );
-100000 
+100000
 \endexample
 
 `Tuples(<set>,<k>)' can also be viewed  as the <k>-fold cartesian product
@@ -224,13 +227,13 @@ with repetitions.
 
 \beginexample
 gap> PermutationsList( [1,2,3] );
-[ [ 1, 2, 3 ], [ 1, 3, 2 ], [ 2, 1, 3 ], [ 2, 3, 1 ], [ 3, 1, 2 ],
+[ [ 1, 2, 3 ], [ 1, 3, 2 ], [ 2, 1, 3 ], [ 2, 3, 1 ], [ 3, 1, 2 ], 
   [ 3, 2, 1 ] ]
 gap> PermutationsList( [1,1,2,2] );
-[ [ 1, 1, 2, 2 ], [ 1, 2, 1, 2 ], [ 1, 2, 2, 1 ], [ 2, 1, 1, 2 ],
+[ [ 1, 1, 2, 2 ], [ 1, 2, 1, 2 ], [ 1, 2, 2, 1 ], [ 2, 1, 1, 2 ], 
   [ 2, 1, 2, 1 ], [ 2, 2, 1, 1 ] ]
 gap> NrPermutationsList( [1,2,2,3,3,3,4,4,4,4] );
-12600 
+12600
 \endexample
 
 The function `Arrangements' (see "Arrangements") is the generalization of
@@ -248,20 +251,20 @@ the intended person.
 
 \beginexample
 gap> Derangements( [1,2,3,4] );
-[ [ 2, 1, 4, 3 ], [ 2, 3, 4, 1 ], [ 2, 4, 1, 3 ], [ 3, 1, 4, 2 ],
-  [ 3, 4, 1, 2 ], [ 3, 4, 2, 1 ], [ 4, 1, 2, 3 ], [ 4, 3, 1, 2 ],
+[ [ 2, 1, 4, 3 ], [ 2, 3, 4, 1 ], [ 2, 4, 1, 3 ], [ 3, 1, 4, 2 ], 
+  [ 3, 4, 1, 2 ], [ 3, 4, 2, 1 ], [ 4, 1, 2, 3 ], [ 4, 3, 1, 2 ], 
   [ 4, 3, 2, 1 ] ]
 gap> NrDerangements( [1..10] );
 1334961
 gap> Int( 10^7*NrPermutationsList([1..10])/last );
 27182816
 gap> Derangements( [1,1,2,2,3,3] );
-[ [ 2, 2, 3, 3, 1, 1 ], [ 2, 3, 1, 3, 1, 2 ], [ 2, 3, 1, 3, 2, 1 ],
-  [ 2, 3, 3, 1, 1, 2 ], [ 2, 3, 3, 1, 2, 1 ], [ 3, 2, 1, 3, 1, 2 ],
-  [ 3, 2, 1, 3, 2, 1 ], [ 3, 2, 3, 1, 1, 2 ], [ 3, 2, 3, 1, 2, 1 ],
+[ [ 2, 2, 3, 3, 1, 1 ], [ 2, 3, 1, 3, 1, 2 ], [ 2, 3, 1, 3, 2, 1 ], 
+  [ 2, 3, 3, 1, 1, 2 ], [ 2, 3, 3, 1, 2, 1 ], [ 3, 2, 1, 3, 1, 2 ], 
+  [ 3, 2, 1, 3, 2, 1 ], [ 3, 2, 3, 1, 1, 2 ], [ 3, 2, 3, 1, 2, 1 ], 
   [ 3, 3, 1, 1, 2, 2 ] ]
 gap> NrDerangements( [1,2,2,3,3,3,4,4,4,4] );
-338 
+338
 \endexample
 
 The function  `PermutationsList'  (see  "PermutationsList")  computes all
@@ -272,17 +275,16 @@ permutations of a list.
 
 \beginexample
 gap> PartitionsSet( [1,2,3] );
-[ [ [ 1 ], [ 2 ], [ 3 ] ], [ [ 1 ], [ 2, 3 ] ], [ [ 1, 2 ], [ 3 ] ],
+[ [ [ 1 ], [ 2 ], [ 3 ] ], [ [ 1 ], [ 2, 3 ] ], [ [ 1, 2 ], [ 3 ] ], 
   [ [ 1, 2, 3 ] ], [ [ 1, 3 ], [ 2 ] ] ]
 gap> PartitionsSet( [1,2,3,4], 2 );
-[ [ [ 1 ], [ 2, 3, 4 ] ], [ [ 1, 2 ], [ 3, 4 ] ],
-  [ [ 1, 2, 3 ], [ 4 ] ], [ [ 1, 2, 4 ], [ 3 ] ],
-  [ [ 1, 3 ], [ 2, 4 ] ], [ [ 1, 3, 4 ], [ 2 ] ],
+[ [ [ 1 ], [ 2, 3, 4 ] ], [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 2, 3 ], [ 4 ] ], 
+  [ [ 1, 2, 4 ], [ 3 ] ], [ [ 1, 3 ], [ 2, 4 ] ], [ [ 1, 3, 4 ], [ 2 ] ], 
   [ [ 1, 4 ], [ 2, 3 ] ] ]
 gap> NrPartitionsSet( [1..6] );
 203
 gap> NrPartitionsSet( [1..10], 3 );
-9330 
+9330
 \endexample
 
 Note  that `PartitionsSet' does currently  not support multisets and that
@@ -293,16 +295,16 @@ there is currently no ordered counterpart.
 
 \beginexample
 gap> Partitions( 7 );
-[ [ 1, 1, 1, 1, 1, 1, 1 ], [ 2, 1, 1, 1, 1, 1 ], [ 2, 2, 1, 1, 1 ],
-  [ 2, 2, 2, 1 ], [ 3, 1, 1, 1, 1 ], [ 3, 2, 1, 1 ], [ 3, 2, 2 ],
-  [ 3, 3, 1 ], [ 4, 1, 1, 1 ], [ 4, 2, 1 ], [ 4, 3 ], [ 5, 1, 1 ],
-  [ 5, 2 ], [ 6, 1 ], [ 7 ] ]
+[ [ 1, 1, 1, 1, 1, 1, 1 ], [ 2, 1, 1, 1, 1, 1 ], [ 2, 2, 1, 1, 1 ], 
+  [ 2, 2, 2, 1 ], [ 3, 1, 1, 1, 1 ], [ 3, 2, 1, 1 ], [ 3, 2, 2 ], 
+  [ 3, 3, 1 ], [ 4, 1, 1, 1 ], [ 4, 2, 1 ], [ 4, 3 ], [ 5, 1, 1 ], [ 5, 2 ], 
+  [ 6, 1 ], [ 7 ] ]
 gap> Partitions( 8, 3 );
 [ [ 3, 3, 2 ], [ 4, 2, 2 ], [ 4, 3, 1 ], [ 5, 2, 1 ], [ 6, 1, 1 ] ]
 gap> NrPartitions( 7 );
 15
 gap> NrPartitions( 100 );
-190569292 
+190569292
 \endexample
 
 The function `OrderedPartitions' (see "OrderedPartitions") is the ordered
@@ -316,19 +318,21 @@ counterpart of `Partitions'.
 
 \beginexample
 gap> OrderedPartitions( 5 );
-[ [ 1, 1, 1, 1, 1 ], [ 1, 1, 1, 2 ], [ 1, 1, 2, 1 ], [ 1, 1, 3 ],
-  [ 1, 2, 1, 1 ], [ 1, 2, 2 ], [ 1, 3, 1 ], [ 1, 4 ], [ 2, 1, 1, 1 ],
-  [ 2, 1, 2 ], [ 2, 2, 1 ], [ 2, 3 ], [ 3, 1, 1 ], [ 3, 2 ], 
-  [ 4, 1 ], [ 5 ] ]
+[ [ 1, 1, 1, 1, 1 ], [ 1, 1, 1, 2 ], [ 1, 1, 2, 1 ], [ 1, 1, 3 ], 
+  [ 1, 2, 1, 1 ], [ 1, 2, 2 ], [ 1, 3, 1 ], [ 1, 4 ], [ 2, 1, 1, 1 ], 
+  [ 2, 1, 2 ], [ 2, 2, 1 ], [ 2, 3 ], [ 3, 1, 1 ], [ 3, 2 ], [ 4, 1 ], [ 5 ] ]
 gap> OrderedPartitions( 6, 3 );
-[ [ 1, 1, 4 ], [ 1, 2, 3 ], [ 1, 3, 2 ], [ 1, 4, 1 ], [ 2, 1, 3 ],
+[ [ 1, 1, 4 ], [ 1, 2, 3 ], [ 1, 3, 2 ], [ 1, 4, 1 ], [ 2, 1, 3 ], 
   [ 2, 2, 2 ], [ 2, 3, 1 ], [ 3, 1, 2 ], [ 3, 2, 1 ], [ 4, 1, 1 ] ]
 gap> NrOrderedPartitions(20);
-524288 
+524288
 \endexample
 
 The function `Partitions' (see "Partitions") is the unordered counterpart
 of `OrderedPartitions'.
+
+\Declaration{PartitionsGreatestLE}
+\Declaration{PartitionsGreatestEQ}
 
 \Declaration{RestrictedPartitions}
 \Declaration{NrRestrictedPartitions}
@@ -337,7 +341,7 @@ of `OrderedPartitions'.
 
 \beginexample
 gap> RestrictedPartitions( 8, [1,3,5,7] );
-[ [ 1, 1, 1, 1, 1, 1, 1, 1 ], [ 3, 1, 1, 1, 1, 1 ], [ 3, 3, 1, 1 ],
+[ [ 1, 1, 1, 1, 1, 1, 1, 1 ], [ 3, 1, 1, 1, 1, 1 ], [ 3, 3, 1, 1 ], 
   [ 5, 1, 1, 1 ], [ 5, 3 ], [ 7, 1 ] ]
 gap> NrRestrictedPartitions(50,[1,2,5,10,20,50]);
 451
@@ -376,10 +380,9 @@ gap> PowerPartition([6,5,4,3,2,1], 3);
 
 \beginexample
 gap> PartitionTuples(3, 2);
-[ [ [ 1, 1, 1 ], [  ] ], [ [ 1, 1 ], [ 1 ] ], [ [ 1 ], [ 1, 1 ] ],
-  [ [  ], [ 1, 1, 1 ] ], [ [ 2, 1 ], [  ] ], [ [ 1 ], [ 2 ] ],
-  [ [ 2 ], [ 1 ] ], [ [  ], [ 2, 1 ] ], [ [ 3 ], [  ] ],
-  [ [  ], [ 3 ] ] ] 
+[ [ [ 1, 1, 1 ], [  ] ], [ [ 1, 1 ], [ 1 ] ], [ [ 1 ], [ 1, 1 ] ], 
+  [ [  ], [ 1, 1, 1 ] ], [ [ 2, 1 ], [  ] ], [ [ 1 ], [ 2 ] ], 
+  [ [ 2 ], [ 1 ] ], [ [  ], [ 2, 1 ] ], [ [ 3 ], [  ] ], [ [  ], [ 3 ] ] ]
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -387,7 +390,7 @@ gap> PartitionTuples(3, 2);
 
 \Declaration{Fibonacci}
 
-\index{sequence!fibonacci}
+\atindex{sequence!Fibonacci}{@sequence!Fibonacci}
 
 \beginexample
 gap> Fibonacci( 10 );
@@ -395,12 +398,12 @@ gap> Fibonacci( 10 );
 gap> Fibonacci( 35 );
 9227465
 gap> Fibonacci( -10 );
--55 
+-55
 \endexample
 
 \Declaration{Lucas}
 
-\index{sequence!lucas}
+\atindex{sequence!Lucas}{@sequence!Lucas}
 
 \beginexample
 gap> List( [0..10], i->Lucas(1,-2,i)[1] );

@@ -78,6 +78,117 @@ local M;
   fi;
 end );
 
+
+#############################################################################
+##
+#M  AugmentedCosetTableInWholeGroup
+##
+InstallGlobalFunction(AugmentedCosetTableInWholeGroup,
+function(arg)
+local aug,H,wor,w;
+  H:=arg[1];
+  if Length(arg)=1 then
+    return AugmentedCosetTableRrsInWholeGroup(H);
+  fi;
+  wor:=List(arg[2],UnderlyingElement); # words for given elements
+  # is there an MTc table we can use?
+  if HasAugmentedCosetTableMtcInWholeGroup(H) then
+    aug := AugmentedCosetTableMtcInWholeGroup( H );
+    if IsSubset(aug.primaryGeneratorWords,wor) or
+       IsSubset(SecondaryGeneratorWordsAugmentedCosetTable(aug),wor) then
+      return aug;
+    fi;
+  fi;
+  # try the Rrs table
+  aug := AugmentedCosetTableRrsInWholeGroup( H );
+  if IsSubset(aug.primaryGeneratorWords,wor) or
+      IsSubset(SecondaryGeneratorWordsAugmentedCosetTable(aug),wor) then
+    return aug;
+  fi;
+
+  # still not: need completely new table
+  w:=FamilyObj(H)!.wholeGroup;
+  aug:=AugmentedCosetTableMtc(w,SubgroupNC(w,arg[2]),2,"y" );
+
+  return aug;
+end);
+
+
+#############################################################################
+##
+#M  AugmentedCosetTableMtcInWholeGroup
+##
+InstallMethod( AugmentedCosetTableMtcInWholeGroup,
+  "subgroup of fp group", true, [IsSubgroupFpGroup], 0,
+function( H )
+  local G, aug;
+  G := FamilyObj( H )!.wholeGroup;
+  aug := AugmentedCosetTableMtc( G, H, 2, "y" );
+  return aug;
+end);
+
+
+#############################################################################
+##
+#M  AugmentedCosetTableRrsInWholeGroup
+##
+InstallMethod( AugmentedCosetTableRrsInWholeGroup,
+  "subgroup of fp group", true, [IsSubgroupFpGroup], 0,
+function( H )
+  local G, costab, fam, aug, gens;
+  G := FamilyObj( H )!.wholeGroup;
+  costab := CosetTableInWholeGroup( H );
+  aug := AugmentedCosetTableRrs( G, costab, 2, "y" );
+
+  # if H has not yet any generators, we store them (and then also can store
+  # the coset table as Mtc table)
+  if not (HasGeneratorsOfGroup(H)
+          or HasAugmentedCosetTableMtcInWholeGroup(H)) then
+    SetAugmentedCosetTableMtcInWholeGroup(H,aug);
+    gens := aug.primaryGeneratorWords;
+    # do we need to wrap?
+    if not IsWord( One( G ) ) then
+      fam := ElementsFamily( FamilyObj( H ) );
+      gens := List( gens, i -> ElementOfFpGroup( fam, i ) );
+    fi;
+    SetGeneratorsOfGroup( H, gens );
+  fi;
+
+  return aug;
+end);
+
+InstallMethod( AugmentedCosetTableRrsInWholeGroup, "use Mtc table", true,
+  [IsSubgroupFpGroup and HasAugmentedCosetTableMtcInWholeGroup], 0,
+  AugmentedCosetTableMtcInWholeGroup);
+
+#############################################################################
+##
+#M  AugmentedCosetTableNormalClosureInWholeGroup( <H> ) . . . augmented coset
+#M           table of the normal closure of an fp subgroup in its whole group
+##
+##  is equivalent to `AugmentedCosetTableNormalClosure( <G>, <H> )' where <G>
+##  is the  (unique) finitely presented group  such that <H> is a subgroup of
+##  <G>.
+##
+InstallMethod( AugmentedCosetTableNormalClosureInWholeGroup,
+  "subgroup of fp group", true, [IsSubgroupFpGroup], 0,
+function( H )
+  local G, costab, aug;
+
+  # get the whole group G of H
+  G := FamilyObj( H )!.wholeGroup;
+
+  # compute a coset table of the normal closure N of H in G
+  costab := CosetTableNormalClosureInWholeGroup( H );
+
+  # apply the Reduced Reidemeister-Schreier method to construct an
+  # augmented coset table of N in G
+  aug := AugmentedCosetTableRrs( G, costab, 2, "%" );
+
+  return aug;
+end );
+
+
 #############################################################################
 ##
 #M  AugmentedCosetTableMtc( <G>, <H>, <type>, <string> )  . . . . . . . . . .
@@ -120,7 +231,7 @@ InstallGlobalFunction( AugmentedCosetTableMtc,
             deductions,             # deduction queue
             i, gen, inv,            # loop variables for generators
             g, f,                   # loop variables for generator cols
-            rel,                    # loop variables for relation
+            rel,                    # loop variable for relations
             p, p1, p2,              # generator position numbers
             app,                    # arguments list for 'MakeConsequences2'
             limit,                  # limit of the table
@@ -147,6 +258,7 @@ InstallGlobalFunction( AugmentedCosetTableMtc,
             exponent,               # order of subgroup in case type = 1
             convert,                # conversion list for subgroup generators
             aug,                    # augmented coset table
+            field,                  # loop variable for record field names
 	    silent;		    # do we want the algorithm to silently
 	                            # return `fail' if the algorithm did not
 				    # finish in the permitted size?
@@ -445,7 +557,7 @@ InstallGlobalFunction( AugmentedCosetTableMtc,
         fi;                                        
     od;
 
-    # standardize the table
+    # standardize the tables.
     StandardizeTable2( table, coFacTable );
 
     # save coset table and index in the group record of H.
@@ -511,11 +623,14 @@ InstallGlobalFunction( AugmentedCosetTableMtc,
     aug := rec( );
     aug.isAugmentedCosetTable := true;
     aug.type := type;
+    aug.tableType := TABLE_TYPE_MTC;
     aug.groupGenerators := fgens;
     aug.groupRelators := grels;
     aug.cosetTable := table;
     aug.cosetFactorTable := coFacTable;
     aug.primaryGeneratorWords := defs;
+    aug.numberOfSubgroupGenerators := ngens;
+    aug.nameOfSubgroupGenerators := Immutable( string );
     aug.subgroupGenerators := gens;
     aug.tree := tree;
 
@@ -545,6 +660,11 @@ InstallGlobalFunction( AugmentedCosetTableMtc,
             aug.conversionList := convert;
         fi;
     fi;
+
+    # ensure that all components of the augmented coset table are immutable.
+    for field in RecFields( aug ) do
+      MakeImmutable( aug.(field) );
+    od;
 
     # display a message
     if treelength > 0 then
@@ -608,6 +728,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
             treeNums,               #
             convert,                # conversion list for subgroup generators
             aug,                    # augmented coset table
+            field,                  # loop variable for record field names
             EnterDeduction,         # subroutine
             LoopOverAllCosets;      # subroutine
 
@@ -650,11 +771,10 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     count := count - 2;
   end;
 
-
-  LoopOverAllCosets := function ( )
-
+  LoopOverAllCosets:=function()
     # loop over all the cosets
     for j in [ 1 .. index ] do
+      CompletionBar(InfoFpGroup,2,"Coset Loop: ",j/index);
 
         # run through all the rows and look for negative entries
         for i  in [ 1 .. numcols ]  do
@@ -720,7 +840,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
                             # the tables and to the deductions lists.
                             EnterDeduction( );
                             if count <= 0 then
-                                return;
+			      return;
                             fi;
                         fi;
                     od;
@@ -732,6 +852,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
         od;
     od;
   end;
+
 
 
     # check G to be a finitely presented group.
@@ -861,6 +982,9 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     # set up the deduction queue and run over it until it's empty
     ded := 1;
     while ded <= nrdeds  do
+      if ded mod 50=0 then
+	CompletionBar(InfoFpGroup,2,"Queue: ",ded/nrdeds);
+      fi;
 
         # apply all relators that start with this generator
         for triple in relsGen[deductions[ded][1]] do
@@ -879,6 +1003,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
 
         ded := ded + 1;
     od;
+    CompletionBar(InfoFpGroup,2,"Queue: ",false);
 
     # get a list of the parent group generators parallel to the table
     # columns.
@@ -892,12 +1017,20 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     numgens := 0;
     defs := [ ];
 
-    # loop over all the cosets
-    LoopOverAllCosets( );
+    # loop over cosets
+    LoopOverAllCosets();
+    CompletionBar(InfoFpGroup,2,"Coset Loop: ",false);
 
     # save the number of primary subgroup generators and the number of all
     # subgroup generators in the tree.
     tree[3] := treelength;
+
+    # get an immutable coset table with no two columns identical.
+    if IsMutable( table ) then
+        cosTable := Immutable( table );
+    else
+        cosTable := table;
+    fi;
 
     # separate pairs of identical columns in the coset factor table.
     for i in [ 1 .. Length( fgens ) ] do
@@ -910,6 +1043,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     aug := rec( );
     aug.isAugmentedCosetTable := true;
     aug.type := type;
+    aug.tableType := TABLE_TYPE_RRS;
     aug.groupGenerators := fgens;
     aug.groupRelators := grels;
     aug.cosetTable := cosTable;
@@ -968,8 +1102,15 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
             od;
             aug.conversionList := convert;
         fi;
+        aug.numberOfSubgroupGenerators := ngens;
+        aug.nameOfSubgroupGenerators := Immutable( string );
         aug.subgroupGenerators := gens;
     fi;
+
+    # ensure that all components of the augmented coset table are immutable.
+    for field in RecFields( aug ) do
+      MakeImmutable( aug.(field) );
+    od;
 
     # display a message
     numgens := Length( defs );
@@ -979,6 +1120,27 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     # return the augmented coset table.
     return aug;
 end );
+
+
+#############################################################################
+##
+#M  AugmentedCosetTableNormalClosure( <G>, <H> )  . . . augmented coset table
+#M          of the normal closure of a subgroup in a finitely presented group
+##
+InstallMethod( AugmentedCosetTableNormalClosure,
+    "for finitely presented groups",
+    true,
+    [ IsSubgroupFpGroup and IsGroupOfFamily, IsSubgroupFpGroup ],
+    0,
+function( G, H );
+
+    if G <> FamilyObj( H )!.wholeGroup then
+        Error( "<H> must be a subgroup of <G>" );
+    fi;
+    return AugmentedCosetTableNormalClosureInWholeGroup( H );
+
+end );
+
 
 #############################################################################
 ##
@@ -994,11 +1156,16 @@ local column, gens, i, range, table, transversal;
 
   # construct a permutations representation of G on the cosets of H.
   gens := GeneratorsOfGroup(G);
-  transversal := RightTransversal( G, H );
-  gens := List( gens, gen -> Permutation( gen, transversal,OnRight ) );
+  if not (IsPermGroup(G) and IsPermGroup(H) and
+          Length(Orbit(G,1))=NrMovedPoints(G) and H=Stabilizer(G,1)) then
+    transversal := RightTransversal( G, H );
+    gens := List( gens, gen -> Permutation( gen, transversal,OnRight ) );
+    range := [ 1 .. Length( transversal ) ];
+  else
+    range := [ 1 .. NrMovedPoints(G) ];
+  fi;
 
   # initialize the coset table.
-  range := [ 1 .. Length( transversal ) ];
   table := [];
 
   # construct the columns of the table from the permutations.
@@ -1288,7 +1455,7 @@ InstallGlobalFunction( PresentationAugmentedCosetTable,
 
     # check the third argument to be an integer.
     printlevel := 1;
-    if Length( arg ) = 3 then  printlevel := arg[3];  fi;
+    if Length( arg ) >= 3 then  printlevel := arg[3];  fi;
     if not IsInt( printlevel ) then
         Error ("third argument must be an integer" );
     fi;
@@ -1296,12 +1463,12 @@ InstallGlobalFunction( PresentationAugmentedCosetTable,
     # initialize some local variables.
     coFacTable := aug.cosetFactorTable;
     tree := ShallowCopy( aug.tree );
-    treeNums := StructuralCopy( aug.treeNumbers );
+    treeNums := ShallowCopy( aug.treeNumbers );
     treelength := Length( tree[1] );
-    F := FreeGroup( infinity, string );
+    F := FreeGroup(IsLetterWordsFamily, infinity, string );
     fgens := GeneratorsOfGroup( F );
-    gens := aug.subgroupGenerators;
-    rels := aug.subgroupRelators;
+    gens := ShallowCopy(aug.subgroupGenerators);
+    rels := List(aug.subgroupRelators,ShallowCopy);
     numrels := Length( rels );
     numgens := Length( gens );
 
@@ -1367,6 +1534,12 @@ InstallGlobalFunction( PresentationAugmentedCosetTable,
     # handle relators of length 1 or 2, but do not eliminate any primary
     # generators.
     TzOptions(T).protected := tree[TR_PRIMARY];
+    TzOptions(T).printLevel := printlevel;
+    if Length(arg)>3 and arg[4]=true then
+      # the stupid Length1or2 convention might mess up the connection to the
+      # coset table.
+      TzInitGeneratorImages(T);
+    fi;
     if numgens>0 then
       TzHandleLength1Or2Relators( T );
     fi;
@@ -1375,8 +1548,8 @@ InstallGlobalFunction( PresentationAugmentedCosetTable,
 
     # sort the relators.
     TzSort( T );
-    TzOptions(T).printLevel := printlevel;
 
+    TzOptions(T).printLevel := printlevel;
     # return the Tietze record.
     return T;
 end );
@@ -1408,7 +1581,6 @@ InstallGlobalFunction( PresentationNormalClosureRrs,
             K,          # factor group of F isomorphic to G/N
             cosTable,   # coset table of <G> by <N>
             i,          # loop variable
-            type,       # parameter for function AugmentedCosetTableRrs
             aug,        # auxiliary coset table of <G> by <N>
             T;          # resulting Tietze record
 
@@ -1450,29 +1622,17 @@ InstallGlobalFunction( PresentationNormalClosureRrs,
     cosTable := CosetTable( K, TrivialSubgroup( K ) );
     Info( InfoFpGroup, 1, "index is ", Length( cosTable[1] ) );
 
-# --------------
-# obsolete: No columns should be equal!
-#    # separate pairs of table columns which have been forced to be identical
-#    # by normal subgroup generators, but not by group relators.
-#    for i in [ 1 .. Length( fgens ) ] do
-#        if IsIdenticalObj( cosTable[2*i-1], cosTable[2*i] ) and
-#            not ( fgens[i]^2 in grels or fgens[i]^-2 in grels ) then
-#            cosTable[2*i] := StructuralCopy( cosTable[2*i-1] );
-#        fi;
-#    od;
-for i in [ 1 .. Length( fgens ) ] do
-if IsIdenticalObj( cosTable[2*i-1], cosTable[2*i] ) then
-Error( "there is a bug in PresentationNormalClosureRrs" ); fi; od;
-# --------------
+#   # obsolete: No columns should be equal!
+#   for i in [ 1 .. Length( fgens ) ] do
+#   if IsIdenticalObj( cosTable[2*i-1], cosTable[2*i] ) then
+#   Error( "there is a bug in PresentationNormalClosureRrs" ); fi; od;
 
     # apply the Reduced Reidemeister-Schreier method to construct a coset
     # table presentation of N.
-    type := 2;
-    aug := AugmentedCosetTableRrs( G, cosTable, type, string );
+    aug := AugmentedCosetTableRrs( G, cosTable, 2, string );
 
     # determine a set of subgroup relators.
-    aug.subgroupRelators := RewriteSubgroupRelators( aug,
-                             aug.groupRelators);
+    aug.subgroupRelators := RewriteSubgroupRelators( aug, aug.groupRelators);
 
     # create a Tietze record for the resulting presentation.
     T := PresentationAugmentedCosetTable( aug, string );
@@ -1508,7 +1668,7 @@ end );
 InstallGlobalFunction( PresentationSubgroupMtc,
     function ( arg )
 
-    local aug, G, H, i, printlevel, string, T, type;
+    local aug, G, gens, H, i, printlevel, ngens, string, T;
 
     # check the first two arguments to be a finitely presented group and a
     # subgroup of that group.
@@ -1536,14 +1696,20 @@ InstallGlobalFunction( PresentationSubgroupMtc,
         fi;
     od;
 
-    # do a Modified Todd-Coxeter coset representative enumeration to
-    # construct an augmented coset table of H.
-    type := 2;
-    aug := AugmentedCosetTableMtc( G, H, type, string );
+    # get a copy of an augmented MTC coset table of H in G.
+    aug := CopiedAugmentedCosetTable(
+        AugmentedCosetTableMtcInWholeGroup( H ) );
+
+    # insert the required subgroup generator names if necessary.
+    if aug.nameOfSubgroupGenerators <> string then
+        aug.nameOfSubgroupGenerators := string;
+        ngens := aug.numberOfSubgroupGenerators;
+        gens := GeneratorsOfGroup( FreeGroup( ngens, string ) );
+        aug.subgroupGenerators := gens;
+    fi;
 
     # determine a set of subgroup relators.
-    aug.subgroupRelators := RewriteSubgroupRelators( aug,
-                             aug.groupRelators);
+    aug.subgroupRelators := RewriteSubgroupRelators( aug, aug.groupRelators);
 
     # create a Tietze record for the resulting presentation.
     T := PresentationAugmentedCosetTable( aug, string );
@@ -1575,7 +1741,7 @@ end );
 ##
 InstallGlobalFunction( PresentationSubgroupRrs, function ( arg )
 
-    local aug, G, H, string, T, table, type;
+    local aug, G, gens, H, ngens, string, T, table;
 
     # check G to be a finitely presented group.
     G := arg[1];
@@ -1597,6 +1763,7 @@ InstallGlobalFunction( PresentationSubgroupRrs, function ( arg )
     # get the coset table in either case.
     H := arg[2];
     if not IsSubgroupFpGroup( H ) or FamilyObj( H ) <> FamilyObj( G ) then
+
         # check the given table to be a legal coset table.
         table := H;
         CheckCosetTableFpGroup( G, table );
@@ -1606,89 +1773,35 @@ InstallGlobalFunction( PresentationSubgroupRrs, function ( arg )
             "#I           a standardized copy will be used instead.\n" );
             StandardizeTable( StructuralCopy( table ) );
         fi;
+
+	# apply the Reduced Reidemeister-Schreier method to construct an
+	# augmented RRS coset table of H.
+	aug := AugmentedCosetTableRrs( G, table, 2, string );
+
     else
-        # construct the coset table of H in G if it is not yet available.
-        if not HasCosetTableInWholeGroup( H ) then
-            Info( InfoFpGroup, 1, "index is ", IndexInWholeGroup( H ) );
+
+        # get a copy of an augmented RRS coset table of H in G.
+        aug := CopiedAugmentedCosetTable(
+            AugmentedCosetTableRrsInWholeGroup( H ) );
+
+        # insert the required subgroup generator names if necessary.
+        if aug.nameOfSubgroupGenerators <> string then
+            aug.nameOfSubgroupGenerators := string;
+            ngens := aug.numberOfSubgroupGenerators;
+            gens := GeneratorsOfGroup( FreeGroup( ngens, string ) );
+            aug.subgroupGenerators := gens;
         fi;
-        table := CosetTableInWholeGroup( H );
+
     fi;
 
-    # apply the Reduced Reidemeister-Schreier method to construct an
-    # augmented coset table of H.
-    type := 2;
-    aug := AugmentedCosetTableRrs( G, table, type, string );
-
     # determine a set of subgroup relators.
-    aug.subgroupRelators := RewriteSubgroupRelators( aug,
-                             aug.groupRelators);
+    aug.subgroupRelators := RewriteSubgroupRelators( aug, aug.groupRelators);
 
     # create a Tietze record for the resulting presentation.
     T := PresentationAugmentedCosetTable( aug, string );
 
     return T;
 end );
-
-InstallMethod(IsomorphismFpGroup,"subgroups of fp group",true,
-  [IsSubgroupFpGroup],0,
-function(u)
-local p,pres,f,fam;
-  if HasIsWholeFamily(u) and IsWholeFamily(u) then
-    return IdentityMapping(u);
-  fi;
-  p:=FamilyObj(u)!.wholeGroup;
-  pres:=PresentationSubgroup(p,u);
-  p:=PrimaryGeneratorWords(pres);
-  if not IsWordCollection(u) then
-    fam:=FamilyObj(One(u));
-    p:=List(p,i->ElementOfFpGroup(fam,i));
-  fi;
-
-  TzOptions(pres).printLevel:=0; # shut up
-
-  # primary generators
-  if Length(p)<>Length(pres!.generators) then
-    #secondary generators missing
-    DecodeTree(pres);
-  fi;
-
-  TzInitGeneratorImages(pres);
-  TzGoGo(pres); # a bit cleanup
-
-  # transfer generators
-  p:=List(TzPreImagesNewGens(pres),
-          i->MappedWord(i,OldGeneratorsOfPresentation(pres),p));
-
-  # new free group
-  f:=FpGroupPresentation(pres);
-  f:=GroupHomomorphismByImagesNC(u,f,p,GeneratorsOfGroup(f));
-  SetIsBijective(f,true);
-  return f;
-end);
-
-InstallMethod(IsomorphismFpGroupByGenerators,"subgroups of fp group",
-  IsIdenticalObj,
-  [IsSubgroupFpGroup,IsList and IsMultiplicativeElementWithInverseCollection],0,
-function(u,gens)
-local p,pres,f,v;
-  if HasIsWholeFamily(u) and IsWholeFamily(u) and
-     IsIdenticalObj(gens,GeneratorsOfGroup(u))then
-    return IdentityMapping(u);
-  fi;
-  p:=FamilyObj(u)!.wholeGroup;
-  if HasGeneratorsOfGroup(u) and IsIdenticalObj(GeneratorsOfGroup(u),gens) then
-    v:=u;
-  else
-    v:=SubgroupNC(p,gens);
-  fi;
-  pres:=PresentationSubgroupMtc(p,v,0);
-
-  # new free group
-  f:=FpGroupPresentation(pres);
-  f:=GroupHomomorphismByImagesNC(u,f,gens,GeneratorsOfGroup(f));
-  SetIsBijective(f,true);
-  return f;
-end);
 
 
 #############################################################################
@@ -1742,8 +1855,6 @@ InstallGlobalFunction( RelatorMatrixAbelianizedNormalClosureRrs,
             K,          # factor group of F isomorphic to G/N
             cosTable,   # coset table of <G> by <N>
             i,          # loop variable
-            type,       # parameter for function AugmentedCosetTableRrs
-            string,     # default name for generators
             aug;        # auxiliary coset table of <G> by <N>
 
     # check the arguments to be a finitely presented group and a subgroup of
@@ -1772,27 +1883,15 @@ InstallGlobalFunction( RelatorMatrixAbelianizedNormalClosureRrs,
     cosTable := CosetTable( K, TrivialSubgroup( K ) );
     Info( InfoFpGroup, 1, "index is ", Length( cosTable[1] ) );
 
-# --------------
-# obsolete: No columns should be equal!
-#    # separate pairs of table columns which have been forced to be identical
-#    # by normal subgroup generators, but not by group relators.
-#    for i in [ 1 .. Length( fgens ) ] do
-#        if IsIdenticalObj( cosTable[2*i-1], cosTable[2*i] ) and
-#            not ( fgens[i]^2 in grels or fgens[i]^-2 in grels ) then
-#            cosTable[2*i] := StructuralCopy( cosTable[2*i-1] );
-#        fi;
-#    od;
-for i in [ 1 .. Length( fgens ) ] do
-if IsIdenticalObj( cosTable[2*i-1], cosTable[2*i] ) then
-Error( "there is a bug in RelatorMatrixAbelianizedNormalClosureRrs" );
-fi; od;
-# --------------
+#   # obsolete: No columns should be equal!
+#   for i in [ 1 .. Length( fgens ) ] do
+#   if IsIdenticalObj( cosTable[2*i-1], cosTable[2*i] ) then
+#   Error( "there is a bug in RelatorMatrixAbelianizedNormalClosureRrs" );
+#   fi; od;
 
     # apply the Reduced Reidemeister-Schreier method to construct a coset
     # table presentation of N.
-    type := 0;
-    string := "_x";
-    aug := AugmentedCosetTableRrs( G, cosTable, type, string );
+    aug := AugmentedCosetTableRrs( G, cosTable, 0, "_x" );
 
     # determine a set of abelianized subgroup relators.
     aug.subgroupRelators := RewriteAbelianizedSubgroupRelators( aug,
@@ -1818,7 +1917,7 @@ RelatorMatrixAbelianizedNormalClosure :=
 InstallGlobalFunction( RelatorMatrixAbelianizedSubgroupMtc,
     function ( G, H )
 
-    local aug, string, type;
+    local aug;
 
     # check the arguments to be a finitely presented group and a subgroup of
     # that group.
@@ -1832,9 +1931,7 @@ InstallGlobalFunction( RelatorMatrixAbelianizedSubgroupMtc,
 
     # do a Modified Todd-Coxeter coset representative enumeration to
     # construct an augmented coset table of H.
-    type := 0;
-    string := "_x";
-    aug := AugmentedCosetTableMtc( G, H, type, string );
+    aug := AugmentedCosetTableMtc( G, H, 0, "_x" );
 
     # determine a set of abelianized subgroup relators.
     aug.subgroupRelators := RewriteAbelianizedSubgroupRelators( aug,
@@ -1860,7 +1957,7 @@ end );
 ##
 InstallGlobalFunction( RelatorMatrixAbelianizedSubgroupRrs, function ( G, H )
 
-    local aug, string, table, type;
+    local aug, table;
 
     # check G to be a finitely presented group.
     if not ( IsSubgroupFpGroup( G ) and IsGroupOfFamily( G ) ) then
@@ -1890,9 +1987,7 @@ InstallGlobalFunction( RelatorMatrixAbelianizedSubgroupRrs, function ( G, H )
 
     # apply the Reduced Reidemeister-Schreier method to construct an
     # augmented coset table of H.
-    type := 0;
-    string := "_x";
-    aug := AugmentedCosetTableRrs( G, table, type, string );
+    aug := AugmentedCosetTableRrs( G, table, 0, "_x" );
 
     # determine a set of abelianized subgroup relators.
     aug.subgroupRelators := RewriteAbelianizedSubgroupRelators( aug,
@@ -1994,9 +2089,9 @@ end );
 InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
     function ( aug,prels )
 
-    local app2, coFacTable, cols, cosTable, factor, ggens, grel, i,
+    local app2, coFacTable, cols, cosTable, factor, ggensi, grel,greli, i,
           index, j, length, nums, numgens, numrels, p, rels, total, tree,
-          treelength, type;
+          treelength, type,si,ei,nneg;
 
     # check the type for being zero.
     type := aug.type;
@@ -2005,7 +2100,7 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
     fi;
 
     # initialize some local variables.
-    ggens := aug.groupGenerators;
+    ggensi := List(aug.groupGenerators,i->GeneratorSyllable(i,1));
     cosTable := aug.cosetTable;
     coFacTable := aug.cosetFactorTable;
     index := Length( cosTable[1] );
@@ -2029,7 +2124,9 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
     app2[8] := tree;
 
     # loop over all group relators
-    for grel in prels do
+    for greli in [1..Length(prels)] do
+      CompletionBar(InfoFpGroup,2,"Relator Loop:",greli/Length(prels));
+      grel:=prels[greli];
 
         # get two copies of the group relator, one as a list of words in the
         # factor table columns and one as a list of words in the coset table
@@ -2037,22 +2134,26 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
         length := Length( grel );
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
-        for i in [ 1 .. length ]  do
-            factor := Subword( grel, i, i );
-            if factor in ggens then
-                p := 2 * Position( ggens, factor );
-                nums[2*i]   := p-1;
-                nums[2*i-1] := p;
-                cols[2*i]   := cosTable[p-1];
-                cols[2*i-1] := cosTable[p];
-            else
-                p := 2 * Position( ggens, factor^-1 );
-                nums[2*i]   := p;
-                nums[2*i-1] := p-1;
-                cols[2*i]   := cosTable[p];
-                cols[2*i-1] := cosTable[p-1];
-            fi;
-        od;
+
+	i:=0;
+        for si in [ 1 .. NrSyllables(grel) ]  do
+	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+	  nneg:=ExponentSyllable(grel,si)>0;
+	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+	    i:=i+1;
+	    if nneg then
+	      nums[2*i]   := p-1;
+	      nums[2*i-1] := p;
+	      cols[2*i]   := cosTable[p-1];
+	      cols[2*i-1] := cosTable[p];
+	    else
+	      nums[2*i]   := p;
+	      nums[2*i-1] := p-1;
+	      cols[2*i]   := cosTable[p];
+	      cols[2*i-1] := cosTable[p-1];
+	    fi;
+	  od;
+	od;
 
         # loop over all cosets and determine the subgroup relators which are
         # induced by the current group relator.
@@ -2076,9 +2177,11 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
             numrels := AddAbelianRelator( rels, numrels );
         od;
     od;
+    CompletionBar(InfoFpGroup,2,"Relator Loop:",false);
 
     # loop over all primary subgroup generators.
     for j in [ 1 .. numgens ] do
+      CompletionBar(InfoFpGroup,2,"Generator Loop:",j/numgens);
 
         # get two copies of the subgroup generator, one as a list of words in
         # the factor table columns and one as a list of words in the coset
@@ -2087,21 +2190,25 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
         length := Length( grel );
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
-        for i in [ 1 .. length ]  do
-            factor := Subword( grel, i, i );
-            if factor in ggens then
-                p := 2 * Position( ggens, factor );
-                nums[2*i]   := p-1;
-                nums[2*i-1] := p;
-                cols[2*i]   := cosTable[p-1];
-                cols[2*i-1] := cosTable[p];
-            else
-                p := 2 * Position( ggens, factor^-1 );
-                nums[2*i]   := p;
-                nums[2*i-1] := p-1;
-                cols[2*i]   := cosTable[p];
-                cols[2*i-1] := cosTable[p-1];
-            fi;
+
+	i:=0;
+        for si in [ 1 .. NrSyllables(grel) ]  do
+	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+	  nneg:=ExponentSyllable(grel,si)>0;
+	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+	    i:=i+1;
+	    if nneg then
+	      nums[2*i]   := p-1;
+	      nums[2*i-1] := p;
+	      cols[2*i]   := cosTable[p-1];
+	      cols[2*i-1] := cosTable[p];
+	    else
+	      nums[2*i]   := p;
+	      nums[2*i-1] := p-1;
+	      cols[2*i]   := cosTable[p];
+	      cols[2*i-1] := cosTable[p-1];
+	    fi;
+	  od;
         od;
 
         # scan coset 1 through the current subgroup generator and collect the
@@ -2135,6 +2242,7 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
     for i in [ numrels + 1 .. total ] do
         Unbind( rels[i] );
     od;
+    CompletionBar(InfoFpGroup,2,"Generator Loop:",false);
 
     return rels;
 end );
@@ -2148,22 +2256,22 @@ end );
 ##  'RewriteSubgroupRelators'  is a subroutine  of the  Reduced Reidemeister-
 ##  Schreier and the  Modified Todd-Coxeter  routines.  It computes  a set of
 ##  subgroup relators from the coset factor table of an augmented coset table
-##  and the  relators <rels> of the  parent  group.  It assumes  that  <aug>
+##  and the  relators <prels> of the  parent  group.  It assumes  that  <aug>
 ##  is an augmented coset table of type 2.
 ##
 InstallGlobalFunction( RewriteSubgroupRelators,
     function ( aug, prels )
 
-    local app2, coFacTable, cols, convert, cosTable, factor, ggens,
-          grel, i, index, j, last, length, nums, numgens, p, rel, rels,
-          treelength, type;
+    local app2, coFacTable, cols, convert, cosTable, factor, ggensi,
+          greli,grel, i, index, j, last, length, nums, numgens, p, rel, rels,
+          treelength, type,si,nneg,ei;
 
     # check the type.
     type := aug.type;
     if type <> 2 then  Error( "invalid type; it should be 2" );  fi;
 
     # initialize some local variables.
-    ggens := aug.groupGenerators;
+    ggensi := List(aug.groupGenerators,i->GeneratorSyllable(i,1));
     cosTable := aug.cosetTable;
     coFacTable := aug.cosetFactorTable;
     index := Length( cosTable[1] );
@@ -2176,7 +2284,9 @@ InstallGlobalFunction( RewriteSubgroupRelators,
     app2[7] := [ ]; app2[7][100] := 0;
 
     # loop over all group relators
-    for grel in prels do
+    for greli in [1..Length(prels)] do
+      CompletionBar(InfoFpGroup,2,"Relator Loop:",greli/Length(prels));
+      grel:=prels[greli];
       length := Length( grel );
       if length > 0 then
 
@@ -2185,22 +2295,26 @@ InstallGlobalFunction( RewriteSubgroupRelators,
         # column numbers.
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
-        for i in [ 1 .. length ]  do
-            factor := Subword( grel, i, i );
-            if factor in ggens then
-                p := 2 * Position( ggens, factor );
-                nums[2*i]   := p-1;
-                nums[2*i-1] := p;
-                cols[2*i]   := cosTable[p-1];
-                cols[2*i-1] := cosTable[p];
-            else
-                p := 2 * Position( ggens, factor^-1 );
-                nums[2*i]   := p;
-                nums[2*i-1] := p-1;
-                cols[2*i]   := cosTable[p];
-                cols[2*i-1] := cosTable[p-1];
-            fi;
-        od;
+
+	i:=0;
+        for si in [ 1 .. NrSyllables(grel) ]  do
+	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+	  nneg:=ExponentSyllable(grel,si)>0;
+	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+	    i:=i+1;
+	    if nneg then
+	      nums[2*i]   := p-1;
+	      nums[2*i-1] := p;
+	      cols[2*i]   := cosTable[p-1];
+	      cols[2*i-1] := cosTable[p];
+	    else
+	      nums[2*i]   := p;
+	      nums[2*i-1] := p-1;
+	      cols[2*i]   := cosTable[p];
+	      cols[2*i-1] := cosTable[p-1];
+	    fi;
+	  od;
+	od;
 
         # loop over all cosets and determine the subgroup relators which are
         # induced by the current group relator.
@@ -2226,10 +2340,12 @@ InstallGlobalFunction( RewriteSubgroupRelators,
         od;
       fi;
     od;
+    CompletionBar(InfoFpGroup,2,"Relator Loop:",false);
 
     # loop over all primary subgroup generators.
     numgens := Length( aug.primaryGeneratorWords );
     for j in [ 1 .. numgens ] do
+      CompletionBar(InfoFpGroup,2,"Generator Loop:",j/numgens);
 
         # get two copies of the subgroup generator, one as a list of words in
         # the factor table columns and one as a list of words in the coset
@@ -2238,21 +2354,25 @@ InstallGlobalFunction( RewriteSubgroupRelators,
         length := Length( grel );
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
-        for i in [ 1 .. length ]  do
-            factor := Subword( grel, i, i );
-            if factor in ggens then
-                p := 2 * Position( ggens, factor );
-                nums[2*i]   := p-1;
-                nums[2*i-1] := p;
-                cols[2*i]   := cosTable[p-1];
-                cols[2*i-1] := cosTable[p];
-            else
-                p := 2 * Position( ggens, factor^-1 );
-                nums[2*i]   := p;
-                nums[2*i-1] := p-1;
-                cols[2*i]   := cosTable[p];
-                cols[2*i-1] := cosTable[p-1];
-            fi;
+
+	i:=0;
+        for si in [ 1 .. NrSyllables(grel) ]  do
+	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+	  nneg:=ExponentSyllable(grel,si)>0;
+	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+	    i:=i+1;
+	    if nneg then
+	      nums[2*i]   := p-1;
+	      nums[2*i-1] := p;
+	      cols[2*i]   := cosTable[p-1];
+	      cols[2*i-1] := cosTable[p];
+	    else
+	      nums[2*i]   := p;
+	      nums[2*i-1] := p-1;
+	      cols[2*i]   := cosTable[p];
+	      cols[2*i-1] := cosTable[p-1];
+	    fi;
+	  od;
         od;
 
         # scan coset 1 through the current subgroup generator and collect the
@@ -2281,6 +2401,7 @@ InstallGlobalFunction( RewriteSubgroupRelators,
             fi;
         fi;
     od;
+    CompletionBar(InfoFpGroup,2,"Generator Loop:",false);
 
     # renumber the generators in the relators, if necessary.
     numgens := Length( aug.subgroupGenerators );
@@ -2391,6 +2512,172 @@ InstallGlobalFunction( SpanningTree, function ( cosTable )
     Error( "argument must be a coset table" );
 end );
 
+#############################################################################
+##
+##  Extensions for rewriting and homomorphisms
+##
+
+#############################################################################
+##
+#F  RewriteWord( <aug>, <word> )
+##
+InstallGlobalFunction(RewriteWord,function ( aug, word )
+local cft, ct, w,c,i,j,g,e,ind;
+
+  # check the type.
+  Assert(1,aug.type=2);
+
+  # initialize some local variables.
+  ct := aug.cosetTable;
+  cft := aug.cosetFactorTable;
+
+  # translation table for group generators to numbers
+  if not IsBound(aug.transtab) then
+    # should do better, also cope with inverses
+    aug.transtab:=List(aug.groupGenerators,i->GeneratorSyllable(i,1));
+  fi;
+
+  w:=[];
+  c:=1; # current coset
+  for i in [1..NrSyllables(word)] do
+    g:=GeneratorSyllable(word,i);
+    e:=ExponentSyllable(word,i);
+    if e<0 then
+      ind:=2*aug.transtab[g];
+      e:=-e;
+    else
+      ind:=2*aug.transtab[g]-1;
+    fi;
+    for j in [1..e] do
+      # apply the generator, collect cofactor
+      if cft[ind][c]<>0 then
+	Add(w,cft[ind][c]); #cofactor
+      fi;
+      c:=ct[ind][c]; # new coset number
+    od;
+  od;
+  # make sure we got back to start
+  if c<>1 then 
+    return fail;
+  fi;
+  return w;
+
+end);
+
+#############################################################################
+##
+#F  DecodedTreeEntry(<tree>,<imgs>,<nr>) 
+##
+InstallGlobalFunction(DecodedTreeEntry,function(tree,imgs,nr)
+local eval,t1,t2;
+  if IsBound(imgs[AbsInt(nr)]) then
+    if nr>0 then
+      return imgs[nr];
+    else
+      return imgs[-nr]^-1;
+    fi;
+  fi;
+# as we might not want to construct the full tree, we'll be more specific
+  if not IsMutable(imgs) then
+    imgs:=ShallowCopy(imgs); # we will add locally
+  fi;
+  t1:=tree[1];
+  t2:=tree[2];
+  eval:=function(n)
+    if not IsBound(imgs[n]) then
+      imgs[n]:=eval(AbsInt(t1[n]))^SignInt(t1[n])
+             *eval(AbsInt(t2[n]))^SignInt(t2[n]);
+    fi;
+    return imgs[n];
+  end;
+  return eval(nr);
+end);
+
+#############################################################################
+##
+#F  GeneratorTranslationAugmentedCosetTable(<aug>) 
+##
+## decode the secondary generators as words in the primary generators, using
+## the `.subgroupGenerators' and their subset `.primarySubgroupGenerators'.
+InstallGlobalFunction(GeneratorTranslationAugmentedCosetTable,function(aug)
+local tt,i,t1,t2;
+  if not IsBound(aug.translationTable) then
+    if not IsBound(aug.primarySubgroupGenerators) then
+      aug.primarySubgroupGenerators:=
+          aug.subgroupGenerators{[1..Length(aug.primaryGeneratorWords)]};
+    fi;
+    # now expand the tree to get words for the secondary generators.
+    # the first elements are just the primary generators
+    tt:=ShallowCopy(aug.primarySubgroupGenerators);
+    t1:=aug.tree[1];
+    t2:=aug.tree[2];
+    for i in [Length(tt)+1..Maximum(aug.treeNumbers)] do
+      tt[i]:=tt[AbsInt(t1[i])]^SignInt(t1[i])
+            *tt[AbsInt(t2[i])]^SignInt(t2[i]);
+    od;
+    aug.translationTable:=Immutable(tt);
+  fi;
+  return aug.translationTable;
+end);
+
+#############################################################################
+##
+#F  SecondaryGeneratorWordsAugmentedCosetTable(<aug>) 
+##
+InstallGlobalFunction(SecondaryGeneratorWordsAugmentedCosetTable,function(aug)
+local tt;
+  if not IsBound(aug.secondaryWords) then
+    aug.secondaryWords:=Immutable(
+    List(GeneratorTranslationAugmentedCosetTable(aug),i->
+      MappedWord(i,aug.primarySubgroupGenerators,aug.primaryGeneratorWords)));
+  fi;
+  return aug.secondaryWords;
+end);
+
+#############################################################################
+##
+#F  CopiedAugmentedCosetTable(<aug>) 
+##
+##  returns a new augmented coset table, equal to the old one. The
+##  components of this new table are immutable, but new components may be
+##  added.
+##  (This function is needed to have different homomorphisms share the same
+##  augmented coset table data. It must not be applied to augmented coset
+##  tables which are not of type 2.)
+InstallGlobalFunction(CopiedAugmentedCosetTable,function(aug)
+local t;
+  t:=rec(
+	  isAugmentedCosetTable:=true,
+	  type:=aug.type,
+	  tableType:=aug.tableType,
+	  groupGenerators:=aug.groupGenerators,
+	  groupRelators:=aug.groupRelators,
+	  cosetTable:=aug.cosetTable,
+	  cosetFactorTable:=aug.cosetFactorTable,
+	  primaryGeneratorWords:=aug.primaryGeneratorWords,
+	  tree:=aug.tree,
+	  treeNumbers:=aug.treeNumbers,
+	  numberOfSubgroupGenerators:=aug.numberOfSubgroupGenerators,
+	  nameOfSubgroupGenerators:=aug.nameOfSubgroupGenerators,
+	  subgroupGenerators:=aug.subgroupGenerators
+	);
+  if IsBound(aug.conversionList) then
+    t.conversionList:=aug.conversionList;
+  fi;
+  if IsBound(aug.primarySubgroupGenerators) then
+    t.primarySubgroupGenerators:=Immutable(aug.primarySubgroupGenerators);
+  fi;
+  if IsBound(aug.subgroupRelators) then
+    t.subgroupRelators:=Immutable(aug.subgroupRelators);
+  fi;
+  if IsBound(aug.translationTable) then
+    t.translationTable:=Immutable(aug.translationTable);
+  fi;
+  if IsBound(aug.secondaryWords) then
+    t.secondaryWords:=Immutable(aug.secondaryWords);
+  fi;
+  return t;
+end);
 
 #############################################################################
 ##

@@ -113,8 +113,15 @@ Simply unpack the files into ``/home/myhome/gap''.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Directories}
 
+\>Directory( <dir> ) F
+
+returns  a  directory  object  for  the  directory   <dir>.   `Directory'
+understands `.' for ``current directory''. It also  understands  absolute
+paths. Paths are otherwise taken  relative  to  the  directory  in  which
+{\GAP} was started. `Directory' does *not* do tilde expansion.
+
 \>DirectoryTemporary( <hint> ) F
-\)DirectoryTemporary()
+\)\fmark DirectoryTemporary()
 
 returns  a directory  object in the   category `IsDirectory' for a  *new*
 temporary directory.   This is guaranteed to  be  newly created and empty
@@ -135,7 +142,7 @@ about the error.
 returns the directory object for the current directory.
 
 \>DirectoriesLibrary( <lib> ) F
-\)DirectoriesLibrary()
+\)\fmark DirectoriesLibrary()
 
 returns the  directory objects  for  the  {\GAP}  library <lib> as a list.
 <lib> must be one of `"lib"' (the default), `"grp"', `"tbl"', and so on.
@@ -240,44 +247,48 @@ the standard output was redirected.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{File Access}
 
-The  following functions  return `fail'  if a system  error occurred, for
-example, if <name-file> does not exist (except for `IsExistingFile').  In
-this case  the function `LastSystemError'  can be used to get information
-about the error.
+When the following functions return `false' one can use `LastSystemError'
+(see~"LastSystemError") to find  out  the  reason  (as  provided  by  the
+operating system).
 
 \>IsExistingFile( <name-file> ) F
 
-returns `true'  if   a file  with the filename   <name-file>  exists, and
-`false' otherwise.
+returns `true' if a file with the filename <name-file> exists and can be
+seen by the {\GAP} process. Otherwise `false' is returned.
 
 \>IsReadableFile( <name-file> ) F
 
-returns `true' if a  file with the  filename <name-file> exists *and* the
-{\GAP} process has read  permissions for the  file, and `false' if it has
-no such permissions.
+returns `true' if a file with the filename <name-file> exists  *and*  the
+{\GAP} process has read permissions for the file, or `false' if 
+this is not the case.
 
-\>IsWriteableFile( <name-file> ) F
+\>IsWritableFile( <name-file> ) F
 
-returns `true'  if a file with the  filename <name-file> exists *and* the
-{\GAP} process has write permissions for the  file, and `false' if it has
-no such permissions.
+returns `true' if a file with the filename <name-file> exists  *and*  the
+{\GAP} process has write permissions for  the  file,  or  `false'  if  
+this is not the case.
 
-\>IsExecuteableFile( <name-file> ) F
+\>IsExecutableFile( <name-file> ) F
 
-returns `true' if  a file with the  filename <name-file> exists *and* the
-{\GAP} process has execute  permissions for the file,  and `false' if  it
-has no such permissions.  Note that execute permissions do not imply that it
-is possible to execute the file, e.g., it could only be an executable on a
-different machine.
+returns `true'  if a  file with  the filename  <name-file> exists  *and* the
+{\GAP} process has  execute permissions for the file, or  `false' if this is
+not the case. Note that execute permissions do not imply that it is possible
+to execute the file, e.g., it may only be executable on a different machine.
 
 \>IsDirectoryPath( <name-file> ) F
 
-returns `true' if the file with the  filename <name-file> exists *and* is
-a directory.  It returns `false' if the file  exists but is a plain file.
-Note  that this  functions does  not  check if   the  {\GAP} process
-actually has write or execute permissions for the directory.
+returns `true' if the file with the filename <name-file> exists *and*  is
+a directory and  `false' otherwise.
+Note that this function does not check if the {\GAP} process actually has
+write  or  execute  permissions  for   the   directory   (you   can   use
+`IsWritableFile'   (see~"IsWritableFile"),    resp.    `IsExecutableFile'
+(see~"IsExecutableFile") to check such permissions).
 
 *Examples*
+
+Note,   in   particular,    how    one    may    use    `LastSystemError'
+(see~"LastSystemError") to discover the reason  a  file  access  function
+returns `false'.
 
 \beginexample
 # the file `/bin/date' exists
@@ -290,7 +301,7 @@ false
 
 # `/bin/date' is not a directory
 gap> IsExistingFile( "/bin/date/new" );
-fail
+false
 gap> LastSystemError().message;
 "Not a directory"
 
@@ -300,7 +311,7 @@ true
 
 # the file `/bin/date.new' does not exist
 gap> IsReadableFile( "/bin/date.new" );
-fail
+false
 gap> LastSystemError().message;        
 "No such file or directory"
 
@@ -337,7 +348,7 @@ file, but from the input connected to the `stderr' output of {\GAP}.  If
 this break loop is left with `quit' (or <ctr>-'D') {\GAP} exits from the
 `Read' command, and from all enclosing `Read' commands, so that control
 is normally returned to an interactive prompt. The `QUIT' statement (see
-"QUIT") can also be used in the break loop to exit {\GAP} immediately.
+"Leaving GAP") can also be used in the break loop to exit {\GAP} immediately.
 
 Note that  a statement must  not begin in one  file  and end  in another,
 i.e.,  <eof> (`end-of-file') is not    treated as whitespace,  but as   a
@@ -375,35 +386,36 @@ gap> a;
 1
 \endtt
 
-\>PrintTo( <name-file> ) F
+\>PrintTo( <name-file>[, <obj1>, ...] ) F
 
-works like `Print',  except that the output  is printed to the  file with
-the name <name-file>  instead of the standard output.   This file must of
-course be writable by {\GAP}.  Otherwise an error is signalled. Note that
-`PrintTo' will  *overwrite*  the  previous contents  of  this file  if it
-already existed.  `AppendTo'  can   be used to   append to  a file   (see
-"AppendTo").
-    
-There is an  operating system dependent maximum  on the number  of output
-files that may be open simultaneously, usually this is 14.
+works like `Print'  (see~"Print"),  except  that  the  arguments  <obj1>,
+{\dots} (if present) are printed to the file with  the  name  <name-file>
+instead of the standard output. This file must of course be  writable  by
+{\GAP}. Otherwise  an  error  is  signalled.  Note  that  `PrintTo'  will
+*overwrite* the previous contents of this file if it already existed;  in
+particular, `PrintTo' with just the  <name-file>  argument  empties  that
+file. `AppendTo' can be used to append to a file (see "AppendTo").  There
+is an operating system dependent maximum on the number  of  output  files
+that may be open simultaneously, usually this is 14.
 
-\>AppendTo( <name-file> ) F
+\>AppendTo( <name-file>[, <obj1>, ...] ) F
 
-works like `PrintTo',  except  that the   output does  not overwrite  the
-previous contents of the file, but is appended to the file.
+works like `PrintTo' (see~"PrintTo"), except that  the  output  does  not
+overwrite the previous contents of the file, but is appended to the file.
 
 \>LogTo( <name-file> ) O
 
 causes the subsequent interaction to be logged  to the file with the name
 <name-file>, i.e., everything you  see on your  terminal will also appear
-in this file.
+in this file. `LogTo' may also be used to log to a stream (see~"LogTo!for
+streams").
 This file must of course be writable  by {\GAP}, otherwise an error is
 signalled.  Note  that   `LogTo'  will overwrite the   previous
 contents of this file if it already existed.
 
-\)LogTo()
+\>LogTo()!{stop logging} M
 
-In this form `LogTo' stops logging.
+In this form `LogTo' stops logging to a file or stream.
 
 \>InputLogTo( <name-file> ) O
 
@@ -414,9 +426,9 @@ same time while `InputLogTo' and `OutputLogTo' can.
 Note  that   `InputLogTo'  will overwrite the   previous
 contents of this file if it already existed.
 
-\)InputLogTo()
+\>InputLogTo()!{stop logging input} M
 
-In this form `InputLogTo' stops logging.
+In this form `InputLogTo' stops logging to a file or stream.
 
 \>OutputLogTo( <name-file> ) O
 
@@ -427,20 +439,19 @@ at the same time while `InputLogTo' and `OutputLogTo' can.
 Note  that   `OutputLogTo'  will overwrite the   previous
 contents of this file if it already existed.
 
-\)OutputLogTo()
+\>OutputLogTo()!{stop logging output} M
 
-In this form `OutputLogTo' stops logging.
+In this form `OutputLogTo' stops logging to a file or stream.
 
 *Note* that one should be careful not to write to a logfile with
 `PrintTo' or `AppendTo'.
 % The same holds of course for the redirection of output to a file.
 
-When using 
-
 \>CrcFile( <name-file> ) F
 
 computes  a checksum  value for the  file  with filename <name-file>  and
-returns this value  as integer. The function returns  `fail' if a  system
+returns this value  as an integer. See Section~"CRC Numbers" for an example.
+The function returns  `fail' if a  system
 error occurred, say, for example, if <name-file> does not exist.
 In this case the function `LastSystemError' (see~"LastSystemError")
 can be used to get information about the error.

@@ -150,7 +150,7 @@ situations by choosing strange letter names.
 
 \beginexample
 gap> m:= FreeMagma( "x", "x" );  gens:= GeneratorsOfMagma( m );;
-<free magma on the generators [x,x]>
+<free magma on the generators [ x, x ]>
 gap> gens[1] = gens[2];
 false
 \endexample

@@ -33,14 +33,14 @@ true
 \FileHeader[2]{unknown}
 \beginexample                                                               
 gap> Unknown() >= Unknown();  Unknown(2) < Unknown(3);                      
-false                                                                       
-true                                                                        
+false
+true
 gap> Unknown() > 3;  Unknown() > E(3);                                      
-true                                                                        
-true                                                                        
+true
+true
 gap> Unknown() > Z(8);  Unknown() > [];                                     
-false                                                                       
-false                                                                       
+false
+false
 \endexample
 
 \FileHeader[3]{unknown}

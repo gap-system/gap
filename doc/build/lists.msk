@@ -47,7 +47,7 @@ list*, i.e., a list with no elements, is written as `[]'.
 gap> [ 1, 2, 3 ];
 [ 1, 2, 3 ]  # a list with three elements
 gap> [ [], [ 1 ], [ 1, 2 ] ];
-[ [ ], [ 1 ], [ 1, 2 ] ]  # a list may contain other lists
+[ [  ], [ 1 ], [ 1, 2 ] ]  # a list may contain other lists
 \endexample
 
 Each list constructed this way is mutable (see~"Mutability and Copyability").
@@ -68,8 +68,21 @@ false
 gap> l[3];
 9
 gap> l[4];
-Error, List Element: <list>[4] must have a value
+List Element: <list>[4] must have an assigned value
+not in any function
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' after assigning a value to continue
+brk> l[4] := 16;; # assigning a value                      
+brk> return;      # to escape the break-loop               
+16
+gap>
 \endtt
+
+Observe that requesting the value of `l[4]', which was not
+assigned, caused the entry of a `break'-loop (see Section~"Break Loops").
+After assigning a value and typing `return;', {\GAP} is finally
+able to comply with our request (by responding with `16').
 
 \Declaration{IsHomogeneousList}
 \beginexample
@@ -946,6 +959,8 @@ gap> PositionNonZero( l );  PositionNonZero( [ 2, 3, 4, 5 ] * Z(2) );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Properties and Attributes for Lists}
 
+\Declaration{IsMatchingSublist}
+
 *Note:* A list that contains mutable objects (like lists or records)
 *cannot* store attribute values that depend on the values of its entries,
 such as whether it is homogeneous, sorted, or strictly sorted,
@@ -987,11 +1002,11 @@ gap> list := [ 5, 4, 6, 1, 7, 5 ];; Sort( list ); list;
 gap> list := [ [0,6], [1,2], [1,3], [1,5], [0,4], [3,4] ];;
 gap> Sort( list, function(v,w) return v*v < w*w; end ); list;
 [ [ 1, 2 ], [ 1, 3 ], [ 0, 4 ], [ 3, 4 ], [ 1, 5 ], [ 0, 6 ] ]
-# sorted according to the Euclidian distance from [0,0]
+  # sorted according to the Euclidian distance from [0,0]
 gap> list := [ [0,6], [1,3], [3,4], [1,5], [1,2], [0,4], ];;
 gap> Sort( list, function(v,w) return v[1] < w[1]; end ); list;
 [ [ 0, 6 ], [ 0, 4 ], [ 1, 3 ], [ 1, 5 ], [ 1, 2 ], [ 3, 4 ] ]
-# note the random order of the elements with equal first component
+  # note the random order of the elements with equal first component
 \endexample
 
 \Declaration{SortParallel}
@@ -1267,7 +1282,7 @@ gap> Collected( last );
 \beginexample
 gap> l:=[1,Z(3),1,"abc",Group((1,2,3),(1,2)),Z(3),Group((1,2),(2,3))];;
 gap> DuplicateFreeList( l );
-[ 1, Z(3), "abc", Group( [ (1,2,3), (1,2) ] ) ]
+[ 1, Z(3), "abc", Group([ (1,2,3), (1,2) ]) ]
 \endexample
 
 \Declaration{AsDuplicateFreeList}
@@ -1277,7 +1292,7 @@ gap> DuplicateFreeList( l );
 gap> Flat( [ 1, [ 2, 3 ], [ [ 1, 2 ], 3 ] ] );
 [ 1, 2, 3, 1, 2, 3 ]
 gap> Flat( [ ] );
-[ ]
+[  ]
 \endexample
 (To reconstruct a matrix from a `Flat'tened list, the sublist operator can
 be used:
@@ -1295,8 +1310,6 @@ gap> Reversed( [ 1, 4, 9, 5, 6, 7 ] );
 \endexample
 
 \Declaration{IsLexicographicallyLess}
-\beginexample
-\endexample
 
 \Declaration{Apply}
 \beginexample
@@ -1339,11 +1352,11 @@ gap> Minimum( [ 1, 2 ], [ 0, 15 ], [ 1, 5 ], [ 2, -11 ] );
 \Declaration{Cartesian}
 \beginexample
 gap> Cartesian( [1,2], [3,4], [5,6] );
-[ [ 1, 3, 5 ], [ 1, 3, 6 ], [ 1, 4, 5 ], [ 1, 4, 6 ], [ 2, 3, 5 ],
- [ 2, 3, 6 ], [ 2, 4, 5 ], [ 2, 4, 6 ] ]
+[ [ 1, 3, 5 ], [ 1, 3, 6 ], [ 1, 4, 5 ], [ 1, 4, 6 ], [ 2, 3, 5 ], 
+  [ 2, 3, 6 ], [ 2, 4, 5 ], [ 2, 4, 6 ] ]
 gap> Cartesian( [1,2,2], [1,1,2] );
-[ [ 1, 1 ], [ 1, 1 ], [ 1, 2 ], [ 2, 1 ], [ 2, 1 ], [ 2, 2 ], 
- [ 2, 1 ], [ 2, 1 ], [ 2, 2 ] ]
+[ [ 1, 1 ], [ 1, 1 ], [ 1, 2 ], [ 2, 1 ], [ 2, 1 ], [ 2, 2 ], [ 2, 1 ], 
+  [ 2, 1 ], [ 2, 2 ] ]
 \endexample
 
 \Declaration{Permuted}
@@ -1459,6 +1472,14 @@ gap> Iterated( [ 126, 66, 105 ], Gcd );
 3
 \endexample
 
+\Declaration{ListN}
+\beginexample
+gap> ListN( [1,2], [3,4], \+ );
+[ 4, 6 ]
+\endexample
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Advanced List Manipulations}
@@ -1475,6 +1496,7 @@ The following functions are generalizations of `List' (see~"List"),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Ranges}
 
+\index{range}
 A *range* is a dense list of integers in arithmetic progression (or
 degression).
 This is a list of integers such that the difference between
@@ -1482,13 +1504,15 @@ consecutive elements is a nonzero constant.  Ranges can be abbreviated
 with the syntactic construct `[ <first>, <second> .. <last> ]' or, if the
 difference between consecutive elements is 1, as `[ <first> .. <last> ]'.
 
-If `<first> > <last>', `[<first>,<second>..<last>]' is the empty list,
-which  by definition is  also  a range.  If  <first> = <last>,
-`[<first>,<second>..<last>]' is a singleton list, which is a range, too.
-Note that `<last> - <first>' must be divisible by the increment `<second>
-- <first>', otherwise an error is signalled.
+If `<first> > <last>', `[<first>..<last>]' is the empty  list,  which  by
+definition is also a range; also, if `<second> >  <first>  >  <last>'  or
+`<second> \< <first> \< <last>', then `[<first>,<second>..<last>]' is the
+empty list. If `<first>  =  <last>',  `[<first>,<second>..<last>]'  is  a
+singleton list, which is a range, too. Note that `<last> - <first>'  must
+be divisible by the increment `<second> - <first>', otherwise an error is
+signalled.
 
-Note that a range is just a special case of a list.
+Note also that a range is just a special case of a list.
 Thus you can access elements in a range (see "List Elements"), test for
 membership etc.
 You can even assign to such a range if it is mutable (see~"List Assignment").

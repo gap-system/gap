@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%W  install.msk               GAP documentation              Frank Celler
+%W  run.msk                 GAP documentation                Frank Celler
 %W                                                     & Martin Schoenert
 %W                                                     & Alexander Hulpke
 %%
@@ -30,8 +30,10 @@ and how to save and load a {\GAP} workspace
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Command Line Options}
 
-\index{features!under UNIX}\index{UNIX!features}
-\index{options!under UNIX}\index{UNIX!options}
+\atindex{features!under UNIX}{@features!under UNIX}
+\atindex{UNIX!features}{@UNIX!features}
+\atindex{options!under UNIX}{@options!under UNIX}
+\atindex{UNIX!options}{@UNIX!options}
 When you start {\GAP} under UNIX, you may specify a number of  options on
 the command-line to change  the default behaviour  of {\GAP}.  All  these
 options  start with a  hyphen `-', followed by a  single letter.  Options
@@ -43,165 +45,200 @@ correct to say `gap -m256k' instead.
 {\GAP} for UNIX will distinguish between upper and lower case options.
 
 As is described in Chapter~"Installing GAP" (see "Installation of GAP for
-UNIX"), usually you  will not execute {\GAP}  directly.  Instead  you will
-call a shell script, with the name `gap',  which in turn executes {\GAP}.
-This shell script sets some options which are  necessary to make {\GAP} work on
-your  system.  This means that the   default settings mentioned below may
-not be what you experience when you execute {\GAP} on your system.
+UNIX"), usually you will not execute {\GAP} directly.  Instead  you  will
+call a shell script, with the name `gap', which in turn executes  {\GAP}.
+This shell script sets some options which are necessary  to  make  {\GAP}
+work on your system. This means that the default settings mentioned below
+may not be what you experience when you execute {\GAP} on your system.
 
-`-h'
+\beginitems
 
-The  options  `-h' tells {\GAP}   to print  a   summary of all  available
-options.  {\GAP} exits after printing the summary,  all other options are
-ignored.
+\indextt{-h}
+`-h' &
+tells {\GAP} to print a summary of all available options (`-h' is menomic
+for ``help''). {\GAP} exits after printing the summary, all other options
+are ignored.
 
-`-b'
+\indextt{-b}
+`-b' &
+tells {\GAP} to suppress the banner. That means that  {\GAP}  immediately
+prints the prompt. This is useful when, after a while, you get  tired  of
+the banner.
 
-The option `-b'  tells {\GAP} to  suppress the banner.  That  means  that
-{\GAP} immediately prints the prompt.  This is useful  when, after a
-while, you get tired of the banner.
+\indextt{-q}
+`-q' &
+tells {\GAP} to be quiet. This means that  {\GAP}  displays  neither  the
+banner nor the prompt `gap>'. This is useful if you want to run {\GAP} as
+a filter with input and output redirection and want to avoid  the  banner
+and the prompts appearing in the output file.
 
-`-q'
+\indextt{-e}
+`-e' &
+tells {\GAP} not to quit when receiving a `<ctr>-D'  on  an  empty  input
+line (see~"quit"). This option should not be used when  the  input  is  a
+file or pipe.
 
-The option  `-q' tells {\GAP} to be  quiet.  This means that  {\GAP} does
-not display the banner nor the prompt `gap>'.  This is useful if you want
-to run {\GAP} as a filter with  input and output  redirection and want to
-avoid the banner and the prompts appearing in the output file.
+\indextt{-f}
+`-f' &
+tells {\GAP} to enable the line editing and history (see "Line Editing").
 
-`-e'
-
-The option `-e' tells {\GAP} not to quit when receiving a `<ctr>-D' on an
-empty input line (see~"quit").
-This option  should not be used when the input is a file or pipe.
-
-`-f'
-
-The option `-f' tells {\GAP} to enable the line  editing and history (see
-"Line Editing").
-
+&
 In general  line editing will  be enabled if the input  is connected to a
 terminal.  There are rare circumstances, for  example when using a remote
 session with a corrupted telnet implementation, when this detection fails.
 Try using `-f' in this case to enable line editing.
 
-`-n'
+\indextt{-n}
+`-n' &
+tells  {\GAP}  to  disable  the  line  editing  and  history  (see  "Line
+Editing").
 
-The option  `-n'  tells {\GAP}  to disable  the line editing  and history
-(see "Line Editing").
-
+&
 You may want to do this if the command line  editing is incompatible with
 another program that is used to run {\GAP}.  For example if {\GAP} is run
 from inside a GNU Emacs shell window, `-n' should be used since otherwise
 every input line will be echoed twice, once by Emacs and once by {\GAP}.
 
-`-x <length>'
-
+\indextt{-x}
+`-x <length>' &
 With this option  you can tell  {\GAP}  how long lines  are.  {\GAP} uses
-this value to decide when to split long lines.
+this value to decide when to split long lines. After starting {\GAP}  you
+may use `SizeScreen' (see~"SizeScreen") to alter the line length.
 
-The default value is 80, unless another value can be obtained from the
-Operating System, which is the right value if you have a standard
-ASCII terminal.  If you have a larger monitor, or use a smaller font,
-or redirect the output to a printer, you may want to increase this
-value.
-
-`-y <length>'
-
-With this option   you can tell {\GAP} how   many lines your  screen has.
-{\GAP} uses this value to decide after how many lines  of on-line help it
-should wait.
-
-The default value is 24, unless another value can be obtained from the
-Operating System, which is the right  value if you have a standard
-ASCII terminal.  If you have a larger monitor, or use  a smaller font, or
+&
+The default value is 80, unless another value can be  obtained  from  the
+Operating System, which is the right value if you have a  standard  ASCII
+terminal. If you have a  larger  monitor,  or  use  a  smaller  font,  or
 redirect the output to a printer, you may want to increase this value.
 
-`-g'
+\indextt{-y}
+`-y <length>' &
+With this option you can tell {\GAP} how  many  lines  your  screen  has.
+{\GAP} uses this value to decide after how many lines of on-line help  it
+should  wait.  After   starting   {\GAP}   you   may   use   `SizeScreen'
+(see~"SizeScreen") to alter the number of lines.
 
-The option  `-g' tells {\GAP} to print a information message every time a
-full garbage collection is performed.
+&
+The default value is 24, unless another value can be  obtained  from  the
+Operating System, which is the right value if you have a  standard  ASCII
+terminal. If you have a  larger  monitor,  or  use  a  smaller  font,  or
+redirect the output to a printer, you may want to increase this value.
+
+\indextt{-g}
+`-g' &
+tells {\GAP} to print a information message every  time  a  full  garbage
+collection is performed.
 
 \begintt
 #G  FULL 44580/2479kb live   57304/4392kb dead   734/4096kb free
 \endtt
 
-For example, this tells you that there are 44580 live objects that
-survived a full garbage collection, that 57304 unused objects were
-reclaimed by it, and that 734 KBytes from a total allocated memory of
+&
+For example, this tells you  that  there  are  44580  live  objects  that
+survived a full  garbage  collection,  that  57304  unused  objects  were
+reclaimed by it, and that 734 KBytes from a  total  allocated  memory  of
 4096 KBytes are available afterwards.
 
-`-g -g'
-
-If  you  give the option `-g'  twice,  {\GAP} prints a information message
-every time a partial or full garbage collection is performed.
+\indextt{-g -g}
+`-g -g' &
+If you give the option `-g' twice, {\GAP} prints  a  information  message
+every time a  partial  or  full  garbage  collection  is  performed.  The
+message,
 
 \begintt
 #G  PART 9405/961kb+live   7525/1324kb+dead   2541/4096kb free
 \endtt
 
-For  example,  this  tells you  that  9405  objects survived  the partial
-garbage collection and  7525 objects were  reclaimed, and that 2541 KBytes
-from a total allocated memory of 4096 KBytes are available afterwards.
+&
+for example, tells you that 9405 objects  survived  the  partial  garbage
+collection and 7525 objects were reclaimed, and that 2541 KBytes  from  a
+total allocated memory of 4096 KBytes are available afterwards.
 
-`-m <memory>'
+\indextt{-m}
+`-m <memory>' &
+tells {\GAP} to allocate <memory> bytes at  startup  time.  If  the  last
+character of <memory> is `k' or `K' it is taken as KBytes and if the last
+character is `m' or `M' <memory> is taken as MBytes.
 
-The option `-m' tells {\GAP} to allocate <memory>  bytes at startup time.
-If the last character of <memory> is `k' or `K' it is taken as KBytes and
-if the last character is `m' or `M' <memory> is taken as MBytes.
+&
+Under UNIX the default amount of memory allocated by {\GAP} is 8  MBytes.
+The amount of memory should be large enough so that computations  do  not
+require too many garbage  collections.  On  the  other  hand,  if  {\GAP}
+allocates more virtual memory than is physically available, it will spend
+most of the time paging.
 
-Under UNIX the default amount of memory allocated  by {\GAP} is 8 MBytes.
-The amount of memory  should be large  enough so that computations do not
-require  too  many  garbage  collections.  On the   other hand,  if {\GAP}
-allocates more virtual memory than  is physically available, it will spend
-most of  the  time  paging.  
+\indextt{-o}
+`-o <memory>' &
+tells {\GAP} to allocate at most <memory> bytes. If the last character of
+<memory> is `k' or `K' it is taken as KBytes and if the last character is
+`m' or `M' <memory> is taken as MBytes.
 
-`-o <memory>'
-
-The option `-o' tells {\GAP} to allocate  at most <memory> bytes.  If the
-last character of <memory> is `k' or `K' it is taken as KBytes and if the
-last character is `m' or `M' <memory> is taken as MBytes.
-
+&
 Under UNIX the default amount is 128 MBytes.  If more than this amount is
 required  during the {\GAP} session,  {\GAP} prints an error messages and
 enters a break loop.
 
-`-l <pathname>'
+\indextt{-K} 
+`-K <memory>' &
+is like `-o' above. But while the latter actually allocates more memory if
+the system allows it and then prints a warning inside a break loop the `-K' 
+options tells {\GAP} not even to try to allocate more memory. Instead {\GAP}
+just exits with an appropriate message. The default is that this feature is
+switched off. You have to set it explicitly when you want to enable it.
 
-The option `-l' tells  {\GAP}  that the  {\GAP} root directory  (see "GAP Root
-Directory") is <pathname>.  By default <pathname> is './', i.e., the root
-directory is normally   expected  to be the   current  directory.  {\GAP}
-searches for the library   files  which contain the functions   initially
-known to  {\GAP},  in the   subdirectory `lib/'  of  the  root directory.
-<pathname> should end with a   pathname separator, i.e., '/', but  {\GAP}
-will silently   add one  if  it is  missing.  {\GAP}   will read the file
-'<pathname>/lib/init.g' during startup.  If  {\GAP} cannot find this file
-it will print the following warning
+\indextt{-l}
+`-l <path list>' &
+can be used to modify {\GAP}'s list of root directories  (see  "GAP  Root
+Directory"). Before the option `-l' is used for the first time, the  only
+root directory is `./', i.e., {\GAP} has only one root directory which is
+the current directory. Usually this  option  is  used  inside  a  startup
+script to specify where {\GAP} is  installed  on  the  system.  The  `-l'
+option can also  be  used  by  individual  users  to  tell  {\GAP}  about
+privately  installed  modifications  of  the  library,  additional  share
+packages and so on. Section "GAP Root  Directory"  explains  how  several
+root paths can be used to do this.
+
+&
+<path list> should be a list of  directories separated by semicolons.  No
+whitespace is permitted before or after a semicolon.  Each directory name
+should end with a pathname separator, i.e., `/', but {\GAP} will silently
+add one if it  is missing.  If <path  list> does not start  or end with a
+semicolon,    then <path list>     replaces the  existing   list of  root
+directories.  If <path list> starts with a semicolon, then <path list> is
+appended to the existing list  of root directories.   If <path list> ends
+with a semicolon (and does not start with one), then the new list of root
+directories is the concatenation of <path  list> and the existing list of
+root directories.  After  {\GAP} has completed  its startup procedure and
+has displays  the prompt, the list of  root directories can  be viewed in
+the variable `GAP_ROOT_PATHS'.
+
+&
+{\GAP} will attempt  to   read the file  `<root  dir>/lib/init.g'  during
+startup where  <root dir> is one  of the directories  in its list of root
+directories.  If {\GAP} cannot find `init.g' it  will print the following
+warning
 
 \begintt
 gap: hmm, I cannot find 'lib/init.g' maybe use option '-l <gaproot>'?
 \endtt
 
+&
 It is not possible  to use {\GAP} without the  library files, so you must
 not  ignore this warning.  You  should leave {\GAP}   and start it again,
-specifying the correct root path using the '-l' option.
+specifying the correct root path using the `-l' option.
 
-It  is  also possible  to  specify several  alternative library  paths by
-separating them  with semicolons  ';'.  This is explained  in detail in
-"GAP Root Directory". Note that no whitespace is permitted before or
-after the semicolons.
-
-`-r'
-
+\indextt{-r}
+`-r' &
 The option `-r'  tells {\GAP}  not to  read the user  supplied `~/.gaprc'
 files.
 
-`-L <filename>'
-
+\indextt{-L}
+`-L <filename>' &
 The option `-L' tells {\GAP} to load a saved workspace. See
 section~"Saving and Loading a Workspace".
 
-`<filename> ...'
-
+\index{options!command line, filenames}
+`<filename> ...' &
 Further arguments are taken as filenames of files that are read by {\GAP}
 during startup, after the system  and private init   files are read,  but
 before the first prompt is  printed.  The files are read  in the order in
@@ -209,135 +246,145 @@ which they appear on the command line.   {\GAP} only accepts 14 filenames
 on the command  line.  If a  file cannot  be opened {\GAP}  will print an
 error message and will abort.
 
+\enditems
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Advanced Features of GAP}
 
 The following options are in general not needed  for the normal operation
 of {\GAP}.  They are mostly used for debugging.
 
-`-a <memory>' 
+\beginitems
 
+\indextt{-a}
+`-a <memory>' &
 GASMAN, the storage manager of {\GAP} uses `sbrk' to get blocks of memory
 from (certain) operating systems and it is required that subsequent calls
-to `sbrk' produce  adjacent blocks of memory  in this case because {\GAP}
-only wants to  deal with one large  block  of memory.  If the  C function
-`malloc' is called for whatever reason, it is likely that `sbrk' will no
-longer produce adjacent blocks, therefore GAP does not use `malloc' itself.
+to `sbrk' produce adjacent blocks of memory in this case  because  {\GAP}
+only wants to deal with one large block of  memory.  If  the  C  function
+`malloc' is called for whatever reason, it is likely that `sbrk' will  no
+longer produce adjacent blocks,  therefore  GAP  does  not  use  `malloc'
+itself.
 
-However some operating systems insist on calling `malloc' to create a
-buffer when a file is opened, or for some other reason.  In order to
-catch these cases GAP preallocates a block of memory with `malloc'
-which is immediately freed. The amount preallocated can be controlled
-with the `-a' option.  If the last character of <memory> is `k' or `K'
-it is taken as KBytes and if the last character is `m' or `M' <memory>
-is taken as MBytes.
+&
+However some operating systems insist on calling  `malloc'  to  create  a
+buffer when a file is opened, or for some other reason. In order to catch
+these cases GAP preallocates a block of memory  with  `malloc'  which  is
+immediately freed. The amount preallocated can  be  controlled  with  the
+`-a' option. If the last character of <memory> is `k' or `K' it is  taken
+as KBytes and if the last character is `m' or `M' <memory>  is  taken  as
+MBytes.
 
-'-A' 
+\indextt{-A}
+`-A' &
+By default, some share packages (see "Share  Packages")  are  loaded,  if
+present, into the {\GAP} session when it  starts.  This  option  disables
+(actually toggles) this behaviour, which can be useful for  debugging  or
+testing.
 
-By default, some share packages (see "Share Packages") are loaded, if
-present, into the {\GAP} session when it starts. This option disables
-(actually toggles) this behaviour, which can be useful for debugging
-or testing.
+\indextt{-B}
+`-B <architecture>' &
+Executable binary files that form part of {\GAP} or of  a  share  package
+are kept in a subdirectory of the `bin' dirctory with in  the  {\GAP}  or
+package root directory. The subdirectory  name  is  determined  from  the
+operating system, processor and compiler details when {\GAP}  (resp.  the
+package) is installed. Under rare circumstances, it may be  necessary  to
+override this name, and this can be done using the `-B' option.
 
-'-B <architecture>'
-
-Execuable binary files that form part of {\GAP} or of a share package
-are kept in a subdirectory of the 'bin' dirctory with in the {\GAP} or 
-package root directory. The subdirectory name is determined from the
-operating system, processor and compiler details when {\GAP}
-(resp. the package) is installed. Under rare circumstances, it may be
-necessary to override this name, and this can be done using the '-B'
-option.
-
-
-`-D'
-
-The `-D' option tells {\GAP} to print short  messages when it is reading
-or completing files or loading modules.
+\indextt{-D}
+`-D' &
+The `-D' option tells {\GAP} to print short messages when it  is  reading
+or completing files or loading modules. The message,
 
 \begintt
 #I  READ_GAP_ROOT: loading 'lib/kernel.g' as GAP file
 \endtt
 
+&
 tells   you  that   {\GAP}  has  started    to  read the   library   file
-``lib/kernel.g''.
+`lib/kernel.g'.
 
 \begintt
 #I  READ_GAP_ROOT: loading 'lib/kernel.g' statically
 \endtt
 
-tells you that {\GAP}  has used the compiled  version of the library file
-``lib/kernel.g''.  This compiled    module was statically linked to   the
-{\GAP} kernel at the time the kernel was created.
+&
+tells you that {\GAP} has used the compiled version of the  library  file
+`lib/kernel.g'. This compiled module was statically linked to the  {\GAP}
+kernel at the time the kernel was created.
 
 \begintt
 #I  READ_GAP_ROOT: loading 'lib/kernel.g' dynamically
 \endtt
 
+&
 tells you that {\GAP} has loaded the compiled version of the library file
-``lib/kernel.g''.   This compiled module  was  dynamically loaded to  the
-{\GAP} kernel at runtime from a corresponding `.so' file.
+`lib/kernel.g'. This compiled module was dynamically loaded to the {\GAP}
+kernel at runtime from a corresponding `.so' file.
 
 \begintt
 #I  completing 'lib/domain.gd'
 \endtt
 
-tells you   that {\GAP} has   completed the file  ``lib/domain.gd''.  See
+&
+tells you  that  {\GAP}  has  completed  the  file  `lib/domain.gd'.  See
 "Completion Files" for more information about completion of files.
 
-`-M'
+\indextt{-M}
+`-M' &
+tells {\GAP} not to check for, nor to use, compiled versions  of  library
+files.
 
-The `-M' option  tells  {\GAP}  not to check   for,  nor to  use,  compiled
-versions of library files.
+\indextt{-N}
+`-N' &
+tells {\GAP} not  to  check  for,  nor  to  use,  completion  files,  see
+"Completion Files".
 
-`-N'
+\indextt{-O}
+`-O' &
+enables a {\GAP 3} compatibility mode, in which (for instance) the values
+`false' and `fail' are identified. Use of this mode  is  not  recommended
+other than as a transitional step in porting {\GAP 3} code to  {\GAP  4},
+because the {\GAP 4} library may not work reliably in this mode.
 
-The `-N' option tells  {\GAP}  not to check   for, nor to use,   completion
-files, see "Completion Files".
+\indextt{-T}
+`-T' &
+suppresses the usual break loop behaviour of  {\GAP}.  With  this  option
+{\GAP} behaves as if the user `quit' immediately from every  break  loop.
+This is intended for automated testing of {\GAP}.
 
-'-O'
+\indextt{-X}
+`-X' &
+tells {\GAP} to do a consistency  check  of  the  library  file  and  the
+corresponding completion file when reading the completion file.
 
-The '-O' option enables a {\GAP 3} compatibility mode, in which (for
-instance) the values 'false' and 'fail' are identified. Use of this
-mode is not recommended other than as a transitional step in porting
-{\GAP 3} code to {\GAP 4}, because the {\GAP 4} library may not work
-reliably in this mode.
+\indextt{-Y}
+`-Y' &
+tells {\GAP} to do a consistency  check  of  the  library  file  and  the
+corresponding completion file when completing the library file.
 
-'-T'
-
-The '-T' option suppresses the usual break loop behaviour of
-{\GAP}. With this option {\GAP} behaves as if the user 'quit'
-immediately from every break loop. This is intended for automated
-testing of {\GAP}.
-
-`-X'
-
-The `-X' option  tells {\GAP} to do a consistency check of the library
-file and the corresponding completion   file when reading the  completion
-file.
-
-`-Y'
-
-The `-Y' option tells {\GAP}  to do a  consistency check of the library
-file and  the corresponding completion  file  when completing the library
-file.
-
-`-i <filename>'
-
-The `-i' changes the name of the init file from the default ``init.g'' to
+\indextt{-i}
+`-i <filename>' &
+changes  the  name  of  the  init  file  from  the  default  `init.g'  to
 <filename>.
 
+\enditems
 
-Additional options, '-C', '-U', '-P', '-W' amd '-z' are used
-internally in the {\GAP} compiler and/or on specific operating systems.
+\index{options!command line, internal}
+\indextt{-C}\indextt{-U}\indextt{-P}\indextt{-W}\indextt{-z}
+Additional options, `-C', `-U', `-P', `-W' and `-z' are  used  internally
+in the {\GAP} compiler and/or on specific operating systems.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The .gaprc file}
 
-\index{gap.rc}\index{.gaprc}
+\indextt{gap.rc}\indextt{.gaprc}
 When you start {\GAP}, it looks for the file with the name `.gaprc' in
-your home directory.
+your home directory (on UNIX systems). On a Macintosh the equivalent
+to the `.gaprc' file is `gap.rc', and for it to be read it must be in
+the same folder as the {\GAP} application; see Section~"Features of GAP for
+MacOS" for more details.
 If such a file is found it is read after
 `<libname>/init.g', but before any of the files mentioned on the command
 line are read. You can use this file for your private customizations.
@@ -353,7 +400,7 @@ AcHom := ActionHomomorphism;
 RepAc := RepresentativeAction;
 \endtt
 
-\index{GAP3}
+\atindex{GAP3}{@GAP3}
 If you have already a `.gaprc' file for \GAP~3, its settings might not be
 compatible with \GAP~4. In this case it has to be removed.  On UNIX Systems
 the following `.gaprc' file can be used to load alternatively a `.gap3rc' or
@@ -384,20 +431,19 @@ you  want   to  execute the  corresponding    function, the  library file
 containing the function body is completed.
 
 Completion files reduce the startup time of {\GAP} drastically.  However,
-this technique also means that the information stored in the completion
-files and the library must  be  consistent.
-If you   change  a library  file  without recreating the completion files
-disaster is bound to happen.
+this technique also means that the information stored in  the  completion
+files and the library must be consistent. If you change  a  library  file
+without recreating the completion files disaster is bound to happen.
 
-Bugfixes distributed for {\GAP} will also update the completion files.
-Therefore you only need to update them if you have changed the library
-by yourself.
+Bugfixes distributed for {\GAP} will also update  the  completion  files.
+Therefore you only need to update them if you have changed the library by
+yourself.
 
-However, if you are modifying a library file  a more convenient way is to
-use the `-X' option that allows you (in most cases) to use the completion
-files   for the unchanged  parts of  library   files and avoids using the
-completion files for the changed parts.
-After you have finished modifying the library files you can recreate the
+However, if you are modifying a library file a more convenient way is  to
+use the `-X' option (see~"Command Line Options") that allows you (in most
+cases) to use the completion files for the  unchanged  parts  of  library
+files and avoids using the completion files for the changed parts.  After
+you have finished modifying  the  library  files  you  can  recreate  the
 completion files using:
 
 \>CreateCompletionFiles() F
@@ -425,7 +471,7 @@ the completion files.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Compiler}
 
-\index{gac}
+\indextt{gac}
 The {\GAP} compiler {\sf GAC} creates C code from {\GAP} code and
 then calls the system's C compiler to produce machine code from it. This can
 result in a speedup (see section~"Suitability for Compilation" for more
@@ -435,9 +481,9 @@ details).
 %%  Ferenc~R{\'a}k{\'o}czi and Martin Sch{\"o}nert.
 
 To use the compiler to produce dynamically loadable modules,
-call it with the '-d' option:
+call it with the `-d' option:
 \begintt
-M193 /home/ahulpke > gap4/bin/gac -d test.g
+M193 /home/ahulpke > gap4/bin/i386-ibm-linux-gcc2/gac -d test.g
 gap4/bin/i386-ibm-linux-gcc2/gap -C /tmp/5827_test.c test.g Init_Dynamic
 gcc -fpic -ansi -Wall -O2 -o /tmp/5827_test.o -I
 gap4/bin/i386-ibm-linux-gcc2/../../src -c /tmp/5827_test.c
@@ -459,17 +505,22 @@ gap> LoadDynamicModule("./test.so");
 gap> CrcFile("test.g");
 2906458206
 gap> LoadDynamicModule("./test.so",1);
-Error <crc> mismatch (or no support for dynamic loading) at
-Error( "<crc> mismatch (or no support for dynamic loading)" );
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or you can return to continue
+Error, <crc> mismatch (or no support for dynamic loading) called from
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
 brk> quit;
 gap> LoadDynamicModule("./test.so",2906458206);
 \endtt
 
 If you want to see or modify the intermediate C code, you can also instruct
 the compiler to produce only the C files by using the option `-C' instead of
-`-d'.
+`-d'. 
+
+On some operating systems, once you have loaded a dynamic module with
+a certain filename, loading another with the same filename will have
+no effect, even if the file on disk has changed.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Suitability for Compilation}
@@ -548,7 +599,7 @@ always reads code from the library.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{CRC Numbers}
 
-\index{crc}
+\atindex{CRC}{@CRC}\indextt{CrcFile!example}
 CRC (cyclic redundancy check) numbers provide a certain method of doing
 checksums. They are used by {\GAP} to check whether
 files have changed.
@@ -557,18 +608,13 @@ Whenever files are ``condensed'' -- for example for completion files
 checksum is computed implicitly and stored within the condensed file.
 
 When reading a condensed version of the file instead of the original one,
-the CRC checksum can be used to check whether the original has been changed
-in the meantime.
-
-\>CrcFile( <filename> ) F
-
-can be used to compute a CRC checksum for the file with name <filename>.
+the CRC checksum, which is computed via `CrcFile' (see~"CrcFile"), can be
+used to check whether the original has been changed in the meantime, e.g.
 
 \begintt
 gap> CrcFile("lib/morpheus.gi");
 2705743645
 \endtt
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Saving and Loading a Workspace}
@@ -594,7 +640,8 @@ be included in the body of a loop or function, or called from a break loop.
 
 \>`-L <filename>'{load}
 
-A saved workspace can be loaded by starting {\GAP} with the option `-L'.
+A saved workspace can be loaded by starting {\GAP} with the option `-L'
+(see~"Command Line Options").
 This will start {\GAP} and load the workspace.
 
 \begintt
@@ -635,7 +682,7 @@ true
 
 A small number of such messages can probably be ignored (they arise
 because the garbage collector may not always collect all dead objects, 
-and dead objects may contain data that 'SaveWorkspace' does not know how 
+and dead objects may contain data that `SaveWorkspace' does not know how 
 to process). 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

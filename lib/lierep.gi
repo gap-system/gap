@@ -1,6 +1,7 @@
 #############################################################################
 ##
 #W  lierep.gi                   GAP library                Willem de Graaf
+#W                                                     and Craig A. Struble
 ##
 #H  @(#)$Id$
 ##
@@ -714,7 +715,7 @@ InstallMethod( WeylGroup,
               od;
           od;
           SetSparseCartanMatrix( G, RM );
-          FamilyObj( G )!.rootSystem:= R;
+          SetRootSystem( G, R );
           return G;
 end );
 
@@ -893,7 +894,7 @@ InstallMethod( WeylOrbitIterator,
                         curLen:= 0,
                         maxlen:= len,
                         noPosR:= Length( PositiveRoots(
-                                FamilyObj( W )!.rootSystem ) ),
+                                RootSystem(W) ) ),
                         isDone:= false ) );
 
 end );
@@ -1128,19 +1129,18 @@ end );
 
 #############################################################################
 ##
+#M  DominantCharacter( <R>, <maxw> )
 #M  DominantCharacter( <L>, <maxw> )
 ##
-##
 InstallMethod( DominantCharacter,
-    "for a semisimple Lie algebra and a highest weight",
-    true, [ IsLieAlgebra, IsList ], 0,
-   function( L, maxw )
+    "for a root system and a highest weight",
+    true, [ IsRootSystem, IsList ], 0,
+   function( R, maxw )
 
-   local R, ww, rank, fundweights, rhs, bilin, i, j, rts, dones, mults,
+   local ww, rank, fundweights, rhs, bilin, i, j, rts, dones, mults,
          lam_rho, clam, WR, refl, grps, orbs, k, mu, zeros, p, O, W, reps,
          sum, a, done_summing, sum1, nu, nu1, mu_rho, gens;
 
-   R:= RootSystem( L );
    ww:= DominantWeights( R, maxw );
    rank:= Length( CartanMatrix( R ) );
 
@@ -1253,6 +1253,13 @@ InstallMethod( DominantCharacter,
 
    return [ dones, mults ];
 
+end );
+
+InstallOtherMethod( DominantCharacter,
+    "for a semisimple Lie algebra and a highest weight",
+    true, [ IsLieAlgebra, IsList ], 0,
+   function( L, maxw )
+       return DominantCharacter( RootSystem(L), maxw );
 end );
 
 
@@ -2230,6 +2237,302 @@ end );
 
 ############################################################################
 ##
+##                                               
+##
+##  The next few functions are implementations for vector search tables. 
+##  The ideas
+##  used in this implementation are from Macaulay 2 by Dan Grayson and
+##  Mike Stillman.
+##
+
+#############################################################################
+##
+#R  IsVectorSearchTableDefaultRep     Representation of vector search tables.
+##
+DeclareRepresentation( "IsVectorSearchTableDefaultRep",
+    IsVectorSearchTable and IsComponentObjectRep and IsAttributeStoringRep,
+    [ "top" ]);            # the top node of the search data structure
+
+## Create a new vector search tree node
+VSTNode := function(var, exp, nxt)
+    return rec( var := var,
+                exp := exp,
+                nxt := nxt,
+                isHeader := false,
+                header := 0,
+                right := 0,
+                left := 0 );
+end;
+
+## Insert the node p to the left of node q in the doubly linked list
+VSTInsertToLeft := function(q, p)
+    p.header := q.header;
+    p.left := q.left;
+    p.right := q;
+    q.left.right := p;
+    q.left := p;
+end;
+
+#############################################################################
+##
+#O  Insert( <T>, <key>, <data> )
+##
+##  inserts the object <data> into table <T> with key <key>. The key <key>
+##  must be an integer list. Assumes that the identity element is not
+##  ever inserted.
+##
+InstallMethod( Insert,
+    "for a vector search table in default representation",
+    [ IsVectorSearchTableDefaultRep, IsHomogeneousList, IsObject ],
+    function( T, key, data )
+        local p,               # Position in the search data structure
+              q,               # Position in the search data structure
+              i,               # Index into the key
+              update,          # The index should be updated
+              nxt,             # The next node to follow in the search
+              iVar,            # The variable index being inserted
+              iExp,            # The exponent being inserted
+              iNode,           # The new VST node to insert
+              cKey,            # A compressed version of the key
+              pState,          # Where new header nodes should be inserted
+              headerNode,      # New node to insert for new level
+              zeroNode;        # New node to insert for new level
+
+        p := T!.top;
+        nxt := 0;
+        pState := 0; # 0 means top node, 1 means nxt node.
+
+        # Build a compressed key
+        cKey := [];
+        for i in [1..Length(key)] do
+            if key[i] <> 0 then
+                Append(cKey, [i,key[i]]);
+            fi;
+        od;
+
+        Info(InfoSearchTable, 1, "Compressed key: ", cKey);
+
+        i := Length(cKey)-1;
+        while i >= 1 do
+            iVar := cKey[i];
+            if p = 0 then
+                ## Create a new header node for a new variable level
+                Info(InfoSearchTable, 1, "Creating new header.");
+                if pState = 0 then
+                    T!.top := VSTNode(iVar, 0, nxt);
+                    p := T!.top;
+                else
+                    q.nxt := VSTNode(iVar, 0, nxt);
+                    p := q.nxt;
+                fi;
+                p.isHeader := true;
+                p.header := p;
+                p.left := p;
+                p.right := p;
+            elif p.var < iVar then
+                ## A higher indexed variable has a non-zero component.
+                ## Create a new level in the data structure, storing
+                ## the current level under the exponent 0 for the new
+                ## non-zero component.
+                Info(InfoSearchTable, 1, "Creating new layer.");
+                headerNode := VSTNode(iVar, 0, nxt);
+                zeroNode := VSTNode(iVar, 0, p);
+                headerNode.isHeader := true;
+                headerNode.left := zeroNode;
+                headerNode.right := zeroNode;
+                p.nxt := zeroNode;
+                zeroNode.right := headerNode;
+                zeroNode.left := headerNode;
+                zeroNode.header := headerNode;
+                headerNode.header := headerNode;
+                p := headerNode;
+                if pState = 0 then
+                    T!.top := p;
+                else
+                    q.nxt := p;
+                fi;
+            fi;
+            
+            # Need to add a zero layer to the current variable.
+            if p.var > iVar then
+                iVar := p.var;
+                iExp := 0;
+                update := false;
+            else
+                iExp := cKey[i+1];
+                update := true;
+            fi;
+
+            # Insert into the doubly linked list in the current level
+            q := p.right;
+            while (not q.isHeader) and (q.exp < iExp) do
+                q := q.right;
+            od;
+            if q.exp <> iExp then
+                Info(InfoSearchTable, 1, "Inserting: ", iVar, " ", iExp);
+                iNode := VSTNode(iVar, iExp, 0);
+                VSTInsertToLeft(q, iNode);
+                if i <> 1 or not update then
+                    q := iNode;
+                else
+                    iNode.data := data;
+                    return true;
+                fi;
+            fi;
+            nxt := q;
+            p := q.nxt;
+            pState := 1;
+            if update then
+                i := i - 2;
+            fi;
+        od;
+        return false;    # already in the table
+    end );
+
+
+#############################################################################
+##
+#O  Search( <T>, <key> )
+##
+##  searches the vector search table <T> for a key that divides <key>.
+##  If an appropriate key <div> is found, the data stored with <div> is
+##  returned. Otherwise, `fail' is returned.
+##
+InstallMethod( Search,
+    "for vector search tables in default representation",
+    [ IsVectorSearchTableDefaultRep, IsHomogeneousList ],
+    function( T, key )
+        local p;    # point into the search data structure
+
+        # Handle empty tables.
+        if T!.top = 0 then
+            return fail;
+        fi;
+        
+        p := T!.top;
+        while true do
+            p := p.right;
+            if p.isHeader then
+                # Checked all of the elements on the current level, move on.
+                p := p.nxt;
+                if p = 0 then
+                    return fail;
+                fi;
+            elif p.exp > key[p.var] then
+                # Remaining elements are too large, move on.
+                p := p.header.nxt;
+                if p = 0 then
+                    return fail;
+                fi;
+            elif IsBound(p.data) then
+                # Found an element.
+                return p.data;
+            else
+                # Still making progress. Continue the search.
+                p := p.nxt;
+            fi;
+        od;
+    end );
+
+#############################################################################
+##
+#F VectorSearchTable( )
+#F VectorSearchTable( <keys>, <data> )
+##
+## construct an empty search table or a search table containing <data>
+## keyed by <keys>. The list <keys> must contain integer lists which are
+## interpreted as exponents for variables.           
+## 
+## The lists <keys> and <data> must be the same length as well.
+##
+InstallGlobalFunction( VectorSearchTable,
+    function( arg )
+        local fam, T, i;
+
+        if Length(arg) <> 0 and Length(arg) <> 2 then
+            Error("Usage: VectorSearchTable() or VectorSearchTable( keys, data )");
+        fi;
+        if Length(arg) = 2 and Length(arg[1]) <> Length(arg[2]) then
+            Error("Must provide the same number of keys and data.");
+        fi;
+
+        fam := NewFamily("VectorSearchTableFam", IsVectorSearchTable);
+        T := Objectify( NewType(fam, 
+                                IsVectorSearchTableDefaultRep and IsMutable),
+                        rec( top := 0) );
+
+        if Length(arg) = 2 then
+            for i in [1..Length(arg[1])] do
+                Insert(T, arg[1][i], arg[2][i]);
+            od;
+        fi;
+
+        return T;
+    end );
+
+
+#############################################################################
+##
+#M ViewObj( <T> )
+##
+## Prints out simply that this is a vector search table.
+##
+InstallMethod( ViewObj,
+    "for vector search tables",
+    [IsVectorSearchTable],
+    function( T )
+        Print("<vector search table>");
+    end );
+
+
+#############################################################################
+##
+#M Display( <T> )
+##
+## Display the contents of <T> in a tree like output.
+##
+InstallMethod(Display,
+    "for vector search tables in default representation",
+    [IsVectorSearchTableDefaultRep],
+    function(T)
+        local DisplayNode,
+              DisplayTree;
+
+        DisplayNode := function(n, indent)
+            local i;
+            for i in [1..indent] do
+                Print(" ");
+            od;
+            Print(n.var, " ", n.exp);
+            if IsBound(n.data) then
+                Print("  (", n.data, ")");
+            fi;
+            Print("\n");
+        end;
+
+        DisplayTree := function(n, indent)
+            local q;
+
+            DisplayNode(n, indent);
+            q := n.right;
+            while not q.isHeader do
+                DisplayNode(q, indent);
+                if not IsBound(q.data) then
+                    DisplayTree(q.nxt, indent+2);
+                fi;
+                q := q.right;
+            od;
+        end;
+
+        if T!.top <> 0 then
+            DisplayTree(T!.top, 0);
+        fi;
+    end );
+
+
+
+############################################################################
+##
 #M  LatticeGeneratorsInUEA( <L> )
 ##
 ##
@@ -2369,15 +2672,19 @@ end );
 
 #############################################################################
 ##
-#F  LeftReduceUEALatticeElement( <novar>, <G>, <lms>, <p> )
+#F  LeftReduceUEALatticeElement( <novar>, <G>, <lms>, <lmtab>, <p> )
+##
+##  Here `G' is a list of UEALatticeElements, `lms' is a list of
+##  indices where the leading monomials of elements of `G' can be found
+##  (in their extrep), `lmtab' is a search table for `G', `p' is the
+##  elements to be reduced modulo `G'.
 ##
 ##
 InstallGlobalFunction( LeftReduceUEALatticeElement,
-        function( novar, G, lms, p )
+        function( novar, G, lms, lmtab, p )
 
-    local   fam,  reduced,  rem,  res,  m1,  k,  g,  diff,  cme,  mon,
-            cflmg,  j,  isfactor,  fac,  fac1,  cf,  lm;
-
+    local   fam,  reduced,  rem,  res,  m1,  k,  g,  diff,  cme,  mon,  
+            cflmg,  j,  fac,  fac1,  cf,  lm;
 
     # We left-reduce the UEALattice element `p' modulo the elements in `G'.
     # Here `lms' is a list of leading monomial-indices; if the index `k'
@@ -2395,7 +2702,10 @@ InstallGlobalFunction( LeftReduceUEALatticeElement,
         m1:= LeadingUEALatticeMonomial( novar, rem );
         k:= 1;
         reduced:= false;
-        while k <= Length(G) do
+            
+        k:= Search( lmtab, m1[2] );
+        if k <> fail then
+            
             g:= G[k];
             diff:= ShallowCopy( m1[2] );
             cme:= g![1];
@@ -2404,41 +2714,32 @@ InstallGlobalFunction( LeftReduceUEALatticeElement,
             for j in [1,3..Length(mon)-1] do
                 diff[mon[j]]:= diff[mon[j]] - mon[j+1];
             od;
-            isfactor:= true;
+
+            fac:= [ ];
             for j in [1..novar] do
-                if diff[j] < 0  then
-                    isfactor:= false;
-                    break;
+                if diff[j] <> 0 then
+                    Add( fac, j ); Add( fac, diff[j] );
                 fi;
             od;
-
-            if isfactor then
-                fac:= [ ];
-                for j in [1..novar] do
-                    if diff[j] <> 0 then
-                        Add( fac, j ); Add( fac, diff[j] );
-                    fi;
-                od;
-                fac1:= ObjByExtRep( fam, [ fac, 1 ] )*g;
-                cf:= LeadingUEALatticeMonomial( novar, fac1 )[3];
-                rem:= rem - (m1[3]/cf)*fac1;
-                reduced:= true;
-                break;
-            fi;
-            k:= k+1;
-        od;
-
-        if not reduced then
+            fac1:= ObjByExtRep( fam, [ fac, 1 ] )*g;
+            cf:= LeadingUEALatticeMonomial( novar, fac1 )[3];
+            rem:= rem - (m1[3]/cf)*fac1;
+            reduced:= true;
+    
+        
+        else
             lm:= ObjByExtRep( fam, [ m1[1], m1[3] ] );
             res:= res + lm;
-            rem:= rem-lm;
+            rem:= rem-lm; 
         fi;
-
+        
+            
     od;
 
     return res;
 
 end );
+
 
 ############################################################################
 ##
@@ -2566,7 +2867,9 @@ InstallMethod(\*,
         [ IsWeightRepElement and IsPackedElementDefaultRep, IsRingElement ], 0,
         function( u, scal )
     local lu,k;
-
+    
+    if IsZero( scal ) then return ZeroOp( u ); fi;
+    
     lu:= ShallowCopy( u![1] );
     for k in [2,4..Length(lu)] do
         lu[k]:= scal*lu[k];
@@ -2581,6 +2884,8 @@ InstallMethod(\*,
         [ IsRingElement, IsWeightRepElement and IsPackedElementDefaultRep ], 0,
         function( scal, u  )
     local lu,k;
+    
+    if IsZero( scal ) then return ZeroOp( u ); fi;
 
     lu:= ShallowCopy( u![1] );
     for k in [2,4..Length(lu)] do
@@ -2640,8 +2945,8 @@ InstallOtherMethod(\^,
         [ IsRingElement, IsWeightRepElement and IsPackedElementDefaultRep], 0,
         function( x, u )
 
-    local   fam,  G,  L,  wvecs,  j,  hwv,  hw,  g,  elt,  lu,  m,  k,
-            n,  em,  er,  i,  len,  cf,  mon,  pos,  f,  mons,  cfts,
+    local   fam,  G,  L,  wvecs,  j,  hwv,  hw,  g,  elt,  lu,  m,  k,  
+            n,  em,  er,  i,  len,  cf,  mon,  pos,  f,  mons,  cfts,  
             p,  im;
 
     fam:= FamilyObj( u );
@@ -2730,7 +3035,7 @@ InstallOtherMethod(\^,
 
     od;
     f:= ObjByExtRep( FamilyObj( m ), er );
-    m:= LeftReduceUEALatticeElement( n, G[1], G[2], f );
+    m:= LeftReduceUEALatticeElement( n, G[1], G[2], G[3], f );
 
     # Write `m' as a weight rep element again...
     mons:= [ ];
@@ -2753,16 +3058,14 @@ InstallOtherMethod(\^,
 
 end );
 
+
 #############################################################################
 ##
-#M  NewBasis( <V>, <vecs> )  for space of weight rep elements
+#F  BasisOfWeightRepSpace( <V>, <vecs> )
+##                           for space of weight rep elements
 ##                           and a list of elements thereof
 ##
-InstallMethod( NewBasis,
-    "for a space of weight rep elements, and homogeneous list",
-    IsIdenticalObj,
-    [ IsFreeLeftModule and IsWeightRepElementCollection,
-      IsWeightRepElementCollection and IsList ], 0,
+BindGlobal( "BasisOfWeightRepSpace",
     function( V, vectors )
     local B;
 
@@ -2875,7 +3178,7 @@ InstallMethod( Basis,
 
       info:= TriangulizeWeightRepElementList( ShallowCopy( vectors ) );
       if Length( info.echelonbas ) <> Length( vectors ) then return fail; fi;
-      B:= NewBasis( V, vectors );
+      B:= BasisOfWeightRepSpace( V, vectors );
       B!.echelonBasis:= info.echelonbas;
       B!.heads:= info.heads;
       B!.baseChange:= info.basechange;
@@ -2893,7 +3196,7 @@ InstallMethod( BasisNC,
 
       info:= TriangulizeWeightRepElementList( ShallowCopy( vectors ) );
       if Length( info.echelonbas ) <> Length( vectors ) then return fail; fi;
-      B:= NewBasis( V, vectors );
+      B:= BasisOfWeightRepSpace( V, vectors );
       B!.echelonBasis:= info.echelonbas;
       B!.heads:= info.heads;
       B!.baseChange:= info.basechange;
@@ -2902,10 +3205,9 @@ end );
 
 #############################################################################
 ##
-#M  BasisOfDomain( <V> ) . . . . . . . . . . . . . . . for a space of weight
-##                                                     rep elements
+#M  Basis( <V> )  . . . . . . . . . . . .  for a space of weight rep elements
 ##
-InstallMethod( BasisOfDomain,
+InstallMethod( Basis,
     "for a space of weight rep elements",
     true, [ IsFreeLeftModule and IsWeightRepElementCollection ], 0,
     function( V )
@@ -2914,7 +3216,7 @@ InstallMethod( BasisOfDomain,
 
     info:= TriangulizeWeightRepElementList( ShallowCopy(
                                   GeneratorsOfLeftModule( V ) ) );
-    B:= NewBasis( V, info.echelonbas );
+    B:= BasisOfWeightRepSpace( V, info.echelonbas );
     B!.echelonBasis:= info.echelonbas;
     B!.heads:= info.heads;
     B!.baseChange:= List( [1..Length(info.echelonbas)], x -> [[ x, 1 ]] );
@@ -2940,7 +3242,7 @@ InstallMethod( Coefficients,
     # in `lierep.gd'.
 
     w:= v;
-    cf:= List( BasisVectors( B ), x -> 0 );
+    cf:= List( BasisVectors( B ), x -> FamilyObj(v)!.zeroCoeff );
     for i in [1..Length(B!.heads)] do
         if IsZero( w ) then return cf; fi;
         if w![1][1][1] < B!.heads[i] then
@@ -2966,128 +3268,65 @@ end );
 ##
 #M  HighestWeightModule( <L>, <hw> ) for a Lie algebra and a dominant weight.
 ##
-InstallGlobalFunction( HighestWeightModule,
+InstallMethod( HighestWeightModule,
+        "for a Lie algebra and a list of non-negative integers",
+        true, [ IsLieAlgebra, IsList ], 0,
 
- function( L, hw )
+  function( L, hw )
 
-    local   IsReducible,  NormalizedLeftReduction,  AddAndReduce,
-            ggg,  famU,  R,  n,  posR,  V,  lcombs,  fundB,  novar,
-            rank,  char,  orbs,  k,  it,  orb,  www,  levels,
-            weights,  wd,  levwd,  i,  w,  j,  w1,  lev,  lents,
-            maxlev,  cfs,  G,  Glms,  paths,  GB,  lms,  curlev,  ccc,
-            mons,  pos,  m,  em,  z,  pos1,  Glmsk,  Gk,  isdone,
-            mmm,  f,  multiplicity,  we_had_enough,  le,  m1a,
-            prelcm,  l,  g,  m2a,  lcm,  pp,  w2,  e1,  e2,  fac1,
-            fac2,  comp,  wvecs,  no,  fam, delB, delmod, B;
-
-    IsReducible:= function( novar, G, lms, p )
-
-        local   fam,  m1,  k,  g,  diff,  cme,  mon,  cflmg,  j,
-                isfactor;
-
-
-        # Here `p' is a UEALattice elt; we check whether it can be
-        # reduced modulo `G' (without reducing it).
-
-        m1:= LeadingUEALatticeMonomial( novar, p );
-
-        k:= 1;
-        while k <= Length(G) do
-            g:= G[k];
-            diff:= ShallowCopy( m1[2] );
-            cme:= g![1];
-            mon:= cme[ lms[k] ];
-            cflmg:= cme[ lms[k]+1 ];
-            for j in [1,3..Length(mon)-1] do
-                diff[mon[j]]:= diff[mon[j]] - mon[j+1];
-            od;
-
-            isfactor:= true;
-            for j in [1..novar] do
-                if diff[j] < 0  then
-                    isfactor:= false;
-                    break;
-                fi;
-            od;
-
-            if isfactor then
-                return true;
-            fi;
-            k:= k+1;
+    local   NormalizedLeftReduction,  ggg,  famU,  R,  n,  posR,  V,  
+            lcombs,  fundB,  novar,  rank,  char,  orbs,  k,  it,  
+            orb,  www,  levels,  weights,  wd,  levwd,  i,  w,  j,  
+            w1,  lev,  lents,  maxlev,  cfs,  G,  Glms,  paths,  GB,  
+            lms,  lmtab,  curlev,  ccc,  mons,  pos,  m,  em,  z,  
+            pos1,  Glmsk,  Gk,  isdone,  mmm,  lm,  prelcm,  l,  
+            multiplicity,  sps,  sortmn,  we_had_enough,  le,  f,  
+            m1a,  g,  m2a,  lcm,  pp,  w2,  e1,  e2,  fac1,  fac2,  
+            comp,  vec,  ecomp,  vecs,  cfsc,  ec,  wvecs,  no,  fam,  
+            B,  delmod,  delB, lexord, longmon;
+    
+    
+    lexord:= function( novar, m1, m2 )
+    
+        # m1, m2 are two monomials in extrep, deg lex order...
+    
+        local   d1,  d2,  n1,  k,  n2,  o,  pos;
+        
+        d1:= Sum(m1{[2,4..Length(m1)]});
+        d2:= Sum(m2{[2,4..Length(m2)]});
+        if d1<>d2 then
+            return d1<d2;
+        fi;
+        
+        n1:= ListWithIdenticalEntries( novar, 0 );
+        for k in [1,3..Length(m1)-1] do
+            n1[m1[k]]:= m1[k+1];
         od;
-
-        return false;
-
+        n2:= ListWithIdenticalEntries( novar, 0 );
+        for k in [1,3..Length(m2)-1] do
+            n2[m2[k]]:= m2[k+1];
+        od;
+        
+        o:= n2-n1;
+        pos:= PositionProperty( o, x -> x <> 0 );
+        return o[pos] < 0;
     end;
 
-    NormalizedLeftReduction:= function( novar, G, lms, p )
+
+    NormalizedLeftReduction:= function( novar, G, lms, lmtab, p )
 
         local   res,  cf;
 
         # We reduce `p' modulo `G' and make the coefficients integral, and
         # divide by their greatest common divisor.
 
-        res:= LeftReduceUEALatticeElement( novar, G, lms, p );
+        res:= LeftReduceUEALatticeElement( novar, G, lms, lmtab, p );
         if res <> 0*res then
             cf:= res![1]{[2,4..Length(res![1])]};
             res:= (Lcm(List(cf,DenominatorRat))/
                                  Gcd(List(cf,NumeratorRat)))*res;
         fi;
         return res;
-
-    end;
-
-
-    AddAndReduce:= function( novar, G, lms, g  )
-
-        local   stack,  g1,  m,  j,  red_occ,  h,  m1;
-
-        # We add `g' to the set `G', and see to it that `G' remains self-
-        # reduced.
-
-        stack:= [ g ];
-
-        while stack <> [] do
-            g1:= stack[1];
-            RemoveElmList( stack, 1 );
-            g1:= NormalizedLeftReduction( novar, G, lms, g1 );
-
-            if g1![1] <> [ ] then
-
-                m:= LeadingUEALatticeMonomial( novar, g1 );
-
-                # Now we look for elements of `G' that are reducible modulo
-                # `g1'. When we find such an element we move it from `G'
-                # to `stack'.
-
-                for j in [1..Length(G)] do
-                    if IsBound(G[j]) then
-                        h:= NormalizedLeftReduction( novar,[g1],[m[4]],G[j] );
-                        if h <> G[j] then
-
-                            if h![1] <> [ ] then
-                                m1:= LeadingUEALatticeMonomial( novar, h );
-                                if m1[1] <> G[j]![1][ lms[j] ] then
-                                    Add( stack, h );
-                                    RemoveElmList( G, j );
-                                    RemoveElmList( lms, j );
-                                else
-                                    G[j]:= h;
-                                    lms[j]:= m1[4];
-                                fi;
-                            else
-                                RemoveElmList( G, j );
-                                RemoveElmList( lms, j );
-                            fi;
-                        fi;
-                    fi;
-                od;
-
-                Add( G, g1 );
-                Add( lms, LeadingUEALatticeMonomial( novar, g1 )[4] );
-
-            fi;
-        od;
 
     end;
 
@@ -3194,6 +3433,8 @@ InstallGlobalFunction( HighestWeightModule,
     # `paths' is the list of normal monomials of each weight in `weights'.
     # `GB' is the Groebner basis, now as a flat list, `lms' are the
     # corresponding leading monomials.
+    # `lmtab' will be the search table of leading monomials of `G'. 
+    # 
 
     G:= [ [ ] ];
     Glms:= [ [ ] ];
@@ -3201,7 +3442,7 @@ InstallGlobalFunction( HighestWeightModule,
     paths:= [ [ ggg[1]^0 ] ];
     GB:= [ ];
     lms:= [ ];
-
+    lmtab:= VectorSearchTable( );
 
     k:= 2;
     while k <= Length(wd) do
@@ -3226,7 +3467,7 @@ InstallGlobalFunction( HighestWeightModule,
             mons[j]:= [ ];
             for i in [1..Length(posR)] do
 
-                # We construct all weights of higher levels (that already have
+                # We construct all weights of lower levels (that already have
                 # been taken care of), connected to the weight `w'.
 
                 w1:= w[j] + posR[i];
@@ -3272,7 +3513,7 @@ InstallGlobalFunction( HighestWeightModule,
             od;
         od;
 
-        # `Gk' will contain the parst of the Groebner basis corresponding
+        # `Gk' will contain the part of the Groebner basis corresponding
         # to the weights in `w'. `Glmsk' are the corresponding leading
         # monomials. The list `isdone' keeps track of the positions
         # with a complete part of the GB. `mmm' are the corresponding
@@ -3284,6 +3525,23 @@ InstallGlobalFunction( HighestWeightModule,
         mmm:= [ ];
 
         for j in [1..Length(w)] do
+
+            for i in [1..Length(mons[j])] do
+                
+                lm:= mons[j][i]![1][1];
+                longmon:= ListWithIdenticalEntries( n, 0 );
+                for l in [1,3..Length(lm)-1] do
+                    longmon[lm[l]]:= lm[l+1];
+                od; 
+                if Search( lmtab, longmon ) <> fail then
+                    
+                    # This means that `longmon' reduces modulo `G', 
+                    # so we get rid of it.
+                    Unbind( mons[j][i] );
+                fi;
+            od;                
+            mons[j]:= Filtered( mons[j], x -> IsBound(x) );
+
             Glmsk[j]:= [ ];
             Gk[ j ]:= [ ];
             if curlev > maxlev or not w[j] in levels[ curlev ] then
@@ -3291,12 +3549,10 @@ InstallGlobalFunction( HighestWeightModule,
             # `w[j]' is not a weight of the representation; this means that
             # there are no normal monomials of weight `w[j]'. Hence we can
             # add all candidates in `mons' to the Groebner basis.
-
-                mons[j]:= Filtered( mons[j], x ->
-                                  not IsReducible( novar, GB, lms, x ) );
-                for f in mons[j] do
-                    AddAndReduce( novar, Gk[j], Glmsk[j], f );
-                od;
+                
+                
+                Gk[j]:= mons[j];
+                Glmsk[j]:= List( Gk[j], x -> 1 );
 
                 # Normal monomials; empty in this case.
                 mmm[j]:= [ ];
@@ -3322,16 +3578,31 @@ InstallGlobalFunction( HighestWeightModule,
                                      fi;
                                      return 0;
                                  end );
-
+                                 
+        # Let `a', `b' be two monomials of the same weight; then `a' can only
+        # be a factor of `b' if we have `a=b'. So reduction within a
+        # weight component is the same as linear algebra. We use the 
+        # mutable bases in `sps' to perform the linear algebra.
+                                 
+        sps:= [ ];
+        sortmn:= [ ];                         
         for j in [1..Length(w)] do
             if not isdone[j] then
-                mmm[j]:= Filtered( mons[j],
-                                 x -> not IsReducible( novar, GB, lms, x ) );
+                mmm[j]:= mons[j];
                 if Length( mmm[j] ) = multiplicity[j] then
                     isdone[j]:= true;
+                else
+                    
+                    sps[j]:= MutableBasis( Rationals, [], 
+                                     [1..Length(mmm[j])]*0 );
+                    sortmn[j]:= List( mmm[j], x -> ExtRepOfObj(x)[1] );
+                    Sort( sortmn[j], function(x,y) return
+                             lexord( novar, y, x ); end );
+                      
                 fi;
             fi;
         od;
+        
 
         we_had_enough:= ForAll( isdone, x -> x );
         le:= Length(GB);
@@ -3396,19 +3667,22 @@ InstallGlobalFunction( HighestWeightModule,
 
                     comp:= LeadingUEALatticeMonomial(novar,fac2)[3]*fac1 -
                            LeadingUEALatticeMonomial(novar,fac1)[3]*fac2;
-                    comp:= NormalizedLeftReduction( novar, GB, lms, comp );
+                    comp:= NormalizedLeftReduction( novar, GB, lms, lmtab,
+                                   comp );
                     if comp <> 0*comp then
-                        AddAndReduce( novar, Gk[pp], Glmsk[pp], comp );
-                        for l in [1..Length(mmm[pp])] do
-                            if IsReducible(novar,Gk[pp],Glmsk[pp],mmm[pp][l] )
-                               then
-                                Unbind( mmm[pp][l] );
-                                break;
-                            fi;
-                        od;
-                        mmm[pp]:= Filtered( mmm[pp], x -> IsBound(x) );
 
-                        isdone[pp]:=  multiplicity[pp] = Length( mmm[pp] );
+                        vec:= ListWithIdenticalEntries( Length( sortmn[pp] ), 
+                                      0 );
+                        ecomp:= comp![1];
+                        for l in [1,3..Length(ecomp)-1] do
+                            vec[ Position( sortmn[pp], ecomp[l] )]:=
+                              ecomp[l+1];
+                        od;
+                   
+                        CloseMutableBasis( sps[pp], vec );
+                   
+                        isdone[pp]:=  multiplicity[pp] = Length( mmm[pp] )-
+                                      Length( BasisVectors( sps[pp] ) );
                         if isdone[pp] then
                             we_had_enough:= ForAll( isdone, x -> x );
                         fi;
@@ -3419,12 +3693,96 @@ InstallGlobalFunction( HighestWeightModule,
         od;     # loop over i
 
         for j in [1..Length(w)] do
+            
             if multiplicity[j] > 0 then
+                
+                # We add the elements that we get from the mutable bases to 
+                # the Groebner basis. We have to use the order of monomials
+                # that is used by GAP to multiply, i.e., not the deglex order.
+                # (Otherwise everything messes up.)
+                
+                if IsBound( sps[j] ) then
+              
+                    vecs:= BaseMat( BasisVectors( sps[j] ) );
+       
+                else
+                    vecs:= [ ];
+                fi;
+                
+                for l in [1..Length(vecs)] do
+                    ecomp:= [ ];
+                    cfsc:= [ ];
+                    for i in [1..Length(vecs[l])] do
+                        if vecs[l][i] <> 0*vecs[l][i] then
+                            
+                            Add( ecomp, sortmn[j][i] );
+                            Add( cfsc, vecs[l][i] );
+                        fi;
+                        
+                    od;
+                    SortParallel( ecomp, cfsc );
+                    ec:= [ ];
+                    for i in [1..Length(ecomp)] do
+                        Add( ec, ecomp[i] ); 
+                        Add( ec, cfsc[i] );
+                    od;
+                    
+                    Add( Gk[j], ObjByExtRep( famU, ec ) ); 
+                od;
+                
+                Glmsk[j]:= List( Gk[j], x -> LeadingUEALatticeMonomial(
+                                  novar, x )[ 4 ] );
+                
+                le:= Length(GB);
+                Append( GB, Gk[j] );
+                Append( lms, Glmsk[j] );
+                
+                # Update the search table....
+                
+                for i in [1..Length(Gk[j])] do
+                    lm:= Gk[j][i]![1][ Glmsk[j][i] ];
+                    longmon:= ListWithIdenticalEntries( n, 0 );
+                    for l in [1,3..Length(lm)-1] do
+                        longmon[lm[l]]:= lm[l+1];
+                    od; 
+                    Insert( lmtab, longmon, le+i ); 
+                od;
+                
+                # Get rid of the monomials that reduce....
+                
+                for i in [1..Length(mmm[j])] do
+                    lm:= mmm[j][i]![1][1];
+                    longmon:= ListWithIdenticalEntries( n, 0 );
+                    for l in [1,3..Length(lm)-1] do
+                        longmon[lm[l]]:= lm[l+1];
+                    od; 
+                    if Search( lmtab, longmon ) <> fail then
+                        Unbind( mmm[j][i] );
+                    fi;
+                od;
+                mmm[j]:= Filtered( mmm[j], x -> IsBound(x) );
                 paths[Position(weights,w[j])]:= mmm[j];
+            else
+                
+                # In this case the weight s not a weight of the representation;
+                # we only update the Groebner basis, and the search table.
+                
+                le:= Length(GB);
+                Append( GB, Gk[j] );
+                Append( lms, Glmsk[j] );
+                
+                for i in [1..Length(Gk[j])] do
+                    lm:= Gk[j][i]![1][ Glmsk[j][i] ];
+                    longmon:= ListWithIdenticalEntries( n, 0 );
+                    for l in [1,3..Length(lm)-1] do
+                        longmon[lm[l]]:= lm[l+1];
+                    od;
+                    Insert( lmtab, longmon, le+i ); 
+                od;
             fi;
-
-            Append( GB, Gk[j] );
-            Append( lms, Glmsk[j] );
+            
+            
+            
         od;
         Append( G, Gk );
 
@@ -3447,12 +3805,13 @@ InstallGlobalFunction( HighestWeightModule,
         od;
     od;
 
-    fam!.grobnerBasis:= [ GB, lms ];
+    fam!.grobnerBasis:= [ GB, lms, lmtab ];
     fam!.algebra:= L;
     fam!.hwModule:= V;
     fam!.weightVectors:= wvecs;
     fam!.dimension:= Length( wvecs );
-    V:= LeftAlgebraModule( L, \^, wvecs );
+    fam!.zeroCoeff:= Zero( LeftActingDomain( L ) );
+    V:= LeftAlgebraModuleByGenerators( L, \^, wvecs );
     SetGeneratorsOfLeftModule( V, GeneratorsOfAlgebraModule( V ) );
 
     B:= Objectify( NewType( FamilyObj( V ),
@@ -3463,16 +3822,17 @@ InstallGlobalFunction( HighestWeightModule,
     SetUnderlyingLeftModule( B, V );
     SetBasisVectors( B, GeneratorsOfLeftModule( V ) );
     delmod:= VectorSpace( LeftActingDomain(V), wvecs);
-    delB:= NewBasis( delmod, wvecs );
+    delB:= BasisOfWeightRepSpace( delmod, wvecs );
     delB!.echelonBasis:= wvecs;
     delB!.heads:= List( [1..Length(wvecs)], x -> x );
     delB!.baseChange:= List( [1..Length(wvecs)], x -> [[ x, 1 ]] );
     B!.delegateBasis:= delB;
-    SetBasisOfDomain( V, B );
+    SetBasis( V, B );
     SetDimension( V, Length( wvecs ) );
     return V;
-
+    
 end );
+
 
 
 
@@ -3781,7 +4141,7 @@ end;
 
     asbas:=[ IdentityMat( Length( mats[1] ), F ) ];
     Append( asbas, mats );
-    sp:= MutableBasisByGenerators( F, asbas );
+    sp:= MutableBasis( F, asbas );
     wds:= [ [] ];
     for i in [1..Length(mats)] do
       Add( wds, [i] );
@@ -4102,13 +4462,7 @@ InstallMethod( FaithfulModule,
 end );
 
 
-
-
-
-
-
-
-
-
-
+#############################################################################
+##
+#E
 

@@ -1076,7 +1076,7 @@ InstallMethod( ImagesElm,
     FamSourceEqFamElm,
     [ IsMagmaCongruence, IsObject ], 0,
     function( rel, elm )
-        return Enumerator(EquivalenceClassOfElement(rel,elm));
+        return Set(Enumerator(EquivalenceClassOfElement(rel,elm)));
     end);
 
 #############################################################################
@@ -1089,7 +1089,7 @@ InstallMethod( ImagesElm,
     FamSourceEqFamElm,
     [ IsLeftMagmaCongruence, IsObject ], 0,
     function( rel, elm )
-        return Enumerator(EquivalenceClassOfElement(rel,elm));
+        return Set(Enumerator(EquivalenceClassOfElement(rel,elm)));
     end);
 
 #############################################################################
@@ -1102,7 +1102,7 @@ InstallMethod( ImagesElm,
     FamSourceEqFamElm,
     [ IsRightMagmaCongruence, IsObject ], 0,
     function( rel, elm )
-        return Enumerator(EquivalenceClassOfElement(rel,elm));
+        return Set(Enumerator(EquivalenceClassOfElement(rel,elm)));
     end);
 
 #############################################################################

@@ -214,7 +214,8 @@ InstallMethod( Size,
     [ IsConjugacyClassGroupRep ], 0,
     cl -> Index( ActingDomain( cl ), StabilizerOfExternalSet( cl ) ) );
 
-InstallOtherMethod( CentralizerOp, true, [ IsConjugacyClassGroupRep ], 0,
+InstallOtherMethod( Centralizer,
+    [ IsConjugacyClassGroupRep ],
     StabilizerOfExternalSet );
 
 InstallMethod( StabilizerOfExternalSet, true, [ IsConjugacyClassGroupRep ],
@@ -288,29 +289,14 @@ local   classes,    # conjugacy classes of <G>, result
 	elms;       # elements of <G>
 
     # initialize the conjugacy class list
-    classes := [ ConjugacyClass( G, One( G ) ) ];
 
     # if the group is small, or if its elements are known
     # or if the group is abelian, do it the hard way
     if Size( G ) <= 1000 or HasAsSSortedList( G )  or IsAbelian( G ) then
-
-        # get the elements
-        elms := Difference( AsSSortedList( G ), [ One( G ) ] );
-
-        # while we have not found all conjugacy classes
-        while 0 < Length(elms)  do
-
-            # add the class of the first element
-            class := ConjugacyClass( G, elms[1] );
-            Add( classes, class );
-
-            # remove the elements of this class
-            SubtractSet( elms, AsSSortedList( class ) );
-
-        od;
-
+      return ConjugacyClassesByOrbits(G);
     # otherwise use probabilistic algorithm
     else
+	classes := [ ConjugacyClass( G, One( G ) ) ];
 
 	cent:=G;
         # while we have not found all conjugacy classes
@@ -334,13 +320,29 @@ end );
 ##
 InstallGlobalFunction(ConjugacyClassesByOrbits,
 function(G)
-local xset,i,cl;
-  # separate the 1 to ensure it comes first
-  xset:=ExternalSet(G,Difference(AsSSortedList(G),[One(G)]),OnPoints);
-  cl:=[ConjugacyClass(G,One(G),G)];
-  for i in ExternalOrbitsStabilizers(xset) do
-    Add(cl,ConjugacyClass(G,Representative(i),StabilizerOfExternalSet(i)));
+local xset,i,cl,c,p,s;
+  #xset:=ExternalSet(G,AsSSortedListNonstored(G),OnPoints);
+  xset:=AsSSortedListNonstored(G);
+  s:=HasAsList(G) or HasAsSSortedList(G); # do we want to store class elements?
+  p:=false;
+  cl:=[];
+  #for i in ExternalOrbitsStabilizers(xset) do
+  for i in OrbitsDomain(G,xset) do
+    #c:=ConjugacyClass(G,Representative(i),StabilizerOfExternalSet(i));
+    c:=ConjugacyClass(G,i[1]);
+    SetSize(c,Length(i));
+    # the sorted element list will speed up `\in' tests
+    if s or Length(i)<5 then
+      SetAsSSortedList(c,SortedList(i));
+    fi;
+    Add(cl,c);
+    if IsOne(Representative(i)) then
+      SetStabilizerOfExternalSet(c,G);
+      p:=Length(cl);
+    fi;
   od;
+  # force class of one in first position
+  c:=cl[p];cl[p]:=cl[1];cl[1]:=c;
   return cl;
 end);
 
@@ -348,7 +350,6 @@ end);
 ##
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . .  of a group
 ##
-DEFAULT_CLASS_ORBIT_LIMIT:=500;
 InstallMethod( ConjugacyClasses, "test options", true, [ IsGroup ], 
   GETTER_FLAGS-1, # this method tests options which would override the method
 	       # selection. Therefore we get the highest possible value
@@ -358,38 +359,56 @@ function(G)
     return ConjugacyClassesByRandomSearch(G);
   elif ValueOption("action")<>fail then
     return ConjugacyClassesByOrbits(G);
-  elif ValueOption("noaction")=fail and Size(G)<=DEFAULT_CLASS_ORBIT_LIMIT
-   # we can do better for S_n/A_n
-   and not (IsPermGroup(G) and 
-             (IsNaturalSymmetricGroup(G) or IsNaturalAlternatingGroup(G))) then
-    return ConjugacyClassesByOrbits(G);
   else
     TryNextMethod();
   fi;
 end);
 
-#T do we want an option for small groups acting on the elements?
 
-InstallMethod( ConjugacyClasses, "by random search", true, [ IsGroup ], 0,
-  ConjugacyClassesByRandomSearch );
+DEFAULT_CLASS_ORBIT_LIMIT:=500;
+InstallGlobalFunction(ConjugacyClassesForSmallGroup,function(G)
+  if ValueOption("noaction")=fail and 
+   (HasAsSSortedList(G) or HasAsList(G) or Size(G)<=DEFAULT_CLASS_ORBIT_LIMIT)
+    then
+      return ConjugacyClassesByOrbits(G);
+  else
+    return fail;
+  fi;
+end);
+
+
+InstallMethod( ConjugacyClasses, "for groups: try random search", true,
+  [ IsGroup ], 0,
+function(G)
+local cl;
+  cl:=ConjugacyClassesForSmallGroup(G);
+  if cl<>fail then
+    return cl;
+  else
+    return ConjugacyClassesByRandomSearch(G);
+  fi;
+end);
 
 InstallMethod( ConjugacyClasses, "try solvable method", true,
     [ IsGroup ], 0,
     function( G )
     local   cls,  cl,  c;
 
-    if IsSolvableGroup( G ) and CanEasilyComputePcgs(G) then
-        cls := [  ];
-        for cl  in ClassesSolvableGroup( G, 0 )  do
-            c := ConjugacyClass( G, cl.representative, cl.centralizer );
-	    Assert(2,Centralizer(G,cl.representative)=cl.centralizer);
-            Add( cls, c );
-        od;
-	Assert(1,Sum(cls,Size)=Size(G));
-        return cls;
-    else
-        TryNextMethod();
-    fi;
+  cl:=ConjugacyClassesForSmallGroup(G);
+  if cl<>fail then
+    return cl;
+  elif IsSolvableGroup( G ) and CanEasilyComputePcgs(G) then
+      cls := [  ];
+      for cl  in ClassesSolvableGroup( G, 0 )  do
+	  c := ConjugacyClass( G, cl.representative, cl.centralizer );
+	  Assert(2,Centralizer(G,cl.representative)=cl.centralizer);
+	  Add( cls, c );
+      od;
+      Assert(1,Sum(cls,Size)=Size(G));
+      return cls;
+  else
+      TryNextMethod();
+  fi;
 end );
 
 #############################################################################
@@ -625,10 +644,9 @@ end );
 
 #############################################################################
 ##
-
 #M  RationalClasses( <G> )  . . . . . . . . . . . . . . . . . . .  of a group
 ##
-InstallMethod( RationalClasses, true, [ IsGroup ], 0,
+InstallMethod( RationalClasses, "trial", true, [ IsGroup ], 0,
     function( G )
     local   rcl;
 
@@ -657,12 +675,13 @@ InstallGlobalFunction( RationalClassesTry, function(  G, classes, elm  )
 
 end );
 
-InstallMethod( RationalClasses, true, [ IsSolvableGroup ], 20,
+InstallMethod( RationalClasses,"solvable",true,[ CanEasilyComputePcgs ], 20,
     function( G )
-    local   rcls,  cls,  cl,  c,  sum;
-
+    local   rcls,  cls,  cl,  c,  sum, size;
+    
+    size := Size(G);
     rcls := [  ];
-    if IsPrimePowerInt( Size( G ) )  then
+    if IsPrimePowerInt( size )  then
         for cl  in RationalClassesSolvableGroup( G, 1 )  do
             c := RationalClass( G, cl.representative );
             SetStabilizerOfExternalSet( c, cl.centralizer );
@@ -671,29 +690,20 @@ InstallMethod( RationalClasses, true, [ IsSolvableGroup ], 20,
         od;
     else
         sum := 0;
-        if not HasConjugacyClasses( G )  then
-            cls := [  ];
-        fi;
-        for cl  in ClassesSolvableGroup( G, 0 )  do
-            if IsBound( cls )  then
-                c := ConjugacyClass( G, cl.representative,cl.centralizer );
-		Assert(2,Centralizer(G,cl.representative)=cl.centralizer);
-                Add( cls, c );
-            fi;
-            c := RationalClass( G, cl.representative );
-            SetStabilizerOfExternalSet( c, cl.centralizer );
-            if not c in rcls  then
+        for cl in ConjugacyClasses(G)  do
+            c := RationalClass( G, Representative(cl) );
+            SetStabilizerOfExternalSet( c, Centralizer(cl) );
+            if sum < size and not c in rcls  then
                 Add( rcls, c );
                 sum := sum + Size( c );
-                if sum = Size( G )  then
+                if sum = size and not IsBound(cls)  then
                     break;
                 fi;
             fi;
         od;
-        if IsBound( cls )  then
-            SetConjugacyClasses( G, cls );
-        fi;
+
     fi;
+
     return rcls;
 end );
 

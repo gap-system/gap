@@ -35,7 +35,7 @@ DeclareInfoClass( "InfoPoly" );
 ##  ring over an UFD. It is represented as a quotient of two polynomials,
 ##  its numerator (see~"NumeratorOfRationalFunction") and
 ##  its denominator (see~"DenominatorOfRationalFunction")
-DeclareCategory( "IsRationalFunction", IsRingElementWithInverse );
+DeclareCategory( "IsRationalFunction", IsRingElementWithInverse and IsZDFRE);
 
 DeclareCategoryCollections( "IsRationalFunction" );
 
@@ -199,7 +199,7 @@ InstallTrueMethod( IsConstantRationalFunction,IsZeroRationalFunction );
 ##  `ExtRepNumeratorRatFun' and `ExtRepDenominatorRatFun' where
 ##  `ExtRepNumeratorRatFun' and `ExtRepDenominatorRatFun' are
 ##  both external representations of a polynomial.
-DeclareRepresentation( "IsRationalFunctionDefaultRep",
+DeclareRepresentation("IsRationalFunctionDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep and IsRationalFunction,
     ["zeroCoefficient","numerator","denominator"] );
 
@@ -212,7 +212,7 @@ DeclareRepresentation( "IsRationalFunctionDefaultRep",
 ##  in this representation is defined by the components
 ##  and `ExtRepNumeratorRatFun' where `ExtRepNumeratorRatFun' is the
 ##  external representation of the polynomial.
-DeclareRepresentation( "IsPolynomialDefaultRep",
+DeclareRepresentation("IsPolynomialDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep 
     and IsRationalFunction and IsPolynomial,["zeroCoefficient","numerator"]);
 
@@ -227,10 +227,23 @@ DeclareRepresentation( "IsPolynomialDefaultRep",
 ##  (see~"CoefficientsOfLaurentPolynomial") and
 ##  `IndeterminateNumberOfLaurentPolynomial'
 ##  (see~"IndeterminateNumberOfLaurentPolynomial").
-DeclareRepresentation(
-    "IsLaurentPolynomialDefaultRep",
+DeclareRepresentation("IsLaurentPolynomialDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep
     and IsRationalFunction and IsLaurentPolynomial, [] );
+
+#############################################################################
+##
+#R  IsUnivariateRationalFunctionDefaultRep(<obj>)
+##
+##  This representation is used for univariate rational functions
+##  polynomials. It represents a univariate rational function via the attributes
+##  `CoefficientsOfUnivariateRationalFunction'
+##  (see~"CoefficientsOfUnivariateRationalFunction") and
+##  `IndeterminateNumberOfUnivariateRationalFunction'
+##  (see~"IndeterminateNumberOfUnivariateRationalFunction").
+DeclareRepresentation("IsUnivariateRationalFunctionDefaultRep",
+    IsComponentObjectRep and IsAttributeStoringRep
+    and IsRationalFunction and IsUnivariateRationalFunction, [] );
 
 
 #1 
@@ -380,6 +393,22 @@ DeclareGlobalFunction( "RationalFunctionByExtRep" );
 
 #############################################################################
 ##
+#F  UnivariateRationalFunctionByExtRep(<fam>,<ncof>,<dcof>,<val> ,<ind> )
+##
+##  creates a univariate rational function in the family <fam> with
+##  [<ncof>,<dcof>,<val>] as
+##  value of `CoefficientsOfUnivariateRationalFunction'. No coefficient
+##  shifting is performed.  This is the lowest level function to create a
+##  univariate rational function but will rely on the coefficients being
+##  shifted properly and will not perform any tests. Unless this is
+##  guaranteed for the parameters,
+##  `UnivariateLaurentPolynomialByCoefficients'
+##  (see~"UnivariateLaurentPolynomialByCoefficients") should be used.
+##  No cancellation is performed.
+DeclareGlobalFunction( "UnivariateRationalFunctionByExtRep");
+
+#############################################################################
+##
 #F  RationalFunctionByExtRepWithCancellation( <rfam>, <num>, <den> )
 ##
 ##  constructs a rational function as `RationalFunctionByExtRep' does but
@@ -398,6 +427,17 @@ DeclareAttribute( "IndeterminateOfUnivariateRationalFunction",
     IsUnivariateRationalFunction );
 DeclareSynonym("IndeterminateOfLaurentPolynomial",
   IndeterminateOfUnivariateRationalFunction);
+
+#############################################################################
+##
+#F  IndeterminateNumberOfLaurentPolynomial(<pol>)
+##
+##  Is a synonym for `IndeterminateNumberOfUnivariateRationalFunction'
+##  (see~"IndeterminateNumberOfUnivariateRationalFunction").
+DeclareSynonymAttr("IndeterminateNumberOfLaurentPolynomial",
+  IndeterminateNumberOfUnivariateRationalFunction);
+DeclareSynonymAttr("IndeterminateNumberOfUnivariateLaurentPolynomial",
+  IndeterminateNumberOfUnivariateRationalFunction);
 
 #############################################################################
 ##
@@ -445,17 +485,6 @@ DeclareSynonym( "DegreeOfUnivariateLaurentPolynomial",
 
 #############################################################################
 ##
-#F  IndeterminateNumberOfLaurentPolynomial(<pol>)
-##
-##  Is a synonym for `IndeterminateNumberOfUnivariateRationalFunction'
-##  (see~"IndeterminateNumberOfUnivariateRationalFunction").
-DeclareSynonymAttr("IndeterminateNumberOfLaurentPolynomial",
-  IndeterminateNumberOfUnivariateRationalFunction);
-DeclareSynonymAttr("IndeterminateNumberOfUnivariateLaurentPolynomial",
-  IndeterminateNumberOfUnivariateRationalFunction);
-
-#############################################################################
-##
 #O  UnivariatePolynomialByCoefficients( <fam>, <cofs>, <ind> )
 ##
 ##  constructs an univariate polynomial over the coeffcients family
@@ -476,6 +505,30 @@ DeclareOperation( "UnivariatePolynomialByCoefficients",
 DeclareOperation( "UnivariatePolynomial",
   [ IsRing, IsRingElementCollection, IsPosInt ] );
 
+#############################################################################
+##
+#A  CoefficientsOfUnivariateRationalFunction( <rfun> )
+##
+## if <rfun> is a univariate rational function, this attribute
+##  returns a list [<ncof>,<dcof>,<val>] where <ncof> and <dcof> are
+##  coefficient lists of univariate polynomials <n> and <d> and a valuation
+##  <val> such that $<rfun>=x^{<val>}\cdot<n>/<d>$ where $x$ is the variable
+##  with the number given by
+##  "IndeterminateNumberOfUnivariateRationalFunction". Numerator and
+##  Denominator are guaranteed to be cancelled.
+DeclareAttribute( "CoefficientsOfUnivariateRationalFunction",
+    IsUnivariateRationalFunction );
+
+#############################################################################
+##
+#O  UnivariateRationalFunctionByCoefficients(<fam>,<ncof>,<dcof>,<val>[,<ind>])
+##
+##  constructs a univariate rational function over the coefficients
+##  family <fam> and in the indeterminate <ind> (defaulting to 1) with
+##  numerator and denominator coefficients given by <ncof> and <dcof> and
+##  valuation <val>.
+DeclareOperation( "UnivariateRationalFunctionByCoefficients",
+    [ IsFamily, IsList, IsList, IsInt, IsInt ] );
 
 #############################################################################
 ##
@@ -626,6 +679,9 @@ DeclareOperation("Derivative",[IsPolynomial]);
 ##
 ##  computes the resultant of the polynomials <pol1> and <pol2> with respect
 ##  to the indeterminate <ind> or indeterminate number <inum>.
+##  The resultant considers <pol1> and <pol2> as univariate in <ind> and
+##  returns an element of the corresponding base ring (which might be a
+##  polynomial ring).
 DeclareOperation( "Resultant",[ IsPolynomial, IsPolynomial, IsPosInt]);
 
 #############################################################################
@@ -724,12 +780,24 @@ DeclareGlobalFunction("QuotRemLaurpols");
 
 #############################################################################
 ##
+#F  GcdCoeffs(<a>,<b>)
+##
+##  compute univariate gcd coeff list from coeff lists.
+##  This should eventually becomne an operation and dispatch specially for
+##  rationals.
+DeclareGlobalFunction("GcdCoeffs");
+
+#############################################################################
+##
 #F  UnivariatenessTestRationalFunction(<f>)
 ##
 ##  takes a rational function <f> and tests whether it is univariate or even
 ##  a laurent polynomial. It returns a list
 ##  [<isunivariate>,<indet>,<islaurent>,<cofs>] where <indet> is the
-##  indeterminate number and <cof> (if applicable) the coefficients lists.
+##  indeterminate number and <cofs> (if applicable) the coefficients lists.
+##  The list <cofs> is the `CoefficientsOfLaurentPolynomial' if <islaurent>
+##  is `true' and the `CoefficientsOfUnivariateRationalFunction' if
+##  <islaurent> is `false' and <isunivariate> true.
 ##  As there is no proper multivariate gcd, it might return `fail' for
 ##  <isunivariate>.
 DeclareGlobalFunction("UnivariatenessTestRationalFunction");

@@ -26,7 +26,7 @@ echo "to the PC. Start cygwin there. Extract the file using"
 echo "tar zxf wincode.tgz                       and call"
 echo "./configure"
 echo "make"
-echo "tar zcf winbin.tgz bin/i586-pc-cygwin-gcc/gap.exe"
+echo "tar zcf winbin.tgz bin/i686-pc-cygwin-gcc/gap.exe"
 echo "Then ftp the file 'winbin.tgz' back in the current UNIX directory".
 echo "Afterwards leave, by typing 'exit'."
 bash
@@ -40,7 +40,7 @@ if [ \! -f winbin.tgz ];  then
 fi
 tar zxf winbin.tgz
 # check that a binary executable has been created
-if [ \! -x bin/i586-pc-cygwin-gcc/gap.exe ];  then
+if [ \! -x bin/i686-pc-cygwin-gcc/gap.exe ];  then
     echo "PANIC: no executable has been created"
     exit 1
 fi

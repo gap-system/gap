@@ -97,14 +97,22 @@ DeclareOperation( "AsSubsemigroup", [ IsDomain, IsCollection ] );
 ##
 DeclareSynonymAttr( "GeneratorsOfSemigroup", GeneratorsOfMagma );
 
+#############################################################################
+##
+#A  CayleyGraphSemigroup( <S> ) 
+#A  CayleyGraphDualSemigroup( <S> )
+##
+##
+DeclareAttribute("CayleyGraphSemigroup",IsSemigroup);
+DeclareAttribute("CayleyGraphDualSemigroup",IsSemigroup);
 
 #############################################################################
 ##
-#F  FreeSemigroup( <rank> )
-#F  FreeSemigroup( <rank>, <name> )
-#F  FreeSemigroup( <name1>, <name2>, ... )
-#F  FreeSemigroup( <names> )
-#F  FreeSemigroup( infinity, <name>, <init> )
+#F  FreeSemigroup( [<wfilt>,]<rank> )
+#F  FreeSemigroup( [<wfilt>,]<rank>, <name> )
+#F  FreeSemigroup( [<wfilt>,]<name1>, <name2>, ... )
+#F  FreeSemigroup( [<wfilt>,]<names> )
+#F  FreeSemigroup( [<wfilt>,]infinity, <name>, <init> )
 ##
 ##  Called in the first form, `FreeSemigroup' returns a free semigroup on
 ##  <rank> generators.
@@ -121,6 +129,13 @@ DeclareSynonymAttr( "GeneratorsOfSemigroup", GeneratorsOfMagma );
 ##  infinitely many generators, where the first generators are printed
 ##  by the names in the list <init>, and the other generators by <name>
 ##  and an appended number.
+##
+##  If the extra argument <wfilt> is given, it must be either
+##  `IsSyllableWordsFamily' or `IsLetterWordsFamily' or
+##  `IsWLetterWordsFamily' or `IsBLetterWordsFamily'. The filter then
+##  specifies the representation used for the elements of the free group
+##  (see~"Representations for Associative Words"). If no such filter is
+##  given, a letter representation is used.
 ##
 DeclareGlobalFunction( "FreeSemigroup" );
 

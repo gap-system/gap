@@ -24,7 +24,7 @@ false    # has holes
 gap> IsBlist( [1,1,0,0] );
 false    # contains not only boolean values
 gap> IsBlist( 17 );
-false    # is not even a list 
+false    # is not even a list
 \endexample
 
 Boolean lists are lists and all operations for lists are therefore
@@ -48,19 +48,21 @@ gap> BlistList( [1,2,3,4,5,2,8,6,4,10], [4,8,9,16] );
 [ false, false, false, true, false, false, true, false, true, false ]
 \endexample
 
+See also~"UniteBlistList".
+
 \Declaration{ListBlist}
 \beginexample
 gap> ListBlist([1..8],[false,true,true,true,true,false,true,true]);
 [ 2, 3, 4, 5, 7, 8 ]
 gap> ListBlist( [1,2,3,4,5,2,8,6,4,10],
 > [false,false,false,true,false,false,true,false,true,false] );
-[ 4, 8, 4 ] 
+[ 4, 8, 4 ]
 \endexample
 
 \Declaration{SizeBlist}
 \beginexample
 gap> SizeBlist( [ false, true, false, true, false ] );
-2 
+2
 \endexample
 
 \Declaration{IsSubsetBlist}
@@ -71,7 +73,7 @@ gap> IsSubsetBlist( blist1, blist2 );
 false
 gap> blist2 := [ true, false, false, false ];;
 gap> IsSubsetBlist( blist1, blist2 );
-true 
+true
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -84,11 +86,11 @@ true
 gap> blist1 := [ true, true, false, false ];;
 gap> blist2 := [ true, false, true, false ];;
 gap> UnionBlist( blist1, blist2 );
-[ true, true, true, false ] 
+[ true, true, true, false ]
 gap> IntersectionBlist( blist1, blist2 );
-[ true, false, false, false ] 
+[ true, false, false, false ]
 gap> DifferenceBlist( blist1, blist2 );
-[ false, true, false, false ] 
+[ false, true, false, false ]
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -100,8 +102,10 @@ gap> blist1 := [ true, true, false, false ];;
 gap> blist2 := [ true, false, true, false ];;
 gap> UniteBlist( blist1, blist2 );
 gap> blist1;
-[ true, true, true, false ] 
+[ true, true, true, false ]
 \endexample
+
+\Declaration{UniteBlistList}
 
 The  function  `UnionBlist'   (see "UnionBlist") is   the  nondestructive
 counterpart to the procedure `UniteBlist'.
@@ -112,7 +116,7 @@ gap> blist1 := [ true, true, false, false ];;
 gap> blist2 := [ true, false, true, false ];;
 gap> IntersectBlist( blist1, blist2 );
 gap> blist1;
-[ true, false, false, false ] 
+[ true, false, false, false ]
 \endexample
 
 The  function `IntersectionBlist'    (see  "IntersectionBlist")   is  the
@@ -124,7 +128,7 @@ gap> blist1 := [ true, true, false, false ];;
 gap> blist2 := [ true, false, true, false ];;
 gap> SubtractBlist( blist1, blist2 );
 gap> blist1;
-[ false, true, false, false ] 
+[ false, true, false, false ]
 \endexample
 
 The function   `DifferenceBlist'    (see   "DifferenceBlist")    is   the

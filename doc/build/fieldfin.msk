@@ -128,8 +128,8 @@ gap> IntFFE( Z(409)^116 );  21^116 mod 409;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Creating Finite Fields}
 
-\index{DefaultField!for finite field elements}
-\index{DefaultRing!for finite field elements}
+\indextt{DefaultField!for finite field elements}
+\indextt{DefaultRing!for finite field elements}
 \FileHeader[3]{ffe}
 \beginexample
 gap> DefaultField( [ Z(4), Z(4)^2 ] );  DefaultField( [ Z(4), Z(8) ] );
@@ -165,10 +165,10 @@ Z(3^5)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{FrobeniusAutomorphism}
 
-\index{homomorphisms!Frobenius, field}%
-\index{field homomorphisms!Frobenius}%
-\index{Image!for Frobenius automorphisms}%
-\index{CompositionMapping!for Frobenius automorphisms}
+\atindex{homomorphisms!Frobenius, field}{@homomorphisms!Frobenius, field}
+\atindex{field homomorphisms!Frobenius}{@field homomorphisms!Frobenius}
+\indextt{Image!for Frobenius automorphisms}
+\indextt{CompositionMapping!for Frobenius automorphisms}
 
 \Declaration{FrobeniusAutomorphism}
 

@@ -172,6 +172,8 @@ BIND_GLOBAL( "StructuralCopy", DEEP_COPY_OBJ );
 ##
 #A  Name( <obj> ) . . . . . . . . . . . . . . . . . . . . . name of an object
 ##
+##  returns the name, a string, previously assigned to <obj> via a call to
+##  `SetName' (see~"SetName").
 ##  The name of an object is used *only* for viewing the object via this
 ##  name.
 ##
@@ -233,6 +235,13 @@ BIND_GLOBAL( "FormattedString", String );
 ##  {\GAP} readable data can be produced with `SaveObj'.                 
 ##
 DeclareOperationKernel( "PrintObj", [ IsObject ], PRINT_OBJ );
+
+# for technical reasons, this cannot be in `function.g' but must be after
+# the declaration.
+InstallMethod( PrintObj, "for an operation", true, [IsOperation], 0,
+        function ( op )
+    Print("<Operation \"",NAME_FUNC(op),"\">");
+end);
 
 
 #############################################################################

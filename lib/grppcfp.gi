@@ -14,6 +14,7 @@ Revision.grppcfp_gi :=
 #############################################################################
 ##
 #F  PcGroupFpGroup( F )
+#F  PcGroupFpGroupNC( F )
 ##
 InstallGlobalFunction( PcGroupFpGroup, function( F )
     return PolycyclicFactorGroup(
@@ -21,31 +22,10 @@ InstallGlobalFunction( PcGroupFpGroup, function( F )
         RelatorsOfFpGroup( F ) );
 end );
 
-#############################################################################
-##
-#M  IsomorphismFpGroupByGenerators( G, gens, str )
-##
-InstallMethod( IsomorphismFpGroupByGenerators,
-               "method for pc groups", true,
-               [IsGroup, IsList, IsString], 0,
-function( G, gens, str )
-    local F, hom, rels, H, gensH, iso;
-    F   := FreeGroup( Length(gens), str );
-    hom := GroupGeneralMappingByImages( G, F, gens, GeneratorsOfGroup(F) );
-    rels := GeneratorsOfGroup( CoKernelOfMultiplicativeGeneralMapping( hom ) );
-    H := F /rels;
-    gensH := GeneratorsOfGroup( H );
-    iso := GroupHomomorphismByImagesNC( G, H, gens, gensH );
-    SetIsBijective( iso, true );
-    SetKernelOfMultiplicativeGeneralMapping( iso, TrivialSubgroup(G) );
-    return iso;
-end );
-
-InstallOtherMethod( IsomorphismFpGroupByGenerators,
-                    "method for pc groups", true,
-                    [IsGroup, IsList], 0,
-function( G, gens )
-    return IsomorphismFpGroupByGenerators( G, gens, "F" );
+InstallGlobalFunction( PcGroupFpGroupNC, function( F )
+    return PolycyclicFactorGroupNC(
+        FreeGroupOfFpGroup( F ),
+        RelatorsOfFpGroup( F ) );
 end );
 
 #############################################################################
@@ -55,7 +35,7 @@ end );
 InstallGlobalFunction( IsomorphismFpGroupByPcgs, function( pcgs, str )
     local n, F, gens, rels, i, pis, exp, t, h, rel, comm, j, H, phi;
 
-    n    := Length( pcgs );
+    n:=Length(pcgs);
     F    := FreeGroup( n, str );
     gens := GeneratorsOfGroup( F );
     pis  := RelativeOrders( pcgs );
@@ -84,6 +64,7 @@ InstallGlobalFunction( IsomorphismFpGroupByPcgs, function( pcgs, str )
         od;
     od;
     H := F / rels;
+    SetSize(H,Product(RelativeOrders(pcgs)));
     phi := 
       GroupHomomorphismByImagesNC( GroupOfPcgs(pcgs), H, AsList( pcgs ),
                                         GeneratorsOfGroup( H ) );
@@ -97,185 +78,48 @@ end );
 ##
 #M  IsomorphismFpGroupByCompositionSeries( G, str )
 ##
-InstallMethod( IsomorphismFpGroupByCompositionSeries, 
-               "method for pc groups",
-               true,
-               [IsGroup and CanEasilyComputePcgs, IsString],
-               0,
-function( G, str )
-    return IsomorphismFpGroupByPcgs( Pcgs(G), str );
-end);
-
-InstallOtherMethod( IsomorphismFpGroupByCompositionSeries, 
-               "method for pc groups",
-               true,
-               [IsGroup and CanEasilyComputePcgs],
-               0,
-function( G )
-    return IsomorphismFpGroupByPcgs( Pcgs(G), "F" );
+InstallOtherMethod( IsomorphismFpGroupByCompositionSeries, "pc groups",
+               true, [IsGroup and CanEasilyComputePcgs,IsString], 0,
+function( G,nam )
+  return IsomorphismFpGroupByPcgs( Pcgs(G), nam );
 end);
 
 #############################################################################
 ##
 #O  IsomorphismFpGroup( G )
 ##
-InstallMethod( IsomorphismFpGroup, 
-               "method for pc groups",
-               true,
-               [IsGroup and CanEasilyComputePcgs],
-               0,
-function( G )
-    return IsomorphismFpGroupByPcgs( Pcgs( G ), "F" );
+InstallOtherMethod( IsomorphismFpGroup, "pc groups",
+               true, [IsGroup and CanEasilyComputePcgs,IsString], 0,
+function( G,nam )
+  return IsomorphismFpGroupByPcgs( Pcgs( G ), nam);
+end );
+
+#############################################################################
+##
+#O  IsomorphismFpGroupByGeneratorsNC( G )
+##
+InstallMethod(IsomorphismFpGroupByGeneratorsNC,"pcgs",
+  IsFamFamX,[IsGroup,IsPcgs,IsString],0,
+function( G,p,nam )
+  # this test now is obsolete but extremely cheap.
+  if Product(RelativeOrders(p))<Size(G) then
+    Error("pcgs does not generate the group");
+  fi;
+  return IsomorphismFpGroupByPcgs( p, nam);
 end );
                
 #############################################################################
 ##
 #F  SmithNormalFormSQ( mat )
 ##
-##  returns D = diagonalised form, M = P * D * Q, I = Q^-1
+##  returns D = diagonalised form, D = P * M * Q, I = Q^-1
 ##
 InstallGlobalFunction( SmithNormalFormSQ, function( M )
-	local	divisor, minimum, diagonal,
-	    	col_add, row_add, reduce_col, reduce_row,
-		    k, l, pos, h, i, j, P, Q, I;
-
-	col_add := function ( h, f, j )
-		local	i;
-		for i in [ pos..Length( M ) ] do
-			M[i][h] := M[i][h] + f * M[i][j];
-		od;
-		for i in [ 1..Length( M[1] ) ] do
-			Q[i][h] := Q[i][h] + f * Q[i][j];
-		od;
-		I[j] := I[j] - f * I[h];
-	end;
-
-	diagonal := function ()
-		local	i, j;
-		for i in [ pos..Length( M ) ] do
-			for j in [ pos..Length( M[1] ) ] do
-				if i <> j and M[i][j] <> 0 then
-					return( false );
-				fi;
-			od;
-		od;
-		return( true );
-	end;
-
-	divisor := function ( div )
-		local	i, j;
-		for i in [ pos..Length( M ) ] do
-			for j in [ pos..Length( M[1] ) ] do
-				if M[i][j] mod div <> 0 then
-					k := i; l := j; return( false );
-				fi;
-			od;
-		od;
-		return( true );
-	end;
-
-	minimum := function()
-		local	abs, i, j, min;
-		min := 0;
-		for i in [ pos..Length( M ) ] do
-		    for j in [ pos..Length( M[1] ) ] do
-			if M[i][j] <> 0 then
-				abs := AbsInt( M[i][j] );
-				if abs < min or min = 0 then
-					min := abs; k := i; l := j;
-				fi;
-			fi;
-		    od;
-		od;
-		return( min );
-	end;
-
-	reduce_col := function ()
-	    local	h, i, min;
-	    for i in [ pos+1..Length( M ) ] do
-	      if M[i][pos] <> 0 then
-		repeat
-		  min := M[pos][pos];
-		  if M[i][pos] mod min = 0 then
-		    row_add( i, -QuoInt( M[i][pos], min ), pos );
-		  else
-		    row_add( i, -QuoInt( M[i][pos], min ), pos );
-		    h := M[i]; M[i] := M[pos]; M[pos] := h;
-		    h := P[i]; P[i] := P[pos]; P[pos] := h;
-		  fi;
-		until M[i][pos] = 0;
-	      fi;
-	    od;
-	end;
-
-	reduce_row := function ()
-	    local	h, i, j, min;
-	    for j in [ pos+1..Length( M[1] ) ] do
-	      if M[pos][j] <> 0 then
-		repeat
-		  min := M[pos][pos];
-		  if M[pos][j] mod min = 0 then
-		    col_add( j, -QuoInt( M[pos][j], min ), pos );
-		  else
-		    col_add( j, -QuoInt( M[pos][j], min ), pos );
-		    for i in [ pos..Length( M ) ] do
-			h := M[i][j]; M[i][j] := M[i][pos]; M[i][pos] := h;
-		    od;
-		    for i in [ 1..Length( M[1] ) ] do
-			h := Q[i][j]; Q[i][j] := Q[i][pos]; Q[i][pos] := h;
-		    od;
-		    h := I[j]; I[j] := I[pos]; I[pos] := h;
-		    reduce_col();
-		  fi;
-		until M[pos][j] = 0;
-	      fi;
-	    od;
-	end;
-
-	row_add := function ( i, f, k )
-		local	j;
-		for j in [ pos..Length( M[1] ) ] do
-			M[i][j] := M[i][j] + f * M[k][j];
-		od;
-		for j in [ 1..Length( M ) ] do
-			P[i][j] := P[i][j] + f * P[k][j];
-		od;
-	end;
-
-    # here starts the main function
-	P := IdentityMat( Length( M ) );
-	M := List( M, ShallowCopy );
-	Q := IdentityMat( Length( M[1] ) );
-	I := IdentityMat( Length( M[1] ) );
-
-	for pos in [ 1..Minimum( Length( M ), Length( M[1] ) ) ] do
-	    if minimum() <> 0 then
-
-		h := M[k]; M[k] := M[pos]; M[pos] := h;
-		h := P[k]; P[k] := P[pos]; P[pos] := h;
-		for i in [ pos..Length( M ) ] do
-			h := M[i][l]; M[i][l] := M[i][pos]; M[i][pos] := h;
-		od;
-		for i in [ 1..Length( M[1] ) ] do
-			h := Q[i][l]; Q[i][l] := Q[i][pos]; Q[i][pos] := h;
-		od;
-		h := I[l]; I[l] := I[pos]; I[pos] := h;
-
-		reduce_col(); reduce_row();
-		while not divisor( M[pos][pos] ) do
-		    col_add( pos, 1, l ); reduce_col(); reduce_row();
-		od;
-
-		if M[pos][pos] < 0 then
-			M[pos][pos] := -M[pos][pos];
-			for j in [ 1..Length( M ) ] do
-				P[pos][j] := -P[pos][j];
-			od;
-		fi;
-
-	    fi;
-	od;
-	return( rec( D := M, P := P, Q := Q, I := I ) );
+local r;
+  Info(InfoWarning,1,"Obsolete function  `SmithNormalFormSQ',\n",
+  "use `NormalFormIntMat' instead");
+  r:=NormalFormIntMat(M,15);
+  return rec(P:=r.rowtrans,Q:=r.coltrans,D:=r.normal,I:=r.coltrans^-1);
 end );
 
 #############################################################################
@@ -283,12 +127,15 @@ end );
 #F  InitEpimorphismSQ( F )
 ##
 InstallGlobalFunction( InitEpimorphismSQ, function( F )
-	local g, gens, r, rels, ng, nr, pf, pn, pp, D, P, M, Q, I, A, G, min,
-      	  gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n;
+local g, gens, r, rels, ng, nr, pf, pn, pp, D, P, M, Q, I, A, G, min,
+gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n,genu;
 
-	gens := GeneratorsOfGroup( FreeGroupOfFpGroup( F ) );
+  if IsFpGroup(F) then
+    gens := GeneratorsOfGroup( FreeGroupOfFpGroup( F ) );
     ng   := Length( gens );
-	rels := RelatorsOfFpGroup( F );
+    genu:=List(gens,i->GeneratorSyllable(i,1));
+    genu:=List([1..Maximum(genu)],i->Position(genu,i));
+    rels := RelatorsOfFpGroup( F );
     nr   := Length( rels );
 
 	# build the relation matrix for the commutator  quotient  group
@@ -296,39 +143,32 @@ InstallGlobalFunction( InitEpimorphismSQ, function( F )
 	for i in [ 1..Maximum( nr, ng ) ] do
 	    M[i] := List( [ 1..ng ], i->0 );
 	    if i <= nr then
-  		    r := rels[i];
-		    for j in [ 1..Length( r ) ] do
-		        g := Subword( r, j, j );
-		        k := 1;
-		        while (g <> gens[k]) and (g^-1<>gens[k]) do
-				    k := k+1;
-		        od;
-		        if g = gens[k] then
-			        M[i][k] := M[i][k] + 1;
-		        else
-			        M[i][k] := M[i][k] - 1;
-		        fi;
-		    od;
+	      r := rels[i];
+	      for j in [1..NrSyllables(r)] do
+		g := GeneratorSyllable(r,j);
+		k:=genu[g];
+		M[i][k] := M[i][k] + ExponentSyllable(r,j);
+	      od;
 	    fi;
 	od;
 
     # compute normal form
-	norm := SmithNormalFormSQ( M );
-	D := norm.D; 
-    P := norm.P; 
-    Q := norm.Q; 
-    I := norm.I;
+    norm := NormalFormIntMat( M,15 );
+    D := norm.normal; 
+    P := norm.rowtrans; 
+    Q := norm.coltrans; 
+    I := Q^-1;
     min := Minimum( Length(D), Length(D[1]) );
     diag := List( [1..min], x -> D[x][x] );
     if ForAny( diag, x -> x = 0 ) then
-        Print("solvable quotient is infinite \n");
+        Info(InfoSQ,1,"solvable quotient is infinite");
         return false;
     fi;
 
     # compute pc presentation for the finite quotient
     n := Filtered( diag, x -> x <> 1 );
     n := Length( Flat( List( n, x -> FactorsInt( x ) ) ) );
-    A := FreeGroup( n );
+    A := FreeGroup(IsSyllableWordsFamily, n );
 	gensA := GeneratorsOfGroup( A );
 
 	index := [];
@@ -369,12 +209,12 @@ InstallGlobalFunction( InitEpimorphismSQ, function( F )
     # set up epimorphism F -> A -> G
 	imgs  := [];
 	for i in [ 1..ng ] do
-	    imgs[i] := One( G );
-		for j in [ 1..ng ] do
-		    if Q[i][j] <> 0 and D[j][j] <> 1 then
-			    imgs[i] := imgs[i] * gensG[index[j]]^( Q[i][j] mod D[j][j] );
-		    fi;
-		od;
+	  imgs[i] := One( G );
+	  for j in [ 1..ng ] do
+	    if Q[i][j] <> 0 and D[j][j] <> 1 then
+	      imgs[i] := imgs[i] * gensG[index[j]]^( Q[i][j] mod D[j][j] );
+	    fi;
+	  od;
 	od;
 
     # compute preimages
@@ -404,6 +244,25 @@ InstallGlobalFunction( InitEpimorphismSQ, function( F )
                 image  := G,
                 imgs   := imgs,
                 prei   := prei );
+  elif IsMapping(F) then
+    if IsWholeFamily(Image(F)) then
+      return rec(source:=Source(F),
+		image:=Parent(Image(F)), # parent will replace full group
+		                         # with other gens.
+		imgs:=List(GeneratorsOfGroup(Source(F)),
+			    i->Image(F,i)));
+    else
+      # ensure the image group is the whole family
+      gensG:=Pcgs(Image(F));
+      G:=GroupByPcgs(gensG);
+      return rec(source:=Source(F),
+		image:=G,
+		imgs:=List(GeneratorsOfGroup(Source(F)),
+			    i->PcElementByExponentsNC(FamilyPcgs(G),
+			         ExponentsOfPcElement(gensG,Image(F,i)))));
+    fi;
+  fi;
+  Error("Syntax!");
 end );
 
 #############################################################################
@@ -411,13 +270,19 @@ end );
 #F  LiftEpimorphismSQ( epi, M, c )
 ##
 InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
-    local F, G, pcgsG, n, H, pcgsH, d, gensf, pcgsN, htil, gtil, mtil,
+    local F, G, pcgsG, n, H, pcgsH, d, gensf, pcgsN, htil, gtil, mtil,mtilinv,
           w, e, g, m, i, A, V, rel, l, v, mats, j, t, mat, k, elms, imgs,
-          lift, null, vec, new, U, sol, sub, elm, r;
+          lift, null, vec, new, U, sol, sub, elm, r,tval,tvalp,
+	  ex,pos,i1,genid,rels,reln,stopi;
 
     F := epi.source;
     gensf := GeneratorsOfGroup( FreeGroupOfFpGroup( F ) );
     r := Length( gensf );
+
+    genid:=[];
+    for i in [1..r] do
+      genid[GeneratorSyllable(gensf[i],1)]:=i;
+    od;
 
     d := M.dimension;
 
@@ -425,7 +290,7 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
     pcgsG := Pcgs( G );
     n := Length( pcgsG );
 
-    H := Extension( G, M, c );
+    H := ExtensionNC( G, M, c );
     pcgsH := Pcgs( H );
     pcgsN := InducedPcgsByPcSequence( pcgsH, pcgsH{[n+1..n+d]} );
 
@@ -433,68 +298,116 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
     htil := pcgsH{[1..n]};
     gtil := [];
     mtil := [];
+    mtilinv:=[];
     for w in epi.imgs do
-        e := ExponentsOfPcElement( pcgsG, w );
-        g := PcElementByExponentsNC( pcgsH, htil, e );
-        Add( gtil, g );
-        m := Immutable( IdentityMat( d, M.field ) );
-        for i in [1..n] do
-            m := m * M.generators[i]^e[i];
-        od;
-        Add( mtil, m );
+      e := ExponentsOfPcElement( pcgsG, w );
+      g := PcElementByExponentsNC( pcgsH, htil, e );
+      Add( gtil, g );
+      m := ImmutableMatrix(M.field, IdentityMat( d, M.field ) );
+      for i in [1..n] do
+	  m := m * M.generators[i]^e[i];
+      od;
+      Add( mtil,m);
+      #Add( mtilinv, ImmutableMatrix(M.field,m^-1 ));
     od;
+    mtilinv:=List(mtil,i->i^-1);
 
     # set up inhom eq
     A := List( [1..r*d], x -> [] );
     V := [];
 
     # for each relator of G add 
-    for rel in RelatorsOfFpGroup( F ) do
-        l := Length( rel );
 
-        # right hand side
-        v := MappedWord( rel, gensf, gtil );
-        v := ExponentsOfPcElement( pcgsN, v ) * One( M.field );
-        Append( V, v );
-   
-        # left hand side
-        mats := ListWithIdenticalEntries( r,
-                    Immutable( NullMat( d, d, M.field ) ) );
-        for i in [1..l] do
-            g := Subword( rel, i, i );
-            j := Position( gensf, g );
-            if not IsBool( j ) then
-                if i+1 <= l then
-                    t := Subword( rel, i+1, l );
-                else
-                    t := One( FreeGroupOfFpGroup( F ) );
-                fi;
-                mat := MappedWord( t, gensf, mtil );
-                mats[j] := mats[j] + mat;
-            elif IsBool( j ) then
-                j := Position( gensf, g^-1 );
-                t := Subword( rel, i, l );
-                mat := MappedWord( t, gensf, mtil );
-                mats[j] := mats[j] - mat;
-            fi;
-        od;
-        for i in [1..r] do
-            for j in [1..d] do
-                k := d * (i-1) + j;
-                Append( A[k], mats[i][j] );
-            od;
-        od; 
-    od;
-    sol := SolutionMat( A, V );
+    rels:=RelatorsOfFpGroup(F);
 
-    # if there is no solution, then there is no lift
-    if sol = fail then return false; fi;
+    stopi:=[4,8,15,30,200];
+    AddSet(stopi,Length(rels));
+    for reln in [1..Length(rels)] do
+      if IsInt(reln/100) then
+	Info(InfoSQ,2,reln);
+      fi;
+
+      rel:=rels[reln];
+      l := NrSyllables( rel );
+
+      # right hand side
+      # was: v := MappedWord( rel, gensf, gtil );
+      v:=One(gtil[1]);
+      for i in [1..l] do
+	j := genid[GeneratorSyllable(rel,i)];
+	ex:=ExponentSyllable(rel,i);
+	if ex<0 then
+	  v:=v/gtil[j]^(-ex);
+	else
+	  v:=v*gtil[j]^ex;
+	fi;
+      od;
+
+      v := ExponentsOfPcElement( pcgsN, v ) * One( M.field );
+      Append( V, v );
+  
+      # left hand side
+      mats := ListWithIdenticalEntries( r,
+		  Immutable( NullMat( d, d, M.field ) ) );
+
+      # ahulpke, 28-feb-00: it seems to be much more clever, to run
+      # through this loop backwards. Then `MappedWord' can be replaced by
+      # a multiplication
+      # Similarly the iterated calls to `Subword' are very expensive - better
+      # use the internal syllable indexing
+
+      # tval is the product from position i on, tvalp the product from
+      # position i+1 on (the tval of the last round)
+      tval:=One(mats[1]);
+
+      for i in [l,l-1..1] do
+	j := genid[GeneratorSyllable(rel,i)];
+	ex:=ExponentSyllable(rel,i);
+	if ex<0 then
+	  pos:=false;
+	  ex:=-ex;
+	else
+	  pos:=true;
+	fi;
+	for i1 in [1..ex] do
+	  tvalp:=tval;
+	  if pos then
+	    tval:=mtil[j]*tval;
+	    mat:=tvalp;
+	    mats[j] := mats[j] + mat;
+	  else
+	    tval:=mtilinv[j]*tval;
+	    mat := tval;
+	    mats[j] := mats[j] - mat;
+	  fi;
+	od;
+      od;
+
+      for i in [1..r] do
+	  for j in [1..d] do
+	      k := d * (i-1) + j;
+	      Append( A[k], mats[i][j] );
+	  od;
+      od; 
+
+      # do these tests several times earlier to speed up
+      if reln in stopi then
+	sol := SolutionMat( A, V );
+	# if there is no solution, then there is no lift
+	if sol=fail then
 #T return value should be fail?
+	  if reln<Length(rels) then
+	    Info(InfoSQ,3,"early break:",reln);
+	  fi;
+	  return false;
+	fi;
+      fi;
+    od;
 
     # create lift
     elms := [];
     for i in [1..r] do
-        sub := sol{[d*(i-1)+1..d*i]}; 
+        sub := - sol{[d*(i-1)+1..d*i]}; 
         elm := PcElementByExponentsNC( pcgsN, sub );
         Add( elms, elm );
     od;
@@ -508,10 +421,16 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
   
     # otherwise check
     U    := Subgroup( H, imgs );
-    if Size( U ) = Size( H ) then return lift; fi;
+    if Size( U ) = Size( H ) 
+     and c=0 then # c=0 is the ordinary case
+      return lift;
+    else
+      lift:=false; # indicate the lift is no good
+    fi;
 
     # this is not optimal - see Plesken
     null := NullspaceMat( A );
+    Info(InfoSQ,2,"nullspace dimension:",Length(null));
     for vec in null do
         new  := vec + sol;
         elms := [];
@@ -523,15 +442,24 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
         imgs := List( [1..r], x -> gtil[x] * elms[x] );
         U    := Subgroup( H, imgs );
         if Size( U ) = Size( H ) then
-            lift := rec( source := F,
-                         image  := H, 
-                         imgs   := imgs );
-            return lift;
+	  if lift<>false then
+	    Info(InfoSQ,2,"found one");
+	    lift:=SubdirProdPcGroups(H,imgs,
+				     lift.image,lift.imgs);
+	    H:=lift[1];
+	    imgs:=lift[2];
+	  fi;
+	  lift := rec( source := F,
+		      image  := H, 
+		      imgs   := imgs );
+	  if c=0 then
+	    return lift;
+	  fi;
         fi;
     od;
 
     # give up 
-    return false;
+    return lift; # if c=0 this is automatically false
 end );
 
 #############################################################################
@@ -560,7 +488,7 @@ end );
 #F  TryModuleSQ( epi, M )
 ##
 InstallGlobalFunction( TryModuleSQ, function( epi, M )
-    local  C, lift, co, cb, cc, r, q, j, k, l, v, qi, c;
+    local  C, lift, co, cb, cc, r, q, ccpos, ccnum, l, v, qi, c;
 
     # first try a split extension
     lift := LiftEpimorphismSQ( epi, M, 0 );
@@ -594,11 +522,11 @@ InstallGlobalFunction( TryModuleSQ, function( epi, M )
             q  := Size( M.absolutelyIrreducible.field );
 
             # loop over all vectors of <cc>
-            for j in [ 1 .. Length(cc) ]  do
-                for k in [ 0 .. q^(Length(cc)-j)-1 ]  do
-                    v := cc[Length(cc)-j+1];
-                    for l in [ 1 .. Length(cc)-j ]  do
-                        qi := QuoInt( k, q^(l-1) );
+            for ccpos in [ 1 .. Length(cc) ]  do
+                for ccnum in [ 0 .. q^(Length(cc)-ccpos)-1 ]  do
+                    v := cc[Length(cc)-ccpos+1];
+                    for l in [ 1 .. Length(cc)-ccpos ]  do
+                        qi := QuoInt( ccnum, q^(l-1) );
                         if qi mod q <> q-1  then
                             v := v + r^(qi mod q) * cc[l];
                         fi;
@@ -609,10 +537,12 @@ InstallGlobalFunction( TryModuleSQ, function( epi, M )
                          M.absolutelyIrreducible.field );
 
                     # try to lift epimorphism
-                    lift := LiftEpimorphismSQ( epi, M, c );
 
-                    # return if we have found a lift
-                    if not IsBool( lift ) then return lift; fi;
+		    lift := LiftEpimorphismSQ( epi, M, c);
+
+		    # return if we have found a lift
+		    if not IsBool( lift ) then return lift; fi;
+
                 od;
             od;
         fi;
@@ -620,6 +550,127 @@ InstallGlobalFunction( TryModuleSQ, function( epi, M )
 
     # give up
     return false;
+end );
+
+#############################################################################
+##
+#F  AllModulesSQ( epi, M )
+##
+InstallGlobalFunction( AllModulesSQ, function( epi, M,onlyact )
+local  C, lift, co, cb, cc, r, q, ccpos, ccnum, l, v, qi,
+       c,all,cnt,total,i,j,iter,sel,dim;
+
+    iter:=onlyact<Length(Pcgs(epi.image)); # are we running in iteration?
+
+    all:=epi;
+
+    if not iter then
+      # first try a split extension
+      # the -1 indicates we want *all* sdps
+      lift := LiftEpimorphismSQ( epi, M, -1 );
+      if not IsBool( lift ) then 
+	all:=lift;
+	Info(InfoSQ,2,"semidirect ",Size(all.image)/Size(epi.image)," found");
+      fi;
+    fi;
+
+    # get collector
+    dim:=M.absolutelyIrreducible.dimension;
+    C := CollectorSQ( epi.image, M.absolutelyIrreducible, true );
+
+    # compute the two cocycles
+    co := TwoCocyclesSQ( C, epi.image, M.absolutelyIrreducible );
+
+    # if there is one non split extension,  try all mod coboundaries
+    if 0 < Length(co) then
+        cb := TwoCoboundariesSQ( C, epi.image, M.absolutelyIrreducible );
+
+	q:=false;
+	if iter and Length(cb)>0 then
+	  # we only want those cocycles, which are trivial for the extra
+	  # generators
+	  # find those indices which can have nontrivial cocycles
+	  r:=Length(Pcgs(epi.image));
+	  v:=[1..dim];
+	  sel:=[];
+	  for i in [1..r] do
+	    for j in [1..Minimum(i,onlyact)] do
+	      UniteSet(sel,((i^2-i)/2+j-1)*dim+v);
+	    od;
+	  od;
+	  v:=IdentityMat(Length(co[1]),M.absolutelyIrreducible.field){sel};
+	  v:=ImmutableMatrix(M.absolutelyIrreducible.field,v);
+
+	  r:=SumIntersectionMat(v,co)[2];
+	  if Length(r)<Length(co) then
+	    Info(InfoSQ,1,"don't need all cocycles/reduced cohomology");
+	    co:=r;
+	    q:=true; # use as flag whether it got changed
+	  fi;
+	fi;
+
+        # use only those coboundaries which lie in <co>
+        if 0 < Length(C.avoid) or q then
+            cb := SumIntersectionMat( co, cb )[2];
+        fi;
+
+        # representatives for basis for the 2-cohomology
+        if 0 < Length(cb)  then
+            cc  := BaseSteinitzVectors( co, cb ).factorspace;
+        else
+            cc := co;
+        fi;
+
+        # try all non split extensions
+        if 0 < Length(cc)  then
+
+            r  := PrimitiveRoot( M.absolutelyIrreducible.field );
+            q  := Size( M.absolutelyIrreducible.field );
+
+	    total:=Int(q^Length(cc)/(q-1)); # approximately
+	    cnt:=0;
+            # loop over all vectors of <cc>
+            for ccpos in [ 1 .. Length(cc) ]  do
+                for ccnum in [ 0 .. q^(Length(cc)-ccpos)-1 ]  do
+		  cnt:=cnt+1;
+		  if cnt mod 10 =0 then
+		    CompletionBar(InfoSQ,2,"cocycle loop: ",cnt/total);
+		  fi;
+		  v := cc[Length(cc)-ccpos+1];
+		  for l in [ 1 .. Length(cc)-ccpos ]  do
+		    qi := QuoInt( ccnum, q^(l-1) );
+		    if qi mod q <> q-1  then
+		      v := v + r^(qi mod q) * cc[l];
+		    fi;
+		  od;
+
+		  # blow cocycle up
+		  c := BlowUpCocycleSQ( v, M.field, 
+			M.absolutelyIrreducible.field );
+
+		  # try to lift epimorphism
+
+		  lift := LiftEpimorphismSQ( epi, M, c);
+
+		  # return if we have found a lift
+		  if not IsBool( lift ) then 
+		    lift:=SubdirProdPcGroups(all.image,all.imgs,
+					      lift.image,lift.imgs);
+		    all:=rec(source:=epi.source,
+			      image:=lift[1],
+			      imgs:=lift[2]);
+		    Info(InfoSQ,2,"locally ",Size(all.image)/Size(epi.image),
+			  " found");
+		  fi;
+
+                od;
+            od;
+        fi;
+	CompletionBar(InfoSQ,2,"cocycle loop: ",false);
+    fi;
+
+    # return all lifts
+    return all;
 end );
 
 #############################################################################
@@ -651,6 +702,78 @@ end );
 
 #############################################################################
 ##
+#F  EAPrimeLayerSQ( epi, prime )
+##
+InstallGlobalFunction( EAPrimeLayerSQ, function( epi, prime )
+local field, dim, rep, lift,all,dims,allmo,mo,start,found,genum,genepi;
+
+  # compute modules for prime
+  field := GF(prime);
+  start:=epi;
+  dims:=List(CharacterDegrees(epi.image,prime),i->i[1]);
+dims:=[1..4];
+
+  genum:=Length(Pcgs(epi.image)); # number of generators of the starting
+                                  # group. (We need to consider nontrivial
+				  # cocycles only for those elements, as we
+				  # only want to get one layer.)
+  # build all modules
+  allmo:=[];
+  for dim in dims do
+    rep  := IrreducibleModules( epi.image, field, dim );
+    rep:=rep[2]; # the actual modules
+    rep:=Filtered(rep,i->i.dimension=dim);
+    Info(InfoSQ,1,"Dimension ",dim,", ",Length(rep)," modules");
+    allmo[dim]:=rep;
+  od;
+
+  repeat # extend as long as possible
+    all:=epi;
+    genepi:=Length(Pcgs(epi.image));
+    found:=false;
+    for dim in dims do
+      # loop over the representations
+      for rep in [1..Length(allmo[dim])] do
+	Info(InfoSQ,2,"Module representative ",dim," #",rep);
+	mo:=allmo[dim][rep];
+
+	# inflate to extra generators
+	if genum<genepi then
+	  mo:=GModuleByMats(Concatenation(mo.generators,
+	     List([1..genepi-genum],
+	          i->One(mo.generators[1]))),field);
+	  if allmo[dim][rep].absolutelyIrreducible=allmo[dim][rep] then
+	    mo.absolutelyIrreducible:=mo;
+	  else
+	    mo.absolutelyIrreducible:=GModuleByMats(
+	      Concatenation(allmo[dim][rep].absolutelyIrreducible.generators,
+	      List([1..genepi-genum],
+		  i->One(allmo[dim][rep].absolutelyIrreducible.generators[1]))),
+		  allmo[dim][rep].absolutelyIrreducible.field);
+	  fi;
+	fi;
+
+	lift := AllModulesSQ( epi, mo,genum);
+	if Size(lift.image)>Size(epi.image) then
+	  found:=true;
+	  lift:=SubdirProdPcGroups(all.image,all.imgs,
+				    lift.image,lift.imgs);
+	  all:=rec(source:=epi.source,
+		    image:=lift[1],
+		    imgs:=lift[2]);
+	  Info(InfoSQ,1,"globally ",Size(all.image)/Size(start.image)," found");
+        fi;
+      od;
+      
+    od;
+    epi:=all;
+  until not found;
+
+  return all;
+end );
+
+#############################################################################
+##
 #F  SQ( <F>, <...> ) / SolvableQuotient( <F>, <...> )
 ##
 InstallGlobalFunction( SolvableQuotient, function ( F, primes )
@@ -659,16 +782,16 @@ InstallGlobalFunction( SolvableQuotient, function ( F, primes )
     # initialise epimorphism
     epi := InitEpimorphismSQ(F);
     G   := epi.image;
-    Print("init done, quotient has size ",Size(G)," \n");
+    Info(InfoSQ,1,"init done, quotient has size ",Size(G));
 
     # if the commutator factor group is trivial return
     if Size( G ) = 1 then return epi; fi;
 
     # if <primes> is a list of tuples, it denotes a chief series
     if IsList( primes ) and IsList( primes[1] ) then
-        Print("have chief series given \n");
+        Info(InfoSQ,2,"have chief series given");
         for tup in primes{[2..Length(primes)]} do
-            Print("  trying ", tup,"\n");
+            Info(InfoSQ,1,"trying ", tup);
             tup[3] := true;
             lift := TryLayerSQ( epi, tup );
             if IsBool( lift ) then 
@@ -677,7 +800,7 @@ InstallGlobalFunction( SolvableQuotient, function ( F, primes )
                 epi := ShallowCopy( lift );
                 G   := epi.image;
             fi;
-            Print("  found quotient of size ", Size(G),"\n");
+            Info(InfoSQ,1,"found quotient of size ", Size(G));
         od;
     fi;
 
@@ -688,7 +811,7 @@ InstallGlobalFunction( SolvableQuotient, function ( F, primes )
         while found and i <= Length( primes ) do
             p := primes[i];
             tup := [p, 0, false];
-            Print("  trying ", tup,"\n");
+            Info(InfoSQ,1,"trying ", tup);
             lift := TryLayerSQ( epi, tup );
             if not IsBool( lift ) then
                 epi := ShallowCopy( lift );
@@ -698,7 +821,7 @@ InstallGlobalFunction( SolvableQuotient, function ( F, primes )
             else
                 i := i + 1;
             fi;
-            Print("  found quotient of size ", Size(G),"\n");
+            Info(InfoSQ,1,"found quotient of size ", Size(G));
         od;
     fi;
                 
@@ -712,7 +835,7 @@ InstallGlobalFunction( SolvableQuotient, function ( F, primes )
             j := 1;
             while not found and j <= Length( fac ) do
                 fac[j][3] := false;
-                Print("  trying ", fac[j],"\n");
+		Info(InfoSQ,1,"trying ", fac[j]);
                 lift := TryLayerSQ( epi, fac[j] );
                 if not IsBool( lift ) then
                     epi := ShallowCopy( lift );
@@ -722,7 +845,7 @@ InstallGlobalFunction( SolvableQuotient, function ( F, primes )
                 else
                     j := j + 1;
                 fi;
-                Print("  found quotient of size ", Size(G),"\n");
+		Info(InfoSQ,1,"found quotient of size ", Size(G));
             od;
         od;
     fi;

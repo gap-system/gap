@@ -8,18 +8,14 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains functions to construct semisimple Lie algebras of type
-##  $A_n$, $B_n$, $C_n$, $D_n$, $E_6$, $E_7$, $E_8$, $G_2$, $F_4$,
-##  as s.c. algebras over the rationals.
+##  $A_n$, $B_n$, $C_n$, $D_n$, $E_6$, $E_7$, $E_8$, $F_4$, $G_2$,
+##  as s.c. algebras. Also there are the restricted Lie algebras 
+##  of types W,H,K,S.
 ##
-##  The Lie algebras of type $B_n$, $C_n$, and $D_n$ are formed by taking
-##  a matrix $M$ and setting $L_M = \{ A \in M_k(Q) | A^T M = -M A \}$.
+##  The algorithm used for types $A-G$ is the one described in 
+##  Kac, Infinite Dimensional Lie Algebras, and de Graaf, Lie Algebras:
+##  Theory and Algorithms.
 ##
-##  Prior to the part of the program where we construct the Lie algebra
-##  we state the matrix $M$ used and the basis of the resulting Lie algebra.
-##  Furthermore we describe the structure constants of the Lie algebra
-##  relative to this basis.
-##  The resulting Lie algebra will have a basis consiting of root vectors,
-##  however they are not ordered.
 ##
 Revision.algliess_gi :=
     "@(#)$Id$";
@@ -247,10 +243,10 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
         dim:= 2*lenR + n;
         
         posR:= List( R, r -> Zero(F)*r );
-        
+
         # Initialize the s.c. table
         T:= EmptySCTable( dim, Zero(F), "antisymmetric" );
-        
+
         lst:= [ 1 .. n ] + 2 * lenR;
         
         for i in [1..lenR] do
@@ -301,7 +297,7 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
                 fi;
             od;
         od;
-        
+
         L:= LieAlgebraByStructureConstants( F, T );
         
         # A Cartan subalgebra is spanned by the last 'n' basis elements.
@@ -635,23 +631,33 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
     SetChevalleyBasis( L, [ PositiveRootVectors( R ), 
                             NegativeRootVectors( R ),
                             vectors ] );
-    C:= 2*IdentityMat( n );
-    for i in [1..n] do
-        for j in [1..n] do
-            if i <> j then
-                q:= 0;
-                r:= posR[i]+posR[j];
-                while r in posR do
-                    q:=q+1;
-                    r:= r+posR[j];
-                od;
-                C[i][j]:= -q;
-            fi;           
-        od;
-    od;
+    
+    if not ( Characteristic( F ) in [ 2, 3 ] ) then 
 
-    SetCartanMatrix( R, C );
+        C:= 2*IdentityMat( n );
+        for i in [1..n] do
+            for j in [1..n] do
+                if i <> j then
+                    q:= 0;
+                    r:= posR[i]+posR[j];
+                    while r in posR do
+                        q:=q+1;
+                        r:= r+posR[j];
+                    od;
+                    C[i][j]:= -q;
+                fi;           
+            od;
+        od;
+
+        SetCartanMatrix( R, C );
+    fi;
+    
     SetRootSystem( L, R );
+
+    if Characteristic( F ) = 0 then 
+       SetIsSimpleAlgebra( L, true );
+    fi;
+
     return L;
     
         

@@ -28,6 +28,14 @@ DeclareProperty("IsTransformationMonoid", IsTransformationSemigroup);
 
 #############################################################################
 ##
+#P  IsFullTransformationSemigroup(<obj>)
+#F  FullTransformationSemigroup(<degree>)
+##  
+DeclareProperty("IsFullTransformationSemigroup", IsSemigroup);
+DeclareGlobalFunction("FullTransformationSemigroup");
+
+#############################################################################
+##
 #A  DegreeOfTransformationSemigroup( <S> )
 ##
 ##	The number of points the semigroup acts on.

@@ -142,14 +142,15 @@ local  hom,fg,fpi,fpg,nt;
    then 
     Info(InfoCoh,1,"using factor representation");
     if IsBound(ocr.generators) then
-      fpi:=IsomorphismFpGroupByGenerators(fg,List(ocr.generators,
-                                                  i->Image(hom,i)));
+      fpi:=IsomorphismFpGroupByGeneratorsNC(fg,List(ocr.generators,
+                                                  i->Image(hom,i)),"f");
     else
       fpi:=IsomorphismFpGroup(fg);
     fi;
     fpg:=FreeGeneratorsOfFpGroup(Range(fpi));
     ocr.factorpres:=[fpg,RelatorsOfFpGroup(Range(fpi)),
-                     List(fpi!.genimages,i->PreImagesRepresentative(fpi,i))];
+                     List(MappingGeneratorsImages(fpi)[2],
+		          i->PreImagesRepresentative(fpi,i))];
     if not IsBound(ocr.generators) then
       ocr.generators:=List(ocr.factorpres[3],i->PreImagesRepresentative(hom,i));
     fi;
@@ -158,10 +159,11 @@ local  hom,fg,fpi,fpg,nt;
   else
     Info(InfoCoh,1,"using group representation");
     if IsBound(ocr.generators) then
-      fpi:=IsomorphismFpGroupByGenerators(ocr.group,ocr.generators);
+      fpi:=IsomorphismFpGroupByGeneratorsNC(ocr.group,ocr.generators,"f");
     else
       fpi:=IsomorphismFpGroup(ocr.group);
-      ocr.generators:=List(fpi!.genimages,i->PreImagesRepresentative(fpi,i));
+      ocr.generators:=List(MappingGeneratorsImages(fpi)[2],
+                           i->PreImagesRepresentative(fpi,i));
     fi;
     fpg:=FreeGeneratorsOfFpGroup(Range(fpi));
     ocr.factorpres:=[fpg,RelatorsOfFpGroup(Range(fpi))];

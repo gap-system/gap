@@ -37,24 +37,18 @@ Revision.alghom_gi :=
 ##  algebras $A$ and $B$ where $F$ is equal to the left acting
 ##  domain of $A$ and of $B$.
 ##
-##  Defining components are
-##
-##  `generators' \: \\
-##      list of vectors generating $A$ as algebra,
-##
-##  `genimages' \: \\
-##      list of vectors generating $B$ as algebra.
+##  Algebra generators of $A$ and $B$ images are stored in the attribute
+##  `MappingGeneratorsImages'.
 ##
 ##  The general mapping is defined as the closure of the relation that joins
-##  the $i$-th entry in `generators' and the $i$-th entry in `genimages',
+##  the $i$-th generator of $A$ and the $i$-th generator of $B$
 ##  w.r.t. linearity and multiplication.
 ##
 ##  It is handled using the attribute `AsLinearGeneralMappingByImages'.
 ##
 DeclareRepresentation( "IsAlgebraGeneralMappingByImagesDefaultRep",
     IsAlgebraGeneralMapping and IsAdditiveElementWithInverse
-    and IsAttributeStoringRep,
-    [ "generators", "genimages" ] );
+    and IsAttributeStoringRep, [] );
 
 
 #############################################################################
@@ -63,8 +57,7 @@ DeclareRepresentation( "IsAlgebraGeneralMappingByImagesDefaultRep",
 ##
 InstallMethod( AlgebraGeneralMappingByImages,
     "for two FLMLORs and two homogeneous lists",
-    true,
-    [ IsFLMLOR, IsFLMLOR, IsHomogeneousList, IsHomogeneousList ], 0,
+    [ IsFLMLOR, IsFLMLOR, IsHomogeneousList, IsHomogeneousList ],
     function( S, R, gens, imgs )
 
     local map;        # general mapping from <S> to <R>, result
@@ -96,10 +89,11 @@ InstallMethod( AlgebraGeneralMappingByImages,
                          and IsAlgebraGeneralMapping
                          and IsAlgebraGeneralMappingByImagesDefaultRep ),
                      rec(
-                          generators := gens,
-                          genimages  := imgs
+#                          generators := gens,
+#                          genimages  := imgs
                          ) );
 
+    SetMappingGeneratorsImages(map,[Immutable(gens),Immutable(imgs)]);
     # return the general mapping
     return map;
     end );
@@ -111,8 +105,7 @@ InstallMethod( AlgebraGeneralMappingByImages,
 ##
 InstallMethod( AlgebraHomomorphismByImagesNC,
     "for two FLMLORs and two homogeneous lists",
-    true,
-    [ IsFLMLOR, IsFLMLOR, IsHomogeneousList, IsHomogeneousList ], 0,
+    [ IsFLMLOR, IsFLMLOR, IsHomogeneousList, IsHomogeneousList ],
     function( S, R, gens, imgs )
     local map;        # homomorphism from <source> to <range>, result
     map:= AlgebraGeneralMappingByImages( S, R, gens, imgs );
@@ -128,8 +121,7 @@ InstallMethod( AlgebraHomomorphismByImagesNC,
 ##
 InstallMethod( AlgebraWithOneGeneralMappingByImages,
     "for two FLMLORs and two homogeneous lists",
-    true,
-    [ IsFLMLOR, IsFLMLOR, IsHomogeneousList, IsHomogeneousList ], 0,
+    [ IsFLMLOR, IsFLMLOR, IsHomogeneousList, IsHomogeneousList ],
     function( S, R, gens, imgs )
     local map;        # homomorphism from <source> to <range>, result
     gens:= Concatenation( gens, [ One( S ) ] );
@@ -194,62 +186,64 @@ end );
 ##
 #M  ViewObj( <map> )  . . . . . . . . . . . . . . . . .  for algebra g.m.b.i.
 ##
-InstallMethod( ViewObj,
-    "for an algebra g.m.b.i",
-    true,
+InstallMethod( ViewObj, "for an algebra g.m.b.i", true,
     [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
-    function( map )
-    Print( map!.generators, " -> ", map!.genimages );
-    end );
+function( map )
+local mapi;
+  mapi:=MappingGeneratorsImages(map);
+  View(mapi[1]);
+  Print(" -> ");
+  View(mapi[2]);
+end );
 
 
 #############################################################################
 ##
 #M  PrintObj( <map> ) . . . . . . . . . . . . . . . . .  for algebra g.m.b.i.
 ##
-InstallMethod( PrintObj,
-    "for an algebra-with-one hom. b.i",
-    true,
+InstallMethod( PrintObj, "for an algebra-with-one hom. b.i", true,
     [     IsMapping and IsTotal and RespectsOne
       and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
-    function( map )
-    Print( "AlgebraWithOneHomomorphismByImages( ",
-           Source( map ), ", ", Range( map ), ", ",
-           map!.generators, ", ", map!.genimages, " )" );
-    end );
+function( map )
+local mapi;
+  mapi:=MappingGeneratorsImages(map);
+  Print( "AlgebraWithOneHomomorphismByImages( ",
+	  Source( map ), ", ", Range( map ), ", ",
+	  mapi[1], ", ", mapi[2], " )" );
+end );
 
-InstallMethod( PrintObj,
-    "for an algebra hom. b.i.",
-    true,
+InstallMethod( PrintObj, "for an algebra hom. b.i.", true,
     [     IsMapping and IsTotal
       and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
-    function( map )
-    Print( "AlgebraHomomorphismByImages( ",
-           Source( map ), ", ", Range( map ), ", ",
-           map!.generators, ", ", map!.genimages, " )" );
-    end );
+function( map )
+local mapi;
+  mapi:=MappingGeneratorsImages(map);
+  Print( "AlgebraHomomorphismByImages( ",
+	  Source( map ), ", ", Range( map ), ", ",
+	  mapi[1], ", ", mapi[2], " )" );
+end );
 
-InstallMethod( PrintObj,
-    "for an algebra-with-one g.m.b.i",
-    true,
+InstallMethod( PrintObj, "for an algebra-with-one g.m.b.i", true,
     [     IsGeneralMapping and RespectsOne
       and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
-    function( map )
-    Print( "AlgebraWithOneGeneralMappingByImages( ",
-           Source( map ), ", ", Range( map ), ", ",
-           map!.generators, ", ", map!.genimages, " )" );
-    end );
+function( map )
+local mapi;
+  mapi:=MappingGeneratorsImages(map);
+  Print( "AlgebraWithOneGeneralMappingByImages( ",
+	  Source( map ), ", ", Range( map ), ", ",
+	  mapi[1], ", ", mapi[2], " )" );
+end );
 
-InstallMethod( PrintObj,
-    "for an algebra g.m.b.i",
-    true,
+InstallMethod( PrintObj, "for an algebra g.m.b.i", true,
     [     IsGeneralMapping
       and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
-    function( map )
-    Print( "AlgebraGeneralMappingByImages( ",
-           Source( map ), ", ", Range( map ), ", ",
-           map!.generators, ", ", map!.genimages, " )" );
-    end );
+function( map )
+local mapi;
+  mapi:=MappingGeneratorsImages(map);
+  Print( "AlgebraGeneralMappingByImages( ",
+	  Source( map ), ", ", Range( map ), ", ",
+	  mapi[1], ", ", mapi[2], " )" );
+end );
 
 
 #############################################################################
@@ -264,9 +258,8 @@ InstallMethod( PrintObj,
 ##
 InstallMethod( AsLeftModuleGeneralMappingByImages,
     "for an algebra general mapping by images",
-    true,
     [     IsAlgebraGeneralMapping
-      and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
+      and IsAlgebraGeneralMappingByImagesDefaultRep ],
     function( alg_gen_map )
 
     local origgenerators,  # list of algebra generators of the preimage
@@ -284,8 +277,9 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
           gen,             # loop over generators
           prod;            #
 
-    origgenerators := alg_gen_map!.generators;
-    origgenimages  := alg_gen_map!.genimages;
+    A:=MappingGeneratorsImages(alg_gen_map);
+    origgenerators := A[1];
+    origgenimages  := A[2];
 
     if IsBasis( origgenerators ) then
 
@@ -370,9 +364,8 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
 
 InstallMethod( AsLeftModuleGeneralMappingByImages,
     "for an algebra homomorphism by images",
-    true,
     [     IsAlgebraHomomorphism
-      and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
+      and IsAlgebraGeneralMappingByImagesDefaultRep ],
     function( alghom )
 
     local origgenerators,  # list of algebra generators of the preimage
@@ -390,8 +383,9 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
           gen,             # loop over generators
           prod;            #
 
-    origgenerators := alghom!.generators;
-    origgenimages  := alghom!.genimages;
+    A:=MappingGeneratorsImages(alghom);
+    origgenerators := A[1];
+    origgenimages  := A[2];
 
     if IsBasis( origgenerators ) then
 
@@ -471,8 +465,7 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
 ##
 InstallMethod( ImagesSource,
     "for an algebra g.m.b.i.",
-    true,
-    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
+    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ],
     function( map )
     local asmap;
     if     HasAsLeftModuleGeneralMappingByImages( map ) then
@@ -483,7 +476,7 @@ InstallMethod( ImagesSource,
                             asmap!.basisimage, "basis" );
       fi;
     fi;
-    return SubFLMLORNC( Range( map ), map!.genimages );
+    return SubFLMLORNC( Range( map ), MappingGeneratorsImages(map)[2] );
     end );
 
 
@@ -493,8 +486,7 @@ InstallMethod( ImagesSource,
 ##
 InstallMethod( PreImagesRange,
     "for an algebra g.m.b.i.",
-    true,
-    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
+    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ],
     function( map )
     local asmap;
     if     HasAsLeftModuleGeneralMappingByImages( map ) then
@@ -505,7 +497,7 @@ InstallMethod( PreImagesRange,
                             asmap!.basispreimage, "basis" );
       fi;
     fi;
-    return SubFLMLORNC( Source( map ), map!.generators );
+    return SubFLMLORNC( Source( map ), MappingGeneratorsImages(map)[1]);
     end );
 
 
@@ -515,8 +507,7 @@ InstallMethod( PreImagesRange,
 ##
 InstallMethod( CoKernelOfAdditiveGeneralMapping,
     "for algebra g.m.b.i.",
-    true,
-    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
+    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ],
     function( map )
     local asmap, genimages, coker;
 
@@ -525,7 +516,7 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
     if not IsBound( asmap!.corelations ) then
       MakeImagesInfoLinearGeneralMappingByImages( asmap );
     fi;
-    genimages:= asmap!.genimages;
+    genimages:= MappingGeneratorsImages(asmap)[2];
     coker:= SubFLMLORNC( Range( map ),
                List( asmap!.corelations,
                      r -> LinearCombination( genimages, r ) ) );
@@ -541,8 +532,7 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
 ##
 InstallMethod( IsSingleValued,
     "for algebra g.m.b.i.",
-    true,
-    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
+    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ],
     map -> IsSingleValued( AsLeftModuleGeneralMappingByImages( map ) ) );
 
 
@@ -552,8 +542,7 @@ InstallMethod( IsSingleValued,
 ##
 InstallMethod( KernelOfAdditiveGeneralMapping,
     "for algebra g.m.b.i.",
-    true,
-    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
+    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ],
     function( map )
     local asmap, generators, ker;
 
@@ -562,7 +551,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
     if not IsBound( asmap!.relations ) then
       MakePreImagesInfoLinearGeneralMappingByImages( asmap );
     fi;
-    generators:= asmap!.generators;
+    generators:= MappingGeneratorsImages(asmap)[1];
     ker:= SubFLMLORNC( Source( map ),
                List( asmap!.relations,
                      r -> LinearCombination( generators, r ) ) );
@@ -582,8 +571,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
 ##
 InstallMethod( IsInjective,
     "for algebra g.m.b.i.",
-    true,
-    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
+    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ],
     map -> IsInjective( AsLeftModuleGeneralMappingByImages( map ) ) );
 
 
@@ -595,7 +583,7 @@ InstallMethod( ImagesRepresentative,
     "for algebra g.m.b.i., and element",
     FamSourceEqFamElm,
     [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep,
-      IsObject ], 0,
+      IsObject ],
     function( map, elm )
     return ImagesRepresentative( AsLeftModuleGeneralMappingByImages( map ),
                                  elm );
@@ -610,7 +598,7 @@ InstallMethod( PreImagesRepresentative,
     "for algebra g.m.b.i., and element",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep,
-      IsObject ], 0,
+      IsObject ],
     function( map, elm )
     return PreImagesRepresentative( AsLeftModuleGeneralMappingByImages(map),
                                     elm );
@@ -623,9 +611,8 @@ InstallMethod( PreImagesRepresentative,
 ##
 InstallMethod( \*,
     "for scalar and algebra g.m.b.i.",
-    true,
     [ IsMultiplicativeElement,
-      IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
+      IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ],
     function( scalar, map )
     return scalar * AsLeftModuleGeneralMappingByImages( map );
     end );
@@ -637,8 +624,7 @@ InstallMethod( \*,
 ##
 InstallMethod( AdditiveInverseOp,
     "for algebra g.m.b.i.",
-    true,
-    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
+    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ],
     map -> AdditiveInverse( AsLeftModuleGeneralMappingByImages( map ) ) );
 
 
@@ -651,7 +637,7 @@ InstallMethod( CompositionMapping2,
     FamSource1EqFamRange2,
     [ IsLeftModuleHomomorphism,
           IsAlgebraGeneralMapping
-      and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
+      and IsAlgebraGeneralMappingByImagesDefaultRep ],
     function( map2, map1 )
 
     # Composition of two algebra homomorphisms is handled by another method.
@@ -674,23 +660,26 @@ InstallMethod( CompositionMapping2,
     FamSource1EqFamRange2,
     [ IsAlgebraHomomorphism,
           IsAlgebraGeneralMapping
-      and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
+      and IsAlgebraGeneralMappingByImagesDefaultRep ],
     function( map2, map1 )
     local comp,        # composition of <map2> and <map1>, result
           gens,
-          genimages;
+          genimages,
+	  mapi1,mapi2;
 
+    mapi1:=MappingGeneratorsImages(map1);
+    mapi2:=MappingGeneratorsImages(map2);
     # Compute images for the generators of `map1'.
     if     IsAlgebraGeneralMappingByImagesDefaultRep( map2 )
-       and map1!.genimages = map2!.generators then
+       and mapi1[2]=mapi2[1] then
 
-      gens      := map1!.generators;
-      genimages := map2!.genimages;
+      gens      := mapi1[1];
+      genimages := mapi2[2];
 
     else
 
-      gens:= map1!.generators;
-      genimages:= List( map1!.genimages,
+      gens:= mapi1[1];
+      genimages:= List( mapi1[2],
                         v -> ImagesRepresentative( map2, v ) );
 
     fi;
@@ -728,7 +717,7 @@ InstallOtherMethod( \+,
     "for an algebra g.m.b.i. and general mapping",
     IsIdenticalObj,
     [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep,
-      IsGeneralMapping ], 0,
+      IsGeneralMapping ],
     function( map1, map2 )
     return AsLeftModuleGeneralMappingByImages( map1 ) + map2;
     end );
@@ -737,7 +726,7 @@ InstallOtherMethod( \+,
     "for general mapping and algebra g.m.b.i.",
     IsIdenticalObj,
     [ IsGeneralMapping,
-      IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ], 0,
+      IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ],
     function( map1, map2 )
     return map1 + AsLeftModuleGeneralMappingByImages( map2 );
     end );
@@ -794,8 +783,7 @@ DeclareRepresentation( "IsOperationAlgebraHomomorphismDefaultRep",
 ##
 InstallMethod( ViewObj,
     "for an operation algebra homomorphism",
-    true,
-    [ IsOperationAlgebraHomomorphismDefaultRep ], 0,
+    [ IsOperationAlgebraHomomorphismDefaultRep ],
     function( ophom )
     Print( "<op. hom. ", Source( ophom ), " -> matrices of dim. ",
            Length( BasisVectors( ophom!.basis ) ), ">" );
@@ -808,8 +796,7 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( PrintObj,
     "for an operation algebra homomorphism",
-    true,
-    [ IsOperationAlgebraHomomorphismDefaultRep ], 0,
+    [ IsOperationAlgebraHomomorphismDefaultRep ],
     function( ophom )
     if ophom!.operation = OnRight then
       Print( "OperationAlgebraHomomorphism( ",
@@ -838,8 +825,7 @@ end );
 ##
 InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
     "for an operation algebra homomorphism",
-    true,
-    [ IsOperationAlgebraHomomorphismDefaultRep ], 0,
+    [ IsOperationAlgebraHomomorphismDefaultRep ],
     function( ophom )
 
     local A,               # source of the general mapping
@@ -926,7 +912,7 @@ end );
 InstallMethod( ImagesRepresentative,
     "for an operation algebra homomorphism, and an element",
     FamSourceEqFamElm,
-    [ IsOperationAlgebraHomomorphismDefaultRep, IsRingElement ], 0,
+    [ IsOperationAlgebraHomomorphismDefaultRep, IsRingElement ],
     function( ophom, elm )
     return InducedLinearAction( ophom!.basis, elm, ophom!.operation );
     end );
@@ -950,7 +936,7 @@ end;
 InstallMethod( PreImagesRepresentative,
     "for an operation algebra homomorphism, and an element",
     FamRangeEqFamElm,
-    [ IsOperationAlgebraHomomorphismDefaultRep, IsMatrix ], 0,
+    [ IsOperationAlgebraHomomorphismDefaultRep, IsMatrix ],
     PreImagesRepresentativeOperationAlgebraHomomorphism );
 
 
@@ -998,8 +984,7 @@ DeclareRepresentation( "IsAlgebraHomomorphismFromFpRep",
 ##
 InstallMethod( ViewObj,
     "for an alg. hom. from f. p. algebra",
-    true,
-    [ IsAlgebraHomomorphismFromFpRep ], 0,
+    [ IsAlgebraHomomorphismFromFpRep ],
     function( ophom )
     Print( "<op. hom. ", Source( ophom ), " -> matrices of dim. ",
            Length( ophom!.Agenimages[1] ), ">" );
@@ -1012,8 +997,7 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( PrintObj,
     "for an alg. hom. from f. p. algebra",
-    true,
-    [ IsAlgebraHomomorphismFromFpRep ], 0,
+    [ IsAlgebraHomomorphismFromFpRep ],
     function( hom )
     Print( "AlgebraHomomorphismByImages( ",
            Source( hom ), ", ", Range( hom ), ", ",
@@ -1029,8 +1013,7 @@ InstallMethod( PrintObj,
 ##
 InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
     "for an alg. hom. from f. p. algebra",
-    true,
-    [ IsAlgebraHomomorphismFromFpRep ], 0,
+    [ IsAlgebraHomomorphismFromFpRep ],
     function( ophom )
 
     local A,               # source of the general mapping
@@ -1104,7 +1087,7 @@ InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
 InstallMethod( ImagesRepresentative,
     "for an alg. hom. from f. p. algebra, and an element",
     FamSourceEqFamElm,
-    [ IsAlgebraHomomorphismFromFpRep, IsRingElement ], 0,
+    [ IsAlgebraHomomorphismFromFpRep, IsRingElement ],
     function( ophom, elm )
     return MappedExpression( elm, ophom!.Agenerators, ophom!.Agenimages );
     end );
@@ -1117,7 +1100,7 @@ InstallMethod( ImagesRepresentative,
 InstallMethod( PreImagesRepresentative,
     "for an alg. hom. from f. p. algebra, and an element",
     FamRangeEqFamElm,
-    [ IsAlgebraHomomorphismFromFpRep, IsMatrix ], 0,
+    [ IsAlgebraHomomorphismFromFpRep, IsMatrix ],
     PreImagesRepresentativeOperationAlgebraHomomorphism );
 
 
@@ -1127,8 +1110,7 @@ InstallMethod( PreImagesRepresentative,
 ##
 InstallMethod( OperationAlgebraHomomorphism,
     "for a FLMLOR, a basis, and a function",
-    true,
-    [ IsFLMLOR, IsBasis, IsFunction ], 0,
+    [ IsFLMLOR, IsBasis, IsFunction ],
     function( A, basis, opr )
 
     local ophom, image;
@@ -1173,8 +1155,7 @@ InstallMethod( OperationAlgebraHomomorphism,
 ##
 InstallOtherMethod( OperationAlgebraHomomorphism,
     "for a FLMLOR and a collection (add `OnRight' argument)",
-    true,
-    [ IsFLMLOR, IsCollection ], 0,
+    [ IsFLMLOR, IsCollection ],
     function( A, C )
     return OperationAlgebraHomomorphism( A, C, OnRight );
     end );
@@ -1189,11 +1170,9 @@ InstallOtherMethod( OperationAlgebraHomomorphism,
 ##
 InstallOtherMethod( OperationAlgebraHomomorphism,
     "for a FLMLOR, a free left module with known generators, and a function",
-    true,
     [ IsFLMLOR,
       IsFreeLeftModule and IsFiniteDimensional and HasGeneratorsOfLeftModule,
       IsFunction ],
-    0,
     function( A, V, opr )
     return OperationAlgebraHomomorphism( A, Basis( V ), opr );
     end );
@@ -1208,8 +1187,7 @@ InstallOtherMethod( OperationAlgebraHomomorphism,
 ##
 InstallMethod( Range,
     "for operation algebra homomorphism (set full matrix FLMLOR)",
-    true,
-    [ IsOperationAlgebraHomomorphismDefaultRep ], 0,
+    [ IsOperationAlgebraHomomorphismDefaultRep ],
     ophom -> FullMatrixFLMLOR( LeftActingDomain( Source( ophom ) ),
                                Length( BasisVectors( ophom!.basis ) ) ) );
 
@@ -1223,8 +1201,7 @@ InstallMethod( Range,
 ##
 InstallMethod( KernelOfAdditiveGeneralMapping,
     "for operation algebra hom. with fin. dim. source",
-    true,
-    [ IsMapping and IsOperationAlgebraHomomorphismDefaultRep ], 0,
+    [ IsMapping and IsOperationAlgebraHomomorphismDefaultRep ],
     function( ophom )
     local A,         # source of the homomorphism
           BA,        # basis of `A'
@@ -1278,7 +1255,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
 InstallMethod( RepresentativeLinearOperation,
     "for a FLMLOR, two elements in it, and `OnRight'",
     IsCollsElmsElmsX,
-    [ IsFLMLOR, IsVector, IsVector, IsFunction ], 0,
+    [ IsFLMLOR, IsVector, IsVector, IsFunction ],
     function( A, v, w, opr )
 
     local B, vectors, a;
@@ -1314,7 +1291,7 @@ InstallMethod( RepresentativeLinearOperation,
 InstallOtherMethod( RepresentativeLinearOperation,
     "for a FLMLOR, two tuples of elements in it, and `OnTuples'",
     IsFamFamFamX,
-    [ IsFLMLOR, IsHomogeneousList, IsHomogeneousList, IsFunction ], 0,
+    [ IsFLMLOR, IsHomogeneousList, IsHomogeneousList, IsFunction ],
     function( A, vs, ws, opr )
 
     local B, vectors, a;
@@ -1384,7 +1361,7 @@ InstallMethod( NaturalHomomorphismByIdeal,
 InstallMethod( NaturalHomomorphismByIdeal,
     "for two finite dimensional FLMLORs",
     IsIdenticalObj,
-    [ IsFLMLOR, IsFLMLOR ], 0,
+    [ IsFLMLOR, IsFLMLOR ],
     function( A, I )
 
     local F,         # left acting domain of `A'
@@ -1509,8 +1486,7 @@ InstallMethod( NaturalHomomorphismByIdeal,
 ##
 InstallMethod( IsomorphismMatrixFLMLOR,
     "for a finite dimensional associative FLMLOR with identity",
-    true,
-    [ IsFLMLOR ], 0,
+    [ IsFLMLOR ],
     function( A )
 
     local B,     # basis of `A'
@@ -1605,8 +1581,7 @@ InstallMethod( IsomorphismMatrixFLMLOR,
 ##
 InstallMethod( IsomorphismFpFLMLOR,
     "for a finite dimensional FLMLOR-with-one",
-    true,
-    [ IsFLMLORWithOne ], 0,
+    [ IsFLMLORWithOne ],
     function( A )
 
     local Agens,           # list of algebra generators of `A'
@@ -1772,9 +1747,67 @@ InstallMethod( IsomorphismFpFLMLOR,
 ##  Return the identity mapping.
 ##
 InstallMethod( IsomorphismFpFLMLOR,
-    "for f.p. FLMLOR",
-    true,
+    "for f.p. FLMLOR (return the identity mapping)",
     [ IsSubalgebraFpAlgebra ], SUM_FLAGS,
+    IdentityMapping );
+
+
+#############################################################################
+##
+#M  IsomorphismSCFLMLOR( <A> )  . . . . . . . . . . . . . . . .  for a FLMLOR
+##
+InstallMethod( IsomorphismSCFLMLOR,
+    "for a finite dimensional FLMLOR (delegate to the method for a basis)",
+    [ IsFLMLOR ],
+    A -> IsomorphismSCFLMLOR( Basis( A ) ) );
+
+
+#############################################################################
+##
+#M  IsomorphismSCFLMLOR( <B> )  . . . . . . . . . . . for a basis of a FLMLOR
+##
+InstallMethod( IsomorphismSCFLMLOR,
+    "for a basis (of a finite dimensional FLMLOR)",
+    [ IsBasis ],
+    function( B )
+
+    local A,               # underlying FLMLOR of `B'
+          T,               # structure constants table w.r.t. `B'
+          I,               # s.c. FLMLOR, image of the isomorphism
+          map;             # isomorphism from `A' to `I', result
+
+    A:= UnderlyingLeftModule( B );
+    if not IsFLMLOR( A ) then
+      Error( "<A> must be a FLMLOR" );
+    fi;
+
+    # Construct the image.
+    T:= StructureConstantsTable( B );
+    I:= AlgebraByStructureConstants( LeftActingDomain( A ), T );
+    UseIsomorphismRelation( A, I );
+
+    # Construct the isomorphism.
+    map:= LeftModuleHomomorphismByImagesNC( A, I, B, CanonicalBasis( I ) );
+    SetIsBijective( map, true );
+    SetIsAlgebraHomomorphism( map, true );
+    if IsFLMLORWithOne( A ) then
+      SetRespectsOne( map, true );
+    fi;
+
+    # Return the result.
+    return map;
+    end );
+
+
+#############################################################################
+##
+#M  IsomorphismSCFLMLOR( <A> )  . . . . . . . . . . . . . . . for s.c. FLMLOR
+##
+##  Return the identity mapping.
+##
+InstallMethod( IsomorphismSCFLMLOR,
+    "for s.c. FLMLOR (return the identity mapping)",
+    [ IsFLMLOR and IsSCAlgebraObjCollection ], SUM_FLAGS,
     IdentityMapping );
 
 

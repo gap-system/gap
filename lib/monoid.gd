@@ -116,11 +116,11 @@ DeclareSynonymAttr( "TrivialSubmonoid", TrivialSubmagmaWithOne );
 
 #############################################################################
 ##
-#F  FreeMonoid( <rank> )
-#F  FreeMonoid( <rank>, <name> )
-#F  FreeMonoid( <name1>, <name2>, ... )
-#F  FreeMonoid( <names> )
-#F  FreeMonoid( infinity, <name>, <init> )
+#F  FreeMonoid( [<wfilt>,]<rank> )
+#F  FreeMonoid( [<wfilt>,]<rank>, <name> )
+#F  FreeMonoid( [<wfilt>,]<name1>, <name2>, ... )
+#F  FreeMonoid( [<wfilt>,]<names> )
+#F  FreeMonoid( [<wfilt>,]infinity, <name>, <init> )
 ##
 ##  Called in the first form, `FreeMonoid' returns a free monoid on
 ##  <rank> generators.
@@ -137,6 +137,13 @@ DeclareSynonymAttr( "TrivialSubmonoid", TrivialSubmagmaWithOne );
 ##  infinitely many generators, where the first generators are printed
 ##  by the names in the list <init>, and the other generators by <name>
 ##  and an appended number.
+##
+##  If the extra argument <wfilt> is given, it must be either
+##  `IsSyllableWordsFamily' or `IsLetterWordsFamily' or
+##  `IsWLetterWordsFamily' or `IsBLetterWordsFamily'. The filter then
+##  specifies the representation used for the elements of the free group
+##  (see~"Representations for Associative Words"). If no such filter is
+##  given, a letter representation is used.
 ##
 DeclareGlobalFunction( "FreeMonoid" );
 

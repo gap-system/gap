@@ -18,12 +18,8 @@ Revision.grppcatr_gi :=
 ##
 #M  AsSSortedList( <pcgrp> )
 ##
-InstallMethod( AsSSortedList,
-    "pcgs computable groups",
-    true,
-    [ IsGroup and CanEasilyComputePcgs and IsFinite ],
-    0,
-
+InstallMethod( AsSSortedListNonstored,"pcgs computable groups",true,
+    [ IsGroup and CanEasilyComputePcgs and IsFinite ],0,
 function( grp )
     local   elms,  pcgs,  g,  u,  e,  i;
 
@@ -42,6 +38,16 @@ function( grp )
     return elms;
 
 end );
+
+InstallMethod( AsSSortedList,"pcgs computable groups",true,
+    [ IsGroup and CanEasilyComputePcgs and IsFinite ],0,
+  AsSSortedListNonstored);
+
+#############################################################################
+##
+#M  AsList(<G>)
+##
+InstallMethod(AsList,"pc group",true,[IsPcGroup],0,AsSSortedListNonstored);
 
 
 #############################################################################
@@ -180,8 +186,7 @@ function( G )
             next,  p,  pcgsS,  pcgsN,  pcgsL,  mats,  modu,  rad,  
             elms,  P;
 
-    pcgs    := Pcgs(G);
-    spec    := SpecialPcgs( pcgs );
+    spec    := SpecialPcgs( G );
     first   := LGFirst( spec );
     weights := LGWeights( spec );
     m       := Length( spec );
@@ -575,6 +580,17 @@ function (G)
   return MinimalGeneratingSet(G);
 end);
 
+InstallOtherMethod( GeneratorOfCyclicGroup,"pc groups",true,
+    [ IsPcGroup and IsFinite ],0,
+function ( G )
+local g;
+  g:=SmallGeneratingSet(G);
+  if Length(g)>1 then
+    Error("not cyclic");
+  fi;
+  return g[1];
+end);
+
 #############################################################################
 ##
 #M  GeneratorsSmallest(<pcgrp>)
@@ -699,9 +715,7 @@ end );
 ##
 InstallMethod( Centre,
     "pcgs computable groups using special pcgs",
-    true, 
     [ IsGroup and CanEasilyComputePcgs and IsFinite ],
-    0,
 
 function( G )
     local   spec,  first,  weights,  m,  primes,  cent,  i,  gens,  
@@ -835,7 +849,10 @@ function( G )
     od;
 
     # return centre as direct product of p-parts
-    return Subgroup( G, Concatenation( cent ) );
+    G:= SubgroupNC( G, Concatenation( cent ) );
+    Assert( 1, IsAbelian( G ) );
+    SetIsAbelian( G, true );
+    return G;
 end );
 
 #############################################################################

@@ -939,8 +939,11 @@ end);
 ##
 InstallMethod(Complementclasses,
   "tell that the normal subgroup must be solvable",IsIdenticalObj,
-  [IsGroup,IsGroup],-2*SIZE_FLAGS(FLAGS_FILTER(IsGroup)),
+  [IsGroup,IsGroup],-2*RankFilter(IsGroup),
 function( G, N )
+  if IsSolvableGroup(N) then
+    TryNextMethod();
+  fi;
   Error("Cannot compute complement classes for nonsolvable normal subgroups");
 end);
 

@@ -79,7 +79,7 @@ InstallGlobalFunction( BlownUpModule, function( modu, E, F )
     B := Basis( B );
  
     #mats := List( modu.generators, x -> TransposedMat(BlownUpMat(B, x)));
-    mats := List( modu.generators, x -> BlownUpMatrix( B, x ) );
+    mats:=List(modu.generators,x ->ImmutableMatrix(F,BlownUpMatrix(B,x)));
     return GModuleByMats( mats, F );
 end );
 
@@ -88,14 +88,14 @@ end );
 #F ConjugatedModule( <pcgsN>, <g>, <modu> ) . . . . . . . . conjugated module
 ##
 InstallGlobalFunction( ConjugatedModule, function( pcgsN, g, modu )
-    local mats, i, exp;
+local mats, i, exp;
 
-    mats := List(modu.generators, x -> false );
-    for i in [1..Length(mats)] do
-        exp := ExponentsOfPcElement( pcgsN, pcgsN[i]^g );
-        mats[i] := MappedVector( exp, modu.generators );
-    od;
-    return GModuleByMats( mats, modu.field );
+  mats := List(modu.generators, x -> false );
+  for i in [1..Length(mats)] do
+    exp := ExponentsOfPcElement( pcgsN, pcgsN[i]^g );
+    mats[i] := ImmutableMatrix(modu.field,MappedVector(exp,modu.generators));
+  od;
+  return GModuleByMats( mats, modu.field );
 end );
 
 #############################################################################
@@ -177,13 +177,13 @@ InstallGlobalFunction( GaloisConjugates, function( modu, F )
 
     # conjugate
     for k in [1..d-1] do
-        mats := List( modu.generators, x -> false );
-        r    := RemInt( p^k, p^d-1 );
-        for i in [1..Length(mats)] do
-            mats[i] := List(modu.generators[i], x -> List(x, y -> y^r) );
-        od;
-        new := GModuleByMats( mats, F );
-        Add( conj, new );
+      mats := List( modu.generators, x -> false );
+      r    := RemInt( p^k, p^d-1 );
+      for i in [1..Length(mats)] do
+	mats[i]:=ImmutableMatrix(F,List(modu.generators[i],x->List(x,y->y^r)));
+      od;
+      new := GModuleByMats( mats, F );
+      Add( conj, new );
     od;
     return conj;
 end );
@@ -232,7 +232,7 @@ InstallGlobalFunction( InducedModule, function( pcgsS, modu )
             exp := ExponentsOfPcElement( pcgsS, h, [2..m] );
             mat[j][j] := MappedVector( exp, modu.generators ); 
         od;
-        Add( mats, FlatBlockMat( mat ) );
+        Add( mats, ImmutableMatrix(modu.field,FlatBlockMat( mat ) ));
     od;
     
     return GModuleByMats( mats, modu.field );
@@ -292,7 +292,7 @@ InstallGlobalFunction( InducedModuleByFieldReduction,
     matg := ch * BlownUpMatrix( base, iso );
 
     # construct module and return
-    mats := Concatenation( [matg], matsN );
+    mats := List(Concatenation( [matg], matsN ),i->ImmutableMatrix(K,i));
     newm := GModuleByMats( mats, K ); 
     return newm;
 end );
@@ -327,42 +327,44 @@ InstallGlobalFunction( ExtensionsOfModule, function( pcgsS, modu, conj, dim )
 
     if (p^dE - 1) mod r <> 0 then
 
-        # compute rth root c of e in E
-        c := e ^ (r^(-1) mod (p^dE - 1));
+      # compute rth root c of e in E
+      c := e ^ (r^(-1) mod (p^dE - 1));
 
-        # this yields a unique extension of modu over E
-        mats := Concatenation( [c * iso], modu.generators );
-        newm := GModuleByMats( mats, E );
-        Add( new, newm );
+      # this yields a unique extension of modu over E
+      mats:=List(Concatenation([c*iso],modu.generators),
+                 i->ImmutableMatrix(E,i));
+      newm := GModuleByMats( mats, E );
+      Add( new, newm );
 
-        # if we have roots of unity in an extension of E
-        if r <> p then
-            f := Indeterminate( E );
-            f := Sum( List( [1..r], x -> f^(x-1) ) );
-            f := Factors( PolynomialRing( E ), f );
-            d := DegreeOfLaurentPolynomial( f[1] );
-            b := dE * d;
+      # if we have roots of unity in an extension of E
+      if r <> p then
+	  f := Indeterminate( E );
+	  f := Sum( List( [1..r], x -> f^(x-1) ) );
+	  f := Factors( PolynomialRing( E ), f );
+	  d := DegreeOfLaurentPolynomial( f[1] );
+	  b := dE * d;
 
-            # construct new field of dimension b
-            if p^b >= MAXSIZE_GF_INTERNAL then
-                if dim = 0 or b * modu.dimension <= dim then
-                   Error("field too big: ",p,"^",b," \n");
-                fi;
+	  # construct new field of dimension b
+	  if p^b >= MAXSIZE_GF_INTERNAL then
+	    if dim = 0 or b * modu.dimension <= dim then
+		Error("field too big: ",p,"^",b," \n");
+	    fi;
 
-            elif dim = 0 or b * modu.dimension <= dim then
-                L := GF(p^b);
-                for j in [1..Length(f)] do
-                    w := PrimitiveRoot( L ) ^ ((p^b - 1)/r);
-                    while Value( f[j], w ) <> Zero( E ) do
-                        w := w * PrimitiveRoot( L )^ ((p^b - 1)/r);
-                    od;
-                    mats := Concatenation( [w*c*iso], modu.generators );
-                    newm := GModuleByMats( mats, L );
-                    Add( new, newm );
-                od;
-            fi;
-        fi;
-        return new;
+	  elif dim = 0 or b * modu.dimension <= dim then
+	    L := GF(p^b);
+	    for j in [1..Length(f)] do
+	      w := PrimitiveRoot( L ) ^ ((p^b - 1)/r);
+	      while Value( f[j], w ) <> Zero( E ) do
+		w := w * PrimitiveRoot( L )^ ((p^b - 1)/r);
+	      od;
+	      mats:=List(Concatenation([w*c*iso],modu.generators),
+	        i->ImmutableMatrix(L,i));
+	      newm := GModuleByMats( mats, L );
+	      Add( new, newm );
+	    od;
+	  fi;
+      fi;
+      return new;
     fi;
 
     # now we know that p^dE - 1 mod r = 0
@@ -375,7 +377,8 @@ InstallGlobalFunction( ExtensionsOfModule, function( pcgsS, modu, conj, dim )
     if Order( e ) mod r^k <> 0 then
         c := PrimitiveRoot( E ) ^ QuoInt( LogFFE( e, PrimitiveRoot(E) ), r );
         for j in [1..r] do
-            mats := Concatenation( [c*iso], modu.generators );
+            mats:=List(Concatenation([c*iso],modu.generators),
+                 i->ImmutableMatrix(E,i));
             newm := GModuleByMats( mats, E );
             Add( new, newm );
             c := c * PrimitiveRoot( E ) ^ QuoInt( p^dE-1, r ); 
@@ -394,7 +397,8 @@ InstallGlobalFunction( ExtensionsOfModule, function( pcgsS, modu, conj, dim )
     elif dim = 0 or b * modu.dimension <= dim then
         L := GF( p^b );
         c := PrimitiveRoot( L ) ^ QuoInt( LogFFE( e, PrimitiveRoot( L ) ), r );
-        mats := Concatenation( [c*iso], modu.generators );
+        mats:=List(Concatenation([c*iso],modu.generators),
+	           i->ImmutableMatrix(L,i));
         newm := GModuleByMats( mats, L );
         Add( new, newm );
     fi;
@@ -416,7 +420,7 @@ InstallGlobalFunction( InitAbsAndIrredModules, function( r, F, dim )
     if ( (p^d-1) mod r ) <> 0 then
 
         # construct a 1-dimensional module
-        mats := [ Immutable( IdentityMat( 1, F ) ) ];
+        mats := [ ImmutableMatrix(F, IdentityMat( 1, F ) ) ];
         modu := GModuleByMats( mats, F );
         Add( new, modu );
 
@@ -441,7 +445,7 @@ InstallGlobalFunction( InitAbsAndIrredModules, function( r, F, dim )
                     while Value( f[j], w ) <> Zero( F ) do
 	                w := w * PrimitiveRoot(E)^QuoInt( p^b-1, r );
 	            od;
-                    modu := GModuleByMats( [[[w]]], E );
+                    modu := GModuleByMats( [ImmutableMatrix(E,[[w]])], E );
                     Add( new, modu );
                 od;
             fi;
@@ -451,7 +455,7 @@ InstallGlobalFunction( InitAbsAndIrredModules, function( r, F, dim )
         # construct 1-dimensional module
         w := PrimitiveRoot( F )^QuoInt( p^d - 1, r );
         for j in [ 1..r ] do
-            mats := [ [[w]] ];
+            mats := [ ImmutableMatrix(F,[[w]]) ];
             modu := GModuleByMats( mats, F );
             Add( new, modu );
             w := w * PrimitiveRoot( F )^QuoInt( p^d - 1, r );

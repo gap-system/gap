@@ -136,7 +136,7 @@
 ##  for general mappings we have the attribute `InverseGeneralMapping'.
 ##  If <F> is a general mapping with source $S$, range $R$, and underlying
 ##  relation $Rel$ then `InverseGeneralMapping( <F> )' has source $R$,
-##  range $S$, and underlying relation $\{ (r,s); (s,r) \in Rel \}$.
+##  range $S$, and underlying relation $\{ (r,s) \mid (s,r) \in Rel \}$.
 ##  For a general mapping that has an inverse in the usual sense,
 ##  i.e., for a bijection of the source, of course both concepts coincide.
 ##
@@ -336,7 +336,7 @@ DeclareProperty( "IsInjective", IsGeneralMapping );
 ##
 ##  is `true' if each element in the range $R$ of the general mapping <map>
 ##  has preimages in the source $S$ of <map>, i.e.,
-##  $\{ s\in S; x\in s^{<map>} \} \not= \emptyset$ for all $x\in R$,
+##  $\{ s\in S \mid x\in s^{<map>} \} \not= \emptyset$ for all $x\in R$,
 ##  and `false' otherwise.
 ##
 DeclareProperty( "IsSurjective", IsGeneralMapping );
@@ -529,7 +529,7 @@ DeclareOperation( "ImageElm", [ IsMapping, IsObject ] );
 ##  `Image( <map>, <elm> )' is the image of the element <elm> of the source
 ##  of the mapping <map> under <map>, i.e., the unique element of the range
 ##  to which <map> maps <elm>.
-##  This can also be expressed as `<elm> \^\ <map>'.
+##  This can also be expressed as `<elm> ^ <map>'.
 ##  Note that <map> must be total and single valued, a multi valued general
 ##  mapping is not allowed (see~"Images").
 ##
@@ -724,8 +724,33 @@ DeclareOperation( "CompositionMapping2",
 ##  (So one should not call `CompositionMapping2' directly if one wants to
 ##  maintain these properties.)
 ##
+##  Depending on the types of <map1> and <map2>, the returned mapping might
+##  be constructed completely new (for example by giving domain generators
+##  and their images, this is for example the case if both mappings preserve
+##  the same alagebraic structures and {\GAP} can decompose elements of the
+##  source of <map2> into generators) or as an (iterated) composition
+##  (see~"IsCompositionMappingRep").
 DeclareGlobalFunction( "CompositionMapping" );
 
+#############################################################################
+##
+#R  IsCompositionMappingRep( <map> )
+##
+##  Mappings in this representation are stored as composition of two
+##  mappings, (pre)images of elements are computed in a two-step process.
+##  The constituent mappings of the composition can be obtained via
+##  `ConstituentsCompositionMapping'.
+DeclareRepresentation( "IsCompositionMappingRep",
+    IsGeneralMapping and IsAttributeStoringRep, [ "map1", "map2" ] );
+
+#############################################################################
+##
+#F  ConstituentsCompositionMapping( <map> )
+##
+##  If <map> is stored in the representation `IsCompositionMappingRep' as
+##  composition of two mappings <map1> and <map2>, this function returns the
+##  two constituent mappings in a list [<map1>,<map2>].
+DeclareGlobalFunction( "ConstituentsCompositionMapping" );
 
 #############################################################################
 ##
@@ -753,8 +778,16 @@ DeclareOperation( "RestrictedMapping", [ IsGeneralMapping, IsDomain ] );
 #############################################################################
 ##
 #O  Embedding( <S>, <T> ) . . . . . . .  embedding of one domain into another
-#O  Embedding( <S>, <T>, <i> )
 #O  Embedding( <S>, <i> )
+##
+##  returns the embedding of the domain <S> in the  domain  <T>,  or  in  the
+##  second form, some domain indexed by the positive integer <i>. The precise
+##  natures of the various methods are described elsewhere: for Lie algebras,
+##  see~`LieFamily' ("LieFamily"); for group  products,  see~"Embeddings  and
+##  Projections for  Group  Products"  for  a  general  description,  or  for
+##  examples see~"Direct Products" for direct products, "Semidirect Products"
+##  for semidirect products, or~"Wreath Products" for wreath products; or for
+##  magma rings see~"Natural Embeddings related to Magma Rings".
 ##
 DeclareOperation( "Embedding", [ IsDomain, IsObject ] );
 
@@ -762,8 +795,17 @@ DeclareOperation( "Embedding", [ IsDomain, IsObject ] );
 #############################################################################
 ##
 #O  Projection( <S>, <T> )  . . . . . . projection of one domain onto another
-#O  Projection( <S>, <T>, <i> )
 #O  Projection( <S>, <i> )
+#O  Projection( <S> )
+##
+##  returns the projection of the domain <S> onto the domain <T>, or  in  the
+##  second form, some domain indexed by the positive integer <i>, or  in  the
+##  third form some natural subdomain of <S>. Various methods are defined for
+##  group products; see~"Embeddings and Projections for Group Products" for a
+##  general description, or for examples  see~"Direct  Products"  for  direct
+##  products,  "Semidirect  Products"  for  semidirect  products,  "Subdirect
+##  Products"  for  subdirect  products,  or~"Wreath  Products"  for   wreath
+##  products.
 ##
 DeclareOperation( "Projection", [ IsDomain, IsObject ] );
 
@@ -782,6 +824,7 @@ DeclareGlobalFunction( "GeneralMappingByElements" );
 ##                                         
 #F  MappingByFunction( <S>, <R>, <fun> )  . . . . .  create map from function
 #F  MappingByFunction( <S>, <R>, <fun>, <invfun> )
+#F  MappingByFunction( <S>, <R>, <fun>, `false',<prefun> )
 ##
 ##  `MappingByFunction' returns a mapping <map> with source <S> and range
 ##  <R>, such that each element <s> of <S> is mapped to the element
@@ -790,6 +833,10 @@ DeclareGlobalFunction( "GeneralMappingByElements" );
 ##  If the argument <invfun> is bound then <map> is a bijection between <S>
 ##  and <R>, and the preimage of each element <r> of <R> is given by
 ##  `<invfun>( <r> )', where <invfun> is a {\GAP}  function.
+##
+##  In the third variant, a function <prefun> is given that can be used to
+##  compute a single preimage. In this case, the third entry must be
+##  `false'.
 ##
 ##  `MappingByFunction' creates a mapping which `IsNonSPGeneralMapping'
 ##              
@@ -810,6 +857,31 @@ InstallTrueMethod( IsBijective, IsGeneralMapping and IsOne );
 ##
 InstallTrueMethod( IsSingleValued, IsGeneralMapping and IsZero );
 InstallTrueMethod( IsTotal, IsGeneralMapping and IsZero );
+
+
+#############################################################################
+##
+#F  CopyMappingAttributes( <from>, <to> )
+##
+##  Let <from> and <to> be two general mappings which are known to be equal.
+##  `CopyMappingAttributes' copies known mapping attributes from <from> to
+##  <to>. This is used in operations, such as
+##  `AsGroupGeneralMappingByImages', that produce equal mappings in another
+##  representation.
+##
+DeclareGlobalFunction( "CopyMappingAttributes" );
+
+#############################################################################
+##
+#A  MappingGeneratorsImages(<map>)
+##
+##  This attribute contains a list of length 2, the first enry being a list
+##  of generators of the source of <map> and the second entry a list of
+##  their images. This attribute is used (for example) by
+##  `GroupHomomorphismByImages' to store generators and images.
+#T  `MappingGeneratorsImages' is permitted to call `Source' and
+#T  `ImagesRepresentative'.
+DeclareAttribute( "MappingGeneratorsImages", IsGeneralMapping );
 
 
 #############################################################################

@@ -296,7 +296,9 @@ end );
 Matrix_OrderPolynomialInner := 
   function( fld, mat, vec, vecs)
     local d, w, p, one, zero, zeroes, piv,  pols, x, t;
-    t := Runtime();
+    Info(InfoMatrix,2,"Order Polynomial Inner on ",Length(mat[1]),
+         " x ",Length(mat)," matrix over ",fld," with ", 
+         Number(vecs)," basis vectors already given");
     d := Length(vec);
     pols := [];
     one := One(fld);
@@ -346,6 +348,7 @@ Matrix_OrderPolynomialInner :=
         fi;
     until piv > d;
     MakeImmutable(p);
+    Info(InfoMatrix,2,"Order Polynomial returns ",p);
     return p;
 end;
 
@@ -372,6 +375,8 @@ end;
 ##
 Matrix_CharacteristicPolynomialSameField := function( fld, mat, ind)
     local i, n, ords, base, imat, vec, one,cp,op,zero,fam;
+    Info(InfoMatrix,1,"Characteristic Polynomial called on ",
+         Length(mat[1])," x ",Length(mat)," matrix over ",fld);
     imat := ImmutableMatrix(fld,mat);
     n := Length(mat);
     base := [];
@@ -388,6 +393,9 @@ Matrix_CharacteristicPolynomialSameField := function( fld, mat, ind)
             vec[i] := zero;
         fi;
     od;
+    Assert(3, IsZero(Value(cp,imat)));
+    Assert(2, Length(CoefficientsOfUnivariatePolynomial(cp)) = n+1);
+    Info(InfoMatrix,1,"Characteristic Polynomial returns ", cp);
     return cp;
 end;
 
@@ -399,6 +407,8 @@ Matrix_MinimalPolynomialSameField := function( fld, mat, ind )
     local i, n, ords, base, imat, vec, one,cp,zero, fam,
           processVec, mp, dim, span,op,w, piv,j;
     
+    Info(InfoMatrix,1,"Minimal Polynomial called on ",
+         Length(mat[1])," x ",Length(mat)," matrix over ",fld);
     imat := ImmutableMatrix(fld,mat);
     n := Length(imat);
     base := [];
@@ -444,6 +454,8 @@ Matrix_MinimalPolynomialSameField := function( fld, mat, ind )
             fi;
         od;
     od;
+    Assert(3, IsZero(Value(mp,imat)));
+    Info(InfoMatrix,1,"Minimal Polynomial returns ", mp);
     return mp;
 end;
             
@@ -908,7 +920,7 @@ InstallMethod( Order,
     else
 
       # The following checks trace and determinant.
-      lat:= InvariantLattice( GroupWithGenerators( mat ) );
+      lat:= InvariantLattice( GroupWithGenerators( [ mat ] ) );
       if lat = fail then
         return infinity;
       fi;
@@ -992,7 +1004,6 @@ InstallMethod( IsZero,
 
 #############################################################################
 ##
-
 #M  AbelianInvariantsOfList( <list> ) . . . . .  abelian invariants of a list
 ##
 InstallMethod( AbelianInvariantsOfList,
@@ -1031,7 +1042,7 @@ end );
 ##
 #M  BaseMat( <mat> )  . . . . . . . . . .  base for the row space of a matrix
 ##
-InstallMethod( BaseMatNoCo,
+InstallMethod( BaseMatDestructive,
     "generic method for matrices",
     true,
     [ IsMatrix ],
@@ -1040,30 +1051,7 @@ InstallMethod( BaseMatNoCo,
 function ( mat )
     local  base, m, n, i, k, zero;
 
-    base := [];
-
-    if not IsEmpty( mat ) then
-
-       m := Length(mat);
-       n := Length(mat[1]);
-       zero := Zero( mat[1][1] );
-
-       # triangulize the matrix
-       TriangulizeMat( mat );
-
-       # and keep only the nonzero rows of the triangular matrix
-       i := 1;
-       for k  in [1..n]  do
-           if i <= m  and mat[i][k] <> zero  then
-               Add( base, mat[i] );
-               i := i + 1;
-           fi;
-       od;
-
-    fi;
-
-    # return the base
-    return base;
+    return SemiEchelonMatDestructive(mat).vectors;
 end );
 
 InstallMethod( BaseMat,
@@ -1073,16 +1061,9 @@ InstallMethod( BaseMat,
     0,
 
     function ( mat )
-       return BaseMatNoCo( List( mat, ShallowCopy ) );
+       return BaseMatDestructive( List( mat, ShallowCopy ) );
    end);
    
-InstallMethod( BaseMatDestructive,
-    "generic method for matrices",
-    true,
-    [ IsMatrix and IsMutable ],
-    0,
-    BaseMatNoCo );
-
 
 #############################################################################
 ##
@@ -1195,10 +1176,10 @@ end);
 ##
 ## This method is better for cyclotomics, but pivotting is really needed
 ##
-InstallMethod( DeterminantMatNoCo,
+InstallMethod( DeterminantMatDestructive,
     "fraction-free method",
     true,
-    [ IsOrdinaryMatrix ], 0,
+    [ IsOrdinaryMatrix and IsMutable], 0,
     function ( mat )
     local   det, sgn, row, zero, m, i, j, k, mult, row2, piv;
     
@@ -1270,8 +1251,8 @@ end);
 ##  another method is installed for cyclotomics. Anything else falls
 ##  through here also.
 ##
-InstallMethod( DeterminantMatNoCo,"non fraction free",
-    true, [ IsOrdinaryMatrix and IsFFECollColl], 0,
+InstallMethod( DeterminantMatDestructive,"non fraction free",
+    true, [ IsOrdinaryMatrix and IsFFECollColl and IsMutable], 0,
 function( mat )
     local   m,  zero,  det,  sgn,  k,  j,  row,  l,  norm,
             row2, x;
@@ -1353,81 +1334,9 @@ InstallMethod( DeterminantMat,
         "for matrices",
         true, [ IsMatrix ], 0,
         function( mat )
-           return DeterminantMatNoCo( List( mat, ShallowCopy ) );
+           return DeterminantMatDestructive( List( mat, ShallowCopy ) );
 end );
        
-InstallMethod( DeterminantMatDestructive,
-        "for matrices",
-        true, [ IsMatrix ], 0,
-        function( mat )
-           return DeterminantMatNoCo( mat );
-end );
-
-
-#############################################################################
-##
-#M  DeterminantMat( <mat> )
-##
-##  This method is now never faster than the other methods.
-##
-##
-#InstallMethod( DeterminantMat,"method for GF(2)",
-#    true, [ IsOrdinaryMatrix and IsFFECollColl], 0,
-#function(mat)
-#  local   det, sgn, row, zero, m, i, j, k, l;
-#  # we are only better for GF(2)
-#  m:=mat[1][1];
-#  if DegreeFFE(m)>1 or Characteristic(m)>2 then
-#    TryNextMethod();
-#  fi;
-
-#  # the old GAP3 code
-#  # check that the argument is a square matrix and get the size
-#  m := Length(mat);
-#  zero := 0*mat[1][1];
-#  if m <> Length(mat[1])  then
-#      Error("DeterminantMat: <mat> must be a square matrix");
-#  fi;
-
-#  # make a copy to avoid changing the orginal argument
-#  mat := ShallowCopy( mat );
-
-#  # run through all columns of the matrix
-#  i := 0;  det := 1;  sgn := 1;
-#  for k  in [1..m]  do
-
-#      # find a nonzero entry in this column
-#      #N  26-Oct-91 martin if <mat> is an rational matrix look for a pivot
-#      j := i + 1;
-#      while j <= m and mat[j][k] = zero  do j := j+1;  od;
-
-#      # if there is a nonzero entry
-#      if j <= m  then
-
-#	  # increment the rank
-#	  i := i + 1;
-
-	  # make its row the current row
-#	  if i <> j  then
-#	      row := mat[j];  mat[j] := mat[i];  mat[i] := row;
-#	      sgn := -sgn;
-#	  fi;
-
-	  # clear all entries in this column
-#	  for j  in [i+1..m]  do
-#	      mat[j] := (mat[i][k]*mat[j]-mat[j][k]*mat[i])/det;
-#	  od;
-
-#	  det := mat[i][k];
-#      fi;
-
-#  od;
-
-  # return the determinant
-#  if i < m  then det := zero;  fi;
-#  return sgn * det;
-#end);
-
 
 #############################################################################
 ##
@@ -1508,9 +1417,10 @@ InstallGlobalFunction( MutableCopyMat, mat -> List( mat, ShallowCopy ) );
 
 #############################################################################
 ##
-#F  MutableTransposedMat( <mat> ) . . . . . . . . . .  transposed of a matrix
+#M  MutableTransposedMat( <mat> ) . . . . . . . . . .  transposed of a matrix
 ##
-InstallGlobalFunction( MutableTransposedMat, function( mat )
+InstallMethod( MutableTransposedMat, "generic method", true,
+        [IsRectangularTable and IsMatrix], 0, function( mat )
     local trn, n, m, j;
 
     m:= Length( mat );
@@ -1524,7 +1434,7 @@ InstallGlobalFunction( MutableTransposedMat, function( mat )
     # copy the entries
     for j in n do
       trn[j]:= mat{ m }[j];
-      ConvertToVectorRep( trn[j] );
+#      ConvertToVectorRep( trn[j] );
     od;
 
     # return the transposed
@@ -1533,16 +1443,59 @@ end );
 
 #############################################################################
 ##
-#F  MutableTransposedMatDestructive( <mat> ) . . . . . transposed of a matrix
+#M  MutableTransposedMat( <mat> ) . . . . . . . . . .  transposed of a matrix
+##
+
+
+InstallOtherMethod( MutableTransposedMat, "for arbitrary lists of lists", true,
+        [IsList], 0, function( t )
+  local   res,  m,  i,  j;
+  res := [];
+  if Length(t)>0 and IsDenseList(t) and ForAll(t, IsDenseList) then
+        # special case with dense list of dense lists
+      m := Maximum(List(t, Length));
+      for i in [m,m-1..1] do
+          res[i] := [];
+      od;
+      for i in [1..Length(t)] do
+          res{[1..Length(t[i])]}[i] := t[i];
+      od;
+  else
+        # general case, non dense lists allowed
+      for i in [1..Length(t)] do
+          if IsBound(t[i]) then
+              if IsList(t[i]) then
+                  for j in [1..Length(t[i])] do
+                      if IsBound(t[i][j]) then
+                          if not IsBound(res[j]) then
+                              res[j] := [];
+                          fi;
+                          res[j][i] := t[i][j];
+                      fi;
+                  od;
+              else
+                  Error("bound entries must be lists");
+              fi;
+          fi;
+      od;
+  fi;
+  return res;
+end);
+
+
+
+
+#############################################################################
+##
+#M  MutableTransposedMatDestructive( <mat> ) . . . . . transposed of a matrix
 ##                                                     may destroy `mat'.
 ##                                                    
-InstallGlobalFunction( MutableTransposedMatDestructive, function( mat )
+InstallMethod( MutableTransposedMatDestructive, "generic method",
+        true, [IsMatrix and IsMutable], 0,
+        function( mat )
     
     local   m,  n,  min,  i,  j,  store;
     
-    if not IsMutable( mat ) then 
-        return TransposedMat( mat ); 
-    fi;
 
     m:= Length( mat );
     if m = 0 then return []; fi;
@@ -1601,6 +1554,33 @@ InstallMethod( NullspaceMat,
         0,
         mat -> SemiEchelonMatTransformation(mat).relations);
 
+InstallMethod( NullspaceMatDestructive,
+        "generic method for ordinary matrices",
+        true,
+        [ IsOrdinaryMatrix  and IsMutable],
+        0,
+        mat -> SemiEchelonMatTransformationDestructive(mat).relations);
+
+InstallMethod( TriangulizedNullspaceMat,
+        "generic method for ordinary matrices",
+        true,
+        [ IsOrdinaryMatrix ],
+        0,
+        mat -> TriangulizedNullspaceMatDestructive( MutableCopyMat( mat))
+        );
+
+InstallMethod( TriangulizedNullspaceMatDestructive,
+        "generic method for ordinary matrices",
+        true,
+        [ IsOrdinaryMatrix  and IsMutable],
+        0,
+        function(mat)
+    local ns;
+    ns := SemiEchelonMatTransformationDestructive(mat).relations;
+    TriangulizeMat(ns);
+    return ns;
+end);
+
 InstallMethod(TriangulizedNullspaceMatNT,"generic method",
   true,[IsOrdinaryMatrix],0,
 function ( mat )
@@ -1647,85 +1627,23 @@ function ( mat )
     return nullspace;
 end );
 
-InstallMethod(TriangulizedNullspaceMat,"generic method",
-  true,[IsOrdinaryMatrix],0,
-   function ( mat )
-    # triangulize the transposed of the matrix
-    return TriangulizedNullspaceMatNT( 
-                   MutableTransposedMat( Reversed( mat ) ) );
-end );
+#InstallMethod(TriangulizedNullspaceMat,"generic method",
+#  true,[IsOrdinaryMatrix],0,
+#   function ( mat )
+#    # triangulize the transposed of the matrix
+#    return TriangulizedNullspaceMatNT( 
+#                   MutableTransposedMat( Reversed( mat ) ) );
+#end );
 
-InstallMethod(TriangulizedNullspaceMatDestructive,"generic method",
-  true,[IsOrdinaryMatrix],0,
-    function ( mat )
-    # triangulize the transposed of the matrix
-    return TriangulizedNullspaceMatNT( 
-                   MutableTransposedMatDestructive( Reversed( mat ) ) );
-end );
+#InstallMethod(TriangulizedNullspaceMatDestructive,"generic method",
+#  true,[IsOrdinaryMatrix],0,
+#    function ( mat )
+#    # triangulize the transposed of the matrix
+#    return TriangulizedNullspaceMatNT( 
+#                   MutableTransposedMatDestructive( Reversed( mat ) ) );
+#end );
     
     
-#############################################################################
-##
-#M  NullspaceMatDestructive( <mat> ) .basis of solutions of <vec> * <mat> = 0
-##                                    <mat> may get changed!
-##
-InstallMethod( NullspaceMatDestructive,
-        "generic method for ordinary matrices",
-        true,
-        [ IsOrdinaryMatrix and IsMutable ],
-        0,
-        
-        function( mat )    
-    
-    local   nrows,  ncols,  zero,  heads,  vectors,  coeffs,  
-            relations,  i,  row,  row2,  j,  head,  x;
-
-    nrows := Length( mat );
-    ncols := Length( mat[1] );
-
-    zero  := Zero( mat[1][1] );
-
-    heads   := ListWithIdenticalEntries( ncols, 0 );
-    vectors := [];
-
-    coeffs    := [];
-    relations := [];
-
-    for i in [ 1 .. nrows ] do
-        
-        row := mat[i];
-        row2 := ListWithIdenticalEntries( nrows, zero );
-        row2[i]:= One( mat[1][1] );
-        
-        # Reduce the row with the known basis vectors.
-        for j in [ 1 .. ncols ] do
-            head := heads[j];
-            if head <> 0 then
-                x := - row[j];
-                if x <> zero then
-                    AddRowVector( row2  , coeffs[ head ] , x );
-                    AddRowVector( row,    vectors[ head ], x );
-                fi;
-            fi;
-        od;
-
-        j:= PositionNot( row, zero );
-        if j <= ncols then
-
-            # We found a new basis vector.
-            Add( coeffs,  row2   / row[j] );
-            Add( vectors, row / row[j] );
-            heads[j]:= Length( vectors );
-
-        else
-            Add( relations, row2 );
-        fi;
-
-    od;
-
-    return relations;
-
-end );
 
 
 #############################################################################
@@ -1816,74 +1734,30 @@ end );
 ##
 #M  RankMat( <mat> )  . . . . . . . . . . . . . . . . . . .  rank of a matrix
 ##
+
+
+InstallMethod( RankMatDestructive,
+        "generic method for matrices",
+        true,
+        [ IsMatrix and IsMutable],
+        0,
+        mat -> Length(SemiEchelonMatDestructive(mat).vectors));
+
 InstallMethod( RankMat,
-    "generic method for matrices",
-    true,
-    [ IsMatrix ],
-    0,
-        function(mat)
-    local n,i,z,j,t,rk,k,piv,row,x,m;
-
-    # make a copy to avoid changing the original argument
-    m := Length(mat);
-    n := Length(mat[1]);
-    z := Zero(mat[1][1]);
-    mat := List(mat, ShallowCopy);
-
-    # run through all columns of the matrix
-    rk := 0;
-    for i in [1..n] do
-
-        # find a nonzero entry in this column
-        #N  26-Oct-91 martin if <mat> is a rational matrix look for a pivot
-        j := rk+1;
-        while j <= m and mat[j][i] = z  do
-            j := j+1;
-        od;
-
-        # if there is a nonzero entry
-        if (j <= m) then
-
-            # increment the rank
-            rk := rk+1;
-
-            # make its row the current row
-            t := mat[j];
-            if j > rk then
-                mat[j] := mat[rk];
-                mat[rk] := t;
-            fi;
-
-            # clear all entries below in this column
-            # (if possible, otherwise return `fail')
-            piv := Inverse(t[i]);
-            if piv = fail then
-              return fail;
-            fi;
-            piv := - piv;
-            for k in [rk+1..m] do
-                row := mat[k];
-                x := row[i];
-                if x <> z then
-                    AddRowVector(row,t,piv*x);
-                fi;
-            od;
-        fi;
-    od;
-
-    # return the rank (the number of linear independent rows)
-    return rk;
-end);
-
+        "generic method for matrices",
+        true,
+        [ IsMatrix ],
+        0,
+        mat -> RankMatDestructive(List(mat,ShallowCopy)));
 
 #############################################################################
 ##
 #M  SemiEchelonMat( <mat> )
 ##
-InstallMethod( SemiEchelonMatNoCo,
+InstallMethod( SemiEchelonMatDestructive,
     "generic method for matrices",
     true,
-    [ IsMatrix ],
+    [ IsMatrix and IsMutable ],
     0,
     function( mat )
 
@@ -1941,19 +1815,18 @@ InstallMethod( SemiEchelonMat,
     true,
     [ IsMatrix ],
     0,
-    function( mat )
-        return SemiEchelonMatNoCo( List( mat, ShallowCopy ) );
+        function( mat )
+    local copymat, v, vc, f;
+    copymat := [];
+    f := DefaultFieldOfMatrix(mat);
+    for v in mat do
+        vc := ShallowCopy(v);
+        ConvertToVectorRep(vc,f);
+        Add(copymat, vc);
+    od;
+    return SemiEchelonMatDestructive( copymat );
 end );
     
-InstallMethod( SemiEchelonMatDestructive,
-    "generic method for matrices",
-    true,
-    [ IsMatrix ],
-    0,
-    function( mat )
-        return SemiEchelonMatNoCo( mat );
-end );    
-
 
 
 #############################################################################
@@ -1961,9 +1834,27 @@ end );
 #M  SemiEchelonMatTransformation( <mat> )
 ##
 InstallMethod( SemiEchelonMatTransformation,
+        "generic method for matrices",
+        true,
+        [ IsMatrix ],
+        0,
+        function( mat )
+    local copymat, v, vc, f;
+    copymat := [];
+    f := DefaultFieldOfMatrix(mat);
+    for v in mat do
+        vc := ShallowCopy(v);
+        ConvertToVectorRep(vc,f);
+        Add(copymat, vc);
+    od;
+    return  SemiEchelonMatTransformationDestructive(copymat);
+end);
+        
+
+InstallMethod( SemiEchelonMatTransformationDestructive,
     "generic method for matrices",
     true,
-    [ IsMatrix ],
+    [ IsMatrix and IsMutable],
     0,
 
 function( mat )
@@ -1979,8 +1870,8 @@ function( mat )
           coeffs,    # list of coefficient vectors for 'vectors'
           relations, # basis vectors of the null space of 'mat'
           row, head, x, row2;
+    
 
-    mat:= List( mat, ShallowCopy );
     nrows := Length( mat );
     ncols := Length( mat[1] );
 
@@ -2031,74 +1922,6 @@ function( mat )
 end );
 
 
-InstallMethod( SemiEchelonMatTransformation,
-        "special method for GF(2)",
-        true,
-        [ IsMatrix and IsMutable and IsFFECollColl and IsGF2MatrixRep],
-        0,
-
-function( mat )
-
-    local zero,      # zero of the field of <mat>
-          nrows,     # number of rows in <mat>
-          ncols,     # number of columns in <mat>
-          vectors,   # list of basis vectors
-          heads,     # list of pivot positions in 'vectors'
-          i,         # loop over rows
-          j,         # loop over columns
-          T,         # transformation matrix
-          coeffs,    # list of coefficient vectors for 'vectors'
-          relations, # basis vectors of the null space of 'mat'
-          row, head, row2;
-
-    mat:= List( mat, ShallowCopy );
-    nrows := Length( mat );
-    ncols := Length( mat[1] );
-
-    zero  := 0*Z(2);
-
-    heads   := ListWithIdenticalEntries( ncols, 0 );
-    vectors := [];
-
-    T         := IdentityMat( nrows, GF(2) );
-    coeffs    := [];
-    relations := [];
-
-    for i in [ 1 .. nrows ] do
-        
-        row := mat[i];
-        row2 := T[i];
-        
-        # Reduce the row with the known basis vectors.
-        for j in [ 1 .. ncols ] do
-            head := heads[j];
-            if head <> 0 then
-                if row[j] <> zero then
-                    AddRowVector( row2  , coeffs[ head ] );
-                    AddRowVector( row,    vectors[ head ]);
-                fi;
-            fi;
-        od;
-
-        j:= PositionNot( row, zero );
-        if j <= ncols then
-
-            # We found a new basis vector.
-            Add( coeffs,  row2 );
-            Add( vectors, row  );
-            heads[j]:= Length( vectors );
-
-        else
-            Add( relations, row2 );
-        fi;
-
-    od;
-
-    return rec( heads     := heads,
-                vectors   := vectors,
-                coeffs    := coeffs,
-                relations := relations );
-end );
 
 
 #############################################################################
@@ -2200,10 +2023,10 @@ end );
 ##
 #M  TransposedMat( <mat> )  . . . . . . . . . . . . .  transposed of a matrix
 ##
-InstallMethod( TransposedMat,
-    "generic method for matrices",
+InstallOtherMethod( TransposedMat,
+    "generic method for matrices and lists",
     true,
-    [ IsMatrix ],
+    [ IsList ],
     0,
     MutableTransposedMat );
 
@@ -2366,80 +2189,116 @@ end );
 ##
 ##  One solution <x> of <x> * <mat> = <vec> or `fail'.
 ##
-InstallMethod( SolutionMatNoCo,
-    "generic method for ordinary matrix and vector",
+InstallMethod( SolutionMatDestructive,
+        "generic method",
     IsCollsElms,
-    [ IsOrdinaryMatrix,
-      IsRowVector ],
+    [ IsOrdinaryMatrix and IsMutable,
+      IsRowVector and IsMutable],
     0,
-
-function ( mat, vec )
-    local   h, v, tmp, i, l, r, s, c, zero;
-
-    # solve <mat> * x = <vec>.
-    vec  := ShallowCopy( vec );
-    l    := Length( mat );
-    r    := 0;
-    zero := Zero( mat[1][1] );
-    Info( InfoMatrix, 1, "SolutionMat called" );
-
-    # Run through all columns of the matrix.
-    c := 1;
-    while c <= Length( mat[ 1 ] ) and r < l  do
-
-        # Find a nonzero entry in this column.
-        s := r + 1;
-        while s <= l and mat[ s ][ c ] = zero  do s := s + 1;  od;
-
-        # If there is a nonzero entry,
-        if s <= l  then
-
-            # increment the rank.
-            Info( InfoMatrix, 2, "  nonzero columns ", c );
-            r := r + 1;
-
-            # Make its row the current row and normalize it.
-            tmp := mat[ s ][ c ] ^ -1;
-            v := mat[ s ];  mat[ s ] := mat[ r ];  mat[ r ] := tmp * v;
-            v := vec[ s ];  vec[ s ] := vec[ r ];  vec[ r ] := tmp * v;
-
-            # Clear all entries in this column.
-            for s  in [ 1 .. Length( mat ) ]  do
-                if s <> r and mat[ s ][ c ] <> zero  then
-                    tmp := mat[ s ][ c ];
-                    mat[ s ] := mat[ s ] - tmp * mat[ r ];
-                    vec[ s ] := vec[ s ] - tmp * vec[ r ];
-                fi;
-            od;
-        fi;
-        c := c + 1;
-    od;
-
-    # Find a solution.
-    for i  in [ r + 1 .. l ]  do
-        if vec[ i ] <> zero  then return fail;  fi;
-    od;
-    h := [];
-    s := Length( mat[ 1 ] );
-    v := Zero( mat[ 1 ][ 1 ] );
-    r := 1;
-    c := 1;
-    while c <= s and r <= l  do
-        while c <= s and mat[ r ][ c ] = zero  do
-            c := c + 1;
-            Add( h, v );
-        od;
-        if c <= s  then
-            Add( h, vec[ r ] );
-            r := r + 1;
-            c := c + 1;
+        function( mat, vec )
+    local i,ncols,sem, vno, z,x, row, sol;
+    ncols := Length(vec);
+    z := Zero(mat[1][1]);
+    sol := ListWithIdenticalEntries(Length(mat),z);
+    ConvertToVectorRep(sol);
+    if ncols <> Length(mat[1]) then
+        Error("SolutionMat: matrix and vector incompatible");
+    fi;
+    sem := SemiEchelonMatTransformationDestructive(mat);
+    for i in [1..ncols] do
+        vno := sem.heads[i];
+        if vno <> 0 then
+            x := vec[i];
+            if x <> z then
+                AddRowVector(vec, sem.vectors[vno], -x);
+                AddRowVector(sol, sem.coeffs[vno], x);
+            fi;
         fi;
     od;
-    while c <= s  do Add( h, v );  c := c + 1;  od;
+    if IsZero(vec) then
+        return sol;
+    else
+        return fail;
+    fi;
+end);
 
-    Info( InfoMatrix, 1, "SolutionMat returns" );
-    return h;
-end );
+
+
+#InstallMethod( SolutionMatNoCo,
+#    "generic method for ordinary matrix and vector",
+#    IsCollsElms,
+#    [ IsOrdinaryMatrix,
+#      IsRowVector ],
+#    0,
+#
+#function ( mat, vec )
+#    local   h, v, tmp, i, l, r, s, c, zero;
+#
+#    # solve <mat> * x = <vec>.
+#    vec  := ShallowCopy( vec );
+#    l    := Length( mat );
+#    r    := 0;
+#    zero := Zero( mat[1][1] );
+#    Info( InfoMatrix, 1, "SolutionMat called" );
+#
+#    # Run through all columns of the matrix.
+#    c := 1;
+#    while c <= Length( mat[ 1 ] ) and r < l  do
+#
+#        # Find a nonzero entry in this column.
+#        s := r + 1;
+#        while s <= l and mat[ s ][ c ] = zero  do s := s + 1;  od;
+#
+#        # If there is a nonzero entry,
+#        if s <= l  then
+#
+#            # increment the rank.
+#            Info( InfoMatrix, 2, "  nonzero columns ", c );
+#            r := r + 1;
+#
+#            # Make its row the current row and normalize it.
+#            tmp := mat[ s ][ c ] ^ -1;
+#            v := mat[ s ];  mat[ s ] := mat[ r ];  mat[ r ] := tmp * v;
+#            v := vec[ s ];  vec[ s ] := vec[ r ];  vec[ r ] := tmp * v;
+#
+#            # Clear all entries in this column.
+#            for s  in [ 1 .. Length( mat ) ]  do
+#                if s <> r and mat[ s ][ c ] <> zero  then
+#                    tmp := mat[ s ][ c ];
+#                    mat[ s ] := mat[ s ] - tmp * mat[ r ];
+#                    vec[ s ] := vec[ s ] - tmp * vec[ r ];
+#                fi;
+#            od;
+#        fi;
+#        c := c + 1;
+#    od;
+#
+#    # Find a solution.
+#    for i  in [ r + 1 .. l ]  do
+#        if vec[ i ] <> zero  then return fail;  fi;
+#    od;
+#    h := [];
+#    s := Length( mat[ 1 ] );
+#    v := Zero( mat[ 1 ][ 1 ] );
+#    r := 1;
+#    c := 1;
+#    while c <= s and r <= l  do
+#        while c <= s and mat[ r ][ c ] = zero  do
+#            c := c + 1;
+#            Add( h, v );
+#        od;
+#        if c <= s  then
+#            Add( h, vec[ r ] );
+#            r := r + 1;
+#            c := c + 1;
+#        fi;
+#    od;
+#    while c <= s  do Add( h, v );  c := c + 1;  od;
+#
+#    Info( InfoMatrix, 1, "SolutionMat returns" );
+#    return h;
+#end );
+#
 
 InstallMethod( SolutionMat,
     "generic method for ordinary matrix and vector",
@@ -2448,19 +2307,19 @@ InstallMethod( SolutionMat,
       IsRowVector ],
     0,
         function ( mat, vec )
-          return SolutionMatNoCo( MutableTransposedMat( mat ), vec );
+          return SolutionMatDestructive( MutableCopyMat( mat ), ShallowCopy(vec) );
 end );
       
-InstallMethod( SolutionMatDestructive,
-    "generic method for ordinary matrix and vector",
-    IsCollsElms,
-    [ IsOrdinaryMatrix,
-      IsRowVector ],
-    0,
-        function ( mat, vec )
-          return SolutionMatNoCo( MutableTransposedMatDestructive( mat ), 
-                   vec );
-end );
+#InstallMethod( SolutionMatDestructive,
+#    "generic method for ordinary matrix and vector",
+#    IsCollsElms,
+#    [ IsOrdinaryMatrix,
+#      IsRowVector ],
+#    0,
+#        function ( mat, vec )
+#          return SolutionMatNoCo( MutableTransposedMatDestructive( mat ), 
+#                   vec );
+#end );
 
 ############################################################################
 ##
@@ -2520,7 +2379,7 @@ function( M1, M2 )
     od;
 
     # Transform `mat' into semi-echelon form.
-    mat   := SemiEchelonMat( mat );
+    mat   := SemiEchelonMatDestructive( mat );
     heads := mat.heads;
     mat   := mat.vectors;
 
@@ -2620,133 +2479,6 @@ function ( mat )
     Info( InfoMatrix, 1, "TriangulizeMat returns" );
 end );
 
-#############################################################################
-##
-#M  TriangulizeMat2( <mat> ) . . . . . bring a matrix in upper triangular form
-##
-
-TriangulizeMat2 := 
-function ( mat )
-    local   m, n, i, j, k, row, zero, x, row2;
-
-    Info( InfoMatrix, 1, "TriangulizeMat called" );
-
-    if not IsEmpty( mat ) then
-
-       # get the size of the matrix
-       m := Length(mat);
-       n := Length(mat[1]);
-       zero := Zero( mat[1][1] );
-
-       # make sure that the rows are mutable
-       for i in [ 1 .. m ] do
-         if not IsMutable( mat[i] ) then
-           mat[i]:= ShallowCopy( mat[i] );
-         fi;
-       od;
-
-       # run through all columns of the matrix
-       i := 0;
-       for k  in [1..n]  do
-
-           # find a nonzero entry in this column
-           j := i + 1;
-           while j <= m and mat[j][k] = zero  do j := j + 1;  od;
-
-           # if there is a nonzero entry
-           if j <= m  then
-
-               # increment the rank
-               Info( InfoMatrix, 2, "  nonzero columns: ", k );
-               i := i + 1;
-
-               # make its row the current row and normalize it
-               row    := mat[j];
-               mat[j] := mat[i];
-               MultRowVector( row, Inverse(row[k]) );
-               mat[i] := row;
-               
-               ClearColumnNoMults( mat, row, k, 1, i-1);
-               ClearColumnNoMults( mat, row, k, j+1, m);
-
-           fi;
-
-       od;
-
-    fi;
-
-    Info( InfoMatrix, 1, "TriangulizeMat returns" );
-end;
-
-#############################################################################
-##
-#M  TriangulizeMat( <mat> ) . . . . . bring a matrix in upper triangular form
-##
-InstallGlobalFunction(TriangulizeMatGF2,function ( mat )
-    local   m, n, i, j, k, row, zero;
-
-    if Length(mat) > 0 then 
-
-       # get the size of the matrix
-       m := Length(mat);
-       n := Length(mat[1]);
-       zero := 0*Z(2);
-   
-        # make sure that the rows are mutable
-       for i in [ 1 .. m ] do
-           if not IsMutable( mat[i] ) then
-               mat[i]:= ShallowCopy( mat[i] );
-           fi;
-       od;
-     
-     # run through all columns of the matrix
-       i := 0;
-       for k  in [1..n]  do
-   
-           # find a nonzero entry in this column
-           j := i + 1;
-           while j <= m and mat[j][k] = zero  do j := j + 1;  od;
-   
-           # if there is a nonzero entry
-           if j <= m  then
-   
-               # increment the rank
-               i := i + 1;
-   
-               row := mat[j];  mat[j] := mat[i];  mat[i] := row;
-   
-               # clear all entries in this column
-               for j  in [1..i-1] do
-                   if  mat[j][k] <> zero  then
-                       AddRowVector(mat[j],row);
-                   fi;
-               od;
-               for j  in [i+1..m] do
-                   if  mat[j][k] <> zero  then
-                       AddRowVector(mat[j],row);
-                   fi;
-               od;
-   
-           fi;
-   
-       od;
-   
-    fi;
-
-end);
-
-InstallMethod( TriangulizeMat, "method for matrices of packed GF2-vectors",
- true, [ IsMatrix and IsMutable and IsFFECollColl], 0,
-function ( mat )
- if not ForAll(mat,IsGF2VectorRep) then
-    TryNextMethod();
-  fi;
-  TriangulizeMatGF2(mat);
-end);
-
-InstallMethod( TriangulizeMat, "method GF(2) matrices",
-  true, [ IsMatrix and IsMutable and IsFFECollColl and IsGF2MatrixRep], 10,
-  TriangulizeMatGF2);
 
 InstallOtherMethod( TriangulizeMat, "empty list",
         true, [ IsList and IsEmpty], 0, 
@@ -2783,7 +2515,6 @@ end );
 
 #############################################################################
 ##
-
 #F  BaseFixedSpace( <mats> )  . . . . . . . . . . . .  calculate fixed points
 ##
 ##  'BaseFixedSpace' returns a base of the vector space $V$ such that
@@ -2807,7 +2538,7 @@ InstallGlobalFunction( BaseFixedSpace, function( matrices )
             Append( E[ j ], N[ j ] );
         od;
     od;
-    return NullspaceMat( E );
+    return NullspaceMatDestructive( E );
 end );
 
 
@@ -3385,6 +3116,7 @@ InstallGlobalFunction( NullspaceModQ, function( E, q )
 
     local  facs,         # factors of <q>
            p,            # prime of facs
+	   pex,		 # p-power
            n,            # <q> = p^n
            field,        # field with p elements
            B,            # E over GF(p)
@@ -3394,8 +3126,9 @@ InstallGlobalFunction( NullspaceModQ, function( E, q )
            r,            # inhomogenous part mod p^i-1
            newelem,      # all elements solving E mod p^i
            sol,          # solution of E * x = r mod p^i
+	   ran,
            new, o,
-           j, i;
+           j, i,k;
 
     # factorize q
     facs  := FactorsInt( q );
@@ -3417,15 +3150,30 @@ InstallGlobalFunction( NullspaceModQ, function( E, q )
     newelem := [ ];
     o := One( field );
 
+    ran:=[1..Length(null[1])];
     # run trough powers
     for i  in [ 2..n ]  do
+	pex:=p^(i-1);
         for e  in elem  do
-            r   := o * ( - (e * E) / (p ^ ( i - 1 ) ) );
+            #r   := o * ( - (e * E) / (p ^ ( i - 1 ) ) );
+            r   := o * ( - (e * E) / pex );
             sol := SolutionMat( B, r );
             if sol <> fail then
+
+		# accessing the elements of the compact vector `sol'
+		# frequently would be very expensive
+		sol:=List(sol,IntFFE);
+
                 for j  in [ 1..Length( elem ) ]  do
-                    new := e + ( p^(i-1) * List( o * elem[j] + sol, IntFFE ) );
+                    #new := e + ( p^(i-1) * List( o * elem[j] + sol, IntFFE ) );
+		    new:=ShallowCopy(e);
+		    for k in ran do
+		      #new[k]:=new[k]+pex * IntFFE(o*elem[j][k]+ sol[k]);
+		      new[k]:=new[k]+pex * ((elem[j][k]+ sol[k]) mod p);
+		    od;
 #T !
+		    MakeImmutable(new); # otherwise newelem does not remember
+		                        # it is sorted!
                     AddSet( newelem, new );
                 od;
             fi;
@@ -3948,21 +3696,21 @@ end );
 ##
 #F  OnSubspacesByCanonicalBasis(<bas>,<mat>)
 ##
-InstallGlobalFunction(OnSubspacesByCanonicalBasisGF2,function( mat, obj )
-  #mat:=ShallowCopy(mat);
-  #mat:=PROD_LIST_SCL_DEFAULT(mat,obj); # this produced a *mutable* product
-  # (Hooray, so we do not even need `ShallowCopy'. But this should be better
-  # done via a defined interface!)
-  mat:=ShallowCopy(mat*obj);
-  TriangulizeMatGF2(mat); # this function works on full vectors, so no
-			  # further `ShallowCopy' level is needed!
-  return mat;
-end);
 
 InstallGlobalFunction(OnSubspacesByCanonicalBasis,function( mat, obj )
-  mat:=ShallowCopy(mat*obj);
-  TriangulizeMat(mat);
-  return mat;
+    local row;
+    mat:=mat*obj;
+    if not IsMutable(mat) then
+        mat := List(mat, ShallowCopy);
+    else 
+        for row in [1..Length(mat)] do
+            if not IsMutable(mat[row]) then
+                mat[row] := ShallowCopy(mat[row]);
+            fi;
+        od;
+    fi;
+    TriangulizeMat(mat);
+    return mat;
 end);
 
 #############################################################################
@@ -3990,6 +3738,34 @@ local i,j,k,fg,f;
     od;
   od;
   return f;
+end);
+
+#############################################################################
+##
+#M  LaTeXObj
+##
+InstallMethod(LaTeXObj,"matrix",true,
+  [IsMatrix],0,
+function(m)
+local i,j,l,n,s;
+  l:=Length(m);
+  n:=Length(m[1]);
+  s:="\\left(\\begin{array}{";
+  for i in [1..n] do
+    Add(s,'r');
+  od;
+  Append(s,"}%\n");
+  for i in [1..l] do
+    for j in [1..n] do
+      Append(s,LaTeXObj(m[i][j]));
+      if j<n then
+        Add(s,'&');
+      fi;
+    od;
+    Append(s,"\\\\%\n");
+  od;
+  Append(s,"\\end{array}\\right)");
+  return s;
 end);
 
 #############################################################################
@@ -4109,187 +3885,6 @@ end);
 
 
 
-#############################################################################
-##
-#M  ClearColumn( <mat>, <vec>, <col>, <poss> )
-##
-##  Generic Method -- kernel methods are intended for many special cases
-##
-InstallMethod( ClearColumn, "generic",
-        IsCollsElmsXX, [IsMatrix and IsMutable, IsRowVector, IsPosInt,
-                IsDenseList and IsCyclotomicCollection], 0,
-        function (m, v, col, poss)
-    local i, x, r, y, res, z, n;
-    Assert(2, col <= Length(v));
-    Assert(2, ForAll(poss,i->0 < i and i <= Length(m)));
-    if Length(poss) = 0 then
-        return [];
-    fi;
-    Assert(2, Length(v) = Length(m[1]));
-#    Assert(2, IsRectangularMatrix(m));
-    x := v[col];
-    res := [];
-    z := Zero(v[1]);
-    Assert(1, x <> z);
-    if x = One(z) then
-        for i in poss do
-            r := m[i];
-            y := r[col];
-            if y <> z then
-                y := -y;
-                AddRowVector(r, v, y);
-            fi;
-            Add(res,y);
-        od;
-    elif x = -One(z) then
-        for i in poss do
-            r := m[i];
-            y := r[col];
-            if y <> z then
-                AddRowVector(r, v, y);
-            fi;
-            Add(res,y);
-        od;
-    else
-        x := -x;
-        for i in poss do
-            r := m[i];
-            y := r[col];
-            if y <> z then
-                y := y/x;
-                AddRowVector(r, v, y);
-            fi;
-            Add(res,y);
-        od;
-    fi;
-    return res;
-end);
-
-
-#############################################################################
-##
-#M  ClearRow( <vec>, <mat>, <pivots>,  <poss> )
-##
-##  generic method, many kernel methods expected
-##
-InstallMethod( ClearRow, "generic method", IsElmsCollsXX,  [IsRowVector and IsMutable, IsMatrix, 
-        IsList and IsCyclotomicCollection, IsDenseList and IsCyclotomicCollection], 0,
-        function( vec, mat, pivots, poss)
-    local i, p, x, r, y, res;
-    if Length(mat) = 0 then
-        if Length(poss) = 0 then
-            return [];
-        else
-            Error("bad limits for cleaning with empty matrix");
-        fi;
-    fi;
-    Assert(2, ForAll(poss,i->0<i and i<=Length(vec)));
-    if Length(vec) <> Length(mat[1]) then
-        Error("matrix and vector incompatible");
-    fi;
-    res := [];
-    for i in poss do
-        p := pivots[i];
-        x := vec[p];
-        if not IsZero(x) then
-            r := mat[i];
-            y := r[p];
-            x := -(x/y);
-            AddRowVector(vec, r, x);
-        fi;
-        Add(res, x);
-    od;
-    return res;
-end );
-        
-
-#############################################################################
-##
-#M  ClearColumnNoMults( <mat>, <vec>, <col>, <from>, <to> )
-##
-##  Generic Method -- kernel methods are intended for many special cases
-##
-InstallMethod( ClearColumnNoMults, "generic",
-        IsCollsElmsXX, [IsMatrix and IsMutable, IsRowVector, IsPosInt,
-                IsDenseList and IsCyclotomicCollection], 0,
-        function (m, v, col, poss)
-    local i, x, r, y, z, n;
-    Assert(2, col <= Length(v));
-    Assert(2, ForAll(poss, i->0<i and i < Length(m)));
-    if Length(poss) = 0 then
-        return [];
-    fi;
-    Assert(2, Length(v) = Length(m[1]));
-#    Assert(2, IsRectangularMatrix(m));
-    x := v[col];
-    z := Zero(v[1]);
-    Assert(1, x <> z);
-    if x = One(z) then
-        for i in poss do
-            r := m[i];
-            y := r[col];
-            if y <> z then
-                y := -y;
-                AddRowVector(r, v, y);
-            fi;
-        od;
-    elif x = -One(z) then
-        for i in poss do
-            r := m[i];
-            y := r[col];
-            if y <> z then
-                AddRowVector(r, v, y);
-            fi;
-        od;
-    else
-        x := -x;
-        for i in poss do
-            r := m[i];
-            y := r[col];
-            if y <> z then
-                y := y/x;
-                AddRowVector(r, v, y);
-            fi;
-        od;
-    fi;
-    return;
-end);
-
-
-#############################################################################
-##
-#M  ClearRowNoMults( <vec>, <mat>, <pivots>,  <from>, <to> )
-##
-##  generic method, many kernel methods expected
-##
-InstallMethod( ClearRowNoMults, "generic method", IsElmsCollsXX,  [IsRowVector and IsMutable, IsMatrix, 
-        IsList and IsCyclotomicCollection, IsDenseList and IsCyclotomicCollection], 0,
-        function( vec, mat, pivots, poss)
-    local i, p, x, r, y;
-    if Length(mat) = 0 then
-        if Length(poss) = 0 then
-            return [];
-        else
-            Error("bad limits for cleaning with empty matrix");
-        fi;
-    fi;
-    Assert(2, ForAll(poss,i->0<i and i<=Length(vec)));
-    if Length(vec) <> Length(mat[1]) then
-        Error("matrix and vector incompatible");
-    fi;
-    for i in poss do
-        p := pivots[i];
-        x := vec[p];
-        if not IsZero(x) then
-            r := mat[i];
-            y := r[p];
-            x := -(x/y);
-            AddRowVector(vec, r, x);
-        fi;
-    od;
-    return;
-end );
-        
 
 
 #############################################################################

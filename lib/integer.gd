@@ -460,6 +460,15 @@ DeclareGlobalFunction( "SmallestRootInt" );
 ##
 DeclareGlobalFunction( "PrintFactorsInt" );
 
+#############################################################################
+##
+#F  PowerDecompositions( <n> )
+##
+##  returns a list of all nontrivial decompositions of the integer <n> as a
+##  power of integers.
+##
+DeclareGlobalFunction( "PowerDecompositions" );
+
 
 #############################################################################
 ##

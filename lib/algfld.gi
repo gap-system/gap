@@ -155,11 +155,12 @@ local e,fam;
   return e;
 end);
 
-InstallOtherMethod(FieldByGenerators,"algebraic elements",true,
-  [IsAlgebraicElementCollection],0,
-function(l)
-  return FamilyObj(l[1])!.wholeField;
-end);
+# this method is wrong
+#InstallOtherMethod(FieldByGenerators,"algebraic elements",true,
+#  [IsAlgebraicElementCollection],0,
+#function(l)
+#  return FamilyObj(l[1])!.wholeField;
+#end);
 
 #############################################################################
 ##
@@ -327,13 +328,13 @@ local fam;
   return ObjByExtRep(fam,b);
 end);
 
-InstallMethod(\+,"BFElm+FElm",IsCoeffsElms,[IsAlgBFRep,IsRingElement],0,
+InstallMethod(\+,"BFElm+FElm",IsElmsCoeffs,[IsAlgBFRep,IsRingElement],0,
 function(a,b)
   b:=a![1]+b;
   return AlgExtElm(FamilyObj(a),b);
 end);
 
-InstallMethod(\+,"FElm+BFElm",IsElmsCoeffs,[IsRingElement,IsAlgBFRep],0,
+InstallMethod(\+,"FElm+BFElm",IsCoeffsElms,[IsRingElement,IsAlgBFRep],0,
 function(a,b)
   a:=b![1]+a;
   return AlgExtElm(FamilyObj(b),a);
@@ -383,7 +384,7 @@ function(a,b)
   return ObjByExtRep(FamilyObj(a),a![1]*b![1]);
 end);
 
-InstallMethod(\*,"Alg*FElm",IsCoeffsElms,[IsAlgebraicElement,IsRingElement],0,
+InstallMethod(\*,"Alg*FElm",IsElmsCoeffs,[IsAlgebraicElement,IsRingElement],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -391,7 +392,7 @@ local fam;
   return AlgExtElm(fam,b);
 end);
 
-InstallMethod(\*,"FElm*Alg",IsElmsCoeffs,[IsRingElement,IsAlgebraicElement],0,
+InstallMethod(\*,"FElm*Alg",IsCoeffsElms,[IsRingElement,IsAlgebraicElement],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(b);
@@ -774,9 +775,8 @@ end);
 #M  Basis( <algext> )
 ##
 InstallMethod( Basis,
-    "for an algebraic extension (call `CanonicalBasis')",
-    true,
-    [ IsAlgebraicExtension ], 0,
+    "for an algebraic extension (delegate to `CanonicalBasis')",
+    [ IsAlgebraicExtension ], CANONICAL_BASIS_FLAGS,
     CanonicalBasis );
 
 

@@ -178,7 +178,8 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##       the discussion of the <options> argument;
 ##       For linear characters $\lambda$ among these characters,
 ##       the condition $\chi(g)^p = \chi(g^p)$ is checked.
-##       The corresponding function is `Congruences' (see~"Congruences").
+##       The corresponding function is `Congruences' 
+##       (see~"Congruences!for character tables").
 ##  \item{4.}
 ##       For each character $\chi$ of $G$, the kernel is a normal subgroup
 ##       $N$, and $g^p \in N$ for all $g \in N$;
@@ -340,8 +341,8 @@ DeclareGlobalFunction( "RepresentativesPowerMaps" );
 ##  desired class fusion.
 ##  Character tables of the {\GAP} character table library store various
 ##  class fusions that are regarded as important,
-##  for example fusions from maximal subgroups (see~"ComputedClassFusions",
-##  "Maxes").
+##  for example fusions from maximal subgroups (see~"ComputedClassFusions"
+##  and "ctbllib:Maxes" in the manual for the {\GAP} Character Table Library).
 ##
 ##  Class fusions between Brauer tables can be derived from the class fusions
 ##  between the underlying ordinary tables.
@@ -399,8 +400,7 @@ DeclareGlobalFunction( "RepresentativesPowerMaps" );
 ##  Note that the returned class fusion refers to the ordering of conjugacy
 ##  classes in the character tables if the arguments are character tables
 ##  and to the ordering of conjugacy classes in the groups if the arguments
-#T  are groups (see~"ConjugacyClasses!for character tables").
-##  are groups (see~"ConjugacyClasses.ctbl").
+##  are groups (see~"ConjugacyClasses!for character tables").
 ##
 ##  Called with a group homomorphism <hom>,
 ##  `FusionConjugacyClasses' returns the fusion of conjugacy classes between
@@ -1046,7 +1046,9 @@ DeclareGlobalFunction( "PrintAmbiguity" );
 ##  have integral scalar product with the principal character of <tbl>,
 ##  and that satisfy `<func>( <tbl>, <chars>, <vec> ) = true',
 ##
-##  \indextt{}
+##  \indextt{IntScalarProducts}\indextt{NonnegIntScalarProducts}
+##  \indextt{ContainedPossibleVirtualCharacters}
+##  \indextt{ContainedPossibleCharacters}\indextt{ContainedSpecialVectors}
 ##  Two special cases of <func> are the check whether the scalar products in
 ##  <tbl> between the vector <vec> and all lists in <chars> are integers or
 ##  nonnegative integers, respectively.
@@ -1081,7 +1083,7 @@ DeclareGlobalFunction( "ContainedPossibleCharacters" );
 ##  The latter means they lie in the $\Z$-lattice spanned by <constituents>
 ##  and the set
 ##  $$
-##    \{ <moduls>[i] \cdot e_i; 1 \leq i \leq n \},
+##  \{ <moduls>[i] . e_i; 1 \leq i \leq n \},
 ##  $$
 ##  where $n$ is the length of <parachar> and  $e_i$ is the $i$-th standard
 ##  basis vector.

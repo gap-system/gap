@@ -8,17 +8,25 @@
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
+Revision.quogphom_gd :=
+    "@(#)$Id$";
+
+#############################################################################
+##
+##  1. Quotient groups by homomorphisms
+#1
 ##  Given a group homomorphism, the cosets of its kernel correspond to
 ##  elements in the image.  Our hom coset representation
-##  stores the homomorphism and the element in the source group.  The 
+##  stores the homomorphism and the element in the source group.  The
 ##  image is an attribute which is computed as necessary.  Two cosets
-##  are equal if their images are the same.  Where ever practical a coset 
+##  are equal if their images are the same.  Where ever practical a coset
 ##  is identified with its image.  For example, if the homomorphism maps
 ##  into a permutation group, the cosets are considered to be permutations.
 ##  Since cosets can be multiplied, we can use them to form
-##  a quotient group.  Any computation in this quotient group will be 
-##  "shadowed" in the source group.
+##  a quotient group.  Any computation in this quotient group will be
+##  ``shadowed'' in the source group.
 ##
+
 ##  Requires: chain (for CanonicalElt only)
 ##  Exports: 
 ##    	Category IsHomCoset with representations IsHomCosetToPerm,
@@ -52,8 +60,6 @@
 ##  ISSUE:  Given group of additive matrices, both
 ##            IsHomCosetToMatrix and IsHomCosetToAdditiveElt will be true.
 ##
-Revision.quogphom_gd :=
-    "@(#)$Id$";
 
 DeclareInfoClass( "InfoQuotientGroup" );
 
@@ -61,8 +67,8 @@ DeclareInfoClass( "InfoQuotientGroup" );
 #############################################################################
 #############################################################################
 ##
-##  Homomorphism Coset Representation
-##
+##  2. Homomorphism Coset Representation
+#2
 ##  We represent cosets of kernels of homomorphisms.  Each coset stores
 ##  the homomorphism and the element in the source.  The
 ##  element in the image is an attribute.  These cosets are
@@ -70,12 +76,13 @@ DeclareInfoClass( "InfoQuotientGroup" );
 ##  group, then the cosets are representations of a permutation.
 ##  Thus the set of cosets will form a quotient group.
 ##
-#############################################################################
-#############################################################################
 
 #############################################################################
 ##
 #C  IsHomCoset(<obj>)
+##
+##  `IsHomCoset' has one category for each kind of image (and corresponding
+##  representations).
 ##
 DeclareCategory( "IsHomCoset", IsRightCoset and IsAssociativeElement and
    IsMultiplicativeElementWithInverse);
@@ -99,6 +106,7 @@ InstallTrueMethod( IsAssociativeElement, IsHomCoset );
 ##
 ##  for a homomorphism <hom>, this attribute returns a family for the
 ##  `HomCoset' elements belonging to this homomorphism.
+##
 DeclareAttribute("HomCosetFamily",IsGroupHomomorphism);
 
 ##
@@ -115,6 +123,10 @@ DeclareAttribute("HomCosetFamily",IsGroupHomomorphism);
 DeclareCategory( "IsHomCosetToPerm",IsHomCoset and IsPerm);
 DeclareCategoryCollections( "IsHomCosetToPerm" );  
 
+#############################################################################
+##
+#R  IsHomCosetToPermRep(<obj>)
+##
 DeclareRepresentation( "IsHomCosetToPermRep",
   IsHomCosetToPerm and IsComponentObjectRep and IsAttributeStoringRep,
     [ "Homomorphism", "SourceElt" ] );
@@ -123,15 +135,20 @@ DeclareRepresentation( "IsHomCosetToPermRep",
 ##
 #C  IsHomCosetToMatrix(<obj>)
 ##
-##  gdc - We need HomCosetToMatrix to be in same family as Matrix,
-##        so that GAP allows vector \* HomCosetToMatrix
-##        and other algorithms that take elements of the HomCosetToMatrix
+##  gdc - We need `HomCosetToMatrix' to be in same family as `Matrix',
+##        so that {\GAP} allows vector $\*$ for `HomCosetToMatrix'
+##        and other algorithms that take elements of the `HomCosetToMatrix'.
 ##        Unfortunately, I don't know how to set the family correctly
 ##        for compatibility.
+##
 DeclareCategory( "IsHomCosetToMatrix", IsHomCoset 
   and IsMatrix and IsRingElementTable and IsOrdinaryMatrix);
 DeclareCategoryCollections( "IsHomCosetToMatrix" );  
 
+#############################################################################
+##
+#R  IsHomCosetToMatrixRep(<obj>)
+##
 DeclareRepresentation( "IsHomCosetToMatrixRep",
   IsHomCosetToMatrix and IsComponentObjectRep and IsAttributeStoringRep,
     [ "Homomorphism", "SourceElt" ] );
@@ -143,6 +160,10 @@ DeclareRepresentation( "IsHomCosetToMatrixRep",
 DeclareCategory( "IsHomCosetToFp",IsHomCoset and IsWordWithInverse);
 DeclareCategoryCollections( "IsHomCosetToFp" );  
 
+#############################################################################
+##
+#R  IsHomCosetToFpRep(<obj>)
+##
 DeclareRepresentation( "IsHomCosetToFpRep",
   IsHomCosetToFp and IsComponentObjectRep and IsAttributeStoringRep,
     [ "Homomorphism", "SourceElt" ] );
@@ -154,6 +175,10 @@ DeclareRepresentation( "IsHomCosetToFpRep",
 DeclareCategory( "IsHomCosetToTuple",IsHomCoset and IsTuple);
 DeclareCategoryCollections( "IsHomCosetToTuple" );  
 
+#############################################################################
+##
+#R  IsHomCosetToTupleRep(<obj>)
+##
 DeclareRepresentation( "IsHomCosetToTupleRep",
   IsHomCosetToTuple and IsComponentObjectRep and IsAttributeStoringRep,
     [ "Homomorphism", "SourceElt" ] );
@@ -167,6 +192,10 @@ DeclareRepresentation( "IsHomCosetToTupleRep",
 DeclareCategory( "IsHomCosetToAdditiveElt",IsHomCosetToMatrix);
 DeclareCategoryCollections( "IsHomCosetToAdditiveElt" );  
 
+#############################################################################
+##
+#R  IsHomCosetToAdditiveEltRep(<obj>)
+##
 DeclareRepresentation( "IsHomCosetToAdditiveEltRep",
   IsHomCosetToAdditiveElt and IsComponentObjectRep and IsAttributeStoringRep,
     [ "Homomorphism", "SourceElt" ] );
@@ -181,7 +210,7 @@ DeclareRepresentation( "IsHomCosetToAdditiveEltRep",
 ##
 #R  IsHomCosetToObjectRep(<obj>)
 ##
-##  The generic representation
+##  The generic representation.
 ##
 DeclareRepresentation( "IsHomCosetToObjectRep", # catch-all repn
     IsComponentObjectRep and IsAttributeStoringRep and IsHomCoset and IsObject, 
@@ -194,31 +223,31 @@ DeclareRepresentation( "IsHomCosetToObjectRep", # catch-all repn
 
 #############################################################################
 ##
-#P  IsHomCosetOfPerm
+#P  IsHomCosetOfPerm(<obj>)
 ##
 DeclareProperty( "IsHomCosetOfPerm", IsHomCoset );
 
 #############################################################################
 ##
-#P  IsHomCosetOfMatrix
+#P  IsHomCosetOfMatrix(<obj>)
 ##
 DeclareProperty( "IsHomCosetOfMatrix", IsHomCoset );
 
 #############################################################################
 ##
-#P  IsHomCosetOfAdditiveElt
+#P  IsHomCosetOfAdditiveElt(<obj>)
 ##
 DeclareProperty( "IsHomCosetOfAdditiveElt", IsHomCoset );
 
 #############################################################################
 ##
-#P  IsHomCosetOfFp
+#P  IsHomCosetOfFp(<obj>)
 ##
 DeclareProperty( "IsHomCosetOfFp", IsHomCoset );
 
 #############################################################################
 ##
-#P  IsHomCosetOfTuple( <> )
+#P  IsHomCosetOfTuple(<obj>)
 ##
 DeclareProperty( "IsHomCosetOfTuple", IsHomCoset );
 
@@ -259,7 +288,7 @@ DeclareSynonym( "IsQuotientToAdditiveGroup", IsGroup and
 ##
 #F  HomCoset( <hom>, <elt> )
 ##
-##  Create a hom coset.  It is better to use one of the QuotientGroupBy...
+##  Creates a hom coset.  It is better to use one of the `QuotientGroupBy...'
 ##  functions.
 ##
 DeclareGlobalFunction( "HomCoset", 
@@ -269,8 +298,9 @@ DeclareGlobalFunction( "HomCoset",
 ##
 #F  HomCosetWithImage( <hom>, <srcElt>, <imgElt> )
 ##
-##  Create a hom coset with given homomorphism, source and image elements. 
-##  It is better to use one of the QuotientGroupBy...  functions.
+##  Creates a hom coset with given homomorphism <hom>, source element <srcElt>
+##  and image element <imgElt>. 
+##  It is better to use one of the `QuotientGroupBy...'  functions.
 ##
 DeclareGlobalFunction( "HomCosetWithImage",
     [ IsGroupHomomorphism, IsAssociativeElement, IsAssociativeElement ] );
@@ -279,8 +309,8 @@ DeclareGlobalFunction( "HomCosetWithImage",
 ##
 #A  QuotientGroupHom( <hom> )
 ##
-##  The quotient group associated with the homomorphism.
-##  It is better to use one of the QuotientGroupBy...  functions.
+##  The quotient group associated with the homomorphism <hom>.
+##  It is better to use one of the `QuotientGroupBy...'  functions.
 ##
 DeclareAttribute( "QuotientGroupHom", IsGroupHomomorphism );
 
@@ -288,7 +318,7 @@ DeclareAttribute( "QuotientGroupHom", IsGroupHomomorphism );
 ##
 #F  QuotientGroupByHomomorphism( <hom> )
 ##
-##  The quotient group associated with the homomorphism.
+##  The quotient group associated with the homomorphism <hom>.
 ##
 DeclareGlobalFunction( "QuotientGroupByHomomorphism", [ IsGroupHomomorphism ] );
 
@@ -296,8 +326,8 @@ DeclareGlobalFunction( "QuotientGroupByHomomorphism", [ IsGroupHomomorphism ] );
 ##
 #F  QuotientGroupByImages( <srcGroup>, <rangeGroup>, <srcGens>, <imgGens> )
 ##
-##  Create a quotient group from the homomorphism which takes maps 
-##  srcGens[i] in srcGroup to imgGens[i] in rangeGroup.
+##  creates a quotient group from the homomorphism which takes maps 
+##  `<srcGens>[<i>]' in <srcGroup> to `<imgGens>[<i>]' in <rangeGroup>.
 ##
 DeclareGlobalFunction( "QuotientGroupByImages", 
 		       [ IsGroup, IsGroup, IsList, IsList ] );
@@ -306,8 +336,8 @@ DeclareGlobalFunction( "QuotientGroupByImages",
 ##
 #F  QuotientGroupByImagesNC( <srcGroup>, <rangeGroup>, <srcGens>, <imgGens> )
 ##
-##  Same as QuotientGroupByImages but without checking that the 
-##  homomorphism makes sense.
+##  Same as `QuotientGroupByImages' (see~"QuotientGroupByImages") but without
+##  checking that the homomorphism makes sense.
 ##
 DeclareGlobalFunction( "QuotientGroupByImagesNC", 
 		       [ IsGroup, IsGroup, IsList, IsList ] );
@@ -317,7 +347,7 @@ DeclareGlobalFunction( "QuotientGroupByImagesNC",
 ##  QuotientSubgroupNC( <M>, <gens> )
 ##
 ##  Resets the source group in a subgroup of a quotient group.
-##  Not yet implemented
+##  Not yet implemented.
 ##
 ##DeclareGlobalFunction( "QuotientSubgroupNC",
 ##			[IsHomQuotientGroup, IsList] );
@@ -336,8 +366,8 @@ DeclareGlobalFunction( "QuotientGroupByImagesNC",
 #F  IsTrivialHomCoset( <hcoset> )
 ##
 ##  Is the source element trivial?
-##  Sometimes, IsOne(hcoset) => true, in a quotient group, but we can
-##  safely discard such a generator only if its sourceElt is also trivial.
+##  Sometimes, `IsOne(<hcoset>) => true', in a quotient group, but we can
+##  safely discard such a generator only if its <sourceElt> is also trivial.
 ##
 DeclareGlobalFunction( "IsTrivialHomCoset", [ IsHomCoset ] );
 
@@ -346,7 +376,8 @@ DeclareGlobalFunction( "IsTrivialHomCoset", [ IsHomCoset ] );
 #O  Homomorphism( <hcoset> )
 #O  Homomorphism( <Q> )
 ##
-##  The homomorphism of a hom coset, respectively a hom quotient group.
+##  The homomorphism of a hom coset <hcoset>, respectively a hom quotient 
+##  group <Q>.
 ##
 DeclareOperation( "Homomorphism", [ IsHomCoset ] );
 DeclareOperation( "Homomorphism", [ IsHomQuotientGroup ] );
@@ -355,7 +386,7 @@ DeclareOperation( "Homomorphism", [ IsHomQuotientGroup ] );
 ##
 #O  SourceElt( <hcoset> )
 ##
-##  The source element of a hom coset.
+##  The source element of a hom coset <hcoset>.
 ##
 DeclareOperation( "SourceElt", [ IsHomCoset ] );
 
@@ -363,7 +394,7 @@ DeclareOperation( "SourceElt", [ IsHomCoset ] );
 ##
 #A  ImageElt( <hcoset> )
 ##
-##  The image element of a hom coset.
+##  The image element of a hom coset <hcoset>.
 ##
 DeclareAttribute( "ImageElt" , IsHomCoset );
 
@@ -371,9 +402,9 @@ DeclareAttribute( "ImageElt" , IsHomCoset );
 ##
 #A  CanonicalElt( <hcoset> )
 ##
-##  A canonical elt of a hom coset.  Note that SourceElt may be different
-##  for non-identical equal cosets.  CanonicalElt gives the same element
-##  for different representation of a coset.  This will compute a chain
+##  A canonical element of a hom coset <hcoset>.  Note that SourceElt may be
+##  different for non-identical equal cosets.  `CanonicalElt' gives the same 
+##  element for different representation of a coset.  This will compute a chain
 ##  for the range group if one does not already exist.
 ##
 DeclareAttribute( "CanonicalElt", IsHomCoset );
@@ -382,7 +413,7 @@ DeclareAttribute( "CanonicalElt", IsHomCoset );
 ##
 #A  Source( <Q> )
 ##
-##  Source group of a hom quotient group.
+##  Source group of a hom quotient group <Q>.
 ##
 DeclareAttribute( "Source", IsHomQuotientGroup );
 
@@ -390,7 +421,7 @@ DeclareAttribute( "Source", IsHomQuotientGroup );
 ##
 #A  Range( <Q> )
 ##
-##  Range group of a hom quotient group.
+##  Range group of a hom quotient group <Q>.
 ##
 DeclareAttribute( "Range", IsHomQuotientGroup );
 
@@ -398,7 +429,7 @@ DeclareAttribute( "Range", IsHomQuotientGroup );
 ##
 #A  ImagesSource( <Q> )
 ##
-##  Image group of a hom quotient group.
+##  Image group of a hom quotient group <Q>.
 ##
 DeclareAttribute( "ImagesSource", IsHomQuotientGroup );
 
@@ -406,7 +437,7 @@ DeclareAttribute( "ImagesSource", IsHomQuotientGroup );
 ##
 #A  Length( <hcoset> )
 ##
-##  Length of a word.
+##  Length of a word <hcoset>.
 ##
 DeclareAttribute( "Length", IsWord and IsHomCosetToFp );
 
@@ -418,4 +449,7 @@ DeclareAttribute( "Length", IsWord and IsHomCosetToFp );
 ##
 DeclareOperation( "POW", [ IsVector, IsHomCosetToMatrix ]);
 
-#E
+#############################################################################
+##
+#E  quogphom.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##

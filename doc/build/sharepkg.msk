@@ -46,49 +46,80 @@ standalone programs often run only in a UNIX environment.
 
 Typically, a share package is installed  by copying its directory (or
 unpacking its distribution file using `unzoo') into the
-`pkg' directory of the {\GAP} distribution.  This subdirectory of `pkg' is
-called the *home directory* of the share package.  It is possible to have
-several {\GAP} root directories (see~"GAP Root Directory"), therefore it is
-easy to install a package locally even if a user has no permission to add
-files to the main {\GAP} installation.  So share packages also provide an
-easy way to add optional components to the functionality of {\GAP}.
+`pkg' directory of the {\GAP} distribution. 
+The files `allshare{{versionsuffix}}.zoo' and `submitshare{{versionsuffix}}.zoo'
+each contain several share packages, but each share package can also be
+obtained individually from each of the {\GAP} web sites; just follow the
+links from the `Share Packages' link. The easiest procedure is to change 
+directory to the `pkg' directory; then download or move the `<package>.zoo'
+file to that directory and do:
+
+\){\kernttindent}unzoo <package>.zoo
+
+This   typically   creates   a   subdirectory   <package>   (or   several
+subdirectories    in    the    case    of    the    omnibus     archives:
+`allshare{{versionsuffix}}.zoo'  and  `submitshare{{versionsuffix}}.zoo')
+in the directory `pkg'. Such subdirectories of `pkg' are called the *home
+directories* for these share packages. It is  possible  to  have  several
+{\GAP} root directories (see~"GAP Root Directory"); therefore it is  easy
+to install a package locally even if a user  has  no  permission  to  add
+files to the main {\GAP} installation. Thus, share packages also  provide
+an easy way to add optional components to the functionality of {\GAP}.
 
 If the share package uses external binaries, additional compilation is
 necessary. The documentation of  each share package will describe how
 to do this, the following paragraph describes a suggested procedure
 for compiling binaries on a UNIX system:
 
-Go to the directory of the share package.  Then call `/bin/sh configure
-path', where `path' gives a path to the root directory of the {\GAP}
-installation.  So for example if the share package is in the main {\GAP}
-path, simply call
-\begintt
-/bin/sh configure ../..
-\endtt
-This will fetch the name of the system architecture on which {\GAP} has been
-compiled. Finally call `make' to invoke the actual compilation.
-(The standard {\GAP} distribution contains a share package ``example'' which
-makes use of this mechanism. The `configure' script in this package also
-permits to omit the path, using `../..' as a default.)
+Go to the directory of the share package, i.e. for share package <package>
+do:
 
-If {\GAP}  is installed on different  architectures  on a  common file
-system, this configuration  process   will only work  for  the  *last*
-architecture for   which  {\GAP} was  compiled. Therefore  compile the
-share package binaries  always immediately after compiling the  system
-architecture. If you want to add share packages later, you should call
-`configure' again  in the main {\GAP}  directory for each architecture
+\){\kernttindent}cd <package>
+
+Then call:
+
+\){\kernttindent}./configure <path>
+
+where <path> is the path to the root directory of the {\GAP} installation.
+So for example if the share package is in the main {\GAP} path, simply call
+
+\begintt
+./configure ../..
+\endtt
+
+This will fetch the name of the system architecture on which  {\GAP}  has
+been compiled. Finally call:
+
+\begintt
+make
+\endtt
+
+to invoke the actual compilation. You should check the package's `README'
+in case there are any departures from this procedure.
+
+The standard {\GAP} distribution contains a share package `example' which
+makes use of a default path mechanism. The  `configure'  script  in  this
+package permits one to omit the path, using `../..' as a default.
+
+*Note:*
+If {\GAP} is installed  on  different  architectures  on  a  common  file
+system,  this  configuration  process  will  only  work  for  the  *last*
+architecture for which {\GAP} was compiled. Therefore compile  the  share
+package  binaries  always  immediately   after   compiling   the   system
+architecture. If you want to add share packages later,  you  should  call
+`configure' again in the main  {\GAP}  directory  for  each  architecture
 before configuring the share package for this architecture.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Installing a Share Package in your home directory}
+
 \index{share package!permissions}
 \index{superuser}\index{administrator}
-
 If you are using {\GAP} on a multi-user system installing a share package
-globally the way described in the last section might require the cooperation
-of your system administrator.
+globally in the way described in  the  last  section  might  require  the
+cooperation of your system administrator.
 
-If your administrator is absent/unwilling/incapable you still can install
+If your administrator is absent/unwilling/incapable you can still install
 the share package in your local home directory: Create a directory that will
 serve as ``your'' personal {\GAP} home directory. We will assume now that
 you are using a UNIX system and that this directory is called
@@ -100,23 +131,31 @@ Go to this directory and create a subdirectory `pkg'
 you@unix> cd /home/user/mygap
 you@unix> mkdir pkg
 \endtt
-Now extract the share package in the `pkg' subdirectory, creating a
-directory with the package name. Configure the package as usual. However you
-now have to give the correct path to the main {\GAP} home directory (in
-{\GAP} look at the variable `GAP_ROOT_PATHS' to find out where this is),
+Now extract the share package  in  the  `pkg'  subdirectory,  creating  a
+directory with the package name. Configure the package as usual.  However
+you now have to give the correct path to the main {\GAP}  home  directory
+(start up {\GAP} and look at the variable `GAP_ROOT_PATHS'  to  find  out
+where this is, e.g.
+
+\begintt
+gap> GAP_ROOT_PATHS;
+[ "/usr/local/lib/{{gapdirname}}/" ]
+\endtt
+
+indicates that the main {\GAP} directory is `/usr/local/lib/{{gapdirname}}/'),
 so your commands would look something like:
 \begintt
 you@unix> cd /home/user/mygap/pkg/thepackage
-you@unix> configure /usr/local/lib/{{gapdirname}}
+you@unix> ./configure /usr/local/lib/{{gapdirname}}
 you@unix> make
 \endtt
 
-Now the share package is installed locally. Finally, to use the package you
-only have to tell {\GAP} to look in the right place. You can achieve this
-by giving two paths two home directories, the old one and your new one, 
-separated by a semicolon
-as arguments to the `-l' command line option to your usual gap4 command.
-(See~"Command Line Options" for details.)
+Now the share package is installed locally. Finally, to use  the  package
+you only need to tell {\GAP} to look in the right place. You can  achieve
+this by giving two paths to home directories, the old one  and  your  new
+one, separated by a semicolon as  arguments  to  the  `-l'  command  line
+option to your usual `gap4'  command.  (See~"Command  Line  Options"  for
+details.)
 
 \begintt
 you@unix> gap4 -l "/usr/local/lib/{{gapdirname}};/home/user/mygap"
@@ -124,11 +163,55 @@ you@unix> gap4 -l "/usr/local/lib/{{gapdirname}};/home/user/mygap"
 
 Now {\GAP} starts as usual, and the new package ought to be available.
 
+Of course, it may be a little tedious to type this each time, and you may
+be tempted to create an alias and put this in your `.cshrc' (or `.bashrc'
+or whatever) file. In general, this is not the best solution. It  is  far
+better to create a shell script (lets call it `mygap'), put  this  script
+into your private `bin' directory and add that `bin'  directory  to  your
+path. The easy way to create `mygap' is to copy the one  that  runs  your
+`gap4' (it better be a script! \dots~if not tell  your  administrator  to
+read Section~"Installation of GAP for UNIX"), e.g. 
+
+\begintt
+you@unix> mkdir /home/user/bin
+you@unix> cd /home/user/bin
+you@unix> which gap4
+/usr/local/bin/gap4
+you@unix> cp /usr/local/bin/gap4 mygap
+\endtt
+
+(If you already have a `bin' directory you can, of course, skip the first
+step).
+
+Now edit the `-l' part of the last line of `mygap' which should initially
+look something like:
+
+\begintt
+exec $GAP_DIR/bin/$GAP_PRG -m $GAP_MEM -o 970m -l $GAP_DIR $*
+\endtt
+
+so that it becomes:
+
+\begintt
+exec $GAP_DIR/bin/$GAP_PRG -m $GAP_MEM -o 970m -l "$GAP_DIR;/home/user/mygap" $*
+\endtt
+
+Then to start `gap4' with your locally installed package you only need to
+type `mygap'. 
+
+For the share package \package{ANUPQ}  the  above  strategy  is  actually
+necessary if one wants to run the binary as a stand-alone; when computing
+stabilisers it needs to call a  {\GAP}  that  knows  where  the  packages
+\package{ANUPQ} and \package{AutPGrp} are installed. So, take  the  hint,
+always use an appropriate script when running {\GAP}; don't use  aliases.
+(Most of the time aliases work ok; but when that  approach  doesn't  work
+you will be left puzzling!!)
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Loading a Share Package}
+
 \index{automatic loading of share packages}
 \index{disable automatic loading}
-
 Some share packages will be prepared for *automatic loading*,
 that is they will be loaded automatically with {\GAP},
 others must in each case be separately loaded by a call to
@@ -136,44 +219,58 @@ others must in each case be separately loaded by a call to
 
 \Declaration{RequirePackage}
 
-After a package has been loaded its code and documentation are available as other parts of the
-{\GAP} library are.
+After a package has been loaded its  code  and  documentation  should  be
+available as other parts of the {\GAP} library are. Each  package  has  a
+`doc' directory containing the package's  documentation;  generally  this
+contains `.tex' files, and  `manual.dvi'  and  `manual.six'  files.  Some
+packages have an `htm'  directory  containing  an  HTML  version  of  the
+manual. If the documentation was produced  using  \package{GAPDoc}  there
+will be `.txt' files (plain text files that are read by {\GAP}  when  one
+types `?<topic>' commands) and `.html' files  (which  contains  the  HTML
+version of the manual) as well as `manual.dvi' (the {\TeX} `.dvi' version
+of the manual), all in the package's `doc' directory. In  any  case,  the
+`manual.six' file must be present to  enable  {\GAP}'s  on-line  help  to
+display a share  package's  documentation  by  reading  from  either  the
+package's `.txt' or `.tex' files;  if  it  is  not  check  the  package's
+`README' for instructions on how to obtain it.
 
-The documentation of each share package will tell if the package loads
-automatically or not.
-If share packages have been
-loaded automatically, {\GAP} prints a list of  the names of all share
-packages which have been loaded at the end of the initialization process.
+The documentation of each share package will  tell  you  if  the  package
+loads automatically or not. Also, {\GAP} prints the list of names of  all
+share packages which have been loaded (either by automatic loading or via
+`RequirePackage' commands in one's `.gaprc' file or the like) at the  end
+of the initialization process.
 
 A share package may also install only its documentation automatically but
 still need loading by `RequirePackage'. In this situation the online help
-displays `(not loaded)' in the header lines of the manual pages belonging to
-this share package.
+displays `(not loaded)' in the header lines of the manual pages belonging
+to this share package.
 
-\index{ALLPKG}
-(At the moment automatic loading is only possible for the packages listed in
-the file `pkg/ALLPKG'. (This is due to the fact that there is no standard
-C-Function that will list the contents of a subdirectory.) This file must
-list each package name on a line of its own without any heading or trailing
-extra characters.  Under UNIX you can create such a file easily by issuing
-the command
+\indextt{ALLPKG}
+(At the moment automatic loading is only possible for the packages listed
+in the file `pkg/ALLPKG'. (This is due to  the  fact  that  there  is  no
+standard C-Function that will list the contents of a subdirectory.)  This
+file must list each package name on a line of its own without any heading
+or trailing extra characters. Under UNIX  you  can  create  such  a  file
+easily by issuing the command
 \begintt
 find * -type d -maxdepth 0 -print > ALLPKG
 \endtt
 in the `pkg' directory.)
 
-If the {\GAP} installation you are using loads share packages automatically
-which (for example for reasons of memory usage) you do not want to load
-automatically, you can disable the automatic loading of share packages by
-putting a line
-\begintt
-RemoveSet(AUTOLOAD_PACKAGES,"name");
-\endtt
-where <name> is the name of the share package in your `.gaprc' file (see
+\indextt{AUTOLOAD_PACKAGES}
+If  the  {\GAP}  installation  you  are  using   loads   share   packages
+automatically which (for example for reasons of memory usage) you do  not
+want to load automatically, you can  disable  the  automatic  loading  of
+share packages by putting a line
+
+\){\kernttindent}RemoveSet(AUTOLOAD_PACKAGES, "<name>");
+
+where <name> is the name of the share package, in your `.gaprc' file (see
 "The .gaprc file").
 
-You can disable automatic loading globally, by listing the name of the share
-package in a file `NOAUTO' in the `pkg' directory.
+\indextt{NOAUTO}
+You can disable automatic loading globally, by listing the  name  of  the
+share package in a file `NOAUTO' in the `pkg' directory.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Functions for Share Packages}
@@ -186,17 +283,31 @@ package in a file `NOAUTO' in the `pkg' directory.
 
 \Declaration{TestPackageAvailability}
 
+\Declaration{InstalledPackageVersion}
+
 \Declaration{DirectoriesPackageLibrary}
+
+As an example, the following returns a directory object for the library
+functions of the share package `example':
 \begintt
 gap> DirectoriesPackageLibrary( "example", "gap" );  
 [ dir("/home/werner/Gap/4.0/pkg/example/gap/") ]
 \endtt
 
-In order to  find a subdirectory hierarchy in  the package  directory you
-can  pass subdirectories in <lib> separated  by `{'/'}'.  For example, to
-find the subdirectory `m11' in the directory `data', use:
+Observe that we needed the second argument `"gap"' here, since `example''s
+ibrary functions are in the sub-directory `gap' rather than `lib'.
+
+In order to  find  a  subdirectory  deeper  than  one  level  in  a  package
+directory, the second argument is again necessary whether or not the desired
+subdirectory relative to the package's  directory  begins  with  `lib'.  The
+directories in <path> should be separated by  `/'  (even  on  systems,  like
+Windows, which use `\\' as the directory separator).  For  example,  suppose
+there is a package `somepackage' with a subdirectory `m11' in the  directory
+`data', then we might expect the following:
+
 \begintt
-DirectoriesPackageLibrary( "pkgname", "data/m11" )
+gap> DirectoriesPackageLibrary( "somepackage", "data/m11" )
+[ dir("/home/werner/Gap/4.0/pkg/somepackage/data/m11") ]
 \endtt
 
 \Declaration{DirectoriesPackagePrograms}

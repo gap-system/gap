@@ -17,15 +17,14 @@ Revision.classic_gd :=
 #1
 ##  The following functions return classical groups.
 ##  For the linear, symplectic, and unitary groups (the latter in dimension
-##  at least $3$), the generators are taken from~\cite{Tay87}.
-##  The generators of the orthogonal groups are taken from
-##
-##    H.Ishibashi,  A.G.Earnest  "Two-Element Generation of Orthogonal Groups
-##    over Finite Fields".
-##
-#T    P.Kleidman,  M.Liebeck "The Subgroup Structure  of the Finite Classical
-#T    Groups"
-#T what is this reference good for?
+##  at least $3$), the generators are taken from~\cite{Tay87};
+##  for the unitary groups in dimension 2, the isomorphism of $SU(2,q)$ and
+##  $SL(2,q)$ is used, see for example~\cite{Hup67}.
+##  The generators of the orthogonal groups are taken
+##  from~\cite{IshibashiEarnest94} and~\cite{KleidmanLiebeck90},
+##  except that the generators of the orthogonal groups in odd dimension in
+##  even characteristic are constructed via the isomorphism to a symplectic
+##  group, see for example~\cite{Car72a}.
 ##
 ##  For symplectic and orthogonal matrix groups returned by the functions
 ##  described below, the invariant bilinear form is stored as the value of
@@ -88,16 +87,20 @@ DeclareConstructor( "GeneralOrthogonalGroupCons",
 #F  GeneralOrthogonalGroup( [<filt>, ][<e>, ]<d>, <q> ) .  gen. orthog. group
 #F  GO( [<filt>, ][<e>, ]<d>, <q> )
 ##
-##  `GeneralOrthogonalGroup' returns a group isomorphic to the
+##  constructs a group isomorphic to the
 ##  general orthogonal group GO( <e>, <d>, <q> ) of those $<d> \times <d>$
 ##  matrices over the field with <q> elements that respect a non-singular
 ##  quadratic form (see~"InvariantQuadraticForm") specified by <e>,
 ##  in the category given by the filter <filt>.
-##  The value of <e> may be one of $0$, $1$, or $-1$; $<e> = 0$ is possible
-##  if and only if <d> is odd, hence <e> may be omitted in this case.
-##
+##  
+##  The value of <e> must be $0$ for odd <d> (and can optionally be 
+##  omitted in this case), respectively  one of  $1$ or $-1$ for even <d>.
 ##  If <filt> is not given it defaults to `IsMatrixGroup',
 ##  and the returned group is the general orthogonal group itself.
+##
+##  Note that in~\cite{KleidmanLiebeck90}, GO is defined as the stabilizer
+##  $\Delta(V,F,\kappa)$ of the quadratic form, up to scalars,
+##  whereas our GO is called $I(V,F,\kappa)$ there.
 ##
 BindGlobal( "GeneralOrthogonalGroup", function ( arg )
 
@@ -303,7 +306,6 @@ DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsPosInt ] );
 ##  If <filt> is not given it defaults to `IsMatrixGroup',
 ##  and the returned group is the symplectic group itself.
 ##
-
 BindGlobal( "SymplecticGroup", function ( arg )
 
   if Length( arg ) = 2 then
@@ -346,14 +348,14 @@ local pnam,cons,opr;
   InstallMethod( cons,"action on lines",
       [ IsPermGroup, IsPosInt,IsPosInt ],
   function(fil,n,q)
-  local g,f;
+  local g,f,p;
     g:=opr(IsMatrixGroup,n,q);
     f:=GF(q^extdeg);
-    g:=ProjectiveActionOnFullSpace(g,f,n);
+    p:=ProjectiveActionOnFullSpace(g,f,n);
     if szf<>fail then
-      SetSize(g,szf(n,q));
+      SetSize(p,szf(n,q,g));
     fi;
-    return g;
+    return p;
   end);
 
 end);
@@ -377,7 +379,10 @@ end);
 #PseudoDeclare("ProjectiveGeneralLinearGroup");
 #PseudoDeclare("PGL");
 DECLARE_PROJECTIVE_GROUPS_OPERATION("GeneralLinearGroup","GL",1,
-  fail);
+  # size function
+  function(n,q,g)
+    return Size(g)/(q-1);
+  end);
 
 
 #############################################################################
@@ -398,7 +403,10 @@ DECLARE_PROJECTIVE_GROUPS_OPERATION("GeneralLinearGroup","GL",1,
 #PseudoDeclare("ProjectiveSpecialLinearGroup");
 #PseudoDeclare("PSL");
 DECLARE_PROJECTIVE_GROUPS_OPERATION("SpecialLinearGroup","SL",1,
-  fail);
+  # size function
+  function(n,q,g)
+    return Size(g)/Gcd(n,q-1);
+  end);
 
 
 #############################################################################
@@ -411,13 +419,18 @@ DECLARE_PROJECTIVE_GROUPS_OPERATION("SpecialLinearGroup","SL",1,
 ##  $<q>^2$ elements that respect a fixed nondegenerate sesquilinear form,
 ##  modulo the centre, in the category given by the filter <filt>.
 ##
-##  If <filt> is not given it defaults to `IsMatrixGroup',
-##  and the returned group is the general unitary group itself.
+##  If <filt> is not given it defaults to `IsPermGroup',
+##  and the returned group is the action on lines of the underlying vector
+##  space.
 ##
 
 #PseudoDeclare("ProjectiveGeneralUnitaryGroup");
 #PseudoDeclare("PGU");
-DECLARE_PROJECTIVE_GROUPS_OPERATION("GeneralUnitaryGroup","GU",2,fail);
+DECLARE_PROJECTIVE_GROUPS_OPERATION("GeneralUnitaryGroup","GU",2,
+  # size function
+  function(n,q,g)
+    return Size(g)/(q+1);
+  end);
 
 
 #############################################################################
@@ -431,13 +444,18 @@ DECLARE_PROJECTIVE_GROUPS_OPERATION("GeneralUnitaryGroup","GU",2,fail);
 ##  and have determinant 1,
 ##  modulo the centre, in the category given by the filter <filt>.
 ##
-##  If <filt> is not given it defaults to `IsMatrixGroup',
-##  and the returned group is the general unitary group itself.
+##  If <filt> is not given it defaults to `IsPermGroup',
+##  and the returned group is the action on lines of the underlying vector
+##  space.
 ##
 
 #PseudoDeclare("ProjectiveSpecialUnitaryGroup");
 #PseudoDeclare("PSU");
-DECLARE_PROJECTIVE_GROUPS_OPERATION("SpecialUnitaryGroup","SU",2,fail);
+DECLARE_PROJECTIVE_GROUPS_OPERATION("SpecialUnitaryGroup","SU",2,
+  # size function
+  function(n,q,g)
+    return Size(g)/Gcd(n,q+1);
+  end);
 
 
 #############################################################################
@@ -459,7 +477,10 @@ DECLARE_PROJECTIVE_GROUPS_OPERATION("SpecialUnitaryGroup","SU",2,fail);
 #PseudoDeclare("ProjectiveSymplecticGroup");
 #PseudoDeclare("PSP");
 DECLARE_PROJECTIVE_GROUPS_OPERATION("SymplecticGroup","SP",2,
-  fail);
+  # size function
+  function(n,q,g)
+    return Size(g)/Gcd(2,q-1);
+  end);
 DeclareSynonym( "PSp", PSP );
 
 

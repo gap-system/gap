@@ -47,11 +47,11 @@ DeclareGlobalFunction( "RandomSchreierSims" );
 ##
 #F  ChangedBaseGroup( <G> )
 ##
-##  We assume we have a chain for G, which gives a complete BSGS.
-##  We are given a new base newBase and wish to fing strong generators for it.
-##  options are the same as random Schreier-Sims.  
-##  Note that this function does not modify G, but returns a new group,
-##  isomorphic to G with the specified base.
+##  We assume we have a chain for <G>, which gives a complete BSGS.
+##  We are given a new base <newBase> and wish to fing strong generators for 
+##  it. Options are the same as for random Schreier-Sims.  
+##  Note that this function does not modify <G>, but returns a new group,
+##  isomorphic to <G> with the specified base.
 ##
 DeclareGlobalFunction( "ChangedBaseGroup" );
 

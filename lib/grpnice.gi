@@ -38,6 +38,8 @@ function(hom,G)
   # CompositionMapping methods need this to avoid forming an AsGHBI of an
   # nice mono!
   SetFilterObj(hom,IsNiceMonomorphism);
+  Range(hom); # we will need this for example to translate homomorphism props.
+              # (if we only map images we don't need the restricted hom)
 
   return hom;
 end);
@@ -141,7 +143,7 @@ InstallMethod(NiceMonomorphism,
     true,
     [ IsGroup and IsHandledByNiceMonomorphism and HasParent],
     # to rank higher than matrix group methods.
-    SIZE_FLAGS(FLAGS_FILTER(IsFinite and IsMatrixGroup)),
+    RankFilter(IsFinite and IsMatrixGroup),
 
 function(G)
     local P;
@@ -171,7 +173,7 @@ InstallMethod( NiceMonomorphism, "regular operation", true,
             SetOne( G, One( GeneratorsOfGroup( G )[ 1 ] ) );
         fi;
     fi;
-    mon := ActionHomomorphism( G, AsList( G ), OnRight );
+    mon := ActionHomomorphism( G, AsList( G ), OnRight,"surjective" );
     SetIsInjective( mon, true );
     return mon;
 end );
@@ -292,18 +294,22 @@ InstallMethod(ConjugacyClasses,"via niceomorphism",true,
   [IsGroup and IsHandledByNiceMonomorphism],0,
 function(g)
 local mon,cl,clg,c,i;
-   mon:=NiceMonomorphism(g);
-   cl:=ConjugacyClasses(NiceObject(g));
-   clg:=[];
-   for i in cl do
-     c:=ConjugacyClass(g,PreImagesRepresentative(mon,Representative(i)));
-     c!.niceClass:=i;
-     if HasStabilizerOfExternalSet(i) then
-       SetStabilizerOfExternalSet(c,PreImages(mon,StabilizerOfExternalSet(i)));
-     fi;
-     Add(clg,c);
-   od;
-   return clg;
+  cl:=ConjugacyClassesForSmallGroup(g);
+  if cl<>fail then
+    return cl;
+  fi;
+  mon:=NiceMonomorphism(g);
+  cl:=ConjugacyClasses(NiceObject(g));
+  clg:=[];
+  for i in cl do
+    c:=ConjugacyClass(g,PreImagesRepresentative(mon,Representative(i)));
+    c!.niceClass:=i;
+    if HasStabilizerOfExternalSet(i) then
+      SetStabilizerOfExternalSet(c,PreImages(mon,StabilizerOfExternalSet(i)));
+    fi;
+    Add(clg,c);
+  od;
+  return clg;
 end);
 
 
@@ -380,12 +386,36 @@ SubgroupMethodByNiceMonomorphism( FittingSubgroup,
 SubgroupMethodByNiceMonomorphism( FrattiniSubgroup,
     [ IsGroup ] );
 
+#############################################################################
+##
+#M  HallSubgroup
+##
+InstallMethod(HallSubgroupOp,"via niceomorphism",true,
+  [IsGroup and IsHandledByNiceMonomorphism,IsList],0,
+function(g,l)
+local mon,h;
+   mon:=NiceMonomorphism(g);
+   h:=HallSubgroup(ImagesSet(mon,g),l);
+   return PreImage(mon,h);
+end);
 
 #############################################################################
 ##
-#M  Index( <G>, <H> ) . . . . . . . . . . . . . . . . . . index of <H> in <G>
+#M  IndexOp( <G>, <H> ) . . . . . . . . . . . . . . . . . index of <H> in <G>
+#M  IndexNC( <G>, <H> ) . . . . . . . . . . . . . . . . . index of <H> in <G>
+##
+##  We install methods for both `IndexOp' and `IndexNC'.
+##  The former is useful because the check whether <H> is a subset of <G> is
+##  better performed in the image under the nice monomorphism.
+##  (Note that this is safe since the method strikes only if the nice
+##  monomorphisms of <G> and <H> are identical.)
+##  The latter is useful because one might choose `IndexNC' deliberately in
+##  one's code.
 ##
 AttributeMethodByNiceMonomorphismCollColl( IndexOp,
+    [ IsGroup, IsGroup ] );
+
+AttributeMethodByNiceMonomorphismCollColl( IndexNC,
     [ IsGroup, IsGroup ] );
 
 
@@ -487,6 +517,29 @@ PropertyMethodByNiceMonomorphism( IsSupersolvableGroup,
 
 #############################################################################
 ##
+#M  IsomorphismPermGroup
+##
+InstallMethod(IsomorphismPermGroup,"via niceomorphisms",true,
+  [IsGroup and IsHandledByNiceMonomorphism],
+  # this is intended to be better than the generic ``action on element''
+  # method. However for example for matrix groups there are better methods
+  -NICE_FLAGS+5,
+function(g)
+local mon,iso;
+  mon:=NiceMonomorphism(g);
+  if not IsIdenticalObj(Source(mon),g) then
+    mon:=RestrictedNiceMonomorphism(mon,g);
+  fi;
+  iso:=IsomorphismPermGroup(NiceObject(g));
+  if iso=fail then
+    return fail;
+  else
+    return mon*iso;
+  fi;
+end);
+
+#############################################################################
+##
 #M  IsomorphismPcGroup
 ##
 InstallMethod(IsomorphismPcGroup,"via niceomorphisms",true,
@@ -502,6 +555,47 @@ local mon,iso;
     return fail;
   else
     return mon*iso;
+  fi;
+end);
+
+#############################################################################
+##
+#M  IsomorphismFpGroup
+##
+InstallOtherMethod(IsomorphismFpGroup,"via niceomorphism",true,
+  [IsGroup and IsHandledByNiceMonomorphism,IsString],0,
+function(g,nam)
+local mon,iso;
+  mon:=NiceMonomorphism(g);
+  if not IsIdenticalObj(Source(mon),g) then
+    mon:=RestrictedNiceMonomorphism(mon,g);
+  fi;
+  iso:=IsomorphismFpGroup(NiceObject(g),nam);
+  if iso=fail then
+    return fail;
+  else
+    return mon*iso;
+  fi;
+end);
+
+InstallMethod(IsomorphismFpGroupByGeneratorsNC,"via niceomorphism/w. gens",
+  IsFamFamX,[IsGroup and IsHandledByNiceMonomorphism, IsList,IsString],0,
+function(g,c,nam)
+local mon,iso;
+  mon:=NiceMonomorphism(g);
+  c:=List(c,i->Image(mon,i));
+  if not IsIdenticalObj(Source(mon),g) then
+    mon:=RestrictedNiceMonomorphism(mon,g);
+  fi;
+  iso:=IsomorphismFpGroupByGeneratorsNC(NiceObject(g),c,nam);
+  if iso=fail then
+    return fail;
+  else
+    iso:=mon*iso;
+    mon:=MappingGeneratorsImages(iso);
+    SetName(iso,Concatenation("<composed isomorphism:",
+      String(mon[1]),"->",String(mon[2]),">"));
+    return iso;
   fi;
 end);
 

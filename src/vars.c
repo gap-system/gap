@@ -108,7 +108,7 @@ Obj             ObjLVar (
         ErrorReturnVoid(
             "Variable: '%s' must have an assigned value",
             (Int)NAME_LVAR( lvar ), 0L,
-            "you can return after assigning a value" );
+            "you can 'return;' after assigning a value" );
     }
     return val;
 }
@@ -431,7 +431,7 @@ Obj             EvalRefLVar (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -450,7 +450,7 @@ Obj             EvalRefLVar01 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 1 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -469,7 +469,7 @@ Obj             EvalRefLVar02 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 2 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -488,7 +488,7 @@ Obj             EvalRefLVar03 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 3 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -507,7 +507,7 @@ Obj             EvalRefLVar04 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 4 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -526,7 +526,7 @@ Obj             EvalRefLVar05 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 5 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -545,7 +545,7 @@ Obj             EvalRefLVar06 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 6 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -564,7 +564,7 @@ Obj             EvalRefLVar07 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 7 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -583,7 +583,7 @@ Obj             EvalRefLVar08 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 8 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -602,7 +602,7 @@ Obj             EvalRefLVar09 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 9 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -621,7 +621,7 @@ Obj             EvalRefLVar10 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 10 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -640,7 +640,7 @@ Obj             EvalRefLVar11 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 11 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -659,7 +659,7 @@ Obj             EvalRefLVar12 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 12 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -678,7 +678,7 @@ Obj             EvalRefLVar13 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 13 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -697,7 +697,7 @@ Obj             EvalRefLVar14 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 14 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -716,7 +716,7 @@ Obj             EvalRefLVar15 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 15 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -735,7 +735,7 @@ Obj             EvalRefLVar16 (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_LVAR( 16 ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -935,7 +935,7 @@ Obj             EvalRefHVar (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NAME_HVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -1054,7 +1054,7 @@ Obj             EvalRefGVar (
             ErrorReturnVoid(
                 "Variable: '%s' must have an assigned value",
                 (Int)NameGVar( (UInt)(ADDR_EXPR(expr)[0]) ), 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -1146,7 +1146,7 @@ UInt            ExecAssList (
         pos = ErrorReturnObj(
          "List Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
-            "you can return a positive integer for <position>" );
+            "you can replace <position> via 'return <position>;'" );
     }
 
     /* evaluate the right hand side                                        */
@@ -1205,7 +1205,7 @@ UInt            ExecAsssList (
         poss = ErrorReturnObj(
     "List Assignment: <positions> must be a dense list of positive integers",
             0L, 0L,
-        "you can return a dense list of positive integers for <positions>" );
+        "you can replace <positions> via 'return <positions>;'" );
     }
 
     /* evaluate and check right hand sides                                 */
@@ -1216,13 +1216,13 @@ UInt            ExecAsssList (
             rhss = ErrorReturnObj(
                 "List Assignment: <rhss> must be a dense list (not a %s)",
                 (Int)TNAM_OBJ(rhss), 0L,
-                "you can return a dense list for <rhss>" );
+                "you can replace <rhss> via 'return <rhss>;'" );
         }
         else /* if ( LEN_LIST( poss ) != LEN_LIST( rhss ) ) */ {
             rhss = ErrorReturnObj(
-     "List Assignment: <rhss> must have the same length as <positions> (%d)",
+     "List Assignment: <rhss> must be a list with the same length as <positions> (%d)",
                 (Int)LEN_LIST( poss ), 0L,
-                "you can return a new dense list for <rhss>" );
+                "you can replace <rhss> via 'return <rhss>;'" );
         }
     }
 
@@ -1267,7 +1267,7 @@ UInt            ExecAssListLevel (
         pos = ErrorReturnObj(
          "List Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
-            "you can return a positive integer for <position>" );
+            "you can replace <position> via 'return <position>;'" );
     }
 
     /* evaluate right hand sides (checking is done by 'AssListLevel')      */
@@ -1317,7 +1317,7 @@ UInt            ExecAsssListLevel (
         poss = ErrorReturnObj(
     "List Assignment: <positions> must be a dense list of positive integers",
             0L, 0L,
-        "you can return a dense list of positive integers for <positions>" );
+        "you can replace <positions> via 'return <positions>;'" );
     }
 
     /* evaluate right hand sides (checking is done by 'AsssListLevel')     */
@@ -1358,7 +1358,7 @@ UInt            ExecUnbList (
         pos = ErrorReturnObj(
          "List Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
-            "you can return a positive integer for <position>" );
+            "you can replace <position> via 'return <position>;'" );
     }
     p = INT_INTOBJ(pos);
 
@@ -1395,7 +1395,7 @@ Obj             EvalElmList (
         pos = ErrorReturnObj(
             "List Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
-            "you can return a positive integer for <position>" );
+            "you can replace <position> via 'return <position>;'" );
     }
     if (IS_INTOBJ(pos))
       {
@@ -1449,7 +1449,7 @@ Obj             EvalElmsList (
         poss = ErrorReturnObj(
       "List Elements: <positions> must be a dense list of positive integers",
             0L, 0L,
-        "you can return a dense list of positive integers for <positions>" );
+        "you can replace <positions> via 'return <positions>;'" );
     }
 
     /* select several elements from the list                               */
@@ -1490,7 +1490,7 @@ Obj             EvalElmListLevel (
         pos = ErrorReturnObj(
             "List Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
-            "you can return a positive integer for <position>" );
+            "you can replace <position> via 'return <position>;'" );
     }
     /* get the level                                                       */
     level = (Int)(ADDR_EXPR(expr)[2]);
@@ -1534,7 +1534,7 @@ Obj             EvalElmsListLevel (
         poss = ErrorReturnObj(
       "List Elements: <positions> must be a dense list of positive integers",
             0L, 0L,
-        "you can return a dense list of positive integers for <positions>" );
+        "you can replace <positions> via 'return <positions>;'" );
     }
 
     /* get the level                                                       */
@@ -1571,7 +1571,7 @@ Obj             EvalIsbList (
         pos = ErrorReturnObj(
             "List Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
-            "you can return a positive integer for <position>" );
+            "you can replace <position> via 'return <position>;'" );
     }
     p = INT_INTOBJ( pos );
 
@@ -2065,7 +2065,7 @@ UInt            ExecAssPosObj (
         pos = ErrorReturnObj(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
-            "you can return a positive integer for <position>" );
+            "you can replace <position> via 'return <position>;'" );
     }
     p = INT_INTOBJ(pos);
 
@@ -2115,7 +2115,7 @@ UInt            ExecUnbPosObj (
         pos = ErrorReturnObj(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
-            "you can return a positive integer for <position>" );
+            "you can replace <position> via 'return <position>;'" );
     }
     p = INT_INTOBJ(pos);
 
@@ -2158,7 +2158,7 @@ Obj             EvalElmPosObj (
         pos = ErrorReturnObj(
             "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
-            "you can return a positive integer for <position>" );
+            "you can replace <position> via 'return <position>;'" );
     }
     p = INT_INTOBJ( pos );
 
@@ -2168,14 +2168,14 @@ Obj             EvalElmPosObj (
             ErrorReturnVoid(
                 "PosObj Element: <PosObj>![%d] must have an assigned value",
                 (Int)p, 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
         elm = ELM_PLIST( list, p );
         while ( elm == 0 ) {
             ErrorReturnVoid(
                 "PosObj Element: <PosObj>![%d] must have an assigned value",
                 (Int)p, 0L,
-                "you can return after assigning a value" );
+                "you can 'return;' after assigning a value" );
         }
     }
 
@@ -2213,7 +2213,7 @@ Obj             EvalIsbPosObj (
         pos = ErrorReturnObj(
             "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L,
-            "you can return a positive integer for <position>" );
+            "you can replace <position> via 'return <position>;'" );
     }
     p = INT_INTOBJ( pos );
 

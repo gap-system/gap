@@ -1778,7 +1778,7 @@ Obj             PowIntPerm2 (
         opL = ErrorReturnObj(
             "Perm. Operations: <point> must be a positive integer (not %d)",
             (Int)img, 0L,
-            "you can return a positive integer for <point>" );
+            "you can replace <point> via 'return <point>;'" );
         return POW( opL, opR );
     }
 
@@ -1807,7 +1807,7 @@ Obj             PowIntPerm4 (
         opL = ErrorReturnObj(
             "Perm. Operations: <point> must be a positive integer (not %d)",
             (Int)img, 0L,
-            "you can return a positive integer for <point>" );
+            "you can replace <point> via 'return <point>;'" );
         return POW( opL, opR );
     }
 
@@ -1853,7 +1853,7 @@ Obj             QuoIntPerm2 (
         opL = ErrorReturnObj(
             "Perm. Operations: <point> must be a positive integer (not %d)",
             (Int)img, 0L,
-            "you can return a positive integer for <point>" );
+            "you can replace <point> via 'return <point>;'" );
         return QUO( opL, opR );
     }
 
@@ -1887,7 +1887,7 @@ Obj             QuoIntPerm4 (
         opL = ErrorReturnObj(
             "Perm. Operations: <point> must be a positive integer (not %d)",
             (Int)img, 0L,
-            "you can return a positive integer for <point>" );
+            "you can replace <point> via 'return <point>;'" );
         return QUO( opL, opR );
     }
 
@@ -2323,7 +2323,7 @@ Obj             FuncPermList (
         list = ErrorReturnObj(
             "PermList: <list> must be a list (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
-            "you can return a list for <list>" );
+            "you can replace <list> via 'return <list>;'" );
     }
     PLAIN_LIST( list );
 
@@ -2352,7 +2352,7 @@ Obj             FuncPermList (
                 list = ErrorReturnObj(
                     "PermList: <list>[%d] must have an assigned value",
                     (Int)i, 0L,
-                    "you can return a new list for <list>" );
+                    "you can replace <list> via 'return <list>;'" );
                 return FuncPermList( 0, list );
             }
             if ( TNUM_OBJ(ptList[i]) != T_INT ) {
@@ -2360,7 +2360,7 @@ Obj             FuncPermList (
                 list = ErrorReturnObj(
                     "PermList: <list>[%d] must be an integer",
                     (Int)i, 0L,
-                    "you can return a new list for <list>" );
+                    "you can replace <list> via 'return <list>;'" );
                 return FuncPermList( 0, list );
             }
             k = INT_INTOBJ(ptList[i]);
@@ -2369,7 +2369,7 @@ Obj             FuncPermList (
                 list = ErrorReturnObj(
                     "PermList: <list>[%d] must lie in [1..%d]",
                     (Int)i, (Int)degPerm,
-                    "you can return a new list for <list>" );
+                    "you can replace <list> via 'return <list>;'" );
                 return FuncPermList( 0, list );
             }
 
@@ -2379,7 +2379,7 @@ Obj             FuncPermList (
                 list = ErrorReturnObj(
                     "PermList: the point %d must occur only once",
                     (Int)k, 0L,
-                    "you can return a new list for <list>" );
+                    "you can replace <list> via 'return <list>;'" );
                 return FuncPermList( 0, list );
             }
             ptTmp2[k-1] = 1;
@@ -2419,7 +2419,7 @@ Obj             FuncPermList (
                 list = ErrorReturnObj(
                     "PermList: <list>[%d] must have an assigned value",
                     (Int)i, 0L,
-                    "you can return a new list for <list>" );
+                    "you can replace <list> via 'return <list>;'" );
                 return FuncPermList( 0, list );
             }
             if ( TNUM_OBJ(ptList[i]) != T_INT ) {
@@ -2427,7 +2427,7 @@ Obj             FuncPermList (
                 list = ErrorReturnObj(
                     "PermList: <list>[%d] must be an integer",
                     (Int)i, 0L,
-                    "you can return a new list for <list>" );
+                    "you can replace <list> via 'return <list>;'" );
                 return FuncPermList( 0, list );
             }
             k = INT_INTOBJ(ptList[i]);
@@ -2436,7 +2436,7 @@ Obj             FuncPermList (
                 list = ErrorReturnObj(
                     "PermList: <list>[%d] must lie in [1..%d]",
                     (Int)i, (Int)degPerm,
-                    "you can return a new list for <list>" );
+                    "you can replace <list> via 'return <list>;'" );
                 return FuncPermList( 0, list );
             }
 
@@ -2446,7 +2446,7 @@ Obj             FuncPermList (
                 list = ErrorReturnObj(
                     "PermList: the point %d must occur only once",
                     (Int)k, 0L,
-                    "you can return a new list for <list>" );
+                    "you can replace <list> via 'return <list>;'" );
                 return FuncPermList( 0, list );
             }
             ptTmp4[k-1] = 1;
@@ -2493,7 +2493,7 @@ Obj             FuncLARGEST_MOVED_POINT_PERM (
         perm = ErrorReturnObj(
             "LargestMovedPointPerm: <perm> must be a permutation (not a %s)",
             (Int)TNAM_OBJ(perm), 0L,
-            "you can return a permutation for <perm>" );
+            "you can replace <perm> via 'return <perm>;'" );
     }
 
     /* handle small permutations                                           */
@@ -2559,13 +2559,13 @@ Obj             FuncCycleLengthPermInt (
         perm = ErrorReturnObj(
             "CycleLengthPermInt: <perm> must be a permutation (not a %s)",
             (Int)TNAM_OBJ(perm), 0L,
-            "you can return a permutation for <perm>" );
+            "you can replace <perm> via 'return <perm>;'" );
     }
     while ( TNUM_OBJ(point) != T_INT || INT_INTOBJ(point) <= 0 ) {
         point = ErrorReturnObj(
          "CycleLengthPermInt: <point> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(point), 0L,
-            "you can return a positive integer for <point>" );
+            "you can replace <point> via 'return <point>;'" );
     }
 
     /* handle small permutations                                           */
@@ -2637,13 +2637,13 @@ Obj             FuncCyclePermInt (
         perm = ErrorReturnObj(
             "CyclePermInt: <perm> must be a permutation (not a %s)",
             (Int)TNAM_OBJ(perm), 0L,
-            "you can return a permutation for <perm>" );
+            "you can replace <perm> via 'return <perm>;'" );
     }
     while ( TNUM_OBJ(point) != T_INT || INT_INTOBJ(point) <= 0 ) {
         point = ErrorReturnObj(
             "CyclePermInt: <point> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(point), 0L,
-            "you can return a positive integer for <point>" );
+            "you can replace <point> via 'return <point>;'" );
     }
 
     /* handle small permutations                                           */
@@ -2745,7 +2745,7 @@ Obj             FuncOrderPerm (
         perm = ErrorReturnObj(
             "OrderPerm: <perm> must be a permutation (not a %s)",
             (Int)TNAM_OBJ(perm), 0L,
-            "you can return a permutation for <perm>" );
+            "you can replace <perm> via 'return <perm>;'" );
     }
 
     /* make sure that the buffer bag is large enough                       */
@@ -2869,7 +2869,7 @@ Obj             FuncSignPerm (
         perm = ErrorReturnObj(
             "SignPerm: <perm> must be a permutation (not a %s)",
             (Int)TNAM_OBJ(perm), 0L,
-            "you can return a permutation for <perm>" );
+            "you can replace <perm> via 'return <perm>;'" );
     }
 
     /* make sure that the buffer bag is large enough                       */
@@ -2994,7 +2994,7 @@ Obj             FuncSmallestGeneratorPerm (
         perm = ErrorReturnObj(
             "SmallestGeneratorPerm: <perm> must be a permutation (not a %s)",
             (Int)TNAM_OBJ(perm), 0L,
-            "you can return a permutation for <perm>" );
+            "you can replace <perm> via 'return <perm>;'" );
     }
 
     /* make sure that the buffer bag is large enough                       */
@@ -3167,7 +3167,7 @@ Obj             FuncTRIM_PERM (
         perm = ErrorReturnObj(
             "TRIM_PERM: <perm> must be a permutation (not a %s)",
             (Int)TNAM_OBJ(perm), 0L,
-            "you can return a permutation for <perm>" );
+            "you can replace <perm> via 'return <perm>;'" );
     }
 
     deg = INT_INTOBJ(n);
@@ -3199,6 +3199,71 @@ Obj             FuncTRIM_PERM (
 
 /****************************************************************************
 **
+*F  FunSmallestImgTuplePerm( <tup>, <perm> )
+**
+**  `SmallestImgTuplePerm' returns the smallest image of the  tuple  <tup>
+**  under  the permutation <perm>.
+*/
+Obj             FunSmallestImgTuplePerm (
+    Obj			self,
+    Obj                 tup,
+    Obj                 perm )
+{
+    UInt                res;            /* handle of the image, result     */
+    Obj *               ptTup;          /* pointer to the tuple            */
+    UInt2 *             ptPrm2;         /* pointer to the permutation      */
+    UInt4 *             ptPrm4;         /* pointer to the permutation      */
+    UInt                tmp;            /* temporary handle                */
+    UInt                lmp;            /* largest moved point             */
+    UInt                i, k;           /* loop variables                  */
+
+    res = 2<<30; /* ``infty''. We have no permutations on over 2^28 points */
+    /* handle small permutations                                           */
+    if ( TNUM_OBJ(perm) == T_PERM2 ) {
+
+        /* get the pointer                                                 */
+        ptTup = ADDR_OBJ(tup) + LEN_LIST(tup);
+        ptPrm2 = ADDR_PERM2(perm);
+        lmp = DEG_PERM2(perm);
+
+        /* loop over the entries of the tuple                              */
+        for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup-- ) {
+	  k = INT_INTOBJ( *ptTup );
+	  if ( k <= lmp )
+	      tmp = ptPrm2[k-1] + 1;
+	  else
+	      tmp = k ;
+	  if (tmp<res) res = tmp;
+        }
+
+    }
+
+    /* handle large permutations                                           */
+    else {
+
+        /* get the pointer                                                 */
+        ptTup = ADDR_OBJ(tup) + LEN_LIST(tup);
+        ptPrm4 = ADDR_PERM4(perm);
+        lmp = DEG_PERM4(perm);
+
+        /* loop over the entries of the tuple                              */
+        for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup-- ) {
+	  k = INT_INTOBJ( *ptTup );
+	  if ( k <= lmp )
+	      tmp = ptPrm4[k-1] + 1;
+	  else
+	      tmp = k;
+	  if (tmp<res) res = tmp;
+        }
+
+    }
+
+    /* return the result                                                   */
+    return INTOBJ_INT(res);
+}
+
+/****************************************************************************
+**
 *F  OnTuplesPerm( <tup>, <perm> )  . . . .  operations on tuples of points
 **
 **  'OnTuplesPerm'  returns  the  image  of  the  tuple  <tup>   under  the
@@ -3218,7 +3283,8 @@ Obj             OnTuplesPerm (
     UInt                i, k;           /* loop variables                  */
 
     /* make a bag for the result and initialize pointers                   */
-    res = NEW_PLIST( T_PLIST, LEN_LIST(tup) );
+    res = NEW_PLIST( IS_MUTABLE_PLIST(tup) ? T_PLIST : T_PLIST + IMMUTABLE,
+		     LEN_LIST(tup) );
     ADDR_OBJ(res)[0] = ADDR_OBJ(tup)[0];
 
     /* handle small permutations                                           */
@@ -3312,7 +3378,7 @@ Obj             OnSetsPerm (
     UInt                i, k;           /* loop variables                  */
 
     /* make a bag for the result and initialize pointers                   */
-    res = NEW_PLIST( T_PLIST, LEN_LIST(set) );
+    res = NEW_PLIST(  IS_MUTABLE_PLIST(set) ? T_PLIST : T_PLIST + IMMUTABLE , LEN_LIST(set) );
     ADDR_OBJ(res)[0] = ADDR_OBJ(set)[0];
 
     /* handle small permutations                                           */
@@ -3398,7 +3464,7 @@ Obj             OnSetsPerm (
             }
             h = h / 3;
         }
-        RetypeBag( res, T_PLIST_CYC_SSORT );
+        RetypeBag( res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT : T_PLIST_CYC_SSORT + IMMUTABLE );
     }
 
     /* general case                                                        */
@@ -3542,7 +3608,7 @@ Obj Array2Perm (
             cycle = ErrorReturnObj(
                 "Arra2Perm: <cycle> must be a small list (not a %s)",
                 (Int)TNAM_OBJ(cycle), 0L,
-                "you can return a list" );
+                "you can replace <cycle> via 'return <cycle>;'" );
         }
 
         /* loop over the entries of the cycle                              */
@@ -3555,7 +3621,7 @@ Obj Array2Perm (
                 val = ErrorReturnObj(
               "Permutation: <expr> must be a positive integer (not to a %s)",
                     (Int)TNAM_OBJ(val), 0L,
-                    "you can return a positive integer" );
+                    "you can replace <expr> via 'return <expr>;'" );
             }
             c = INT_INTOBJ(val);
 
@@ -3577,7 +3643,7 @@ Obj Array2Perm (
                 return ErrorReturnObj(
                     "Permutation: cycles must be disjoint",
                     0L, 0L,
-                    "you can return a permutation" );
+                    "you can replace the permutation <perm> via 'return <perm>;'" );
             }
 
             /* enter the previous entry at current location                */
@@ -3667,6 +3733,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "TRIM_PERM", 2, "perm, degree",
       FuncTRIM_PERM, "src/permutat.c:TRIM_PERM" },
+
+    { "SMALLEST_IMG_TUP_PERM", 2, "tuple, perm",
+      FunSmallestImgTuplePerm, "src/permutat.c:SMALLEST_IMG_TUP_PERM" },
 
     { 0 }
 

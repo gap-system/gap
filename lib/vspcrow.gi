@@ -27,6 +27,7 @@
 ##  5. Methods for full row spaces
 ##  6. Methods for collections of subspaces of full row spaces
 ##  7. Methods for mutable bases of Gaussian row spaces
+##  8. Methods installed by somebody else without documenting this ...
 ##
 Revision.vspcrow_gi :=
     "@(#)$Id$";
@@ -491,16 +492,15 @@ InstallMethod( \in,
 #M  Basis( <V>, <vectors> ) . . . . . . . . . . . . .  for Gaussian row space
 #M  BasisNC( <V>, <vectors> ) . . . . . . . . . . . .  for Gaussian row space
 ##
-##  Distinguish the cases whether the space <V> is a Gaussian row vector
+##  Distinguish the cases whether the space <V> is a *Gaussian* row vector
 ##  space or not.
 ##
 ##  If the coefficients field is big enough then either a semi-echelonized or
 ##  a relative basis is constructed.
 ##
-##  Otherwise the mechanism of associated bases is used.
+##  Otherwise the mechanism of associated nice bases is used.
 ##  In this case the default methods have been installed by
-##  `NewRepresentationBasisByNiceBasis'.
-#T ?
+##  `InstallHandlingByNiceBasis'.
 ##
 InstallMethod( Basis,
     "for Gaussian row space (construct a semi-echelonized basis)",
@@ -620,6 +620,7 @@ InstallMethod( SemiEchelonBasis,
 
     local heads,   # heads info for the basis
           B,       # the basis, result
+          gensi,   # immutable copy
           v;       # loop over vector space generators
 
     # Check that the vectors form a semi-echelonized basis.
@@ -640,7 +641,9 @@ InstallMethod( SemiEchelonBasis,
       SetIsRectangularTable( B, true );
     fi;
     SetUnderlyingLeftModule( B, V );
-    SetBasisVectors( B, gens );
+    gensi := Immutable(gens);
+    ConvertToMatrixRep(gensi, LeftActingDomain(V));
+    SetBasisVectors( B, gensi );
 
     B!.heads:= heads;
 
@@ -662,8 +665,8 @@ InstallMethod( SemiEchelonBasisNC,
     [ IsGaussianRowSpace, IsMatrix ],
     function( V, gens )
 
-    local B;  # the basis, result
-
+    local B,  # the basis, result
+          gensi; # immutable copy
     B:= Objectify( NewType( FamilyObj( gens ),
                                 IsBasis
                             and IsSemiEchelonized
@@ -675,6 +678,8 @@ InstallMethod( SemiEchelonBasisNC,
       SetIsRectangularTable( B, true );
     fi;
     SetUnderlyingLeftModule( B, V );
+    gensi := Immutable(gens);
+    ConvertToMatrixRep(gensi, LeftActingDomain(V));
     SetBasisVectors( B, gens );
 
     # Provide the `heads' information.
@@ -740,7 +745,6 @@ InstallOtherMethod( Zero,
 InstallMethod( IsZero,
     "for row vector",
     [ IsRowVector ],
-    0,
     function( v )
     if IsEmpty( v ) then
       return true;
@@ -769,7 +773,7 @@ InstallMethod( AsLeftModule,
 
       # All vector entries lie in `F'.
       # (We work destructively.)
-      m:= SemiEchelonMat( List( vectors, ShallowCopy ) ).vectors;
+      m:= SemiEchelonMatDestructive( List( vectors, ShallowCopy ) ).vectors;
       if IsEmpty( m ) then
         m:= LeftModuleByGenerators( F, [], vectors[1] );
       else
@@ -842,7 +846,7 @@ InstallMethod( Intersection2,
 
     local S,          # intersection of `V' and `W', result
           mat;        # basis vectors of the intersection
-
+    
     if   DimensionOfVectors( V ) <> DimensionOfVectors( W ) then
       S:= [];
     elif Dimension( V ) = 0 then
@@ -855,13 +859,14 @@ InstallMethod( Intersection2,
     else
 
       # Compute the intersection of two spaces over the same field.
-      mat:= SumIntersectionMat( GeneratorsOfLeftModule( V ),
-                                GeneratorsOfLeftModule( W ) )[2];
+      mat:= SumIntersectionMat( BasisVectors(SemiEchelonBasis( V )),
+                                BasisVectors(SemiEchelonBasis( W )) )[2];
       if IsEmpty( mat ) then
         S:= TrivialSubspace( V );
       else
         S:= LeftModuleByGenerators( LeftActingDomain( V ), mat );
         UseBasis( S, mat );
+        SetSemiEchelonBasis(S, SemiEchelonBasisNC(S,mat));
       fi;
 
     fi;
@@ -927,6 +932,12 @@ InstallMethod( NormedRowVectors,
       Append( elms, elms2 );
 
     od;
+
+    # The list is strictly sorted, so we store this.
+    MakeImmutable( elms );
+    SetIsSSortedList( elms, true );
+
+    # Return the result.
     return elms;
     end );
 
@@ -1367,7 +1378,7 @@ InstallMethod( Subspaces,
 ##
 #M  Subspaces( <V> )
 ##
-InstallMethod( Subspaces, true,
+InstallMethod( Subspaces,
     [ IsFullRowModule and IsVectorSpace ],
     V -> Objectify( NewType( CollectionsFamily( FamilyObj( V ) ),
                                  IsSubspacesVectorSpace
@@ -1663,11 +1674,64 @@ InstallOtherMethod( SiftedVector,
     "for mutable basis of Gaussian row space, and row vector",
     IsCollsElms,
     [ IsMutableBasis and IsMutableBasisOfGaussianRowSpaceRep, IsRowVector ],
-    0,
     function( MB, v )
     return SiftedVectorForGaussianRowSpace(
                MB!.leftActingDomain, MB!.basisVectors, MB!.heads, v );
     end );
+
+
+#############################################################################
+##
+#F  OnLines( <vec>, <g> ) . . . . . . . .  for operation on projective points
+##
+InstallGlobalFunction( OnLines, function( vec, g )
+    local c;
+    vec:= OnPoints( vec, g );
+    c:= PositionNonZero( vec ); # better than PositionNot, as no `Zero'
+                                # element needs to be created
+    if c <= Length( vec ) then
+
+      # Normalize from the *left* if the matrices act from the right!
+      vec:= Inverse( vec[c] ) * vec;
+
+    fi;
+    return vec;
+end );
+
+
+#############################################################################
+##
+#M  NormedRowVector( <v> )
+##
+InstallMethod( NormedRowVector,
+    "for a row vector of scalars",
+    [ IsRowVector and IsScalarCollection ],
+function( v )
+    local   depth;
+
+    if 0 < Length(v)  then
+	depth:=PositionNonZero( v ); # better than PositionNot, as no `Zero'
+				     # element needs to be created
+        if depth <= Length(v) then
+            return Inverse(v[depth]) * v;
+        else
+            return ShallowCopy(v);
+        fi;
+    else
+        return ShallowCopy(v);
+    fi;
+end );
+
+
+#T mutable bases for Gaussian row and matrix spaces are always semi-ech.
+#T (note that we construct a mutable basis only if we want to do successive
+#T closures)
+
+
+#############################################################################
+##
+##  8. Methods installed by somebody else without documenting this ...
+##
 
 
 #############################################################################
@@ -1715,7 +1779,7 @@ InstallMethod( PrintObj,
     Print( "A( ", UnderlyingCollection( T!.spaceEnumerator ), " )" );
 end );
 
-InstallMethod( ViewObj, "for extended vectors", true,
+InstallMethod( ViewObj, "for extended vectors",
     [ IsList and IsExtendedVectorsRep ],
     # there is a method for finite lists which claims to be better
     10,
@@ -1736,17 +1800,18 @@ function( T, num )
     ConvertToVectorRep(num,T!.q);
     return num;
 end);
+#T This will fail as soon as the integer is too large.
 
 BindGlobal("PosExVecEnum",function(arg)
   return Position( arg[1]!.spaceEnumerator,
 		  arg[2]{ [ 1 .. Length( arg[2] ) - 1 ] } );
 end);
 
-InstallMethod( Position, "for extended vectors, vector, and 0", true,
+InstallMethod( Position, "for extended vectors, vector, and 0",
     [ IsList and IsExtendedVectorsRep, IsRowVector, IsZeroCyc ],
     PosExVecEnum);
 
-InstallMethod( PositionCanonical, "for extended vectors and vector", true,
+InstallMethod( PositionCanonical, "for extended vectors and vector",
     [ IsList and IsExtendedVectorsRep, IsRowVector ],
     PosExVecEnum);
 
@@ -1769,11 +1834,11 @@ local v;
   return QuoInt(NumberFFVector(v,arg[1]!.q),arg[1]!.q)+1;
 end);
 
-InstallMethod( Position, "for extended vectorsFF, FFvec, and 0", true,
+InstallMethod( Position, "for extended vectorsFF, FFvec, and 0",
     [ IsList and IsExtendedVectorsFFRep, IsRowVector, IsZeroCyc ],
     PosExVecEnumFF);
 
-InstallMethod( PositionCanonical, "for extended vectorsFF and FFvec", true,
+InstallMethod( PositionCanonical, "for extended vectorsFF and FFvec",
     [ IsList and IsExtendedVectorsFFRep, IsRowVector ],
     PosExVecEnumFF);
 
@@ -1894,54 +1959,6 @@ function( U )
     null := NullspaceMat( TransposedMat( base ) );
     return VectorSpace( LeftActingDomain(U), null, Zero(U), "basis" );
 end );
-
-
-#############################################################################
-##
-#F  OnLines( <vec>, <g> ) . . . . . . . .  for operation on projective points
-##
-InstallGlobalFunction( OnLines, function( vec, g )
-    local c;
-    vec:= OnPoints( vec, g );
-    c:= PositionNonZero( vec ); # better than PositionNot, as no `Zero'
-                                # element needs to be created
-    if c <= Length( vec ) then
-
-      # Normalize from the *left* if the matrices act from the right!
-      vec:= Inverse( vec[c] ) * vec;
-
-    fi;
-    return vec;
-end );
-
-
-#############################################################################
-##
-#M  NormedRowVector( <v> )
-##
-InstallMethod( NormedRowVector,
-    "for a row vector of scalars",
-    [ IsRowVector and IsScalarCollection ],
-function( v )
-    local   depth;
-
-    if 0 < Length(v)  then
-	depth:=PositionNonZero( v ); # better than PositionNot, as no `Zero'
-				     # element needs to be created
-        if depth <= Length(v) then
-            return Inverse(v[depth]) * v;
-        else
-            return ShallowCopy(v);
-        fi;
-    else
-        return ShallowCopy(v);
-    fi;
-end );
-
-
-#T mutable bases for Gaussian row and matrix spaces are always semi-ech.
-#T (note that we construct a mutable basis only if we want to do successive
-#T closures)
 
 
 #############################################################################

@@ -145,7 +145,7 @@ gap> ListPerm((3,4,5));
 gap> PermList([1,2,4,5,3]);
 (3,4,5)
 gap> MappingPermListList([2,5,1,6],[7,12,8,2]);
-( 1, 8, 5,12,11,10, 9, 6, 2, 7, 4, 3)
+(1,8,5,12,11,10,9,6,2,7,4,3)
 gap> RestrictedPerm((1,2)(3,4),[3..5]);
 (3,4)
 \endexample

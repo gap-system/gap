@@ -89,8 +89,10 @@ local l,g;
   # special case: Symmetric and Alternating Group
   if l[7]="A_n" then
     g:=AlternatingGroup(deg);
+    SetName(g,Concatenation("A(",String(deg),")"));
   elif l[7]="S_n" then
     g:=SymmetricGroup(deg);
+    SetName(g,Concatenation("S(",String(deg),")"));
   else
     g:= GroupByGenerators( l[9], () );
     if IsString(l[7]) and l[7]<>"" then
@@ -233,6 +235,16 @@ local dom,deg,PD,s,cand,a,p,b,i,ag,bg,q;
     Error("Uh-Oh, this should never happen ",cand);
     return cand[1];
   fi;
+end);
+
+InstallMethod(SimsNo,"via `PrimitiveIdentification'",true,[IsPermGroup],0,
+function(grp)
+local dom;
+  dom:=MovedPoints(grp);
+  if not IsTransitive(grp,dom) and IsPrimitive(grp,dom) then
+    Error("Group must operate primitively");
+  fi;
+  return SimsNo(PrimitiveGroup(Length(dom),PrimitiveIdentification(grp)));
 end);
 
 ##
@@ -465,6 +477,293 @@ DeclareSynonym("SimsName",Name);
 BindGlobal("PrimitiveGroupSims",
 function(d,n)
   return OnePrimitiveGroup(NrMovedPoints,d,SimsNo,n);
+end);
+
+# maximal subgroups routine.
+# precomputed data up to degree 50 (so it will be quick is most cases).
+# (As there is no independed check for the primitive groups of degree >50,
+# we rather do not refer to them, but only use them in a calculation.)
+BindGlobal("SNMAXPRIMS",[[],[],[],[],[],[2],[],[5],[],[7],[],[4],[],[2],[],
+  [],[],[2],[],[2],[1,3,7],[2],[],[3],[],[5],[],[12],[],[2],[],
+  [5],[],[],[],[12],[],[2],[],[4,6],[],[2],[],[2],[5],[],[],
+  [2],[],[7]]);
+
+BindGlobal("ANMAXPRIMS",[[],[],[],[],[],[1],[5],[],[9],[6],[6],[2],[7],[1],
+  [4],[],[8],[1],[],[1],[2,6],[1],[5],[1],[],[3],[13],[6,11],[],
+  [1],[9,10],[4],[2],[],[2],[10,11],[],[1],[],[3,5],[],[1],[],
+  [1],[4,7],[],[],[1],[],[2,6]]);
+
+InstallGlobalFunction(MaximalSubgroupsSymmAlt,function(arg)
+local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
+  G:=arg[1];
+  if Length(arg)>1 then
+    prim:=arg[2];
+  else 
+    prim:=false;
+  fi;
+  dom:=Set(MovedPoints(G));
+  n:=Length(dom);
+
+  if n<3 then
+    return [TrivialSubgroup(G)];
+  fi;
+  invol:=(1,2);
+
+  A:=AlternatingGroup(n);
+  issn:=A<>G;
+  if not issn then
+    S:=SymmetricGroup(n);
+  else
+    S:=G;
+  fi;
+  max:=[];
+  if issn then
+    Add(max,A);
+  fi;
+
+  # types according to Liebeck,Praeger,Saxl paper:
+
+  if not prim then
+    # type (a): Intransitive
+    # A_n is highly transitive, so we always get only one class
+
+    # all partitions in 2 not equal parts
+    p:=Filtered(Partitions(n,2),i->i[1]<>i[2]);
+    for i in p do
+      if issn then
+	m:=DirectProduct(SymmetricGroup(i[1]),SymmetricGroup(i[2]));
+      else
+	if i[2]<3 then
+	  m:=AlternatingGroup(i[1]);
+	else
+	  m:=DirectProduct(AlternatingGroup(i[1]),AlternatingGroup(i[2]));
+	  # add a double transposition
+	  m:=ClosureGroupAddElm(m,(1,2)(n-1,n));
+	  SetSize(m,Factorial(i[1])*Factorial(i[2])/2);
+	fi;
+      fi;
+      Add(max,m);
+    od;
+
+    # type (b): Imprimitive
+    # A_n is highly transitive, so we always get only one class
+
+    # all possible block system sizes
+    p:=Difference(DivisorsInt(n),[1,n]);
+    for i in p do
+      # exception: Table I, 1
+      if n<>8 or i<>2 then
+	m:=WreathProduct(SymmetricGroup(i),SymmetricGroup(n/i));
+	if not issn then
+	  m:=AlternatingSubgroup(m);
+	fi;
+	Add(max,m);
+      fi;
+    od;
+  fi;
+
+  # type (c): Affine
+  p:=Factors(n);
+  if Length(Set(p))=1 then
+    k:=Length(p);
+    p:=p[1];
+    m:=GL(k,p);
+    v:=AsSSortedList(GF(p)^k);
+    m:=Action(m,v,OnRight);
+    k:=First(v,i->not IsZero(i));
+    m:=ClosureGroup(m,PermList(List(v,i->Position(v,i+k))));
+
+    if SignPermGroup(m)=1 then
+      #its a subgroup of A_n, but there are two classes
+      # (the normalizer in S_n cannot increase)
+      if not issn then
+	Add(max,m);
+	Add(max,m^invol);
+      fi;
+    else
+      # the (intersection with A_n) is a maximal subgroup
+      if issn then
+	Add(max,m);
+      else
+	# exceptions: table I and Aff(3)=A3.
+	if not n in [3,7,11,17,23] then
+	  m:=AlternatingSubgroup(m);
+	  Add(max,m);
+        fi;
+      fi;
+    fi;
+  fi;
+
+  # type (d): Diagonal
+
+  powdec:=PowerDecompositions(n);
+  gps:=IsomorphismTypeInfoFiniteSimpleGroup(n);
+  if gps<>fail then
+    pd:=Concatenation([[n,1]],powdec);
+    for i in pd do
+      if IsBound(gps.series) then
+        if gps.series="A" then
+	  gps:=[AlternatingGroup(gps.parameter)];
+	elif gps.series="L" then
+	  gps:=[PSL(gps.parameter[1],gps.parameter[2])];
+	elif gps.series="Z" then
+	  gps:=[];
+	fi;
+      fi;
+      if not IsList(gps) then
+	Error("code for creation of simple groups not yet implemented");
+      else
+	# did we construct with some automorphisms?
+	for j in [1..Length(gps)] do
+	  while Size(gps[j])>n do
+	    gps[j]:=DerivedSubgroup(gps[j]);
+	  od;
+	od;
+        gps:=List(gps,i->Image(SmallerDegreePermutationRepresentation(i)));
+      fi;
+      for j in gps do
+	m:=DiagonalSocleAction(j,i[2]+1);
+	m:=Normalizer(S,m);
+	if issn then
+	  if SignPermGroup(m)=-1 then
+	    Add(max,m);
+	  fi;
+	else
+	  if SignPermGroup(m)=-1 then
+	    Add(max,AlternatingSubgroup(m));
+	  else
+	    Add(max,m);
+	    Add(max,m^invol);
+	  fi;
+	fi;
+      od;
+    od;
+  fi;
+
+  # type (e): Product type
+  for i in powdec do
+    if i[1]>4 then # up to s_4 we get a solvable normal subgroup
+      m:=WreathProductProductAction(SymmetricGroup(i[1]),SymmetricGroup(i[2]));
+      if issn then
+	# add if not contained in A_n
+	if SignPermGroup(m)=-1 then
+	  Add(max,m);
+	fi;
+      else
+	if SignPermGroup(m)=1 then
+	  Add(max,m);
+	  # the wreath product is alternating, so the normalizer cannot grow
+	  # and there must be a second class
+	  Add(max,m^invol);
+	else
+	  # the group is larger, so we have to intersect with A_n
+	  m:=AlternatingSubgroup(m);
+	  # but it might become imprimitive, use remark 2:
+	  if i[2]<>2 or 2<>(i[1] mod 4) or IsPrimitive(m,[1..n]) then
+	    Add(max,m);
+	  fi;
+	fi;
+      fi;
+    fi;
+  od;
+
+  # type (f): Almost simple
+  if n>999 then
+    Error("tables missing");
+  elif n>50 then
+    # all type 2 nonalt groups of right parity
+    k:=Factorial(n)/2;
+    l:=AllPrimitiveGroups(DegreeOperation,n,
+			  i->Size(i)<k and IsSimpleGroup(Socle(i))
+			  and not IsAbelian(Socle(i)),true,
+			  SignPermGroup,SignPermGroup(G));
+
+    # remove obvious subgroups
+    Sort(l,function(a,b)return Size(a)<Size(b);end);
+    sel:=[];
+    for i in [1..Length(l)] do
+      if not ForAny([i+1..Length(l)],j->IsSubgroup(l[j],l[i])) then
+        Add(sel,i);
+      fi;
+    od;
+    l:=l{sel};
+
+    # remove the LPS exceptions
+    if n=8 then
+      l:=Filtered(l,i->PrimitiveIdentification(i)<>4);
+    elif n=36 then
+      l:=Filtered(l,i->PrimitiveIdentification(i)<>5);
+    elif n=144 then
+      Error("144 exception");
+    # this is the smallest 1/2q^4(q^2-1)^2. Its unlikely anyone will ever
+    # try degrees that big.
+    elif n>=28800 then
+      Error("Possible Sp4(q) exception");
+    fi;
+
+    # go through all and test explicitly
+    sel:=[1..Length(l)];
+    mf:=[];
+    for i in [Length(l),Length(l)-1..1] do
+      if i in sel then
+	Add(mf,l[i]);
+	for j in [1..i] do
+	  #is there a permisomorphic primitive subgroup?
+	  k:=IsomorphicSubgroups(l[i],l[j]);
+	  k:=List(k,Image);
+	  if ForAny(k,x->IsTransitive(x,[1..n]) and IsPrimitive(x,[1..n]) and
+	              PrimitiveIdentification(x)=PrimitiveIdentification(l[j]))
+		      then
+	    RemoveSet(sel,j);
+	  fi;
+	od;
+      fi;
+    od;
+  else
+    # use tables -- quicker
+    if issn then
+      mf:=List(SNMAXPRIMS[n],i->PrimitiveGroup(n,i));
+    else
+      mf:=List(ANMAXPRIMS[n],i->PrimitiveGroup(n,i));
+
+    fi;
+  fi;
+  Append(max,mf);
+
+  #An-split
+  if not issn then
+    for m in mf do
+      # does the class split? If not, the normalizer gets bigger, i.e. there
+      # is a larger primitive group in S_n
+      k:=AllPrimitiveGroups(NrMovedPoints,n,SocleTypePrimitiveGroup,
+	  SocleTypePrimitiveGroup(m),SignPermGroup,-1);
+      k:=List(k,i->AlternatingSubgroup(i));
+      if ForAll(k,j->not IsTransitive(j,[1..n]) or not IsPrimitive(j,[1..n])
+	      or PrimitiveIdentification(j)<>PrimitiveIdentification(m)) then
+	Add(max,m^invol);
+      fi;
+    od;
+  fi;
+
+  if dom<>[1..n] then
+    # map on other points
+    m:=MappingPermListList([1..n],dom);
+    max:=List(max,i->i^m);
+  fi;
+
+  return max;
+end);
+
+InstallMethod( MaximalSubgroupClassReps, "symmetric", true,
+    [ IsNaturalSymmetricGroup ], 0,
+function ( G )
+  return MaximalSubgroupsSymmAlt(G,false);
+end);
+
+InstallMethod( MaximalSubgroupClassReps, "alternating", true,
+    [ IsNaturalAlternatingGroup ], 0,
+function ( G )
+  return MaximalSubgroupsSymmAlt(G,false);
 end);
 
 #############################################################################

@@ -115,13 +115,36 @@ gap>
 gap> I := MagmaIdealByGenerators(O4, [a*f]);;
 gap> C := SemigroupCongruenceByGeneratingPairs(O4, [[a*f, a*e]]);;
 gap> P := EquivalenceRelationPartition(C);;
-gap> I = P[1];                         # true
-true
 gap> AsSSortedList(I) = AsSSortedList(P[1]);     # true
 true
+gap> Length(P);
+1
 gap> IsReesCongruence(C);              # true
 true
-gap> 
+gap> ########################
+gap> #
+gap> # More Congruences
+gap> #
+gap> ########################
+gap> f := FreeGroup("a");;
+gap> g := f/[f.1^4];;
+gap> phi := InjectionZeroMagma(g);
+MappingByFunction( <fp group of size 4 on the generators [ a ]>, <monoid with
+4 generators>, function( g ) ... end )
+gap> m := Range(phi);
+<monoid with 4 generators>
+gap> el := Elements(m);
+[ 0, <identity ...>, a, a^-1, a^2 ]
+gap> c := MagmaCongruenceByGeneratingPairs(m,[[el[2],el[3]]]);
+<semigroup congruence with 1 generating pairs>
+gap> EquivalenceRelationPartition(c);
+[ [ <identity ...>, a, a^2, a^-1 ] ]
+gap> IsReesCongruence(c);
+false
+gap> MagmaIdealByGenerators(m,EquivalenceRelationPartition(c)[1]);
+<SemigroupIdeal with 4 generators>
+gap> Size(last);
+5
 gap> ###############################
 gap> ##
 gap> ##  testing generic factoring methods in semigrp.gd

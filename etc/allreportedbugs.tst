@@ -11,26 +11,20 @@ gap> START_TEST("bugfixes test");
 ######### ######### ######### ######### ######### ######### ######### #########
 
 
-## ##########
-## 1111111111
-## ##########
+##########
+1111111111
+##########
 ## Date: Fri, 22 Oct 1999 10:51:03 +0100
 ## Subject: Primitive Groups Library
 
-gap> PrimitiveGroup(81,114); 
-3^4:GL(2,9):2 < GL(4,3)_4
-gap> Orbits(last,[1..81]);
-[ [ 1, 28, 78, 7, 55, 37, 73, 6, 22, 54, 42, 33, 35, 24, 52, 61, 60, 5, 34, 
-      44, 4, 30, 9, 64, 56, 19, 51, 50, 8, 58, 79, 36, 13, 67, 27, 49, 45, 
-      59, 72, 81, 77, 46, 62, 69, 17, 47, 80, 26, 15, 70, 25, 68, 14, 63, 41, 
-      53, 38, 32, 48, 57, 43, 16, 71, 31, 3, 39, 75, 23, 10, 2, 29, 74, 40, 
-      65, 76, 18, 12, 66, 11, 20, 21 ] ]
+gap> Collected(List(Orbits(PrimitiveGroup(81,114),[1..81]),Length));
+[ [ 81, 1 ] ]
 
 
 
-## ##########
-## 2222222222
-## ##########
+##########
+2222222222
+##########
 ## Date: Sun, 24 Oct 1999 15:04:35 +0100
 ## Subject: trivial PC group detected!
 
@@ -38,9 +32,9 @@ gap> ct := Irr(SymmetricGroup(5));;
 
 
 
-## ##########
-## 3333333333
-## ##########
+##########
+3333333333
+##########
 ## Date: Thu, 28 Oct 1999 12:05:53 +0800 (WST))
 ## Subject: Re: Polynomials
 
@@ -59,9 +53,9 @@ gap> Factors(f);
 
 
 
-## ##########
-## 4444444444                             ## CHECK MANUALLY ##
-## ##########
+##########
+4444444444                             ## CHECK MANUALLY ##
+##########
 ## Date: Thu, 28 Oct 1999 17:42:25 +0200
 ## Subject: some minor bugs
 
@@ -78,9 +72,9 @@ gap> v{[]}+v{[]};;
 
 
 
-## ##########
-## 5555555555                             ## CHECK MANUALLY ##
-## ##########
+##########
+5555555555                             ## CHECK MANUALLY ##
+##########
 ## Date: Fri, 05 Nov 1999 11:14:14 -0500
 ## Subject: guava test questions
 
@@ -90,7 +84,7 @@ gap> v{[]}+v{[]};;
 gap> RequirePackage("guava");
 
    ____                          |
-  /            \           /   --+--  Version 1.4
+  /            \           /   --+--  Version 1.5
  /      |    | |\\        //|    |
 |    _  |    | | \\      // |     Jasper Cramwinckel
 |     \ |    | |--\\    //--|     Erik Roijackers
@@ -99,7 +93,8 @@ gap> RequirePackage("guava");
                                   Lea Ruscio
 true
 gap>  C1:=BinaryGolayCode();;
-gap>  H1:=CheckMat(C1);
+gap>  H1:=CheckMat(C1);;            ## was (badly) producing this:
+
 ## [ [ Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0,
 ## 0*Z(2), 
 ##       0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2),
@@ -118,14 +113,13 @@ gap>  H1:=CheckMat(C1);
 
 
 
-## ##########
-## 6666666666
-## ##########
+##########
+6666666666
+##########
 ## Date: Mon, 8 Nov 1999 12:59:10 +0100 (MET)
 ## Subject: Intransitive primitive groups ...
 
-gap> g:=PrimitiveGroup(25,20);
-5^2:GL(2,5)_1
+gap> g:=PrimitiveGroup(25,20);;
 gap> Size(g);
 3000
 gap> IsTransitive(g,[1..25]);
@@ -133,9 +127,9 @@ true
 
 
 
-## ##########                             ## CHECK MANUALLY ##
-## 7777777777                   ## (ONLY CERTAIN ARCHITECTURES/OS's ??) ##
-## ##########
+##########
+7777777777          ## CHECK MANUALLY: (ONLY CERTAIN ARCHITECTURES/OS's ??) ##
+##########
 ## Date: Thu, 11 Nov 1999 19:43:50 +0100
 ## Subject: Re: bug in FuncNUMBER_VEC8BIT?
 
@@ -184,9 +178,9 @@ gap>
 
 
 
-## ##########
-## 8888888888
-## ##########
+##########
+8888888888
+##########
 ## Date: Fri, 12 Nov 1999 01:31:19 +0100
 ## Subject: Index(g,g) for g a subgroup of an fp group
 
@@ -197,9 +191,9 @@ gap> Index(g,g);
 
 
 
-## ##########                             ## CHECK MANUALLY ##
-## 9999999999                    ## GASMAN OUTPUT APPEARS DURING TEST ##
-## ##########
+##########
+9999999999              ## CHECK MANUALLY: GASMAN OUTPUT APPEARS DURING TEST ##
+##########
 ## Date: Fri, 12 Nov 1999 20:57:48 +0100 (CET)
 ## Subject: strange losses of storage
 
@@ -207,15 +201,16 @@ gap> GASMAN("message");
 gap> for i in [ 1 .. 100 ] do
 > LatticeSubgroups( SmallGroup( 24, 12 ) );
 > Print( i, " \c" );
-> GASMAN( "collect" ); od;
+> GASMAN( "collect" );
+> if i=100 then Print("\n"); fi; od;
 gap> GASMAN("message");
 gap> GASMAN("message");
 
 
 
-## ##########
-##  10 10 10 
-## ##########
+##########
+ 10 10 10 
+##########
 ## Date: Mon Nov 15 21:39:49 GMT 1999
 ## Subject: /gap/CVS/GAP/4.0/lib/oprt.gi (SparseActionHomomorphism)
 
@@ -231,9 +226,9 @@ gap> ImagesSource(h);;
 
 
 
-## ##########
-##  11 11 11 
-## ##########
+##########
+ 11 11 11 
+##########
 ## Date: Fri, 19 Nov 1999 10:43:04 -0600 (CST)
 ## Subject: Fix to semicong.gi Gap4r1 (fwd)
 
@@ -243,9 +238,9 @@ gap> EquivalenceRelationPartition(c);;
 
 
 
-## ##########
-##  12 12 12 
-## ##########
+##########
+ 12 12 12 
+##########
 ## Date: Tue, 23 Nov 1999 16:09:48 +0000
 ## Subject: Elements
 
@@ -256,9 +251,9 @@ gap> Elements(ConjugacyClassSubgroups(G, SG));;
 
 
 
-## ##########
-##  13 13 13 
-## ##########
+##########
+ 13 13 13 
+##########
 ## Date: Wed, 24 Nov 1999 16:30:33 +0100 (CET)
 ## Subject: mutability problem
 
@@ -274,22 +269,22 @@ true
 
 
 
-## ##########
-##  14 14 14 
-## ##########
+##########
+ 14 14 14 
+##########
 ## Date: Thu, 9 Dec 1999 12:14:56 GMT
 ## Subject: committed 'GAP/4.0/lib ratfun.gi'
 
 gap> x:= Indeterminate( Rationals, "x" );;
 gap> y:= Indeterminate( Rationals, "y" );;
 gap> x/y + y/x;
-(x^2+y^2)/x*y
+(x^2+y^2)/(x*y)
 
 
 
-## ########## 
-##  15 15 15 
-## ##########
+########## 
+ 15 15 15 
+##########
 ## Date: Thu, 09 Dec 1999 13:19:07 +0000
 ## Subject: Re: Bug in ConvertToMatrixRep 
 
@@ -297,14 +292,14 @@ gap> l := [];;
 gap> AddSet(l,729);;
 gap> AddSet(l,true);;
 gap> AddSet(l,3);;
-gap >true in l;
+gap> true in l;
 true
 
 
 
-## ##########
-##  16 16 16 
-## ##########
+##########
+ 16 16 16 
+##########
 ## Date: Tue, 14 Dec 1999 13:22:07 +0100 (CET)
 ## Subject: Re: ConjugatorAutomorphism
 
@@ -315,25 +310,28 @@ fail
 
 
 
-## ##########
-##  17 17 17 
-## ##########
+##########
+ 17 17 17 
+##########
 ## Date: Thu, 16 Dec 1999 08:03:16 -0500 (EST)
 ## Subject: Re: Subgroup Lattice question
 
+gap> g:=SmallGroup(18,3);;
+gap> l:=LatticeSubgroups(g);;
+gap> c:=List(ConjugacyClassesSubgroups(g),Representative);;
 gap> List(c,Size);
-[ 1, 3, 3, 3, 9, 18, 2, 6, 6 ]
+[ 1, 2, 3, 3, 3, 6, 6, 9, 18 ]
 gap> MaximalSubgroupsLattice(l);
-[ [  ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], [ [ 1, 1 ] ],
-  [ [ 4, 1 ], [ 4, 2 ], [ 3, 1 ], [ 2, 1 ] ], [ [ 5, 1 ] ], [ [ 1, 1 ]
-],
-  [ [ 7, 1 ], [ 7, 2 ], [ 7, 3 ], [ 2, 1 ] ], [ [ 8, 1 ], [ 6, 1 ] ] ]
+[ [  ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], 
+  [ [ 3, 1 ], [ 2, 1 ], [ 2, 2 ], [ 2, 3 ] ], [ [ 4, 1 ], [ 2, 1 ] ], 
+  [ [ 5, 1 ], [ 5, 2 ], [ 4, 1 ], [ 3, 1 ] ], 
+  [ [ 8, 1 ], [ 7, 1 ], [ 7, 2 ], [ 7, 3 ], [ 6, 1 ] ] ]
 
 
 
-## ##########
-##  18 18 18                              ## CHECK MANUALLY ##
-## ##########
+##########
+ 18 18 18                              ## CHECK MANUALLY ##
+##########
 ## Date: Wed, 22 Dec 1999 14:42:47 +0100 (CET)
 ## Subject: Re: whitespace in Help
 
@@ -344,9 +342,9 @@ gap> MaximalSubgroupsLattice(l);
 
 
 
-## ##########
-##  19 19 19 
-## ##########
+##########
+ 19 19 19 
+##########
 ## Date: Thu, 6 Jan 2000 09:04:19 GMT
 ## Subject: committed 'GAP/4.0/lib morpheus.gi'
 
@@ -356,9 +354,9 @@ gap> InnerAutomorphismsAutomorphismGroup( AutomorphismGroup(
 
 
 
-## ##########
-##  20 20 20 
-## ##########
+##########
+ 20 20 20 
+##########
 ## Date: Fri, 10 Dec 1999 14:35:41 -0500
 ## Subject: AutomorphismGroup fails in particular instances
 
@@ -366,22 +364,37 @@ gap> AutomorphismGroup(SimplexCode(4));
 <permutation group of size 20160 with 9 generators>
 
 
-## ##########
-##  21 21 21 
-## ##########
+##########
+ 21 21 21 
+##########
 ## Date: Wed, 19 Jan 2000 23:43:01 -0800 (PST)
-## Subject: Trouble with "Order" function      = "STRANGE BUG"    !!!!!!
+## Subject: Trouble with "Order" function .... aka  "STRANGE BUG"
 
+gap> mat:=
+>  [ [ -1/3*E(5)-2/3*E(5)^2-2/3*E(5)^3-1/3*E(5)^4,
+>      -1/3*E(60)^11+1/3*E(60)^19+1/3*E(60)^31-1/3*E(60)^59, 
+>      -E(5)^2-E(5)^3, 
+>      -2 ],
+>    [ 1/9*E(60)^7-1/9*E(60)^23+1/9*E(60)^43-1/9*E(60)^47,
+>      1/6*E(5)-1/6*E(5)^2-1/6*E(5)^3+1/6*E(5)^4,
+>      -1/6*E(60)^7-1/6*E(60)^11+1/6*E(60)^19+1/6*E(60)^23+1/6*E(60)^31
+>                               -1/6*E(60)^43+1/6*E(60)^47-1/6*E(60)^59,
+>      2/3*E(60)^11-2/3*E(60)^19-2/3*E(60)^31+2/3*E(60)^59 ],
+>    [ 0, 1/2*E(12)^7-1/2*E(12)^11, -1/2, 0 ],
+>    [ 5/18*E(5)+1/9*E(5)^2+1/9*E(5)^3+5/18*E(5)^4,
+>      -1/18*E(60)^7+1/18*E(60)^23-1/18*E(60)^43+1/18*E(60)^47,
+>      1/6*E(5)+1/6*E(5)^4,
+>      -1/3*E(5)-2/3*E(5)^2-2/3*E(5)^3-1/3*E(5)^4 ] ];;
 gap> MinimalPolynomial( Rationals, mat, 1 );
--1+x_1-x_1^5+x_1^6
+-1+x-x^5+x^6
 gap> MinimalPolynomial( Rationals, mat, 1 );
--1+x_1-x_1^5+x_1^6
+-1+x-x^5+x^6
 
 
 
-## ##########
-##  22 22 22 
-## ##########
+##########
+ 22 22 22 
+##########
 ## Date: Fri, 21 Jan 2000 18:10:07 +0100 (CET)
 ## Subject: Re: trivial-problems
 
@@ -392,9 +405,9 @@ gap> ElementaryAbelianGroup( 1 );;
 
 
 
-## ##########
-##  23 23 23 
-## ##########
+##########
+ 23 23 23 
+##########
 ## Date: 24 Jan 2000 12:58:48 +0100
 ## Subject: Possible bugs
 
@@ -403,9 +416,9 @@ gap> AutomorphismGroup(F);;
 
 
 
-## ##########
-##  24 24 24 
-## ##########
+##########
+ 24 24 24 
+##########
 ## Date: Fri, 21 Jan 2000 12:44:55 +0000
 ## Subject: Re: SmithNormalForm 
 
@@ -415,18 +428,18 @@ gap> SmithNormalFormIntegerMat( a );
 
 
 
-## ##########
-##  25 25 25 
-## ##########
+##########
+ 25 25 25 
+##########
 ## Date: Tue, 25 Jan 2000 15:40:24 +0100 (CET)
 ## Subject: About "IrreducibleRepresentations"
 
 gap> IrreducibleRepresentations( AlternatingGroup( 5 ), GF(2) );;
 
 
-## ##########
-##  26 26 26 
-## ##########
+##########
+ 26 26 26 
+##########
 ## Date: Fri, 28 Jan 2000 13:40:20 +0000
 ## Subject: KM Briggs' question about GRAPE -- actually Library problem...
 
@@ -438,9 +451,9 @@ gap> AugmentedCosetTableMtc(g,h,1,"x");;
 
 
 
-## ##########
-##  27 27 27                              ## CHECK MANUALLY ##
-## ##########
+##########
+ 27 27 27                              ## CHECK MANUALLY ##
+##########
 ## Date: Fri, 21 Jan 2000 14:02:23 -0600 (CST)
 ## Subject: Bug in DefaultFieldOfMatrix
 
@@ -456,21 +469,20 @@ gap> DefaultFieldOfMatrix( [[e]] );;
 
 
 
-## ##########
-##  28 28 28 
-## ##########
+##########
+ 28 28 28 
+##########
 ## Subject: Re: bug in MinimalPolynomial
 ## Date: Fri, 28 Jan 2000 18:18:59 -0500 (EST)
 
-gap> A := [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ];
-> [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ]
+gap> A := [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ];;
 gap> MinimalPolynomial(GF(2),A);;
 
 
 
-## ##########
-##  29 29 29 
-## ##########
+##########
+ 29 29 29 
+##########
 ## Date:           Fri, 28 Jan 2000 22:02:00 +0200
 ## Subject:        Lie nilpotent group rings
 
@@ -483,9 +495,9 @@ true
 
 
 
-## ##########
-##  30 30 30 
-## ##########
+##########
+ 30 30 30 
+##########
 ## Date: Sat, 29 Jan 2000 11:52:55 -0500 (EST)
 ## Subject: bug in GAP 8-bit matrix/vector representation
 
@@ -497,9 +509,9 @@ gap> Order(m3);;
 
 
 
-## ##########
-##  31 31 31 
-## ##########
+##########
+ 31 31 31 
+##########
 ## Subject: Re: [Fwd: committed 'GAP/4.0/lib pquot.gi']
 ## Date: Mon, 31 Jan 2000 14:46:13 +0100 (CET)
 
@@ -513,9 +525,9 @@ true
 
 
 
-## ##########
-##  32 32 32 
-## ##########
+##########
+ 32 32 32 
+##########
 ## Date: Tue, 1 Feb 2000 14:41:57 +0100 (CET)
 ## Subject: Re: algebra
 
@@ -526,14 +538,14 @@ gap> z:=Zero(A)*A;;
 gap> a:=z*()^emb;;
 gap> Dimension(z)=0;
 true
-gap> Dimension(a)=1;
+gap> Dimension(a)=0;
 true
 
 
 
-## ##########
-##  33 33 33 
-## ##########
+##########
+ 33 33 33 
+##########
 ## Date: Wed, 19 Jan 2000 11:14:36 GMT
 ## Subject: Re: Bug report on Guava 1.4 for GAP4
 
@@ -544,9 +556,9 @@ gap> C := GoppaCode( G, L );;
 
 
 
-## ##########
-##  34 34 34 
-## ##########
+##########
+ 34 34 34 
+##########
 ## Date: Mon, 7 Feb 2000 16:28:38 GMT
 ## Subject: lag and intersection
 
@@ -566,26 +578,21 @@ gap> Intersection( B1, B2 );
 
 
 
-## ##########
-##  35 35 35 
-## ##########
+##########
+ 35 35 35                                ##should produce an error
+##########
 ## Date: Wed, 22 Dec 1999 15:03:00 +0100 (CET)
 ## Subject: Re: ElementaryAbelianGroup( 1 )
 
 gap> G := ElementaryAbelianGroup( IsPermGroup, 6 );
-Error <n> must be a prime power at
-Error( "<n> must be a prime power" );
-ElementaryAbelianGroupCons( arg[1], arg[2] ) called from
-<function>( <arguments> ) called from read-eval-loop
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or you can return to continue
-brk>
+Error : <n> must be a prime power
 
 
 
-## ##########
-##  36 36 36 
-## ##########
+
+##########
+ 36 36 36 
+##########
 ## Date: Thu, 3 Feb 2000 13:49:21 -0500 (EST)
 ## Subject: Re: FactorGroup
 
@@ -597,9 +604,9 @@ gap> quo:=FactorGroup(f,g);;
 
 
 
-## ##########
-##  37 37 37 
-## ##########
+##########
+ 37 37 37 
+##########
 ## Date: Mon, 07 Feb 2000 14:46:43 +0000
 ## Subject: IsIntegerMatrixGroup
 
@@ -609,9 +616,9 @@ gap> Order(f);;
 
 
 
-## ##########
-##  38 38 38                           ## CHECK MANUALLY ##
-## ##########
+##########
+ 38 38 38                           ## CHECK MANUALLY ##
+##########
 ## Date: Sun, 30 Jan 2000 15:34:52 +0100 (CET)
 ## Subject: Re: minor bug in GAP startup
 
@@ -634,9 +641,9 @@ gap> Order(f);;
 
 
 
-## ##########
-##  39 39 39 
-## ##########
+##########
+ 39 39 39 
+##########
 ## Date: Wed, 26 Jan 2000 15:01:36 -0500 (EST)
 ## Subject: Re: p groups
 
@@ -647,31 +654,40 @@ gap> Size(G);;
 
 
 
-## ##########
-##  40 40 40 
-## ##########
+##########
+ 40 40 40 
+##########
 ## Date: Mon, 07 Feb 2000 09:49:42 +0000
 ## Subject: One last bug in alltest
 
-gap> RequirePackage("grpconst");
+gap> RequirePackage("grpconst" );
+#I -------- The AutPGroup share package ---------- 
+#I -- Computing automorphism groups of p-groups -- 
+    ----------------------------------------------- 
+    ---- Algorithms to construct finite groups ---- 
+    ----- Hans Ulrich Besche and Bettina Eick ----- 
+    ----------------------------------------------- 
+    --------------- See ?GrpConst ----------------- 
+    ----------------------------------------------- 
+true
 gap> ConstructAndTestAllGroups := function( size )
 > local grps;
->     grps := ConstructAllGroups( size );
->    if Length( grps ) <> NumberSmallGroups( size ) then
->        Print( "wrong number of groups of size ", size, "\n" );
->    fi;
->    if Set( List( grps, IdGroup ) ) <>
->       List( [ 1 .. NumberSmallGroups( size ) ], x -> [ size, x ] ) then
->        Print( "wrong ids for the groups of size ", size, "\n" );
->    fi;
-> end;
+> grps := ConstructAllGroups( size );
+> if Length( grps ) <> NumberSmallGroups( size ) then
+>     Print( "wrong number of groups of size ", size, "\n" );
+> fi;
+> if Set( List( grps, IdGroup ) ) <> List( [ 1 .. NumberSmallGroups( size ) ],
+>  x -> [ size, x ] ) then
+>     Print( "wrong ids for the groups of size ", size, "\n" );
+> fi;
+> end;;
 gap> ConstructAndTestAllGroups( 840 );;
 
 
 
-## ##########
-##  41 41 41 
-## ##########
+##########
+ 41 41 41                                ##should produce an error
+##########
 ## Date: Mon, 7 Feb 2000 17:14:52 +0100 (CET)
 ## Subject: Re: One last bug in alltest
 
@@ -682,15 +698,13 @@ gap> f1(g);  f2(g);
 true
 true
 gap> ResetFilterObj( g, f3 );
-gap> f1(g);  f2(g);
-false
-false
+Error : You can't reset an "and-filter". Reset components individually.
 
 
 
-## ##########
-##  42 42 42 
-## ##########
+##########
+ 42 42 42 
+##########
 ## Date: Thu, 27 Jan 2000 14:38:54 +0100 (CET)
 ## Subject: Re: p groups
 
@@ -708,9 +722,9 @@ false
 
 
 
-## ##########
-##  43 43 43 
-## ##########
+##########
+ 43 43 43 
+##########
 ## Date: Tue, 1 Feb 2000 14:27:58 -0500 (EST)
 ## Subject: bug in group homomorphism?
 
@@ -786,14 +800,14 @@ gap> elt := [ [ Z(3)^0, Z(3), Z(3)^0, Z(3), 0*Z(3) ],
 gap> fun := h->Comm( h, elt );;
 gap> hom := GroupHomomorphismByFunction( src, img, fun );;
 gap> ker := Kernel(hom);;
-gap> HasIsGroup(ker);
+gap> IsGroup(ker);
 true
 
 
 
-## ##########
-##  44 44 44 
-## ##########
+##########
+ 44 44 44 
+##########
 ## Date:           Fri, 04 Feb 2000 12:29:23 -0800
 ## Subject:        Problem with GQuotients
 
@@ -803,9 +817,9 @@ gap>  GQuotients(G, AlternatingGroup(5));;
 
 
 
-## ##########
-##  45 45 45 
-## ##########
+##########
+ 45 45 45 
+##########
 ## Date: Thu, 03 Feb 2000 14:13:23 +0000
 ## Subject: Testing
 
@@ -814,9 +828,9 @@ gap> SetModuleOfExtension;
 
 
 
-## ##########
-##  46 46 46 
-## ##########
+##########
+ 46 46 46 
+##########
 ## Date: Thu, 03 Feb 2000 14:13:23 +0000
 ## Subject: Testing
 
@@ -830,9 +844,156 @@ Subspaces( ( GF(3^2)^3 ), "all" )
 
 
 
+##########
+ 47 47 47 
+##########
+## Date: 12 Feb 2000 16:22:18 +0100
+## Subject: Bug
+
+gap> G:=CyclicGroup(3);;
+gap> kappa:=NaturalHomomorphismByNormalSubgroup(G, G);;
+gap> F:=ImagesSource(kappa);;
+gap> alpha:=Elements(F)[1];;
+gap> PIE:=PreImagesElm(kappa, alpha);;            ##test these two seperately??
+gap> PIR:=PreImagesRepresentative(kappa, alpha);; ##??
+
+
+
+##########
+ 48 48 48                              ## CHECK MANUALLY ##
+##########
+## Date: Mon, 14 Feb 2000 16:34:29 -0500 (EST)
+## Subject: small bug in Print()
+
+gap> Print((x -> (((x * x * x)^2)^2)^2 * x),"\n");
+function ( x )
+    return (((x * x * x) ^ 2) ^ 2) ^ 2 * x;
+end
+
+
+
+##########
+ 49 49 49                              ## CHECK MANUALLY: Sun-specific??##
+##########
+## Date: Tue, 15 Feb 2000 13:01:55 -0600 (CST)
+## Subject: Re: Problem with 'MinimalPolynomial'
+
+gap> A := [ [ Z(2^2)^2, 0*Z(2), Z(2^2), 0*Z(2), 0*Z(2), 0*Z(2) ], 
+>   [ Z(2^2)^2, 0*Z(2), Z(2^2)^2, Z(2)^0, Z(2^2)^2, Z(2)^0 ], 
+>   [ 0*Z(2), Z(2)^0, 0*Z(2), Z(2^2)^2, 0*Z(2), Z(2^2)^2 ], 
+>   [ 0*Z(2), Z(2^2), Z(2^2), Z(2^2), Z(2^2)^2, 0*Z(2) ], 
+>   [ Z(2^2)^2, Z(2^2)^2, Z(2^2)^2, 0*Z(2), 0*Z(2), 0*Z(2) ], 
+>   [ Z(2)^0, Z(2)^0, 0*Z(2), Z(2^2), 0*Z(2), Z(2^2)^2 ] ];;
+gap> F := GF(4);;
+gap> m1:=MinimalPolynomial(F, A);;
+gap> m2:=MinimalPolynomial(F, A);;
+gap> m3:=MinimalPolynomial(F, A);;
+gap> m4:=MinimalPolynomial(F, A);;
+gap> m5:=MinimalPolynomial(F, A);;
+gap> m1=m2;m2=m3;m3=m4;m4=m5;
+true
+true
+true
+true
+
+
+
+##########
+ 50 50 50 
+##########
+## Date: Tue, 15 Feb 2000 18:36:42 GMT
+## Subject: trouble with GRAPE under 4.2pre1a
+
+gap> RequirePackage("grape");
+
+Loading  GRAPE 4.0  (GRaph Algorithms using PErmutation groups),
+by L.H.Soicher@qmw.ac.uk.
+
+true
+gap> AutGroupGraph(JohnsonGraph(4,2));;
+
+
+
+##########
+ 51 51 51 
+##########
+## Date: Wed, 16 Feb 2000 11:53:24 +1100
+## Subject: last fix to 4.dev
+
+gap> f:=FreeMonoid("a","b");;
+gap> a:=GeneratorsOfMonoid(f)[1];;
+gap> b:=GeneratorsOfMonoid(f)[2];;
+gap> e:=Identity(f);;
+gap> m:=f/[[a*a,e],[b*b*b,e],[a*b*a*b*a*b,e]];;
+gap> k:=KnuthBendixRewritingSystem(m);;
+gap> MakeConfluent(k);;
+gap> a:=GeneratorsOfSemigroup(m)[2];;
+gap> b:=GeneratorsOfSemigroup(m)[3];;
+gap> e:=GeneratorsOfSemigroup(m)[1];;
+gap> ab:=MagmaCongruenceByGeneratingPairs(m,
+>  [[a*b,b*a],[a*e,e*a],[b*e,e*b]]);;
+gap> h:=m/ab;;
+
+
+
+##########
+ 52 52 52 
+##########
+## Date: Wed, 16 Feb 2000 15:45:38 +0000
+## Subject: [Fwd: committed 'GAP/4.0/lib wordass.gi']
+
+gap> F := FreeSemigroup (3, "d");;
+gap> d1 := GeneratorsOfSemigroup (F)[1];;
+gap> d2 := GeneratorsOfSemigroup (F)[2];;
+gap> d3 := GeneratorsOfSemigroup (F)[3];;
+gap> pairs := [
+>        [ d1*d2*d3*d2*d1*d2*d1,
+>          d1*d2*d3*d1*d2*d1^2*d2*d1^2 ],
+>        [ d2*d3*d1^2*d2*d1^2*d2*d3*d2*d1,
+>          d2*d3*d2*d1*d2*d1^2*d2*d3*d1*d2*d1 ],
+>        [ d2*d1^2*d2*d3*d2*d1*d2*d3*d1^2*d2,
+>          d2*d1^2*d2*d3*d1*d2*d1^2*d2*d3*d2 ],
+>        [ d2*d1^2*d2*d3*d1,
+>          d2*d1^2*d2*d3*d2*d1^2*d2*d1^2*d2 ] ];;
+gap> List (pairs, p -> [ IsBasicWreathLessThanOrEqual (p[1], p[2]),
+> IsBasicWreathLessThanOrEqual (p[2], p[1])]);
+[ [ true, false ], [ true, false ], [ true, false ], [ true, false ] ]
+
+
+
+##########
+ 53 53 53                              ## CHECK MANUALLY ##
+##########
+## Date: Thu, 17 Feb 2000 09:59:15 +0100 (CET)
+## Subject: error in completion files
+
+## Yesterday I checked in some data files which cannot be read when
+## they are translated to completion files.
+## The reason is that the completion file contains lines of the following form.
+## 
+##     l:=[[1..4],[2.\
+##     .5]];
+##
+## Breaking between the two dots in a range constructor seems to be forbidden.
+
+
+
+##########
+ 54 54 54 
+##########
+## Date: Fri, 18 Feb 2000 12:01:49 +0100 (CET)
+## Subject: bug in printing rational functions
+
+gap> x:= Indeterminate( Rationals, 1 );;
+gap> y:= Indeterminate( Rationals, 2 );;
+gap> 1/(x*y);
+1/(x*y)
+
+
+
 ######### ######### ######### ######### ######### ######### ######### #########
 
-gap> STOP_TEST( "bugfixes test", 31560000 );
+gap> STOP_TEST( "bugfixes test", 18936 );
 
 ######### ######### ######### ######### ######### ######### ######### #########
 
@@ -843,7 +1004,12 @@ gap> Print("                                                7\n");
 gap> Print("                                                9\n");
 gap> Print("                                               18\n");
 gap> Print("                                               27\n");
-gap> Print("                                               38\n\n");
+gap> Print("                                               38\n");
+gap> Print("                                               48\n");
+gap> Print("                                               49\n");
+gap> Print("                                               53\n");
+
+gap> Print("\n");
 
 ######### ######### ######### ######### ######### ######### ######### #########
 

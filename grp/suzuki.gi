@@ -64,7 +64,7 @@ InstallMethod( SuzukiGroupCons,
     
 function ( filter, q )
 
-  local G,Ovoid,f,r,a,b;
+  local G,Ovoid,f,r,a,b,v;
 
   if not IsPrimePowerInt(q) or q < 8 
     or SmallestRootInt(q) <> 2 or LogInt(q,2) mod 2 = 0
@@ -72,12 +72,19 @@ function ( filter, q )
 
   f := GF(q);
   r := RootInt(2 * q);
-  Ovoid := [[1,0,0,0] * One(f)];
+  v:=[1,0,0,0] * One(f);
+  ConvertToVectorRep(v,q);
+  MakeImmutable(v);
+  Ovoid := [v];
   for a in f do
     for b in f do
-      Add(Ovoid,NormedRowVector([a^(r+2) + a*b + b^r,b,a,One(f)]));
+      v:=[a^(r+2) + a*b + b^r,b,a,One(f)];
+      ConvertToVectorRep(v,q);
+      MakeImmutable(v);
+      Add(Ovoid,NormedRowVector(v));
     od;
   od;
+  Sort(Ovoid);
 
   G := Operation(SuzukiGroupCons(IsMatrixGroup,q),Ovoid,OnLines);
   SetName(G,Concatenation("Sz(",String(q),")"));
