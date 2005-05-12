@@ -6,6 +6,8 @@
 ##
 #Y  Copyright 1997,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -89,12 +91,10 @@ gap> Print(first50,"\n");
 gap> List( first50, x -> Position( enum, x ) ) = [ 1 .. 50 ];
 true
 
-gap> STOP_TEST( "grpfree.tst", 630000 );
+gap> STOP_TEST( "grpfree.tst", 4200000 );
+
 
 #############################################################################
 ##
-#E  grpfree.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
-
-
+#E
 

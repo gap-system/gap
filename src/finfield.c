@@ -7,6 +7,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the  functions  to compute  with elements  from  small
 **  finite fields.
@@ -871,9 +872,6 @@ Int             LtFFE (
 **
 **  'PrFFV' prints the value <val> from the finite field <fld>.
 **
-**  This procedure is called by the 'PrVector' printing procedure, which  can
-**  not call 'PrFFE' because it would have to create  finite  field  elements
-**  to do so and calling 'NewBag' from a printing procedure is forbidden.
 */
 void            PrFFV (
     FF                  fld,

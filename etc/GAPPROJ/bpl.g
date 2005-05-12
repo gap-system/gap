@@ -11,6 +11,8 @@
 # last update
 # @Time
 # Estimat of time it takes (see desc.html for scaling)
+# @Public
+# If not set to `Yes', the project will not be listed on a public web page.
 # @Need
 # Interest level/Desirability etc.
 # @Need<suffix>
@@ -29,6 +31,10 @@
 # Published literature
 # @Rem
 # Remarks
+# @Application
+# Applications or uses that would be possible if this feature was
+# implemented. (This might be useful for grant applications and therefore 
+# will not be listed in the public section)
 
 # the colors indicating increasing values
 COLORS:=["#8080ff","#80ffff","#80ff80","#ffff80","#ff8080"];
@@ -55,11 +61,16 @@ MODE:=[
 	 ];
 
 # abbreviation of names (and email) to save typing
-SIGS:=[["AH","Alexander Hulpke","ahulpke@math.colostate.edu"],
+SIGS:=[["AH","Alexander Hulpke","hulpke@math.colostate.edu"],
        ["JN","Joachim Neub&uuml;ser","Joachim.Neubueser@Math.RWTH-Aachen.DE" ],
+       ["MN","Max Neunh&ouml;ffer","Max.Neunhoeffer@Math.RWTH-Aachen.DE" ],
+       ["VF","Volkmar Felsch","Volkmar.Felsch@Math.RWTH-Aachen.DE" ],
+       ["FL","Frank L&uuml;beck","Frank.Luebeck@Math.RWTH-Aachen.De" ],
        ["TB","Thomas Breuer","Thomas.Breuer@Math.RWTH-Aachen.DE" ],
        ["GAP","GAP group","gap-trouble@dcs.st-and.ac.uk" ],
-       ["WDJ","David Joyner","wdj@usna.edu"]
+       ["WDJ","David Joyner","wdj@usna.edu"],
+       ["BE","Bettina Eick","eick@tu-bs.de"],
+       ["SL","Steve Linton","sal@dcs.st-and.ac.uk"]
        ];
 
 DeCR:=function(str)
@@ -105,6 +116,7 @@ local NumBlock,Section,fnam,stream,line,fn,str,r,nam,need,i,con,s1,s2;
          Contact:="",
 	 Date:="",
 	 Time:=1,
+	 Public:="no";
 	 Need:=1,
 	 NeedA:=0,
 	 Math:=1,
@@ -112,7 +124,8 @@ local NumBlock,Section,fnam,stream,line,fn,str,r,nam,need,i,con,s1,s2;
          Descr:=false,
 	 Manual:=false,
 	 Ref:=false,
-	 Rem:=false);
+	 Rem:=false,
+	 Application:="");
   while line<>fail do
     line:=DeCR(line);
     if Length(line)>0 and line[1]='@' then
@@ -173,6 +186,7 @@ local NumBlock,Section,fnam,stream,line,fn,str,r,nam,need,i,con,s1,s2;
 	     "\n<BR>Last Update: ", r.Date,"\n<BR></TD>\n",s1,s2,
 	     "</TR></TABLE>\n<P><HR>\n");
     Section(fnam,"Description",r.Descr);
+    Section(fnam,"Application",r.Descr);
     Section(fnam,"References",r.Ref);
     Section(fnam,"Remarks",r.Rem);
     Section(fnam,"Usage",r.Manual);

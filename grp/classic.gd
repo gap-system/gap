@@ -39,47 +39,47 @@ Revision.classic_gd :=
 
 #############################################################################
 ##
-#O  GeneralLinearGroupCons( <filter>, <d>, <q> )
+#O  GeneralLinearGroupCons( <filter>, <d>, <R> )
 ##
-DeclareConstructor( "GeneralLinearGroupCons", [ IsGroup, IsInt, IsInt ] );
+DeclareConstructor( "GeneralLinearGroupCons", [ IsGroup, IsInt, IsRing ] );
 
 
 #############################################################################
 ##
-#F  GeneralLinearGroup( [<filt>, ]<d>, <q> )  . . . . .  general linear group
+#F  GeneralLinearGroup( [<filt>, ]<d>, <R> )  . . . . .  general linear group
+#F  GL( [<filt>, ]<d>, <R> )
+#F  GeneralLinearGroup( [<filt>, ]<d>, <q> )
 #F  GL( [<filt>, ]<d>, <q> )
-#F  GeneralLinearGroup( <d>, Integers )
-#F  GL( <d>, Integers )
-#F  GeneralLinearGroup( <d>, Integers mod <m> )
-#F  GL( <d>, Integers mod <m> )
 ##
 ##  The first two forms construct a group isomorphic to the general linear
-##  group GL( <d>, <q> ) of all $<d> \times <d>$ matrices over the field with
-##  <q> elements, in the category given by the filter <filt>.
+##  group GL( <d>, <R> ) of all $<d> \times <d>$ matrices that are invertible
+##  over the ring <R>, in the category given by the filter <filt>.
 ##
+##  The third and the fourth form construct the general linear group over the
+##  finite field with <q> elements.
+##  
 ##  If <filt> is not given it defaults to `IsMatrixGroup',
 ##  and the returned group is the general linear group as a matrix group in
-##  its natural action (see also~"IsNaturalGL").
+##  its natural action (see also~"IsNaturalGL", "IsNaturalGLnZ").
 ##
-##  The third and the fourth form construct the group of all integer
-##  $<d> \times <d>$ matrices invertible within the integers (see
-##  also~"IsNaturalGLnZ").
-##
-##  The last two forms construct the general linear group of degree <d> over 
-##  the residue class ring Z/<m>Z.
+##  Currently supported rings <R> are finite fields, the ring `Integers',
+##  and residue class rings `Integers mod <m>'.
 ##
 BindGlobal( "GeneralLinearGroup", function ( arg )
-
-  if Length(arg) = 2  then
-    return GeneralLinearGroupCons( IsMatrixGroup, arg[1], arg[2] );
-  elif IsOperation(arg[1]) then
-
-    if Length(arg) = 3  then
+  if Length( arg ) = 2 then
+    if IsRing( arg[2] ) then
+      return GeneralLinearGroupCons( IsMatrixGroup, arg[1], arg[2] );
+    elif IsPrimePowerInt( arg[2] ) then
+      return GeneralLinearGroupCons( IsMatrixGroup, arg[1], GF( arg[2] ) );
+    fi;
+  elif Length( arg ) = 3 and IsOperation( arg[1] ) then
+    if IsRing( arg[2] ) then
       return GeneralLinearGroupCons( arg[1], arg[2], arg[3] );
+    elif IsPrimePowerInt( arg[3] ) then
+      return GeneralLinearGroupCons( arg[1], arg[2], GF( arg[3] ) );
     fi;
   fi;
-  Error( "usage: GeneralLinearGroup( [<filter>, ]<d>, <q> )" );
-
+  Error( "usage: GeneralLinearGroup( [<filter>, ]<d>, <R> )" );
 end );
 
 DeclareSynonym( "GL", GeneralLinearGroup );
@@ -173,46 +173,48 @@ DeclareSynonym( "GU", GeneralUnitaryGroup );
 
 #############################################################################
 ##
-#O  SpecialLinearGroupCons( <filter>, <d>, <q> )
+#O  SpecialLinearGroupCons( <filter>, <d>, <R> )
 ##
-DeclareConstructor( "SpecialLinearGroupCons", [ IsGroup, IsInt, IsInt ] );
+DeclareConstructor( "SpecialLinearGroupCons", [ IsGroup, IsInt, IsRing ] );
 
 
 #############################################################################
 ##
-#F  SpecialLinearGroup( [<filt>, ]<d>, <q> )  . . . . .  special linear group
+#F  SpecialLinearGroup( [<filt>, ]<d>, <R> )  . . . . .  special linear group
+#F  SL( [<filt>, ]<d>, <R> )
+#F  SpecialLinearGroup( [<filt>, ]<d>, <q> )
 #F  SL( [<filt>, ]<d>, <q> )
-#F  SpecialLinearGroup( <d>, Integers )
-#F  SL( <d>, Integers )
-#F  SpecialLinearGroup( <d>, Integers mod <m> )
-#F  SL( <d>, Integers mod <m> )
 ##
 ##  The first two forms construct a group isomorphic to the special linear
-##  group SL( <d>, <q> ) of all those $<d> \times <d>$ matrices over the
-##  field with <q> elements whose determinant is the identity of the field,
+##  group SL( <d>, <R> ) of all those $<d> \times <d>$ matrices over the
+##  ring <R> whose determinant is the identity of <R>,
 ##  in the category given by the filter <filt>.
+##
+##  The third and the fourth form construct the special linear group over the
+##  finite field with <q> elements.
 ##
 ##  If <filt> is not given it defaults to `IsMatrixGroup',
 ##  and the returned group is the special linear group as a matrix group in
-##  its natural action (see also~"IsNaturalSL").
+##  its natural action (see also~"IsNaturalSL", "IsNaturalSLnZ").
 ##
-##  The third and the fourth form construct the group of all integer
-##  $<d> \times <d>$ matrices of determinant 1 (see also~"IsNaturalSLnZ").
-##
-##  The last two forms construct the group of all $<d> \times <d>$ matrices
-##  over Z/<m>Z with determinant 1 (mod <m>).
+##  Currently supported rings <R> are finite fields, the ring `Integers',
+##  and residue class rings `Integers mod <m>'.
 ##
 BindGlobal( "SpecialLinearGroup", function ( arg )
-
-  if Length(arg) = 2  then
-    return SpecialLinearGroupCons( IsMatrixGroup, arg[1], arg[2] );
-  elif IsOperation(arg[1]) then
-
-    if Length(arg) = 3  then
+  if Length( arg ) = 2  then
+    if IsRing( arg[2] ) then
+      return SpecialLinearGroupCons( IsMatrixGroup, arg[1], arg[2] );
+    elif IsPrimePowerInt( arg[2] ) then
+      return SpecialLinearGroupCons( IsMatrixGroup, arg[1], GF( arg[2] ) );
+    fi;
+  elif Length( arg ) = 3 and IsOperation( arg[1] ) then
+    if IsRing( arg[2] ) then
       return SpecialLinearGroupCons( arg[1], arg[2], arg[3] );
+    elif IsPrimePowerInt( arg[3] ) then
+      return SpecialLinearGroupCons( arg[1], arg[2], GF( arg[3] ) );
     fi;
   fi;
-  Error( "usage: SpecialLinearGroup( [<filter>, ]<d>, <q> )" );
+  Error( "usage: SpecialLinearGroup( [<filter>, ]<d>, <R> )" );
 
 end );
 
@@ -497,7 +499,7 @@ DECLARE_PROJECTIVE_GROUPS_OPERATION("SpecialUnitaryGroup","SU",2,
 
 #PseudoDeclare("ProjectiveSymplecticGroup");
 #PseudoDeclare("PSP");
-DECLARE_PROJECTIVE_GROUPS_OPERATION("SymplecticGroup","SP",2,
+DECLARE_PROJECTIVE_GROUPS_OPERATION("SymplecticGroup","SP",1,
   # size function
   function(n,q,g)
     return Size(g)/Gcd(2,q-1);

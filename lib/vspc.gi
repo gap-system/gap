@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for vector spaces.
 ##
@@ -246,13 +247,12 @@ InstallOtherMethod( \/,
 InstallGlobalFunction( Intersection2Spaces,
     function( AsStructure, Substructure, Structure )
     return function( V, W )
-
     local inters,  # intersection, result
           F,       # coefficients field
+          gensV,   # list of generators of 'V'
+          gensW,   # list of generators of 'W'
           VW,      # sum of 'V' and 'W'
-          B,       # basis of 'VW'
-          AV,      # coefficient space of 'V'
-          AW;      # coefficient space of 'W'
+          B;       # basis of 'VW'
 
     if LeftActingDomain( V ) <> LeftActingDomain( W ) then
 
@@ -265,33 +265,49 @@ InstallGlobalFunction( Intersection2Spaces,
     elif IsFiniteDimensional( V ) and IsFiniteDimensional( W ) then
 
       # Compute the intersection of two spaces over the same field.
-      # First compute a common coefficient space.
-      VW:= LeftModuleByGenerators( LeftActingDomain( V ),
-                            Concatenation( GeneratorsOfLeftModule( V ),
-                                           GeneratorsOfLeftModule( W ) ) );
-      B:= Basis( VW );
-
-      # Construct the coefficient subspaces corresponding to 'V' and 'W'.
-      AV:= List( GeneratorsOfLeftModule( V ), x -> Coefficients( B, x ) );
-      AW:= List( GeneratorsOfLeftModule( W ), x -> Coefficients( B, x ) );
-
-      # Construct the intersection of row spaces, and carry back to VW.
-      inters:= List( SumIntersectionMat( AV, AW )[2],
-                     x -> LinearCombination( B, x ) );
-
-      # Construct the intersection space, if possible with a parent.
-      if     HasParent( V ) and HasParent( W )
-         and IsIdenticalObj( Parent( V ), Parent( W ) ) then
-        inters:= Substructure( Parent( V ), inters, "basis" );
-      elif IsEmpty( inters ) then
-        inters:= TrivialSubspace( V );
+      gensV:= GeneratorsOfLeftModule( V );
+      gensW:= GeneratorsOfLeftModule( W );
+      if   IsEmpty( gensV ) then
+        if Zero( V ) in W then
+          inters:= V;
+        else
+          inters:= [];
+        fi;
+      elif IsEmpty( gensW ) then
+        if Zero( V ) in W then
+          inters:= W;
+        else
+          inters:= [];
+        fi;
       else
-        inters:= Structure( LeftActingDomain( V ), inters, "basis" );
-      fi;
+        # Compute a common coefficient space.
+        VW:= LeftModuleByGenerators( LeftActingDomain( V ),
+                                     Concatenation( gensV, gensW ) );
+        B:= Basis( VW );
 
-      # Run implications by the subset relation.
-      UseSubsetRelation( V, inters );
-      UseSubsetRelation( W, inters );
+        # Construct the coefficient subspaces corresponding to 'V' and 'W'.
+        gensV:= List( gensV, x -> Coefficients( B, x ) );
+        gensW:= List( gensW, x -> Coefficients( B, x ) );
+
+        # Construct the intersection of row spaces, and carry back to VW.
+        inters:= List( SumIntersectionMat( gensV, gensW )[2],
+                       x -> LinearCombination( B, x ) );
+
+        # Construct the intersection space, if possible with a parent.
+        if     HasParent( V ) and HasParent( W )
+           and IsIdenticalObj( Parent( V ), Parent( W ) ) then
+          inters:= Substructure( Parent( V ), inters, "basis" );
+        elif IsEmpty( inters ) then
+          inters:= Substructure( V, inters, "basis" );
+          SetIsTrivial( inters, true );
+        else
+          inters:= Structure( LeftActingDomain( V ), inters, "basis" );
+        fi;
+
+        # Run implications by the subset relation.
+        UseSubsetRelation( V, inters );
+        UseSubsetRelation( W, inters );
+      fi;
 
       # Return the result.
       return inters;
@@ -499,35 +515,27 @@ InstallMethod( Enumerator,
 
 #############################################################################
 ##
-#R  IsSubspacesSpaceIteratorRep( <D> )
+#M  Iterator( <D> ) . . . . . . . . . . . . . . . . .  for a subspaces domain
 ##
 ##  uses the subspaces iterator for full row spaces and the mechanism of
 ##  associated row spaces.
 ##
-DeclareRepresentation( "IsSubspacesSpaceIteratorRep",
-    IsComponentObjectRep,
-    [ "structure", "basis", "associatedIterator" ] );
-
-
-#############################################################################
-##
-#M  Iterator( <D> ) . . . . . . . . . . . . . . . . .  for a subspaces domain
-##
-InstallMethod( IsDoneIterator,
-    "for an iterator of a subspaces domain",
-    [ IsIterator and IsSubspacesSpaceIteratorRep ],
+BindGlobal( "IsDoneIterator_Subspaces",
     iter -> IsDoneIterator( iter!.associatedIterator ) );
 
-InstallMethod( NextIterator,
-    "for a mutable iterator of a subspaces domain",
-    [ IsIterator and IsMutable and IsSubspacesSpaceIteratorRep ],
-    function( iter )
+BindGlobal( "NextIterator_Subspaces", function( iter )
     local next;
     next:= NextIterator( iter!.associatedIterator );
     next:= List( GeneratorsOfLeftModule( next ),
                  x -> LinearCombination( iter!.basis, x ) );
     return Subspace( iter!.structure, next, "basis" );
     end );
+
+BindGlobal( "ShallowCopy_Subspaces",
+    iter -> rec( structure          := iter!.structure,
+                 basis              := iter!.basis,
+                 associatedIterator := ShallowCopy(
+                                           iter!.associatedIterator ) ) );
 
 InstallMethod( Iterator,
     "for a subspaces domain",
@@ -536,30 +544,17 @@ InstallMethod( Iterator,
     local V;      # the vector space
 
     V:= D!.structure;
-    return Objectify( NewType( IteratorsFamily,
-                                   IsIterator
-                               and IsMutable
-                               and IsSubspacesSpaceIteratorRep ),
-                      rec(
-                           structure          := V,
-                           basis              := Basis( V ),
-                           associatedIterator := Iterator(
+    return IteratorByFunctions( rec(
+               IsDoneIterator     := IsDoneIterator_Subspaces,
+               NextIterator       := NextIterator_Subspaces,
+               ShallowCopy        := ShallowCopy_Subspaces,
+               structure          := V,
+               basis              := Basis( V ),
+               associatedIterator := Iterator(
                       Subspaces( FullRowSpace( LeftActingDomain( V ),
                                                Dimension( V ) ),
-                                 D!.dimension ) )
-                          ) );
+                                 D!.dimension ) ) ) );
     end );
-
-InstallMethod( ShallowCopy,
-    "for an iterator of a subspaces domain",
-    [ IsIterator and IsSubspacesSpaceIteratorRep ],
-    iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
-                rec(
-                     structure          := iter!.structure,
-                     basis              := iter!.basis,
-                     associatedIterator := ShallowCopy(
-                                               iter!.associatedIterator )
-                    ) ) );
 
 
 #############################################################################

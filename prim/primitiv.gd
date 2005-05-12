@@ -24,13 +24,15 @@ Revision.primitiv_gd :=
 ##      \itemitem{$\circ$}%unordered
 ##        the primitive permutation groups up to degree~50,
 ##        calculated by C.~Sims,
-##      \itemitem{$\circ$}  the solvable (hence affine) primitive permutation
+##      \itemitem{$\circ$} the solvable (hence affine) primitive permutation
 ##        groups of degree $\<256$ as calculated by M.~Short \cite{Sho92},
 ##      \itemitem{$\circ$} some insolvable affine primitive permutation groups
 ##        of degree $\<256$ as calculated in \cite{Theissen97}.
+##      \itemitem{$\circ$} The solvable primitive groups of degree up to
+##        $999$ as calculated in  \cite{EickHoefling02}.
 ##  \endlist
-##  Note that the affine primitive permutation groups of degrees 256--999 are
-##  not included.
+##  Note that the nonsolvable affine primitive permutation groups of 
+##  degrees 256,512,625 and 729 are not included.
 ##
 ##  For degree up to 50, the names used are as given by Buekenhout and
 ##  Leemans \cite{BuekenhoutLeemans96}.
@@ -40,13 +42,16 @@ Revision.primitiv_gd :=
 ##  \cite{DixonMortimer88}. They do *not* conform to the usual naming for
 ##  extensions. That is `l3,4.3' is the third (in some arbitrary ordering)
 ##  group in a cohort for socle l3,4, but the socle factor is *not
-##  necessarily* of order 3.
+##  necessarily* of order 3. Names of groups of affine type are not
+##  necessarily unique!
 ##
 ##  The work in \cite{Theissen97} is known to have ommissions. Because of this
 ##  we do not guarantee completeness of the lists beyond degree 50, though
 ##  we have corrected errors as far as we know of them.
 ##  When preparing the library it also has been
 ##  ensured that the groups in it are all primitive and not conjugate.
+##  Also as far as included, the groups agree with the list prepared
+##  independently in \cite{RoneyDougal02}
 ##
 ##  In detail, we guarantee the following properties for this and further
 ##  versions (but *not* versions which came before {\GAP}~4.2) of the library:
@@ -72,7 +77,7 @@ Revision.primitiv_gd :=
 ##
 ## tell GAP about the component
 ##
-DeclareComponent("prim","2.0");
+DeclareComponent("prim","2.1");
 
 
 #############################################################################
@@ -101,7 +106,7 @@ DeclareGlobalFunction( "NrPrimitiveGroups" );
 
 #2
 ##  The selection functions (see~"Selection functions") for the primitive
-##  groups library are `AllTransitiveGroups' and `OneTransitiveGroup'. They
+##  groups library are `AllPrimitiveGroups' and `OnePrimitiveGroup'. They
 ##  obtain the following properties from the database without having to
 ##  compute them anew: 
 ##

@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for matrix groups.
 ##
@@ -132,7 +133,8 @@ DeclareGlobalFunction("NaturalActedSpace");
 ##
 ##  The General Linear group is the group of all invertible matrices over a
 ##  ring. This property tests, whether a group is isomorphic to a General
-##  Linear group.
+##  Linear group. (Note that currently only a few trivial methods are
+##  available for this operation. We hope to improve this in the future.)
 DeclareProperty( "IsGeneralLinearGroup", IsGroup );
 DeclareSynonymAttr( "IsGL", IsGeneralLinearGroup );
 
@@ -143,7 +145,8 @@ DeclareSynonymAttr( "IsGL", IsGeneralLinearGroup );
 ##
 ##  This property tests, whether a matrix group is the General Linear group
 ##  in the right dimension over the (smallest) ring which contains all
-##  entries of its elements.
+##  entries of its elements. (Currently, only a trivial test that computes
+##  the order of the group is available.)
 DeclareProperty( "IsNaturalGL", IsMatrixGroup );
 InstallTrueMethod(IsGeneralLinearGroup,IsNaturalGL);
 
@@ -154,7 +157,9 @@ InstallTrueMethod(IsGeneralLinearGroup,IsNaturalGL);
 ##
 ##  The Special Linear group is the group of all invertible matrices over a
 ##  ring, whose determinant is equal to 1. This property tests, wether a
-##  group is isomorphic to a Special Linear group.
+##  group is isomorphic to a Special Linear group. (Note that currently 
+##  only a few trivial methods are available for this operation. We hope 
+##  to improve this in the future.)
 DeclareProperty( "IsSpecialLinearGroup", IsGroup );
 DeclareSynonymAttr( "IsSL", IsSpecialLinearGroup );
 
@@ -165,7 +170,8 @@ DeclareSynonymAttr( "IsSL", IsSpecialLinearGroup );
 ##
 ##  This property tests, whether a matrix group is the Special Linear group
 ##  in the right dimension over the (smallest) ring which contains all
-##  entries of its elements.
+##  entries of its elements. (Currently, only a trivial test that computes
+##  the order of the group is available.)
 DeclareProperty( "IsNaturalSL", IsMatrixGroup );
 InstallTrueMethod(IsSpecialLinearGroup,IsNaturalSL);
 
@@ -182,12 +188,14 @@ InstallTrueMethod(IsSubgroupSL,IsNaturalSL);
 
 #############################################################################
 ##
-#A  InvariantBilinearForm(<matgrp>)
+#A  InvariantBilinearForm( <matgrp> )
 ##
-##  This attribute contains a bilinear form that is invariant under
-##  <matgrp>. The form is given by a record with the component `matrix'
-##  which is a matrix <m> such that for every generator <g> of
-##  <m> the equation $<g>\cdot<m>\cdot<g>^{tr}$ holds.
+##  This attribute describes a bilinear form that is invariant under the
+##  matrix group <matgrp>.
+##  The form is given by a record with the component `matrix'
+##  which is a matrix <m> such that for every generator <g> of <matgrp>
+##  the equation $<g> \cdot <m> \cdot <g>^{tr} = <m>$ holds.
+##
 DeclareAttribute( "InvariantBilinearForm", IsMatrixGroup );
 
 
@@ -200,16 +208,23 @@ DeclareAttribute( "InvariantBilinearForm", IsMatrixGroup );
 ##  is) respecting the `InvariantBilinearForm' of <matgrp>.
 DeclareProperty( "IsFullSubgroupGLorSLRespectingBilinearForm", IsMatrixGroup );
 
+
 #############################################################################
 ##
-#A  InvariantSesquilinearForm(<matgrp>)
+#A  InvariantSesquilinearForm( <matgrp> )
 ##
-##  This attribute contains a sesquilinear form that is invariant under
-##  <matgrp>. The form is given by a record with the component `matrix'
-##  which is is a matrix <m> such that for every generator <g> of <m> the
-##  equation $<g>\cdot<m>\cdot(<g>^{tr})^F$ holds, where $F$ is the
-##  `FrobeniusAutomorphism' of the `FieldOfMatrixGroup' of <G>.
+##  This attribute describes a sesquilinear form that is invariant under the
+##  matrix group <matgrp> over the field $F$ with $q^2$ elements, say.
+##  The form is given by a record with the component `matrix'
+##  which is is a matrix <m> such that for every generator <g> of <matgrp>
+##  the equation $<g> \cdot <m> \cdot (<g>^{tr})^f$ holds,
+##  where $f$ is the automorphism of $F$ that raises each element to the
+##  $q$-th power.
+##  ($f$ can be obtained as a power of `FrobeniusAutomorphism( <F> )',
+##  see~"FrobeniusAutomorphism".)
+##
 DeclareAttribute( "InvariantSesquilinearForm", IsMatrixGroup );
+
 
 #############################################################################
 ##
@@ -232,7 +247,27 @@ DeclareProperty( "IsFullSubgroupGLorSLRespectingSesquilinearForm",
 ##  acts is given by $q(v) = v Q v^{tr}$, and the invariance under <matgrp>
 ##  is given by the equation $q(v) = q(v M)$ for all $v\in V$ and $M$ in
 ##  <matgrp>.
-##  
+##  (Note that the invariance of $q$ does *not* imply that the matrix $Q$
+##  is invariant under <matgrp>.)
+##
+##  $q$ is defined relative to an invariant symmetric bilinear form $f$
+##  (see~"InvariantBilinearForm"), via the equation
+##  $q(\lambda x + \mu y) = \lambda^2 q(x) + \lambda\mu f(x,y) + \mu^2 q(y)$
+##  (see Chapter~3.4 in~\cite{CCN85}).
+##  If $f$ is represented by the matrix $F$ then this implies
+##  $F = Q + Q^{tr}$.
+##  In characteristic different from $2$, we have $q(x) = f(x,x)/2$,
+##  so $Q$ can be chosen as the strictly upper triangular part of $F$
+##  plus half of the diagonal part of $F$.
+##  In characteristic $2$, $F$ does not determine $Q$ but still $Q$ can be
+##  chosen as an upper (or lower) triangular matrix.
+##
+##  Whenever the `InvariantQuadraticForm' value is set in a matrix group
+##  then also the `InvariantBilinearForm' value can be accessed,
+##  and the two values are compatible in the above sense.
+#T So wouldn't it be natural to store the inv. bilinear form in the
+#T record of the invariant quadratic form?
+##
 DeclareAttribute( "InvariantQuadraticForm", IsMatrixGroup );
 
 

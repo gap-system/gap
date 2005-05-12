@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains functions that  deal with conjugacy topics in solvable
 ##  groups using affine  methods.   These  topics includes   calculating  the
@@ -474,6 +475,7 @@ local  classes,    # classes to be constructed, the result
 	    blist[PositionCanonical(aff,i)]:=true;
 	  od;
 	fi;
+	Unbind(S.dictionary);
 
 	Add(k,S);
 
@@ -597,19 +599,19 @@ local  G,  home,  # the group and the home pcgs
   if IsBound(opt.pcgs) then
     # we prescribed a series
     home:=opt.pcgs;
-    eas:=NormalSeriesByPcgs(home);
+    eas:=EANormalSeriesByPcgs(home);
 
     cent:=false;
 
   elif IsPrimePowerInt(Size(G)) then
     p:=FactorsInt(Size(G))[1];
     home:=PcgsPCentralSeriesPGroup(G);
-    eas:=NormalSeriesByPcgs(home);
+    eas:=PCentralNormalSeriesByPcgsPGroup(home);
 
     cent:=ReturnTrue;
   else
     home:=PcgsElementaryAbelianSeries(G);
-    eas:=NormalSeriesByPcgs(home);
+    eas:=EANormalSeriesByPcgs(home);
 
     cent:=function(cl, N, L)
       return ForAll(N, k -> ForAll
@@ -640,7 +642,7 @@ local  G,  home,  # the group and the home pcgs
 	    return true;
           end;
   fi;
-  indstep:=IndicesNormalSteps(home);
+  indstep:=IndicesEANormalSteps(home);
 
   # check to which factors we want to lift
 
@@ -1090,7 +1092,7 @@ local  G,  home,  # the group and the home pcgs
   if IsBound(opt.pcgs) then
     # we prescribed a series
     home:=opt.pcgs;
-    eas:=NormalSeriesByPcgs(home);
+    eas:=EANormalSeriesByPcgs(home);
     cent:=function(cl, N, L)
       return ForAll(N, k -> ForAll
         (InducedPcgs(home,cl.centralizer), c -> Comm(k, c) in L));
@@ -1098,14 +1100,14 @@ local  G,  home,  # the group and the home pcgs
   elif IsPrimePowerInt(Size(G)) then
     p:=FactorsInt(Size(G))[1];
     home:=PcgsPCentralSeriesPGroup(G);
-    eas:=NormalSeriesByPcgs(home);
+    eas:=PCentralNormalSeriesByPcgsPGroup(home);
 
     cent:=ReturnTrue;
   elif mode mod 2=1 then  # rational classes
     Error("<G> must be a p-group");
   else
     home:=PcgsElementaryAbelianSeries(G);
-    eas:=NormalSeriesByPcgs(home);
+    eas:=EANormalSeriesByPcgs(home);
     cent:=function(cl, N, L)
       return ForAll(N, k -> ForAll
         (InducedPcgs(home,cl.centralizer),
@@ -1602,7 +1604,7 @@ InstallGlobalFunction( CentralStepRatClPGroup,
             c.galoisGroup!.type:=3;
             c.galoisGroup!.operators:=[  ];
             Add( classes, c );
-            for v  in OneDimSubspacesTransversal( GF( p ) ^ Length( N ) )  do
+            for v in EnumeratorOfNormedRowVectors( GF( p ) ^ Length( N ) ) do
                 c:=rec( representative:=PcElementByExponentsNC( N, v ),
                              centralizer:=G,
                              galoisGroup:=gal );

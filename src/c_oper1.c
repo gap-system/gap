@@ -299,7 +299,7 @@ static Obj  HdlrFunc2 (
    t_11 = GF_LEN__LIST;
    t_10 = CALL_1ARGS( t_11, l_imm );
    CHECK_FUNC_RESULT( t_10 )
-   C_DIFF_FIA( t_9, t_10, INTOBJ_INT(7) )
+   C_DIFF( t_9, t_10, INTOBJ_INT(7) )
    t_8 = Range3Check( INTOBJ_INT(0), INTOBJ_INT(7), t_9 );
    if ( IS_SMALL_LIST(t_8) ) {
     t_7 = (Obj)(UInt)1;
@@ -324,7 +324,7 @@ static Obj  HdlrFunc2 (
     
     /* if IS_SUBSET_FLAGS( flags, imm[i + 4] ) and not IS_SUBSET_FLAGS( flags, imm[i + 3] ) and not imm[i + 6] in tried then */
     t_13 = GF_IS__SUBSET__FLAGS;
-    C_SUM_FIA( t_15, l_i, INTOBJ_INT(4) )
+    C_SUM( t_15, l_i, INTOBJ_INT(4) )
     CHECK_INT_POS( t_15 )
     C_ELM_LIST_FPL( t_14, l_imm, t_15 )
     t_12 = CALL_2ARGS( t_13, a_flags, t_14 );
@@ -334,7 +334,7 @@ static Obj  HdlrFunc2 (
     t_10 = t_11;
     if ( t_10 ) {
      t_15 = GF_IS__SUBSET__FLAGS;
-     C_SUM_FIA( t_17, l_i, INTOBJ_INT(3) )
+     C_SUM( t_17, l_i, INTOBJ_INT(3) )
      CHECK_INT_POS( t_17 )
      C_ELM_LIST_FPL( t_16, l_imm, t_17 )
      t_14 = CALL_2ARGS( t_15, a_flags, t_16 );
@@ -346,7 +346,7 @@ static Obj  HdlrFunc2 (
     }
     t_9 = t_10;
     if ( t_9 ) {
-     C_SUM_FIA( t_14, l_i, INTOBJ_INT(6) )
+     C_SUM( t_14, l_i, INTOBJ_INT(6) )
      CHECK_INT_POS( t_14 )
      C_ELM_LIST_FPL( t_13, l_imm, t_14 )
      t_12 = (Obj)(UInt)(IN( t_13, l_tried ));
@@ -358,7 +358,7 @@ static Obj  HdlrFunc2 (
      /* res := IMMEDIATE_METHODS[imm[i + 6]]( obj ); */
      t_11 = GC_IMMEDIATE__METHODS;
      CHECK_BOUND( t_11, "IMMEDIATE_METHODS" )
-     C_SUM_FIA( t_13, l_i, INTOBJ_INT(6) )
+     C_SUM( t_13, l_i, INTOBJ_INT(6) )
      CHECK_INT_POS( t_13 )
      C_ELM_LIST_FPL( t_12, l_imm, t_13 )
      CHECK_INT_POS( t_12 )
@@ -370,7 +370,7 @@ static Obj  HdlrFunc2 (
      
      /* ADD_LIST( tried, imm[i + 6] ); */
      t_9 = GF_ADD__LIST;
-     C_SUM_FIA( t_11, l_i, INTOBJ_INT(6) )
+     C_SUM( t_11, l_i, INTOBJ_INT(6) )
      CHECK_INT_POS( t_11 )
      C_ELM_LIST_FPL( t_10, l_imm, t_11 )
      CALL_2ARGS( t_9, l_tried, t_10 );
@@ -378,7 +378,7 @@ static Obj  HdlrFunc2 (
      /* RUN_IMMEDIATE_METHODS_CHECKS := RUN_IMMEDIATE_METHODS_CHECKS + 1; */
      t_10 = GC_RUN__IMMEDIATE__METHODS__CHECKS;
      CHECK_BOUND( t_10, "RUN_IMMEDIATE_METHODS_CHECKS" )
-     C_SUM_FIA( t_9, t_10, INTOBJ_INT(1) )
+     C_SUM( t_9, t_10, INTOBJ_INT(1) )
      AssGVar( G_RUN__IMMEDIATE__METHODS__CHECKS, t_9 );
      
      /* if TRACE_IMMEDIATE_METHODS then */
@@ -391,7 +391,7 @@ static Obj  HdlrFunc2 (
       /* Print( "#I  immediate: ", imm[i + 7], "\n" ); */
       t_9 = GF_Print;
       C_NEW_STRING( t_10, 15, "#I  immediate: " )
-      C_SUM_FIA( t_12, l_i, INTOBJ_INT(7) )
+      C_SUM( t_12, l_i, INTOBJ_INT(7) )
       CHECK_INT_POS( t_12 )
       C_ELM_LIST_FPL( t_11, l_imm, t_12 )
       C_NEW_STRING( t_12, 1, "\n" )
@@ -411,7 +411,7 @@ static Obj  HdlrFunc2 (
       AssGVar( G_IGNORE__IMMEDIATE__METHODS, t_9 );
       
       /* imm[i + 2]( obj, res ); */
-      C_SUM_FIA( t_10, l_i, INTOBJ_INT(2) )
+      C_SUM( t_10, l_i, INTOBJ_INT(2) )
       CHECK_INT_POS( t_10 )
       C_ELM_LIST_FPL( t_9, l_imm, t_10 )
       CHECK_FUNC( t_9 )
@@ -424,7 +424,7 @@ static Obj  HdlrFunc2 (
       /* RUN_IMMEDIATE_METHODS_HITS := RUN_IMMEDIATE_METHODS_HITS + 1; */
       t_10 = GC_RUN__IMMEDIATE__METHODS__HITS;
       CHECK_BOUND( t_10, "RUN_IMMEDIATE_METHODS_HITS" )
-      C_SUM_FIA( t_9, t_10, INTOBJ_INT(1) )
+      C_SUM( t_9, t_10, INTOBJ_INT(1) )
       AssGVar( G_RUN__IMMEDIATE__METHODS__HITS, t_9 );
       
       /* if not IS_IDENTICAL_OBJ( TYPE_OBJ( obj ), type ) then */
@@ -552,7 +552,7 @@ static Obj  HdlrFunc3 (
    C_ELM_LIST_FPL( t_4, a_flags, INTOBJ_INT(1) )
    t_2 = CALL_1ARGS( t_3, t_4 );
    CHECK_FUNC_RESULT( t_2 )
-   C_DIFF_FIA( t_1, a_rank, t_2 )
+   C_DIFF( t_1, a_rank, t_2 )
    a_rank = t_1;
    
   }
@@ -590,7 +590,7 @@ static Obj  HdlrFunc3 (
    t_7 = GF_RankFilter;
    t_6 = CALL_1ARGS( t_7, l_i );
    CHECK_FUNC_RESULT( t_6 )
-   C_SUM_FIA( t_5, a_rank, t_6 )
+   C_SUM( t_5, a_rank, t_6 )
    a_rank = t_5;
    
   }
@@ -666,8 +666,8 @@ static Obj  HdlrFunc3 (
   t_2 = (Obj)(UInt)(LT( l_i, t_3 ));
   t_1 = t_2;
   if ( t_1 ) {
-   C_SUM_FIA( t_6, l_narg, INTOBJ_INT(3) )
-   C_SUM_FIA( t_5, l_i, t_6 )
+   C_SUM( t_6, l_narg, INTOBJ_INT(3) )
+   C_SUM( t_5, l_i, t_6 )
    CHECK_INT_POS( t_5 )
    C_ELM_LIST_FPL( t_4, l_methods, t_5 )
    t_3 = (Obj)(UInt)(LT( a_rank, t_4 ));
@@ -676,8 +676,8 @@ static Obj  HdlrFunc3 (
   if ( ! t_1 ) break;
   
   /* i := i + (narg + 4); */
-  C_SUM_FIA( t_2, l_narg, INTOBJ_INT(4) )
-  C_SUM_FIA( t_1, l_i, t_2 )
+  C_SUM( t_2, l_narg, INTOBJ_INT(4) )
+  C_SUM( t_1, l_i, t_2 )
   l_i = t_1;
   
  }
@@ -705,8 +705,8 @@ static Obj  HdlrFunc3 (
    t_2 = (Obj)(UInt)(LT( l_k, t_3 ));
    t_1 = t_2;
    if ( t_1 ) {
-    C_SUM_FIA( t_6, l_k, l_narg )
-    C_SUM_FIA( t_5, t_6, INTOBJ_INT(3) )
+    C_SUM( t_6, l_k, l_narg )
+    C_SUM( t_5, t_6, INTOBJ_INT(3) )
     CHECK_INT_POS( t_5 )
     C_ELM_LIST_FPL( t_4, l_methods, t_5 )
     t_3 = (Obj)(UInt)(EQ( a_rank, t_4 ));
@@ -715,8 +715,8 @@ static Obj  HdlrFunc3 (
    if ( ! t_1 ) break;
    
    /* if info = methods[k + narg + 4] then */
-   C_SUM_FIA( t_4, l_k, l_narg )
-   C_SUM_FIA( t_3, t_4, INTOBJ_INT(4) )
+   C_SUM( t_4, l_k, l_narg )
+   C_SUM( t_3, t_4, INTOBJ_INT(4) )
    CHECK_INT_POS( t_3 )
    C_ELM_LIST_FPL( t_2, l_methods, t_3 )
    t_1 = (Obj)(UInt)(EQ( a_info, t_2 ));
@@ -739,8 +739,8 @@ static Obj  HdlrFunc3 (
       t_3 = l_match;
      }
      else if ( l_match == True ) {
-      C_SUM_FIA( t_7, l_k, l_j )
-      C_SUM_FIA( t_6, t_7, INTOBJ_INT(1) )
+      C_SUM( t_7, l_k, l_j )
+      C_SUM( t_6, t_7, INTOBJ_INT(1) )
       CHECK_INT_POS( t_6 )
       C_ELM_LIST_FPL( t_5, l_methods, t_6 )
       C_ELM_LIST_FPL( t_6, a_flags, l_j )
@@ -749,8 +749,8 @@ static Obj  HdlrFunc3 (
      }
      else {
       CHECK_FUNC( l_match )
-      C_SUM_FIA( t_8, l_k, l_j )
-      C_SUM_FIA( t_7, t_8, INTOBJ_INT(1) )
+      C_SUM( t_8, l_k, l_j )
+      C_SUM( t_7, t_8, INTOBJ_INT(1) )
       CHECK_INT_POS( t_7 )
       C_ELM_LIST_FPL( t_6, l_methods, t_7 )
       C_ELM_LIST_FPL( t_7, a_flags, l_j )
@@ -785,8 +785,8 @@ static Obj  HdlrFunc3 (
    /* fi */
    
    /* k := k + narg + 4; */
-   C_SUM_FIA( t_2, l_k, l_narg )
-   C_SUM_FIA( t_1, t_2, INTOBJ_INT(4) )
+   C_SUM( t_2, l_k, l_narg )
+   C_SUM( t_1, t_2, INTOBJ_INT(4) )
    l_k = t_1;
    
   }
@@ -810,16 +810,16 @@ static Obj  HdlrFunc3 (
  if ( t_1 ) {
   
   /* methods{[ narg + 4 + i + 1 .. narg + 4 + LEN_LIST( methods ) ]} := methods{[ i + 1 .. LEN_LIST( methods ) ]}; */
-  C_SUM_FIA( t_4, l_narg, INTOBJ_INT(4) )
-  C_SUM_FIA( t_3, t_4, l_i )
-  C_SUM_FIA( t_2, t_3, INTOBJ_INT(1) )
-  C_SUM_FIA( t_4, l_narg, INTOBJ_INT(4) )
+  C_SUM( t_4, l_narg, INTOBJ_INT(4) )
+  C_SUM( t_3, t_4, l_i )
+  C_SUM( t_2, t_3, INTOBJ_INT(1) )
+  C_SUM( t_4, l_narg, INTOBJ_INT(4) )
   t_6 = GF_LEN__LIST;
   t_5 = CALL_1ARGS( t_6, l_methods );
   CHECK_FUNC_RESULT( t_5 )
-  C_SUM_FIA( t_3, t_4, t_5 )
+  C_SUM( t_3, t_4, t_5 )
   t_1 = Range2Check( t_2, t_3 );
-  C_SUM_FIA( t_4, l_i, INTOBJ_INT(1) )
+  C_SUM( t_4, l_i, INTOBJ_INT(1) )
   t_6 = GF_LEN__LIST;
   t_5 = CALL_1ARGS( t_6, l_methods );
   CHECK_FUNC_RESULT( t_5 )
@@ -836,7 +836,7 @@ static Obj  HdlrFunc3 (
  if ( t_1 ) {
   
   /* methods[i + 1] := RETURN_TRUE; */
-  C_SUM_FIA( t_1, l_i, INTOBJ_INT(1) )
+  C_SUM( t_1, l_i, INTOBJ_INT(1) )
   CHECK_INT_POS( t_1 )
   t_2 = GC_RETURN__TRUE;
   CHECK_BOUND( t_2, "RETURN_TRUE" )
@@ -851,7 +851,7 @@ static Obj  HdlrFunc3 (
   if ( t_1 ) {
    
    /* methods[i + 1] := RETURN_FALSE; */
-   C_SUM_FIA( t_1, l_i, INTOBJ_INT(1) )
+   C_SUM( t_1, l_i, INTOBJ_INT(1) )
    CHECK_INT_POS( t_1 )
    t_2 = GC_RETURN__FALSE;
    CHECK_BOUND( t_2, "RETURN_FALSE" )
@@ -909,7 +909,7 @@ static Obj  HdlrFunc3 (
     /* fi */
     
     /* methods[i + 1] := rel; */
-    C_SUM_FIA( t_1, l_i, INTOBJ_INT(1) )
+    C_SUM( t_1, l_i, INTOBJ_INT(1) )
     CHECK_INT_POS( t_1 )
     C_ASS_LIST_FPL( l_methods, t_1, a_rel )
     
@@ -940,8 +940,8 @@ static Obj  HdlrFunc3 (
   l_k = t_1;
   
   /* methods[i + k + 1] := flags[k]; */
-  C_SUM_FIA( t_4, l_i, l_k )
-  C_SUM_FIA( t_3, t_4, INTOBJ_INT(1) )
+  C_SUM( t_4, l_i, l_k )
+  C_SUM( t_3, t_4, INTOBJ_INT(1) )
   CHECK_INT_POS( t_3 )
   C_ELM_LIST_FPL( t_4, a_flags, l_k )
   C_ASS_LIST_FPL( l_methods, t_3, t_4 )
@@ -956,7 +956,7 @@ static Obj  HdlrFunc3 (
   
   /* methods[i + (narg + 2)] := RETURN_TRUE; */
   C_SUM_INTOBJS( t_2, l_narg, INTOBJ_INT(2) )
-  C_SUM_FIA( t_1, l_i, t_2 )
+  C_SUM( t_1, l_i, t_2 )
   CHECK_INT_POS( t_1 )
   t_2 = GC_RETURN__TRUE;
   CHECK_BOUND( t_2, "RETURN_TRUE" )
@@ -972,7 +972,7 @@ static Obj  HdlrFunc3 (
    
    /* methods[i + (narg + 2)] := RETURN_FALSE; */
    C_SUM_INTOBJS( t_2, l_narg, INTOBJ_INT(2) )
-   C_SUM_FIA( t_1, l_i, t_2 )
+   C_SUM( t_1, l_i, t_2 )
    CHECK_INT_POS( t_1 )
    t_2 = GC_RETURN__FALSE;
    CHECK_BOUND( t_2, "RETURN_FALSE" )
@@ -1041,7 +1041,7 @@ static Obj  HdlrFunc3 (
     
     /* methods[i + (narg + 2)] := method; */
     C_SUM_INTOBJS( t_2, l_narg, INTOBJ_INT(2) )
-    C_SUM_FIA( t_1, l_i, t_2 )
+    C_SUM( t_1, l_i, t_2 )
     CHECK_INT_POS( t_1 )
     C_ASS_LIST_FPL( l_methods, t_1, a_method )
     
@@ -1065,13 +1065,13 @@ static Obj  HdlrFunc3 (
  
  /* methods[i + (narg + 3)] := rank; */
  C_SUM_INTOBJS( t_2, l_narg, INTOBJ_INT(3) )
- C_SUM_FIA( t_1, l_i, t_2 )
+ C_SUM( t_1, l_i, t_2 )
  CHECK_INT_POS( t_1 )
  C_ASS_LIST_FPL( l_methods, t_1, a_rank )
  
  /* methods[i + (narg + 4)] := IMMUTABLE_COPY_OBJ( info ); */
  C_SUM_INTOBJS( t_2, l_narg, INTOBJ_INT(4) )
- C_SUM_FIA( t_1, l_i, t_2 )
+ C_SUM( t_1, l_i, t_2 )
  CHECK_INT_POS( t_1 )
  t_3 = GF_IMMUTABLE__COPY__OBJ;
  t_2 = CALL_1ARGS( t_3, a_info );
@@ -1376,7 +1376,7 @@ static Obj  HdlrFunc7 (
  l_filters = t_1;
  
  /* pos := pos + 1; */
- C_SUM_FIA( t_1, l_pos, INTOBJ_INT(1) )
+ C_SUM( t_1, l_pos, INTOBJ_INT(1) )
  l_pos = t_1;
  
  /* flags := [  ]; */
@@ -1446,7 +1446,7 @@ static Obj  HdlrFunc7 (
    l_rank = t_1;
    
    /* pos := pos + 1; */
-   C_SUM_FIA( t_1, l_pos, INTOBJ_INT(1) )
+   C_SUM( t_1, l_pos, INTOBJ_INT(1) )
    l_pos = t_1;
    
   }
@@ -1575,7 +1575,7 @@ static Obj  HdlrFunc7 (
   CHECK_BOUND( t_8, "OPERATIONS" )
   t_6 = CALL_1ARGS( t_7, t_8 );
   CHECK_FUNC_RESULT( t_6 )
-  C_DIFF_FIA( t_5, t_6, INTOBJ_INT(1) )
+  C_DIFF( t_5, t_6, INTOBJ_INT(1) )
   t_4 = Range3Check( INTOBJ_INT(1), INTOBJ_INT(3), t_5 );
   if ( IS_SMALL_LIST(t_4) ) {
    t_3 = (Obj)(UInt)1;
@@ -1613,7 +1613,7 @@ static Obj  HdlrFunc7 (
     /* req := OPERATIONS[i + 1]; */
     t_6 = GC_OPERATIONS;
     CHECK_BOUND( t_6, "OPERATIONS" )
-    C_SUM_FIA( t_7, l_i, INTOBJ_INT(1) )
+    C_SUM( t_7, l_i, INTOBJ_INT(1) )
     CHECK_INT_POS( t_7 )
     C_ELM_LIST_FPL( t_5, t_6, t_7 )
     l_req = t_5;
@@ -1706,7 +1706,7 @@ static Obj  HdlrFunc7 (
    if ( ! t_1 ) break;
    
    /* j := j + 1; */
-   C_SUM_FIA( t_1, l_j, INTOBJ_INT(1) )
+   C_SUM( t_1, l_j, INTOBJ_INT(1) )
    l_j = t_1;
    
    /* reqs := req[j]; */
@@ -1830,7 +1830,7 @@ static Obj  HdlrFunc7 (
   else {
    
    /* for k in [ j + 1 .. LEN_LIST( req ) ] do */
-   C_SUM_FIA( t_2, l_j, INTOBJ_INT(1) )
+   C_SUM( t_2, l_j, INTOBJ_INT(1) )
    CHECK_INT_SMALL( t_2 )
    t_4 = GF_LEN__LIST;
    t_3 = CALL_1ARGS( t_4, l_req );
@@ -2197,7 +2197,7 @@ static Obj  HdlrFunc8 (
      C_ELM_LIST_FPL( t_6, t_7, l_i )
      t_4 = CALL_1ARGS( t_5, t_6 );
      CHECK_FUNC_RESULT( t_4 )
-     C_DIFF_FIA( t_3, l_rank, t_4 )
+     C_DIFF( t_3, l_rank, t_4 )
      l_rank = t_3;
      
     }
@@ -2469,7 +2469,7 @@ static Obj  HdlrFunc14 (
   if ( ! t_1 ) break;
   
   /* i := i + 2; */
-  C_SUM_FIA( t_1, l_i, INTOBJ_INT(2) )
+  C_SUM( t_1, l_i, INTOBJ_INT(2) )
   l_i = t_1;
   
  }
@@ -2498,11 +2498,11 @@ static Obj  HdlrFunc14 (
   l_erg = t_1;
   
   /* known{[ i + 2 .. LEN_LIST( known ) + 2 ]} := known{[ i .. LEN_LIST( known ) ]}; */
-  C_SUM_FIA( t_2, l_i, INTOBJ_INT(2) )
+  C_SUM( t_2, l_i, INTOBJ_INT(2) )
   t_5 = GF_LEN__LIST;
   t_4 = CALL_1ARGS( t_5, l_known );
   CHECK_FUNC_RESULT( t_4 )
-  C_SUM_FIA( t_3, t_4, INTOBJ_INT(2) )
+  C_SUM( t_3, t_4, INTOBJ_INT(2) )
   t_1 = Range2Check( t_2, t_3 );
   t_5 = GF_LEN__LIST;
   t_4 = CALL_1ARGS( t_5, l_known );
@@ -2516,7 +2516,7 @@ static Obj  HdlrFunc14 (
   C_ASS_LIST_FPL( l_known, l_i, a_key )
   
   /* known[i + 1] := erg; */
-  C_SUM_FIA( t_1, l_i, INTOBJ_INT(1) )
+  C_SUM( t_1, l_i, INTOBJ_INT(1) )
   CHECK_INT_POS( t_1 )
   C_ASS_LIST_FPL( l_known, t_1, l_erg )
   
@@ -2524,7 +2524,7 @@ static Obj  HdlrFunc14 (
  /* fi */
  
  /* return known[i + 1]; */
- C_SUM_FIA( t_2, l_i, INTOBJ_INT(1) )
+ C_SUM( t_2, l_i, INTOBJ_INT(1) )
  CHECK_INT_POS( t_2 )
  C_ELM_LIST_FPL( t_1, l_known, t_2 )
  RES_BRK_CURR_STAT();
@@ -2990,7 +2990,7 @@ static Obj  HdlrFunc15 (
   CHECK_FUNC_RESULT( t_8 )
   t_6 = CALL_1ARGS( t_7, t_8 );
   CHECK_FUNC_RESULT( t_6 )
-  C_DIFF_FIA( t_5, a_val, t_6 )
+  C_DIFF( t_5, a_val, t_6 )
   a_val = t_5;
   
  }
@@ -3374,7 +3374,7 @@ static Obj  HdlrFunc1 (
  /* LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + 6; */
  t_2 = GC_LENGTH__SETTER__METHODS__2;
  CHECK_BOUND( t_2, "LENGTH_SETTER_METHODS_2" )
- C_SUM_FIA( t_1, t_2, INTOBJ_INT(6) )
+ C_SUM( t_1, t_2, INTOBJ_INT(6) )
  AssGVar( G_LENGTH__SETTER__METHODS__2, t_1 );
  
  /* InstallAttributeFunction( function ( name, filter, getter, setter, tester, mutflag )
@@ -3629,39 +3629,39 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "CallFuncList", &GF_CallFuncList );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(22774439)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(22774439)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](22774439)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(22774439)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](22774439)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(22774439)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](22774439)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(22774439)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](22774439)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(22774439)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](22774439)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(22774439)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](22774439)" );
- InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(22774439)" );
- InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](22774439)" );
- InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(22774439)" );
- InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](22774439)" );
- InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(22774439)" );
- InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](22774439)" );
- InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(22774439)" );
- InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](22774439)" );
- InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(22774439)" );
- InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](22774439)" );
- InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(22774439)" );
- InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](22774439)" );
- InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(22774439)" );
- InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](22774439)" );
- InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(22774439)" );
- InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](22774439)" );
- InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(22774439)" );
- InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](22774439)" );
- InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/oper1.g:HdlrFunc16(22774439)" );
- InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/oper1.g:NameFunc[16](22774439)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(-28744363)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(-28744363)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](-28744363)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(-28744363)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](-28744363)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(-28744363)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](-28744363)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(-28744363)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](-28744363)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(-28744363)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](-28744363)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(-28744363)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](-28744363)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(-28744363)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](-28744363)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(-28744363)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](-28744363)" );
+ InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(-28744363)" );
+ InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](-28744363)" );
+ InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(-28744363)" );
+ InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](-28744363)" );
+ InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(-28744363)" );
+ InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](-28744363)" );
+ InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(-28744363)" );
+ InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](-28744363)" );
+ InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(-28744363)" );
+ InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](-28744363)" );
+ InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(-28744363)" );
+ InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](-28744363)" );
+ InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(-28744363)" );
+ InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](-28744363)" );
+ InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/oper1.g:HdlrFunc16(-28744363)" );
+ InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/oper1.g:NameFunc[16](-28744363)" );
  
  /* return success */
  return 0;
@@ -3959,7 +3959,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ 22774439,
+ /* crc         = */ -28744363,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

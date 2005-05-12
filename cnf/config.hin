@@ -40,7 +40,7 @@
 
 /****************************************************************************
 **
-*D  architucture
+*D  architecture
 */
 
 /* define the name of the architucture                                     */
@@ -257,6 +257,12 @@
 
 /* define as 1 if you have `unlink'                                        */
 #define HAVE_UNLINK             0
+
+/* define as 1 if you have `mkstemp'                                         */
+#define HAVE_MKSTEMP              0
+
+/* define as 1 if you have `mkdtemp'                                        */
+#define HAVE_MKDTEMP             0
 
 /****************************************************************************
 **

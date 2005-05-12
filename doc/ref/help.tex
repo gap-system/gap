@@ -25,16 +25,10 @@ For an explanation and some examples see~"tut:Help".
 
 Note that the first question mark  must appear in the *first position* after
 the `gap> ' prompt. The search  strings <book> and <topic> are normalized in
-a  certain  way  before  the  search starts.  This  makes  the  search  case
+a  certain  way (see the end of this section for details)
+before  the  search starts.  This  makes  the  search  case
 insensitive and there can be arbitrary  white space after the first question
 mark.
-
-%%%%%%  should these more precise statements be in the manual? (FL) %%%%%%%% 
-%%  The  search strings  <book> and  <topic>  are normalized  before the  search
-%%  starts: backslashes and double or single quotes are removed, parentheses and
-%%  braces are  substituted by  blanks, non-ASCII  characters are  considered as
-%%  ISO-latin1  characters and  the accented  letters are  substituted by  their
-%%  non-accented counterpart. Finally white space is normalized.
 
 %%      Throw away? (FL) 
 %%  The help command `?' displays the section with the name <section> on the
@@ -67,6 +61,15 @@ via a Web-browser. This is explained in section~"Changing the Help Viewer".
 %%  through sections, "Redisplaying a Section" describes how to read a
 %%  section again, "Abbreviating Section Names" tells you how to avoid typing
 %%  the long section names, and "Help Index" describes the index command.
+
+*Details of the string normalization process*
+
+Here now is precisely how  the  search strings  <book> and  <topic>  are
+normalized  before a  search
+starts: backslashes and double or single quotes are removed, parentheses and
+braces are  substituted by  blanks, non-ASCII  characters are  considered as
+ISO-latin1  characters and  the accented  letters are  substituted by  their
+non-accented counterpart. Finally white space is normalized.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Isn't all this practically self-explatory? Throw away? (FL)
@@ -122,8 +125,8 @@ via a Web-browser. This is explained in section~"Changing the Help Viewer".
 %%  chapter on the right.
 %%  
 %%  (If this header line ends in `(not loaded)' the documentation belongs to a
-%%  share package, which has not yet been loaded. See section~"Loading a Share
-%%  Package" for further information.)
+%%  package, which has not yet been loaded. See section~"Loading a GAP Package"
+%%  for further information.)
 %%  
 %%  \begintt
 %%  <text>
@@ -240,8 +243,8 @@ part of the basic help query and  there is a long name which hopefully tells
 you what this book is about.
 
 A  short  name  which ends  in  `(not loaded)'  refers to  a {\GAP}  package
-whose documentation  is loaded  but which needs  a call  of `RequirePackage'
-(see "RequirePackage") before you can use the described functions.
+whose documentation  is loaded  but which needs  a call  of `LoadPackage'
+(see "LoadPackage") before you can use the described functions.
 
 \>`?[<book>:]sections'{table of sections for help books}  
 \>`?[<book>:][chapters]'{table of chapters for help books}
@@ -330,24 +333,30 @@ If you want  to change the default  setting you will probably put  a call of
   bad. Furthermore the  terminal (window) should use a fixed  width font and
   we suggest to take one with `ISO-8859-1' (also called `latin1') encoding.
 
-`\"netscape\"' &
-  If a  book is available  in HTML-format this  is shown using  the (already
-  running) `netscape'  Web-browser. Note,  that for  some books  the browser
-  must be configured to use symbol fonts.
+`\"firefox\"', `\"mozilla\"', `\"netscape\"', `\"konqueror\"' &
+  If  a  book   is  available  in  HTML-format  this  is   shown  using  the
+  corresponding web-browser.  How well  this works, for  example by  using a
+  running instance of this browser,  depends on your particular start script
+  of this browser. Note, that for  some books the browser must be configured
+  to use symbol fonts.
 
-`\"lynx\"' &
+`\"w3m\"', `\"lynx\"' &
   If a book is  available in HTML-format this is shown  using the text based
-  `lynx' Web-browser inside the terminal  running {\GAP}. Formulae which use
-  symbol fonts may be unreadable.
+  `w3m' or `lynx' web-browser inside the terminal  running {\GAP}.  Formulae 
+  which use symbol fonts may be unreadable.
 
-`\"internet config\"' &
-  (for Apple  Macintosh with MacOS)  If a  book is available  in HTML-format
-  this is  shown in a Web browser. The web browser used is the program
-  set to handle the `file' protocol in the program `Internet Config' (System 
-  7 and 8) resp. the "Internet" control panel (System 9 and System X). 
-  For some browsers (e.g., Internet Explorer), you may have to set the GAP 
-  variable `HELP_MAC_PROTOCOL' to `file:/' for this to work correctly; in 
-  this case, you may wish to do this in the `gap.rc' file (see 
+`\"mac default browser\"', `\"safari\"' &
+  (for Apple Macintosh) If a book  is available in HTML-format this is shown
+  in a web-browser.  The web browser used  is the program set  to handle the
+  `file' protocol in  the `Internet' control panel (System 9  and System X).
+  For some browsers (e.g., Internet Explorer), you may have to enter the GAP
+  command
+  `HELP_MAC_PROTOCOL := \"file:/\";'
+  for this to work correctly.  If you wish to use the online html version of
+  the manual, you may use
+  `HELP_EXTERNAL_URL := \"http://www.gap-system.org/\";'. Note that
+  `HELP_EXTERNAL_URL := \"\";' switches back to the local html files.
+  It may be a  good idea to put the relevant line in  the `gap.rc' file (see
   "The .gaprc file").
   
 `\"xdvi\"' &
@@ -365,8 +374,9 @@ If you want  to change the default  setting you will probably put  a call of
   system).  This is  a nice  program, once  it is  running it  is reused  by
   {\GAP} for  the next  displays of  help sections.  (Hint: On  many systems
   `xpdf'  shows a  very bad  display  quality, this  is  due to  a wrong  or
-  missing  font configuration.  One needs  to set  certain X-resources,  see
-  `http://www.foolabs.com/xpdf/'(Problems) for more details.
+  missing  font configuration.  One needs  to set  certain X-resources;  for
+  more details follow the `Problems' link at
+  \URL{http://www.foolabs.com/xpdf/}
 
 `\"acroread\"' &
   If a book is available in pdf-format  it is shown with the onscreen viewer
@@ -377,7 +387,7 @@ If you want  to change the default  setting you will probably put  a call of
   the  acroread window  still exists.  When  you go  to another  book a  new
   acroread window is launched.
 
-`\"less\" or "more"' &
+`\"less\"' or `"more"' &
   This is the same as `\"screen\"' but additionally the `PAGER' and
   `PAGER_OPTIONS'  variables are set, see the next section~"The Pager
   Command" for more details.
@@ -385,7 +395,7 @@ If you want  to change the default  setting you will probably put  a call of
 \enditems
 
 Please,     send     ideas     for    further     viewer     commands     to
-`Gap-Trouble@dcs.st-and.ac.uk'.
+\Mailto{support@gap-system.org}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Pager Command}
@@ -449,12 +459,13 @@ The `Pager'  command is  used by  {\GAP}'s help  system for  displaying help
 sections in text-format.  But, of course, it may be  used for other purposes
 as well.
 
-\begintt
+%notest
+\beginexample
 gap> s6 := SymmetricGroup(6);;
 gap> words := ["This", "is", "a", "very", "stupid", "example"];;
 gap> l := List(s6, p-> Permuted(words, p));;
 gap> Pager(List(l, a-> JoinStringsWithSeparator(a," ")));;                
-\endtt
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  \Section{Changing the Way the Help Pages are Displayed}
@@ -565,3 +576,4 @@ gap> Pager(List(l, a-> JoinStringsWithSeparator(a," ")));;
 %%
 %E
 %%  
+

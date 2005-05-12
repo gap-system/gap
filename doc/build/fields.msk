@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Fields and Division Rings}
 
@@ -103,11 +104,11 @@ which vanish on <z>.
 
 \beginexample
 gap> MinimalPolynomial( Rationals, E(8) );
-1+x_1^4
+x_1^4+1
 gap> MinimalPolynomial( CF(4), E(8) );
--E(4)+x_1^2
+x_1^2+-E(4)
 gap> MinimalPolynomial( CF(8), E(8) );
--E(8)+x_1
+x_1+-E(8)
 \endexample
 
 \Declaration{TracePolynomial}
@@ -116,9 +117,9 @@ gap> MinimalPolynomial( CF(8), E(8) );
 
 \beginexample
 gap> TracePolynomial( CF(8), Rationals, E(8) );
-1+x_1^4
+x_1^4+1
 gap> TracePolynomial( CF(16), Rationals, E(8) );
-1+2*x_1^4+x_1^8
+x_1^8+2*x_1^4+1
 \endexample
 
 \Declaration{Norm}
@@ -153,6 +154,10 @@ gap> NormalBase( CF(5) );
 [ -E(5), -E(5)^2, -E(5)^3, -E(5)^4 ]
 gap> NormalBase( CF(4) );
 [ 1/2-1/2*E(4), 1/2+1/2*E(4) ]
+gap> NormalBase( GF(3^6) );
+[ Z(3^6)^2, Z(3^6)^6, Z(3^6)^18, Z(3^6)^54, Z(3^6)^162, Z(3^6)^486 ]
+gap> NormalBase( GF( GF(8), 2 ) );
+[ Z(2^6), Z(2^6)^8 ]
 \endexample
 
 

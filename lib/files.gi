@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for files and directories.
 ##
@@ -37,13 +38,13 @@ BindGlobal( "DirectoryType", NewType(
 ##
 #F  USER_HOME_EXPAND . . . . . . . . . . . .  expand leading ~ in file name
 ##  
-##  If `USER_HOME' has positive length then a leading '~' character in 
-##  string `str' is substituted by the content of `USER_HOME'.
+##  If `GAPInfo.UserHome' has positive length then a leading '~' character in 
+##  string `str' is substituted by the content of `GAPInfo.UserHome'.
 ##  Otherwise `str' itself is returned.
 ##  
 InstallGlobalFunction(USER_HOME_EXPAND, function(str)
-  if Length(str) > 0 and str[1] = '~' and Length(USER_HOME) > 0 then
-    return Concatenation(USER_HOME, str{[2..Length(str)]});
+  if Length(str) > 0 and str[1] = '~' and Length( GAPInfo.UserHome ) > 0 then
+    return Concatenation( GAPInfo.UserHome, str{[2..Length(str)]});
   else
     return str;
   fi;
@@ -146,6 +147,43 @@ function( dirs, name )
     return fail;
 end );
 
+#############################################################################
+##
+#F  DirectoryContents(<name>)
+## 
+InstallGlobalFunction(DirectoryContents, function(dirname)
+  local str;
+  # to make ~/mydir work
+  dirname := USER_HOME_EXPAND(dirname);
+  if dirname[Length(dirname)] <> '/' then
+    Add(dirname, '/');
+  fi;
+  str := STRING_LIST_DIR(dirname);
+  if str = fail then
+    Error("Could not open ", dirname, " as directory,\nsee LastSystemError();");
+  fi;
+  # Why is this file read before string.gd ???
+  return SplitStringInternal(str, "", "\000");
+end);
+
+
+
+##  function(str)
+##  local a, l, i, j;
+##    a:=STRING_LIST_DIR(str);
+##    l:=[];
+##    i:=1;
+##    j:=1;
+##    while i<=Length(a) do
+##      if a[i]='\000' then
+##        Add(l,a{[j..i-1]});
+##        j:=i+1;
+##      fi;
+##      i:=i+1;
+##    od;
+##    return l;
+##  end);
+
 
 #############################################################################
 ##
@@ -218,21 +256,30 @@ end );
 
 #############################################################################
 ##
-#M  CreateCompletionFiles( <path> ) . . . . . . . create "lib/readX.co" files
+#M  CreateCompletionFiles( [<path>] ) . . . . . . create "lib/readX.co" files
+#M  CreateCompletionFiles( <path>, <list> ) .  create "pkg/.../read.co" files
+##
+##  The undocumented two argument version is used for creating completion
+##  files of packages.
 ##
 InstallGlobalFunction( CreateCompletionFiles, function( arg )
-    local   path,  input,  i,  com,  read,  j,  crc;
+    local path, list, input, i, com, read, j, crc;
 
     # get the path to the output
     if 0 = Length(arg)  then
         path := DirectoriesLibrary("")[1];
+        list := COMPLETABLE_FILES;
     elif 1 = Length(arg)  then
         path := Directory(arg[1]);
+        list := COMPLETABLE_FILES;
+    elif 2 = Length(arg)  then
+        path := Directory(arg[1]);
+        list := arg[2];
     fi;
-    input := DirectoriesLibrary("");
+    input:= DirectoriesLibrary("");
 
     # loop over the list of completable files
-    for i  in COMPLETABLE_FILES  do
+    for i in list do
 
         # convert "read" into "comp"
         com := Filename( path, ReplacedString( i[1], ".g", ".co" ) );

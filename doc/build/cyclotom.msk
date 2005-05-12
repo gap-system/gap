@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 %%  This file is being maintained by Thomas Breuer.
 %%  Please do not make any changes without consulting him.
@@ -23,8 +24,8 @@ These fields are subfields of *cyclotomic fields* $\Q(e_n)$
 where $e_n = e^{2\pi i/n}$ is a primitive complex $n$-th root of unity.
 The elements of these fields are called *cyclotomics*.
 
-Information concerning operations for fields of cyclotomics,
-for example certain integral bases,
+Information concerning operations for domains of cyclotomics,
+for example certain integral bases of fields of cyclotomics,
 can be found in Chapter~"Abelian Number Fields".
 For more general operations that take a field extension as a
 ---possibly optional--- argument, e.g., `Trace' or `Coefficients',
@@ -45,7 +46,7 @@ E(3)
 -1/3*E(12)^7
 \endexample
 A particular basis is used to express cyclotomics,
-see~"Integral Bases for Abelian Number Fields";
+see~"Integral Bases of Abelian Number Fields";
 note that `E(9)' is *not* a basis element,
 as the above example shows.
 
@@ -63,8 +64,8 @@ Note that `^' does *not* denote the conjugation of group elements,
 so it is *not* possible to explicitly construct groups of cyclotomics.
 (However, it is possible to compute the inverse and the multiplicative
 order of a nonzero cyclotomic.)
-Also, taking the $k$-th power of a cyclotomic is a Galois automorphism
-if and only if $k$ is coprime to the conductor of the cyclotomic.
+Also, taking the $k$-th power of a root of unity $z$ defines a Galois
+automorphism if and only if $k$ is coprime to the conductor of $z$.
 
 \beginexample
 gap> E(5) + E(3); (E(5) + E(5)^4) ^ 2; E(5) / E(3); E(5) * E(3);
@@ -160,7 +161,7 @@ fail
 
 \Declaration{DenominatorCyc}
 
-\>ExtRepOfObj(<cyc>)!{external representation!for cyclotomics}
+\>ExtRepOfObj( <cyc> )!{external representation!for cyclotomics}
 \beginexample
 gap> ExtRepOfObj( E(5) ); CoeffsCyc( E(5), 15 );
 [ 0, 1, 0, 0, 0 ]
@@ -298,6 +299,7 @@ gap> AtlasIrrationality( "3y'''24&7" );
 \Section{Galois Conjugacy of Cyclotomics}
 
 \Declaration{GaloisCyc}
+\Declaration{ComplexConjugate}
 \beginexample
 gap> GaloisCyc( E(5) + E(5)^4, 2 );
 E(5)^2+E(5)^3
@@ -350,13 +352,9 @@ rec( mat := [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ], [ 1, E(3)^2, E(3) ] ],
 
 \Declaration{RationalizedMat}
 \beginexample
-gap> mat:=List(Irr(CharacterTable( "A5" )),ValuesOfClassFunction);
-[ [ 1, 1, 1, 1, 1 ], [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ], 
-  [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ], [ 4, 0, 1, -1, -1 ], 
-  [ 5, 1, -1, 0, 0 ] ]
+gap> mat:= [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ], [ 1, E(3)^2, E(3) ] ];;
 gap> RationalizedMat( mat );
-[ [ 1, 1, 1, 1, 1 ], [ 6, -2, 0, 1, 1 ], [ 4, 0, 1, -1, -1 ], 
-  [ 5, 1, -1, 0, 0 ] ]
+[ [ 1, 1, 1 ], [ 2, -1, -1 ] ]
 \endexample
 
 
@@ -371,7 +369,8 @@ containing it.
 The reason for this is the wish to reflect the natural embedding of two
 cyclotomic fields into a larger one that contains both.
 With such embeddings, it is easy to construct the sum or the product
-of two arbitrary cyclotomics as an element of a cyclotomic field.
+of two arbitrary cyclotomics (in possibly different fields) as an element
+of a cyclotomic field.
 
 The disadvantage of this approach is that the arithmetical operations
 are quite expensive, so the use of internally represented cyclotomics
@@ -390,7 +389,7 @@ easily convert arbitrary sums of roots of unity into the
 basis, as well as to convert  a cyclotomic represented w.r.t.~the basis
 into the smallest possible cyclotomic field.
 This basis is accessible in {\GAP},
-see~"Integral Bases for Abelian Number Fields" for more information and
+see~"Integral Bases of Abelian Number Fields" for more information and
 references.
 
 Note that the set of all $n$-th roots of unity is linearly dependent
@@ -414,10 +413,32 @@ The internal coefficients list coincides with the external representation
 returned by `ExtRepOfObj'.
 
 Since the conductor of internally represented cyclotomics must be
-in the category `IsSmallIntRep', the biggest possible (though not very
-useful) conductor is $65535$.
+in the filter `IsSmallIntRep', the biggest possible (though not very
+useful) conductor is $2^{28}-1$.
 So the maximal cyclotomic field implemented in {\GAP} is not really
 the field $\Q^{ab}$.
+
+\beginexample
+gap> IsSmallIntRep( 2^28-1 );
+true
+gap> IsSmallIntRep( 2^28 );
+false
+\endexample
+
+It should be emphasized that one disadvantage of representing a cyclotomic in
+the smallest *cyclotomic* field (and not in the smallest field) is that
+arithmetic operations in a fixed small extension field of the rational
+number field are comparatively expensive.
+For example, take a prime integer $p$ and suppose that we want to work with
+a matrix group over the field $\Q(\sqrt{p})$.
+Then each matrix entry could be described by two rational coefficients,
+whereas the representation in the smallest cyclotomic field requires
+$p-1$ rational coefficients for each entry.
+So it is worth thinking about using elements in a field constructed with
+`AlgebraicExtension' (see~"AlgebraicExtension") when natural embeddings
+of cyclotomic fields are not needed.
+
+% show an example?
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

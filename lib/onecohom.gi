@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for operations for the 1-Cohomology
 ##
@@ -136,8 +137,8 @@ local  hom,fg,fpi,fpg,nt;
   fi;
 
   if hom<>false and (IsSolvableGroup(Range(hom))
-     or (IsPermGroup(Range(hom)) and Length(MovedPoints(Range(hom)))*2
-                             < Length(MovedPoints(ocr.group)))
+     or (IsPermGroup(Range(hom)) and Length(MovedPoints(Range(hom)))
+                             < Length(MovedPoints(ocr.group))*2)
      or (HasIsomorphismFpGroup(fg) and not IsBound(ocr.generators)) )
    then 
     Info(InfoCoh,1,"using factor representation");
@@ -145,7 +146,7 @@ local  hom,fg,fpi,fpg,nt;
       fpi:=IsomorphismFpGroupByGeneratorsNC(fg,List(ocr.generators,
                                                   i->Image(hom,i)),"f");
     else
-      fpi:=IsomorphismFpGroup(fg);
+      fpi:=IsomorphismFpGroup(fg:noshort:=true);
     fi;
     fpg:=FreeGeneratorsOfFpGroup(Range(fpi));
     ocr.factorpres:=[fpg,RelatorsOfFpGroup(Range(fpi)),
@@ -161,7 +162,7 @@ local  hom,fg,fpi,fpg,nt;
     if IsBound(ocr.generators) then
       fpi:=IsomorphismFpGroupByGeneratorsNC(ocr.group,ocr.generators,"f");
     else
-      fpi:=IsomorphismFpGroup(ocr.group);
+      fpi:=IsomorphismFpGroup(ocr.group:noshort:=true);
       ocr.generators:=List(MappingGeneratorsImages(fpi)[2],
                            i->PreImagesRepresentative(fpi,i));
     fi;
@@ -176,7 +177,7 @@ local  hom,fg,fpi,fpg,nt;
                                        ocr.generators, fpg );
     ocr.factorpres[2]:=Union(ocr.factorpres[2],
                              List(NumeratorOfModuloPcgs(ocr.modulePcgs),
-				  i->ImagesRepresentative(fpi,i)));
+				  i->ImagesRepresentative(fpi,i:noshort:=true)));
   fi;
 
   Info(InfoCoh,1,Length(ocr.generators)," generators, ",

@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.oprt_gd :=
     "@(#)$Id$";
@@ -432,7 +433,7 @@ end );
 
 #############################################################################
 ##
-#F  OrbitishFO( <name>, <reqs>, <famrel>, <usetype> ) .  orbit-like operation
+#F  OrbitishFO( <name>, <reqs>, <famrel>, <usetype>,<realenum> )
 ##
 ##  is used to create operations like `Orbit'.
 ##  This function is analogous to `OrbitsishOperation',
@@ -447,12 +448,16 @@ end );
 ##  blocks with no seed are computed, they are stored as attribute values
 ##  according to the rules of `OrbitsishOperation'.
 ##
+##  If the 5th argument is set to `true', the action for an external set
+##  should use the enumerator (otherwise it uses the HomeEnumerator). This will
+##  make a difference for external orbits as part of a larger domain.
+##
 
 DeclareOperation( "PreOrbishProcessing", [IsGroup]);
 
 InstallMethod( PreOrbishProcessing, [IsGroup], x->x );
 
-BindGlobal( "OrbitishFO", function( name, reqs, famrel, usetype )
+BindGlobal( "OrbitishFO", function( name, reqs, famrel, usetype,realenum )
     local str, nname, orbish, func;
 
     # Create the operation.
@@ -477,8 +482,12 @@ BindGlobal( "OrbitishFO", function( name, reqs, famrel, usetype )
 	  fi;
 
 	  G := ActingDomain( xset );
-	  if HasHomeEnumerator( xset )  then
-	      D := HomeEnumerator( xset );
+	  if realenum then
+	    D:=Enumerator(xset);
+	  else
+	    if HasHomeEnumerator( xset )  then
+		D := HomeEnumerator( xset );
+	    fi;
 	  fi;
 	  if IsExternalSetByActorsRep( xset )  then
 	      gens := xset!.generators;
@@ -646,9 +655,9 @@ DeclareGlobalFunction("DoSparseActionHomomorphism");
 ##  dependent on these generators.
 ##
 OrbitishFO( "SparseActionHomomorphism", OrbitishReq,
-               IsIdenticalObj, false );
+               IsIdenticalObj, false,false );
 OrbitishFO( "SortedSparseActionHomomorphism", OrbitishReq,
-               IsIdenticalObj, false );
+               IsIdenticalObj, false,false );
 
 #############################################################################
 ##
@@ -709,7 +718,7 @@ OrbitishFO( "ExternalSubset",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdenticalObj, true );
+      IsFunction ], IsIdenticalObj, true, false );
 
 
 #############################################################################
@@ -719,7 +728,7 @@ OrbitishFO( "ExternalSubset",
 ##  constructs the external subset on the orbit of <pnt>. The
 ##  `Representative' of this external set is <pnt>.
 ##
-OrbitishFO( "ExternalOrbit", OrbitishReq, IsCollsElms, true );
+OrbitishFO( "ExternalOrbit", OrbitishReq, IsCollsElms, true, false );
 
 
 #############################################################################
@@ -736,7 +745,7 @@ OrbitishFO( "ExternalOrbit", OrbitishReq, IsCollsElms, true );
 ##  <pnt>, however for performance reasons this element is not necessarily
 ##  *identical* to <pnt>, in particular if <pnt> is mutable.
 ##
-OrbitishFO( "Orbit", OrbitishReq, IsCollsElms, false );
+OrbitishFO( "Orbit", OrbitishReq, IsCollsElms, false, false );
 
 
 #############################################################################
@@ -777,7 +786,7 @@ OrbitsishOperation( "OrbitsDomain", OrbitsishReq, false, NewAttribute );
 ##
 ##  computes the length of the orbit of <pnt>.
 ##
-OrbitishFO( "OrbitLength", OrbitishReq, IsCollsElms, false );
+OrbitishFO( "OrbitLength", OrbitishReq, IsCollsElms, false, false );
 
 
 #############################################################################
@@ -814,7 +823,7 @@ OrbitsishOperation( "OrbitLengthsDomain", OrbitsishReq, false, NewAttribute );
 ##
 ##  The stabilizer must have <G> as its parent.
 ##
-OrbitishFO( "OrbitStabilizer", OrbitishReq, IsCollsElms, false );
+OrbitishFO( "OrbitStabilizer", OrbitishReq, IsCollsElms, false,false );
 
 
 #############################################################################
@@ -875,7 +884,7 @@ OrbitishFO( "Blocks",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdenticalObj, BlocksAttr );
+      IsFunction ], IsIdenticalObj, BlocksAttr,true );
 
 
 #############################################################################
@@ -894,7 +903,7 @@ OrbitishFO( "MaximalBlocks",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdenticalObj, MaximalBlocksAttr );
+      IsFunction ], IsIdenticalObj, MaximalBlocksAttr,true );
 
 #T  the following syntax would be nice for consistency as well:
 ##  RepresentativesMinimalBlocks(<G>,<Omega>[,<seed>][,<gens>,<acts>][,<act>])
@@ -915,7 +924,7 @@ OrbitishFO( "RepresentativesMinimalBlocks",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdenticalObj, RepresentativesMinimalBlocksAttr );
+      IsFunction ], IsIdenticalObj, RepresentativesMinimalBlocksAttr,true );
 
 
 #############################################################################
@@ -925,6 +934,8 @@ OrbitishFO( "RepresentativesMinimalBlocks",
 ##
 ##  returns a list of the elementary abelian regular (when acting on <Omega>)
 ##  normal subgroups of <G>.
+##
+##  At the moment only methods for a primitive group <G> are implemented.
 ##
 OrbitsishOperation( "Earns", OrbitsishReq, false, NewAttribute );
 
@@ -938,7 +949,9 @@ OrbitsishOperation( "Earns", OrbitsishReq, false, NewAttribute );
 ##  `false' otherwise.
 ##
 ##  \index{transitive}
-##  An action is *transitive* if the whole domain forms one orbit.
+##  We say that a  group <G> acts *transitively* on  a domain <D> if and
+##  only if for every pair  of points <d>  and <e> there is  an element
+##  <g> of <G> such that  $d^g = e$.
 ##
 OrbitsishOperation( "IsTransitive", OrbitsishReq, false, NewProperty );
 
@@ -1091,6 +1104,27 @@ DeclareGlobalFunction( "CycleLengths" );
 DeclareOperation( "CycleLengthsOp",
     [ IsObject, IsList, IsFunction ] );
 
+#############################################################################
+##
+#O  CycleIndex( <g>, <Omega>, [,<act>] )
+#O  CycleIndex( <G>, <Omega>, [,<act>] )
+##
+##  The *cycle index* of a permutation <g> acting on <Omega> is defined as
+##  $$z(g)= s_1^{c_1(g)}s_2^{c_2(g)}\cdots s_n^{c_n(g)}$$ where $c_k(g)$ is
+##  the number of $k$-cycles in the cycle decomposition of $g$ and the $s_i$
+##  are indeterminates.
+##
+##  The *cycle index* of a group $G$ is defined as
+##  $Z(G)=\frac{1}{|G|}\sum_{g\in G} z(g)$.
+##
+##  The indeterminates used by `CycleIndex' are the indeterminates $1$ to
+##  $n$ over the rationals (see~"Indeterminate").
+##
+DeclareGlobalFunction( "CycleIndex" );
+
+DeclareOperation( "CycleIndexOp",
+    [ IsObject, IsListOrCollection, IsFunction ] );
+
 
 #############################################################################
 ##
@@ -1114,7 +1148,7 @@ DeclareOperation( "RepresentativeActionOp",
 ##
 DeclareGlobalFunction( "Stabilizer" );
 
-OrbitishFO( "StabilizerFunc", OrbitishReq, IsCollsElms, false );
+OrbitishFO( "StabilizerFunc", OrbitishReq, IsCollsElms, false,false );
 BindGlobal( "StabilizerOp", StabilizerFuncOp );
 
 

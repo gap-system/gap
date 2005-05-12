@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file  contains generic     methods   for groups handled    by  nice
 ##  monomorphisms..
@@ -148,7 +149,8 @@ function(G)
     local P;
 
     P :=Parent(G);
-    if not (IsHandledByNiceMonomorphism(P) and HasNiceMonomorphism(P)) then
+    if not (HasIsHandledByNiceMonomorphism(P) 
+        and IsHandledByNiceMonomorphism(P) and HasNiceMonomorphism(P)) then
       TryNextMethod();
     fi;
     return NiceMonomorphism(P);
@@ -425,25 +427,9 @@ GroupMethodByNiceMonomorphismCollColl( Intersection2,
 
 #############################################################################
 ##
-#M  IsCentral( <G>, <U> )  . . . . . . . . is a group centralized by another?
-##
-PropertyMethodByNiceMonomorphismCollColl( IsCentral,
-    [ IsGroup, IsGroup ] );
-
-
-#############################################################################
-##
 #M  IsCyclic( <G> ) . . . . . . . . . . . . . . . . test if a group is cyclic
 ##
 PropertyMethodByNiceMonomorphism( IsCyclic,
-    [ IsGroup ] );
-
-
-#############################################################################
-##
-#M  IsElementaryAbelian( <G> )  . . . . test if a group is elementary abelian
-##
-PropertyMethodByNiceMonomorphism( IsElementaryAbelian,
     [ IsGroup ] );
 
 
@@ -530,7 +516,10 @@ local mon,iso;
   if iso=fail then
     return fail;
   else
-    return mon*iso;
+    mon:=mon*iso;
+    SetIsInjective(mon,true);
+    SetIsSurjective(mon,true);
+    return mon;
   fi;
 end);
 
@@ -550,7 +539,10 @@ local mon,iso;
   if iso=fail then
     return fail;
   else
-    return mon*iso;
+    mon:=mon*iso;
+    SetIsInjective(mon,true);
+    SetIsSurjective(mon,true);
+    return mon;
   fi;
 end);
 
@@ -570,7 +562,10 @@ local mon,iso;
   if iso=fail then
     return fail;
   else
-    return mon*iso;
+    mon:=mon*iso;
+    SetIsInjective(mon,true);
+    SetIsSurjective(mon,true);
+    return mon;
   fi;
 end);
 
@@ -588,6 +583,8 @@ local mon,iso;
     return fail;
   else
     iso:=mon*iso;
+    SetIsInjective(mon,true);
+    SetIsSurjective(mon,true);
     mon:=MappingGeneratorsImages(iso);
     SetName(iso,Concatenation("<composed isomorphism:",
       String(mon[1]),"->",String(mon[2]),">"));

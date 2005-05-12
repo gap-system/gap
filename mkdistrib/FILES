@@ -1,0 +1,108 @@
+Description of archive/ordinary files and directories
+-----------------------------------------------------
+
+The following files (in this ftp directory) contain parts of the  GAP 4.X
+distribution, where X is the the current revision  number  of  GAP  (i.e.
+replace X by the appropriate revision number for the current GAP  in  the
+filenames listed below; also XXX, YYY represent versions or dates, and N,
+where designated represents an integer).
+
+If disk space is limited or the network connection is slow  it  might  be
+preferrable to assemble only a partial distribution from these files.  We
+list .zoo  files  below  (but  the  description  remains  valid  for  the
+corresponding .zip, .tar.gz, ... archives).
+
+Except for the accpkgXXX and deppkgYYY package archives and  archives  in
+the  accpkg/  and  deposit/pkg/  directories,  all  archives  should   be
+extracted at the ``top'' level (i.e. they contain  a  gap4rX/  directory,
+for some integer X; a directory in brackets or listed as being  contained
+is a subdirectory of gap4rX/ - so `Contains lib/ ...'  means  that  after
+extraction there will be a gap4rX/lib/ directory).
+
+A + in the category column indicates that the material is not included in
+the omnibus editions (gap4rX.zoo, gapmac4rX.zoo, gappc4rX.zoo).
+
+ File/Directory            Category    Description
+ --------------            --------    -----------
+ FILES                     All OS      This file.
+ INSTALL                   Unix        Installation instructions for Unix.
+ INSTALL-MAC.TXT           Mac         Installation instructions for
+                                       Macintosh.
+ INSTALL.WIN               Win         Installation instructions for
+                                       Windows.
+ accpkg/                   Dist+       Directory containing individual
+                                       archives of accepted GAP packages.
+                                       Each archive should be extracted in
+                                       an established pkg/ directory.
+ accpkgXXX.zoo             Dist+       Archive of accepted GAP packages.
+                                       Should be extracted in an
+                                       established pkg/ directory.
+ basic4rX.zoo              Dist        A basic set of files you will need
+                                       to work with GAP4. Contains
+                                       lib/, grp/, doc/, tst/ and src/cnf/
+                                       directories.
+ bin/mac/bin4rXXX-PPC.sit  Mac         Power MAC binary of GAP
+ bin/mac/bin4rXXX-68k.sit  Mac         68k MAC binary of GAP.
+ bin/mac/unzoo-4.2-PPC.sit Mac         Power MAC binary of of unzoo.
+ bin/mac/unzoo-4.2-68k.sit Mac         68k MAC binary of unzoo.
+ bin/unix/unzoo-linux      Unix/Binary Linux binary of unzoo.
+ bin/win/unzoo.exe         Win         Windows binary of unzoo.
+ deposit/pkg/              Dist+       Directory containing individual
+                                       archives of deposited GAP packages.
+                                       Each archive should be extracted in
+                                       an established pkg/ directory.
+ deppkgYYY.zoo             Dist+       Archive of deposited GAP packages.
+                                       Should be extracted in an
+                                       established pkg/ directory.
+ docdvi4rX.zoo             Doc         Pre-TeXed versions of the dvi files
+                                       for the books of the GAP manual of
+                                       the doc/ directory.
+ docps4rX.zoo              Doc         Postscript files for the books of
+                                       the GAP manual of the doc/ directory.
+ gap4rX.zoo                Dist        Omnibus Edition for Unix.
+                                       Does not include accpkgXXX.zoo or
+                                       deppkgYYY.zoo.
+ gapmac4rX.zoo             Mac         MAC omnibus edition. Contains (almost)
+                                       everything usable on a Macintosh.
+                                       Does not contain binary.
+ gappc4rX.zoo              Win         Windows (9x and NT) omnibus edition.
+                                       Contains (almost) everything usable
+                                       on a PC under Windows.
+ gdat4rX.zoo               Data        Group data libraries. Contains the
+                                       libraries of small groups,
+                                       transitive groups and primitive
+                                       groups (small/, trans/, prim/).
+ html4rX.zoo               Doc         HTML version of the manual
+                                       (doc/htm/ directory).
+ split/doc4rX.zoo          Doc         Documentation (doc/).
+ split/grp4rX.zoo          Dist        Basic group definitions (grp/).
+ split/html_sect4rX.zoo    Doc+        HTML documentation split in files by
+                                       section (as provided on our Web
+                                       server). (Contains doc/htm_small/
+                                       directory - not provided by
+                                       basic4rX.zoo or gap4rX.zoo. The 
+                                       online help will probably not work
+                                       together with this version, use the
+                                       standard doc/htm/ directory.)
+ split/idN4rX.zoo          Data        For N in [2 .. 6], the small/idN/ 
+                                       directory of the small groups library. 
+ split/lib4rX.zoo          Dist        The library of GAP functions (lib/).
+ split/prim4rX.zoo         Data        Primitive groups library (prim/).
+ split/smallN4rX.zoo       Data        For N in [2 .. 8], the small/smallN/ 
+                                       directory of the small groups library. 
+ split/src4rX.zoo          Dist        Source and source configuration
+                                       files (src/).
+ split/trans4rX.zoo        Data        Transitive groups library (trans/).
+ split/tst4rX.zoo          Dist        Test files (tst/).
+ tdat4rX.zoo               Data        Table data libraries. Contains the
+                                       character tables and tables of
+                                       marks (pkg/ctbllib/, pkg/tomlib/).
+ util/unzoo.c              Unix        C Source for unzoo.
+ wbin4rX.zoo               Win         Separate Windows binaries (bin/).
+ xtom4rX.zoo               Data+       Further tables of marks of larger
+                                       groups. Not contained in any of the
+                                       above files or the omnibus editions.
+                                       Expands to more than 130MB!
+                                       (pkg/tomlib/data/)
+ 
+GAP Group (gap@dcs.st-and.ac.uk), 16 Apr 02

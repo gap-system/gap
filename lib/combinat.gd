@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains declaration for combinatorics functions.
 ##
@@ -208,6 +209,23 @@ DeclareGlobalFunction("NrUnorderedTuples");
 ##  so on.
 ##
 DeclareGlobalFunction("Tuples");
+
+
+#############################################################################
+##
+#F  EnumeratorOfTuples( <set>, <k> )
+##
+##  This function is referred to as an example of enumerators that are
+##  defined by functions but are not constructed from a domain.
+##  The result is equal to that of `Tuples( <set>, <k> )'.
+##  However, the entries are not stored physically in the list but are
+##  created/identified on demand.
+##
+##  (It might be interesting to add analogous enumerator constructors
+##  also for other functions that are declared in `lib/combinat.gd'.
+##  For the moment, *this is kept undocumented* since it is too trivial.)
+##
+DeclareGlobalFunction( "EnumeratorOfTuples" );
 
 
 #############################################################################

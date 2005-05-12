@@ -3,8 +3,8 @@
 ##
 ##  This shell script constructs the (La)TeX .dvi, .ps, and .pdf formats and
 ##  the HTML format versions of the GAP manuals, which currently includes:
-##    ext, prg, ref, tut, new (main manuals) and
-##    ctbllib, gapdoc         (share package manuals)
+##    ext, prg, ref, tut, new (main GAP manuals) and
+##    ctbllib, gapdoc         (GAP package manuals)
 ##
 echo "Cleaning main manual auxiliary files"
 
@@ -19,59 +19,38 @@ echo "Building main manual .tex files from .msk files"
 
 echo "Creating main manual .toc, .bbl, .ind, .six and .lab files"
 # tex all manuals and build their bibliography and index information
-(cd ext; tex manual;bibtex manual;tex manual;../manualindex manual)
-(cd prg; tex manual;bibtex manual;tex manual;../manualindex manual)
-(cd ref; tex manual;bibtex manual;tex manual;../manualindex manual)
-(cd tut; tex manual;bibtex manual;tex manual;../manualindex manual)
-(cd new; tex manual;bibtex manual;tex manual;../manualindex manual)
+(cd ext; tex manual >& /dev/null;bibtex manual;../manualindex manual;tex manual >& /dev/null;../manualindex manual)
+(cd prg; tex manual >& /dev/null;bibtex manual;../manualindex manual;tex manual >& /dev/null;../manualindex manual)
+(cd ref; tex manual >& /dev/null;bibtex manual;../manualindex manual;tex manual >& /dev/null;../manualindex manual)
+(cd tut; tex manual >& /dev/null;bibtex manual;../manualindex manual;tex manual >& /dev/null;../manualindex manual)
+(cd new; tex manual >& /dev/null;bibtex manual;../manualindex manual;tex manual >& /dev/null;../manualindex manual)
 
-#####################################################################
-### Share package docs need to be made here (after the main manuals
-### have created their manual.lab and manual.six files). Also they need
-### to create a manual.lab file for possible cross-references from the
-### main manuals.
-echo "Creating CTblLib manuals (most formats)"
-# ctbllib           # force a fresh make of all the docs
-(cd ../pkg/ctbllib; touch doc/ctbllibr.msk; make manual)
-
-echo "Creating GapDoc manuals (all formats) and a manual.lab"
-# gapdoc 
-(cd ../pkg; 
-# this ensures gapdoc is present once in ALLPKG and not present in NOAUTO
-perl -pi -e "s/gapdoc\n//;" NOAUTO ALLPKG; echo gapdoc >> ALLPKG;
-# this creates GapDoc's documentation - all formats
-cd gapdoc; ./clean; echo "quit;" | ../../bin/gap.sh -r -q -b makedoc.g;
-# this creates the manual.lab needed for gapmacro.tex- & convert.pl-made manuals
-echo "GapDocManualLab(\"gapdoc\");quit;" | ../../bin/gap.sh -r -q -b)
+# two further tex runs to get the indices in and in the TOC.
+(cd ref; tex manual)
+(cd tut; tex manual)
+(cd ext; tex manual)
+(cd prg; tex manual)
+(cd new; tex manual)
 
 #####################################################################
 
 echo "Creating main manual .pdf files"
 # pdftex all manuals to create pdf versions (need to run twice to set
 # crossrefs properly)
-(cd ref; pdftex manual; pdftex manual)
-(cd tut; pdftex manual; pdftex manual)
-(cd ext; pdftex manual; pdftex manual)
-(cd prg; pdftex manual; pdftex manual)
-(cd new; pdftex manual; pdftex manual)
-echo "Creating CTblLib .pdf manual"
+(cd ref; pdftex manual >& /dev/null; pdftex manual)
+(cd tut; pdftex manual >& /dev/null; pdftex manual)
+(cd ext; pdftex manual >& /dev/null; pdftex manual)
+(cd prg; pdftex manual >& /dev/null; pdftex manual)
+(cd new; pdftex manual >& /dev/null; pdftex manual)
+#echo "Creating CTblLib .pdf manual"
 # ctbllib           # ctbllib's make doesn't include making .pdf format
-(cd ../pkg/ctbllib/doc; pdftex manual; pdftex manual)
-
-echo "Creating main manual .dvi and .ps files"
-# finally tex main manuals again for correct .dvi and postscript versions
-(cd ref; tex manual; dvips -D300 manual -o)
-(cd tut; tex manual; dvips -D300 manual -o)
-(cd ext; tex manual; dvips -D300 manual -o)
-(cd prg; tex manual; dvips -D300 manual -o)
-(cd new; tex manual; dvips -D300 manual -o)
+#(cd ../pkg/ctbllib/doc; pdftex manual; pdftex manual)
 
 echo "Creating main manual comprehensive index: .dvi, .ps and .pdf versions"
 ./allmanualsindex
 tex fullindex
 pdftex fullindex
-dvips -D300 fullindex -o fullindex.ps
 
 echo "Creating main manual HTML documentation (inc. comprehensive index)"
 # the main manuals + the comprehensive index
-(cd htm; make)
+(cd htm; make clean; make)

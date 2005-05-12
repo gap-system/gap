@@ -8,6 +8,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains
 ##  1. the design of families of general mappings
@@ -857,8 +858,14 @@ InstallMethod( InverseOp,
     true,
     [ IsGeneralMapping ], 0,
     function( map )
+    local inv;
     if IsEndoGeneralMapping( map ) and IsBijective( map ) then
-      return InverseGeneralMapping( map );
+      inv := InverseGeneralMapping( map );
+      SetIsEndoGeneralMapping( inv, true );
+      SetIsBijective (inv, true); # this may seem superfluous, but  
+           # IsInjective may create an InverseGeneralMapping which does not 
+           # know that it is bijective
+      return inv;
     else
       Info(InfoWarning,1,
         "The mapping must be bijective and have source=range\n",

@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the coder package.
 **
@@ -245,10 +246,10 @@ extern  Stat *          PtrBody;
                         (((Int)(expr) & 0x03) == 0x01)
 
 #define INTEXPR_INT(indx)       \
-                        ((Expr)(((indx) << 2) + 0x01))
+                        ((Expr)(((Int)(indx) << 2) + 0x01))
 
 #define INT_INTEXPR(expr)       \
-                        (((Int)(Int4)(expr)-0x01) / 4)
+                        (((Int)(expr)-0x01) >> 2)
 
 
 /****************************************************************************

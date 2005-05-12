@@ -1,19 +1,163 @@
-==Files
-src/objcftl.c
-src/objccoll.c
-src/objscoll.c
-lib/tuples.gi
-lib/ctblauto.gi
+==Files (do not clear out, only add)
+lib/string.gi
+tst/vspcrow.tst
+lib/ctblmono.gi
+lib/vspcrow.gi
+lib/ctblsymm.gi
+lib/algfld.gi
+lib/arith.gd
+lib/magma.gi
+lib/modulrow.gi
+lib/addmagma.gi
+lib/quogphom.gi # fixed a component access, not mentioned below
+lib/coll.gi
+lib/ctbl.gi
+lib/ctblmaps.gi
+lib/ctblmoli.gi
+lib/process.gi
+lib/algrep.gi
+lib/relation.gi
+lib/oprt.gi
+lib/matrix.gi
+src/vec8bit.c
+lib/ghom.gi # (correction not listed since harmless)
+lib/mat8bit.gi # (correction not listed since very obscure and not reported
+	          by user)
+lib/pager.gi
+lib/init.g  # "installed" --> "loaded", not mentioned below
+src/saveload.c
+src/funcs.c
+lib/grppc.gi
+lib/tom.gi
+src/listoper.c # just a fix to a comment.
+src/vecgf2.c
+src/vec8bit.c
+grp/classic.gd
+
+lib/grppcatr.gi
+lib/ffe.gi
+lib/stbcbckt.gi
+lib/lierep.gi
+lib/meataxe.gi
+trans/trans.grp
+lib/grpperm.gi
+
+lib/vecmat.gi
+
+lib/semirel.gi
+
+lib/kbsemi.gi
+lib/rwssmg.gi
+lib/reesmat.gi
+lib/semigrp.gi
+prim/grps/prim1.grp
+lib/addmagma.gi
+src/system.c # for version number
+
+small/idgrp1.g
+lib/version.g
+lib/read2.co
+lib/read3.co
+lib/read4.co
+lib/read5.co
+lib/read6.co
+lib/read7.co
+lib/read8.co
+lib/pcgsspec.gi
+lib/algsc.gi
+lib/ghomperm.gi
+lib/csetperm.gi
+lib/ghomfp.gi
+lib/info.gi
+
+src/scanner.c # output redirection bug
+
+lib/algebra.gi
+lib/semirel.gd
+lib/semirel.gi
+lib/reesmat.gi
+lib/semigrp.gd
+lib/semigrp.gi
+lib/ratfunul.gi
+lib/morpheus.gi
+lib/ctblgrp.gi
+
+lib/pquot.gi
+
+lib/grppclat.gi
+
+lib/grppc.gd
+lib/grppc.gi
+pkg/autpgrp/gap/autos.gi
+pkg/anupq/lib/anupga.gi  
+pkg/anupq/lib/anupq.gi   
+pkg/anupq/lib/anupqi.gi  
+pkg/anupq/lib/anupqios.gi
+
+lib/pcgs.gi
+
+lib/grpfp.gi
+lib/straight.gi
+lib/init.g
+lib/ratfunul.gi
+
+tst/grpconst.tst # AutPGrp banner change
+lib/helpt2t.gi
+lib/package.g
+
+prim/cohorts.grp
+prim/primitiv.grp
+prim/grps/prim11.grp
+
+lib/grpnice.gi  # seemed to be left out
+
+tst/ctblfuns.tst
+tst/ctblmono.tst
+
+lib/morpheus.gi
+lib/grp.gi
+
+src/plist.c # assign to vecffe
+
+lib/algebra.gi
+
+lib/alglie.gi
+
+lib/algrep.gi
+lib/algliess.gi
+lib/ctblsolv.gi
+
+lib/zmodnz.gi
 
 === message, all XXX need replacing
 
+# this is the kernel bit for later bugfixes.
+This fix incorporates changes in the kernel that came with bugfix YYY. If
+you did not install this bugfix (or do not remember installing the bugfix),
+you have to recompile by issuing the commands
+
+make clean
+./configure
+make
+
+in the directory in which you unpacked the fix or download (and unpack) the
+most recent binary for your machine.
+
+
 # this is the kernel bit.
-This fix changes the kernel. You have to recompile by calling `make' in the
-directory in which you unpacked the fix.
+This fix changes the kernel. You have to recompile the kernel after
+unpacking the fix. The safest way to do this is to execute the three
+commands:
+
+make clean
+./configure
+make
+
+in the directory in which you unpacked the fix.
 
 Windows users can find a new binary in the file `wbin4rXXX.zoo' in the
 `bugfixes' directory: Extract this archive in the same place as the fix
-archive to get a new `gapw95.exe' file.
+archive to get a new `bin/gapw95.exe' file.
 
 Macintosh users should download the file 'bin4rXXX-PPC.sit' (for PPC
 machines) or 'bin4rXXX-68k.sit' (for 68k machines), from the 'bugfixes'
@@ -29,45 +173,187 @@ fixes did not make the binaries of this fix obsolete.
 
 Dear Forum,
 
-This is to announce bugfix number XXX for GAP 4.XXX. The priority of this fix
-is XXX.
+This is to announce bugfix number 6 for GAP 4.3. The priority of this fix
+is XXXXXX.
 
-You should not apply this fix to any version of GAP3, nor to any
-version of GAP4.1.
+You should not apply this fix to any version of GAP before GAP 4.3. (If you
+run such an old version, please update to GAP 4.3 (and this bugfix) as
+release 4.3 corrects many problems.)
+GAP Bugfixes now are comprehensive. If you forgot to install prior bugfixes,
+you do only need to install this, and no prior ones.
+
+Please note that one of the changes made in this bugfix breaks two packages,
+namely AutPGrp and ANUPQ. If you have either of these packages installed
+then you will need to also upgrade these packages. A mechanism has been
+provided with the bugfix to detect out-dated packages, prevent their being
+autoloaded and inform of where to find the latest version. More details
+about the new versions of the AutPGrp and ANUPQ packages will follow in
+subsequent announcements to the forum.
 
 This fix corrects:
 
-1) A problem with `FactorCosetAction' for groups handled by a nice
-monomorphism.
-2) A bug in the collector for polycyclic groups, the bug occurs only
-   if the package `polycyclic' is used.
-3) A problem in storing whether a finitely presented group has a decidable
-   word problem if it is found out later
-4) The wrong combinatorial kernel collector was installed for the
-   8-bit associative word reprsentation.
-5) A problem with `TransformingPermutationsCharacterTables';
-   `fail' may be returned in some cases although the given tables are in
-   fact permutation equivalent.
+1) A crash when incorrect types of arguments are passed to FileString.
+2) A bug in `DerivedSubgroupTom' and `DeriverSubgroupsTom'.
+3) An error in the inversion of certain `ZmodnZObj' elements.
 
-Errors 1,3) may lead to error messages.
-Error 2) leads to a segmentation fault.
-Errors 3), 5) may lead to wrong results.
+Error 1 may cause GAP to crash, errors 2 and 3 may cause an error message.
 
-Many thanks to:
-G"otz Pfeiffer for reporting error 1
-Toshio Sumi for reporting error 3
+Many thanks to Jan Willem Knopper and Ignat Soroko who reported problems. 
+
+The following errors were corrected in earlier bugfixes, which are
+incorporated into this one:
+
+Corrections from bugfix 1
+
+1) A bug in the handling of Processes with empty input or output streams.
+2) An error in the function for computing quotients of algebra modules.
+3) An error in computing the strongly connected components of a binary
+   relation in which incorrect results can be returned.
+4) A "no method found" error in OrbitStabilizerAlgorithm for infinite
+groups.
+5) Calculation of iterated automorphism groups might stop with an error message.
+6) A segmentation fault when converting length 0 compressed vectors to
+   larger fields
+7) The output of the internal pager (see 'Pager') is no longer copied to
+   log files.
+8) Some memory is not freed up as soon as it could be, resulting in
+   over-use of memory and over-large saved workspaces
+9) Saving and loading a workspace using a kernel containing a
+   statically loaded user module (most likely a compiled GAP file)
+   did not work.
+10) Problems with EulerianFunction for certain types of groups
+
+Corrections from bugfix 2
+
+ 1) A segmentation fault when appending to a length 0 compressed vector
+    over GF2.
+ 2) An error in the computation of inverses in quaternion algebras with
+    non-standard parameters.
+ 3) The result of 'ProjectiveSymplecticGroup(n,q);'.
+ 4) `GeneratorOfCyclicGroup' for a trivial pc group.
+ 5) A problem in backtrack routines using `Suborbits' if the group has
+    fixed points in the range [1..max(Omega)].
+ 6) A problem with `CharacterTableDirectProduct' if exactly one argument
+    is a Brauer table.
+ 7) Problems with `IntScalarProduct' and `NonnegIntScalarProducts'
+    if the third argument is not a plain list (this situation does not occur
+    in GAP library functions).
+ 8) A Problem with GQuotient
+ 9) A problem with the linear algebra methods for Lie algebra cohomology.
+10) A Problem with requesting transitive groups of degree including 1
+11) A Problem with inverting lists of compressed vectors over fields
+    of order greater than 2.
+12) An error in computing whether an element is in a Green's D equivalence
+    class or not.
+13) A missing method for `MovedPoints(<perm>)'
+14) The method IsGreensLessThanOrEqual should work for Green's D classes for
+    finite groups.
+15) The method GroupHClassOfGreensDClass was not implemented and is required
+    for the Rees Matrix methods.
+16) The methods AssociatedReesMatrixSemigroupOfDClass, IsZeroSimpleSemigroup,
+    IsomorphismReesMatrixSemigroup, and SandwichMatrixOfReesZeroMatrixSemigroup
+    all create Greens classes using obsolete methods which for some semigroups
+    leads to infinite recursion or causes GAP to stop with an error message.
+17) A problem with `CentralizerModulo' for permutation groups.
+18) A wrong name for PGL(2,49) in the primitive groups library of degree 50
+20) Missing `Representative' methods for certain trivial groups and
+    trivial spaces.
+21) A missing setting of `IndicesNormalSteps'
+
+Corrections from bugfix 3
+
+1) An error in IdGroup that mistakenly was not corrected in Bugfix 2.
+2) An inconsistent setting of IndicesNormalSteps.
+3) A problem with the inversion routine for quaternions.
+
+Corrections from bugfix 4
+
+ 1. A problem with a homomorphism from a free group in the trivial
+    permutation group.
+ 2. A problem with the multiplication of rationals and elements in
+    large prime fields.
+ 3. A problem with composing a homomorphism from an fp group with another
+    homomorphism (images may be wrong).
+ 4. A problem with attempting to create univariate polynomials of very
+    high degree.
+ 5. A problem with output going to *errout* incorrectly after a syntax error
+ 6. An error in the function ReducedSCTable.
+ 7. An error in computing the Rees Matrix semigroup.
+ 8. A compatibility problem with earlier versions of gap in semigroup
+    and monoid rewriting systems.
+ 9. An error in the comparison routine for univariate rational functions.
+10. The behaviour of PQuotient() when an attempt is made to compute a
+    p-quotient with more generators than the underlying data structure
+    was initialised with. 
+11. A problem with computing `BasisVectors' for a basis of an algebraic
+    field extension.
+12. A problem with the definition of `IsRowVector' (which previously
+    returned `true' also for matrices).
+13. A problem with `BaumClausenInfo'.
+14. A problem with `IsRowModule' for infinite dimensional vector spaces
+    (which are not row spaces).
+15. A problem when calculating representations of a group in which class
+    arrangement in group and character table are not identical.
+16. A problem with `Difference' with first argument a list that is not a set
+    and second argument an empty list.
+17. The failure of Elements() to compute the elements of a pc group
+    with non-prime relative orders.
+18. A wrong computation of single character values of Weyl groups of type B
+    and character tables of Weyl groups of type D. Furthermore, a much more
+    efficient function for computing all character values is provided.
+19. Packages accidentally overwriting the setting of `InfoWarning'.
+20. A missing method for `IsPolynomial' for univariate rational functions.
+21. A problem in the on-line help which sometimes returned a blank entry for
+    a topic even though the topic was documented.
+22. A problem in the help system where a tilde in a filename was replaced by
+    a blank.
+23. A problem that prevented the documentation of some packages from 
+    autoloading.
+24. Three missing primitive groups of degree 441 were addded.
+
+Corrections from Bugfix 5:
+
+ 1) A wrong return format for `IsomorphicSubgroups' applied to cyclic groups.
+ 2) A wrong `true' result of `IsSubset' for certain algebras.
+ 3) Segmentation faults and other strange behaviour when assigning
+    finite field elements of different characteristics into compressed vectors
+ 4) A bug in the subgroup conjugation test for permutation groups that are
+    not subgroups.
+ 5) A missing method for `BaseOrthogonalSpaceMat'.
+ 6) A missing `Set' call in the construction of the global variable
+    `AUTOLOAD_PACKAGES'.
+ 7) A wrong display string of the numerator in rational functions returned
+    by `MolienSeries' (in the case that the constant term of this numerator
+    is zero).
+ 8) A strange behaviour of `Intersection' for the case that a strictly
+    sorted list is the unique entry of the list that is given as the
+    argument; in this situation, this entry itself was returned instead of
+    a shallow copy.
+ 9) An error in the basis of a product space of algebras.
+10) Possibly wrong result of `Centre' for pc groups.
+11) Possibly wrong result of `DirectSumDecomposition' for matrix Lie algebras. 
+12) An error in `LieNormalizer', `LieCentralizer' for zero subspaces.
+13) An error in the computation of matrices of adjoint modules.
+14) A strange error message when constructing the simple Lie algebra of type B1.
+15) An error in `ModuleByRestriction'.
+16) An error in `IrrBaumClausen' for the trivial group.
+17) An error with vector space bases of row spaces over fields which
+    neither are prime fields nor contain all entries of the vectors.
+18) An error with `IsMonomial', when it uses the function
+    `TestMonomialFromLattice' (i.e., in hard cases, likely for characters of
+    nonsolvable groups).
 
      Installing the bugfix.
      ======================
 
-Load the zoo archive `fix4rXXX.zoo' from the bugfixes web page
+Load the zoo archive `fix4r3nX.zoo' from the bugfixes web page
 http://www-gap.dcs.st-and.ac.uk/~gap/Info4/bugfixes.html
 Alternatively you can find this file in the `bugfixes' directory of the
 GAP4 ftp distribution.
 
 Unpack the file in the home directory of your GAP distribution (the
 directory containing the `lib' and `grp' directories) using `unzoo -x
-fix4rXXX.zoo'. `unzoo' may ask you for permissions to overwrite files,
+fix4r3nX.zoo'. `unzoo' may ask you for permissions to overwrite files,
 answer this with Y)es or A)ll. This will replace the erroneous files by
 fixed versions.
 
@@ -75,19 +361,20 @@ fixed versions.
 enter the argument line after the call to `unzoo'.)
 Make sure you have write permissions when applying the fix.
 
-You can remove the file `descriptionXXX' afterwards.
+You can remove the file `descriptionX' afterwards.
 
-After installing the bugfix you can test whether
-the bugfix has been applied correctly by starting GAP from the `gap4XXX'
-directory and issuing
+After installing the bugfix you can test whether the bugfix has been applied
+correctly by starting GAP from the `gap4r3' directory and issuing
 
 gap> ReadTest("tst/bugfix.tst");
 + bugfixes test
-+ GAP4stones: 835
++ GAP4stones: 6220
 true
 
 (The output should be like this if the bugfixes have been installed
-correctly. The number of GAP4stones may vary according to your system.)
+correctly. The number of GAP4stones may vary according to your system. If
+your screen width is not 80 characters you must start GAP with the command
+line option -x 80 for reading in test files.)
 
 Running this test is not a necessary part of installing a bug fix, but only
 serves as a confirmation that everything went well. The test might run for
@@ -99,17 +386,4 @@ messages.
 XXX Name and date XXX
 
 == Comments
-
-
-== Example code
-gap> D:=Z(2)*[[0,1],[1,0]];;
-gap> g:=Group([D]);;
-gap> h:=FactorCosetAction(g,TrivialSubgroup(g));;
-gap> Image(h,D);
-(1,2)
-gap> f:=FreeGroup(2);;
-gap> g:=f/[f.1^6,f.2^2*f.1^(-3),f.2^(-1)*f.1*f.2*f.1];;
-gap> h:=CyclicGroup(5);;
-gap> k:=DirectProduct(g,h);;
-gap> Elements(k);;
 

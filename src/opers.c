@@ -7,6 +7,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the  filters, operations, attributes,
 **  and properties package.
@@ -48,13 +49,17 @@ const char * Revision_opers_c =
 
 #include        "saveload.h"            /* saving and loading              */
 
+#include        "listfunc.h"   
+#include        "integer.h"   
 
 /****************************************************************************
 **
-
 *V  TRY_NEXT_METHOD . . . . . . . . . . . . . . . . . `TRY_NEXT_MESSAGE' flag
 */
 Obj TRY_NEXT_METHOD;
+
+
+#define CACHE_SIZE 5
 
 
 /****************************************************************************
@@ -1501,6 +1506,32 @@ Obj CallHandleMethodNotFound( Obj oper,
 
 /****************************************************************************
 **
+*F  FuncCompactTypeIDs( <self> ) . . . garbage collect the type IDs
+**
+*/
+
+static UInt NextTypeID = 0;
+Obj IsType = 0;
+
+static void FixTypeIDs( Bag b ) {
+  if ( (TNUM_OBJ( b )  == T_POSOBJ) &&
+       (DoFilter(IsType, b ) == True ))
+    {
+      ID_TYPE(b) = INTOBJ_INT(NextTypeID);
+      NextTypeID++;
+    } 
+}
+
+
+Obj FuncCompactTypeIDs( Obj self )
+{
+  NextTypeID = -(1L << NR_SMALL_INT_BITS);
+  CallbackForAllBags( FixTypeIDs );
+  return INTOBJ_INT(NextTypeID);
+}
+
+/****************************************************************************
+**
 *F  DoOperation( <name> ) . . . . . . . . . . . . . . .  make a new operation
 */
 UInt CacheIndex;
@@ -1550,7 +1581,6 @@ Int OperationHit;
 Int OperationMiss;
 Int OperationNext;
 
-#define CACHE_SIZE 5
 
 /* This avoids a function call in the case of external objects with a
    stored type */
@@ -6085,6 +6115,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "IS_AND_FILTER", 1, "filter",
       FuncIS_AND_FILTER, "src/opers.c:IS_AND_FILTER" },
 
+    { "COMPACT_TYPE_IDS", 0, "",
+      FuncCompactTypeIDs, "src/opers.c:COMPACT_TYPE_IDS" },
+
     { 0 }
 
 };
@@ -6252,6 +6285,7 @@ static Int InitKernel (
     ImportFuncFromLibrary( "RESET_FILTER_OBJ", &RESET_FILTER_OBJ );
     
     ImportFuncFromLibrary( "HANDLE_METHOD_NOT_FOUND", &HandleMethodNotFound );
+    ImportGVarFromLibrary( "IsType", &IsType );
 
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );

@@ -1,0 +1,104 @@
+<html><head><title>HOWTO CVS</title></head>
+<body bgcolor="ffffff"><h1>HOWTO CVS</h1>
+<A NAME="out"><H2>How to check out the current version</H2></A>
+
+You will need a copy of the CVS version control system.
+It might be necessary to use version 1.10 (or newer) of CVS to get proper
+date interpretation after 2000.
+<P>
+Using CVS you first (once) have to log in to the repository:
+<PRE>
+cvs -d ":pserver:visitor@cvs-gap.dcs.st-and.ac.uk:/gap/CVS" login
+</PRE>
+This will prompt for the password. (The password then will be stored locally
+on your computer.)
+<P>
+To check out the current development version of <font face="Gill Sans,Helvetica,Arial">GAP</font> 4, use
+<PRE>
+cvs -d ":pserver:gap@cvs-gap.dcs.st-and.ac.uk:/gap/CVS" checkout 4.0
+</PRE>
+This creates a directory 4.0 which contains the current development version of
+<font face="Gill Sans,Helvetica,Arial">GAP</font> 4. 
+Note that this version is quite big -- about 200MB -- in part due to some
+very large tables of marks. You can delete large files or directories which
+you will not need (if your disk is small you can even interrupt CVS with ^Z
+and do so before continuing) and CVS should not complain
+<P>
+In any of the subdirectories of 4.0  you can call at any time:
+<PRE>
+cvs update
+</PRE>
+which will add the last changes to your version. Adding the option ``-d'' will
+automatically create subdirectories which are not checked out which is
+necessary if new subdirectories were added to the development tree, however
+it might also recreate directories you deliberately removed.
+
+
+<A NAME="upd"><H2>How to update</H2></A>
+Calling
+<PRE>
+cvs update
+</PRE>
+in a checked out branch will update all files to the most recent version
+(under the checked out branch. Add the <tt>-A</tt> option to guarantee
+update to the current development version) in the current directory and all
+subdirectories.
+<P>
+This will add/delete new/obsolete files, but will not add new directories.
+For this adding the <tt>-d</tt> option is necessary.
+(This is to avoid updating very large directories -- such as tables of marks
+-- that are not used.)
+<P>
+Iyt is possible to give a list of file/directory names as extra argument, in
+this case only the named files are updated.
+<P>
+CVS will report on the status of the update:
+<UL>
+<LI><tt>U</tt> or <tt>P</tt> means the local file was updated/patched by
+CVS.
+<LI><tt>M</tt> means the local file has changes that are not in CVS (use
+<tt>cvs diff</tt> to see which)
+<LI><tt>C</tt> means the local file has changes and the CVS update adds
+changes in the same places. You must edit the file to resolve these problems
+by hand.
+</UL>
+It is always possible to delete corrupted local files and get them anew with
+update.
+
+<A NAME="old"><H2>How to check out an old (or released) version</H2></A>
+It is possible to refer to an older version either by its 
+<DL>
+<DT>
+date
+<DD>
+with the <tt>-D date</tt>
+option. The date will be given as a string in the same way as for the unix
+<tt>date</tt> command,
+<DT>or by its branch tag
+<DD> with the <tt>-r tagname</tt> option. Here <i>tagname</i> is the name of
+the tag (something we rarely use, but some prereleases are simply tags) or
+the branch (typically a released branch <tt>GAP4R3</tt> or similar).  In the
+case of a branch, this will get the most current version of this branch.
+
+</DL>
+The option can be given either to a <tt>checkout</tt> command to create a
+new copy or to a <tt>update</tt> command to change an existing version to
+an older version.
+<P>
+It also is possible to do an <tt>update</tt> to an older version for single
+files.
+<P>
+The files obtained this way keep a <i>sticky tag</i>, which indicates that
+they are of an older version.
+<pre>
+cvs status
+</pre>
+can be used to list this status, an <tt>update</tt> with option <tt>-A</tt>
+can be used to remove this tag and bring the files to the most recent
+development version.
+<P>
+In a copy checked out in a branch, it is possible to commit changes (i.e.
+bugfixes) in this branch.
+</BODY>
+</HTML>
+

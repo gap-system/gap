@@ -6,60 +6,11 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.oprt_gi :=
     "@(#)$Id$";
 
-#############################################################################
-##
-#R  IsSubsetEnumerator  . . . . . . . . . . . . . . .  enumerator for subsets
-##
-DeclareRepresentation( "IsSubsetEnumerator",
-    IsList and IsAttributeStoringRep,
-    [ "homeEnumerator", "sublist" ] );
-
-#############################################################################
-##
-#M  Length( <senum> ) . . . . . . . . . . . . . . . . .  for such enumerators
-##
-InstallMethod( Length,"subset enumerator", true, [ IsSubsetEnumerator ], 0,
-    senum -> SizeBlist( senum!.sublist ) );
-
-#############################################################################
-##
-#M  <senum>[ <num> ]  . . . . . . . . . . . . . . . . .  for such enumerators
-##
-InstallMethod( \[\],"subset enumerator", true, [ IsSubsetEnumerator, IsPosInt ], 0,
-    function( senum, num )
-    num := PositionNthTrueBlist( senum!.sublist, num );
-    if num = fail  then  return fail;
-                   else  return senum!.homeEnumerator[ num ];  fi;
-end );
-
-#############################################################################
-##
-#M  PositionCanonical( <senum>, <elm> ) . . . . . . . .  for such enumerators
-##
-InstallMethod( PositionCanonical,"subset enumerator", true,
-  [ IsSubsetEnumerator, IsObject ], 0,
-    function( senum, elm )
-    local   pos;
-    
-    pos := PositionCanonical( senum!.homeEnumerator, elm );
-    if pos = fail  or  not senum!.sublist[ pos ]  then
-        return fail;
-    else
-        return SizeBlist( senum!.sublist{ [ 1 .. pos ] } );
-    fi;
-end );
-
-#############################################################################
-##
-#M  AsList( <senum> ) . . . . . . . . . . . . . . . . .  for such enumerators
-##
-InstallMethod( AsList,"subset enumerator", true, [ IsSubsetEnumerator ], 0,
-    senum -> senum!.homeEnumerator{ ListBlist
-            ( [ 1 .. Length( senum!.homeEnumerator ) ], senum!.sublist ) } );
 
 #############################################################################
 ##
@@ -301,8 +252,8 @@ end );
 ##
 #M  Enumerator( <xset> )  . . . . . . . . . . . . . . .  for external subsets
 ##
-InstallMethod( Enumerator,"for external subset with home enumerator", true,
-  [ IsExternalSubset and HasHomeEnumerator], 0,
+InstallMethod( Enumerator, "for external subset with home enumerator",
+    [ IsExternalSubset and HasHomeEnumerator],
     function( xset )
     local   G,  henum,  gens,  acts,  act,  sublist,  pnt,  pos;
     
@@ -328,9 +279,7 @@ InstallMethod( Enumerator,"for external subset with home enumerator", true,
             OrbitByPosOp( G, henum, sublist, pos, pnt, gens, acts, act );
         fi;
     od;
-    return Objectify( NewType( FamilyObj( henum ), IsSubsetEnumerator ),
-        rec( homeEnumerator := henum,
-                    sublist := sublist ) );
+    return EnumeratorOfSubset( henum, sublist );
 end );
 
 InstallMethod( Enumerator,"for external orbit: compute orbit", true,
@@ -666,7 +615,6 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
     elif IsExternalSetByActorsRep( xset )  then
         filter := filter and IsActionHomomorphismByActors;
     elif     IsMatrixGroup( G )
-         and not IsOneDimSubspacesTransversalRep( D )
          and IsScalarList( D[ 1 ] )
          and act in [ OnPoints, OnRight ]  then
       # we act linearly. This might be used to compute preimages by linear
@@ -764,14 +712,7 @@ InstallMethod( SurjectiveActionHomomorphismAttr,
   "call Ac.Hom.Constructor", true, [ IsExternalSet ], 0,
    xset -> ActionHomomorphismConstructor( xset, true ) );
 
-
-#############################################################################
-##
-#M  ViewObj( <hom> )  . . . . . . . . . . . .  view an action homomorphism
-##
-InstallMethod( ViewObj, "for action homomorphism", true,
-    [ IsActionHomomorphism ], 0,
-function( hom )
+VPActionHom:=function( hom )
 local name;
   name:="homo";
   if HasIsInjective(hom) and IsInjective(hom) then
@@ -783,18 +724,22 @@ local name;
     name:="epi";
   fi;
   Print( "<action ",name,"morphism>" );
-end );
+end;
 
+
+#############################################################################
+##
+#M  ViewObj( <hom> )  . . . . . . . . . . . .  view an action homomorphism
+##
+InstallMethod( ViewObj, "for action homomorphism", true,
+    [ IsActionHomomorphism ], 0, VPActionHom);
 
 #############################################################################
 ##
 #M  PrintObj( <hom> ) . . . . . . . . . . . . print an action homomorphism
 ##
 InstallMethod( PrintObj, "for action homomorphism", true,
-    [ IsActionHomomorphism ], 0,
-    function( hom )
-    Print( "<action homomorphism>" );
-end );
+    [ IsActionHomomorphism ], 0, VPActionHom);
 #T It seems to be difficult to find out what I can use
 #T for a correct treatment of `PrintObj'.
 
@@ -815,13 +760,14 @@ InstallMethod( Range,"ophom: S(domain)", true,
   [ IsActionHomomorphism ], 0, hom ->
     SymmetricGroup( Length( HomeEnumerator(UnderlyingExternalSet(hom)) ) ) );
 
-InstallMethod( Range, "surjective action homomorphism",true,
-  [ IsActionHomomorphism and IsSurjective ], 0,
+InstallMethod( Range, "surjective action homomorphism",
+  [ IsActionHomomorphism and IsSurjective ],
 function(hom)
 local gens,imgs,ran,xset;
   gens:=GeneratorsOfGroup( Source( hom ) );
   imgs:=List(gens,gen->ImageElmActionHomomorphism( hom, gen ) );
-  ran:=GroupByGenerators(imgs,());
+    ran:= GroupByGenerators( imgs,
+              ImageElmActionHomomorphism( hom, One( Source( hom ) ) ) );
   # remember a known base
   if HasBaseOfGroup(UnderlyingExternalSet(hom)) then
     xset:=UnderlyingExternalSet(hom);
@@ -832,6 +778,12 @@ local gens,imgs,ran,xset;
     SetBaseOfGroup(ran,xset!.basePermImage);
   fi;
   SetMappingGeneratorsImages(hom,[gens,imgs]);
+  if HasSize(Source(hom)) then
+    StabChainOptions(ran).limit:=Size(Source(hom));
+  fi;
+  if HasIsInjective(hom) and HasSource(hom) and IsInjective(hom) then
+    UseIsomorphismRelation( Source(hom), ran );
+  fi;
   return ran;
 end);
 
@@ -1258,7 +1210,11 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 
   # can we compute the index from the orbit length?
   if HasSize(G) then
-    SetSize(stb,Size(G)/Length(orb));
+    if IsFinite(G) then
+      SetSize(stb,Size(G)/Length(orb));
+    else
+      SetSize(stb,infinity);
+    fi;
   fi;
 
   # do we care about a blist?
@@ -1399,7 +1355,7 @@ local   list,  ps,  p,  i,  gen,  img,  pos,  imgs,  hom,orb,ran,xset;
   p:=RUN_IN_GGMBI; # no niceomorphism translation here
   RUN_IN_GGMBI:=true;
   hom := ActionHomomorphism(xset,"surjective" );
-  ran:=Group(imgs,());
+    ran:= Group( imgs, () );  # `imgs' has been created with `PermList'
   SetRange(hom,ran);
   SetImagesSource(hom,ran);
   SetAsGroupGeneralMappingByImages( hom, GroupHomomorphismByImagesNC
@@ -1486,7 +1442,7 @@ local dict,p,i,img,imgs,hom,permimg,orb,imgn,ran,D,xset;
   RUN_IN_GGMBI:=true;
   hom := ActionHomomorphism( xset,"surjective" );
   imgs:=permimg;
-  ran:=Group(imgs,());
+    ran:= Group( imgs, () );  # `imgs' has been created with `PermList'
   SetRange(hom,ran);
   SetImagesSource(hom,ran);
   SetAsGroupGeneralMappingByImages( hom, GroupHomomorphismByImagesNC
@@ -2014,15 +1970,20 @@ InstallMethod( MaximalBlocksOp,
     function ( G, D, seed, gens, acts, act )
     local   blks,       # blocks, result
             H,          # image of <G>
-            blksH;      # blocks of <H>
+            blksH,      # blocks of <H>
+	    onsetact;   # induces set action
 
     blks := BlocksOp( G, D, seed, gens, acts, act );
 
     # iterate until the action becomes primitive
     H := G;
     blksH := blks;
+    onsetact:=function(l,g)
+      return Set(List(l,i->act(i,g)));
+    end;
+
     while Length( blksH ) <> 1  do
-        H     := Action( H, blksH, OnSets );
+        H     := Action( H, blksH, onsetact );
         blksH := Blocks( H, [1..Length(blksH)] );
         if Length( blksH ) <> 1  then
             blks := List( blksH, bl -> Union( blks{ bl } ) );
@@ -2198,6 +2159,57 @@ InstallMethod( CycleLengthsOp, true, [ IsObject, IsList, IsFunction ], 0,
     return Immutable( List( CyclesOp( g, D, act ), Length ) );
 end );
 
+#############################################################################
+##
+#F  CycleIndex( <arg> ) . . . . . . . . . . . . . . . . . . . cycle lengths
+##
+InstallGlobalFunction( CycleIndex, function( arg )
+local cs, g, dom, op;
+  
+  # get/test arguments
+  cs:=Length(arg)>0 
+	and (IsMultiplicativeElementWithInverse(arg[1]) or IsGroup(arg[1]));
+  if cs then
+    g:=arg[1];
+    if Length(arg)<2 then
+      cs:= IsPerm(g) or IsPermGroup(g);
+      if cs then
+	dom:=MovedPoints(g);
+      fi;
+    else
+      dom:=arg[2];
+    fi;
+
+    if Length(arg)<3 then
+      op:=OnPoints;
+    else
+      op:=arg[3];
+      cs:=cs and IsFunction(op);
+    fi;
+  fi;
+  if not cs then
+    Error("usage: CycleIndex(<g>,<Omega>[,<act>])");
+  fi;
+  return CycleIndexOp( g, dom, op );
+end );
+
+InstallOtherMethod(CycleIndexOp,"element",true,
+  [IsMultiplicativeElementWithInverse,IsListOrCollection,IsFunction ],0,
+function( g, dom, act )
+local c, i;
+  c:=Indeterminate(Rationals,1)^0;
+  for i in CycleLengthsOp(g,dom,act) do
+    c:=c*Indeterminate(Rationals,i);
+  od;
+  return c;
+end);
+
+InstallMethod(CycleIndexOp,"finite group",true,
+  [IsGroup and IsFinite,IsListOrCollection,IsFunction ],0,
+function( g, dom, act )
+  return 1/Size(g)*
+  Sum(ConjugacyClasses(g),i->Size(i)*CycleIndexOp(Representative(i),dom,act));
+end);
 
 #############################################################################
 ##
@@ -2933,4 +2945,9 @@ local p,n,f,o,v,ran,exp,H,phi,alpha;
   end);
   return [phi,alpha,p];
 end);
+
+
+#############################################################################
+##
+#E
 

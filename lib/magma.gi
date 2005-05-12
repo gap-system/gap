@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for magmas.
 ##
@@ -847,6 +848,16 @@ InstallMethod( Representative,
     true,
     [ IsMagmaWithOne and HasOne ], SUM_FLAGS,
     One );
+
+InstallMethod( Representative,
+    "for magma-with-one with stored parent",
+    [ IsMagmaWithOne and HasParentAttr ],
+    function( M )
+    if not IsIdenticalObj( M, Parent( M ) ) then
+      return One( Representative( Parent( M ) ) );
+    fi;
+    TryNextMethod();
+    end );
 
 
 #############################################################################

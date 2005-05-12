@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -48,7 +50,7 @@ gap> IsBijective( f );
 true
 
 
-gap> STOP_TEST( "alghom.tst", 58060000 );
+gap> STOP_TEST( "alghom.tst", 50500000 );
 
 
 #############################################################################

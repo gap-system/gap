@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions for the float package.
 **
@@ -334,13 +335,18 @@ Obj FuncFLOAT_INT( Obj self, Obj i)
 
 /****************************************************************************
 **
-*F  FuncFLOAT_STRING(<int>) . . . . . . . . . . . . . . . conversion
+*F  FuncFLOAT_STRING(<string>) . . . . . . . . . . . . . . . conversion
 **
 */
 
 Obj FuncFLOAT_STRING( Obj self, Obj s)
 {
-  /* no check yet ! */
+
+  while (!IsStringConv(s))
+    {
+      s = ErrorReturnObj("FLOAT_STRING: object to be converted must be a string not a %s",
+			 (Int)(InfoBags[TNUM_OBJ(s)].name),0,"You can return a string to continue" );
+    }
   return NEW_FLOAT((Double) atof((char*)CHARS_STRING(s)));
 }
 

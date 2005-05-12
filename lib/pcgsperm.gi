@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file  contains    functions which deal with   polycyclic  generating
 ##  systems of solvable permutation groups.
@@ -443,8 +444,8 @@ function(filter,G,series,oldlen,iselab)
     filter:=filter and IsPcgs and IsPrimeOrdersPcgs;
     attr:=[];
     if iselab=true then
-      filter:=filter and HasIndicesNormalSteps;
-      attr:=[IndicesNormalSteps, first];
+      filter:=filter and HasIndicesEANormalSteps;
+      attr:=[IndicesEANormalSteps, first];
     fi;
     pcgs := PcgsByPcSequenceCons( IsPcgsDefaultRep,filter,
 		ElementsFamily( FamilyObj( G ) ),
@@ -465,26 +466,29 @@ function(filter,G,series,oldlen,iselab)
     return pcgs;
 end );
 
-NorSerPermPcgs:=function(pcgs)
-local series,G,i;
+BindGlobal("NorSerPermPcgs",function(pcgs)
+local ppcgs,series,G,i;
+  ppcgs := ParentPcgs (pcgs);
   G:=GroupOfPcgs(pcgs);
   series:=pcgs!.generatingSeries;
   for i  in [ 1 .. Length( series ) ]  do
         Unbind( series[ i ].relativeOrders );
         Unbind( series[ i ].base           );
         series[ i ] := GroupStabChain( G, series[ i ], true );
-        SetHomePcgs ( series[ i ], pcgs );
+        SetHomePcgs ( series[ i ], ppcgs );
         SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
         series[ i ]!.noInSeries := i;
   od;
   return series;
-end;
+end);
 
-InstallMethod(NormalSeriesByPcgs,"perm group rep",true,
-   [IsPcgs and IsPcgsPermGroupRep],0, NorSerPermPcgs);
+InstallMethod(EANormalSeriesByPcgs,"perm group rep",true,
+   [IsPcgs and IsPcgsElementaryAbelianSeries and IsPcgsPermGroupRep],0,
+   NorSerPermPcgs);
 
-InstallOtherMethod(NormalSeriesByPcgs,"perm group modulo rep",true,
-  [IsModuloPcgsPermGroupRep],0, NorSerPermPcgs);
+InstallOtherMethod(EANormalSeriesByPcgs,"perm group modulo rep",true,
+  [IsModuloPcgsPermGroupRep and IsPcgsElementaryAbelianSeries],0, 
+  NorSerPermPcgs);
 
 #############################################################################
 ##
@@ -791,14 +795,14 @@ local   tail,  i,ins,pins,ran,filt,attr;
 	and HasParentPcgs;
   attr:=[ParentPcgs,pcgs];
 
-  if HasIndicesNormalSteps(pcgs) then
-    filt:=filt and HasIndicesNormalSteps;
-    Append(attr,[IndicesNormalSteps,ins]);
+  if HasIndicesEANormalSteps(pcgs) then
+    filt:=filt and HasIndicesEANormalSteps;
+    Append(attr,[IndicesEANormalSteps,ins]);
   fi;
-  if HasNormalSeriesByPcgs(pcgs) then
-    filt:=filt and HasNormalSeriesByPcgs;
-    Append(attr,[NormalSeriesByPcgs,
-                 NormalSeriesByPcgs(pcgs){[i..Length(pins)]}]);
+  if HasEANormalSeriesByPcgs(pcgs) then
+    filt:=filt and HasEANormalSeriesByPcgs;
+    Append(attr,[EANormalSeriesByPcgs,
+                 EANormalSeriesByPcgs(pcgs){[i..Length(pins)]}]);
   fi;
 
   tail := PcgsByPcSequenceCons(
@@ -811,7 +815,7 @@ local   tail,  i,ins,pins,ran,filt,attr;
   tail!.permpcgsNormalSteps:=ins;
 
   SetRelativeOrders(tail,RelativeOrders(pcgs){[from..Length(pcgs)]});
-  tail!.stabChain := StabChainMutable( NormalSeriesByPcgs( pcgs )[ i ] );
+  tail!.stabChain := StabChainMutable( EANormalSeriesByPcgs( pcgs )[ i ] );
   if from < pins[ i ]  then
     tail := ExtendedPcgs( tail,
 		    pcgs{ [ from .. pins[ i ] - 1 ] } );
@@ -897,8 +901,8 @@ InstallMethod( ExtendedPcgs, "perm pcgs", true,
     Unbind( S.relativeOrders );
     #SetIndicesNormalSteps( pcgs, Concatenation( [ 1 ], IndicesNormalSteps( N ) ) );
     pcgs!.permpcgsNormalSteps:=Concatenation([1],N!.permpcgsNormalSteps+1);
-    SetNormalSeriesByPcgs( pcgs, Concatenation( [ GroupStabChain( S ) ],
-            NormalSeriesByPcgs( N ) ) );
+    SetEANormalSeriesByPcgs( pcgs, Concatenation( [ GroupStabChain( S ) ],
+            EANormalSeriesByPcgs( N ) ) );
     return pcgs;
 end );
 
@@ -1001,7 +1005,7 @@ InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
     fi;
 
     # Construct the pcp group <A> and the bijection between <A> and <G>.
-    A := PermpcgsPcGroupPcgs( pcgs, IndicesNormalSteps(pcgs), false );
+    A := PermpcgsPcGroupPcgs( pcgs, IndicesEANormalSteps(pcgs), false );
     iso := GroupHomomorphismByImagesNC( G, A, pcgs, GeneratorsOfGroup( A ) );
     SetIsBijective( iso, true );
     

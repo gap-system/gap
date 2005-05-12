@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions that deal with plain lists.
 **
@@ -1373,7 +1374,10 @@ Obj             ElmsPlistDense (
         /* make the result list                                            */
         /* try to assert as many properties as possible                    */
 	if (HAS_FILT_LIST(list, FN_IS_SSORT) && HAS_FILT_LIST(poss, FN_IS_SSORT))
-	  elms = NEW_PLIST( MUTABLE_TNUM(TNUM_OBJ(list)), lenPoss);
+	  {
+	    elms = NEW_PLIST( MUTABLE_TNUM(TNUM_OBJ(list)), lenPoss);
+	    RESET_FILT_LIST( elms, FN_IS_NHOMOG); /* can't deduce this one */
+	  }
 	else if (HAS_FILT_LIST(list, FN_IS_TABLE))
 	  elms = NEW_PLIST( T_PLIST_TAB, lenPoss );
 	else if (T_PLIST_CYC <= TNUM_OBJ(list) && TNUM_OBJ(list) <= 
@@ -1661,7 +1665,20 @@ void AssPlistFfe   (
 	FF ffval;
 	Obj elm1;
 	FF ffelm1;
-	elm1 = ELM_PLIST( list, 1);
+	UInt otherpos;
+
+	/* Here we select an other element to compare the field and
+	   possibly characteristic of the assigned value to This will
+	   code will never select pos, where the assignment has
+	   already been done, unless we are replacing the only entry
+	   of a length 1 list, in which case the result will always
+	   still be a vecffe, so we are happy */
+	
+	if (pos == 1)
+	  otherpos = len;
+	else
+	  otherpos = 1;
+	elm1 = ELM_PLIST( list, otherpos);
 	ffval = FLD_FFE(val);
 	ffelm1 = FLD_FFE(elm1);
 	if( ffval != ffelm1 ) {
@@ -2329,20 +2346,28 @@ Int             IsPossPlist (
 **
 **  'PosPlist' is the function in 'PosListFuncs' for plain lists.
 */
-Int             PosPlist (
+Obj             PosPlist (
     Obj                 list,
     Obj                 val,
-    Int                 start )
+    Obj                 start )
 {
     Int                 lenList;        /* length of <list>                */
     Obj                 elm;            /* one element of <list>           */
     Int                 i;              /* loop variable                   */
+    UInt istart;
 
+    /* if the starting position is too big to be a small int
+       then there can't be anything to find */
+    if (!IS_INTOBJ(start))
+      return Fail;
+
+    istart = INT_INTOBJ(start);
+    
     /* get the length of <list>                                            */
     lenList = LEN_PLIST( list );
 
     /* loop over all entries in <list>                                     */
-    for ( i = start+1; i <= lenList; i++ ) {
+    for ( i = istart+1; i <= lenList; i++ ) {
 
         /* select one element from <list>                                  */
         elm = ELM_PLIST( list, i );
@@ -2354,23 +2379,31 @@ Int             PosPlist (
     }
 
     /* return the position (0 if <val> was not found)                      */
-    return (lenList < i ? 0 : i);
+    return (lenList < i ? Fail : INTOBJ_INT(i));
 }
 
-Int             PosPlistDense (
+Obj             PosPlistDense (
     Obj                 list,
     Obj                 val,
-    Int                 start )
+    Obj                 start )
 {
     Int                 lenList;        /* length of <list>                */
     Obj                 elm;            /* one element of <list>           */
     Int                 i;              /* loop variable                   */
+    UInt istart;
 
+    /* if the starting position is too big to be a small int
+       then there can't be anything to find */
+    if (!IS_INTOBJ(start))
+      return Fail;
+
+    istart = INT_INTOBJ(start);
+    
     /* get the length of <list>                                            */
     lenList = LEN_PLIST( list );
 
     /* loop over all entries in <list>                                     */
-    for ( i = start+1; i <= lenList; i++ ) {
+    for ( i = istart+1; i <= lenList; i++ ) {
 
         /* select one element from <list>                                  */
         elm = ELM_PLIST( list, i );
@@ -2383,22 +2416,30 @@ Int             PosPlistDense (
     }
 
     /* return the position (0 if <val> was not found)                      */
-    return (lenList < i ? 0 : i);
+    return (lenList < i ? Fail : INTOBJ_INT(i));
 }
 
-Int             PosPlistSort (
+Obj             PosPlistSort (
     Obj                 list,
     Obj                 val,
-    Int                 start )
+    Obj                 start )
 {
     UInt                lenList;        /* logical length of the set       */
     UInt                i, j, k;        /* loop variables                  */
+    UInt                istart;
+
+    /* if the starting position is too big to be a small int
+       then there can't be anything to find */
+    if (!IS_INTOBJ(start))
+      return Fail;
+
+    istart = INT_INTOBJ(start);
 
     /* get a pointer to the set and the logical length of the set          */
     lenList = LEN_PLIST( list );
 
     /* perform the binary search to find the position                      */
-    i = start;  k = lenList + 1;
+    i = istart;  k = lenList + 1;
     while ( i+1 < k ) {                 /* set[i] < elm && elm <= set[k]   */
         j = (i + k) / 2;                /* i < j < k                       */
         if ( LT( ELM_PLIST(list,j), val ) )  i = j;
@@ -2410,27 +2451,35 @@ Int             PosPlistSort (
         k = 0;
 
     /* return the position                                                 */
-    return k;
+    return k == 0 ? Fail : INTOBJ_INT(k);
 }
 
 
-Int             PosPlistHomSort (
+Obj             PosPlistHomSort (
     Obj                 list,
     Obj                 val,
-    Int                 start )
+    Obj                 start )
 {
     UInt                lenList;        /* logical length of the set       */
     UInt                i, j, k;        /* loop variables                  */
+    UInt                istart;
+
+    /* if the starting position is too big to be a small int
+       then there can't be anything to find */
+    if (!IS_INTOBJ(start))
+      return Fail;
+
+    istart = INT_INTOBJ(start);
 
     /* deal with the case which can be decided by the family relationship  */
     if (FAMILY_OBJ(val) != FAMILY_OBJ(ELM_PLIST(list,1)))
-      return 0;
+      return Fail;
     
     /* get a pointer to the set and the logical length of the set          */
     lenList = LEN_PLIST( list );
 
     /* perform the binary search to find the position                      */
-    i = start;  k = lenList + 1;
+    i = istart;  k = lenList + 1;
     while ( i+1 < k ) {                 /* set[i] < elm && elm <= set[k]   */
         j = (i + k) / 2;                /* i < j < k                       */
         if ( LT( ELM_PLIST(list,j), val ) )  i = j;
@@ -2442,7 +2491,7 @@ Int             PosPlistHomSort (
         k = 0;
 
     /* return the position                                                 */
-    return k;
+    return k == 0 ? Fail: INTOBJ_INT(k);
 }
 
 
@@ -4301,7 +4350,35 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
+*V  SweepAndCheckNonDensePlist
+*/
 
+void SweepAndCheckNonDensePlist ( Bag * src,
+				  Bag *dest,
+				  UInt baglength )
+{
+  UInt holeseen=0;
+  UInt listlength = (UInt)(*src);
+  UInt i;
+  if (listlength > baglength - 1)
+    Pr("#W Plain list with length %d in bag of size only %d\n", listlength, baglength);
+  *(UInt *)dest = listlength;
+  if (listlength == 0)
+    Pr("#W Plain non-dense list length 0\n", 0, 0);
+  for (i = 1; i < listlength; i++)
+    if (!(dest[i] = src[i]))
+      holeseen = 1;
+  if (!(dest[listlength] = src[listlength]))
+    Pr("#W plain list length %d with final entry unbound\n", listlength, 0);
+  if (!holeseen)
+    Pr("#W plain non-dense list length %d contains no hole\n", listlength, 0);
+  for (i = listlength+1; i < baglength; i++)
+    dest[i] = (Bag)0;  
+}
+			  
+
+/****************************************************************************
+**
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
@@ -4327,6 +4404,11 @@ static Int InitKernel (
     InitMarkFuncBags( T_PLIST_FFE            +COPYING , MarkNoSubBags );
     InitMarkFuncBags( T_PLIST_FFE +IMMUTABLE +COPYING , MarkNoSubBags );
 
+#ifdef CHECK_NDENSE_BAGS
+    InitSweepFuncBags( T_PLIST_NDENSE, SweepAndCheckNonDensePlist);
+    InitSweepFuncBags( T_PLIST_NDENSE + IMMUTABLE, SweepAndCheckNonDensePlist);
+#endif
+    
     /* If T_PLIST_FFE is not the last PLIST type then some more
        work needs to be done here */
 

@@ -1,4 +1,4 @@
 @msfiles = ("ratfun","algfld");
-@gdfiles = ("ratfun","ratfunul","upoly","ringpoly","algfld","polyrat");
+@gdfiles = ("ratfun","ratfunul","upoly","ringpoly","algfld","polyrat","groebner","galois");
 $DIR = "../ref";
 $LIB = "../../lib"; 

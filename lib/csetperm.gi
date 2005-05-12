@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for cosets of permutation groups
 ##
@@ -31,7 +32,8 @@ local s,c,mp,o,i,step;
 	Sort(o,function(a,b) return Length(a)<Length(b);end);
 	s:=Stabilizer(s,Set(o[1]),OnSets);
 	step:=true;
-      elif IsPrimitive(s,o[i]) and not IsPrimitive(U,o[i]) then
+      elif Index(G,U)>NrMovedPoints(U) 
+	  and IsPrimitive(s,o[i]) and not IsPrimitive(U,o[i]) then
 	Info(InfoCoset,2,"AC: blocks");
 	s:=Stabilizer(s,Set(List(MaximalBlocks(U,o[i]),Set)),
                       OnSetsDisjointSets);

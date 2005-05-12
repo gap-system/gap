@@ -102,9 +102,11 @@ gap> s4 := Group((1,2,3,4),(1,2));;
 gap> SylowSubgroup( s4, 5 );;  ComputedSylowSubgroups( s4 );
 [ 5, Group(()) ]
 gap> SylowSubgroup( s4, 2 );;  ComputedSylowSubgroups( s4 );
-[ 2, Group([(3,4),(1,4)(2,3),(1,3)(2,4)]), 5, Group(()) ]
+[ 2, Group([ (3,4), (1,4)(2,3), (1,3)(2,4) ]), 5, Group(()) ]
 \endexample
-\begintt
+
+%notest
+\beginexample
 gap> SylowSubgroup( s4, 6 );
 Error, SylowSubgroup: <p> must be a prime called from
 <compiled or corrupted call value>  called from
@@ -113,7 +115,7 @@ Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> quit;
-\endtt
+\endexample
 
 Thus the prime test need not be repeated in the methods for the operation
 `SylowSubgroupOp' (which are installed to do the real work).
@@ -367,6 +369,7 @@ gap> s4 := Group((1,2,3,4),(1,2));; Blocks( s4, MovedPoints(s4), [1,2] );
 gap> Tester( BlocksAttr )( s4 );
 false
 \endexample
+
 \beginexample
 gap> Blocks( s4, MovedPoints(s4) );       
 [ [ 1, 2, 3, 4 ] ]

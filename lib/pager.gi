@@ -6,6 +6,7 @@
 ##  
 #Y  Copyright  (C) 2001, Lehrstuhl  D  fuer  Mathematik, RWTH  Aachen, Germany 
 #Y (C) 2001 School Math and  Comp. Sci., University of St. Andrews, Scotland
+#Y Copyright (C) 2002 The GAP Group
 ##  
 ##  The  files  pager.g{d,i}  contain  the `Pager'  utility.  A  rudimentary
 ##  version of this  was integrated in first versions of  GAP's help system.
@@ -50,10 +51,12 @@ if not IsBound(ANSI_COLORS) then
 fi;
 BindGlobal("PAGER_BUILTIN", function( lines )
   local   formatted,  linepos,  size,  wd,  pl,  count,  i,  stream,  
-          halt,  delhaltline,  from,  len,  char;
+          halt,  delhaltline,  from,  len,  char, out;
   
   formatted := false;
   linepos := 1;
+  # don't print this to LOG files
+  out := OutputTextUser();
   
   if IsRecord(lines) then
     if IsBound(lines.formatted) then
@@ -76,13 +79,13 @@ BindGlobal("PAGER_BUILTIN", function( lines )
     local   r;
     r := 1;
     while r*wd<=Length(l) do
-      Print(l{[(r-1)*wd+1..r*wd]}, "\c");
+      PrintTo(out, l{[(r-1)*wd+1..r*wd]}, "\c");
       r := r+1;
     od;
     if (r-1)*wd < Length(l) then
-      Print(l{[(r-1)*wd+1..Length(l)]});
+      PrintTo(out, l{[(r-1)*wd+1..Length(l)]});
     fi;
-    Print("\n");
+    PrintTo(out, "\n");
   end;
   
   if not formatted then
@@ -119,7 +122,7 @@ BindGlobal("PAGER_BUILTIN", function( lines )
     local i;
     for i  in halt  do 
       if i <> '\c' then
-        Print( "\b\c \c\b\c" );
+        PrintTo(out,  "\b\c \c\b\c" );
       fi;
     od;
   end;
@@ -135,7 +138,7 @@ BindGlobal("PAGER_BUILTIN", function( lines )
     elif len = i then
       char := 'q';
     else
-      Print(halt);
+      PrintTo(out, halt);
       char := CHAR_INT(ReadByte(stream));
       while not char in " nbpq" do
         char := CHAR_INT(ReadByte(stream));

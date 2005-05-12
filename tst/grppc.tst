@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997
 ##
+##  To be listed in testall.g
 ##
 
 gap> START_TEST("$Id$");
@@ -65,9 +66,10 @@ gap> Length(Complementclasses( G, S ));
 1
 
 # that's all, folks
-gap> STOP_TEST( "grppc.tst", 82187500 );
+gap> STOP_TEST( "grppc.tst", 99500000 );
+
 
 #############################################################################
 ##
-#E  grppc.tst . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

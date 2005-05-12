@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 gap> ###############################################
@@ -133,8 +135,9 @@ MappingByFunction( <fp group of size 4 on the generators [ a ]>, <monoid with
 4 generators>, function( g ) ... end )
 gap> m := Range(phi);
 <monoid with 4 generators>
-gap> el := Elements(m);
-[ 0, <identity ...>, a, a^-1, a^2 ]
+gap> el := Elements(m);;
+gap> Size(m)=5;
+true
 gap> c := MagmaCongruenceByGeneratingPairs(m,[[el[2],el[3]]]);
 <semigroup congruence with 1 generating pairs>
 gap> EquivalenceRelationPartition(c);
@@ -283,9 +286,10 @@ gap> CategoryCollections(IsMultiplicativeElementWithZero)(m);
 true
 gap> 
 gap> 
-gap> STOP_TEST( "semigrp.tst", 74105000 );
+gap> STOP_TEST( "semigrp.tst", 102900000 );
 
 
 #############################################################################
 ##
-#E  semigrp.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

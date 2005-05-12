@@ -7,6 +7,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions which mainly deal with strings.
 **
@@ -320,12 +321,15 @@ Obj FuncSINT_CHAR (
 **
 *F  FuncSINTLIST_STRING( <self>, <string> ) signed integer list by string
 */
-Obj FuncSINTLIST_STRING (
+Obj SINTCHARS[256];
+Obj INTCHARS[256];
+Obj FuncINTLIST_STRING (
     Obj             self,
-    Obj             val )
+    Obj             val,
+    Obj             sign )
 {
   UInt l,i;
-  Obj n;
+  Obj n, *addr, *ints;
   UInt1 *p;
 
   /* test whether val is a string, convert to compact rep if necessary */
@@ -336,15 +340,28 @@ Obj FuncSINTLIST_STRING (
          "you can replace <val> via 'return <val>;'" );
   }
 
+  /* initialize before first use */
+  if ( SINTCHARS[0] == (Obj) 0 )
+     for (i=0; i<256; i++) {
+       SINTCHARS[i] = INTOBJ_INT(SINT_CHAR(i));
+       INTCHARS[i] = INTOBJ_INT((UInt1)i);
+     }
+       
+
   l=GET_LEN_STRING(val);
   n=NEW_PLIST(T_PLIST,l);
   SET_LEN_PLIST(n,l);
   p=CHARS_STRING(val);
-  for (i=1;i<=l;i++) {
-    SET_ELM_PLIST(n,i,INTOBJ_INT(SINT_CHAR(p[i-1])));
+  addr=ADDR_OBJ(n);
+  /* signed or unsigned ? */
+  if (sign == INTOBJ_INT(1L)) 
+    ints = INTCHARS;
+  else
+    ints = SINTCHARS;
+  for (i=1; i<=l; i++) {
+    addr[i] = ints[p[i-1]];
   }
 
-  /* return the character                                                */
   CHANGED_BAG(n);
   return n;
 }
@@ -769,7 +786,7 @@ void PrintString1 (
     }
     PrStrBuf[scanout] = '\0';
     Pr( "%s", (Int)PrStrBuf, 0L );
-    for (p = CHARS_STRING(list); off<len && p[off]==0; off++) {
+    for (; off<len && CHARS_STRING(list)[off]==0; off++) {
       Pr("%c", 0L, 0L);
     }
   }
@@ -1251,31 +1268,39 @@ Int IsPossString (
 **
 **  'PosString' is the function in 'PosListFuncs' for strings.
 */ 
-Int PosString (
+Obj PosString (
     Obj                 list,
     Obj                 val,
-    Int                 start )
+    Obj                 start )
 {
     Int                 lenList;        /* length of <list>                */
     Int                 i;              /* loop variable                   */
     UInt1               valc;        /* C characters                    */
     UInt1               *p;             /* pointer to chars of <list>      */
+    UInt                istart;
 
+    /* if the starting position is too big to be a small int
+       then there can't be anything to find */
+    if (!IS_INTOBJ(start))
+      return Fail;
+
+    istart = INT_INTOBJ(start);
+    
     /* get the length of <list>                                            */
     lenList = GET_LEN_STRING( list );
 
     /* a string contains only characters */
-    if (TNUM_OBJ(val) != T_CHAR) return 0;
+    if (TNUM_OBJ(val) != T_CHAR) return Fail;
     
     /* val as C character   */
     valc = *(UInt1*)ADDR_OBJ(val);
 
     /* search entries in <list>                                     */
     p = CHARS_STRING(list);
-    for ( i = start; i < lenList && p[i] != valc; i++ );
+    for ( i = istart; i < lenList && p[i] != valc; i++ );
 
     /* return the position (0 if <val> was not found)                      */
-    return (lenList <= i ? 0 : i+1);
+    return (lenList <= i ? Fail : INTOBJ_INT(i+1));
 }
 
 
@@ -1648,6 +1673,265 @@ Obj FuncNormalizeWhitespace (
   return (Obj)0;
 }
 
+
+/****************************************************************************
+**
+*F  FuncRemoveCharacters( <self>, <string>, <rem> ) . . . . . delete characters
+**  from <rem> in <string> in place 
+**    
+*/ 
+UInt1 REMCHARLIST[257];
+Obj FuncRemoveCharacters (
+			      Obj     self,
+			      Obj     string,
+                              Obj     rem     )
+{
+  UInt1  *s;
+  Int i, j, len;
+
+  /* check whether <string> is a string                                  */
+  if ( ! IsStringConv( string ) ) {
+    string = ErrorReturnObj(
+	     "RemoveCharacters: first argument <string> must be a string (not a %s)",
+	     (Int)TNAM_OBJ(string), 0L,
+	     "you can replace <string> via 'return <string>;'" );
+    return FuncRemoveCharacters( self, string, rem );
+  }
+  
+  /* check whether <rem> is a string                                  */
+  if ( ! IsStringConv( rem ) ) {
+    rem = ErrorReturnObj(
+	     "RemoveCharacters: second argument <rem> must be a string (not a %s)",
+	     (Int)TNAM_OBJ(rem), 0L,
+	     "you can replace <rem> via 'return <rem>;'" );
+    return FuncRemoveCharacters( self, string, rem );
+  }
+  
+  /* reset REMCHARLIST (in case of previous error) */
+  if (REMCHARLIST[256] != 0) {
+    for(i=0; i<257; i++) REMCHARLIST[i] = 0;
+  }
+  
+  /* set REMCHARLIST by setting positions of characters in rem to 1 */
+  len = GET_LEN_STRING(rem);
+  s = CHARS_STRING(rem);
+  REMCHARLIST[256] = 1;
+  for(i=0; i<len; i++) REMCHARLIST[s[i]] = 1;
+  
+  /* now change string in place */
+  len = GET_LEN_STRING(string);
+  s = CHARS_STRING(string);
+  i = -1;
+  for (j = 0; j < len; j++) {
+    if (REMCHARLIST[s[j]] == 0) {
+      i++;
+      s[i] = s[j];
+    }
+  }
+  i++;
+  s[i] = '\0';
+  SET_LEN_STRING(string, i);
+
+  /* unset REMCHARLIST  */
+  len = GET_LEN_STRING(rem);
+  s = CHARS_STRING(rem);
+  for(i=0; i<len; i++) REMCHARLIST[s[i]] = 0;
+  REMCHARLIST[256] = 0;
+
+  return (Obj)0;
+}
+
+
+/****************************************************************************
+**
+*F  FuncTranslateString( <self>, <string>, <trans> ) . . . translate characters
+**  in <string> in place, <string>[i] = <trans>[<string>[i]] 
+**    
+*/ 
+Obj FuncTranslateString (
+			      Obj     self,
+			      Obj     string,
+                              Obj     trans     )
+{
+  UInt1  *s, *t;
+  Int j, len;
+
+  /* check whether <string> is a string                                  */
+  if ( ! IsStringConv( string ) ) {
+    string = ErrorReturnObj(
+	     "RemoveCharacters: first argument <string> must be a string (not a %s)",
+	     (Int)TNAM_OBJ(string), 0L,
+	     "you can replace <string> via 'return <string>;'" );
+    return FuncTranslateString( self, string, trans );
+  }
+  
+  /* check whether <trans> is a string                                  */
+  if ( ! IsStringConv( trans ) ) {
+    trans = ErrorReturnObj(
+	     "RemoveCharacters: second argument <trans> must be a string (not a %s)",
+	     (Int)TNAM_OBJ(trans), 0L,
+	     "you can replace <trans> via 'return <trans>;'" );
+    return FuncTranslateString( self, string, trans );
+  }
+ 
+  /* check if string has length at least 256 */
+  if ( GET_LEN_STRING( trans ) < 256 ) {
+    trans = ErrorReturnObj(
+	     "RemoveCharacters: second argument <trans> must have length >= 256",
+	     0L, 0L,
+	     "you can replace <trans> via 'return <trans>;'" );
+    return FuncTranslateString( self, string, trans );
+  }
+  
+  /* now change string in place */
+  len = GET_LEN_STRING(string);
+  s = CHARS_STRING(string);
+  t = CHARS_STRING(trans);
+  for (j = 0; j < len; j++) {
+    s[j] = t[s[j]];
+  }
+  
+  return (Obj)0;
+}
+
+
+/****************************************************************************
+**
+*F  FuncSplitString( <self>, <string>, <seps>, <wspace> ) . . . . split string
+**  at characters in <seps> and <wspace>
+**    
+**  The difference of <seps> and <wspace> is that characters in <wspace> don't
+**  separate empty strings.
+*/ 
+UInt1 SPLITSTRINGSEPS[257];
+UInt1 SPLITSTRINGWSPACE[257];
+Obj FuncSplitString (
+			      Obj     self,
+			      Obj     string,
+                              Obj     seps,
+                              Obj     wspace    )
+{
+  UInt1  *s;
+  Int i, a, z, l, pos, len;
+  Obj res, part;
+
+  /* check whether <string> is a string                                  */
+  if ( ! IsStringConv( string ) ) {
+    string = ErrorReturnObj(
+	     "SplitString: first argument <string> must be a string (not a %s)",
+	     (Int)TNAM_OBJ(string), 0L,
+	     "you can replace <string> via 'return <string>;'" );
+    return FuncSplitString( self, string, seps, wspace );
+  }
+  
+  /* check whether <seps> is a string                                  */
+  if ( ! IsStringConv( seps ) ) {
+    seps = ErrorReturnObj(
+	     "SplitString: second argument <seps> must be a string (not a %s)",
+	     (Int)TNAM_OBJ(seps), 0L,
+	     "you can replace <seps> via 'return <seps>;'" );
+    return FuncSplitString( self, string, seps, wspace );
+  }
+  
+  /* check whether <wspace> is a string                                  */
+  if ( ! IsStringConv( wspace ) ) {
+    wspace = ErrorReturnObj(
+	     "SplitString: third argument <wspace> must be a string (not a %s)",
+	     (Int)TNAM_OBJ(wspace), 0L,
+	     "you can replace <wspace> via 'return <wspace>;'" );
+    return FuncSplitString( self, string, seps, wspace );
+  }
+  
+  /* reset SPLITSTRINGSEPS (in case of previous error) */
+  if (SPLITSTRINGSEPS[256] != 0) {
+    for(i=0; i<257; i++) SPLITSTRINGSEPS[i] = 0;
+  }
+  
+  /* set SPLITSTRINGSEPS by setting positions of characters in rem to 1 */
+  len = GET_LEN_STRING(seps);
+  s = CHARS_STRING(seps);
+  SPLITSTRINGSEPS[256] = 1;
+  for(i=0; i<len; i++) SPLITSTRINGSEPS[s[i]] = 1;
+  
+  /* reset SPLITSTRINGWSPACE (in case of previous error) */
+  if (SPLITSTRINGWSPACE[256] != 0) {
+    for(i=0; i<257; i++) SPLITSTRINGWSPACE[i] = 0;
+  }
+  
+  /* set SPLITSTRINGWSPACE by setting positions of characters in rem to 1 */
+  len = GET_LEN_STRING(wspace);
+  s = CHARS_STRING(wspace);
+  SPLITSTRINGWSPACE[256] = 1;
+  for(i=0; i<len; i++) SPLITSTRINGWSPACE[s[i]] = 1;
+ 
+  /* create the result (list of strings) */
+  res = NEW_PLIST(T_PLIST, 2);
+  SET_LEN_PLIST(res, 0);
+  pos = 0;
+
+  /* now do the splitting */
+  len = GET_LEN_STRING(string);
+  s = CHARS_STRING(string);
+  for (a=0, z=0; z<len; z++) {
+    if (SPLITSTRINGWSPACE[s[z]] == 1) {
+      if (a<z) {
+        l = z-a;
+        part = NEW_STRING(l);
+        /* in case of garbage collection we need update */
+        s = CHARS_STRING(string);
+        COPY_CHARS(part, s+a, l);
+        CHARS_STRING(part)[l] = 0;
+        pos++;
+        AssPlist(res, pos, part);
+        s = CHARS_STRING(string);
+        a = z+1;
+      }
+      else {
+        a = z+1;
+      }
+    }
+    else {
+      if (SPLITSTRINGSEPS[s[z]] == 1) {
+        l = z-a;
+        part = NEW_STRING(l);
+        s = CHARS_STRING(string);
+        COPY_CHARS(part, s+a, l);
+        CHARS_STRING(part)[l] = 0;
+        pos++;
+        AssPlist(res, pos, part);
+        s = CHARS_STRING(string);
+        a = z+1;
+      }
+    }
+  }
+  
+  /* collect a trailing part */
+  if (a<z) {
+    /* copy until last position which is z-1 */
+    l = z-a;
+    part = NEW_STRING(l);
+    s = CHARS_STRING(string);
+    COPY_CHARS(part, s+a, l);
+    CHARS_STRING(part)[l] = 0;
+    pos++;
+    AssPlist(res, pos, part);
+  }
+
+  /* unset SPLITSTRINGSEPS  */
+  len = GET_LEN_STRING(seps);
+  s = CHARS_STRING(seps);
+  for(i=0; i<len; i++) SPLITSTRINGSEPS[s[i]] = 0;
+  SPLITSTRINGSEPS[256] = 0;
+
+  /* unset SPLITSTRINGWSPACE  */
+  len = GET_LEN_STRING(wspace);
+  s = CHARS_STRING(wspace);
+  for(i=0; i<len; i++) SPLITSTRINGWSPACE[s[i]] = 0;
+  SPLITSTRINGWSPACE[256] = 0;
+
+  return res;
+}
+
 /****************************************************************************
 **
 *F  UnbString( <string>, <pos> ) . . . . . Unbind function for strings
@@ -2017,8 +2301,8 @@ static StructGVarFunc GVarFuncs [] = {
     { "STRING_SINTLIST", 1, "list",
       FuncSTRING_SINTLIST, "src/string.c:STRING_SINTLIST" },
 
-    { "SINTLIST_STRING", 1, "string",
-      FuncSINTLIST_STRING, "src/string.c:SINTLIST_STRING" },
+    { "INTLIST_STRING", 2, "string, sign",
+      FuncINTLIST_STRING, "src/string.c:INTLIST_STRING" },
 
     { "REVNEG_STRING", 1, "string",
       FuncREVNEG_STRING, "src/string.c:REVNEG_STRING" },
@@ -2028,6 +2312,15 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "NormalizeWhitespace", 1, "string",
       FuncNormalizeWhitespace, "src/string.c:NormalizeWhitespace" },
+
+    { "REMOVE_CHARACTERS", 2, "string, rem",
+      FuncRemoveCharacters, "src/string.c:RemoveCharacters" },
+
+    { "TranslateString", 2, "string, trans",
+      FuncTranslateString, "src/string.c:TranslateString" },
+
+    { "SplitStringInternal", 3, "string, seps, wspace",
+      FuncSplitString, "src/string.c:SplitStringInternal" },
 
     { 0 }
 

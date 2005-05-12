@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  Free groups are treated as   special cases of finitely presented  groups.
 ##  In addition,   elements  of  a free   group are
@@ -52,6 +53,10 @@ DeclareSynonym( "IsElementOfFreeGroupFamily",IsAssocWordWithInverseFamily );
 ##  specifies the representation used for the elements of the free group
 ##  (see~"Representations for Associative Words"). If no such filter is
 ##  given, a letter representation is used.
+##
+##  (For interfacing to old code that omits the representation flag, use of
+##  the syllable representation is also triggered by setting the option
+##  `FreeGroupFamilyType' to the string ``syllable''.)
 ##
 DeclareGlobalFunction( "FreeGroup" );
 

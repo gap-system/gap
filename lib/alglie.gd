@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of attributes, properties, and
 ##  operations for Lie algebras.
@@ -539,6 +540,9 @@ DeclareAttribute( "ChevalleyBasis", IsLieAlgebra );
 ##  is not simple. Examples are the Lie algebras of type $A_n$ over a field
 ##  of characteristic $p>0$ where $p$ divides $n+1$, and the Lie algebras
 ##  of type $K_n$ where $n$ is a list of length 1.
+##
+##  If <type> is one of A, B, C, D, E, F, G, and <F> is a field of characteristic
+##  zero, then the basis of the returned Lie algebra is a Chevalley basis. 
 ##
 DeclareGlobalFunction( "SimpleLieAlgebra" );
 

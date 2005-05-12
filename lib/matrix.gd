@@ -10,6 +10,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains those functions that mainly deal with matrices.
 ##
@@ -80,12 +81,6 @@ DeclareOperation("IsLowerTriangularMat",[IsMatrix]);
 ##
 DeclareGlobalFunction( "DiagonalOfMat" );
 
-
-#############################################################################
-##
-#A  AbelianInvariantsOfList( <list> ) . . . . .  abelian invariants of a list
-##
-DeclareAttribute( "AbelianInvariantsOfList", IsCyclotomicCollection );
 
 #############################################################################
 ##
@@ -191,6 +186,7 @@ DeclareAttribute( "DimensionsMat", IsMatrix );
 #############################################################################
 ##
 #O  ElementaryDivisorsMat([<ring>,] <mat>)
+#F  ElementaryDivisorsMatDestructive(<ring>,<mat>)
 ##
 ##  `ElementaryDivisors' returns a list of the elementary divisors, i.e., the
 ##  unique <d> with `<d>[<i>]' divides  `<d>[<i>+1]' and <mat> is  equivalent
@@ -199,7 +195,11 @@ DeclareAttribute( "DimensionsMat", IsMatrix );
 ##  all matrix entries. For compatibility reasons it can be omitted and
 ##  defaults to `Integers'.
 ##
+##  The function `ElementaryDivisorsMatDestructive' produces the same result
+##  but in the process destroys the contents of <mat>.
+##
 DeclareOperation( "ElementaryDivisorsMat", [IsRing,IsMatrix] );
+DeclareGlobalFunction( "ElementaryDivisorsMatDestructive" );
 
 #############################################################################
 ##
@@ -684,42 +684,6 @@ DeclareGlobalFunction( "BlownUpMat" );
 ##  `BlownUpMat( <B>, <mat> ) \* BlownUpVector( <B>, <vector> )'.
 ##
 DeclareGlobalFunction( "BlownUpVector" );
-
-
-#############################################################################
-##
-#F  DiagonalizeIntMatNormDriven(<mat>)  . . . . diagonalize an integer matrix
-##
-##  `DiagonalizeIntMatNormDriven'  diagonalizes  the  integer  matrix  <mat>.
-##
-##  It tries to keep the entries small  through careful  selection of pivots.
-##
-##  First it selects a nonzero entry for which the  product of row and column
-##  norm is minimal (this need not be the entry with minimal absolute value).
-##  Then it brings this pivot to the upper left corner and makes it positive.
-##
-##  Next it subtracts multiples of the first row from the other rows, so that
-##  the new entries in the first column have absolute value at most  pivot/2.
-##  Likewise it subtracts multiples of the 1st column from the other columns.
-##
-##  If afterwards not  all new entries in the  first column and row are zero,
-##  then it selects a  new pivot from those  entries (again driven by product
-##  of norms) and reduces the first column and row again.
-##
-##  If finally all offdiagonal entries in the first column  and row are zero,
-##  then it  starts all over again with the submatrix  `<mat>{[2..]}{[2..]}'.
-##
-##  The original idea is explained in ~\cite{HM97}.
-##
-##  \beginexample
-##  gap> m:=[[14,20],[6,9]];;
-##  gap> DiagonalizeIntMatNormDriven(m);
-##  gap> m;
-##  [ [ 2, 0 ], [ 0, 3 ] ]
-##  \endexample
-DeclareGlobalFunction( "DiagonalizeIntMatNormDriven" );
-
-DeclareSynonym( "DiagonalizeIntMat", DiagonalizeIntMatNormDriven );
 
 
 #############################################################################

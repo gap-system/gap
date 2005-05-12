@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the definition of categories of class functions,
 ##  and the corresponding properties, attributes, and operations.
@@ -162,7 +163,7 @@ DeclareGlobalFunction( "CharacterString" );
 ##  \beginexample
 ##  gap> irrS4:= Irr( S4 );;
 ##  gap> irrD8:= Irr( D8 );;
-##  gap> chi:= irrD8[3];
+##  gap> chi:= irrD8[4];
 ##  Character( CharacterTable( D8 ), [ 1, 1, 1, -1, -1 ] )
 ##  gap> chi * chi;
 ##  Character( CharacterTable( D8 ), [ 1, 1, 1, 1, 1 ] )
@@ -184,7 +185,7 @@ DeclareGlobalFunction( "CharacterString" );
 ##  \beginexample
 ##  gap> tS4:= CharacterTable( S4 );;
 ##  gap> tD8:= CharacterTable( D8 );;
-##  gap> chi:= ValuesOfClassFunction( irrD8[3] );
+##  gap> chi:= ValuesOfClassFunction( irrD8[4] );
 ##  [ 1, 1, 1, -1, -1 ]
 ##  gap> Tensored( [ chi ], [ chi ] )[1];
 ##  [ 1, 1, 1, 1, 1 ]
@@ -308,7 +309,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  is a more interesting operation than the vector product of plain lists.
 ##  (Another candidate for a multiplication of compatible class functions
 ##  would have been the inner product, which is implemented via the function
-##  `ScalarProduct', see~"ScalarProduct".)
+##  `ScalarProduct', see~"ScalarProduct!for characters".)
 ##  In terms of filters, the arithmetic of class functions is based on the
 ##  decision that they lie in `IsGeneralizedRowVector',
 ##  with additive nesting depth $1$,
@@ -1393,7 +1394,7 @@ DeclareSynonym( "ReducedOrdinary", ReducedCharacters );
 DeclareGlobalFunction( "IrreducibleDifferences" );
 
 
-###############################################################################
+#############################################################################
 ##
 ##  11. Symmetrizations of Class Functions
 ##
@@ -1535,45 +1536,42 @@ DeclareGlobalFunction( "OrthogonalComponents" );
 DeclareGlobalFunction( "SymplecticComponents" );
 
 
-###############################################################################
+#############################################################################
 ##
 ##  12. Operations for Brauer Characters
 ##
 
 
-###############################################################################
+#############################################################################
 ##
 #F  FrobeniusCharacterValue( <value>, <p> )
 ##
-##  `FrobeniusCharacterValue' returns the value of the Frobenius character
-##  corresponding to the Brauer character value <value>,
-##  where <p> is the characteristic of the field.
+##  Let <value> be a cyclotomic whose coefficients over the rationals are
+##  in the ring $\Z_{<p>}$ of <p>-local numbers,
+##  where <p> is a prime integer.
+##  Assume that <value> lies in $\Z_{<p>}[\zeta]$ for $\zeta = `E'(<p>^n)$.
 ##
-##  The result can be described as the image of <value> under the
-##  ring homomorphism from $\Z[\zeta]$ to the field with $<p>^n$ elements,
-##  where $\zeta = `E'(<p>^n)$ and <value> is contained in $\Z[\zeta]$.
-##  This map is defined with the help of Conway polynomials
+##  `FrobeniusCharacterValue' returns the image of <value> under the ring
+##  homomorphism from $\Z_{<p>}[\zeta]$ to the field with $<p>^n$ elements
+##  that is defined with the help of Conway polynomials
 ##  (see~"ConwayPolynomial"), more information can be found in Sections~2--5
 ##  of~\cite{JLPW95}.
+##
+##  If <value> is a Brauer character value in characteristic <p> then
+##  the result can be described as the corresponding value of the Frobenius
+##  character, that is, as the trace of a representing matrix with the given
+##  Brauer character value.
 ##
 ##  If the result of `FrobeniusCharacterValue' cannot be expressed as an
 ##  element of a finite field in {\GAP} (see Chapter~"Finite Fields")
 ##  then `FrobeniusCharacterValue' returns `fail'.
 ##
-##  \indextt{TryConwayPolynomialForFrobeniusCharacterValue}
 ##  If the Conway polynomial of degree $n$ is required for the computation
-##  but not yet stored in the global list of {\GAP} then it is computed only
-##  if the global function `TryConwayPolynomialForFrobeniusCharacterValue'
-##  returns `true' when it is called with <p> and $n$.
+##  then it is computed only if `IsCheapConwayPolynomial' returns `true'
+##  when it is called with <p> and $n$,
+##  otherwise `fail' is returned.
 ##
 DeclareGlobalFunction( "FrobeniusCharacterValue" );
-
-
-#############################################################################
-##
-#F  TryConwayPolynomialForFrobeniusCharacterValue( <p>, <n> )
-##
-DeclareGlobalFunction( "TryConwayPolynomialForFrobeniusCharacterValue" );
 
 
 #############################################################################

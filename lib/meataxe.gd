@@ -65,6 +65,15 @@ DeclareGlobalFunction("TensorProductGModule");
 ## 
 DeclareGlobalFunction("WedgeGModule");
 
+###############################################################################
+##
+#F  DualGModule ( module ) . . . . . wedge product of a G-module
+##
+## DualGModule calculates the dual of a G-module.
+## The matrices of the module are inverted and transposed.
+## 
+DeclareGlobalFunction("DualGModule");
+
 DeclareInfoClass("InfoMeatAxe");
 
 SMTX:=rec(name:="The Smash MeatAxe");

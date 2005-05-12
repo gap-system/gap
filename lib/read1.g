@@ -25,16 +25,18 @@ ReadLib( "list.gd"     );
 ReadLib( "wpobj.gd"    );
 ReadLib( "arith.gd"    );
 ReadLib( "ffe.gd"      );
+ReadLib( "domain.gd"   );
 
 ReadLib( "string.g"    );
 ReadLib( "cyclotom.g"  );
 ReadLib( "set.gd"      );
 
+ReadLib( "record.g"    );
+
 ReadLib( "coll.gi"     );
 
 ReadLib( "flag.g"      );
 ReadLib( "boolean.g"   );
-ReadLib( "record.g"    );
 ReadLib( "ffe.g"       );
 ReadLib( "arith.gi"    );
 ReadLib( "list.g"      );

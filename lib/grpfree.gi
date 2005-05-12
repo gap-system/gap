@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for free groups.
 ##
@@ -56,14 +57,7 @@ Revision.grpfree_gi :=
 ##         s_{c_{i+1}+1} & ; & \mbox{\rm otherwise}
 ##                            \end{array} \right.    \]
 ##
-DeclareRepresentation( "IsFreeGroupIteratorRep",
-    IsComponentObjectRep,
-    [ "family", "nrgenerators", "exp", "word", "counter", "length" ] );
-
-InstallMethod( NextIterator,
-    "for mutable iterator of a free group",
-    [ IsIterator and IsMutable and IsFreeGroupIteratorRep ],
-    function( iter )
+BindGlobal( "NextIterator_FreeGroup", function( iter )
     local word, oldword, exp, len, pos, i;
 
     # Increase the counter.
@@ -91,54 +85,35 @@ InstallMethod( NextIterator,
     return ObjByExtRep( iter!.family, 1, exp, oldword );
     end );
 
-InstallMethod( IsDoneIterator,
-    "for iterator of a free group",
-    [ IsIterator and IsFreeGroupIteratorRep ],
-    ReturnFalse );
+BindGlobal( "ShallowCopy_FreeGroup", iter -> rec(
+                 family         := iter!.family,
+                 nrgenerators   := iter!.nrgenerators,
+                 exp            := iter!.exp,
+                 word           := ShallowCopy( iter!.word ),
+                 length         := iter!.length,
+                 counter        := ShallowCopy( iter!.counter ) ) );
 
 InstallMethod( Iterator,
     "for a free group",
     [ IsAssocWordWithInverseCollection and IsWholeFamily ],
-    G -> Objectify( NewType( IteratorsFamily,
-                                 IsIterator
-                             and IsMutable
-                             and IsFreeGroupIteratorRep ),
-                    rec(
-                         family         := ElementsFamily( FamilyObj( G ) ),
-                         nrgenerators   := Length( GeneratorsOfGroup( G ) ),
-                         exp            := 0,
-                         word           := [],
-                         length         := 0,
-                         counter        := [ 0, 0 ]
-                        )
-                   ) );
+    G -> IteratorByFunctions( rec(
+             IsDoneIterator := ReturnFalse,
+             NextIterator   := NextIterator_FreeGroup,
+             ShallowCopy    := ShallowCopy_FreeGroup,
 
-InstallMethod( ShallowCopy,
-    "for iterator of a free group",
-    [ IsIterator and IsFreeGroupIteratorRep ],
-    iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
-                    rec(
-                         family         := iter!.family,
-                         nrgenerators   := iter!.nrgenerators,
-                         exp            := iter!.exp,
-                         word           := ShallowCopy( iter!.word ),
-                         length         := iter!.length,
-                         counter        := ShallowCopy( iter!.counter )
-                        )
-                   ) );
+             family         := ElementsFamily( FamilyObj( G ) ),
+             nrgenerators   := Length( GeneratorsOfGroup( G ) ),
+             exp            := 0,
+             word           := [],
+             length         := 0,
+             counter        := [ 0, 0 ] ) ) );
 
 
 #############################################################################
 ##
 #M  Enumerator( <G> )
 ##
-DeclareRepresentation( "IsFreeGroupEnumerator",
-    IsDomainEnumerator and IsAttributeStoringRep,
-    [ "family", "nrgenerators" ] );
-
-InstallMethod( \[\],
-    "for enumerator of a free group",
-    [ IsFreeGroupEnumerator, IsPosInt ],
+BindGlobal( "ElementNumber_FreeGroup",
     function( enum, nr )
     local n, 2n, nn, l, power, word, exp, maxexp, cc, sign, i, c;
 
@@ -150,7 +125,7 @@ InstallMethod( \[\],
     2n:= 2 * n;
     nn:= 2n - 1;
 
-    # Compute the length of the word corresponding to 'nr'.
+    # Compute the length of the word corresponding to `nr'.
     l:= 0;
     power:= 2n;
     nr:= nr - 1;
@@ -161,7 +136,7 @@ InstallMethod( \[\],
     od;
     nr:= nr + power / nn - 1;
 
-    # Compute the vector of the '(nr + 1)'-th element of length 'l'.
+    # Compute the vector of the `(nr + 1)'-th element of length `l'.
     exp:= 0;
     maxexp:= 1;
     c:= nr mod 2n;
@@ -176,7 +151,7 @@ InstallMethod( \[\],
     word:= [ c/2 + 1 ];
     for i in [ 1 .. l ] do
 
-      # translate 'c'
+      # translate `c'
       if cc < c or ( cc mod 2 = 1 and cc-2 < c ) then
         c:= c+1;
       fi;
@@ -184,7 +159,6 @@ InstallMethod( \[\],
       if c = cc then
         exp:= exp + 1;
       else
-
         Add( word, sign * exp );
         if maxexp < exp then
           maxexp:= exp;
@@ -209,12 +183,13 @@ InstallMethod( \[\],
     return ObjByExtRep( enum!.family, 1, maxexp, word );
     end );
 
-InstallMethod( Position,
-    "for enumerator of a free group",
-    IsCollsElmsX,
-    [ IsFreeGroupEnumerator, IsAssocWordWithInverse, IsZeroCyc ],
-    function( enum, elm, zero )
+BindGlobal( "NumberElement_FreeGroup",
+    function( enum, elm )
     local l, len, i, n, 2n, nn, nr, j, power, c, cc, exp;
+
+    if not IsCollsElms( FamilyObj( enum ), FamilyObj( elm ) ) then
+      return fail;
+    fi;
 
     elm:= ExtRepOfObj( elm );
     l:= Length( elm );
@@ -291,16 +266,13 @@ InstallMethod( Position,
 InstallMethod( Enumerator,
     "for enumerator of a free group",
     [ IsAssocWordWithInverseCollection and IsWholeFamily and IsGroup ],
-#T generalize!
-    function( G )
-    local enum;
-    enum:= Objectify( NewType( FamilyObj( G ), IsFreeGroupEnumerator ),
-                    rec( family        := ElementsFamily( FamilyObj( G ) ),
-                         nrgenerators  := Length( GeneratorsOfGroup( G ) ) )
-                     );
-    SetUnderlyingCollection( enum, G );
-    return enum;
-    end );
+    G -> EnumeratorByFunctions( G, rec(
+             NumberElement := NumberElement_FreeGroup,
+             ElementNumber := ElementNumber_FreeGroup,
+
+             family        := ElementsFamily( FamilyObj( G ) ),
+             nrgenerators  := Length( ElementsFamily(
+                                          FamilyObj( G ) )!.names ) ) ) );
 
 
 #############################################################################
@@ -410,7 +382,11 @@ InstallGlobalFunction( FreeGroup, function ( arg )
           F,          # family of free group element objects
           G;          # free group, result
 
-    lesy:=IsLetterWordsFamily; # default
+    if ValueOption("FreeGroupFamilyType")="syllable" then
+      lesy:=IsSyllableWordsFamily; # optional -- used in PQ
+    else
+      lesy:=IsLetterWordsFamily; # default
+    fi;
     if IsFilter(arg[1]) then
       lesy:=arg[1];
       zarg:=arg{[2..Length(arg)]};
@@ -552,7 +528,7 @@ InstallMethod( ViewObj,
     [ IsFreeGroup ],
 function(G)
   if IsGroupOfFamily(G) then
-    if Length(GeneratorsOfGroup(G))>VIEWLEN*10 then
+    if Length(GeneratorsOfGroup(G)) > GAPInfo.ViewLength * 10 then
       Print("<free group with ",Length(GeneratorsOfGroup(G))," generators>");
     else
       Print("<free group on the generators ",GeneratorsOfGroup(G),">");
@@ -563,7 +539,7 @@ function(G)
       if not IsBound(G!.gensWordLengthSum) then
 	G!.gensWordLengthSum:=Sum(List(GeneratorsOfGroup(G),Length));
       fi;
-      if G!.gensWordLengthSum<=VIEWLEN*30 then
+      if G!.gensWordLengthSum <= GAPInfo.ViewLength * 30 then
         Print(GeneratorsOfGroup(G));
       else
         Print("<",Length(GeneratorsOfGroup(G))," generators>");

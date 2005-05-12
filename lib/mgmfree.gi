@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for free magmas and free magma-with-ones.
 ##
@@ -260,7 +261,7 @@ InstallMethod( ViewObj,
     "for a free magma containing the whole family",
     [ IsMagma and IsWordCollection and IsWholeFamily ],
     function( M )
-    if VIEWLEN * 10 < Length( GeneratorsOfMagma( M ) ) then
+    if GAPInfo.ViewLength * 10 < Length( GeneratorsOfMagma( M ) ) then
       Print( "<free magma with ", Length( GeneratorsOfMagma( M ) ),
              " generators>" );
     else
@@ -277,7 +278,7 @@ InstallMethod( ViewObj,
     "for a free magma-with-one containing the whole family",
     [ IsMagmaWithOne and IsWordCollection and IsWholeFamily ],
     function( M )
-    if VIEWLEN * 10 < Length( GeneratorsOfMagmaWithOne( M ) ) then
+    if GAPInfo.ViewLength * 10 < Length( GeneratorsOfMagmaWithOne( M ) ) then
       Print( "<free magma-with-one with ",
              Length( GeneratorsOfMagmaWithOne( M ) ), " generators>" );
     else

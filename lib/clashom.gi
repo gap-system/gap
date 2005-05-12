@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains functions that compute the conjugacy classes of a
 ##  finite group by homomorphic images.
@@ -89,6 +90,7 @@ BindGlobal("GeneralStepClEANSNonsolv",function( H, N,NT, cl )
   for orb in eo do
     rep := PcElementByExponentsNC( N, N{ N!.subspace.baseComplement },
 		    Representative( orb ){ ran } );
+    Assert(2,ForAll(GeneratorsOfGroup(stabsub),i->Comm(i,h*rep) in NT));
 
     # filter those we don't get anyhow.
     stab:=Filtered(GeneratorsOfGroup(StabilizerOfExternalSet(orb)),
@@ -102,9 +104,10 @@ BindGlobal("GeneralStepClEANSNonsolv",function( H, N,NT, cl )
     comm:=ImmutableMatrix(field,comm);
     comm := comm * N!.subspace.inverse;
     for s  in [ 1 .. Length( comm ) ]  do
-	stab[ s ] := stab[ s ] / PcElementByExponentsNC
+      stab[ s ] := stab[ s ] / PcElementByExponentsNC
 	  ( N, N{ N!.subspace.needed }, comm[ s ] );
 	  #( N!.capH, N!.capH{ N!.subspace.needed }, comm[ s ] );
+      Assert(2,Comm(h*rep,stab[s]) in NT);
     od;
 
   # NC is safe
@@ -114,6 +117,7 @@ BindGlobal("GeneralStepClEANSNonsolv",function( H, N,NT, cl )
       SetIsSolvableGroup(stab,true);
     fi;
     c := [h * rep,stab];
+    Assert(2,ForAll(GeneratorsOfGroup(stab),i->Comm(i,c[1]) in NT));
 
     Add( classes, c );
   od;
@@ -208,7 +212,7 @@ end);
 
 #############################################################################    
 AutomorphismRepresentingGroup := function(G,autos)
-local cnt,iso,Gi,ai,dom,s,u,a;
+local cnt,iso,Gi,ai,dom,s,u,a,red,degs,degs2,v;
 # assumes G simple!
   cnt:=2;
   dom:=Set(Orbit(G,LargestMovedPoint(G)));
@@ -220,11 +224,19 @@ local cnt,iso,Gi,ai,dom,s,u,a;
     Info(InfoHomClass,2,"block refinement");
     iso:=ActionHomomorphism(G,s,OnSets,"surjective");
   fi;
+  red:=true;
+  degs:=[];
+  degs2:=[];
   repeat
     Gi:=ImagesSet(iso,G);
-    ai:=SmallerDegreePermutationRepresentation(Gi);
-    Gi:=ImagesSet(ai,Gi);
-    iso:=iso*ai;
+    AddSet(degs,NrMovedPoints(Gi));
+    if red then
+      # reduce degree
+      Info(InfoHomClass,3,"reduce degree");
+      ai:=SmallerDegreePermutationRepresentation(Gi);
+      Gi:=ImagesSet(ai,Gi);
+      iso:=iso*ai;
+    fi;
     ai:=List(autos,i->GroupHomomorphismByImagesNC(Gi,Gi,GeneratorsOfGroup(Gi),
              List(GeneratorsOfGroup(Gi),
 	          j->Image(iso,Image(i,PreImagesRepresentative(iso,j))))));
@@ -246,17 +258,42 @@ local cnt,iso,Gi,ai,dom,s,u,a;
     # otherwise we try to find another perm rep, hopefully not to bad. 
     # we should invoke the classification here to see how bad it might be
     cnt:=cnt+1; # increase in case the best rep is awfully bigger
-    repeat
+    # try intersection
+    if not NrMovedPoints(Gi) in degs2 then
+      AddSet(degs2,NrMovedPoints(Gi));
+      u:=Stabilizer(Gi,1);
+      for a in ai do
+	if not IsConjugatorAutomorphism(a) then
+	  v:=Image(a,u);
+	  red:=false; # no reduction!
+	  if RepresentativeAction(Gi,u,v)=fail then
+	    u:=Intersection(u,v);
+	    Info(InfoHomClass,3,"Intersecting, index ",Index(v,u));
+	  fi;
+	fi;
+      od;
+      if Index(Gi,u)>cnt*10*Length(dom) then
+	# Index too big
+	RemoveSet(degs2,NrMovedPoints(Gi));
+	u:=TrivialSubgroup(G);
+      else
+	u:=PreImage(iso,u);
+      fi;
+    fi;
+
+    # arbitrary values.
+    while (Index(G,u)=1 or Index(G,u)>cnt*10*Length(dom)) do;
+      red:=true;
       # assume each suitable subgroup is 2-generators
       u:=Subgroup(G,[Random(G),Random(G)]);
       if Index(G,u)>1 and Random([1..3])=1 then
 	u:=Intersection(u,Image(Random(autos),u));
 	Info(InfoHomClass,3,"intersection degree ",Index(G,u));
       fi;
-      # arbitrary values.
-    until Index(G,u)>1 and Index(G,u)<cnt*10*Length(dom);
+    od;
     # next attempt at iso
     iso:=ActionHomomorphism(G,RightTransversal(G,u),OnRight,"surjective");
+    red:=red and not (Index(G,u) in degs);
   until false;
 end;
 
@@ -337,10 +374,12 @@ local clT,	# classes T
       clF,	# classes of F
       clop,	# classes of op
       bars,	# colour bars
+      barsi,    # partial bars
+      lallcolors,# |all colors|
       reps,Mproj,centralizers,centindex,emb,pi,varpi,newreps,newcent,
       newcentindex,centimages,centimgindex,C,p,P,selectcen,select,
       cen,eta,newcentlocal,newcentlocalindex,d,dc,s,t,elm,newcen,shift,
-      cengen,
+      cengen,b1,ore,
       # as in paper
       colourbar,newcolourbar,possiblecolours,potentialbars,bar,colofclass,
       clin,clout,
@@ -383,7 +422,7 @@ local clT,	# classes T
       trymap,	# operation to try
       skip,	# skip (if u=ug)
       ug,	# u\cap u^{gen^-1}
-      scj,	# size(centralizers[j]);
+      scj,	# size(centralizers[j])
       dsz;	# Divisors(scj);
 
 
@@ -434,7 +473,8 @@ local clT,	# classes T
   # get the allowed colour bars
   ophom:=ActionHomomorphism(F,components,OnSets,"surjective");
   op:=Image(ophom);
-  bars:=ClassRepsPermutedTuples(op,[1..Length(fus)]);
+  lallcolors:=Length(fus);
+  bars:=ClassRepsPermutedTuples(op,[1..lallcolors]);
 
   Info(InfoHomClass,1,"classes in normal subgroup");
   # inner classes
@@ -448,6 +488,7 @@ local clT,	# classes T
 
   for i in [1..n] do
     Info(InfoHomClass,1,"component ",i);
+    barsi:=Set(Immutable(List(bars,j->j[1]{[1..i]})));
     emb:=embeddings[i];
     pi:=projections[i];
     Add(varpi,ActionHomomorphism(M,Union(components{[1..i]}),"surjective"));
@@ -471,14 +512,14 @@ local clT,	# classes T
       fi;
       Add(centimgindex,p);
 
-      #force 'centralizers[j]' to have its base appropriate to the component
-      # (this will speed up preimages)
-      cen:=centralizers[j];
-      d:=Size(cen);
-      cen:=Group(GeneratorsOfGroup(cen),());
-      StabChain(cen,rec(base:=components[i],size:=d));
-      centralizers[j]:=cen;
-      etas[j]:=ActionHomomorphism(cen,components[i],"surjective");
+      # #force 'centralizers[j]' to have its base appropriate to the component
+      # # (this will speed up preimages)
+      # cen:=centralizers[j];
+      # d:=Size(cen);
+      # cen:=Group(GeneratorsOfGroup(cen),());
+      # StabChain(cen,rec(base:=components[i],size:=d));
+      # centralizers[j]:=cen;
+      # etas[j]:=ActionHomomorphism(cen,components[i],"surjective");
 
     od;
     Info(InfoHomClass,2,Length(centimages)," centralizer images");
@@ -498,11 +539,16 @@ local clT,	# classes T
 	possiblecolours:=[1..Length(fus)];
       else
 	possiblecolours:=[];
-	for k in select do
-	  bar:=colourbar[k];
+	#for k in select do
+	#  bar:=colourbar[k];
+	k:=1;
+	while k<=Length(select) 
+	  and Length(possiblecolours)<lallcolors do
+	  bar:=colourbar[select[k]];
 	  potentialbars:=Filtered(bars,j->j[1]{[1..i-1]}=bar);
 	  UniteSet(possiblecolours,
 	           potentialbars{[1..Length(potentialbars)]}[1][i]);
+	  k:=k+1;
 	od;
 
       fi;
@@ -520,7 +566,29 @@ local clT,	# classes T
 	fi;
 	for t in selectcen do
 	  # continue partial rep. 
+
+	  #force 'centralizers[j]' to have its base appropriate to the component
+	  # (this will speed up preimages)
 	  cen:=centralizers[t];
+	  if not (HasStabChainMutable(cen) 
+	     and i<=Length(centralizers)
+	     and BaseStabChain(StabChainMutable(cen))[1] in centralizers[i])
+	    then
+	    d:=Size(cen);
+	    cen:= Group( GeneratorsOfGroup( cen ), One( cen ) );
+	    StabChain(cen,rec(base:=components[i],size:=d));
+	    #centralizers[t]:=cen;
+	  fi;
+
+	  if not IsBound(etas[t]) then
+	    if Number(etas,i->IsBound(i))>500 then
+	      for d in
+		Filtered([1..Length(etas)],i->IsBound(etas[i])){[1..500]} do
+		Unbind(etas[d]);
+	      od;
+	    fi;
+	    etas[t]:=ActionHomomorphism(cen,components[i],"surjective");
+	  fi;
 	  eta:=etas[t];
 
 	  select:=Filtered([1..Length(centindex)],l->centindex[l]=t);
@@ -533,7 +601,11 @@ local clT,	# classes T
 	    for s in select do
 	      # test whether colour may be added here
 	      bar:=Concatenation(colourbar[s],[colofclass[k]]);
-	      if ForAny(bars,j->j[1]{[1..i]}=bar) then
+	      bar:=ShallowCopy(colourbar[s]);
+	      Add(bar,colofclass[k]);
+	      MakeImmutable(bar);
+	      #if ForAny(bars,j->j[1]{[1..i]}=bar) then
+	      if bar in barsi then
 		# new representative
 		elm:=reps[s]*Image(emb,clT[k][1]^d);
 		if elm in Mproj[i] then
@@ -554,11 +626,11 @@ local clT,	# classes T
 		    Add(newcentlocalindex,1); # dummy, just for counting
 		  fi;
 		#else
-		#  Info(InfoHomClass,2,"not in");
+		#  Info(InfoHomClass,5,"not in");
 		fi;
 
 	      #else
-	      #	Info(InfoHomClass,2,bar,"not minimal");
+	      #	Info(InfoHomClass,5,bar,"not minimal");
 	      fi;
 	      # end the loops from step 9
 	    od;
@@ -606,7 +678,8 @@ local clT,	# classes T
   newreps:=[];
   Info(InfoHomClass,2,"computing centralizers");
   for bar in bars do
-    select:=Filtered([1..Length(reps)],i->colourbar[i]=bar[1]);
+    b1:=Immutable(bar[1]);
+    select:=Filtered([1..Length(reps)],i->colourbar[i]=b1);
     if Length(select)>1 then
       Info(InfoHomClass,2,"test ",Length(select)," classes for fusion");
     fi;
@@ -695,8 +768,8 @@ local clT,	# classes T
 	centrhom:=ActionHomomorphism(centralizers_r[j],components[i],
 	            "surjective");
 	localcent_r:=Image(centrhom);
-	Info(InfoHomClass,3,i,":",j);
-	Info(InfoHomClass,2,"acting: ",Size(centralizers[j])," minimum ",
+	Info(InfoHomClass,4,i,":",j);
+	Info(InfoHomClass,3,"acting: ",Size(centralizers[j])," minimum ",
 	      Int(Size(Image(projections[i]))/Size(centralizers[j])),
 	      " orbits.");
 	# compute C(r)-classes
@@ -741,7 +814,7 @@ local clT,	# classes T
 	# large local stabilizers)
 	Sort(clTR,function(a,b) return Size(a[3])<Size(b[3]);end);
 
-	Info(InfoHomClass,2,Length(clTR)," local classes");
+	Info(InfoHomClass,3,Length(clTR)," local classes");
 
 	cengen:=GeneratorsOfGroup(centralizers[j]);
 	#cengen:=Filtered(cengen,i->not i in localcent_r);
@@ -839,8 +912,8 @@ local clT,	# classes T
 			   =Representative(clTR[p][3]));
 		  Add(trans,con);
 		  for stgen in GeneratorsOfGroup(clTR[p][2]) do
-		    Assert(1,Image(projections[i],
-				   opfun(repres,con*stgen/con)/repres)=());
+		    Assert( 1, IsOne( Image( projections[i],
+				   opfun(repres,con*stgen/con)/repres ) ) );
 		    stab:=ClosureGroup(stab,con*stgen/con);
 		  od;
 
@@ -1003,18 +1076,18 @@ local clT,	# classes T
 			      fi;
 			    od;
 			    if possible=false then
-			      Info(InfoHomClass,3,"Even test failed!");
+			      Info(InfoHomClass,4,"Even test failed!");
 			    else
 			      orb:=Concatenation(orb,clTR{smacla});
 			      select:=Difference(select,smacla);
-			      Info(InfoHomClass,2,"Completed orbit (hard)");
+			      Info(InfoHomClass,3,"Completed orbit (hard)");
 			    fi;
 			  fi;
 			else
 			  combl:=combl[1];
 			  orb:=Concatenation(orb,clTR{smacla{combl}});
 			  select:=Difference(select,smacla{combl});
-			  Info(InfoHomClass,2,"Completed orbit");
+			  Info(InfoHomClass,3,"Completed orbit");
 			fi;
 		      fi;
 		    fi;
@@ -1065,7 +1138,7 @@ local clT,	# classes T
 
 
 	  Assert(1,ForAll(GeneratorsOfGroup(stab),
-			j->Image(projections[i],opfun(repres,j)/repres)=()));
+                j -> IsOne( Image(projections[i],opfun(repres,j)/repres) )));
 
 	  # correct stabilizer to element stabilizer
 	  Add(newreps,reps[j]*RestrictedPerm(repres,components[i]));
@@ -1094,14 +1167,17 @@ local clT,	# classes T
     newcentlocal:=[];
     for i in [1..Length(reps)] do
       bar:=CycleStructurePerm(reps[i]);
+      ore:=Order(reps[i]);
       newcentlocal:=Filtered(newreps,
-                      i->CycleStructurePerm(Representative(i))=bar);
+		     i->Order(Representative(i))=ore and
+		     i!.elmcyc=bar);
       if not ForAny(newcentlocal,j->reps[i] in j) then
         C:=Centralizer(cen,reps[i]);
 	# AH can we use centralizers[i] here ? 
 	Add(clF,[reps[i],C]);
 	Add(clout,[reps[i],C]);
 	bar:=ConjugacyClass(cen,reps[i],C);
+	bar!.elmcyc:=CycleStructurePerm(reps[i]);
 	Add(newreps,bar);
       fi;
     od;
@@ -1488,7 +1564,7 @@ local cs,	# chief series of G
 		      Assert(2,ForAll(GeneratorsOfGroup(zentr),
 			      i->Comm(i,elm) in N));
 
-		      Info(InfoHomClass,4,"new class, order ",OrderPerm(elm),
+		      Info(InfoHomClass,4,"new class, order ",Order(elm),
 			  ", size=",Index(G,zentr));
 		      Add(cl,[elm,zentr]);
 		      good:=good+1;
@@ -1548,7 +1624,7 @@ local r,	#radical
 
   # first try whether the pcgs found is good enough
   pcgs:=PcgsElementaryAbelianSeries(r);
-  ser:=NormalSeriesByPcgs(pcgs);
+  ser:=EANormalSeriesByPcgs(pcgs);
   if not ForAll(ser,i->IsNormal(G,i)) then
     # we have to get a better series
     ser:=InvariantElementaryAbelianSeries(r,
@@ -1559,7 +1635,7 @@ local r,	#radical
 
     pcgs:=false; # remember there is no universal parent pcgs
   else
-    ind:=IndicesNormalSteps(pcgs);
+    ind:=IndicesEANormalSteps(pcgs);
     pcgs:=List([1..Length(ind)],
                i->InducedPcgsByPcSequenceNC(pcgs,pcgs{[ind[i]..Length(pcgs)]}));
   fi;

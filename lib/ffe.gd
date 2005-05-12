@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares operations for `FFE's.
 #1
@@ -151,14 +152,18 @@ InstallFlushableValue( GALOIS_FIELDS, [] );
 ##
 DeclareGlobalFunction( "LargeGaloisField" );
 
-
 #############################################################################
 ##
 #F  GaloisField( <p>^<d> )  . . . . . . . . . .  create a finite field object
+#F  GF( <p>^<d> )
 #F  GaloisField( <p>, <d> )
-#F  GaloisField( <S>, <d> )
+#F  GF( <p>, <d> )
+#F  GaloisField( <subfield>, <d> )
+#F  GF( <subfield>, <d> )
 #F  GaloisField( <p>, <pol> )
-#F  GaloisField( <S>, <pol> )
+#F  GF( <p>, <pol> )
+#F  GaloisField( <subfield>, <pol> )
+#F  GF( <subfield>, <pol> )
 ##
 ##  `GaloisField' returns a finite field.  It takes two arguments.
 ##  The form `GaloisField( <p>, <d> )', where <p>, <d> are integers,
@@ -237,7 +242,7 @@ DeclareOperation( "LogFFE", [ IsFFE, IsFFE ] );
 ##  nonnegative integer <i> such that `<i> \*\ One( <z> ) = <z>'.
 ##  
 ##  The  correspondence between elements from a finite prime field of
-##  characteristic <p> and the integers between $0$ and `<p>-1' is defined by
+##  characteristic <p> (for $p\< 2^{16}$) and the integers between $0$ and $p-1$ is defined by
 ##  choosing `Z(<p>)' the element corresponding to the smallest primitive
 ##  root mod <p> (see~"PrimitiveRootMod").
 ##
@@ -246,6 +251,27 @@ DeclareOperation( "LogFFE", [ IsFFE, IsFFE ] );
 ##
 DeclareOperation( "IntFFE", [ IsFFE ] );
 
+
+#############################################################################
+##
+#O  IntFFESymm( <z> )
+#O  IntFFESymm( <vec> )
+##
+##  For a finite prime field element <z>, `IntFFESymm' returns the corresponding
+##  integer of smallest absolute value. That is `IntFFESymm' returns the integer
+##  <i> of smallest absolute value that `<i> \*\ One( <z> ) = <z>'.
+##
+##  For a vector <vec>, the operation returns the result if applying
+##  `IntFFESymm' to every entry of the vector.
+##  
+##  The  correspondence between elements from a finite prime field of
+##  characteristic <p> (for $p\< 2^{16}$) and the integers between $-p/2$ and $p/2$ is defined by
+##  choosing `Z(<p>)' the element corresponding to the smallest positive
+##  primitive
+##  root mod <p> (see~"PrimitiveRootMod") and reducing results to the
+##  $-p/2..p/2$ range.
+##
+DeclareOperation( "IntFFESymm", [ IsFFE ] );
 
 #############################################################################
 ##

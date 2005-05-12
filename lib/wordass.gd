@@ -7,6 +7,7 @@
 ##
 #Y  Copyright 1997,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for associative words.
 ##
@@ -182,15 +183,15 @@ InstallTrueMethod( IsGeneratorsOfMagmaWithInverses,
 ##  function assigns these generators to global variables with the same 
 ##  names.
 ##
-##  The aim of this function to make it easy in interactive use to work with
-##  (for example) a free group. It is a shorthand for a sequence of
+##  The aim of this function is to make it easy in interactive use to work
+##  with (for example) a free group. It is a shorthand for a sequence of
 ##  assignments of the form
 ##
 ##  \begintt
-##  gap> var1:=GeneratorsOfGroup(G)[1];
-##  gap> var2:=GeneratorsOfGroup(G)[2];
+##  var1:=GeneratorsOfGroup(G)[1];
+##  var2:=GeneratorsOfGroup(G)[2];
 ##  ...
-##  gap> varn:=GeneratorsOfGroup(G)[n];
+##  varn:=GeneratorsOfGroup(G)[n];
 ##  \endtt
 ##
 ##  However, since overwriting global variables can be very dangerous, *it

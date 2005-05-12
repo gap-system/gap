@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of attributes, properties, and
 ##  operations for modules over Lie algebras.
@@ -34,7 +35,7 @@ Revision.lierep_gd :=
 ##  Then we represent an $s$-cocycle by a list of $r$ lists.
 ##  The $j$-th of those lists consists of entries of the form
 ##  $$
-##  [  [i_1,i_2,\ldots,i_s], \lambda^j_{i_1,\ldots, i_s} ]
+##  [ [i_1,i_2,\ldots,i_s], \lambda^j_{i_1,\ldots, i_s} ]
 ##  $$
 ##  where the coefficient on the second position is non-zero.
 ##  (We only store those entries for which this coefficient is non-zero.)
@@ -46,7 +47,7 @@ Revision.lierep_gd :=
 ##  $4$-dimensional, then the $2$-cochain represented by
 ##
 ##  \begintt
-##  [  [ [ [1,2], 2] ], [ ], [ [ [1,2], 1/2 ] ], [ ] ]
+##  [ [ [ [1,2], 2] ], [ ], [ [ [1,2], 1/2 ] ], [ ] ]
 ##  \endtt
 ##
 ##  maps the pair $(x_1,x_2)$ to $2v_1+1/2 v_3$ (where $v_1$ is the first

@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for free left modules.
 ##
@@ -17,29 +18,31 @@ Revision.modfree_gi :=
 ##
 #M  \=( <V>, <W> )  . . . . . . . . . test if two free left modules are equal
 ##
+##  This method is used also for algebras and algebras-with-one,
+##  in particular also for infinite dimensional vector spaces.
+##  Note that no generators are accessed here,
+##  this happens in the method chosen for `IsSubset'.
+##
 InstallMethod( \=,
     "for two free left modules (at least one fin. dim.)",
     IsIdenticalObj,
-    [ IsFreeLeftModule, IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule, IsFreeLeftModule ],
     function( V, W )
-    local inter;
-    if IsFiniteDimensional( V ) then
-      if IsFiniteDimensional( W ) then
-        if LeftActingDomain( V ) <> LeftActingDomain( W ) then
-          inter:= Intersection2( LeftActingDomain(V), LeftActingDomain(W) );
-          V:= AsVectorSpace( inter, V );
-          W:= AsVectorSpace( inter, W );
-        fi;
-        return     Dimension( V ) = Dimension( W )
-               and ForAll( GeneratorsOfLeftModule( V ), x -> x in W );
-      else
+
+    # If the dimensions of the two free modules are known and are different
+    # then we need not look at elements.
+    if     HasDimension( V ) and HasDimension( W )
+       and IsIdenticalObj( LeftActingDomain( V ), LeftActingDomain( W ) ) then
+      if   Dimension( V ) <> Dimension( W ) then
         return false;
+      elif IsInt( Dimension( V ) ) then
+        # Only one inclusion must be tested.
+        return IsSubset( V, W );
       fi;
-    elif IsFiniteDimensional( W ) then
-      return false;
-    else
-      TryNextMethod();
     fi;
+
+    # Check the inclusions.
+    return IsSubset( V, W ) and IsSubset( W, V );
     end );
 
 
@@ -58,7 +61,7 @@ InstallMethod( \=,
 InstallMethod( \<,
     "for two free left modules",
     IsIdenticalObj,
-    [ IsFreeLeftModule, IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule, IsFreeLeftModule ],
     function( V, W )
     local inters;
     if LeftActingDomain( V ) <> LeftActingDomain( W ) then
@@ -82,7 +85,7 @@ InstallMethod( \<,
 InstallMethod( \in,
     "for vector and fin. dim. free left module",
     IsElmsColls,
-    [ IsVector, IsFreeLeftModule and IsFiniteDimensional ], 0,
+    [ IsVector, IsFreeLeftModule and IsFiniteDimensional ],
     function( v, V )
     return Coefficients( Basis( V ), v ) <> fail;
     end );
@@ -115,8 +118,7 @@ InstallImmediateMethod( IsFinite,
 
 InstallMethod( IsFinite,
     "for a free left module",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     function( V )
     if not IsFiniteDimensional( V ) then
       return false;
@@ -141,8 +143,7 @@ InstallImmediateMethod( IsTrivial, IsFreeLeftModule and HasDimension, 0,
 
 InstallMethod( IsTrivial,
     "for a free left module",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     V -> Dimension( V ) = 0 );
 
 
@@ -152,8 +153,7 @@ InstallMethod( IsTrivial,
 ##
 InstallMethod( Size,
     "for a free left module",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     function( V )
     if IsFiniteDimensional( V ) then
       if   IsFinite( LeftActingDomain( V ) ) then
@@ -178,7 +178,6 @@ InstallMethod( Size,
 ##  basis is computed together with the elements list.
 ##
 AsListOfFreeLeftModule := function( V )
-
     local elms,      # elements list, result
           B,         # $F$-basis of $V$
           new,       # intermediate elements list
@@ -207,14 +206,12 @@ end;
 
 InstallMethod( AsList,
     "for a free left module",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     AsListOfFreeLeftModule );
 
 InstallMethod( AsSSortedList,
     "for a free left module",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     AsListOfFreeLeftModule );
 #T problem: may be called twice, but does the same job ...
 #T Note that 'AsList' is not allowed to call 'AsSSortedList'!
@@ -226,10 +223,8 @@ InstallMethod( AsSSortedList,
 ##
 InstallMethod( Random,
     "for a free left module",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     function( V )
-
     local F;    # coefficient field of <V>
 
     if IsFiniteDimensional( V ) then
@@ -245,30 +240,72 @@ InstallMethod( Random,
 
 #############################################################################
 ##
+#F  GeneratorsOverIntersection( <V>, <gens>, <K>, <L> )
+##
+##  Let <gens> be a list of (vector space, algebra, algebra-with-one, field)
+##  generators of a <K>-free left module <V>,
+##  and <L> be a field with the same prime field as <K>.
+##  Furthermore, let $I$ be the intersection of <K> and <L>,
+##  and let $B$ be an $I$-basis of <K>.
+##  If <gens> is nonempty then `GeneratorsOverIntersection' returns
+##  the list containing $\{ b \cdot a; b \in B, a \in <gens> \}$,
+##  which is a set of generators (in the same sense) of <V> over <L>.
+##  If <gens> is empty then the list containing the zero element of <V> is
+##  returned.
+##
+##  This function is used for `IsSubset' methods for vector spaces, algebras,
+##  algebras-with-one.
+##  Note that in `IsSubset', we want to avoid delegating to structures with
+##  equal `LeftActingDomain' value, mainly because we want to use the
+##  membership test for the original arguments of `IsSubset' rather than for
+##  newly created objects.
+##
+BindGlobal( "GeneratorsOverIntersection", function( V, gens, K, L )
+    local I, B;
+
+    if   IsEmpty( gens ) then
+      return [ Zero( V ) ];
+    elif IsSubset( L, K ) then
+      return gens;
+    elif IsSubset( K, L ) then
+      I:= L;
+    else
+      I:= Intersection( K, L );
+    fi;
+    K:= AsField( I, K );
+    Assert( 1, IsFiniteDimensional( K ) );
+    B:= BasisVectors( Basis( K ) );
+    return Concatenation( List( B, b -> List( gens, a -> b * a ) ) );
+    end );
+
+
+#############################################################################
+##
 #M  IsSubset( <V>, <U> )
+##
+##  This method is used also in situations where <U> is a (perhaps infinite
+##  dimensional) algebra but <V> is not.
 ##
 InstallMethod( IsSubset,
     "for two free left modules",
     IsIdenticalObj,
-    [ IsFreeLeftModule, IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule, IsFreeLeftModule ],
     function( V, U )
-
-    local gensU, base;
-
-    gensU:= GeneratorsOfLeftModule( U );
-
-    if IsEmpty( gensU ) then
-      return Zero( U ) in V;
-    elif IsSubset( LeftActingDomain( V ), LeftActingDomain( U ) ) then
-      return ForAll( gensU, v -> v in V );
-    else
-      base:= BasisVectors( Basis(
+    local K, L;
+    K:= LeftActingDomain( U );
+    L:= LeftActingDomain( V );
+    if   IsFiniteDimensional( U ) then
 #T does only work if the left acting domain is a field!
 #T (would work for division rings or algebras, but general rings ?)
-               AsField( Intersection( LeftActingDomain( V ),
-                                      LeftActingDomain( U ) ),
-                        LeftActingDomain( U ) ) ) );
-      return ForAll( gensU, v -> ForAll( base, x -> x * v in V ) );
+      return IsSubset( V, GeneratorsOverIntersection(
+                              U, GeneratorsOfLeftModule( U ), K, L ) );
+    elif     IsFiniteDimensional( V )
+         and IsFiniteDimensional( AsField( Intersection2( K, L ), L ) ) then
+      return false;
+    else
+      # For two infinite dimensional modules, we should have succeeded
+      # in a more special method.
+      TryNextMethod();
     fi;
     end );
 
@@ -279,8 +316,7 @@ InstallMethod( IsSubset,
 ##
 InstallMethod( Dimension,
     "for a free left module",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     function( V )
     if IsFiniteDimensional( V ) then
       return Length( BasisVectors( Basis( V ) ) );
@@ -296,8 +332,7 @@ InstallMethod( Dimension,
 ##
 InstallMethod( IsFiniteDimensional,
     "for a free left module with known dimension",
-    true,
-    [ IsFreeLeftModule and HasDimension ], 0,
+    [ IsFreeLeftModule and HasDimension ],
     M -> IsInt( Dimension( M ) ) );
 
 
@@ -327,8 +362,7 @@ InstallImmediateMethod( GeneratorsOfLeftModule,
 ##
 InstallMethod( Enumerator,
     "for free left module (delegate to 'EnumeratorByBasis')",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     V -> EnumeratorByBasis( Basis( V ) ) );
 
 
@@ -342,8 +376,7 @@ InstallMethod( Enumerator,
 ##
 InstallMethod( Iterator,
     "for free left module (delegate to 'IteratorByBasis')",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     V -> IteratorByBasis( Basis( V ) ) );
 
 
@@ -354,7 +387,7 @@ InstallMethod( Iterator,
 InstallMethod( ClosureLeftModule,
     "for free left module and vector",
     IsCollsElms,
-    [ IsFreeLeftModule and HasBasis, IsVector ], 0,
+    [ IsFreeLeftModule and HasBasis, IsVector ],
     function( V, w )
     local   B;  # basis of 'V'
 
@@ -375,7 +408,6 @@ InstallMethod( ClosureLeftModule,
 #F  FreeLeftModule( <R>, <gens>[, <zero>][, "basis"] )
 ##
 InstallGlobalFunction(FreeLeftModule,function( arg )
-
 #T check that the families have the same characteristic?
 #T 'CharacteristicFamily' ?
     local V;
@@ -436,8 +468,7 @@ end);
 ##
 InstallMethod( UseBasis,
     "for a free left module and a homog. list",
-    true,
-    [ IsFreeLeftModule, IsHomogeneousList ], 0,
+    [ IsFreeLeftModule, IsHomogeneousList ],
     function( V, gens )
 #T    local B;
     if not HasGeneratorsOfLeftModule( V ) then
@@ -465,8 +496,7 @@ InstallMethod( UseBasis,
 ##
 InstallMethod( ViewObj,
     "for free left module with known dimension",
-    true,
-    [ IsFreeLeftModule and HasDimension ], 0,
+    [ IsFreeLeftModule and HasDimension ],
     function( V )
     Print( "<free left module of dimension ", Dimension( V ),
            " over ", LeftActingDomain( V ), ">" );
@@ -474,8 +504,7 @@ InstallMethod( ViewObj,
 
 InstallMethod( ViewObj,
     "for free left module with known generators",
-    true,
-    [ IsFreeLeftModule and HasGeneratorsOfLeftModule ], 0,
+    [ IsFreeLeftModule and HasGeneratorsOfLeftModule ],
     function( V )
     Print( "<free left module over ", LeftActingDomain( V ), ", with ",
            Length( GeneratorsOfLeftModule( V ) ), " generators>" );
@@ -483,8 +512,7 @@ InstallMethod( ViewObj,
 
 InstallMethod( ViewObj,
     "for free left module",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     function( V )
     Print( "<free left module over ", LeftActingDomain( V ), ">" );
     end );
@@ -496,8 +524,7 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( PrintObj,
     "for free left module with known generators",
-    true,
-    [ IsFreeLeftModule and HasGeneratorsOfLeftModule ], 0,
+    [ IsFreeLeftModule and HasGeneratorsOfLeftModule ],
     function( V )
     if IsEmpty( GeneratorsOfLeftModule( V ) ) then
       Print( "FreeLeftModule( ", LeftActingDomain( V ), ", [], ",
@@ -510,8 +537,7 @@ InstallMethod( PrintObj,
 
 InstallMethod( PrintObj,
     "for free left module",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     function( V )
     Print( "FreeLeftModule( ", LeftActingDomain( V ), ", ... )" );
     end );

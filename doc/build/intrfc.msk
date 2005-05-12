@@ -80,7 +80,7 @@ property tester first.) Therefore the method would not be applicable
 for the group `g' in the following definition but only for the --
 mathematically identical but endowed with more knowledge by {\GAP} -- group
 `h'. (Section~"Enforcing Property Tests" shows a way around this.)
-\begintt
+\beginexample
 gap> g:=Group((1,2),(1,3)(2,4));;
 gap> h:=Group((1,2),(1,3)(2,4));;
 gap> IsNilpotentGroup(h); # enforce test
@@ -89,7 +89,7 @@ gap> HasIsNilpotentGroup(g);
 false
 gap> HasIsNilpotentGroup(h);
 true
-\endtt
+\endexample
 \bigskip
 
 Lets now look at a slightly more complicated example:

@@ -221,6 +221,9 @@
 **
 **  HISTORY
 *H  $Log$
+*H  Revision 4.6  2003/08/27 11:15:38  gap
+*H  Added drag and drop support. Replaced some functions in the Mac part by versons supported by recent Mac OS.
+*H
 *H  Revision 4.5  2001/11/09 01:30:53  gap
 *H  Added `SYS_IS_WINDOWS' target for cygwin/naive windows compilation.
 *H
@@ -325,16 +328,20 @@ FILE *          ReadArch;
 #define BLCK_READ_ARCH(blk,len) fread( (blk), 1L, (len), ReadArch )
 #define CLOS_READ_ARCH()        (fclose( ReadArch ) == 0)
 #define RWND_READ_ARCH()        (fseek( ReadArch, 0, 0 ) == 0)
+#define SYS_IS_MAC_BOTH
 #endif
-#ifdef  SYS_IS_MAC_THC
+#ifdef  SYS_IS_MAC_MWC
 #include <SIOUX.h>
 FILE *          ReadArch;
+int 			IsActive = 0;
+int 			DragAndDropEnabled;
+
 #define OPEN_READ_ARCH(patl)    ((ReadArch = fopen( (patl), "rb") ) != 0)
 #define BLCK_READ_ARCH(blk,len) fread( (blk), 1L, (len), ReadArch )
 #define CLOS_READ_ARCH()        (fclose( ReadArch ) == 0)
 #define RWND_READ_ARCH()        (fseek( ReadArch, 0, SEEK_SET ) == 0)
 #define SEEK_READ_ARCH(pos)		(fseek( ReadArch, pos, SEEK_SET) == 0)
-#define SYS_IS_MAC_MPW          /* BH: use most parts of MPW port */
+#define SYS_IS_MAC_BOTH
 #endif
 #ifdef  SYS_IS_GENERIC
 FILE *          ReadArch;
@@ -406,17 +413,16 @@ FILE *          ReadText;
 **  You may want to use 'open', 'write', and 'close' for better performance.
 */
 #ifdef  SYS_IS_MAC_MPW
-#ifndef  SYS_IS_MAC_THC
 FILE *          WritText;
 #define OPEN_WRIT_TEXT(patl)    MacOpenWritText( (patl) )
 #define CLOS_WRIT_TEXT()        MacClosWritText()
 #define BLCK_WRIT_TEXT(blk,len) MacBlckWritText( (blk), (len) )
-#else
+#endif
+#ifdef  SYS_IS_MAC_MWC
 FILE *          WritText;
 #define OPEN_WRIT_TEXT(patl)    MacOpenWritText( (patl) )
 #define CLOS_WRIT_TEXT()        (fclose( WritText ) == 0)
 #define BLCK_WRIT_TEXT(blk,len) fwrite( (blk), 1L, (len), WritText )
-#endif
 #endif
 #ifndef OPEN_WRIT_TEXT
 FILE *          WritText;
@@ -489,7 +495,7 @@ long            WritBinr;
 #define BLCK_WRIT_BINR(blk,len) VmsBlckWritBinr( WritBinr, (blk), (len) )
 #define CLOS_WRIT_BINR()        (close( WritBinr ) == 0)
 #endif
-#ifdef  SYS_IS_MAC_THC
+#ifdef  SYS_IS_MAC_MWC
 FILE *          WritBinr;
 #define OPEN_WRIT_BINR(patl)    MacOpenWritBinr (patl)
 #define BLCK_WRIT_BINR(blk,len) fwrite( (blk), 1L, (len), WritBinr )
@@ -538,6 +544,9 @@ FILE *          WritBinr;
 #ifdef  SYS_IS_MAC_MPW
 #define CONV_NAME(naml,namu)    strncpy( (naml), (namu), 31 ); naml[32] = '\0'
 #endif
+#ifdef  SYS_IS_MAC_MWC
+#define CONV_NAME(naml,namu)    strncpy( (naml), (namu), 31 ); naml[32] = '\0'
+#endif
 #ifndef CONV_NAME
 #define CONV_NAME(naml,namu)    ConvName( (naml), (namu), 8L, 3L, 'x' )
 #endif
@@ -579,6 +588,12 @@ FILE *          WritBinr;
 #ifdef  SYS_IS_MAC_MPW
 #define CONV_DIRE(dirl,diru)    ConvDire((dirl),(diru),"","",":",":",":")
 #endif
+#ifdef  SYS_IS_MAC_MWC
+#define CONV_DIRE(dirl,diru)    if (*diru) \
+                                     ConvDire((dirl),(diru),"","",":",":",":"); \
+                                else \
+                                   strcpy ((dirl), ":")
+#endif
 #ifndef CONV_DIRE
 #define CONV_DIRE(dirl,diru)    ((dirl)[0]='\0',1)
 #endif
@@ -619,6 +634,9 @@ char            Cmd [256];
 #define MAKE_DIRE(patl)         VmsMakeDire( (patl) )
 #endif
 #ifdef  SYS_IS_MAC_MPW
+#define MAKE_DIRE(patl)         MacMakeDire( (patl) )
+#endif
+#ifdef  SYS_IS_MAC_MWC
 #define MAKE_DIRE(patl)         MacMakeDire( (patl) )
 #endif
 
@@ -903,12 +921,14 @@ int             VmsMakeDire ( patl )
 **  'MacMakeDire' creates  the directory  with local  path  name <patl>.  The
 **  code comes from the Macintosh 'tar' port by Gail Zacharias.
 */
-#ifdef  SYS_IS_MAC_MPW
+
+#ifdef SYS_IS_MAC_MWC
 
 #include        <Devices.h>
 #include        <Files.h>
+#include        <URLAccess.h>
 
-#ifdef SYS_IS_MAC_THC
+extern Boolean gURLAvailable;
 
 int             MacOpenWritText ( patl )
     char *              patl;
@@ -916,7 +936,8 @@ int             MacOpenWritText ( patl )
     FileParam               fndrInfo;
     char            	    patp [256];     /* <patl> as a Pascal string       */
     int                		len;            /* length of <patp>                */
-
+    OSErr                   err;
+    
     /* open the file                                                       */
     if ( ! (WritText = fopen( (patl), "w" )) )
         return 0;
@@ -932,12 +953,22 @@ int             MacOpenWritText ( patl )
     fndrInfo.ioVRefNum   = 0;
     fndrInfo.ioFVersNum  = 0;
     fndrInfo.ioFDirIndex = 0;
-    if ( PBGetFInfo( (ParmBlkPtr)&fndrInfo, 0 ) ) {
+    if ( PBGetFInfoSync( (ParmBlkPtr)&fndrInfo) ) {
         return 0;
     }
-    fndrInfo.ioFlFndrInfo.fdType    = 'TEXT';
-	fndrInfo.ioFlFndrInfo.fdCreator = 'ttxt';
-     if ( PBSetFInfo( (ParmBlkPtr)&fndrInfo, 0 ) ) {
+#if TARGET_CPU_PPC
+    if (!gURLAvailable || 
+    	(err = URLGetFileInfo ((unsigned char*)patp, 
+    	    &fndrInfo.ioFlFndrInfo.fdType,
+    	    &fndrInfo.ioFlFndrInfo.fdCreator)) != noErr) {
+    	fndrInfo.ioFlFndrInfo.fdCreator = 'ttxt'; /* default type */
+    } 
+#else
+    fndrInfo.ioFlFndrInfo.fdCreator = 'ttxt'; /* default type */
+#endif
+	fndrInfo.ioFlFndrInfo.fdType    = 'TEXT'; /* make this a text file anyway */
+	
+     if ( PBSetFInfoSync( (ParmBlkPtr)&fndrInfo) ) {
         return 0;
     }
    /* indicate success                                                    */
@@ -950,6 +981,7 @@ int             MacOpenWritBinr ( patl )
     FileParam               fndrInfo;
     char            	    patp [256];     /* <patl> as a Pascal string       */
     int                		len;            /* length of <patp>                */
+	OSErr                   err;
 	
     /* open the file                                                       */
     if ( ! (WritBinr = fopen( (patl), "wb" )) )
@@ -967,12 +999,22 @@ int             MacOpenWritBinr ( patl )
     fndrInfo.ioVRefNum   = 0;
     fndrInfo.ioFVersNum  = 0;
     fndrInfo.ioFDirIndex = 0;
-    if ( PBGetFInfo( (ParmBlkPtr)&fndrInfo, 0 ) ) {
+    if ( PBGetFInfoSync( (ParmBlkPtr)&fndrInfo) ) {
         return 0;
     }
+#if TARGET_CPU_PPC
+    if (!gURLAvailable || 
+    	(err = URLGetFileInfo ((unsigned char*)patp, 
+    	    &fndrInfo.ioFlFndrInfo.fdType,
+    	    &fndrInfo.ioFlFndrInfo.fdCreator)) != noErr) {
+        fndrInfo.ioFlFndrInfo.fdType    = 'BINA';
+	    fndrInfo.ioFlFndrInfo.fdCreator = '????';
+    } 
+#else
     fndrInfo.ioFlFndrInfo.fdType    = 'BINA';
 	fndrInfo.ioFlFndrInfo.fdCreator = '????';
-     if ( PBSetFInfo( (ParmBlkPtr)&fndrInfo, 0 ) ) {
+#endif
+     if ( PBSetFInfoSync( (ParmBlkPtr)&fndrInfo) ) {
         return 0;
     }
    /* indicate success                                                    */
@@ -981,7 +1023,11 @@ int             MacOpenWritBinr ( patl )
 
 #endif
 
-#ifndef SYS_IS_MAC_THC
+#ifdef  SYS_IS_MAC_MPW
+
+#include        <Devices.h>
+#include        <Files.h>
+
 int             MacOpenWritText ( patl )
     char *              patl;
 {
@@ -1003,6 +1049,7 @@ int             MacOpenWritText ( patl )
 }
 #endif
 
+#ifdef  SYS_IS_MAC_BOTH
 
 int             MacClosWritText ()
 {
@@ -1023,7 +1070,8 @@ unsigned long   MacBlckWritText ( blk, len )
 }
 
 char            WritName [256];         /* name of the file                */
-IOParam         WritIOPB;               /* IO parameter block              */
+FSSpec          WritFSSpec;             /* fsspec of the file              */
+short           WritRef;                /* file reference number           */
 FileParam       WritFIPB;               /* Finder Info parameter block     */
 unsigned long   WritPart;               /* current part of MacBinary file  */
 unsigned long   WritType;               /* type of file, e.g. 'TEXT'       */
@@ -1057,7 +1105,7 @@ int             CLOS_WRIT_MACB ()
 {
 
     /* first get the current settings                                      */
-#ifdef SYS_IS_MAC_THC
+#ifdef SYS_IS_MAC_MWC
     WritFIPB.ioNamePtr   = (StringPtr)WritName;
 #else
     WritFIPB.ioNamePtr   = WritName;
@@ -1065,7 +1113,7 @@ int             CLOS_WRIT_MACB ()
     WritFIPB.ioVRefNum   = 0;
     WritFIPB.ioFVersNum  = 0;
     WritFIPB.ioFDirIndex = 0;
-    if ( PBGetFInfo( (ParmBlkPtr)&WritFIPB, 0 ) ) {
+    if ( PBGetFInfoSync( (ParmBlkPtr)&WritFIPB) ) {
         return 0;
     }
 
@@ -1075,7 +1123,7 @@ int             CLOS_WRIT_MACB ()
     WritFIPB.ioFlFndrInfo.fdFlags   = WritFlgs;
     WritFIPB.ioFlCrDat              = WritCDat;
     WritFIPB.ioFlMdDat              = WritMDat;
-    if ( PBSetFInfo( (ParmBlkPtr)&WritFIPB, 0 ) ) {
+    if ( PBSetFInfoSync( (ParmBlkPtr)&WritFIPB) ) {
         return 0;
     }
 
@@ -1089,13 +1137,17 @@ unsigned long   BLCK_WRIT_MACB ( blk, len )
 {
     unsigned long       cnt;            /* number of bytes written         */
     unsigned long       i;              /* loop variable                   */
-
+    long 				count; 
+    long 				need;
+	OSErr err;
+	
     /* first comes the header (128 bytes long)                             */
     cnt = 0;
     if ( WritPart == 0 ) {
         for ( i = 1; i <= blk[1]; i++ )
             WritName[WritName[0]+i] = blk[i+1];
         WritName[0] += blk[1];
+
         WritType = (blk[65]<<24) + (blk[66]<<16) + (blk[67]<< 8) + (blk[68]);
         WritCrtr = (blk[69]<<24) + (blk[70]<<16) + (blk[71]<< 8) + (blk[72]);
         WritFlgs = (blk[73]<< 8) + 0;
@@ -1103,26 +1155,22 @@ unsigned long   BLCK_WRIT_MACB ( blk, len )
         WritLRsc = (blk[87]<<24) + (blk[88]<<16) + (blk[89]<< 8) + (blk[90]);
         WritCDat = (blk[91]<<24) + (blk[92]<<16) + (blk[93]<< 8) + (blk[94]);
         WritMDat = (blk[95]<<24) + (blk[96]<<16) + (blk[97]<< 8) + (blk[98]);
+
+        
+        err = FSMakeFSSpec (0,0, (unsigned char *)WritName, &WritFSSpec);
+       	if (err == fnfErr) 	
+       		err = FSpCreate(&WritFSSpec, WritCrtr, WritType, -1);
+		if (err)
+			return 0;
+
         cnt += 128;
         WritPart = 1;
     }
 
     /* open the data fork                                                  */
     if ( WritPart == 1 && cnt < len ) {
-#ifdef SYS_IS_MAC_THC
-    WritFIPB.ioNamePtr   = (StringPtr)WritName;
-#else
-    WritFIPB.ioNamePtr   = WritName;
-#endif
-        WritIOPB.ioVRefNum = 0;
-        WritIOPB.ioVersNum = 0;
-        WritIOPB.ioPermssn = fsWrPerm;
-        WritIOPB.ioMisc    = 0;
-        WritIOPB.ioRefNum  = 0;
-        if ( PBCreate( (ParmBlkPtr)&WritIOPB, 0 ) ) {
-            return cnt;
-        }
-        if ( PBOpenSync(   (ParmBlkPtr)&WritIOPB ) ) {
+ 			
+        if ( err = FSpOpenDF(&WritFSSpec, fsWrPerm, &WritRef) ) {
             return cnt;
         }
         WritPart = 2;
@@ -1131,30 +1179,28 @@ unsigned long   BLCK_WRIT_MACB ( blk, len )
     /* next comes the data fork (padded to a multiple of 128 bytes)        */
     if ( WritPart == 2 ) {
         while ( WritLDat != 0 && cnt < len ) {
-            WritIOPB.ioReqCount  = (128 <= WritLDat ? 128 : WritLDat);
-            WritIOPB.ioPosMode   = fsAtMark;
-            WritIOPB.ioPosOffset = 0;
-            WritIOPB.ioBuffer    = (Ptr) (blk + cnt);
-            if ( PBWriteSync( (ParmBlkPtr)&WritIOPB )
-              || WritIOPB.ioActCount != WritIOPB.ioReqCount ) {
-                PBCloseSync( (ParmBlkPtr)&WritIOPB );
+        	need = (128 <= WritLDat ? 128 : WritLDat);
+        	count = need;
+        	err = FSWrite (WritRef, &count, (Ptr) (blk + cnt));
+            if (err || count < need ) {
+               err = FSClose (WritRef);
                 return cnt;
             }
             cnt += 128;
-            WritLDat -= WritIOPB.ioReqCount;
+            WritLDat -= count;
         }
         if ( WritLDat == 0 )  WritPart = 3;
     }
 
     /* close the data fork                                                 */
     if ( WritPart == 3 ) {
-        PBCloseSync( (ParmBlkPtr)&WritIOPB );
+        err = FSClose (WritRef);
         WritPart = 4;
     }
 
     /* open the resource fork                                              */
     if ( WritPart == 4 && cnt < len ) {
-        if ( PBOpenRF( (ParmBlkPtr)&WritIOPB, 0 ) ) {
+        if ( err = FSpOpenRF(&WritFSSpec, fsWrPerm, &WritRef) ) {
             return cnt;
         }
         WritPart = 5;
@@ -1163,24 +1209,22 @@ unsigned long   BLCK_WRIT_MACB ( blk, len )
     /* and finally comes the resource fork                                 */
     if ( WritPart == 5 ) {
         while ( WritLRsc != 0 && cnt < len ) {
-            WritIOPB.ioReqCount  = (128 <= WritLRsc ? 128 : WritLRsc);
-            WritIOPB.ioPosMode   = fsAtMark;
-            WritIOPB.ioPosOffset = 0;
-            WritIOPB.ioBuffer    = (Ptr) (blk + cnt);
-            if ( PBWriteSync( (ParmBlkPtr)&WritIOPB )
-              || WritIOPB.ioActCount != WritIOPB.ioReqCount ) {
-                PBCloseSync( (ParmBlkPtr)&WritIOPB );
+        	need = (128 <= WritLRsc ? 128 : WritLRsc);
+        	count = need;
+        	err = FSWrite (WritRef, &count, (Ptr) (blk + cnt));
+            if (err || count < need ) {
+               err = FSClose (WritRef);
                 return cnt;
             }
             cnt += 128;
-            WritLRsc -= WritIOPB.ioReqCount;
+            WritLRsc -= count;
         }
         if ( WritLRsc == 0 )  WritPart = 6;
     }
 
     /* close the resource fork                                             */
     if ( WritPart == 6 ) {
-        PBCloseSync( (ParmBlkPtr)&WritIOPB );
+        err = FSClose (WritRef);
         WritPart = 7;
     }
 
@@ -1205,7 +1249,7 @@ int             MacMakeDire ( patl )
     request.ioNamePtr = (unsigned char*)patp;
     request.ioVRefNum = 0;
     request.ioDirID   = 0;
-    if (noErr == PBDirCreate( (HParmBlkPtr)&request, 0 ))
+    if (noErr == PBDirCreateSync( (HParmBlkPtr)&request))
     /* return result                                                       */
 	    return (request.ioResult == 0);
 	else
@@ -1213,6 +1257,75 @@ int             MacMakeDire ( patl )
 }
 
 #endif
+
+/****************************************************************************
+**
+*F  MacConvDire(...) . . . . . . . . convert a directory name to local format
+**
+**  'MacConvDire( <dirl>, <diru>, <root>,<abs>,<rel>,<sep>,<end> )'
+**
+**  similr to 'ConvDire'  returns  in  <dirl>  the  universal  directory  name   <diru>
+**  converted to the  local format.  <diru> contains an  arbitrary number  of
+**  components separated by  slashes ('/'),  where each component may contain
+**  uppercase,  lowercase,  and all special characters,  and may be up to 255
+**  characters long.
+**
+**  <root> is the string that is used for the root directory in local format.
+**  <abs> is the string that starts absolute directory names in local format,
+**  <rel> starts relative names, directory components are separated by <sep>,
+**  and <end> separates the directory part and a proper file name.
+**
+**  If <diru> is the empty string, then 'ConvDire' returns in <dirl> also the
+**  empty string, instead of '<rel><end>'.
+*/
+int             MacConvDire ( dirl, diru, root, abs, rel, sep, end )
+    char *              dirl;
+    char *              diru;
+    char *              root;
+    char *              abs;
+    char *              rel;
+    char *              sep;
+    char *              end;
+{
+    char                namu [256];     /* file name part, univ.           */
+    char                naml [256];     /* file name part, local           */
+    char *              d;              /* loop variable                   */
+    char *              s;              /* loop variable                   */
+
+    /* special case for the root directory                                 */
+    if ( *diru == '/' && diru[1] == '\0' ) {
+        for ( s = root; *s != '\0'; s++ )  *dirl++ = *s;
+        *dirl = '\0';
+        return 1;
+    }
+
+    /* start the file name with <abs> or <rel>                             */
+    d = diru;
+    if ( *diru == '/' )
+        for ( d++, s = abs; *s != '\0'; s++ )  *dirl++ = *s;
+    else if ( *diru != '\0' )
+        for (      s = rel; *s != '\0'; s++ )  *dirl++ = *s;
+
+    /* add the components of the directory part separated by <sep>         */
+    while ( *d != '\0' ) {
+        s = namu;
+        while ( *d != '\0' && *d != '/' )  *s++ = *d++;
+        *s = '\0';
+        CONV_NAME( naml, namu );
+        for ( s = naml; *s != '\0'; s++ )  *dirl++ = *s;
+        if ( *d == '/' )
+            for ( d++, s = sep; *s != '\0'; s++ )  *dirl++ = *s;
+    }
+
+    /* add the divisor <end>                                               */
+    if ( *diru != '\0' )
+        for ( s = end; *s != '\0'; s++ )  *dirl++ = *s;
+
+    /* terminate the file name and indicate success                        */
+    *dirl = '\0';
+    return 1;
+}
+
 
 
 /****************************************************************************
@@ -1749,7 +1862,7 @@ int             OpenWritFile ( patl, bin )
         IsOpenWritFile = 3;
         return 1;
     }
-#ifdef  SYS_IS_MAC_MPW
+#ifdef  SYS_IS_MAC_BOTH
     else if ( bin == 3 && OPEN_WRIT_MACB(patl) ) {
         IsOpenWritFile = 4;
         return 1;
@@ -1773,7 +1886,7 @@ int             ClosWritFile ()
         IsOpenWritFile = 0;
         return CLOS_WRIT_BINR();
     }
-#ifdef  SYS_IS_MAC_MPW
+#ifdef  SYS_IS_MAC_BOTH
     else if ( IsOpenWritFile == 4 ) {
         IsOpenWritFile = 0;
         return CLOS_WRIT_MACB();
@@ -1800,9 +1913,9 @@ unsigned long   BlckWritFile ( blk, len )
     else if ( IsOpenWritFile == 3 ) {
         return BLCK_WRIT_BINR( blk, len );
     }
-#ifdef  SYS_IS_MAC_MPW
+#ifdef  SYS_IS_MAC_BOTH
     else if ( IsOpenWritFile == 4 ) {
-#ifdef SYS_IS_MAC_THC
+#ifdef SYS_IS_MAC_MWC
         return BLCK_WRIT_MACB( (StringPtr)blk, len );
 #else
         return BLCK_WRIT_MACB( blk, len );
@@ -2560,7 +2673,7 @@ int             ExtrArch ( bim, out, ovr, pre, arc, filec, files )
         bim = 1;
 
     /* test if the archive has a comment starting with '!MACBINARY!'       */
-#ifdef  SYS_IS_MAC_MPW
+#ifdef  SYS_IS_MAC_BOTH
     else if ( bim == 0
       && 11 <= Descript.sizcmt && GotoReadArch( Descript.poscmt )
       && ByteReadArch() == '!' && ByteReadArch() == 'M'
@@ -2638,7 +2751,7 @@ int             ExtrArch ( bim, out, ovr, pre, arc, filec, files )
           && ByteReadArch() == 'E' && ByteReadArch() == 'X'
           && ByteReadArch() == 'T' && ByteReadArch() == '!' )
             bin = 1;
-#ifdef  SYS_IS_MAC_MPW
+#ifdef  SYS_IS_MAC_BOTH
         else if ( bim == 0
           && 11 <= Entry.sizcmt    && GotoReadArch( Entry.poscmt )
           && ByteReadArch() == '!' && ByteReadArch() == 'M'
@@ -2697,7 +2810,7 @@ int             ExtrArch ( bim, out, ovr, pre, arc, filec, files )
         else if ( Crc != Entry.crcdat  )  printf("error, CRC failed\n");
         else if ( out == 2 && bin == 1 )  printf("extracted as text\n");
         else if ( out == 2 && bin == 2 )  printf("extracted as binary\n");
-#ifdef  SYS_IS_MAC_MPW
+#ifdef  SYS_IS_MAC_BOTH
         else if ( out == 2 && bin == 3 )  printf("extracted as MacBinary\n");
 #endif
         else if ( out == 0             )  printf("tested\n");
@@ -2741,6 +2854,24 @@ int             ExtrArch ( bim, out, ovr, pre, arc, filec, files )
     return 1;
 }
 
+/****************************************************************************
+**
+*F  Banner()  . . . . . . . . . . . . . . . . . . . . . . . . .  print banner
+**
+**  'Banner' prints version information
+*/
+int			Banner ()
+{
+    printf("unzoo -- a zoo archive extractor by Martin Schoenert\n");
+#ifndef SYS_IS_MAC_MWC
+    printf("  ($Id$)\n");
+#endif
+    printf("  based on 'booz' version 2.0 by Rahul Dhesi\n");
+#ifdef SYS_IS_MAC_MWC
+    printf("  Macintosh version "MACUNZOOSHORTVERS" by Burkhard Hofling.\n");
+#endif
+}
+
 
 /****************************************************************************
 **
@@ -2750,17 +2881,24 @@ int             ExtrArch ( bim, out, ovr, pre, arc, filec, files )
 */
 int             HelpArch ()
 {
-    printf("unzoo -- a zoo archive extractor by Martin Schoenert\n");
-    printf("  ($Id$)\n");
-    printf("  based on 'booz' version 2.0 by Rahul Dhesi\n");
     printf("\n");
-    printf("unzoo [-l] [-v] <archive>[.zoo] [<file>..]\n");
+ #ifdef SYS_IS_MAC_MWC
+	printf("Command line syntax: \n");
+#else
+    printf("unzoo ");
+#endif
+    printf("[-l] [-v] <archive>[.zoo] [<file>..]\n");
     printf("  list the members of the archive\n");
     printf("  -v:  list also the generation numbers and the comments\n");
     printf("  <file>: list only files matching at least one pattern,\n");
     printf("          '?' matches any char, '*' matches any string.\n");
     printf("\n");
-    printf("unzoo -x [-abnpo] [-j <prefix>] <archive>[.zoo] [<file>..]\n");
+#ifdef SYS_IS_MAC_MWC
+	printf("or: \n");
+#else
+    printf("unzoo ");
+#endif
+    printf("-x [-abnpo] [-j <prefix>] <archive>[.zoo] [<file>..]\n");
     printf("  extract the members of the archive\n");
     printf("  -a:  extract all members as text files ");
     printf("(not only those with !TEXT! comments)\n");
@@ -2798,13 +2936,18 @@ int             main ( argc, argv )
     int                 argd;           /* interactive command count       */
     char *              argw [256];     /* interactive command vector      */
     char *              p;              /* loop variable                   */
+    char                match1;         /* for interactive command line 
+                                                                   parsing */
+    char                match2;         /* for interactive command line 
+                                                                   parsing */
 
 
-#ifdef SYS_IS_MAC_THC
-    SIOUXSettings.autocloseonquit = 1;
-    SIOUXSettings.asktosaveonclose = 0;
+#ifdef SYS_IS_MAC_MWC
+    InitMacUnzoo ();
+	res = Banner ();
 #endif
-
+	
+	
     /* repeat until the user enters an empty line                          */
     InitCrc();
     IsSpec['\0'] = 1;  IsSpec[';'] = 1;
@@ -2834,32 +2977,66 @@ int             main ( argc, argv )
         }
 
         /* execute the command or print help                               */
+#ifdef SYS_IS_MAC_MWC
+        IsActive = 1;
+#endif
+        
         if      ( cmd == 1 && 1 < argc )
             res = ListArch( ver, argv[1],
                             (unsigned long)argc-2, argv+2 );
         else if ( cmd == 2 && 1 < argc )
             res = ExtrArch( bim, out, ovr, pre, argv[1],
                             (unsigned long)argc-2, argv+2 );
-        else
+        else {
+#ifdef SYS_IS_MAC_MWC
+			if (argd > 1 || DragAndDropEnabled == 0)
+				res = HelpArch();
+#else
+			res = Banner();
             res = HelpArch();
-
+#endif
+		}
+		
+#ifdef SYS_IS_MAC_MWC
+        IsActive = 0;
+#endif
         /* in interactive mode read another line                           */
         if ( 1 < argd || argc <= 1 ) {
 
             /* read a command line                                         */
+#ifdef SYS_IS_MAC_MWC
+			if (DragAndDropEnabled) {
+            	printf("\nDrop the zoo file onto the unzoo application icon to uncompress it,\n");
+            	printf("or enter a command line (-h for help). An empty line quits unzoo.\n\n");
+            } else {
+            	printf("\nEnter a command line (-h for help).  An empty line quits unzoo.\n\n");
+            }
+#else
             printf("\nEnter a command line or an empty line to quit:\n");
+#endif
             fflush( stdout );
             if ( fgets( argl, sizeof(argl), stdin ) == (char*)0 )  break;
-#ifdef SYS_IdfgdfsgasfgdsgfdS_MAC_THC
+
+#ifdef SYS_IS_MAC_MWC
 			if ( *argl == '\n' && argl[1]=='\0') break;
 #endif 
+
            /* parse the command line into argc                            */
             argd = 1;
             p = argl;
             while ( *p==' ' || *p=='\t' || *p=='\n' )  *p++ = '\0';
+            	
             while ( *p != '\0' ) {
+            	if (*p == '\'' || *p == '\"') {
+            		match1 = *p++;
+            		match2 = match1;
+            	} else {
+            		match1 = ' ';
+            		match2 = '\t';
+            	}
                 argw[argd++] = p;
-                while ( *p!=' ' && *p!='\t' && *p!='\n' && *p!='\0' )  p++;
+                while ( *p!=match1 && *p!=match2 && *p!='\n' && *p!='\0' )  p++;
+                if (*p==match1 || *p==match2)  *p++ = '\0';
                 while ( *p==' ' || *p=='\t' || *p=='\n' )  *p++ = '\0';
             }
             argc = argd;  argv = argw;

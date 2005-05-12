@@ -252,6 +252,9 @@ end;
 
 SMTX.IsAbsolutelyIrreducible:=function(module)
   if not IsBound(module.IsAbsolutelyIrreducible) then
+    if not SMTX.IsIrreducible(module) then
+      return false;
+    fi;
     module.IsAbsolutelyIrreducible:=SMTX.AbsoluteIrreducibilityTest(module);
   fi;
   return module.IsAbsolutelyIrreducible;
@@ -396,7 +399,6 @@ SMTX_SpinnedBasis := function ( arg  )
    else
       ngens := Length (matrices);
    fi;
-   zero := Zero(matrices[1][1][1]);
    ans := [];
    if Length(v)=0 then
      return [];
@@ -404,6 +406,7 @@ SMTX_SpinnedBasis := function ( arg  )
    if not IsList(v[1]) then
      v := [v];
    fi;
+   zero:=Zero(matrices[1][1][1]);
    ans := ShallowCopy(Basis(VectorSpace(F,v)));
    for v in ans do ConvertToVectorRep(v,F); od;
    if Length(ans)=0 then
@@ -419,13 +422,14 @@ SMTX_SpinnedBasis := function ( arg  )
       for l in [1..ngens] do
          m := matrices[l];
          # apply generator m to submodule generator i
-         w := ans[i] * m;
+         w := ShallowCopy(ans[i] * m);
          # try to express w in terms of existing submodule generators
          j := 1;
          for  j in [1..subdim] do
             k := w[leadpos[j]];
             if k <> zero then
-               w := w - k * ans[j];
+               #w := w - k * ans[j];
+               AddRowVector(w,ans[j],-k);
             fi;
          od;
 
@@ -435,7 +439,8 @@ SMTX_SpinnedBasis := function ( arg  )
             #we have found a new generator of the submodule
             subdim := subdim + 1;
             leadpos[subdim] := j;
-            w := (w[j]^-1) * w;
+            #w := (w[j]^-1) * w;
+	    MultRowVector(w,w[j]^-1);
             Add ( ans, w );
             if subdim = dim then
 	       ans:=ImmutableMatrix(F,ans);
@@ -458,7 +463,9 @@ SMTX_SubGModule := function(module, subspace)
   return SMTX.SpinnedBasis(subspace, SMTX.Generators(module),
                                     SMTX.Field(module));
 end;
+
 SMTX.SubGModule := SMTX_SubGModule;
+SMTX.SubmoduleGModule := SMTX_SubGModule;
 
 #############################################################################
 ##
@@ -478,12 +485,19 @@ SMTX.SubGModule := SMTX_SubGModule;
 SMTX_SubQuotActions := function(matrices,sub,dim,subdim,F,typ)
 local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,one,
            g, newg, newgn, smatrices, qmatrices, nmatrices, 
-           im, newim, newimn;
+           im, newim, newimn,onem,zerov,zeroc;
 
    one:=One(F);
+   onem:=One(matrices[1]);
    zero:=Zero(one);
    c:=typ>3; # common indicator
    q:=c or (typ mod 4)>1; # quotient indicator
+   if c then 
+     zeroc:=ListWithIdenticalEntries(subdim,zero);
+     ConvertToVectorRep(zeroc,F);
+   else
+     zeroc:=fail;
+   fi;
 
    leadpos:=SubGModLeadPos(sub,dim,subdim,zero);
    cfleadpos:=leadpos[2];
@@ -496,9 +510,10 @@ local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,one,
      for i in [1..dim] do
 	if cfleadpos[i] = 0 then
 	   k := k + 1;
-	   w := [];
-	   for m in [1..dim] do w[m] := zero; od;
-	   w[i] := one;
+	   #w := [];
+	   #for m in [1..dim] do w[m] := zero; od;
+	   #w[i] := one;
+	   w:=onem[i];
 	   leadpos[k] := i;
 	   Add (sub, w);
 	fi;
@@ -510,28 +525,35 @@ local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,one,
 
    nmatrices := [];
    if (typ mod 2)>0 then
+     zerov:=ListWithIdenticalEntries(subdim,zero);
+     ConvertToVectorRep(zerov,F);
+
      ## Now work out action of generators on submodule
      smatrices := [];
      for g in matrices do
 	newg := []; newgn := [];
 	for i in [1..subdim] do
-	   im := sub[i] * g;
-	   newim := []; newimn := [];
+	   im := ShallowCopy(sub[i] * g);
+	   #newim := []; newimn := [];
+	   newim:=ShallowCopy(zerov);
 	   for j in [1..subdim] do
-	      k := im[leadpos[j]];
-	      newim[j] := k; newimn[j] := k;
-	      if k<> zero then
-		 im := im - k * sub[j];
-	      fi;
+	     k := im[leadpos[j]];
+	     newim[j] := k; #newimn[j] := k;
+	     if k<> zero then
+	       #im := im - k * sub[j];
+	       AddRowVector(im,sub[j],-k);
+	     fi;
 	   od;
 
 	   # Check that the vector is now zero - if not, then sub was 
 	   # not the basis of a submodule 
-	   if im <> im * zero then return fail; fi;
+	   if im <> Zero(im) then return fail; fi;
 	   Add (newg, newim);
 
 	   if c then
-	     for j in [subdim + 1..dim] do newimn[j] := zero; od;
+	     #for j in [subdim + 1..dim] do newimn[j] := zero; od;
+	     newimn:=ShallowCopy(zeroc);
+	     newimn{[1..subdim]}:=newim;
 	     Add (newgn, newimn);
 	   fi;
 
@@ -547,6 +569,8 @@ local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,one,
    fi;
 
    if q then
+     zerov:=ListWithIdenticalEntries(dim-subdim,zero);
+     ConvertToVectorRep(zerov,F);
      ## Now work out action of generators on quotient module
      qmatrices := [];
      ct := 0;
@@ -555,20 +579,25 @@ local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,one,
 	newg := [];
 	newgn := nmatrices[ct];
 	for i in [subdim + 1..dim] do
-	   im := sub[i] * g;
-	   newim := []; newimn := [];
-	   for j in [1..dim] do
-	      k := im[leadpos[j]];
-	      if j > subdim then
-		 newim[j - subdim] := k;
+	  im := ShallowCopy(sub[i] * g);
+	  #newim := []; newimn := [];
+	  newim:=ShallowCopy(zerov);
+	  newimn:=ShallowCopy(zeroc);
+	  for j in [1..dim] do
+	    k := im[leadpos[j]];
+	    if j > subdim then
+	      newim[j - subdim] := k;
+	    fi;
+	    if k <> zero then
+	      #im := im - k * sub[j];
+	      AddRowVector(im,sub[j],-k);
+	      if c then
+		newimn[j] := k;
 	      fi;
-	      if k <> zero then
-		 im := im - k * sub[j];
-	      fi;
-	      newimn[j] := k;
-	   od;
-	   Add (newg, newim);   
-	   Add (newgn, newimn);
+	    fi;
+	  od;
+	  Add (newg, newim);   
+	  Add (newgn, newimn);
 	od;
 	newg:=ImmutableMatrix(F,newg);
 	Add (qmatrices, newg);
@@ -584,6 +613,8 @@ local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,one,
 
    return erg;
 end;
+
+
 SMTX.SubQuotActions := SMTX_SubQuotActions;
 
 #############################################################################
@@ -1090,7 +1121,7 @@ SMTX_IrreducibilityTest := function ( module )
             if deg > Int (DegreeOfLaurentPolynomial (pol) / 2) then
                fac := [pol];
             else
-               fac := Factors(R, pol, rec(onlydegs:=[deg]));
+               fac := Factors(R, pol: factoroptions:=rec(onlydegs:=[deg]));
                fac:=Filtered(fac,i->DegreeOfLaurentPolynomial(i)=deg);
                Info(InfoMeatAxe,2,Length (fac)," factors of degree ",deg,
                     ", Time = ",Runtime()-rt0,".");
@@ -1332,6 +1363,7 @@ SMTX_RandomIrreducibleSubGModule := function ( module )
       # this is done by triangulization
       F := SMTX.Field(module);
       subbasis2 := ranSub[1] * subbasis;
+      subbasis2:=List(subbasis2,ShallowCopy);
       TriangulizeMat(subbasis2);
 
       # But now since we've normed the basis subbasis2, 
@@ -1459,7 +1491,7 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
             if deg > mindim then
                fac := [pol];
             else
-               fac := Factors(R, pol, rec(onlydegs:=[deg]));
+               fac := Factors(R, pol: factoroptions:=rec(onlydegs:=[deg]));
                fac:=Filtered(fac,i->DegreeOfLaurentPolynomial(i)<=deg);
                Info(InfoMeatAxe,2,Length(fac)," factors of degree ",deg,
                     ", Time = ",Runtime()-rt0,".");
@@ -1986,13 +2018,14 @@ end;
 ## number of times it occurs in module.
 ##
 SMTX_CollectedFactors:= function ( module )
-local dim, factors, factorsout, queue, cmod, new,
+  local field,dim, factors, factorsout, queue, cmod, new,
       d, i, j, l, lq, lf, q, smod, ds, homs, mat;
    if SMTX.IsMTXModule (module) = false then
       return Error ("Argument is not a module.");
    fi;
 
    dim := SMTX.Dimension(module);
+   field:= SMTX.Field(module);
    factors := [];
    for i in [1..dim] do
       factors[i] := [];
@@ -2067,7 +2100,8 @@ local dim, factors, factorsout, queue, cmod, new,
                mat := Concatenation(mat,homs[i]);
              od;
              TriangulizeMat(mat);
-             MakeImmutable(mat);
+	     mat:=Filtered(mat,i->not IsZero(i));
+	     mat:=ImmutableMatrix(field,mat);
              queue[lq + 1] := SMTX.InducedActionFactorModule(cmod, mat);
            fi;
          else
@@ -2201,7 +2235,7 @@ SMTX_Distinguish := function ( cf, i )
             if deg > extdeg then
                fac := [p];
             else
-               fac := Factors(R, p, rec(onlydegs:=[deg]));
+               fac := Factors(R, p: factoroptions:=rec(onlydegs:=[deg]));
                fac:=Filtered(fac,i->DegreeOfLaurentPolynomial(i)<=deg);
                sfac := Set (fac);
             fi;
@@ -2331,7 +2365,7 @@ SMTX.MinimalSubGModule := SMTX_MinimalSubGModule ;
 ## if they are isomorphic it returns the matrix B, whose rows form the 
 ## basis of module2  which is the image of the standard basis for module1.
 ## Thus if X and Y are corresponding matrices in the generating sets
-## for module1 and module2 respectively, Y = BXB^-1
+## for module1 and module2 respectively, Y = B^-1XB
 ## It is assumed that the same group acts on both modules.
 ## Otherwise who knows what will happen?
 ## 
@@ -2434,7 +2468,7 @@ SMTX_IsomorphismComp := function (module1, module2, action)
    ConvertToVectorRep(N[1],F);
    v2 := N[1];
    v := Concatenation (v1, v2);
-   basis := SMTX.SpinnedBasis (v, matrices,F);
+   basis := SMTX.SpinnedBasis (v, matrices, F);
    if Length (basis) = dim then
       if action<>true then
         return true;
@@ -3134,6 +3168,17 @@ SMTX.DualModule:=function(module)
   fi;
 end;
 
+###############################################################################
+##
+#F  DualGModule ( module ) . . . . . dual of a G-module
+##
+## DualGModule calculates the dual of a G-module.
+## The matrices of the module are inverted and transposed.
+## 
+InstallGlobalFunction(DualGModule,function ( module)
+   return SMTX.DualModule(module);
+end);
+
 SMTX.DualizedBasis:=function(module,sub)
 local F,M;
   F:=DefaultFieldOfMatrix(sub);
@@ -3257,3 +3302,385 @@ SMTX.funcs:=[SMTX_OrthogonalVector,SMTX_SpinnedBasis,SMTX_SubQuotActions,
   SMTX_BasesMaximalSubmodules,SMTX_BasesMinimalSupermodules,SMTX_BasisSocle,
   SMTX_BasisRadical];
 
+
+# The following functions are for finding a basis of an irreducible module
+# that is contained in an orbit of the G-action on vectors, and for
+# looking for G-invariant bilinear and quadratic forms of the module.
+# The special basis is used for finding invariant quadratic forms when
+# the characteristic of the field is 2.
+
+SMTX.SetBasisInOrbit:=function(module,b)
+  module.BasisInOrbit:=b;
+end;
+
+#############################################################################
+##
+#F  BasisInOrbit ( module ) . . . . 
+## 
+## Find a basis of the irrecucible GModule module that is contained in
+## an orbit of the action of G.
+## The code is similar to that of SpinnedBasis.
+SMTX_BasisInOrbit := function ( module  )
+   local   v, matrices, ngens, zero,  ans, normedans,
+           dim, subdim, leadpos, w, normedw, i, j, k, l, m, F;
+
+   if not SMTX.IsMTXModule(module) or not SMTX.IsIrreducible(module) then
+      Error("Argument of BasisInOrbit is not an irreducible module");
+   fi;
+   if IsBound(module.BasisInOrbit) then return module.BasisInOrbit; fi;
+
+   dim := SMTX.Dimension(module);
+   F := SMTX.Field(module);
+   matrices := module.generators;
+   ngens := Length(matrices);
+
+   zero := Zero(F);
+   v := IdentityMat(dim,F)[1];
+   ConvertToVectorRep(v,F);
+   ans := [v];
+   normedans := [v];
+   subdim := 1;
+   leadpos := SubGModLeadPos(ans,dim,subdim,zero);
+   leadpos := leadpos[1];
+     
+   i := 1;
+   while i <= subdim do
+      for l in [1..ngens] do
+         m := matrices[l];
+         # apply generator m to submodule generator i
+         w := ans[i] * m;
+         normedw := w;
+         # try to express w in terms of existing submodule generators
+         j := 1;
+         for  j in [1..subdim] do
+            k := normedw[leadpos[j]];
+            if k <> zero then
+               normedw := normedw - k * normedans[j];
+            fi;
+         od;
+
+         j := 1;
+         while j <= dim and normedw[j] = zero do j := j + 1; od;
+         if j <= dim then
+            #we have found a new generator of the submodule
+            subdim := subdim + 1;
+            leadpos[subdim] := j;
+            normedw := (normedw[j]^-1) * normedw;
+            Add ( ans, w );
+            Add ( normedans, normedw );
+            if subdim = dim then
+	       ans:=ImmutableMatrix(F,ans);
+               SMTX.SetBasisInOrbit(module,ans);
+               return ans;
+            fi;
+         fi;
+      od;
+      i := i + 1;
+   od;
+end;
+SMTX.BasisInOrbit := SMTX_BasisInOrbit;
+
+SMTX.SetInvariantBilinearForm:=function(module,b)
+  module.InvariantBilinearForm:=b;
+end;
+
+#############################################################################
+##
+#F  InvariantBilinearForm ( module ) . . . . 
+## 
+## Look for an invariant bilinear form of the absolutely irreducible
+## GModule module. Return fail, or the matrix of the form.
+SMTX_InvariantBilinearForm := function ( module  )
+   local DM, iso;
+
+   if not SMTX.IsMTXModule(module) or
+                            not SMTX.IsAbsolutelyIrreducible(module) then
+      Error(
+ "Argument of InvariantBilinearForm is not an absolutely irreducible module");
+   fi;
+   if IsBound(module.InvariantBilinearForm) then
+     return module.InvariantBilinearForm; 
+   fi;
+   DM := SMTX.DualModule(module);
+   iso := MTX.Isomorphism(module,DM);
+   if iso = fail then 
+       SMTX.SetInvariantBilinearForm(module, fail);
+       return fail; 
+   fi;
+   ConvertToMatrixRep(iso,module.field);
+   MakeImmutable(iso);
+   SMTX.SetInvariantBilinearForm(module, iso);
+   return iso;
+end;
+
+SMTX.InvariantBilinearForm := SMTX_InvariantBilinearForm;
+
+SMTX.MatrixUnderFieldAuto := function(matrix, r)
+# raise every component of matrix to r-th power
+  local mat;
+  mat := List( matrix, x -> List(x, y->y^r) );
+  ConvertToMatrixRep(mat, GF(r^2));
+  MakeImmutable(mat);
+  return mat;
+end;
+
+SMTX.TwistedDualModule:=function(module)
+  local q, r, mats;
+  q := Size(module.field);
+  r := RootInt(q,2);
+  if r^2 <> q then
+    Error("Size of field of module is not a square"); 
+  fi;
+  if SMTX.IsZeroGens(module) then
+    return GModuleByMats([],module.dimension,SMTX.Field(module));
+  else
+    mats := List( SMTX.Generators(module),
+          i->SMTX.MatrixUnderFieldAuto(TransposedMat(i)^-1,r) );
+    return GModuleByMats( mats, module.dimension, SMTX.Field(module) );
+  fi;
+end;
+
+SMTX.SetInvariantSesquilinearForm:=function(module,b)
+  module.InvariantSesquilinearForm:=b;
+end;
+
+#############################################################################
+##
+#F  InvariantSesquilinearForm ( module ) . . . . 
+## 
+## Look for an invariant sesquililinear form of the absolutely irreducible
+## GModule module. Return fail, or the matrix of the form.
+SMTX_InvariantSesquilinearForm := function ( module  )
+   local DM, q, r, iso, isot, l;
+
+   if not SMTX.IsMTXModule(module) or
+                            not SMTX.IsAbsolutelyIrreducible(module) then
+      Error(
+ "Argument of InvariantSesquilinearForm is not an absolutely irreducible module"
+   );
+   fi;
+
+   if IsBound(module.InvariantSesquilinearForm) then
+     return module.InvariantSesquilinearForm; 
+   fi;
+   DM := SMTX.TwistedDualModule(module);
+   iso := MTX.Isomorphism(module,DM);
+   if iso = fail then 
+       SMTX.SetInvariantSesquilinearForm(module, fail);
+       return fail; 
+   fi;
+   #Replace iso by a scalar multiple to get iso twisted symmetric
+   q := Size(module.field);
+   r := RootInt(q,2);
+   isot := List( TransposedMat(iso), x -> List(x, y->y^r) );
+   isot := iso * isot^-1;
+   if not IsDiagonalMat(isot) then
+     Error("Form does not seem to be of the right kind (non-diagonal)!");
+   fi;
+   l := LogFFE(isot[1][1],Z(q));
+   if l mod (r-1) <> 0 then
+     Error("Form does not seem to be of the right kind (not (q-1)st root)!");
+   fi;
+   iso := Z(q)^(l/(r-1)) * iso;
+   ConvertToMatrixRep(iso,GF(q));
+   MakeImmutable(iso);
+   SMTX.SetInvariantSesquilinearForm(module, iso);
+   return iso;
+end;
+
+SMTX.InvariantSesquilinearForm := SMTX_InvariantSesquilinearForm;
+
+SMTX.SetInvariantQuadraticForm:=function(module,b)
+  module.InvariantQuadraticForm:=b;
+end;
+
+#############################################################################
+##
+#F  InvariantQuadraticForm ( module ) . . . . 
+## 
+## Look for an invariant quadratic form of the absolutely irreducible
+## GModule module. Return fail, or the matrix of the form.
+SMTX_InvariantQuadraticForm := function ( module  )
+   local iso, bas, cgens, ciso, dim, f, z, x, i, j, qf, g, id, cqf, fix;
+
+   if not SMTX.IsMTXModule(module) or
+                            not SMTX.IsAbsolutelyIrreducible(module) then
+      Error(
+ "Argument of InvariantQuadraticForm is not an absolutely irreducible module");
+   fi;
+   if IsBound(module.InvariantQuadraticForm) then
+     return module.InvariantQuadraticForm; 
+   fi;
+   iso := SMTX.InvariantBilinearForm(module);
+   if iso = fail then return fail; fi;
+   if Characteristic(module.field) <> 2 then return iso/2; fi;
+
+   #In characteristic two, we change to a basis in orbit.
+   #This makes the search for an invariant quadratic form quicker.
+   bas := SMTX.BasisInOrbit(module);
+   cgens := List (module.generators, x->bas*x*bas^-1 );
+   ciso := List(bas * iso * TransposedMat(bas),ShallowCopy);
+   dim := module.dimension;
+   f := module.field;
+   z := Zero(f);
+
+   #Matrix must be symplectic - perhaps it must be?
+   for i in [1..dim] do if ciso[i][i] <> z then
+     Print("Non-symplectic failure!\n");
+     return fail;
+   fi; od;
+
+   #If there is an invariant quadratic form, then it will be the lower
+   #left hand part of ciso plus a scalar.
+   for i in [1..dim-1] do for j in [i+1..dim] do ciso[i][j] := z; od; od;
+   id := IdentityMat(dim, f);
+   for x in f do
+     qf := ciso + x*id;
+     fix := true;
+     #Form is preserved if and only if diagonal is.
+     for g in cgens do
+       cqf := g * qf * TransposedMat(g);
+       for j in [1..dim] do if cqf[j][j] <> x then
+         fix := false;
+         break;
+       fi; od;
+       if not fix then break; fi;
+     od;
+     if fix then
+       qf := bas^-1 * qf * TransposedMat(bas^-1);
+       #switch to lower triangular equivalent
+       for i in [1..dim-1] do for j in [i+1..dim] do
+         qf[j][i] := qf[i][j] + qf[j][i];
+         qf[i][j] := z;
+       od; od;
+       ConvertToMatrixRep(qf,f);
+       MakeImmutable(qf);
+       SMTX.SetInvariantQuadraticForm(module, qf);
+       return qf;
+     fi;
+   od;
+   SMTX.SetInvariantQuadraticForm(module, fail);
+   return fail;
+end;
+
+SMTX.InvariantQuadraticForm := SMTX_InvariantQuadraticForm;
+
+#############################################################################
+##
+#F  OrthogonalSign ( module ) . . . . 
+## 
+## When an absolutely irreducible G-module has an invariant quadratic
+## form, this implies that it embeds in a General Orthogonal group. In
+## even dimension there are two non-isomorphic General Orthogonal groups
+## "plus" and "minus" type `GeneralOrthogonalGroup(+1,<n>,<q>)' and 
+## `GeneralOrthogobalGroup(-1,<n>,<q>)' in GAP terms. This function
+## decides which one the module embeds into. 
+##
+## It returns: 
+##  fail if the module is not absolutely irreducible, or
+##       does not stabilize a quadratic form.
+##  0    otherwise, if the dimension of the module is odd
+##  +1 or -1 otherwise, according to which GO the module embeds in
+##
+## This is an implementation of an algorithm by Jon Thackray
+
+SMTX.SetOrthogonalSign:=function(module,s)
+  module.OrthogonalSign:=s;
+end;
+
+SMTX_OrthogonalSign := function(gm)
+    local   b,  q,  k,  n,  W,  o,  z,  lo,  lzo,  lines,  l,  w,  p,  
+            x,  y,  r,  i;
+    if IsBound(gm.OrthogonalSign) then
+        return gm.OrthogonalSign;
+    fi;
+    b := MTX.InvariantBilinearForm(gm);
+    q := MTX.InvariantQuadraticForm(gm);
+    if q = fail then
+        return fail;
+    fi;
+    n := Length(b);
+    if n mod 2 = 1 then
+        return 0;
+    fi;
+    k := MTX.Field(gm);
+    W := IdentityMat(n,k);
+    
+    #
+    # Assemble the points of projective 3-space
+    #
+    o := One(k);
+    z := Zero(k);
+    lo := [o];
+    lzo := [z,o];
+    lines := List(Elements(FullRowSpace(k,2)),x -> Concatenation(lo,x));
+    Append(lines,List(Elements(k), x-> Concatenation(lzo,[x])));
+    Add(lines,[z,z,o]);
+    
+    #
+    # Main loop of Thackray's algorithm, build up a totally isotropic 
+    # subspace and restrict it's perp until the gap between is just 2 dimensional
+    #
+    
+    while n > 2 do
+        
+        #
+        # Find an isotropic vector
+        #
+        for l in lines do
+            w := l*W;
+            if w*q*w = z then
+                break;
+            fi;
+        od;
+        Assert(1,w*b*w = z);
+        p := PositionNonZero(l);
+        #
+        # delete it from W (add it to the subspace)
+        #
+        W{[p..n-1]} := W{[p+1..n]};
+        Unbind(W[n]);
+        n := n-1;
+        #
+        # find a vector with which it has non-zero inner product
+        #
+        x := w*b;
+        p := PositionProperty(W, row -> x*row <> z);
+        Assert(1, p <> fail);
+        #
+        # use it to find the perp of the enlarged subspace
+        #
+        y := W[p];
+        r := x*y;
+        for i in [p+1..n] do
+            AddRowVector(W[i], y, - x*W[i]/r);
+            W[i-1] := W[i];
+        od;
+        Unbind(W[n]);
+        n := n-1;
+        #
+        # Now n has gone down by 2 and W is still the "gap" between the
+        # subspace and its perp
+        #
+    od;
+    
+    #
+    # Now we need to see if the span of W contains an isotropic vector
+    #
+    if W[2]*q*W[2] = z then
+        SMTX.SetOrthogonalSign(gm,1);
+        return 1;
+    else
+        for x in k do
+            w := W[1]+x*W[2];
+            if w*q*w = z then
+                SMTX.SetOrthogonalSign(gm,1);
+                return 1;
+            fi;
+        od;
+        SMTX.SetOrthogonalSign(gm,-1);
+        return -1;
+    fi;
+end;
+        
+SMTX.OrthogonalSign := SMTX_OrthogonalSign;        

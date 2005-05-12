@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods  for attributes, properties and operations
 ##  for polynomial rings.
@@ -49,10 +50,15 @@ end);
 ##
 
 #############################################################################
-InstallMethod( PolynomialRing,"indetlist", true, [ IsRing, IsList ], 0,
+InstallMethod( PolynomialRing,"indetlist", true, [ IsRing, IsList ], 
+# force higher ranking than following (string) method
+  1,
 function( r, n )
     local   efam,  rfun,  zero,  one,  ind,  i,  type,  prng;
 
+    if IsRationalFunctionCollection(n) and ForAll(n,IsLaurentPolynomial) then
+      n:=List(n,IndeterminateNumberOfLaurentPolynomial);
+    fi;
     if IsEmpty(n) or not IsInt(n[1]) then
       TryNextMethod();
     fi;
@@ -64,17 +70,17 @@ function( r, n )
     rfun := RationalFunctionsFamily(efam);
 
     # cache univariate rings - they might be created often
-    if not IsBound(rfun!.univariateRings) then
-      rfun!.univariateRings:=[];
+    if not IsBound(r!.univariateRings) then
+      r!.univariateRings:=[];
     fi;
 
     if Length(n)=1 
       # some bozo might put in a ridiculous number
       and n[1]<10000 
       # only cache for the prime field
-      and IsField(r) and DegreeOverPrimeField(r)=1
-      and IsBound(rfun!.univariateRings[n[1]]) then
-      return rfun!.univariateRings[n[1]];
+      and IsField(r) 
+      and IsBound(r!.univariateRings[n[1]]) then
+      return r!.univariateRings[n[1]];
     fi;
 
     # first the indeterminates
@@ -147,13 +153,23 @@ function( r, n )
 
     if Length(n)=1 and n[1]<10000 
       # only cache for the prime field
-      and IsField(r) and DegreeOverPrimeField(r)=1 then
-      rfun!.univariateRings[n[1]]:=prng;
+      and IsField(r) then
+      r!.univariateRings[n[1]]:=prng;
     fi;
 
     # and return
     return prng;
 
+end );
+
+InstallMethod( PolynomialRing,"names",true, [ IsRing, IsList ], 0,
+function( r, nam )
+  if not IsString(nam[1]) then
+    TryNextMethod();
+  fi;
+  return PolynomialRing( r, GiveNumbersNIndeterminates(
+            RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),
+	                             Length(nam),nam,[]));
 end );
 
 
@@ -167,16 +183,6 @@ InstallOtherMethod( PolynomialRing,"rank,avoid",true,
 function( r, n,a )
   return PolynomialRing( r, GiveNumbersNIndeterminates(
            RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),n,[],a));
-end );
-
-InstallMethod( PolynomialRing,"names",true, [ IsRing, IsList ], 0,
-function( r, nam )
-  if not IsString(nam[1]) then
-    TryNextMethod();
-  fi;
-  return PolynomialRing( r, GiveNumbersNIndeterminates(
-            RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),
-	                             Length(nam),nam,[]));
 end );
 
 InstallOtherMethod(PolynomialRing,"names,avoid",true,[IsRing,IsList,IsList],0,
@@ -335,6 +341,33 @@ function( r,n,a )
   r:=ElementsFamily(FamilyObj(r));
   return UnivariatePolynomialByCoefficients(r,[Zero(r),One(r)],
           GiveNumbersNIndeterminates(RationalFunctionsFamily(r),1,[n],a)[1]);
+end);
+
+#############################################################################
+##
+#M  \.   Access to indeterminates
+##
+InstallMethod(\.,"pring indeterminates",true,[IsPolynomialRing,IsPosInt],
+function(r,n)
+local v, fam, a, i;
+  v:=IndeterminatesOfPolynomialRing(r);
+  n:=NameRNam(n);
+  if ForAll(n,i->i in CHARS_DIGITS) then
+    # number
+    n:=Int(n);
+    if Length(v)>=n then
+      return v[n];
+    fi;
+  else
+    fam:=ElementsFamily(FamilyObj(r));
+    for i in v do
+      a:=IndeterminateNumberOfLaurentPolynomial(i);
+      if HasIndeterminateName(fam,a) and IndeterminateName(fam,a)=n then
+	return i;
+      fi;
+    od;
+  fi;
+  TryNextMethod();
 end);
 
 #############################################################################

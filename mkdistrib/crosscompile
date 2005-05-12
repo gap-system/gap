@@ -18,7 +18,7 @@ fi
 
 # go into the home directory and compile
 cd ${DISTROOT}/${DISTNAME}
-echo "$0: cross-compiling version $VERSION of $DATE"
+echo "$0: cross-compiling version $FULLVERSION of $DATE"
 rm config.*
 # force the cross-compiler in the path
 #PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/gnuwin32/i586-pc-cygwin32/bin

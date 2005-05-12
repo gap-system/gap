@@ -22,7 +22,7 @@ fi
 cd ${DISTROOT}/${DISTNAME}/tst
 touch gap.core
 chmod 000 gap.core
-echo "$0: testing version $VERSION of $DATE"
+echo "$0: testing version $FULLVERSION of $DATE"
 for file  in *.tst;  do
     echo "+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +"
     echo "$0: testing file '$file'"
@@ -33,10 +33,10 @@ done
 
 rm -rf gap.core
 
-# do a "testall.g"
+# do a "testfull.g"
 #echo "+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +"
-#echo "$0: testing all"
-#echo "Print(\"\\n\"); Read(\"testall.g\");" | \
+#echo "$0: testing full"
+#echo "Print(\"\\n\"); Read(\"testfull.g\");" | \
 #    ${GAPEXEC} -l ${DISTROOT}/${DISTNAME} -r -b -M -N -m 16m
 
 exit 0

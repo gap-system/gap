@@ -27,7 +27,7 @@ make
 make Makegap.in
 cd ..
 
-echo "$0: compiling version $VERSION of $DATE"
+echo "$0: compiling version $FULLVERSION of $DATE"
 ./configure
 make
 

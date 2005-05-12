@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for bases of free left modules.
 ##
@@ -601,6 +602,45 @@ end );
 ##
 DeclareHandlingByNiceBasis( "IsGenericFiniteSpace",
     "for finite vector spaces (generic)" );
+
+
+#############################################################################
+##
+#F  IsSpaceOfRationalFunctions( <V> )
+##
+##  If an $F$-vector space <V> is in the filter `IsSpaceOfRationalFunctions'
+##  then this expresses that <V> consists of rational functions,
+##  and that <V> is handled via the mechanism of nice bases in the following
+##  way.
+##  Let $v_1, v_2, \ldots, v_k$ be vector space generators of <V>,
+##  let $d$ be a polynomial such that all $d \cdot v_i$ are polynomials,
+##  and let $S$ be the set of monomials that occur in these polynomials.
+##  Then the `NiceFreeLeftModuleInfo' value of <V> is a record with the
+##  following components.
+##  \beginitems
+##  `family' &
+##     the elements family of <V>,
+##
+##  `monomials' &
+##     the list $S$,
+##
+##  `denom' &
+##     the polynomial $d$,
+##
+##  `zerocoeff' &
+##     the zero coefficient of elements in <V>,
+##
+##  `zerovector' &
+##     the zero row vector in the nice free left module.
+##  \enditems
+##  The `NiceVector' value of $v \in <V>$ is defined as the row vector of
+##  coefficients of $v$ w.r.t.~$S$.
+##
+##  Finite dimensional free left modules of rational functions
+##  are by default handled via the mechanism of nice bases.
+##
+DeclareHandlingByNiceBasis( "IsSpaceOfRationalFunctions",
+    "for free left modules of rational functions" );
 
 
 #############################################################################

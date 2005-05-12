@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions of the scanner, which is responsible for
 **  all input and output processing.
@@ -999,6 +1000,13 @@ extern  UInt            OpenInput (
 **  close the current output file, which will lead to very strange behaviour.
 */
 extern  UInt            CloseInput ( void );
+
+/****************************************************************************
+**
+*F  FlushRestOfInputLine()  . . . . . . . . . . . . discard remainder of line
+*/
+
+extern void FlushRestOfInputLine( void );
 
 
 /****************************************************************************

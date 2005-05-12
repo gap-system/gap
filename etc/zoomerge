@@ -11,7 +11,7 @@ zoo lc $2 >infile
 # assume: header does not start with blank
 # summary line starts with blank
 awk 'BEGIN{com=0;}\
-/^ /{if (substr ($0,2,1) == "\|" ) { \
+/^[ 0123456789]/{if (substr ($0,2,1) == "|" ) { \
   print "echo \"" substr($0,3) "\" > comment";\
   print "echo \"/END\" >>comment";\
   com=1;} \

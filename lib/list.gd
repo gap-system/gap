@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the definition of operations and functions for lists.
 ##
@@ -74,7 +75,7 @@ InstallTrueMethod( IsSmallList, IsList and IsInternalRep );
 InstallTrueMethod( IsFinite, IsList and IsSmallList );
 InstallTrueMethod( IsSmallList, IsList and IsEmpty );
 
-BIND_GLOBAL( "MAX_SIZE_LIST_INTERNAL", 2^28 - 1 );
+BIND_GLOBAL( "MAX_SIZE_LIST_INTERNAL", 2^(8*GAPInfo.BytesPerVariable-4) - 1 );
 
 
 #############################################################################
@@ -200,7 +201,7 @@ DeclareOperation( "AsPlist", [IsListOrCollection] );
 #C  IsDenseList( <obj> )
 ##
 ##  A list is *dense* if it has no holes, i.e., contains an element at every
-##  position.
+##  position up to the length.
 ##  It is absolutely legal to have lists with holes.
 ##  They are created by leaving the entry between the commas empty.
 ##  Holes at the end of a list are ignored.
@@ -210,6 +211,9 @@ DeclareOperation( "AsPlist", [IsListOrCollection] );
 
 # DeclareCategory("IsDenseList",IsList);
 DeclareCategoryKernel( "IsDenseList", IsList, IS_DENSE_LIST );
+
+InstallTrueMethod( IsDenseList, IsList and IsEmpty );
+
 
 #############################################################################
 ##
@@ -284,7 +288,7 @@ DeclareProperty( "IsSortedList", IsList);
 #T This should belong to `IsSortedList' not to `IsSSortedList'
 #T (but see the comment below)!
 ##
-##  (Currently there is *no* special treatment of lists that are sorted
+##  (Currently there is little special treatment of lists that are sorted
 ##  but not strictly sorted.
 ##  In particular, internally represented lists will *not* store that they
 ##  are sorted but not strictly sorted.)
@@ -295,6 +299,7 @@ DeclarePropertyKernel( "IsSSortedList", IsList, IS_SSORT_LIST );
 DeclareSynonym( "IsSet", IsSSortedList );
 
 InstallTrueMethod( IsSortedList, IsSSortedList );
+InstallTrueMethod( IsSSortedList, IsList and IsEmpty );
 
 
 #T #############################################################################
@@ -428,7 +433,6 @@ DeclareOperation( "PositionNthOccurrence", [ IsList, IsObject, IS_INT ] );
 ##  for testing whether a list is sorted, see~"IsSortedList" and
 ##  "IsSSortedList".
 ##
-UNBIND_GLOBAL( "PositionSorted" ); # was declared "2b defined"
 DeclareOperation( "PositionSorted", [ IsList, IsObject ] );
 #T originally was
 #T DeclareOperation( "PositionSorted", [ IsHomogeneousList, IsObject ] );
@@ -742,32 +746,33 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  order, i.e., `Sort' is not stable.
 ##
 DeclareOperation( "Sort", [ IsList and IsMutable ] );
+DeclareOperation( "Sort", [ IsList and IsMutable, IsFunction ] );
 
 
 #############################################################################
 ##
-#O  Sortex(<list>) . . . sort a list (stable), return the applied permutation
+#O  Sortex( <list> ) . . sort a list (stable), return the applied permutation
 ##
-##  sorts the list <list> via the operator`\<' and  returns the  permutation
-##  that must be applied to <list> to obtain the sorted list.
-##  (If the list is not homogeneous it is the users responsibility to ensure
-##  that `\<' is defined for all element pairs, see~"Comparison Operations
-##  for Elements")
+##  sorts the list <list> via the operator`\<' and returns a permutation
+##  that can be applied to <list> to obtain the sorted list.
+##  (If the list is not homogeneous it is the user's responsibility to ensure
+##  that `\<' is defined for all element pairs,
+##  see~"Comparison Operations for Elements")
 ##
 ##  `Permuted' (see~"Permuted") allows you to rearrange a list according to
 ##  a given permutation.
 ##
-DeclareOperation( "Sortex", [  IsMutable ] );
+DeclareOperation( "Sortex", [ IsList and IsMutable ] );
 
 
 #############################################################################
 ##
-#F  SortingPerm( <list> )
+#A  SortingPerm( <list> )
 ##
-##  `SortingPerm' returns the same as `Sortex( <list> )' but does *not*
-##  change the argument.
+##  `SortingPerm' returns the same as `Sortex( <list> )' (see~"Sortex")
+##  but does *not* change the argument.
 ##
-DeclareGlobalFunction( "SortingPerm" );
+DeclareAttribute( "SortingPerm", IsList );
 
 
 #############################################################################
@@ -786,14 +791,15 @@ DeclareGlobalFunction( "PermListList" );
 #O  SortParallel(<list>,<list2>)  . . . . . . . .  sort two lists in parallel
 #O  SortParallel( <list>, <list2>, <func> ) . . .  sort two lists in parallel
 ##
-##  sorts the list <list1>  in increasing order just as `Sort'
-##  (see "Sort") does.  In  parallel it applies  the same exchanges  that are
+##  sorts the list <list1> in increasing order just as `Sort' (see~"Sort")
+##  does.  In  parallel it applies  the same exchanges  that are
 ##  necessary to sort <list1> to the list <list2>, which must of  course have
 ##  at least as many elements as <list1> does.
 ##
-UNBIND_GLOBAL( "SortParallel" );
 DeclareOperation( "SortParallel",
     [ IsDenseList and IsMutable, IsDenseList and IsMutable ] );
+DeclareOperation( "SortParallel",
+    [ IsDenseList and IsMutable, IsDenseList and IsMutable, IsFunction ] );
 
 
 #############################################################################

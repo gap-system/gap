@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains some functions moved from type.g to a place
 ##  where they will be compiled by default
@@ -180,8 +181,11 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
 
     # get next type id
     NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID + 1;
-    if TNUM_OBJ_INT(NEW_TYPE_NEXT_ID) <> 0  then
-        Error( "too many types" );
+    if NEW_TYPE_NEXT_ID >= NEW_TYPE_ID_LIMIT then
+        GASMAN("collect");
+        FLUSH_ALL_METHOD_CACHES();
+        NEW_TYPE_NEXT_ID := COMPACT_TYPE_IDS();
+        #Print("#I Compacting type IDs: ",NEW_TYPE_NEXT_ID+2^28," in use\n");
     fi;
 
     # make the new type

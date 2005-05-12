@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.addmagma_gi :=
     "@(#)$Id$";
@@ -17,24 +18,21 @@ Revision.addmagma_gi :=
 ##
 InstallMethod( PrintObj,
     "for an add. magma",
-    true,
-    [ IsAdditiveMagma ], 0,
+    [ IsAdditiveMagma ],
     function( A )
     Print( "AdditiveMagma( ... )" );
     end );
 
 InstallMethod( PrintObj,
     "for an add. magma with generators",
-    true,
-    [ IsAdditiveMagma and HasGeneratorsOfAdditiveMagma ], 0,
+    [ IsAdditiveMagma and HasGeneratorsOfAdditiveMagma ],
     function( A )
     Print( "AdditiveMagma( ", GeneratorsOfAdditiveMagma( A ), " )" );
     end );
 
 InstallMethod( PrintObj,
     "for an add. magma-with-zero with generators",
-    true,
-    [ IsAdditiveMagmaWithZero and HasGeneratorsOfAdditiveMagmaWithZero ], 0,
+    [ IsAdditiveMagmaWithZero and HasGeneratorsOfAdditiveMagmaWithZero ],
     function( A )
     if IsEmpty( GeneratorsOfAdditiveMagmaWithZero( A ) ) then
       Print( "AdditiveMagmaWithZero( ", Zero( A ), " )" );
@@ -46,9 +44,7 @@ InstallMethod( PrintObj,
 
 InstallMethod( PrintObj,
     "for an add. magma-with-inverses with generators",
-    true,
-    [     IsAdditiveGroup
-      and HasGeneratorsOfAdditiveGroup ], 0,
+    [ IsAdditiveGroup and HasGeneratorsOfAdditiveGroup ],
     function( A )
     if IsEmpty( GeneratorsOfAdditiveGroup( A ) ) then
       Print( "AdditiveGroup( ", Zero( A ), " )" );
@@ -65,16 +61,14 @@ InstallMethod( PrintObj,
 ##
 InstallMethod( ViewObj,
     "for an add. magma",
-    true,
-    [ IsAdditiveMagma ], 0,
+    [ IsAdditiveMagma ],
     function( A )
     Print( "<additive magma>" );
     end );
 
 InstallMethod( ViewObj,
     "for an add. magma with generators",
-    true,
-    [ IsAdditiveMagma and HasGeneratorsOfAdditiveMagma ], 0,
+    [ IsAdditiveMagma and HasGeneratorsOfAdditiveMagma ],
     function( A )
     Print( "<additive magma with ",
            Length( GeneratorsOfAdditiveMagma( A ) ), " generators>" );
@@ -82,8 +76,7 @@ InstallMethod( ViewObj,
 
 InstallMethod( ViewObj,
     "for an add. magma-with-zero with generators",
-    true,
-    [ IsAdditiveMagmaWithZero and HasGeneratorsOfAdditiveMagmaWithZero ], 0,
+    [ IsAdditiveMagmaWithZero and HasGeneratorsOfAdditiveMagmaWithZero ],
     function( A )
     if IsEmpty( GeneratorsOfAdditiveMagmaWithZero( A ) ) then
       Print( "<trivial additive magma-with-zero>" );
@@ -96,9 +89,7 @@ InstallMethod( ViewObj,
 
 InstallMethod( ViewObj,
     "for an add. magma-with-inverses with generators",
-    true,
-    [     IsAdditiveGroup
-      and HasGeneratorsOfAdditiveGroup ], 0,
+    [ IsAdditiveGroup and HasGeneratorsOfAdditiveGroup ],
     function( A )
     if IsEmpty( GeneratorsOfAdditiveGroup( A ) ) then
       Print( "<trivial additive magma-with-inverses>" );
@@ -115,7 +106,7 @@ InstallMethod( ViewObj,
 #M  IsTrivial( <A> )  . . . . . . . test whether an additive magma is trivial
 ##
 InstallImmediateMethod( IsTrivial,
-    IsAdditiveMagmaWithZero and HasGeneratorsOfAdditiveMagmaWithZero , 0,
+    IsAdditiveMagmaWithZero and HasGeneratorsOfAdditiveMagmaWithZero, 0,
     function( A )
     if IsEmpty( GeneratorsOfAdditiveMagmaWithZero( A ) ) then
       return true;
@@ -158,7 +149,6 @@ InstallGlobalFunction( AdditiveMagma, function( arg )
 
     # no argument given, error
     Error("usage: AdditiveMagma(<gens>), AdditiveMagma(<Fam>,<gens>)");
-
 end );
 
 
@@ -181,7 +171,6 @@ InstallGlobalFunction( SubadditiveMagma, function( M, gens )
         Error( "<gens> must be elements in <M>" );
     fi;
     return SubadditiveMagmaNC( M, gens );
-
 end );
 
 
@@ -311,7 +300,6 @@ InstallGlobalFunction( AdditiveGroup, function( arg )
     # no argument given, error
     Error("usage: AdditiveGroup(<gens>), ",
           "AdditiveGroup(<Fam>,<gens>)");
-
 end );
 
 
@@ -367,8 +355,7 @@ end );
 ##
 InstallMethod( TrivialSubadditiveMagmaWithZero,
     "for add.-magma-with-zero",
-    true,
-    [ IsAdditiveMagmaWithZero ], 0,
+    [ IsAdditiveMagmaWithZero ],
     M -> SubadditiveMagmaWithZeroNC( M, [] ) );
 
 
@@ -378,8 +365,7 @@ InstallMethod( TrivialSubadditiveMagmaWithZero,
 ##
 InstallMethod( AdditiveMagmaByGenerators,
     "for collection",
-    true,
-    [ IsCollection ] , 0,
+    [ IsCollection ],
     function( gens )
     local M;
     M:= Objectify( NewType( FamilyObj( gens ),
@@ -396,8 +382,7 @@ InstallMethod( AdditiveMagmaByGenerators,
 ##
 InstallOtherMethod( AdditiveMagmaByGenerators,
     "for family and list",
-    true,
-    [ IsFamily, IsList ], 0,
+    [ IsFamily, IsList ],
     function( family, gens )
     local M;
     if not ( IsEmpty(gens) or IsIdenticalObj( FamilyObj(gens), family ) ) then
@@ -417,8 +402,7 @@ InstallOtherMethod( AdditiveMagmaByGenerators,
 ##
 InstallMethod( AdditiveMagmaWithZeroByGenerators,
     "for collection",
-    true,
-    [ IsCollection ] , 0,
+    [ IsCollection ],
     function( gens )
     local M;
     M:= Objectify( NewType( FamilyObj( gens ),
@@ -435,8 +419,7 @@ InstallMethod( AdditiveMagmaWithZeroByGenerators,
 ##
 InstallOtherMethod( AdditiveMagmaWithZeroByGenerators,
     "for family and list",
-    true,
-    [ IsFamily, IsList ], 0,
+    [ IsFamily, IsList ],
     function( family, gens )
     local M;
     if not ( IsEmpty(gens) or IsIdenticalObj( FamilyObj(gens), family ) ) then
@@ -456,8 +439,7 @@ InstallOtherMethod( AdditiveMagmaWithZeroByGenerators,
 ##
 InstallMethod( AdditiveGroupByGenerators,
     "for collection",
-    true,
-    [ IsCollection ] , 0,
+    [ IsCollection ],
     function( gens )
     local M;
     M:= Objectify( NewType( FamilyObj( gens ),
@@ -474,8 +456,7 @@ InstallMethod( AdditiveGroupByGenerators,
 ##
 InstallOtherMethod( AdditiveGroupByGenerators,
     "for family and list",
-    true,
-    [ IsFamily, IsList ], 0,
+    [ IsFamily, IsList ],
     function( family, gens )
     local M;
     if not ( IsEmpty(gens) or IsIdenticalObj( FamilyObj(gens), family ) ) then
@@ -514,22 +495,20 @@ InstallImmediateMethod( GeneratorsOfAdditiveGroup,
     A -> GeneratorsOfAdditiveMagmaWithZero( A ) );
 
 
-InstallMethod( GeneratorsOfAdditiveMagma, true,
-    [ IsAdditiveMagmaWithZero and HasGeneratorsOfAdditiveMagmaWithZero ], 0,
+InstallMethod( GeneratorsOfAdditiveMagma,
+    [ IsAdditiveMagmaWithZero and HasGeneratorsOfAdditiveMagmaWithZero ],
     A -> Concatenation( GeneratorsOfAdditiveMagmaWithZero( A ),
               [ Zero( A ) ] ) );
 
-InstallMethod( GeneratorsOfAdditiveMagma, true,
-    [     IsAdditiveGroup
-      and HasGeneratorsOfAdditiveGroup ], 0,
+InstallMethod( GeneratorsOfAdditiveMagma,
+    [ IsAdditiveGroup and HasGeneratorsOfAdditiveGroup ],
     A -> Concatenation( GeneratorsOfAdditiveGroup( A ),
               [ Zero( A ) ],
               List( GeneratorsOfAdditiveGroup( A ),
                     AdditiveInverse ) ) );
 
-InstallMethod( GeneratorsOfAdditiveMagmaWithZero, true,
-    [     IsAdditiveGroup
-      and HasGeneratorsOfAdditiveGroup ], 0,
+InstallMethod( GeneratorsOfAdditiveMagmaWithZero,
+    [ IsAdditiveGroup and HasGeneratorsOfAdditiveGroup ],
     A -> Concatenation( GeneratorsOfAdditiveGroup( A ),
               List( GeneratorsOfAdditiveGroup( A ),
                     AdditiveInverse ) ) );
@@ -541,35 +520,41 @@ InstallMethod( GeneratorsOfAdditiveMagmaWithZero, true,
 ##
 InstallMethod( Representative,
     "for additive magma with known generators",
-    true,
-    [ IsAdditiveMagma and HasGeneratorsOfAdditiveMagma ], 0,
+    [ IsAdditiveMagma and HasGeneratorsOfAdditiveMagma ],
     RepresentativeFromGenerators( GeneratorsOfAdditiveMagma ) );
 
 InstallMethod( Representative,
     "for additive-magma-with-zero with known generators",
-    true,
-    [ IsAdditiveMagmaWithZero and HasGeneratorsOfAdditiveMagmaWithZero ], 0,
+    [ IsAdditiveMagmaWithZero and HasGeneratorsOfAdditiveMagmaWithZero ],
     RepresentativeFromGenerators( GeneratorsOfAdditiveMagmaWithZero ) );
 
 InstallMethod( Representative,
     "for additive-magma-with-inverses with known generators",
-    true,
-    [ IsAdditiveGroup
-      and HasGeneratorsOfAdditiveGroup ], 0,
+    [ IsAdditiveGroup and HasGeneratorsOfAdditiveGroup ],
     RepresentativeFromGenerators( GeneratorsOfAdditiveGroup ) );
 
 InstallMethod( Representative,
     "for additive-magma-with-zero with known zero",
-    true,
     [ IsAdditiveMagmaWithZero and HasZero ], SUM_FLAGS,
     Zero );
+
+InstallMethod( Representative,
+    "for additive-magma-with-zero with stored parent",
+    [ IsAdditiveMagmaWithZero and HasParentAttr ],
+    function( A )
+    if not IsIdenticalObj( A, Parent( A ) ) then
+      return Zero( Representative( Parent( A ) ) );
+    fi;
+    TryNextMethod();
+    end );
 
 
 #############################################################################
 ##
 #M  AdditiveNeutralElement( <A> ) . . . . . . . . . zero of an additive magma
 ##
-InstallMethod( AdditiveNeutralElement, true, [ IsAdditiveMagma ], 0,
+InstallMethod( AdditiveNeutralElement,
+    [ IsAdditiveMagma ],
     function( M )
     local m;
     if IsFinite( M ) then
@@ -591,7 +576,7 @@ InstallMethod( AdditiveNeutralElement, true, [ IsAdditiveMagma ], 0,
 ##
 InstallOtherMethod( Zero,
     "for additive magma",
-    true, [ IsAdditiveMagma ], 0,
+    [ IsAdditiveMagma ],
     function( A )
     local zero;
     zero:= Zero( Representative( A ) );
@@ -604,7 +589,7 @@ InstallOtherMethod( Zero,
 
 InstallOtherMethod( Zero,
     "for additive magma with zero (look at family)",
-    true, [ IsAdditiveMagmaWithZero ], SUM_FLAGS,
+    [ IsAdditiveMagmaWithZero ], SUM_FLAGS,
     function( A )
     A:= ElementsFamily( FamilyObj( A ) );
     if HasZero( A ) then
@@ -617,8 +602,7 @@ InstallOtherMethod( Zero,
 
 InstallOtherMethod( Zero,
     "for an add. magma-with-zero with parent (ask the parent)",
-    true,
-    [ IsAdditiveMagmaWithZero and HasParent ], 0,
+    [ IsAdditiveMagmaWithZero and HasParent ],
     function( A )
     if not IsIdenticalObj( A, Parent( A ) ) then
       return Zero( Parent( A ) );
@@ -629,8 +613,7 @@ InstallOtherMethod( Zero,
 
 InstallOtherMethod( Zero,
     "for additive magma with zero",
-    true,
-    [ IsAdditiveMagmaWithZero ], 0,
+    [ IsAdditiveMagmaWithZero ],
     A -> Zero( Representative( A ) ) );
 
 
@@ -642,8 +625,7 @@ EnumeratorOfTrivialAdditiveMagmaWithZero := A -> Immutable( [ Zero( A ) ] );
 
 InstallMethod( Enumerator,
     "for trivial add. magma-with-zero",
-    true,
-    [ IsAdditiveMagmaWithZero and IsTrivial ], 0,
+    [ IsAdditiveMagmaWithZero and IsTrivial ],
     EnumeratorOfTrivialAdditiveMagmaWithZero );
 
 
@@ -652,7 +634,6 @@ InstallMethod( Enumerator,
 #F  ClosureAdditiveMagmaDefault( <A>, <elm> )  closure of add. magma with elm
 ##
 BindGlobal( "ClosureAdditiveMagmaDefault", function( A, elm )
-
     local   C,          # closure `\< <a>, <obj> \>', result
             gens,       # generators of <A>
             gen,        # generator of <A> or <C>
@@ -707,7 +688,6 @@ end );
 #M  Enumerator( <A> ) . . . . . . . . .  set of the elements of an add. magma
 ##
 BindGlobal( "EnumeratorOfAdditiveMagma", function( A )
-
     local   gens,       # add. magma generators of <A>
             H,          # subadd. magma of the first generators of <A>
             gen;        # generator of <A>
@@ -735,8 +715,7 @@ end );
 
 InstallMethod( Enumerator,
     "generic method for an add. magma",
-    true,
-    [ IsAdditiveMagma and IsAttributeStoringRep ], 0,
+    [ IsAdditiveMagma and IsAttributeStoringRep ],
     EnumeratorOfAdditiveMagma );
 
 
@@ -748,7 +727,7 @@ InstallMethod( Enumerator,
 InstallMethod( IsSubset,
     "for two additive magmas",
     IsIdenticalObj,
-    [ IsAdditiveMagma, IsAdditiveMagma ], 0,
+    [ IsAdditiveMagma, IsAdditiveMagma ],
     function( M, N )
     return IsSubset( M, GeneratorsOfAdditiveMagma( N ) );
     end );
@@ -761,7 +740,7 @@ InstallMethod( IsSubset,
 InstallMethod( IsSubset,
     "for two additive magmas with zero",
     IsIdenticalObj,
-    [ IsAdditiveMagmaWithZero, IsAdditiveMagmaWithZero ], 0,
+    [ IsAdditiveMagmaWithZero, IsAdditiveMagmaWithZero ],
     function( M, N )
     return IsSubset( M, GeneratorsOfAdditiveMagmaWithZero( N ) );
     end );
@@ -774,7 +753,7 @@ InstallMethod( IsSubset,
 InstallMethod( IsSubset,
     "for two additive magmas with inverses",
     IsIdenticalObj,
-    [ IsAdditiveGroup, IsAdditiveGroup ], 0,
+    [ IsAdditiveGroup, IsAdditiveGroup ],
     function( M, N )
     return IsSubset( M, GeneratorsOfAdditiveGroup( N ) );
     end );
@@ -787,7 +766,7 @@ InstallMethod( IsSubset,
 InstallMethod( ClosureAdditiveGroup,
     "for add. group and element",
     IsCollsElms,
-    [ IsAdditiveGroup, IsAdditiveElement ], 0,
+    [ IsAdditiveGroup, IsAdditiveElement ],
     function( A, a )
 
     # if possible test if the element lies in the add. group already
@@ -809,7 +788,7 @@ InstallMethod( ClosureAdditiveGroup,
 InstallOtherMethod( ClosureAdditiveGroup,
     "for two add. groups",
     IsIdenticalObj,
-    [ IsAdditiveGroup, IsAdditiveGroup ], 0,
+    [ IsAdditiveGroup, IsAdditiveGroup ],
     function( A, B )
     local C, b;
     C:= A;

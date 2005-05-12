@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file is a first stab at a special posobj-based representation 
 ##  for 8 bit matrices, mimicking the one for GF(2)
@@ -246,11 +247,11 @@ end);
 
 #############################################################################
 ##
-#M  ConvertToMatrixRep( <list> )
+#M  ConvertToMatrixRepNC( <list> )
 ##
 
 
-InstallGlobalFunction(ConvertToMatrixRep,
+InstallGlobalFunction(ConvertToMatrixRepNC,
         function( arg )
     local m,qs, v,  q, givenq, q1, LeastCommonPower, lens;
     
@@ -332,9 +333,9 @@ InstallGlobalFunction(ConvertToMatrixRep,
         elif Is8BitVectorRep(v) then
             AddSet(qs,Q_VEC8BIT(v));
         elif givenq then
-            AddSet(qs,ConvertToVectorRep(v,q1));
+            AddSet(qs,ConvertToVectorRepNC(v,q1));
         else
-            AddSet(qs,ConvertToVectorRep(v));
+            AddSet(qs,ConvertToVectorRepNC(v));
         fi;
         AddSet(lens, Length(v));
 #        mut := mut or IsMutable(v);
@@ -377,7 +378,7 @@ InstallGlobalFunction(ConvertToMatrixRep,
         #
         
         for v in m do
-            if q <> ConvertToVectorRep(v,q) then
+            if q <> ConvertToVectorRepNC(v,q) then
                 return fail;
             fi;
         od;
@@ -424,6 +425,61 @@ InstallMethod( \*, "8 bit matrix * 8 bit matrix", IsIdenticalObj,
                 Is8BitMatrixRep and IsMatrix
           ], 0,
         PROD_MAT8BIT_MAT8BIT);
+
+#############################################################################
+##
+#M <scal> * <mat>
+##
+
+InstallMethod( \*, "scalar * 8 bit matrix", IsElmsCollColls, 
+        [           IsFFE, 
+                Is8BitMatrixRep and IsMatrix
+          ], 0,
+        function(s,m)
+    local q,i,l,r,pv;
+    q := Q_VEC8BIT(m![2]);
+    if not s in GF(q) then
+        TryNextMethod();
+    fi;
+    l := m![1];
+    r := [l];
+    for i in [2..l+1] do
+        pv := s*m![i];
+        SetFilterObj(pv, IsLockedRepresentationVector);
+        r[i] := pv;
+    od;
+    Objectify(TYPE_MAT8BIT(q, IsMutable(m)),r);
+    return r;
+end);
+
+#############################################################################
+##
+#M  <mat> * <scal>
+##
+
+InstallMethod( \*, "scalar * 8 bit matrix", IsCollCollsElms, 
+        [         
+                Is8BitMatrixRep and IsMatrix,
+                IsFFE
+          ], 0,
+        function(m,s)
+    local q,i,l,r,pv;
+    q := Q_VEC8BIT(m![2]);
+    if not s in GF(q) then
+        TryNextMethod();
+    fi;
+    l := m![1];
+    r := [l];
+    for i in [2..l+1] do
+        pv := m![i]*s;
+        SetFilterObj(pv, IsLockedRepresentationVector);
+        r[i] := pv;
+    od;
+    Objectify(TYPE_MAT8BIT(q, IsMutable(m)),r);
+    return r;
+end);
+
+
 
 #############################################################################
 ##
@@ -613,7 +669,7 @@ InstallMethod( OneSameMutability, "8 bit matrix", true,
     if not IsMutable(m) then
         MakeImmutable(o);
     fi;
-    ConvertToMatrixRep(o, Q_VEC8BIT(v));
+    ConvertToMatrixRepNC(o, Q_VEC8BIT(v));
     return o;
 end);
 
@@ -635,7 +691,7 @@ InstallMethod( OneMutable, "8 bit matrix", true,
         w[i] := one;
         Add(o,w);
     od;
-    ConvertToMatrixRep(o, Q_VEC8BIT(v));
+    ConvertToMatrixRepNC(o, Q_VEC8BIT(v));
     return o;
 end);
     
@@ -659,7 +715,7 @@ InstallMethod( One, "8 bit matrix", true,
     local   o;
     o := OneOp(m);
     MakeImmutable(o);
-    ConvertToMatrixRep(o, Q_VEC8BIT(m![2]));
+    ConvertToMatrixRepNC(o, Q_VEC8BIT(m![2]));
     return o;
     end );
 
@@ -692,10 +748,10 @@ InstallGlobalFunction( RepresentationsOfMatrix,
             Print(" compressed over GF(",Q_VEC8BIT(m),") ");
         elif IsPlistRep(m) then
             Print(" plain list, tnum: ",TNUM_OBJ(m)," ");
-            if TNUM_OBJ_INT(m) in [48,49] then
+            if TNUM_OBJ_INT(m) in [54,55] then
                 Print("known to be vecffe over GF(",CHAR_FFE_DEFAULT(m[1]),"^",
                       DEGREE_FFE_DEFAULT(m[1]),") ");
-            elif TNUM_OBJ_INT(m) in [42,43] then
+            elif TNUM_OBJ_INT(m) in [48..53] then
                 Print("known to be vector of cyclotomics ");
             else 
                 Print("TNUM: ",TNUM_OBJ(m), " ");
@@ -840,7 +896,7 @@ InstallMethod(SemiEchelonMat, "shortcut method for 8bit matrices",
 
     copymat := List(mat, ShallowCopy);
     res := SemiEchelonMatDestructive( copymat );
-    ConvertToMatrixRep(res.vectors,Q_VEC8BIT(mat![2]));
+    ConvertToMatrixRepNC(res.vectors,Q_VEC8BIT(mat![2]));
     return res;
 end);
 
@@ -853,9 +909,9 @@ InstallMethod(SemiEchelonMatTransformation, "shortcut method for 8bit matrices",
     copymat := List(mat, ShallowCopy);
     res := SemiEchelonMatTransformationDestructive( copymat );
     q := Q_VEC8BIT(mat![2]);
-    ConvertToMatrixRep(res.vectors,q);
-    ConvertToMatrixRep(res.coeffs,q);
-    ConvertToMatrixRep(res.relations,q);
+    ConvertToMatrixRepNC(res.vectors,q);
+    ConvertToMatrixRepNC(res.coeffs,q);
+    ConvertToMatrixRepNC(res.relations,q);
     return res;
 end);
 
@@ -944,6 +1000,13 @@ InstallMethod(NestingDepthA, [Is8BitMatrixRep], m->2);
 InstallMethod(NestingDepthM, [Is8BitVectorRep], m->1);
 InstallMethod(NestingDepthA, [Is8BitVectorRep], m->1);
 
+InstallMethod(PostMakeImmutable, [Is8BitMatrixRep], 
+        function(m)
+    local i;
+    for i in [2..m![1]] do
+        MakeImmutable(m![i]);
+    od;
+end);
 
 
 #############################################################################

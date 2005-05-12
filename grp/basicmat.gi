@@ -69,18 +69,17 @@ end );
 
 #############################################################################
 ##
-#M  GeneralLinearGroupCons( <IsMatrixGroup>, <d>, <q> )
+#M  GeneralLinearGroupCons( <IsMatrixGroup>, <d>, <F> )
 ##
 InstallMethod( GeneralLinearGroupCons,
     "matrix group for dimension and finite field size",
-    true,
     [ IsMatrixGroup and IsFinite,
       IsInt and IsPosRat,
-      IsInt and IsPosRat ],
-    0,
+      IsField and IsFinite ],
+function( filter, n, f )
+    local   q,  z,  o,  mat1,  mat2,  i,  g;
 
-function( filter, n, q )
-    local   f,  z,  o,  mat1,  mat2,  i,  g;
+    q:= Size( f );
 
     # small cases
     if q = 2 and 1 < n  then
@@ -88,7 +87,6 @@ function( filter, n, q )
     fi;
 
     # construct the generators
-    f := GF( q );
     z := PrimitiveRoot( f );
     o := One( f );
 
@@ -123,69 +121,65 @@ end );
 ##
 InstallMethod( SpecialLinearGroupCons,
     "matrix group for dimension and finite field size",
-    true,
     [ IsMatrixGroup and IsFinite,
       IsInt and IsPosRat,
-      IsInt and IsPosRat ],
-    0,
+      IsField and IsFinite ],
 
-function( filter, n, q )
-     local   f,  g,  o,  z,  mat1,  mat2,  i,  size,  qi;
+function( filter, n, f )
+    local   q,  g,  o,  z,  mat1,  mat2,  i,  size,  qi;
 
-     # construct the underlying field
-     f := GF(q);
+    q:= Size( f );
 
-     # handle the trivial case first
-     if n = 1 then
-         g := GroupByGenerators( [ ImmutableMatrix( f, [[One(f)]] ) ] );
+    # handle the trivial case first
+    if n = 1 then
+        g := GroupByGenerators( [ ImmutableMatrix( f, [[One(f)]] ) ] );
 
-     # now the general case
-     else
+    # now the general case
+    else
 
-         # construct the generators
-         o := One(f);
-         z := PrimitiveRoot(f);
-         mat1 := IdentityMat( n, o );
-         mat2 := List( Zero(o) * mat1, ShallowCopy );
-         mat2[1][n] := o;
-         for i  in [ 2 .. n ]  do mat2[i][i-1]:= -o;  od;
+        # construct the generators
+        o := One(f);
+        z := PrimitiveRoot(f);
+        mat1 := IdentityMat( n, o );
+        mat2 := List( Zero(o) * mat1, ShallowCopy );
+        mat2[1][n] := o;
+        for i  in [ 2 .. n ]  do mat2[i][i-1]:= -o;  od;
 
-         if q = 2 or q = 3 then
-             mat1[1][2] := o;
-         else
-             mat1[1][1] := z;
-             mat1[2][2] := z^-1;
-             mat2[1][1] := -o;
-         fi;
-         mat1 := ImmutableMatrix(f,mat1);
-         mat2 := ImmutableMatrix(f,mat2);
+        if q = 2 or q = 3 then
+            mat1[1][2] := o;
+        else
+            mat1[1][1] := z;
+            mat1[2][2] := z^-1;
+            mat2[1][1] := -o;
+        fi;
+        mat1 := ImmutableMatrix(f,mat1);
+        mat2 := ImmutableMatrix(f,mat2);
 
-         g := GroupByGenerators( [ mat1, mat2 ] );
-     fi;
+        g := GroupByGenerators( [ mat1, mat2 ] );
+    fi;
 
-     # set name, dimension and field
-     SetName( g, Concatenation("SL(",String(n),",",String(q),")") );
-     SetDimensionOfMatrixGroup( g, n );
-     SetFieldOfMatrixGroup( g, f );
-     SetIsFinite( g, true );
-     if q = 2  then
-         SetIsNaturalGL( g, true );
-     fi;
-     SetIsNaturalSL( g, true );
-     SetIsFinite(g,true);
+    # set name, dimension and field
+    SetName( g, Concatenation("SL(",String(n),",",String(q),")") );
+    SetDimensionOfMatrixGroup( g, n );
+    SetFieldOfMatrixGroup( g, f );
+    SetIsFinite( g, true );
+    if q = 2  then
+        SetIsNaturalGL( g, true );
+    fi;
+    SetIsNaturalSL( g, true );
+    SetIsFinite(g,true);
 
-     # add the size
-      if n<50 or n+q<500 then
-       Size(g);
-     fi;
+    # add the size
+    if n<50 or n+q<500 then
+      Size(g);
+    fi;
 
-     # return the group
-     return g;
+    # return the group
+    return g;
 end );
 
 
 #############################################################################
 ##
 #E
-##
 

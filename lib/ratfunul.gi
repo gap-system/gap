@@ -8,6 +8,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for rational functions that know that they
 ##  are univariate.
@@ -38,9 +39,7 @@ local lc;
   fi;
   fam:=RationalFunctionsFamily(fam);
   if lc>0 and (IsZero(cofs[1]) or IsZero(cofs[lc])) then
-      if not IsMutable(cofs) then
-          cofs:=ShallowCopy(cofs);
-      fi;
+      cofs:=ShallowCopy(cofs); # always copy to avoid destroying list
       val:=val+RemoveOuterCoeffs(cofs,fam!.zeroCoefficient);
   fi;
 
@@ -117,7 +116,7 @@ function(f);
 end );
 
 RedispatchOnCondition( CoefficientsOfUnivariatePolynomial, true, 
-    [ IsRationalFunction ], [ IsUnivariatePolynomial ], 0);
+    [ IsPolynomialFunction ], [ IsUnivariatePolynomial ], 0);
 
 #############################################################################
 ##
@@ -125,7 +124,7 @@ RedispatchOnCondition( CoefficientsOfUnivariatePolynomial, true,
 ##
 InstallMethod( DegreeOfLaurentPolynomial,
     true,
-    [ IsRationalFunction and IsLaurentPolynomial ],
+    [ IsPolynomialFunction and IsLaurentPolynomial ],
     0,
 
 function( obj )
@@ -221,7 +220,7 @@ end);
 #M  ExtRepDenominatorRatFun(<ulaurent>)
 ##
 InstallMethod(ExtRepDenominatorRatFun,"laurent polynomial rep.",true,
-  [IsLaurentPolynomialDefaultRep],0, 
+  [IsLaurentPolynomialDefaultRep and IsRationalFunction],0, 
 function(obj)
 local   cofs,  val,  ind,  quo;
 
@@ -250,7 +249,7 @@ end);
 #M  One(<laurent>)
 ##
 InstallMethod(OneOp,"univariate",true,
-  [ IsRationalFunction and IsUnivariateRationalFunction ], 0,
+  [ IsPolynomialFunction and IsUnivariateRationalFunction ], 0,
 function(p)
 local indn,fam;
   fam:=FamilyObj(p);
@@ -264,14 +263,14 @@ end);
 
 # avoid the one of the family (which is not univariate!)
 InstallMethod(One,"univariate",true,
-  [ IsRationalFunction and IsUnivariateRationalFunction ], 0, OneOp);
+  [ IsPolynomialFunction and IsUnivariateRationalFunction ], 0, OneOp);
 
 #############################################################################
 ##
 #M  Zero(<laurent>)
 ##
 InstallMethod(ZeroOp,"univariate",true,
-  [ IsRationalFunction and IsUnivariateRationalFunction ], 0,
+  [ IsPolynomialFunction and IsUnivariateRationalFunction ], 0,
 function(p)
 local indn,fam;
   fam:=FamilyObj(p);
@@ -286,7 +285,7 @@ end);
 
 # avoid the one of the family (which is not univariate!)
 InstallMethod(Zero,"univariate",true,
-  [ IsRationalFunction and IsUnivariateRationalFunction ], 0, ZeroOp);
+  [ IsPolynomialFunction and IsUnivariateRationalFunction ], 0, ZeroOp);
 
 #############################################################################
 ##
@@ -294,7 +293,7 @@ InstallMethod(Zero,"univariate",true,
 ##
 InstallMethod( IndeterminateOfUnivariateRationalFunction,
   "use `IndeterminateNumber'",true,
-  [ IsRationalFunction and IsUnivariateRationalFunction ], 0,
+  [ IsPolynomialFunction and IsUnivariateRationalFunction ], 0,
 function( obj )
     local   fam;
 
@@ -312,7 +311,7 @@ end );
 #M  AdditiveInverseOp( <laurent> )
 ##
 InstallMethod( AdditiveInverseOp,"laurent polynomial",
-    true, [ IsRationalFunction and IsLaurentPolynomial ], 0,
+    true, [ IsPolynomialFunction and IsLaurentPolynomial ], 0,
 function( obj )
 local   cofs,  indn;
 
@@ -333,7 +332,7 @@ end );
 #M  InverseOp( <laurent> )
 ##
 InstallMethod( InverseOp,"try to express as laurent polynomial", true,
-    [ IsRationalFunctionsFamilyElement and IsLaurentPolynomial ], 0,
+    [ IsPolynomialFunction and IsLaurentPolynomial ], 0,
 function( obj )
 local   cofs,  indn;
 
@@ -355,16 +354,16 @@ end );
 #M  <laurent> * <laurent>
 ##
 InstallMethod( \*, "laurent * laurent", IsIdenticalObj,
-    [ IsRationalFunction and IsLaurentPolynomial,
-      IsRationalFunction and IsLaurentPolynomial], 0, PRODUCT_LAURPOLS);
+    [ IsPolynomialFunction and IsLaurentPolynomial,
+      IsPolynomialFunction and IsLaurentPolynomial], 0, PRODUCT_LAURPOLS);
 
 #############################################################################
 ##
 #M  <laurent> + <laurent>
 ##
 InstallMethod( \+, "laurent + laurent", IsIdenticalObj,
-    [ IsRationalFunction and IsLaurentPolynomial,
-      IsRationalFunction and IsLaurentPolynomial ], 0, SUM_LAURPOLS);
+    [ IsPolynomialFunction and IsLaurentPolynomial,
+      IsPolynomialFunction and IsLaurentPolynomial ], 0, SUM_LAURPOLS);
 
 #############################################################################
 ##
@@ -374,8 +373,8 @@ InstallMethod( \+, "laurent + laurent", IsIdenticalObj,
 ##  wrap up an intermediate polynomial which gets a bit expensive. So we do
 ##  almost the same here.
 InstallMethod( \-, "laurent - laurent", IsIdenticalObj,
-    [ IsRationalFunction and IsLaurentPolynomial,
-      IsRationalFunction and IsLaurentPolynomial ], 0, DIFF_LAURPOLS);
+    [ IsPolynomialFunction and IsLaurentPolynomial,
+      IsPolynomialFunction and IsLaurentPolynomial ], 0, DIFF_LAURPOLS);
 
 #############################################################################
 ##
@@ -679,9 +678,9 @@ local val,brci,fam;
     g:=ShiftedCoeffs(g[1],g[2]);
     m:=ShiftedCoeffs(m[1],m[2]);
   fi;
-  g:=PowerModCoeffs(g,e,m);
-  if Length(g)>0 and g[1]=fam!.zeroCoefficient or
-    g[Length(g)]=fam!.zeroCoefficient then
+  g:=PowerModCoeffs(g,Length(g),e,m,Length(m));
+  if Length(g)>0 and (g[1]=fam!.zeroCoefficient or
+    g[Length(g)]=fam!.zeroCoefficient) then
     g:=ShallowCopy(g);
     val:=val+RemoveOuterCoeffs(g,fam!.zeroCoefficient);
   fi;
@@ -882,19 +881,26 @@ InstallGlobalFunction(GcdCoeffs,GCD_COEFFS);
 #M  GcdOp( <pring>, <upol>, <upol> )  . . . . . .  for univariate polynomials
 ##
 BindGlobal("GCD_UPOLY",function(f,g)
-local gcd,val,brci,fam;
+local gcd,val,brci,fam,fc,gc;
 
   brci:=CIUnivPols(f,g);
   fam:=FamilyObj(f);
   if brci=fail then TryNextMethod();fi;
 
-  f:=CoefficientsOfLaurentPolynomial(f);
-  g:=CoefficientsOfLaurentPolynomial(g);
+  fc:=CoefficientsOfLaurentPolynomial(f);
+  gc:=CoefficientsOfLaurentPolynomial(g);
+
+  # special case zero polynomial
+  if IsEmpty(fc[1]) then
+    return g;
+  elif IsEmpty(gc[1]) then
+    return f;
+  fi;
 
   # remove common x^i term
-  val:=Minimum(f[2],g[2]);
+  val:=Minimum(fc[2],gc[2]);
   # the gcd cannot contain any further x^i parts, we removed them all!
-  gcd:=GcdCoeffs(f[1],g[1]);
+  gcd:=GcdCoeffs(fc[1],gc[1]);
 
   # return the gcd
   val:=val+RemoveOuterCoeffs(gcd,fam!.zeroCoefficient);
@@ -908,7 +914,8 @@ function(R,f,g)
 end);
 
 InstallOtherMethod( GcdOp,"univariate polynomials",IsIdenticalObj,
-  [IsPolynomial,IsPolynomial],0,GCD_UPOLY);
+  [IsPolynomial and IsRationalFunction,IsPolynomial and IsRationalFunction],
+  0,GCD_UPOLY);
 
 RedispatchOnCondition( GcdOp,IsCollsElmsElms,
   [IsEuclideanRing, IsRationalFunction,IsRationalFunction],
@@ -1048,71 +1055,84 @@ function(f,x)
   return Value(f,x,One(x));
 end);
 
-RedispatchOnCondition(Value,true,[IsRationalFunction,IsRingElement],
+RedispatchOnCondition(Value,true,[IsPolynomialFunction,IsRingElement],
   [IsUnivariateRationalFunction,IsRingElement],0);
 
 # print coeff list f.
-BindGlobal("DoPrintUnivariateLaurent",function(fam,cofs,val,ind)
-local zero,one,mone,i,c,name;
-  if HasIndeterminateName(fam,ind) then
-    name:=IndeterminateName(fam,ind);
-  else
-    name:=Concatenation("x_",String(ind));
-  fi;
+BindGlobal("StringUnivariateLaurent",function(fam,cofs,val,name)
+local str,zero,one,mone,i,c,lc;
+  str:="";
   zero := fam!.zeroCoefficient;
   one  := fam!.oneCoefficient;
   mone := -one;
 
   if Length(cofs)=0 then
-    Print(zero);
+    return String(zero);
   fi;
-  for i  in [ 1 .. Length(cofs) ]  do
-      if cofs[i] <> zero  then
+  lc:=Length(cofs);
+  for i  in [ lc,lc-1..1 ]  do
+    if cofs[i] <> zero  then
 
-	  # print a '+' if necessary
-	  c := "*";
-	  if i > 1  then
-	      if IsRat(cofs[i])  then
-		  if cofs[i] = one  then
-		      Print( "+" );
-		      c := "";
-		  elif cofs[i] > 0  then
-		      Print( "+", cofs[i] );
-		  elif cofs[i] = mone  then
-		      Print( "-" );
-		      c := "";
-		  else
-		      Print( cofs[i] );
-		  fi;
-	      elif cofs[i] = one  then
-		  Print( "+" );
-		  c := "";
-	      elif cofs[i] = mone  then
-		  Print( "-" );
-		  c := "";
-	      else
-		  Print( "+", cofs[i] );
-	      fi;
-	  elif cofs[i] = one  then
-	      c := "";
-	  elif cofs[i] = mone  then
-	      Print("-");
-	      c := "";
+      # print a '+' if necessary
+      c := "*";
+      if i <lc  then
+	if IsRat(cofs[i])  then
+	  if cofs[i] = one  then
+	    Append(str,"+" );
+	    c:="";
+	  elif cofs[i]>0  then
+	    Append(str,"+");
+	    Append(str,String(cofs[i]));
+	  elif cofs[i]=mone  then
+	    Append(str,"-");
+	    c:="";
 	  else
-	      Print(cofs[i]);
+	    Append(str,String(cofs[i]));
 	  fi;
-	  if i+val <> 1  then
-	      Print( c, name );
-	      if i+val <> 2  then
-		  Print( "^", i+val-1 );
-	      fi;
-	  elif cofs[i] = one  then
-	      Print(one);
-	  elif cofs[i] = mone  then
-	      Print(one);
-	  fi;
+	elif cofs[i]=one  then
+	  Append(str,"+");
+	  c:="";
+	elif cofs[i]=mone  then
+	  Append(str,"-");
+	  c:="";
+	else
+	  Append(str,"+");
+	  Append(str,String(cofs[i]));
+	fi;
+      elif cofs[i]=one  then
+	c:="";
+      elif cofs[i]=mone  then
+	Append(str,"-");
+	c:="";
+      else
+	Append(str,String(cofs[i]));
       fi;
+      if i+val <> 1  then
+	Append(str,c);
+	Append(str,name);
+	if i+val <> 2  then
+	  Append(str,"^");
+	  Append(str,String( i+val-1 ));
+	fi;
+      elif cofs[i] = one  then
+	Append(str,String(one));
+      elif cofs[i] = mone  then
+	Append(str,String(one));
+      fi;
+    fi;
   od;
+  return str;
+end);
+
+# print coeff list f.
+BindGlobal("DoPrintUnivariateLaurent",function(fam,cofs,val,ind)
+local zero,one,mone,i,c,name,lc;
+  if HasIndeterminateName(fam,ind) then
+    name:=IndeterminateName(fam,ind);
+  else
+    name:=Concatenation("x_",String(ind));
+  fi;
+  Print(StringUnivariateLaurent(fam,cofs,val,name));
 end);
 
 #############################################################################
@@ -1219,11 +1239,22 @@ end);
 # when testing a univariate rational function for polynomiality, we check
 # whether it is a laurent polynomial and then use the laurent polynomial
 # routines.
-RedispatchOnCondition( IsPolynomial, true,
-    [ IsUnivariateRationalFunction ], [ IsLaurentPolynomial ], 0 );
+InstallMethod(IsPolynomial,"univariate",true,[IsUnivariateRationalFunction],0,
+function(f)
+  if not IsLaurentPolynomial(f) then
+    return false;
+  fi;
+  return CoefficientsOfLaurentPolynomial(f)[2]>=0; # test valuation
+end);
 
-RedispatchOnCondition( ExtRepPolynomialRatFun, true,
-    [ IsUnivariateRationalFunction ], [ IsLaurentPolynomial ], 0 );
+InstallOtherMethod(ExtRepPolynomialRatFun,"univariate",true,
+  [IsUnivariateRationalFunction],0,
+function(f)
+  if not IsPolynomial(f) then
+    return false;
+  fi;
+  return EXTREP_POLYNOMIAL_LAURENT(f);
+end);
 
 RedispatchOnCondition( CoefficientsOfLaurentPolynomial, true,
     [ IsUnivariateRationalFunction ], [ IsLaurentPolynomial ], 0 );
@@ -1266,7 +1297,7 @@ end);
 #M  AdditiveInverseOp( <univariate> )
 ##
 InstallMethod( AdditiveInverseOp,"univariate",
-    true, [ IsRationalFunction and IsUnivariateRationalFunction ], 0,
+    true, [ IsPolynomialFunction and IsUnivariateRationalFunction ], 0,
 function( obj )
 local   cofs,  indn;
 
@@ -1287,7 +1318,7 @@ end );
 #M  InverseOp( <univariate> )
 ##
 InstallMethod( InverseOp,"univariate", true,
-    [ IsRationalFunctionsFamilyElement and IsUnivariateRationalFunction ], 0,
+    [ IsPolynomialFunction and IsUnivariateRationalFunction ], 0,
 function( obj )
 local   cofs,  indn;
 
@@ -1313,8 +1344,8 @@ end );
 #M  <univariate> * <univariate>
 ##
 InstallMethod( \*, "univariate * univariate", IsIdenticalObj,
-    [ IsRationalFunction and IsUnivariateRationalFunction,
-      IsRationalFunction and IsUnivariateRationalFunction], 0,
+    [ IsPolynomialFunction and IsUnivariateRationalFunction,
+      IsPolynomialFunction and IsUnivariateRationalFunction], 0,
       PRODUCT_UNIVFUNCS);
 
 #############################################################################
@@ -1322,7 +1353,7 @@ InstallMethod( \*, "univariate * univariate", IsIdenticalObj,
 #M  <univariate> / <univariate>
 ##
 InstallMethod( \/, "univariate / univariate", IsIdenticalObj,
-    [ IsRationalFunction and IsUnivariateRationalFunction,
+    [ IsPolynomialFunction and IsUnivariateRationalFunction,
       IsRationalFunction and IsUnivariateRationalFunction], 0,
       QUOT_UNIVFUNCS);
 
@@ -1331,8 +1362,8 @@ InstallMethod( \/, "univariate / univariate", IsIdenticalObj,
 #M  <univariate> + <univariate>
 ##
 InstallMethod( \+, "univariate + univariate", IsIdenticalObj,
-    [ IsRationalFunction and IsUnivariateRationalFunction,
-      IsRationalFunction and IsUnivariateRationalFunction ], 0,
+    [ IsPolynomialFunction and IsUnivariateRationalFunction,
+      IsPolynomialFunction and IsUnivariateRationalFunction ], 0,
       SUM_UNIVFUNCS);
 
 #############################################################################
@@ -1343,8 +1374,8 @@ InstallMethod( \+, "univariate + univariate", IsIdenticalObj,
 ##  wrap up an intermediate polynomial which gets a bit expensive. So we do
 ##  almost the same here.
 InstallMethod( \-, "univariate - univariate", IsIdenticalObj,
-    [ IsRationalFunction and IsUnivariateRationalFunction,
-      IsRationalFunction and IsUnivariateRationalFunction ], 0,
+    [ IsPolynomialFunction and IsUnivariateRationalFunction,
+      IsPolynomialFunction and IsUnivariateRationalFunction ], 0,
       DIFF_UNIVFUNCS);
 
 #############################################################################
@@ -1352,8 +1383,8 @@ InstallMethod( \-, "univariate - univariate", IsIdenticalObj,
 #M  <univariate> = <univariate>
 ##
 InstallMethod( \=, "univariate = univariate", IsIdenticalObj,
-    [ IsRationalFunction and IsUnivariateRationalFunction,
-      IsRationalFunction and IsUnivariateRationalFunction ], 0,
+    [ IsPolynomialFunction and IsUnivariateRationalFunction,
+      IsPolynomialFunction and IsUnivariateRationalFunction ], 0,
 function(l,r)
 local lc,rc;
   lc:=CoefficientsOfUnivariateRationalFunction(l);
@@ -1364,7 +1395,7 @@ local lc,rc;
      IndeterminateNumberOfUnivariateRationalFunction(r) then
     return false;
   fi;
-  return ProductCoeffs(lc[1],rc[2])=ProductCoeffs(lc[2],rc[1]);
+  return ProductCoeffs(lc[1],rc[2])=ProductCoeffs(lc[2],rc[1]) and lc[3]=rc[3];
 end);
 
 #############################################################################
@@ -1388,12 +1419,12 @@ local   fam, tmp;
 end );
 
 InstallMethod( \*, "coeff * univariate", IsCoeffsElms,
-  [ IsRingElement, IsRationalFunction and IsUnivariateRationalFunction ],
+  [ IsRingElement, IsPolynomialFunction and IsUnivariateRationalFunction ],
     3, # The method for rational functions is higher ranked
   ProdCoeffUnivfunc);
 
 InstallMethod( \*, "univariate * coeff", IsElmsCoeffs,
-  [ IsRationalFunction and IsUnivariateRationalFunction,IsRingElement ],
+  [ IsPolynomialFunction and IsUnivariateRationalFunction,IsRingElement ],
     3, # The method for rational functions is higher ranked
   function(l,c) return ProdCoeffUnivfunc(c,l);end);
 
@@ -1416,21 +1447,21 @@ local   fam, tmp;
 end );
 
 InstallMethod( \+, "coeff + univariate", IsCoeffsElms,
-  [ IsRingElement, IsRationalFunction and IsUnivariateRationalFunction ],0,
+  [ IsRingElement, IsPolynomialFunction and IsUnivariateRationalFunction ],0,
   SumCoeffUnivfunc);
 
 InstallMethod( \+, "univariate + coeff", IsElmsCoeffs,
-  [ IsRationalFunction and IsUnivariateRationalFunction,IsRingElement ],0,
+  [ IsPolynomialFunction and IsUnivariateRationalFunction,IsRingElement ],0,
   function(l,c) return SumCoeffUnivfunc(c,l);end);
 
 # special convenience: permit to add rationals
 InstallMethod( \+, "rat + univariate", true,
-    [ IsRat, IsRationalFunction and IsUnivariateRationalFunction ],
+    [ IsRat, IsPolynomialFunction and IsUnivariateRationalFunction ],
     -RankFilter(IsRat),#fallback method is low ranked
   function(c,r) return SumCoeffUnivfunc(c*FamilyObj(r)!.oneCoefficient,r); end);
 
 InstallMethod( \+, "univariate + rat", true,
-    [ IsRationalFunction and IsUnivariateRationalFunction, IsRat ],
+    [ IsPolynomialFunction and IsUnivariateRationalFunction, IsRat ],
     -RankFilter(IsRat),#fallback method is low ranked
   function(l,c) return SumCoeffUnivfunc(c*FamilyObj(l)!.oneCoefficient,l); end);
 

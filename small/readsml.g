@@ -55,17 +55,12 @@ READ_SMALL_LIB := function()
                            Concatenation( "small groups #", String( s ) ) );
     until not IsBound( SMALL_AVAILABLE_FUNCS[ s ] );
 
-    i := 1;
-    repeat
-        i := i + 1;
-        if i = s then
-            return;
-        fi;
+    for i in [ 2 .. Length( SMALL_AVAILABLE_FUNCS ) ] do
         READ_IDLIB_FUNCS[ i ] := ReadAndCheckFunc(
                                Concatenation( "small/id", String( i ) ) );
         READ_IDLIB_FUNCS[ i ]( Concatenation( "idgrp", String( i ), ".g" ),
                            Concatenation( "ids of groups #", String( i ) ) );
-    until not IsBound( ID_AVAILABLE_FUNCS[ i ] );
+    od;
 end;
 
 READ_SMALL_LIB();

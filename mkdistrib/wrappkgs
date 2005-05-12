@@ -1,0 +1,59 @@
+#!/bin/sh
+#############################################################################
+##
+#W  wrappkgs							 Frank Celler
+#W       						     Alexander Hulpke
+##
+##  this shell script wraps up current packages.
+##
+
+RBVERSION=$1
+DISTNAME=$2
+BINDIR=$3
+
+export BINDIR DISTNAME RBVERSION
+
+. ${BINDIR}/zoofuncs
+
+echo "Accepted Packages"
+
+( rm -rf accpkgs
+mkdir accpkgs
+cd accpkgs
+
+echo "    fetching"
+../${DISTNAME}/etc/GETPKG/getpkg A ../${DISTNAME}/etc/GETPKG/pkg$RBVERSION
+
+echo "    wrapping"
+
+# acc$RBVERSION is SL's temp. dir. containing the accepted package .zoo files
+for i in *.zoo; do
+	echo "         $i"
+    ../${DISTNAME}/etc/zoomerge3 ../accpkg$RBVERSION $i
+done
+
+echo "        READMEs"
+cp ../${DISTNAME}/mkdistrib/README.pkg README
+addtext ../accpkg$RBVERSION READM*
+
+echo "Deposited  Packages"
+cd ..
+
+rm -rf deppkgs
+mkdir deppkgs
+cd deppkgs
+echo "    fetching"
+../${DISTNAME}/etc/GETPKG/getpkg D ../${DISTNAME}/etc/GETPKG/pkg$RBVERSION
+
+echo "    wrapping"
+for i in *.zoo; do
+	echo "         $i"
+    ../${DISTNAME}/etc/zoomerge3 ../deppkg$RBVERSION $i
+done
+
+cp ../${DISTNAME}/mkdistrib/README.pkg README
+
+echo "        READMEs"
+addtext ../deppkg$RBVERSION READM*
+
+)

@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file deals with permutations.
 ##
@@ -41,6 +42,14 @@ Revision.permutat_g :=
 ##
 #C  IsPerm( <obj> )
 ##
+##  Each *permutation* in {\GAP} lies in the category `IsPerm'.
+##  Basic operations for permutations are `LargestMovedPoint'
+##  (see~"LargestMovedPoint"), multiplication of two permutations via `\*',
+##  and exponentiation `^' with first argument a
+##  positive integer $i$ and second argument a permutation $\pi$, the result
+##  being the image of the point $i$ under $\pi$.
+#T other arith. ops.?
+##
 DeclareCategoryKernel( "IsPerm",
     IsMultiplicativeElementWithInverse and IsAssociativeElement and
         IsFiniteOrderElement,
@@ -66,8 +75,11 @@ DeclareCategoryCollections( "IsPermCollection" );
 ##  is the smallest permutation that generates the same cyclic group
 ##  as the permutation <perm>.
 ##  This is very efficient, even when <perm> has large order.
+DeclareAttribute( "SmallestGeneratorPerm",IsPerm);
 
-# DeclareGlobalFunction( "SmallestGeneratorPerm");
+InstallMethod( SmallestGeneratorPerm,"for internally represented permutation",
+    [ IsPerm and IsInternalRep ],
+    SMALLEST_GENERATOR_PERM );
 
 
 #############################################################################
@@ -151,7 +163,12 @@ DeclareAttribute( "MovedPoints", IsList and IsEmpty );
 ##  multiplicative  group $\{ +1, -1 \}$,
 ##  the kernel of which is the alternating group.
 
-# DeclareAttribute( "SignPerm", IsPerm );
+DeclareAttribute( "SignPerm", IsPerm );
+
+InstallMethod( SignPerm,
+    "for internally represented permutation",
+    [ IsPerm and IsInternalRep ],
+    SIGN_PERM );
 
 
 #############################################################################
@@ -223,11 +240,11 @@ SetOne( PermutationsFamily, () );
 ##  is the permutation <perm>  that moves points as described by the
 ##  list <list>.  That means that  `<i>^<perm>  = <list>[<i>]' if  <i> lies
 ##  between 1 and the length of <list>, and `<i>^<perm> = <i>' if <i> is
-##  larger than  the length of  the list <list>. It will  signal an  error
-##  if <list> does  not define a permutation,  i.e., if <list> is  not a
-##  list of integers  without holes, or  if <list> contains  an  integer
-##  twice, or if <list> contains an integer not in the range
-##  `[1..Length(<list>)]'.
+##  larger than  the length of  the list <list>. It will return `fail' 
+##  if <list> does  not define a permutation,  i.e., if <list> is not dense,
+##  or if <list> contains a positive integer twice, or if <list> contains an
+##  integer not in the range `[ 1 .. Length( <list> ) ]'.
+##  If <list> contains non-integer entries an error is raised.
 
 # DeclareGlobalFunction( "PermList" );
 
@@ -252,7 +269,7 @@ end );
 
 #############################################################################
 ##
-#F  RestrictedPerm(<perm>,<list>)  restriction of a perm. to an invariant set
+#O  RestrictedPerm(<perm>,<list>)  restriction of a perm. to an invariant set
 ##
 ##  `RestrictedPerm' returns  the new permutation <new>  that acts on the
 ##  points in the list <list> in the same  way as the permutation <perm>,
@@ -261,18 +278,16 @@ end );
 ##  <list> the image `<i>^<perm>' is also in <list>,
 ##  i.e., <list> must be the union of cycles of <perm>.
 ##
-BIND_GLOBAL( "RestrictedPerm", function( g, D )
+DeclareOperation( "RestrictedPerm", [ IsPerm, IsList ] );
+
+InstallMethod( RestrictedPerm,
+    "for internally represented permutation, and list",
+    [ IsPerm and IsInternalRep, IsList ],
+    function( g, D )
     local   res, d, e, max;
 
-    # check the arguments
-    if not IsPerm( g )  then
-        Error("<g> must be a permutation");
-    elif not IsList( D )  then
-        Error("<D> must be a list");
-    fi;
-
     # special case for the identity
-    if g = ()  then return ();  fi;
+    if IsOne( g )  then return ();  fi;
 
     # compute the largest point that we must consider
     max := 1;
@@ -294,7 +309,7 @@ BIND_GLOBAL( "RestrictedPerm", function( g, D )
 
     # return the restricted permutation <res>
     return PermList( res );
-end );
+    end );
 
 
 #############################################################################
@@ -333,8 +348,7 @@ end );
 ##
 InstallMethod( SmallestMovedPoint,
     "for a permutation",
-    true,
-    [ IsPerm ], 0,
+    [ IsPerm ],
     function( p )
     local   i;
 
@@ -355,8 +369,7 @@ end );
 ##
 InstallMethod( LargestMovedPoint,
     "for an internal permutation",
-    true,
-    [ IsPerm and IsInternalRep ], 0,
+    [ IsPerm and IsInternalRep ],
     LARGEST_MOVED_POINT_PERM );
 
 
@@ -366,12 +379,11 @@ InstallMethod( LargestMovedPoint,
 ##
 InstallMethod( NrMovedPoints,
     "for a permutation",
-    true,
-    [ IsPerm ], 0,
+    [ IsPerm ],
     function( perm )
     local mov, pnt;
     mov:= 0;
-    if perm <> () then
+    if not IsOne( perm ) then
       for pnt in [ SmallestMovedPoint( perm )
                    .. LargestMovedPoint( perm ) ] do
         if pnt ^ perm <> pnt then
@@ -389,9 +401,7 @@ InstallMethod( NrMovedPoints,
 ##
 InstallMethod( CycleStructurePerm,
     "default method",
-    true,
     [ IsPerm ],
-    0,
 
 function ( perm )
     local   cys,    # collected cycle lengths, result
@@ -434,8 +444,7 @@ end );
 ##
 InstallMethod( String,
     "for a permutation",
-    true,
-    [ IsPerm ], 0,
+    [ IsPerm ],
     function( perm )
     local   str,  i,  j;
 
@@ -470,15 +479,15 @@ InstallMethod( String,
 ##
 InstallMethod( Order,
     "for a permutation",
-    true,
-    [ IsPerm ], 0,
+    [ IsPerm ],
     OrderPerm );
+
 
 #############################################################################
 ##
 #m  ViewObj( <perm> )  . . . . . . . . . . . . . . . . . . . for a permutation
 ##
-InstallMethod( ViewObj, "for a permutation", true, [ IsPerm ], 0,
+InstallMethod( ViewObj, "for a permutation", [ IsPerm ],
 function( perm )
 local dom,l,i,n,p,c;
   dom:=[];

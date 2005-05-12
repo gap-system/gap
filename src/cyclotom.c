@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file implements the arithmetic for elements from  cyclotomic  fields
 **  $Q(e^{{2 \pi i}/n}) = Q(e_n)$,  which  we  call  cyclotomics  for  short.
@@ -75,7 +76,7 @@
 **
 **  The first subbag is  the order  of  the primitive root of  the cyclotomic
 **  field in which the cyclotomic lies.  It is an immediate positive integer,
-**  therefor  'INT_INTOBJ( ADDR_OBJ(<cyc>)[ 0 ] )'  gives you the order.  The
+**  therefore 'INT_INTOBJ( ADDR_OBJ(<cyc>)[ 0 ] )'  gives you the order.  The
 **  first unsigned short integer is unused (but reserved for future use :-).
 **
 **  The other subbags and shorts are paired and each pair describes one term.
@@ -158,7 +159,7 @@ Obj ResultCyc;
 **  'LastNCyc' is the order of this primitive root.
 **
 **  These values are used in 'FunE' to avoid constructing the same  primitive
-**  root over and over again.  This might be  expensiv,  because  $e_n$  need
+**  root over and over again.  This might be expensive,  because  $e_n$  need
 **  itself not belong to the base.
 **
 **  Also these values are used in 'PowCyc' which thereby can recognize if  it
@@ -171,9 +172,9 @@ UInt LastNCyc;
 
 /****************************************************************************
 **
-*F  TypeCyc( <cyc> )  . . . . . . . . . . . . . . . . .  kind of a cyclotomic
+*F  TypeCyc( <cyc> )  . . . . . . . . . . . . . . . . .  type of a cyclotomic
 **
-**  'TypeCyc' returns the kind of a cyclotomic.
+**  'TypeCyc' returns the type of a cyclotomic.
 **
 **  'TypeCyc' is the function in 'TypeObjFuncs' for cyclotomics.
 */
@@ -206,10 +207,11 @@ void            PrintCyc (
 
     n   = INT_INTOBJ( NOF_CYC(cyc) );
     len = SIZE_CYC(cyc);
-    cfs = COEFS_CYC(cyc);
-    exs = EXPOS_CYC(cyc,len);
     Pr("%>",0L,0L);
     for ( i = 1; i < len; i++ ) {
+        /* get pointers, they can change during Pr */
+        cfs = COEFS_CYC(cyc);
+        exs = EXPOS_CYC(cyc,len);
         if (      cfs[i]==INTOBJ_INT(1)    && exs[i]==0 )
             Pr("1",0L,0L);
         else if ( cfs[i]==INTOBJ_INT(1)    && exs[i]==1 && i==1 )
@@ -1138,7 +1140,7 @@ Obj             ProdCyc (
     ml = n / nl;
     mr = n / nr;
 
-    /* make sure that the result back is large enough                      */
+    /* make sure that the result bag is large enough                       */
     if ( LEN_PLIST(ResultCyc) < n ) {
         GROW_PLIST( ResultCyc, n );
         SET_LEN_PLIST( ResultCyc, n );
@@ -1262,10 +1264,11 @@ Obj             OneCyc (
 **  <op>.
 **
 **  'InvCyc' computes the  inverse of <op> by computing  the product $prd$ of
-**  nontrivial galois conjugates of <op>.  Then $op * (prd / (op * prd)) = 1$
+**  nontrivial Galois conjugates of <op>.  Then $op * (prd / (op * prd)) = 1$
 **  so $prd / (op  * prd)$ is the  inverse of $op$.  Because the  denominator
 **  $op *  prd$ is the norm  of $op$ over the rationals  it is rational so we
 **  can compute the quotient $prd / (op * prd)$ with 'ProdCycInt'.
+*T better multiply only the *different* conjugates?
 */
 Obj             InvCyc (
     Obj                 op )
@@ -1404,7 +1407,7 @@ Obj             PowCyc (
 **
 **  'E( <n> )'
 **
-**  'E' return a the primitive root of order <n>, which must  be  a  positive
+**  'E'  returns a  primitive  root of order <n>, which must  be  a  positive
 **  integer, represented as cyclotomic.
 */
 Obj EOper;
@@ -1624,7 +1627,7 @@ Obj FuncCONDUCTOR (
 **  'COEFFSCYC( <cyc> )'
 **
 **  'COEFFSCYC' returns a list of the coefficients of the  cyclotomic  <cyc>.
-**  The list has lenght <n> if <n> is the order of the primitive  root  $e_n$
+**  The list has length <n> if <n> is the order of the primitive  root  $e_n$
 **  of which <cyc> is written as a linear combination.  The <i>th element  of
 **  the list is the coefficient of $e_l^{i-1}$.
 */
@@ -1870,6 +1873,71 @@ Obj FuncGALOIS_CYC (
 
 /****************************************************************************
 **
+*F  FuncCycList( <self>, <list> ) . . . . . . . . . . . . create a cyclotomic
+**
+**  'FuncCycList' implements the internal function 'CycList'.
+**
+**  'CycList( <list> )'
+**
+**  'CycList' returns the cyclotomic described by the list <list>
+**  of rationals.
+*/
+Obj CycListOper;
+
+Obj FuncCycList (
+    Obj                 self,
+    Obj                 list )
+{
+    UInt                i;              /* loop variable                   */
+    Obj *               res;            /* pointer into result bag         */
+    Obj                 val;            /* one list entry                  */
+    UInt                n;              /* length of the given list        */
+
+    /* do full operation                                                   */
+    if ( FIRST_EXTERNAL_TNUM <= TNUM_OBJ( list ) ) {
+        return DoOperation1Args( self, list );
+    }
+
+    /* get and check the argument                                          */
+    if ( ! ( T_PLIST <= TNUM_OBJ( list )
+             && TNUM_OBJ( list ) <= LAST_PLIST_TNUM )
+         || ! IS_DENSE_LIST( list ) ) {
+	ErrorQuit( "CycList: <list> must be a dense plain list (not a %s)",
+                   (Int)TNAM_OBJ( list ), 0L );
+    }
+
+    /* enlarge the buffer if necessary                                     */
+    n = LEN_PLIST( list );
+    if ( LEN_PLIST(ResultCyc) < n ) {
+        GROW_PLIST( ResultCyc, n );
+        SET_LEN_PLIST( ResultCyc, n );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
+        for ( i = 0; i < n; i++ ) { res[i] = INTOBJ_INT(0); }
+    }
+
+    /* transfer the coefficients into the buffer                           */
+    res = &(ELM_PLIST( ResultCyc, 1 ));
+    for ( i = 0; i < n; i++ ) {
+        val = ELM_PLIST( list, i+1 );
+        if ( ! ( TNUM_OBJ(val) == T_INT ||
+                 TNUM_OBJ(val) == T_RAT ||
+                 TNUM_OBJ(val) == T_INTPOS ||
+                 TNUM_OBJ(val) == T_INTNEG ) ) {
+            ErrorQuit( "CycList: each entry must be a rational (not a %s)",
+                       (Int)TNAM_OBJ( val ), 0L );
+        }
+        res[i] = val;
+    }
+
+    /* return the base reduced packed cyclotomic                           */
+    CHANGED_BAG( ResultCyc );
+    ConvertToBase( n );
+    return Cyclotomic( n, 1 );
+}
+
+
+/****************************************************************************
+**
 *F  MarkCycSubBags( <bag> ) . . . . . . . .  marking function for cyclotomics
 **
 **  'MarkCycSubBags' is the marking function for bags of type 'T_CYC'.
@@ -1989,6 +2057,9 @@ static StructGVarOper GVarOpers [] = {
 
     { "GALOIS_CYC", 2, "cyc, n", &GaloisCycOper,
       FuncGALOIS_CYC, "src/cyclotom.c:GALOIS_CYC" },
+
+    { "CYC_LIST", 1, "list", &CycListOper,
+      FuncCycList, "src/cyclotom.c:CYC_LIST" },
 
     { 0 }
 

@@ -1,0 +1,72 @@
+         Setting up the Package/Distribution/Web Page Update Mechanism
+         =============================================================
+
+##  $Id$   Frank Lübeck
+
+(1) Choose a directory for the setup and copy this whole directory there.
+    (To be able to keep archives for some time, there should be space for a
+    few GB of data.)
+
+(2) Go to 'progs' to collect the available packages.
+    (a) The setup can be done by 
+         source addpackageCurrent
+    (b) ./doit   collects package PackageInfo.g's and archives and 
+        produces merged archives. The package related files are in
+        'pkg/<lower case version of package name>' and the merged archives 
+        are in 'archives'. The command also updates all dynamic webpages
+        in the 'web' subdirectory. Stdout and Stderr of 'doit' are stored
+        in the 'log' directory. 
+    (bb)During each  run of 'doit' a new 
+           addpackageCurrent-<timestamp> 
+        is written in the 'progs' directory. When new packages are added 
+        or addresses have changed, copy it to addpackageCurrent and commit
+        it to the CVS repository.
+    (c) To delete packages from the distribution remove the corresponding 
+        'pkg'-subdirectory (or for temporary removal or keeping the old 
+        archives move it to 'pkg/away').
+    (d) To add a further package, you need the URL of its PackageInfo.g
+        file. First apply a rough check by the validation Web service.
+          mozilla "http://www.math.rwth-aachen.de:8001/~Frank.Luebeck/tmp/Packages/checkval?url=..."
+        Then add the package by calling in 'progs':
+           addpackage.py PKGNAME URLOfPackageInfo.g
+        Also, add a line "<!--Link_pkgname--> in the web page template
+        web/Packages/packages.mixer.templ.
+    (e) Updates of the package related data is done by calling in 'progs'
+           doit
+        again. 
+    (f) It is possible to recreate only the web pages with 'updateweb' in
+        'progs'. Also, all update steps can be done separately by starting
+            gap PackageInfoUtils.g 
+        in 'progs'.
+
+(3) Go to 'maindist' and follow the README to create the core distribution
+    archives. (Or just copy these archives from somewhere.) Use the
+    'archives/packages-...' archive to resolve links from GAP main manuals
+    to packages.
+
+(4) To create the web pages goto 'web'.
+    (a) Copy the gap4r4.tar.gz, tools4r4.tar.gz, xtom1r1.tar.gz archives
+        to 'ftpdir/tar.gz', corresponding ....zoo archives to 'ftpdir/zoo'
+        and similarly for 'ftpdir/tar.bz2' and 'ftpdir/win.zip'.
+    (b) Recreate the web pages (some contain links to these archives)
+        as in (2)(f).
+    (c) Install GAP from the archives produced in (3) and including 
+        GAPDoc and all packages you want to reference to on the web pages.
+    (d) Goto 'web/lib' and call the GAP from (c):
+          gap < LinksOfAllHelpSections.g
+        (This creates a file 'AllLinksOfAllHelpSections.data' which allows 
+        the mixer to resolve links from the web pages to manual sections.)
+    (e) Copy the 'doc' directory of the GAP in (c) to 'web/Manuals/docs/doc' 
+        (this becomes the online version of the manuals). Also, create a link
+        in web/Manuals/docs/doc:     ln -s ../../Packages pkg
+    (f) To produce the .html files install the MIXER (needs Python), see
+           http://www.math.rwth-aachen.de/~Max.Neunhoeffer/mixer/
+    (g) Call 'mixer.py' inside 'web'.
+    (h) Adjust the 'web/cptowww' script to copy the web part to some place
+        which  can be mirrored to the public GAP web site.
+        (temporarily this is copied to a subdirectory 'tmpsite' inside a 
+        checked out GAP web site tree.)
+
+(5) Optional: To set up an rsync server for an installed GAP follow the 
+    README in 'rsyncserv'.
+

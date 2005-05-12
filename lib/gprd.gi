@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.gprd_gi :=
     "@(#)$Id$";
@@ -808,7 +809,11 @@ local giso,niso,P,gens,a,Go,No,i;
     Add(gens,i);
   od;
   a:=Group(gens,IdentityMapping(N));
-  SetIsGroupOfAutomorphisms(a,true);
+  if IsFinite(N) then
+    SetIsGroupOfAutomorphismsFiniteGroup(a,true);
+  else
+    SetIsGroupOfAutomorphisms(a,true);
+  fi;
   a:=GroupHomomorphismByImagesNC(G,a,GeneratorsOfGroup(G),gens);
   P:=SemidirectProduct(G,a,N);
   # trick the embeddings and projections (dirty tricks)
@@ -857,6 +862,10 @@ InstallOtherMethod( SemidirectProduct, "group with vector space: affine", true,
   [ IsGroup, IsGroupHomomorphism, IsFullRowModule and IsVectorSpace ], 0,
 function( G, map, V )
 local pm,F,d,b,s,t,pos,i,j,img,m,P,info,Go,bnt;
+  # construction assumes faithful action. AH
+  if Size(KernelOfMultiplicativeGeneralMapping(map))<>1 then
+    TryNextMethod();
+  fi;
   G:=Image(map,G);
   F:=LeftActingDomain(V);
   d:=DimensionOfVectors(V);

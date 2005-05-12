@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -37,10 +39,10 @@ gap> MolienSeries( NaturalCharacter( G ) );
 ( 1 ) / ( (1-z^12)*(1-z^9)*(1-z^6)*(1-z^5)*(1-z^3)*(1-z) )
 
 
-gap> STOP_TEST( "ctblmoli.tst",350007500 );
+gap> STOP_TEST( "ctblmoli.tst", 512400000 );
+
 
 #############################################################################
 ##
-#E  ctblmoli.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
 

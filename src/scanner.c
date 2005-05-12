@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the scanner, which is responsible for
 **  all input and output processing.
@@ -439,25 +440,25 @@ void            SyntaxError (
     NrErrLine++;
 
     /* do not print a message if we found one already on the current line  */
-    if ( NrErrLine != 1 )
-        return;
+    if ( NrErrLine == 1 )
 
-    /* print the message and the filename, unless it is '*stdin*'          */
-    Pr( "Syntax error: %s", (Int)msg, 0L );
-    if ( SyStrcmp( "*stdin*", Input->name ) != 0 )
-        Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
-    Pr( "\n", 0L, 0L );
-
-    /* print the current line                                              */
-    Pr( "%s", (Int)Input->line, 0L );
-
-    /* print a '^' pointing to the current position                        */
-    for ( i = 0; i < In - Input->line - 1; i++ ) {
-        if ( Input->line[i] == '\t' )  Pr("\t",0L,0L);
-        else  Pr(" ",0L,0L);
-    }
-    Pr( "^\n", 0L, 0L );
-
+      {
+	/* print the message and the filename, unless it is '*stdin*'          */
+	Pr( "Syntax error: %s", (Int)msg, 0L );
+	if ( SyStrcmp( "*stdin*", Input->name ) != 0 )
+	  Pr( " in %s line %d", (Int)Input->name, (Int)Input->number );
+	Pr( "\n", 0L, 0L );
+	
+	/* print the current line                                              */
+	Pr( "%s", (Int)Input->line, 0L );
+	
+	/* print a '^' pointing to the current position                        */
+	for ( i = 0; i < In - Input->line - 1; i++ ) {
+	  if ( Input->line[i] == '\t' )  Pr("\t",0L,0L);
+	  else  Pr(" ",0L,0L);
+	}
+	Pr( "^\n", 0L, 0L );
+      }
     /* close error output                                                  */
     CloseOutput();
 }
@@ -601,7 +602,10 @@ UInt OpenInput (
     Input->isstream = 0;
     Input->file = file;
     Input->name[0] = '\0';
-    Input->echo = 0;
+    if (SyStrcmp("*errin*", filename))
+      Input->echo = 0;
+    else
+      Input->echo = 1;
     SyStrncat( Input->name, filename, sizeof(Input->name) );
 
     /* start with an empty line and no symbol                              */
@@ -702,6 +706,20 @@ UInt CloseInput ( void )
     /* indicate success                                                    */
     return 1;
 }
+
+
+/****************************************************************************
+**
+*F  FlushRestOfInputLine()  . . . . . . . . . . . . discard remainder of line
+*/
+
+void FlushRestOfInputLine( void )
+{
+  In[0] = In[1] = '\0';
+  Input->number = 1;
+  Symbol = S_ILLEGAL;
+}
+
 
 
 /****************************************************************************
@@ -1641,7 +1659,7 @@ void GetIdent ( void )
     isQuoted = 0;
 
     /* read all characters into 'Value'                                    */
-    for ( i=0; IsAlpha(*In) || IsDigit(*In) || *In=='_' || *In=='\\'; i++ ) {
+    for ( i=0; IsAlpha(*In) || IsDigit(*In) || *In=='_' || *In=='$' || *In=='\\'; i++ ) {
 
         /* handle escape sequences                                         */
         /* we ignore '\ newline' by decrementing i, except at the
@@ -2050,6 +2068,7 @@ void GetSymbol ( void )
     case '\'':                                          GetChar();   break;
     case '\\':                                          GetIdent();  break;
     case '_':                                           GetIdent();  break;
+    case '$':                                           GetIdent();  break;
     case '~':   Value[0] = '~';  Value[1] = '\0';
                 Symbol = S_IDENT;                       GET_CHAR();  break;
 
@@ -2668,7 +2687,7 @@ void PrTo (
 		      prec--;
 		    }
 		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		      if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_' ) {
+		      if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_'  && *q != '$') {
                         prec--;
 		      }
 		      prec--;
@@ -2694,7 +2713,7 @@ void PrTo (
 		      PutChrTo( stream, '\\' );
 		    }
 		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-		      if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_' ) {
+		      if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_' && *q != '$') {
                         PutChrTo( stream, '\\' );
 		      }
 		      PutChrTo( stream, *q );

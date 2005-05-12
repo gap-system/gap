@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -294,9 +296,10 @@ gap> j:=GroupGeneralMappingByImages(g,g,AsSSortedList(g),AsSSortedList(g));;
 gap> i2 = j;
 true
 
-gap> STOP_TEST( "mapping.tst", 23067500 );
+gap> STOP_TEST( "mapping.tst", 23200000 );
 
 
 #############################################################################
 ##
-#E  mapping.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

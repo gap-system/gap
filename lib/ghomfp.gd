@@ -3,6 +3,7 @@
 #W  ghomfp.gd                   GAP library                  Alexander Hulpke
 ##
 #Y  (C) 2000 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ghomfp_gd :=
     "@(#)$Id$";

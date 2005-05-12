@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Finite Fields}
 
@@ -122,6 +123,16 @@ gap> IntFFE( Z(409)^116 );  21^116 mod 409;
 311
 \endexample
 
+\Declaration{IntFFESymm}
+\beginexample
+gap> IntFFE(Z(13)^2);IntFFE(Z(13)^3);
+4
+8
+gap> IntFFESymm(Z(13)^2);IntFFESymm(Z(13)^3);
+4
+-5
+\endexample
+
 \Declaration{IntVecFFE}
 
 
@@ -179,10 +190,13 @@ Z(3^5)
 \Declaration{ConwayPolynomial}
 \beginexample
 gap> ConwayPolynomial( 2, 5 );  ConwayPolynomial( 3, 7 );
-Z(2)^0+x_1^2+x_1^5
-Z(3)^0-x_1^2+x_1^7
+x_1^5+x_1^2+Z(2)^0
+x_1^7-x_1^2+Z(3)^0
 \endexample
 
+\Declaration{IsCheapConwayPolynomial}
+
+\Declaration{RandomPrimitivePolynomial}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

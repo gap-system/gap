@@ -48,13 +48,13 @@ programming with such an object.
 `WeakPointerObj' returns  a  weak pointer object  which contains  the same
 subobjects as <list>, that is it returns a *shallow* weak copy of <list>.
 
-\begintt
+\beginexample
 gap> w := WeakPointerObj( [ 1, , [2,3], fail, rec() ] );
-WeakPointerObj( [ 1, , [ 2, 3 ], fail, rec( ) ] )
+WeakPointerObj( [ 1, , [ 2, 3 ], fail, rec(  ) ] )
 gap> GASMAN("collect");
 gap> w;
 WeakPointerObj( [ 1, , , fail ] )
-\endtt
+\endexample
 
 Note that `w' has failed to keep its  list and record subobjects alive during
 the garbage    collection.  Certain subobjects, such  as   small integers and
@@ -66,15 +66,15 @@ so are never garbage collected.
 Subobjects reachable without  going  through  a weak  pointer object  do  not
 evaporate, as in:
 
-\begintt
+\beginexample
 gap> l := [1,2,3];;
 gap> w[1] := l;;
 gap> w;
 WeakPointerObj( [ [ 1, 2, 3 ], , , fail ] )
 gap> GASMAN("collect");
 gap> w;                
-eakPointerObj( [ [ 1, 2, 3 ], , , fail] )
-\endtt
+WeakPointerObj( [ [ 1, 2, 3 ], , , fail ] )
+\endexample
 
 Note also  that the global  variables  `last', `last2' and `last3'  will keep
 things alive -- this can be confusing when debugging.
@@ -107,9 +107,9 @@ ElmWPObj(w,i); fi;'  and treat `x' as  reliably containing a value taken from
 Instead use `x := ElmWPObj(w,i); if x \<> fail or IsBoundElmWPObj(w,i) then . 
 . .'.
 
-\begintt
+\beginexample
 gap> w := WeakPointerObj( [ 1, , [2,3], fail, rec() ] );   
-WeakPointerObj( [ 1, , [ 2, 3 ], fail, rec( ) ] )
+WeakPointerObj( [ 1, , [ 2, 3 ], fail, rec(  ) ] )
 gap> SetElmWPObj(w,5,[]);
 gap> w;
 WeakPointerObj( [ 1, , [ 2, 3 ], fail, [  ] ] )
@@ -124,14 +124,14 @@ gap> 2;;3;;4;;GASMAN("collect"); # clear last etc.
 gap> ElmWPObj(w,3);          
 fail
 gap> w;
-WeakPointerObj( [ , , , fail, [  ] ] )
+WeakPointerObj( [ , , , fail ] )
 gap> ElmWPObj(w,4);
 fail
 gap> IsBoundElmWPObj(w,3);
 false
 gap> IsBoundElmWPObj(w,4);
 true
-\endtt    
+\endexample
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Accessing Weak Pointer Objects as Lists}

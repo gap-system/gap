@@ -19,8 +19,9 @@
 \index{options}
 
 This chapter informs about command line options for {\GAP} under UNIX
+and OS X
 (see~"Command Line Options", "Advanced Features of GAP"),
-options and features of {\GAP} on the Macintosh (see 
+and features of {\GAP} on the Macintosh (see 
 "Running GAP under MacOS"),
 the `.gaprc' file (see~"The .gaprc file"),
 completion files (see~"Completion Files"),
@@ -47,8 +48,8 @@ correct to say `gap -m256k' instead.
 
 {\GAP} for UNIX will distinguish between upper and lower case options.
 
-As is described in Chapter~"Installing GAP" (see "Installation of GAP for
-UNIX"), usually you will not execute {\GAP} directly.  Instead  you  will
+As is described in Chapter~"Installing GAP" (see "Installing GAP"),
+usually you will not execute {\GAP} directly.  Instead  you  will
 call a shell script, with the name `gap', which in turn executes  {\GAP}.
 This shell script sets some options which are necessary  to  make  {\GAP}
 work on your system. This means that the default settings mentioned below
@@ -203,7 +204,7 @@ privately  installed  modifications  of  the  library,  additional {\GAP}
 packages and so on. Section "GAP Root  Directory"  explains  how  several
 root paths can be used to do this.
 
-\indextt{GAP_ROOT_PATHS}
+\indextt{GAPInfo.RootPaths}
 &
 <path_list> should be a list of directories separated by  semicolons.  No
 whitespace is permitted before or after a semicolon. Each directory  name
@@ -216,7 +217,7 @@ with a semicolon (and does not start with one), then the new list of root
 directories is the concatenation of <path_list> and the existing list  of
 root directories. After {\GAP} has completed its  startup  procedure  and
 displays the prompt, the list of root directories can be  viewed  in  the
-variable `GAP_ROOT_PATHS'.
+variable `GAPInfo.RootPaths'.
 
 &
 {\GAP} will attempt  to  read  the  file  `<root_dir>/lib/init.g'  during
@@ -601,10 +602,15 @@ files.
 \Section{The .gaprc file}
 
 \indextt{gap.rc}\indextt{.gaprc}
-When you start {\GAP}, it looks for the file with the name `.gaprc' in
-your home directory (on UNIX systems). On a Macintosh the equivalent
-to the `.gaprc' file is `gap.rc', and for it to be read it must be in
-the same folder as the {\GAP} application.
+When you start {\GAP}, it looks for the file with the name `.gaprc' in your
+home directory (on UNIX systems). On a Macintosh or a Windows system the
+equivalent to the `.gaprc' file is `gap.rc', and for it to be read it must
+be in the same folder as the {\GAP} application.
+(Note that the file must be called `gap.rc'. If you use a Windows text
+editor, in particular if your default is not to show file suffixes, you
+might accidentaly create a file `gap.rc.txt' or `gap.rc.doc' which GAP will
+not recognize.)
+
 If such a file is found it is read after
 `<libname>/init.g', but before any of the files mentioned on the command
 line are read. You can use this file for your private customizations.
@@ -666,18 +672,7 @@ files and avoids using the completion files for the changed parts.  After
 you have finished modifying  the  library  files  you  can  recreate  the
 completion files using:
 
-\>CreateCompletionFiles() F
-\>CreateCompletionFiles( <path> ) F
-
-To create  completion files you must  have write permissions to `<path>',
-which defaults to the  first root directory.   Start {\GAP} with the `-N'
-option (to  suppress the reading  of any existing completion files), then
-execute the command `CreateCompletionFiles( <path> );', where <path> is a
-string giving a   path to the home   directory of  {\GAP} (the  directory
-containing the `lib' directory).
-
-This produces, in addition to lots of informational output,
-the completion files.
+\Declaration{CreateCompletionFiles}
 
 \begintt
 $ gap4 -N
@@ -687,6 +682,14 @@ gap> CreateCompletionFiles();
 #I    parsing "gap4/lib/listcoef.gi"
 ...
 \endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Testing for the System Architecture}
+
+\Declaration{ARCH_IS_UNIX}
+\Declaration{ARCH_IS_MAC}
+\Declaration{ARCH_IS_WINDOWS}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Compiler}
@@ -737,6 +740,10 @@ gap> LoadDynamicModule("./test.so",2906458206);
 If you want to see or modify the intermediate C code, you can also instruct
 the compiler to produce only the C files by using the option `-C' instead of
 `-d'. 
+
+There are some known problems with C code produced with the
+GAP compiler on 32 bit architectures and used on 64 bit architectures
+(and vice versa).
 
 On some operating systems, once you have loaded a dynamic module with
 a certain filename, loading another with the same filename will have
@@ -870,6 +877,9 @@ gap> a;
 1
 \endtt
 
+Please note that paths to workspaces have to be given in full, expansion of
+the tilde to denote a home directory will *not* work.
+
 Under UNIX, it is possible to compress savefiles using `gzip'. Compression
 typically reduces the size of a workspace by a factor 3 or 4.
 If {\GAP} is started with a compressed savefile (omit the `.gz' ending),
@@ -904,6 +914,29 @@ A small number of such messages can probably be ignored (they arise
 because the garbage collector may not always collect all dead objects, 
 and dead objects may contain data that `SaveWorkspace' does not know how 
 to process). 
+
+{\GAP} packages which had been loaded before the workspace was saved
+are loaded also when the workspace is loaded.
+Packages which had been available but not loaded before the workspace
+was saved are available also when the workspace is loaded,
+provided these packages have not been upgraded.
+Packages which have been newly installed *after* the workspace was saved
+are *not* available when the workspace is loaded.
+%T Is this acceptable?
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Coloring the Prompt and Input}
+
+{\GAP} provides hooks for functions which are called when the prompt is 
+to be printed and when an input line is finished. 
+
+An example of using this feature is the following function. 
+
+\Declaration{ColorPrompt}
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

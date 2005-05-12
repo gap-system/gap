@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares operations for integer primes.
 
@@ -275,6 +276,7 @@ DeclareGlobalFunction( "RootsUnityMod" );
 #############################################################################
 ##
 #F  LogMod( <n>, <r>, <m> ) . . . . . .  discrete logarithm modulo an integer
+#F  LogModShanks( <n>, <r>, <m> )
 ##
 ##  computes the discrete <r>-logarithm of the integer <n> modulo the integer
 ##  <m>.
@@ -282,16 +284,22 @@ DeclareGlobalFunction( "RootsUnityMod" );
 ##  if such a number exists.
 ##  Otherwise `fail' is returned.
 ##
-##  At the moment only a very naive method has been implemented.
+##  `LogModShanks' uses the Baby Step - Giant Step Method of Shanks (see for
+##  example section 5.4.1 in \cite{Coh93} and in general
+##  requires more memory than a call to `LogMod'.
 ##
 DeclareGlobalFunction( "LogMod" );
+DeclareGlobalFunction( "LogModShanks" );
+
+DeclareGlobalFunction( "DoLogModRho" );
 
 
 #############################################################################
 ##
 #F  Sigma( <n> )  . . . . . . . . . . . . . . . sum of divisors of an integer
 ##
-##  `Sigma' returns the sum of the positive divisors of the integer <n>.
+##  `Sigma' returns the sum of the positive divisors of the nonzero integer
+##  <n>.
 ##
 ##  `Sigma' is a multiplicative arithmetic function, i.e., if <n> and $m$ are
 ##  relatively prime we have $\sigma(<n> m) = \sigma(<n>) \sigma(m)$.
@@ -309,7 +317,7 @@ DeclareGlobalFunction( "LogMod" );
 ##  however~\cite{BC89} show that any such integer must  have  at  least  300
 ##  decimal digits.
 ##
-##  `Sigma' usually spends most of its time factoring <n> (see "FactorsInt").
+##  `Sigma' usually spends most of its time factoring <n> (see~"FactorsInt").
 ##
 DeclareGlobalFunction( "Sigma" );
 
@@ -318,14 +326,15 @@ DeclareGlobalFunction( "Sigma" );
 ##
 #F  Tau( <n> )  . . . . . . . . . . . . . .  number of divisors of an integer
 ##
-##  `Tau' returns the number of the positive divisors of the integer <n>.
+##  `Tau' returns the number of the positive divisors of the nonzero integer
+##  <n>.
 ##
 ##  `Tau' is a multiplicative arithmetic function, i.e., if <n> and  $m$  are
 ##  relative prime we have $\tau(<n> m) = \tau(<n>) \tau(m)$.
 ##  Together with the formula $\tau(p^e) = e+1$ this allows us to compute
 ##  $\tau(<n>)$.
 ##
-##  `Tau' usually spends most of its time factoring <n> (see "FactorsInt").
+##  `Tau' usually spends most of its time factoring <n> (see~"FactorsInt").
 ##
 DeclareGlobalFunction( "Tau" );
 
@@ -335,7 +344,8 @@ DeclareGlobalFunction( "Tau" );
 #F  MoebiusMu( <n> )  . . . . . . . . . . . . . .  Moebius inversion function
 ##
 ##  `MoebiusMu'  computes the value  of  Moebius  inversion function for  the
-##  integer <n>.   This  is 0 for  integers  which are not squarefree,  i.e.,
+##  nonzero integer <n>.
+##  This is 0 for integers which are not squarefree, i.e.,
 ##  which are divided by a square $r^2$.  Otherwise it is 1 if <n> has a even
 ##  number and $-1$ if <n> has an odd number of prime factors.
 ##

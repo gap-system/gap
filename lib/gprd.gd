@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.gprd_gd :=
     "@(#)$Id$";
@@ -117,6 +118,13 @@ DeclareGlobalFunction( "WreathProductImprimitiveAction" );
 ##  described for general wreath products.
 DeclareGlobalFunction( "WreathProductProductAction" );
 
+#############################################################################
+##
+#F  SubdirectProducts( <G>, <H> )
+##
+##  this function computes all subdirect products of <G> and <H> up to 
+##  conjugacy in Parent(<G>) x Parent(<H>). The subdirect products are
+##  returned as subgroups of this direct product.
 DeclareGlobalFunction( "InnerSubdirectProducts" );
 DeclareGlobalFunction( "InnerSubdirectProducts2" );
 DeclareGlobalFunction( "SubdirectProducts" );

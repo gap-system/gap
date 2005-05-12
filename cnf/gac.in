@@ -176,7 +176,7 @@ process_c_file () {
     name=$1
     c_file=$2
     if [ $comp_howfar != "object" ]; then
-       o_file=/tmp/$$_${name}.o
+       o_file=${gactmp}/$$_${name}.o
         temps_o="${temps_o} ${o_file}"
     elif [ "X$output" != "X" ]; then
        o_file=$output
@@ -212,7 +212,7 @@ process_gap_file () {
   name=`basename $1 $2`
 
   if [ $comp_howfar != "c_code" ]; then
-    c_file=/tmp/$$_${name}.c
+    c_file=${gactmp}/$$_${name}.c
     temps_c="${temps_c} $gap_compile_to"
   elif [ "X$output" = "X" ]; then
      c_file=${name}.c
@@ -348,49 +348,63 @@ fi
 
 make_compstat () {
     # make 'compstat.c' and compile it
-    temps_c="${temps_c} /tmp/$$compstat.c"
-    echo     "/* made by 'gac', can be thrown away */"   >  /tmp/$$compstat.c
-    echo     "#include \"src/compiled.h\""                   >> /tmp/$$compstat.c
+    temps_c="${temps_c} ${gactmp}/$$compstat.c"
+    echo     "/* made by 'gac', can be thrown away */"   >  ${gactmp}/$$compstat.c
+    echo     "#include \"src/compiled.h\" "                   >> ${gactmp}/$$compstat.c
 
-    echo     "#ifndef AVOID_PRECOMPILED"                         >> /tmp/$$compstat.c
-    echo     "extern StructInitInfo * Init__methsel1 ( void );"  >> /tmp/$$compstat.c
-    echo     "extern StructInitInfo * Init__type1 ( void );"     >> /tmp/$$compstat.c
-    echo     "extern StructInitInfo * Init__filter1 ( void );"   >> /tmp/$$compstat.c
-    echo     "extern StructInitInfo * Init__oper1( void );"      >> /tmp/$$compstat.c
-    echo     "extern StructInitInfo * Init__random( void );"     >> /tmp/$$compstat.c
-    echo     "#endif"                                            >> /tmp/$$compstat.c
+    echo     "#ifndef AVOID_PRECOMPILED"                         >> ${gactmp}/$$compstat.c
+    echo     "extern StructInitInfo * Init__methsel1 ( void );"  >> ${gactmp}/$$compstat.c
+    echo     "extern StructInitInfo * Init__type1 ( void );"     >> ${gactmp}/$$compstat.c
+    echo     "extern StructInitInfo * Init__filter1 ( void );"   >> ${gactmp}/$$compstat.c
+    echo     "extern StructInitInfo * Init__oper1( void );"      >> ${gactmp}/$$compstat.c
+    echo     "extern StructInitInfo * Init__random( void );"     >> ${gactmp}/$$compstat.c
+    echo     "#endif"                                            >> ${gactmp}/$$compstat.c
 
     for name in ${names}; do
         echo "extern StructInitInfo * Init__${name} ( void );" \
-						         >> /tmp/$$compstat.c
+						         >> ${gactmp}/$$compstat.c
     done
 
-    echo     "InitInfoFunc CompInitFuncs [] = {"         >> /tmp/$$compstat.c
-    echo     "#ifndef AVOID_PRECOMPILED"                 >> /tmp/$$compstat.c
-    echo     "    Init__methsel1,"                       >> /tmp/$$compstat.c
-    echo     "    Init__type1,"                          >> /tmp/$$compstat.c
-    echo     "    Init__oper1,"                          >> /tmp/$$compstat.c
-    echo     "    Init__filter1,"                        >> /tmp/$$compstat.c
-    echo     "    Init__random,"                         >> /tmp/$$compstat.c
-    echo     "#endif"                                    >> /tmp/$$compstat.c
+    echo     "InitInfoFunc CompInitFuncs [] = {"         >> ${gactmp}/$$compstat.c
+    echo     "#ifndef AVOID_PRECOMPILED"                 >> ${gactmp}/$$compstat.c
+    echo     "    Init__methsel1,"                       >> ${gactmp}/$$compstat.c
+    echo     "    Init__type1,"                          >> ${gactmp}/$$compstat.c
+    echo     "    Init__oper1,"                          >> ${gactmp}/$$compstat.c
+    echo     "    Init__filter1,"                        >> ${gactmp}/$$compstat.c
+    echo     "    Init__random,"                         >> ${gactmp}/$$compstat.c
+    echo     "#endif"                                    >> ${gactmp}/$$compstat.c
 
     for name in ${names}; do
-        echo "    Init__${name},"                        >> /tmp/$$compstat.c
+        echo "    Init__${name},"                        >> ${gactmp}/$$compstat.c
     done
-    echo "    0"                                         >> /tmp/$$compstat.c
-    echo "};"                                            >> /tmp/$$compstat.c
-    temps_o="/tmp/$$compstat.o ${temps_o}"
-    c_compile /tmp/$$compstat.o /tmp/$$compstat.c
-    echo rm -f /tmp/$$compstat.c
-    rm -f /tmp/$$compstat.c
-    objects="/tmp/$$compstat.o ${objects}"
+    echo "    0"                                         >> ${gactmp}/$$compstat.c
+    echo "};"                                            >> ${gactmp}/$$compstat.c
+    temps_o="${gactmp}/$$compstat.o ${temps_o}"
+    c_compile ${gactmp}/$$compstat.o ${gactmp}/$$compstat.c
+    echo rm -f ${gactmp}/$$compstat.c
+    rm -f ${gactmp}/$$compstat.c
+    objects="${gactmp}/$$compstat.o ${objects}"
 }
 
+make_tmpdir () {
+    basetmp=${TMPDIR:-/tmp}; #honor the TMPDIR environment variable.
+    gactmp="$basetmp/gac$$";
+    mkdir "$gactmp" || exit 1;
+}
+
+#On systems with mktemp(1) this function is better:
+#make_tmpdir ()
+#{
+#    gactmp=`mktemp -d -t "gacXXXXXXX"`;
+#}
 
 #############################################################################
 ##
 ##  main loop
 ##
+
+#Make temporary directory
+make_tmpdir;
 
 # loop over the input files
 for input in ${inputs}; do
@@ -425,4 +439,8 @@ if [ $comp_mode = "comp_static" -a $comp_howfar = "link" ]; then
     echo rm -f ${temps_o}
     rm -f ${temps_o}
 fi
+
+#Remove temporary directory.
+#We may assume it is empty at this stage.
+rmdir "${gactmp}"
 

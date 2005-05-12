@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the definition of categories of character table like
 ##  objects, and their properties, attributes, operations, and functions.
@@ -656,6 +657,10 @@ InstallIsomorphismMaintenance( CharacterDegrees,
 ##  For a group <G>, `Irr' may delegate to its character table only if the
 ##  irreducibles are already stored there.
 ##
+##  If a group has both ordinary irreducible characters in `Irr' and
+##  irreducible representations in `IrreducibleRepresentations' these are
+##  *not* guaranteed to be ordered in the same way.
+##
 ##  (If <G> is <p>-solvable (see~"IsPSolvable") then the <p>-modular
 ##  irreducible characters can be computed by the Fong-Swan Theorem;
 ##  in all other cases, there may be no method.)
@@ -762,6 +767,8 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  `IsSimple'&
 ##  \indextt{IsSolvable!for character tables}
 ##  `IsSolvable'&
+##  \indextt{IsSporadicSimple!for character tables}
+##  `IsSporadicSimple'&
 ##  \indextt{IsSupersolvable!for character tables}
 ##  `IsSupersolvable'&
 ##  \indextt{NrConjugacyClasses!for character tables}
@@ -802,17 +809,20 @@ DeclareAttributeSuppCT( "Size", IsNearlyCharacterTable, [] );
 #P  IsPerfectCharacterTable( <tbl> )
 #P  IsSimpleCharacterTable( <tbl> )
 #P  IsSolvableCharacterTable( <tbl> )
+#P  IsSporadicSimpleCharacterTable( <tbl> )
 #P  IsSupersolvableCharacterTable( <tbl> )
 ##
-##  These six properties belong to the ``overloaded'' operations,
+##  These seven properties belong to the ``overloaded'' operations,
 ##  methods for the unqualified properties with argument an ordinary
-##  character table are installed in `overload.g'.
+##  character table are installed in `lib/overload.g'.
 ##
 DeclarePropertySuppCT( "IsMonomialCharacterTable", IsNearlyCharacterTable );
 DeclarePropertySuppCT( "IsNilpotentCharacterTable", IsNearlyCharacterTable );
 DeclarePropertySuppCT( "IsPerfectCharacterTable", IsNearlyCharacterTable );
 DeclarePropertySuppCT( "IsSimpleCharacterTable", IsNearlyCharacterTable );
 DeclarePropertySuppCT( "IsSolvableCharacterTable", IsNearlyCharacterTable );
+DeclarePropertySuppCT( "IsSporadicSimpleCharacterTable",
+    IsNearlyCharacterTable );
 DeclarePropertySuppCT( "IsSupersolvableCharacterTable",
     IsNearlyCharacterTable );
 
@@ -824,6 +834,8 @@ InstallTrueMethod( IsNilpotentCharacterTable,
     IsOrdinaryTable and IsAbelian );
 InstallTrueMethod( IsPerfectCharacterTable,
     IsOrdinaryTable and IsSimpleCharacterTable );
+InstallTrueMethod( IsSimpleCharacterTable,
+    IsOrdinaryTable and IsSporadicSimpleCharacterTable );
 InstallTrueMethod( IsSolvableCharacterTable,
     IsOrdinaryTable and IsSupersolvableCharacterTable );
 InstallTrueMethod( IsSolvableCharacterTable,
@@ -1354,13 +1366,7 @@ DeclareOperation( "ClassPositionsOfNormalClosure",
 ##  `relevant' &
 ##      a list of class positions such that only the restriction to these
 ##      classes need be checked for deciding whether two characters lie
-##      in the same block,
-##
-##  `exponents' &
-##      a list containing at the positions in the component `relevant'
-##      an integer $n$ such that the $n$-th power of a difference of
-##      characters is divisible by <p> if the two characters lie in the same
-##      block, and
+##      in the same block, and
 ##
 ##  `centralcharacter' &
 ##      a list containing at position $i$ a list whose values at the
@@ -1368,7 +1374,7 @@ DeclareOperation( "ClassPositionsOfNormalClosure",
 ##      a central character in the $i$-th block.
 ##  \enditems
 ##
-##  The components `relevant', `exponents', and `centralcharacters' are
+##  The components `relevant' and `centralcharacters' are
 ##  used by `SameBlock' (see~"SameBlock").
 ##
 ##  If `InfoCharacterTable' has level at least 2,
@@ -1411,14 +1417,13 @@ DeclareAttributeSuppCT( "ComputedPrimeBlockss", IsOrdinaryTable, "mutable",
 
 #############################################################################
 ##
-#F  SameBlock( <tbl>, <p>, <omega1>, <omega2>, <relevant>, <exponents> )
+#F  SameBlock( <p>, <omega1>, <omega2>, <relevant> )
 ##
-##  Let <tbl> be an ordinary character table, <p> a prime integer,
-##  <omega1> and <omega2> two central characters (or their values lists)
-##  of <tbl>.
-##  The remaining arguments <relevant> and <exponents> are lists as stored
-##  in the components `relevantclasses' and `exponents' of a record
-##  returned by `PrimeBlocks' (see~"PrimeBlocks").
+##  Let <p> be a prime integer, <omega1> and <omega2> be two central
+##  characters (or their values lists) of a character table,
+##  and <relevant> be a list of positions as is stored in the component
+##  `relevantclasses' of a record returned by `PrimeBlocks'
+##  (see~"PrimeBlocks").
 ##
 ##  `SameBlock' returns `true' if <omega1> and <omega2> are equal modulo any
 ##  maximal ideal in the ring of complex algebraic integers containing the
@@ -2180,19 +2185,22 @@ DeclareGlobalFunction( "PrintCharacterTable" );
 ##
 ##  In general, the result will not know an underlying group,
 ##  so missing power maps (for prime divisors of the result)
-##  and irreducibles of <tbl1> and <tbl2> may be computed in order to
-##  construct the direct product.
+##  and irreducibles of the input tables may be computed in order to
+##  construct the table of the direct product.
 ##
-##  The embeddings of <tbl1> and <tbl2> into the direct product are stored,
+##  The embeddings of the input tables into the direct product are stored,
 ##  they can be fetched with `GetFusionMap' (see~"GetFusionMap");
 ##  if <tbl1> is equal to <tbl2> then the two embeddings are distinguished
 ##  by their `specification' components `"1"' and `"2"', respectively.
 ##
-##  Analogously, the projections from the direct product onto <tbl1> and
-##  <tbl2> are stored, and can be distinguished by the `specification'
+##  Analogously, the projections from the direct product onto the input
+##  tables are stored, and can be distinguished by the `specification'
 ##  components.
 ##
 #T generalize this to arbitrarily many arguments!
+##
+##  The attribute `FactorsOfDirectProduct' (see~"FactorsOfDirectProduct")
+##  is set to the lists of arguments.
 ##
 ##  The `\*' operator for two character tables
 ##  (see~"Operators for Character Tables") delegates to
@@ -2200,6 +2208,21 @@ DeclareGlobalFunction( "PrintCharacterTable" );
 ##
 DeclareOperation( "CharacterTableDirectProduct",
     [ IsNearlyCharacterTable, IsNearlyCharacterTable ] );
+
+
+#############################################################################
+##
+#A  FactorsOfDirectProduct( <tbl> )
+##
+##  For an ordinary character table that has been constructed via
+##  `CharacterTableDirectProduct' (see~"CharacterTableDirectProduct"),
+##  the value of `FactorsOfDirectProduct' is the list of arguments in the
+##  `CharacterTableDirectProduct' call.
+##
+##  Note that there is no default method for *computing* the value of
+##  `FactorsOfDirectProduct'.
+##
+DeclareAttribute( "FactorsOfDirectProduct", IsNearlyCharacterTable );
 
 
 #############################################################################
@@ -2220,7 +2243,7 @@ DeclareGlobalFunction( "CharacterTableHeadOfFactorGroupByFusion" );
 ##
 ##  is the character table of the factor group of the ordinary character
 ##  table <tbl> by the normal closure of the classes whose positions are
-##  contained in the list <clases>.
+##  contained in the list <classes>.
 ##
 ##  The `\/' operator for a character table and a list of class positions
 ##  (see~"Operators for Character Tables") delegates to
@@ -2278,140 +2301,30 @@ DeclareGlobalFunction( "CharacterTableOfNormalSubgroup" );
 
 #############################################################################
 ##
-#F  CharacterTableOfTypeGS3( <tbl>, <tbl2>, <tbl3>, <aut>, <identifier> )
-##
-##  Let $H$ be a group with a normal subgroup $G$ such that $H/G \equiv S_3$,
-##  the symmetric group of degree $3$,
-##  and let $G\.2$ and $G\.3$ be preimages of subgroups of order $2$ and $3$,
-##  respectively, under the natural projection onto this factor group.
-##
-##  Let <tbl>, <tbl2>, and <tbl3> be the ordinary character tables of the
-##  groups $G$, $G\.2$, and $G\.3$, respectively,
-##  and <aut> the permutation of classes of <tbl3> induced by the action
-##  of $H$ on $G\.3$.
-##  Furthermore, let the class fusions from <tbl> to <tbl2> and <tbl3> be
-##  stored on <tbl> (see~"StoreFusion").
-##
-##  `CharacterTableOfTypeGS3' returns a record with the following components.
-##  \beginitems
-##  `table' &
-##      the ordinary character table of $H$,
-##
-##  `tbl2fustbls3' &
-##      the fusion map from <tbl2> into the table of $H$, and
-##
-##  `tbl3fustbls3' &
-##      the fusion map from <tbl3> into the table of $H$.
-##  \enditems
-##
-##  The returned table of $H$ has the `Identifier' value <identifier>.
-##  The classes of the table of $H$ are sorted as follows.
-##  First come the classes contained in $G\.3$, sorted compatibly with the
-##  classes in <tbl3>, then the classes in $H \setminus G\.3$ follow,
-##  in the same ordering as the classes of $G\.2 \setminus G$.
-##
-DeclareGlobalFunction( "CharacterTableOfTypeGS3" );
-
-
-#############################################################################
-##
-#F  PossibleActionsForTypeGS3( <tbl>, <tbl2>, <tbl3> )
-##
-##  Let the arguments be as described for `CharacterTableOfTypeGS3'
-##  (see~"CharacterTableOfTypeGS3").
-##  `PossibleActionsForTypeGS3' returns the set of those table automorphisms
-##  (see~"AutomorphismsOfTable") of <tbl3> that may be induced by the action
-##  of $H$ on $G\.3$.
-##
-##  The progress is reported if the level of `InfoCharacterTable' is at least
-##  $1$ (see~"SetInfoLevel").
-##
-DeclareGlobalFunction( "PossibleActionsForTypeGS3" );
-
-
-#############################################################################
-##
-#F  CharacterTableOfTypeMGA( <tblMG>, <tblG>, <tblGA>, <aut>, <identifier> )
-##
-##  Let $H$ be a group with normal subgroups $N$ and $M$ such that
-##  $H/N$ is cyclic, $M \leq N$ holds,
-##  and such that each irreducible character of $N$
-##  that does not contain $M$ in its kernel has inertia group $N$ in $H$.
-##  (This is satisfied for example if $N$ has prime index in $H$
-##  and $M$ is central in $N$ but not in $H$.)
-#T equivalent to the fact that $H$ acts fixed point freely on $M$?
-#T note that I need this for transferring the element orders!
-#T (namely, for $g \in H \setminus N$,
-#T if $gM$ has order $n$ in $H/M$ then $g$ has order $n$ in $H$
-#T because $g^n = m \in M$ implies $g^{-1} m g = m$ and thus $m = 1$.)
-##  Let $G = N/M$ and $A = H/N$, so $H$ has the structure $M\.G\.A$.
-##
-##  Let <tblMG>, <tblG>, <tblGA> be the ordinary character tables of the
-##  groups $M\.G$, $G$, and $G\.A$, respectively,
-##  and <aut> the permutation of classes of <tblMG> induced by the action
-##  of $H$ on $M\.G$.
-##  Furthermore, let the class fusions from <tblMG> to <tblG> and from <tblG>
-##  to <tblGA> be stored on <tblMG> and <tblG>, respectively
-##  (see~"StoreFusion").
-##
-##  `CharacterTableOfTypeMGA' returns a record with the following components.
-##  \beginitems
-##  `table' &
-##      the ordinary character table of $H$, and
-##
-##  `MGfusMGA' &
-##      the fusion map from <tblMG> into the table of $H$.
-##  \enditems
-##
-##  The returned table of $H$ has the `Identifier' value <identifier>.
-##  The classes of the table of $H$ are sorted as follows.
-##  First come the classes contained in $M\.G$, sorted compatibly with the
-##  classes in <tblMG>, then the classes in $H \setminus M\.G$ follow,
-##  in the same ordering as the classes of $G\.A \setminus G$.
-##
-DeclareGlobalFunction( "CharacterTableOfTypeMGA" );
-
-
-#############################################################################
-##
-#F  PossibleActionsForTypeMGA( <tblMG>, <tblG>, <tblGA> )
-##
-##  Let the arguments be as described for `CharacterTableOfTypeMGA'
-##  (see~"CharacterTableOfTypeMGA").
-##  `PossibleActionsForTypeMGA' returns the set of those table automorphisms
-##  (see~"AutomorphismsOfTable") of <tblMG> that may be induced by the action
-##  of $H$ on $M\.G$.
-##
-##  The progress is reported if the level of `InfoCharacterTable' is at least
-##  $1$ (see~"SetInfoLevel").
-##
-DeclareGlobalFunction( "PossibleActionsForTypeMGA" );
-
-
-#############################################################################
-##
 ##  11. Sorted Character Tables
 ##
 
 
 #############################################################################
 ##
-#F  PermutationToSortCharacters( <tbl>, <chars>, <degree>, <norm> )
+#F  PermutationToSortCharacters( <tbl>, <chars>, <degree>, <norm>, <galois> )
 ##
-##  returns a permutation that applied to the list <chars> of characters of
-##  the character table <tbl> will cause the characters to be sorted
+##  returns a permutation $\pi$, say, that can be applied to the list <chars>
+##  of characters of the character table <tbl> in order to sort this list
 ##  w.r.t.~increasing degree, norm, or both.
-##  <degree> and <norm> must be booleans.
+##  The arguments <degree>, <norm>, and <galois> must be Booleans.
 ##  If <norm> is `true' then characters of smaller norm precede characters
-##  of larger norm.
+##  of larger norm after permuting with $\pi$.
 ##  If both <degree> and <norm> are `true' then additionally characters of
-##  same norm are sorted w.r.t.~increasing degree.
+##  same norm are sorted w.r.t.~increasing degree after permuting with $\pi$.
 ##  If only <degree> is `true' then characters of smaller degree precede
-##  characters of larger degree.
+##  characters of larger degree after permuting with $\pi$.
+##  If <galois> is `true' then each family of algebraic conjugate characters
+##  in <chars> is consecutive after permuting with $\pi$.
 ##
-##  Rational characters precede characters with irrationalities of same norm
-##  and/or degree, and the trivial character will be sorted to position $1$
-##  if it occurs in <chars>.
+##  Rational characters in the permuted list precede characters with
+##  irrationalities of same norm and/or degree, and the trivial character
+##  will be sorted to position $1$ if it occurs in <chars>.
 ##
 DeclareGlobalFunction( "PermutationToSortCharacters" );
 
@@ -2472,17 +2385,21 @@ DeclareOperation( "SortedCharacters",
 
 #############################################################################
 ##
-#F  PermutationToSortClasses( <tbl>, <classes>, <orders> )
+#F  PermutationToSortClasses( <tbl>, <classes>, <orders>, <galois> )
 ##
-##  returns a permutation that applied to the columns in the character table
-##  <tbl> will cause the classes to be sorted w.r.t.~increasing class length,
-##  element order, or both.
-##  <classes> and <orders> must be booleans.
+##  returns a permutation $\pi$, say, that can be applied to the columns in
+##  the character table <tbl> in order to sort this table w.r.t.~increasing
+##  class length, element order, or both.
+##  <classes> and <orders> must be Booleans.
 ##  If <orders> is `true' then classes of element of smaller order precede
-##  classes of elements of larger order.
+##  classes of elements of larger order after peruting with $\pi$.
 ##  If both <classes> and <orders> are `true' then additionally classes of
-##  elements of the same order are sorted w.r.t.~increasing length.
-##  If only <classes> is `true' then smaller classes precede larger ones.
+##  elements of the same order are sorted w.r.t.~increasing length after
+##  permuting with $\pi$.
+##  If <classes> is `true' but <orders> is `false' then smaller classes
+##  precede larger ones after permuting with $\pi$.
+##  If <galois> is `true' then each family of algebraic conjugate classes
+##  in <tbl> is consecutive after permuting with $\pi$.
 ##
 DeclareGlobalFunction( "PermutationToSortClasses" );
 
@@ -2732,14 +2649,9 @@ BindGlobal( "SupportedLibraryTableComponents", [
      "factorblocks",
      "indicator",
      # These are used only for ordinary tables.
-     "cliffordTable",
-     "construction",    # does not occur in data files, is set in `MOT'
      "projectives",
      "isSimple",
      "extInfo",
-     "factors",
-     "tomfusion",
-     "tomidentifier",
     ] );
 
 DeclareRepresentation( "IsLibraryCharacterTableRep", IsAttributeStoringRep,

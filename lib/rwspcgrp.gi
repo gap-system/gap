@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file   contains  the methods  for  groups  defined  by  a polycyclic
 ##  collector.
@@ -94,7 +95,7 @@ function( g )
           "'IsConfluent' starting part 4" );
     R := Runtime();
 
-    # Consistency relations: gj * ( gi^ei-1 * gi ) = ( gj * gi^ei-1 ) * gi
+    # Consistency relations: gi * ( gi^ei-1 * gi ) = ( gi * gi^ei-1 ) * gi
     for i  in [ 1 .. Length(gens) ]  do
         gi := gens[ i ];
         r := [ gi*(gi^(exps[i]-1)*gi), (gi*gi^(exps[i]-1))*gi ];

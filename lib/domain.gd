@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This declares the operations for domains.
 ##
@@ -202,33 +203,13 @@ DeclareAttribute( "ParentAttr", IsDomain );
 
 DeclareSynonym( "SetParent", SetParentAttr );
 DeclareSynonym( "HasParent", HasParentAttr );
-BindGlobal( "Parent", function( S )
+BIND_GLOBAL( "Parent", function( S )
     if HasParent( S ) then
         return ParentAttr( S );
     else
         return S;
     fi;
 end );
-
-
-#############################################################################
-##
-#C  IsDomainEnumerator( <obj> )
-##
-##  Enumerators of domains that are not represented as plain lists may be in
-##  this category.
-##
-DeclareCategory( "IsDomainEnumerator", IsList and IsDuplicateFreeList );
-
-
-#############################################################################
-##
-#A  UnderlyingCollection( <enum> )
-##
-##  An enumerator of a domain can delegate the task to compute its length to
-##  `Size' for the underlying domain.
-##
-DeclareAttribute( "UnderlyingCollection", IsDomainEnumerator );
 
 
 #############################################################################
@@ -247,44 +228,7 @@ DeclareAttribute( "UnderlyingCollection", IsDomainEnumerator );
 ##  and if <name> is the name of a generator of $F$ then $F\.<name>$ returns
 ##  this generator.
 ##
-BindGlobal( "InstallAccessToGenerators",
-    function( required, infotext, generators )
-
-    InstallMethod( \.,
-        Concatenation( "generators of a ", infotext ),
-        true,
-        [ required and Tester( generators ), IsPosInt ], 0,
-        function( D, n )
-
-        local gens, nr, names;
-
-        # Get the appropriate generators and the component name string.
-        gens:= generators( D );
-        n:= NameRNam( n );
-
-        # If the component name stands for an integer,
-        # return the generator at this position.
-        nr:= Int( n );
-        if IsPosInt( nr ) and nr <= Length( gens ) then
-          return gens[ nr ];
-        fi;
-
-        # I the component name is the name itself,
-        # return the corresponding generator.
-        names:= ElementsFamily( FamilyObj( D ) );
-        if IsBound( names!.names ) then
-          names:= names!.names;
-          nr:= Position( names, n );
-          if nr <> fail then
-            return gens[ nr ];
-          fi;
-        fi;
-
-        # Give up.
-        TryNextMethod();
-        end );
-
-    end );
+DeclareGlobalFunction( "InstallAccessToGenerators" );
 
 
 #############################################################################
@@ -293,7 +237,7 @@ BindGlobal( "InstallAccessToGenerators",
 ##
 ##  see~"ext:In Parent Attributes" in ``Extending {\GAP}''
 ##
-BindGlobal( "InParentFOA", function( name, superreq, subreq, DeclareAorP )
+BIND_GLOBAL( "InParentFOA", function( name, superreq, subreq, DeclareAorP )
     local str, oper, attr, func;
 
     # Create the two-argument operation.
@@ -348,7 +292,7 @@ end );
 ##  We can get a representative of a domain by taking an element of a
 ##  suitable generators list, so the problem is to specify the generators.
 ##
-BindGlobal( "RepresentativeFromGenerators", function( GeneratorsOfStruct )
+BIND_GLOBAL( "RepresentativeFromGenerators", function( GeneratorsOfStruct )
     return function( D )
            D:= GeneratorsOfStruct( D );
            if IsEmpty( D ) then

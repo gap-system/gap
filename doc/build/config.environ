@@ -1,4 +1,5 @@
 @msfiles = ("debug","language","objects","types","mloop","function","files","process");
-@gdfiles = ("methwhy.g","methsel2.g","profile.g","oper.g","object", "object.gi","type.g","domain","files","type1.g","attr","function.g","process","global");
+@gdfiles = ("methwhy.g","methsel2.g","profile.g","oper.g","object",
+"object.gi","type.g","domain","files","type1.g","attr","function.g","process","global","gasman");
 $DIR = "../ref";
 $LIB = "../../lib"; 

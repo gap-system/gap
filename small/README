@@ -1,10 +1,10 @@
 #############################################################################
 ##
-#W  README             The  Small Groups Library           Hans Ulrich Besche
+#W  README             The  SmallGroups Library           Hans Ulrich Besche
 ##                                                               Bettina Eick
 ##                                                             Eamonn O'Brien
 ##
-##  This file contains information about the Small Groups Library
+##  This file contains information about the SmallGroups Library
 ##
 "@(#)$Id$";
 
@@ -14,18 +14,17 @@
 #
 #############################################################################
 
-The Small Groups Library has been developed by
+The SmallGroups Library has been developed by
 
 Hans Ulrich Besche
-Lehrstuhl D fuer Mathematik
-RWTH Aachen
-Templergraben 64
-52062 Aachen
+Fachbereich Mathematik und Informatik
+Technische Universität Braunschweig
+Pockelsstrasse 14 
+38106 Braunschweig
 Germany
 
-e-mail: Hans-Ulrich.Besche@math.rwth-aachen.de
-http://www.math.rwth-aachen.de/~Hans-Ulrich.Besche/
-
+e-mail: hubesche@tu-bs.de
+http://www.tu-bs.de/~hubesche/
 
 Bettina Eick
 Fachbereich Mathematik und Informatik
@@ -53,20 +52,22 @@ http://www.scitec.auckland.ac.nz/~obrien/
 #
 #############################################################################
 
-The Small Groups Library is a catalogue of groups of `small' order. 
-Currently, (Jan. 2000) it contains the groups 
+The SmallGroups Library is a catalogue of groups of `small' order. 
+Currently, (Apr. 2005) it contains the groups 
 
     * of order at most 2000 except 1024.
-    * of order 5^5 and 7^4.
+    * of cubefree order at most 50 000.
+    * of order p^n for n <= 6 and all primes p.
+    * of squarefree order.
     * whose order factorises in at most 3 primes.
-    * of order q^n * p for a prime-power q^n dividing 2^8, 3^6, 5^5 or 7^4 
-      and an arbitrary prime p different to q.
+    * of order q^n * p for q^n dividing 2^8, 3^6, 5^5, 7^4 and p prime
+      different to q
 
-The Small Groups Library provides access to these groups and a method to 
-identify the catalogue number of a given group. Here we describe the organi-
-sation of this catalogue. We include information on the determination of the 
-groups, the encoding of the stored groups and the algorithms used for the 
-identification routine. 
+The SmallGroups Library provides access to the groups of these orders and 
+a method to identify the catalogue number of a given group for many of these
+orders. Here we describe the organisation of this catalogue. We include 
+information on the determination of the groups, the encoding of the stored 
+groups and the algorithms used for the identification routine. 
 
 #############################################################################
 #
@@ -82,12 +83,13 @@ AllSmallGroups( order, selection-args )
     list of selection-args can be used to specify certain properties to the 
     function and only the groups with these properties are returned then. 
     For some properties and some group orders the desired groups are pre-
-    comuted and stored. Otherwise the desired groups are filtered out of the 
+    computed and stored. Otherwise the desired groups are filtered out of the 
     catalogue. See the GAP 4 manual for some examples.
     Synonym: AllGroups
 
 OneSmallGroup( order, selection-args )
-    returns one group of the given order with the specified properties. 
+    returns one group of the given order with the specified properties or
+    fail. 
     Synonym: OneGroup
 
 SmallGroupsInformation( order ) 
@@ -107,11 +109,11 @@ IdGroup( G )
 IdsOfAllSmallGroups( order, selection-args )
     similar to AllSmallGroups, but returns the catalogue numbers of the
     desired groups only. This can be useful if the list of explicit groups 
-    would need to much storage space to load them.
+    would need too much storage space to load them.
     Synonym: IdsOfAllGroups
 
 UnloadSmallGroupsData()
-    clears the workspace from loaded data. If some groups from the 
+    clears the workspace of loaded data. If some groups of the 
     catalogue are requested from GAP afterwards, then the data will 
     be loaded again automatically.
 
@@ -121,7 +123,7 @@ UnloadSmallGroupsData()
 # 
 #############################################################################
 
-The Small Groups Library is organised in 8 layers. Each layer contains the
+The SmallGroups Library is organised in 10 layers. Each layer contains the
 groups of certain orders:
 
      Layer 1: the orders with at most 3 prime factors; that is, the orders
@@ -145,10 +147,15 @@ groups of certain orders:
 
      Layer 8: the order 1536. 
 
+     Layer 9: the remaining groups of order p^4, p^5 and p^6.
+
+     Layer 10: the remaining groups of squarefree order and of
+               cubefree order at most 50000.
+
 This setup has been chosen for two reasons. First, the organisation in 
 layers permits to add new layers (and thus new group orders) without changes 
 to the existing catalogue. Secondly, it is possible to install a part of the 
-layers only. This might be interesting for computer-systems with few hard 
+layers only. This might be interesting for computer-systems with little hard 
 disk space available.
 
 For each layer i there are two internal functions:
@@ -157,7 +164,8 @@ Both functions return fail, if the given order is not contained in this
 layer. Otherwise the functions return an information record on the layer 
 and the order. This record contains the information needed to handle the 
 groups of the specified order internally. If the layer i is not installed, 
-then SMALL_AVAILABLE_FUNCS[i] and ID_AVAILABLE_FUNCS[i] are both unbound.
+then the entries SMALL_AVAILABLE_FUNCS[i] and ID_AVAILABLE_FUNCS[i] are 
+unbound.
 
 Moreover, there are two internal header functions:
        `SMALL_AVAILABLE( order )' and `ID_AVAILABLE( order )'. 
@@ -172,13 +180,14 @@ containing the groups of this order, then the functions return fail.
 # 
 #############################################################################
 
-For each layer x there are usually two directories in small:
-                   `smallx' and `idx'
-which contain the groups and the identification routine. An exception to
-this rule is the first layer; here all the code for the groups is contained 
-in the files smlgp1.g and idgrp1.g in the main directory of small. Two more
-exceptions are the layers 7 and 8 where there is no identitfication routine
-available at the moment and thus there are no directories id7 and id8.
+For each layer x there are either one or two directories in small:
+               `smallx' or `smallx' and `idx'
+The directory `smallx' contains the groups of layer x and the directory
+`idx' contains the corresponding identification routine if available. An 
+exception to this rule is the first layer; here all the code for the groups 
+is contained in the files smlgp1.g and idgrp1.g in the main directory of 
+small. For the layers 7 and 8 there is no identitfication routine available 
+at the moment and thus there are no directories id7 and id8.
 
 The other files in the small main directory are:
 
@@ -197,14 +206,16 @@ The other files in the small main directory are:
 #############################################################################
 
 The groups whose order factorises in at most 3 primes have been classified 
-by O. H"older, see [8]. An algorithm to find the isomorphism type of such 
+by  H"older, see [11]. An algorithm to find the isomorphism type of such 
 groups was first implemented in Gap 3 by Frank Celler and Hans-Georg Esser. 
 
 H"olders classification distinguishes the groups of the following order 
-types. Let p, q and r are different primes with p < q < r.
+types. Let p, q and r be different primes with p < q < r.
 
   p                - 1 cyclic group
+
   p^2              - 1 cyclic and 1 elementary abelian group
+
   p^3              - 3 abelian groups and 2 extraspecial groups
 
   pq               - 1 cyclic group 
@@ -242,11 +253,11 @@ classification as well.
 
 DETERMINATION:
 The nilpotent groups of this layer have been constructed using p-group 
-generation, see [10] and [12]. The 2- and 3-groups of this layer have also 
-been avaliable in the Two- and ThreeGroup library of Gap 3, see [9] and [11]
+generation, see [14] and [16]. The 2- and 3-groups of this layer have also 
+been avaliable in the Two- and ThreeGroup library of Gap 3, see [12] and [15]
 also. The non-nilpotent groups in this layer have been determined using the 
 Frattini extension method, the cyclic split extension method and cyclic 
-extension for the non-soluble groups, see [1] and [2]. 
+extension for the non-soluble groups, see [1], [2] and [3]. 
 
 STORING:
 The solvable groups in this layer are stored by a single long integer 
@@ -270,7 +281,7 @@ precomputed and stored:
 IDENTIFICATION:
 The identification routine uses invariants of groups to identify a given 
 group. The invariants are organised as tree and stored in `ID_GROUP_TREE', 
-which contains a leave for every group. In some cases this invariants tree 
+which contains a leaf for every group. In some cases this invariants tree 
 is not sufficient to distinguish all groups. In this case the tree is used 
 to reduce to a small number of possible groups and then a special random 
 isomorphism test finds the correct group among the possible ones.
@@ -358,7 +369,7 @@ e1 * q^(r-1) + e2 * q^(r-2) + ... + er where q = |Q| + 1.
 * Groups without normal Sylow subgroup:
 Now there are the groups of order 2^n * p without any normal Sylow subgroup
 left. These exist for very few primes p only. They have been computed as in 
-layer 2 using the Frattini extension method. The are stored as described in
+layer 2 using the Frattini extension method. They are stored as described in
 layer 2 using one long integer for each group.
 
 IDENTIFICATION:
@@ -485,8 +496,8 @@ The identification of groups of these orders is similar to layer 2.
 #############################################################################
 
 DETERMINATION:
-The groups of order 512 have first been enumerated, see [6] and [7]. Later
-they have been determined explicitly using p-group generation, see [10] and
+The groups of order 512 have first been enumerated, see [8] and [9]. Later
+they have been determined explicitly using p-group generation, see [14] and
 [5]. There are 10494213 groups of this order.
 
 STORING:
@@ -527,8 +538,8 @@ in V, then only the reference to the special list is stored instead of
 the full tailcode. This special list contains 1890 different tailcodes, 
 2 letters in the alphabet are sufficient to refer a tailcode.
 
-To distinguish references and actual tailcodes we use an special sign. Each
-new head beginns with a special symbol in V. There are two special symbols
+To distinguish references and actual tailcodes we use a special sign. Each
+new head begins with a special symbol in V. There are two special symbols
 available for this purpose. One is used, if the corresponding tailcode is 
 referenced, and the other, if it is an ordinary tailcode.
 
@@ -572,7 +583,7 @@ list contains the corresponding references.
 Again, in both lists certain patters occur often. In the first list
 the length `1' appears often. Thus the `1' is not stored explicitly,
 but a blank in this lists has to be considered as `1'. In the second
-lists often an entry is the same as the one 2 places bevor. Thus these
+list often an entry is the same as the one 2 places bevor. Thus these
 entries are deleted as well and blanks can be reconstructed by this
 rule. 
 
@@ -594,6 +605,101 @@ once for all groups with this factor and encode the remaining relators only.
 Note that there are only 16 different Frattini factors and only 12 of them 
 have order less than 1536. The groups are stored in lists corresponding 
 to the 12 Frattini factors.
+
+#############################################################################
+#
+# Layer 9 
+#
+#############################################################################
+
+This file contains the generic construction of groups of order p^4, p^5
+and p^6 with order > 3125 (those with order up to 3125 are contained in
+the lower layers of the small groups library).
+
+DETERMINATION:
+
+The groups of order p^4 were first determined by H\"older (1893)[11].
+The groups of order p^5 were first determined by Bagnera (1898).
+The groups of order p^6 were first (correctly) determined by
+Newman, O'Brien and Vaughan-Lee (2003)[13].
+
+STORING:
+
+The groups of order p^4 (p >= 11) are given by pc presentations which are 
+produced at run-time by a function SMALL_GROUPS_FUNCS[ 19 ] provided by 
+Newman.
+
+The groups of order p^5 (p >= 7) are given by pc presentations which are 
+produced at run-time by a function SMALL_GROUPS_FUNCS[ 20 ] provided by 
+Girnat (2004) [10].
+
+The groups of order p^6 (p >= 5) are given by pc presentations which are 
+produced at run-time by a function SMALL_GROUPS_FUNCS[ 21 ] provided by 
+Newman, O'Brien and Vaughan-Lee (2003) [13].
+
+The groups of order p^6 are given as a list of partially repetitive structures.
+These are compressed into the file 'sml1.z'. At run-time, this compressed 
+structure will be expanded, but restricted to those parts of the structure 
+relevant for the given p when needed. It is cached into SMALL_GROUP_LIB[1]. 
+As parts of this structure contain long ( O(p^2) ) lists of groups which are 
+classified by additional parameters and these lists are not dense, it might 
+be neccessary to set up the complete list of indices to find the presentation 
+of a single group.
+
+IDENTIFICATION: 
+
+A group of order p^4 can be identified and its catalogue number found by the
+function ID_SMALL_GROUPS_FUNCS[ 19 ] based on a function provided by Newman
+and modified by Besche.
+
+There is no identification available for the groups of order p^5 and p^6 at
+current.
+
+#############################################################################
+#
+# Layer 10 
+#
+#############################################################################
+
+GROUPS OF SQUAREFREE ORDER:
+
+DETERMINATION:
+
+ These groups have first been determined by H\"older (1895). The implemented
+ construction is based on the determination given in [7]. The key invariants 
+ are the socle and socle factor.
+
+STORING:
+
+ The groups of squarefree order which are not contained in lower layers are 
+ given by pc presentations which are produced at run-time by a function 
+ SMALL_GROUPS_FUNCS[ 24 ] written specially for this library.
+
+IDENTIFICATION:
+
+ A group of this kind can be identified and its catalogue number found by the
+ function ID_SMALL_GROUPS_FUNCS[ 24 ].
+
+
+GROUPS OF CUBEFREE but not SQUAREFREE ORDER:
+
+DETERMINATION:
+
+ First determined in [7]. Every group with cubefree order is either solvable 
+ or has a direct decomposition into a solvable group and PSL(2,p) for a 
+ suitable prime.
+
+STORING:
+
+ The groups of cubefree order < 50000 which are not contained in lower layers
+ and are not squarefree are given by pc presentations which are produced at 
+ run-time by a function SMALL_GROUPS_FUNCS[ 25 ] written specially for this 
+ library.
+
+IDENTIFICATION:
+
+ A group of this kind can be identified and its catalogue number found by the
+ function ID_SMALL_GROUPS_FUNCS[ 24 ].
 
 #############################################################################
 #
@@ -622,50 +728,67 @@ earlier layers.
 
 [1] Hans Ulrich Besche and Bettina Eick.
     The construction of finite groups.
-    J. Symbolic Comput. 27, 387 -- 404 (1999).
+    J. Symbolic Comput. 27, 387 - 404 (1999).
 
 [2] Hans Ulrich Besche and Bettina Eick.
     The groups of order at most 1000 except 512 and 768.
-    J. Symbolic Comput. 27, 405 -- 413 (1999).
+    J. Symbolic Comput. 27, 405 - 413 (1999).
 
 [3] Hans Ulrich Besche and Bettina Eick.
     The groups of order q^n * p.
-    To appear in Comm. Algebra
+    Comm. Alg. 29, 1759 - 1772 (2001)
 
 [4] Hans Ulrich Besche and Bettina Eick.
     The GrpConst share package of GAP 4.
 
 [5] Hans Ulrich Besche, Bettina Eick and E. A. O'Brien.
     A millenium project: constructing small groups.
-    In preparation.
+    Internat. J. Algebra Comput. 12, 623 - 644 (2002)
 
-[6] Bettina Eick and E. A. O'Brien.
+[6] Hans Ulrich Besche, Bettina Eick and E. A. O'Brien.
+    The groups of order at most 2000.
+    Electronic Research Announcements of the AMS 7, 1 - 4 (2001)
+
+[7] Heiko Dietrich and Bettina Eick.
+    Groups of cube-free order.
+    J. Algebra. (To Appear)
+
+[8] Bettina Eick and E. A. O'Brien.
     The groups of order 512. 
     Proceedings of the `Abschlusstagung des DFG Schwerpunktes
     Algorithmische Algebra und Zahlentheorie', Springer (1998)
 
-[7] Bettina Eick and E. A. O'Brien.
+[9] Bettina Eick and E. A. O'Brien.
     Enumerating p-groups.
-    Austal. Math. Soc. Ser. A, 67, 191 -- 205 (1999).
+    Austal. Math. Soc. Ser. A, 67, 191 - 205 (1999).
 
-[8] Otto H"older.
-    Die Gruppen der Ordnungen p^3, pq^2, pqr, p^4.
-    Math. Ann. 43, 301 -- 412 (1893).
+[10] B. Girnat.
+     Klassifikation der Gruppen bis zur Ordnung p^5.
+     Staatsexamensarbeit, TU Braunschweig.
 
-[9] Rodney James, M. F. Newman and E. A. O'Brien.
-    The groups of order 128.
-    J. Algebra 129 (1), 136 -- 158 (1990)
+[11] Otto H"older.
+     Die Gruppen der Ordnungen p^3, pq^2, pqr, p^4.
+     Math. Ann. 43, 301 - 412 (1893).
 
-[10] E. A. O'Brien.
+[12] Rodney James, M. F. Newman and E. A. O'Brien.
+     The groups of order 128.
+     J. Algebra 129 (1), 136 - 158 (1990)
+
+[13]  M. F. Newman, E. A. O'Brien and M. R. Vaughan-Lee.
+      Groups and nilpotent Lie rings whose order is the sixth power of a prime.
+      J. Algebra 278, 383 - 401 (2003)
+
+[14] E. A. O'Brien.
      The p-group generation algorithm.
-     J. Symbolic Comput. 9, 677 -- 698 (1990)
+     J. Symbolic Comput. 9, 677 - 698 (1990)
 
-[11] E. A. O'Brien.
+[15] E. A. O'Brien.
      The groups of order 256.
-     J. Algebra 143 (1), 219 -- 235 (1991)
+     J. Algebra 143 (1), 219 - 235 (1991)
 
-[12] E. A. O'Brien.
+[16] E. A. O'Brien.
      The ANUPQ share package of Gap 3.
+
 
 #############################################################################
 #
@@ -675,7 +798,7 @@ earlier layers.
 
 Please report bugs/problems/feedback to the authors or to gap-trouble
 
-Hans-Ulrich.Besche@math.rwth-aachen.de
+hubesche@tu-bs.de
 beick@tu-bs.de
 obrien@math.auckland.ac.nz
 gap-trouble@dcs.st-and.ac.uk

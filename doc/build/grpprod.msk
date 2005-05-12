@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Group Products}
 
@@ -93,12 +94,9 @@ gap> au:=AutomorphismGroup(n);;
 gap> au:=First(Elements(au),i->Order(i)=3);;
 gap> au:=Group(au);
 <group with 1 generators>
-\endexample
-\begintt
 gap> SemidirectProduct(au,n);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-\endtt
-\beginexample
+Error, no 2nd choice method found for `IsomorphismPcGroup' on 1 arguments
 gap> IsGroupOfAutomorphisms(au);
 true
 gap> SemidirectProduct(au,n);
@@ -213,6 +211,8 @@ gap> p:=Projection(s,2);
 gap> Image(p,(1,3,2)(4,5,6));
 (1,2,3)
 \endexample
+
+\Declaration{SubdirectProducts}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Wreath Products}

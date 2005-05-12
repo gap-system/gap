@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for unknowns.
 ##
@@ -14,7 +15,6 @@ Revision.unknown_gd :=
 
 
 #############################################################################
-##
 #1
 ##  Sometimes the result of an operation does not allow further
 ##  computations with it.
@@ -22,9 +22,9 @@ Revision.unknown_gd :=
 ##  and the computation is stopped.
 ##  
 ##  This is not appropriate for some applications in character theory.
-##  For example, if a character of a group sill be induced to a supergroup
-##  (see~"InducedClassFunction") but the class fusion is only a parametrized
-##  map (see Chapter~"Maps Concerning Character Tables"),
+##  For example, if one wants to induce a character of a group to a
+##  supergroup (see~"InducedClassFunction") but the class fusion is only a
+##  parametrized map (see Chapter~"Maps Concerning Character Tables"),
 ##  there may be values of the induced character which are determined by the
 ##  fusion map, whereas other values are not known.
 ##
@@ -113,7 +113,7 @@ LargestUnknown := 0;
 ##  session.
 ##
 ##  In the second form `Unknown' returns the <n>-th unknown;
-##  if it did not exist already, it is created.
+##  if it did not exist yet, it is created.
 ##
 DeclareOperation( "Unknown", [] );
 DeclareOperation( "Unknown", [ IsPosInt ] );

@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  Exclude from testall.g: why?
+##
 
 gap> START_TEST("$Id$");
 gap> a:=Set([(1,3,2),(4,5)]);;
@@ -51,12 +53,9 @@ gap> c:=Difference(l,a);;
 gap> c=l;
 true
 
-gap> STOP_TEST( "set.tst", 20930000 );
+gap> STOP_TEST( "set.tst", 19900000 );
 
 #############################################################################
 ##
-#E  set.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
-
-
+#E
 

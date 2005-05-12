@@ -22,11 +22,7 @@ chmod a+x ${BINDIR}/saybin
 cd ${DISTROOT}
 [ -d OLD ] || mkdir OLD
 rm -rf OLD/*
-mv [a-z]*.zoo [a-z]*.tar [a-z]*.zip [a-z]*.tar.gz split OLD
-
-if [ \! -d split ];  then
-    mkdir split
-fi
+mv [a-z]*.zoo [a-z]*.tar [a-z]*.zip [a-z]*.tar.gz OLD
 
 # remove things that should not go in the distribution
 
@@ -35,305 +31,145 @@ echo "Cleaning up before wrapping"
 
 rm -rf doc/build doc/abattoir doc/Makefile alpha beta dev dev \
   config.*
+
+find . -name .cvsignore -exec rm {} \;
 )
 
 
 # go into the source directory and create the zoo files
-echo "$0: zooing version $VERSION of $DATE"
+echo "$0: zooing version $FULLVERSION of $DATE"
 
 #echo "README file"
 #cp ${DISTNAME}/etc/README .
 
-addtext () {
-    archivename=$1
-    shift 
-    ${BINDIR}/saytext | zoo ahc ${archivename}.zoo $* >& /dev/null &
-    zip -l ${archivename}.zip $* > /dev/null  &
-    tar rf ${archivename}.tar $* &
-    wait
-}
-
-addbin () {
-    archivename=$1
-    shift 
-    ${BINDIR}/saybin | zoo ahc ${archivename}.zoo $* >& /dev/null & 
-    zip  ${archivename}.zip $* > /dev/null &
-    tar rf ${archivename}.tar $* &
-    wait
-}
+. ${BINDIR}/zoofuncs
 
 (cd $DISTROOT;
 
-
-echo "Removing old attempts"
-
-
-
-
-echo "HTML Documentation (section-wise)"
-
-for j in ref tut ext prg new; do
-   addtext split/html_sect$RBVERSION ${DISTNAME}/doc/htm_small/${j}/*
+echo "Basic stuff"
+for j in lib grp tst; do
+    addtext gap$RBVERSION ${DISTNAME}/${j}/*
 done
-
-addtext split/html_sect$RBVERSION ${DISTNAME}/doc/htm_small/*.htm
-
-echo "Basic version"
-
-for j in lib grp tst pkg/example pkg/example/src pkg/example/doc pkg/example/gap; do
-    addtext basic$RBVERSION ${DISTNAME}/${j}/*
-done
-
-addtext basic$RBVERSION ${DISTNAME}/etc/*.vim ${DISTNAME}/etc/emacs/* ${DISTNAME}/etc/xrmtcmd.c
-
-touch ${DISTNAME}/pkg/NOAUTO
-addtext basic$RBVERSION ${DISTNAME}/pkg/ALLPKG ${DISTNAME}/pkg/NOAUTO
+addtext gap$RBVERSION ${DISTNAME}/etc/*.vim ${DISTNAME}/etc/emacs/* ${DISTNAME}/etc/xrmtcmd.c
+addtext gap$RBVERSION ${DISTNAME}/etc/GPL
 
 echo "Documentation -- TeX files"
 
 for j in ref tut ext prg new; do
-    addtext split/doc$RBVERSION ${DISTNAME}/doc/${j}/*.tex
-    addtext basic$RBVERSION ${DISTNAME}/doc/${j}/*.tex
+    addtext gap$RBVERSION ${DISTNAME}/doc/${j}/*.tex
 
 done
 
 for i in gapmacro.tex manual.bib manualindex; do
-    addtext basic$RBVERSION ${DISTNAME}/doc/$i
-    addtext split/doc$RBVERSION ${DISTNAME}/doc/$i
+    addtext gap$RBVERSION ${DISTNAME}/doc/$i
 done
-
 
 for j in six mst; do
-    addtext split/doc$RBVERSION ${DISTNAME}/doc/{ref,tut,ext,prg,new}/manual.$j
-    addtext basic$RBVERSION ${DISTNAME}/doc/{ref,tut,ext,prg,new}/manual.$j
+    addtext gap$RBVERSION ${DISTNAME}/doc/{ref,tut,ext,prg,new}/manual.$j
 done
-
-
-# this version will also be used for mac and pc, we don't give them the
-# source however.
-cp basic$RBVERSION.zoo macpc.zoo
-cp basic$RBVERSION.zip macpc.zip
-cp basic$RBVERSION.tar macpc.tar
 
 echo "Source files"
 
-cp INSTALL ${DISTNAME}
+cp ${BINDIR}/FILES .
 
-addtext basic$RBVERSION ${DISTNAME}/INSTALL
-addtext basic$RBVERSION ${DISTNAME}/gap.shi
-addtext split/src$RBVERSION ${DISTNAME}/gap.shi
+addtext gap$RBVERSION README
+addbin gap$RBVERSION ${DISTNAME}/gap.shi
 
 for j in src cnf; do
-    addtext split/src$RBVERSION ${DISTNAME}/${j}/*
-    addtext basic$RBVERSION ${DISTNAME}/${j}/*
+    addbin gap$RBVERSION ${DISTNAME}/${j}/*
 done
 
 for i in  ${DISTNAME}/{Makefile.in,sysinfo.in,configure}; do
-    addtext  split/src$RBVERSION $i
-    addtext basic$RBVERSION $i
+    addbin gap$RBVERSION $i
 done
 
-echo "Omnibus edition"
-# extend the basic version
-cp basic$RBVERSION.zoo gap$RBVERSION.zoo
-cp basic$RBVERSION.zip gap$RBVERSION.zip
-cp basic$RBVERSION.tar gap$RBVERSION.tar
 
 echo "TeXed Documentation"
-addbin docdvi$RBVERSION ${DISTNAME}/doc/*/manual.dvi
-addbin macpc ${DISTNAME}/doc/*/manual.dvi
 addbin gap$RBVERSION ${DISTNAME}/doc/*/manual.dvi
-
-for i in docdvi$RBVERSION macpc gap$RBVERSION; do
-    addbin $i ${DISTNAME}/doc/fullindex.dvi
-done
-
-(cd split; ln -s ../docdvi$RBVERSION.zoo .)
-(cd split; ln -s ../docdvi$RBVERSION.zip .)
-(cd split; ln -s ../docdvi$RBVERSION.tar.gz .)
-
-addbin docpdf$RBVERSION ${DISTNAME}/doc/*/manual.pdf
-addbin macpc ${DISTNAME}/doc/*/manual.pdf
 addbin gap$RBVERSION ${DISTNAME}/doc/*/manual.pdf
-
-
-addbin docpdf$RBVERSION  ${DISTNAME}/doc/fullindex.pdf
 addbin gap$RBVERSION  ${DISTNAME}/doc/fullindex.pdf
-
-(cd split; ln -s ../docpdf$RBVERSION.zoo .)
-(cd split; ln -s ../docpdf$RBVERSION.zip .)
-(cd split; ln -s docpdf$RBVERSION.tar.gz .)
-
-
-# postscript files (do we really still want them?)
-addtext docps$RBVERSION ${DISTNAME}/doc/*/manual.ps
-
-addtext docps$RBVERSION ${DISTNAME}/doc/fullindex.ps
-
-(cd split; ln -s ../docps$RBVERSION.zoo .)
-(cd split; ln -s ../docps$RBVERSION.zip .)
-(cd split; ln -s ../docps$RBVERSION.tar.gz .)
 
 echo "HTML Documentation"
 
 for j in ref tut ext prg new; do
-    for k in html$RBVERSION macpc gap$RBVERSION; do
-	addtext $k ${DISTNAME}/doc/htm/${j}/*
-    done
+  addtext gap$RBVERSION ${DISTNAME}/doc/htm/${j}/*
+  addtext htmie$RBVERSION ${DISTNAME}/doc/htmie/${j}/*
 done
 
 for i in ${DISTNAME}/doc/htm/*.htm; do
-    for k in html$RBVERSION macpc gap$RBVERSION; do
-	addtext $k $i
-    done
+    addtext gap$RBVERSION $i
 done
 
-(cd split; ln -s ../html$RBVERSION.zoo .)
-(cd split; ln -s ../html$RBVERSION.zip .)
-(cd split; ln -s ../html$RBVERSION.tar.gz .)
+for i in ${DISTNAME}/doc/htmie/*.htm; do
+    addtext htmie$RBVERSION $i
+done
 
 echo "Trans"
-for j in split/trans$RBVERSION macpc gap$RBVERSION; do
-    addtext $j ${DISTNAME}/trans/*
-done
-
-cp split/trans$RBVERSION.zoo gdat$RBVERSION.zoo
-cp split/trans$RBVERSION.zip gdat$RBVERSION.zip
-cp split/trans$RBVERSION.tar gdat$RBVERSION.tar
-
-echo "Small"
-
-for j in split/small$RBVERSION gdat$RBVERSION macpc gap$RBVERSION; do
-    addtext $j ${DISTNAME}/small/*.*
-done
-
-for k in id2 id3 id4 id5 id6 small2 small3 small4 small5 small6 small7 small8; do
-    echo "     " $k
-    for j in split/${k}$RBVERSION gdat$RBVERSION macpc gap$RBVERSION; do
-	addtext $j ${DISTNAME}/small/${k}/*
-    done
-done
-
+addtext gap$RBVERSION ${DISTNAME}/trans/*
 
 echo "Prim"
 
-for j in split/prim$RBVERSION gdat$RBVERSION macpc gap$RBVERSION; do
-    addtext $j ${DISTNAME}/prim/*.* ${DISTNAME}/prim/grps/*
-done
+addtext gap$RBVERSION ${DISTNAME}/prim/*.* ${DISTNAME}/prim/grps/*
 
-
-
-
-#char tables and tables of marks from ctbllib tomlib and tomxtlib zoo files
-#into macpc, tdat and gap
-
-# touch tdat$RBVERSION.zoo tdat$RBVERSION.zip tdat$RBVERSION.tar
-
-chmod 755 ${DISTNAME}/etc/zoomerge3
-
-echo "Character Tables and Tables of Marks"
-
-for j in /home/ftp/pub/gappre/sys$RBVERSION/*.zoo; do
-    for i in tdat$RBVERSION macpc gap$RBVERSION; do
-	${DISTNAME}/etc/zoomerge3 $i $j ${DISTNAME}/pkg
-    done;
-done;
-
-
-
-
-echo "------------------------------"
-
-echo "Lib"
-addtext split/lib$RBVERSION ${DISTNAME}/lib/*
-
-
-echo "Tst"
-addtext split/tst$RBVERSION ${DISTNAME}/tst/*
-
-echo "Grp"
-addtext split/grp$RBVERSION ${DISTNAME}/grp/*
-
-echo "------------------------------"
-
-echo "Pc version"
-cp macpc.zoo gappc$RBVERSION.zoo
-cp macpc.zip gappc$RBVERSION.zip
-cp macpc.tar gappc$RBVERSION.tar
-
+echo "Winbin"
 cp ${DISTNAME}/bin/i686-pc-cygwin-gcc/gap.exe ${DISTNAME}/bin/gapw95.exe
-cp /gap/4.0/bin/cygwin1.dll ${DISTNAME}/bin
-for i in ${DISTNAME}/bin/gapw95.exe ${DISTNAME}/bin/cygwin1.dll; do
-    addbin gappc$RBVERSION $i 
-    addbin winbin$RBVERSION $i
-done
+addbin gap$RBVERSION ${DISTNAME}/bin/gapw95.exe
+addbin gap$RBVERSION ${DISTNAME}/bin/rxvt.exe
+addbin gap$RBVERSION ${DISTNAME}/bin/regtool.exe
+addbin gap$RBVERSION ${DISTNAME}/bin/cygwin1.dll
+addbin gap$RBVERSION ${DISTNAME}/bin/libW11.dll
+addbin gap$RBVERSION ${DISTNAME}/bin/gap.pif
+addbin gap$RBVERSION ${DISTNAME}/bin/gapicon.bmp
+addtext gap$RBVERSION ${DISTNAME}/bin/gaprxvt.bat
+addtext gap$RBVERSION ${DISTNAME}/bin/gap.bat
+addtext gap$RBVERSION ${DISTNAME}/bin/usemem.bat
 
-addtext gappc$RBVERSION ${DISTNAME}/bin/gap.bat
-addtext winbin$RBVERSION ${DISTNAME}/bin/gap.bat
-addbin gappc$RBVERSION ${DISTNAME}/bin/gap.pif
-addbin winbin$RBVERSION ${DISTNAME}/bin/gap.pif
-addbin gappc$RBVERSION ${DISTNAME}/bin/gapicon.bmp
-addbin winbin$RBVERSION ${DISTNAME}/bin/gapicon.bmp
-# instwin is obsolete now
-#for i in ${DISTNAME}/bin/gap.bat ${DISTNAME}/instwin.bat; do
-#    addtext gappc$RBVERSION $i 
-#    addtext winbin$RBVERSION $i
-#done
-
-	
-cp INSTALL.WIN ${DISTNAME}
-addtext gappc$RBVERSION ${DISTNAME}/INSTALL.WIN
 rm ${DISTNAME}/bin/{gapw95.exe,cygwin1.dll}
-
-echo "Mac version"
-mv macpc.zoo gapmac$RBVERSION.zoo
-mv macpc.zip gapmac$RBVERSION.zip
-mv macpc.tar gapmac$RBVERSION.tar
-
-cp INSTALL-MAC.TXT ${DISTNAME}
-addtext gapmac$RBVERSION ${DISTNAME}/INSTALL-MAC.TXT
-
 
 ##  echo "Mac src"
 ##  find ${DISTNAME}/{macsrc,macgac} -print | zoo ahI macsrc$RBVERSION.zoo > /dev/null
 
+# small is at the end since its many files. 
+echo "Small"
 
-echo "Accepted Share Packages"
-# touch allshare$RBVERSION.zoo allshare$RBVERSION.zip allshare$RBVERSION.tar
+addtext gap$RBVERSION ${DISTNAME}/small/*.*
 
-for i in /home/ftp/pub/gappre/share$RBVERSION/*.zoo; do
-    ${DISTNAME}/etc/zoomerge3 allshare$RBVERSION $i
+for k in id2 id3 id4 id5 small2 small3 small4 small5 small6 small7 small8; do
+    echo "     " $k
+    addtext gap$RBVERSION ${DISTNAME}/small/${k}/*
 done
 
-for i in /home/ftp/pub/gappre/share$RBVERSION/README*; do
-cp $i .
+#
+# Have to do id6 separately because it's too many files
+#
+
+echo "     " id6
+addtext gap$RBVERSION ${DISTNAME}/small/id6/id1152.*
+addtext gap$RBVERSION ${DISTNAME}/small/id6/id1920.*
+addtext gap$RBVERSION ${DISTNAME}/small/id6/*.g
+
+echo "Tom -- only for 4.4"
+
+for j in pkg/tomlib/PackageInfo.g pkg/tomlib/init.g pkg/tomlib/read.g; do
+  addtext gap$RBVERSION ${DISTNAME}/${j}
 done
-cp ${DISTNAME}/mkdistrib/README.allshare README
-for i in READM*; do
-    addtext allshare$RBVERSION $i
-done
-rm -f README*
+addtext gap$RBVERSION ${DISTNAME}/pkg/tomlib/gap/*
 
-echo "Deposited  Packages"
-# touch deppack$RBVERSION.zoo deppack$RBVERSION.zip deppack$RBVERSION.tar
+for j in tmlin2mx tmlinoam tmlin2a tmprimar tmaltc tmx3l34 tmsymc tmutwam tmutwa tmutwmx tmlin2 tmunitc tmutw tmmathmx.tom tmunitcm tmjankmx tmtw tmmath tmsym1mx tmlinoa tmesym tmsympam tmsympa tmjank tmtwmx tmalt1 tmhsmclm tmunit tmunitam tmunitmx tmsympmx tmhsmcl tmlinomx tmalt1mx tmunita tmlino tmsymp tmsym1 tmealt tmhe tms11 tma12 tmco3 ; do
+  addtext gap$RBVERSION ${DISTNAME}/pkg/tomlib/data/${j}.tom
+done;
 
-for i in /home/ftp/pub/gappre/dep$RBVERSION/*.zoo; do
-    ${DISTNAME}/etc/zoomerge3 deppack$RBVERSION $i
+echo "xtom"
+for j in tma12m9 tmco3mx tms10m1 tmo82mx.tom tm2s62mx tms62mx6 tms62mx3 tma12m4 tm4l34mx tm2s62m6 tm2s62 tms10m2 tm2s62m3 tml52 tmu43v4 tms11m3 tma12mx tmm24 tmm24m7 tmhemx tm4l34 tmu43v4m tmm24m5 tms11m4 tms11m6 tma12m5 tms11m5 tm4l34s3 tm3d42 tm3d42m1 tmg24 tmo8m2 tmo8m2m1 tmo8p2 tmo8p2m4; do
+  addtext xtom$RBVERSION ${DISTNAME}/pkg/tomlib/data/${j}.tom
 done
 
-for i in /home/ftp/pub/gappre/dep$RBVERSION/README*; do
-cp $i .
-done
+echo "tools"
 
-cp ${DISTNAME}/mkdistrib/README.deppack README
-for i in READM*; do
-    addtext deppack$RBVERSION $i
-done
-rm -f README*
-
-
-echo "Compressing tar files"
-gzip *.tar split/*.tar
+addtext tools${RBVERSION} ${DISTNAME}/doc/{allmanualsindex,gapmacro.tex,make_doc,mrabbrev.bib}
+addtext tools${RBVERSION} ${DISTNAME}/doc/{fullindex.tex,fullindex.mst}
+addtext tools${RBVERSION} ${DISTNAME}/doc/{manualindex,htm/Makefile,htm/allhtmlindex,htm/onehtmlindex}
+addtext tools${RBVERSION} ${DISTNAME}/etc/{buildman.pe,convert.pl,packpack,unzoo.c,README.tools}
 
 )
 

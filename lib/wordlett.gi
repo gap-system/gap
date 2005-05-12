@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file contains  methods for   associative words  in letter
 ##  representation
@@ -29,6 +30,8 @@ LIB_STRING_SINTLIST:=function(l)
   IS_STRING_CONV(l);
   return l;
 end;
+
+SINTLIST_STRING := s-> INTLIST_STRING(s, -1);
 
 InstallMethod(AssocWordByLetterRep, "W letter words family", true,
     [ IsWLetterWordsFamily, IsHomogeneousList ], 0,
@@ -319,6 +322,63 @@ local names,len,i,g,h,e;
       Print( "^",e);
     fi;
   fi;
+end);
+
+InstallMethod(LaTeXObj,"assoc word in letter rep",true,
+  [IsAssocWord and IsLetterAssocWordRep],0,
+function(elm)
+local names,len,i,g,h,e,a,s;
+
+  names:= ShallowCopy(FamilyObj( elm )!.names);
+  for i in [1..Length(names)] do
+    s:=names[i];
+    e:=Length(s);
+    while e>0 and s[e] in CHARS_DIGITS do
+      e:=e-1;
+    od;
+    if e<Length(s) then
+      if e=Length(s)-1 then
+	s:=Concatenation(s{[1..e]},"_",s{[e+1..Length(s)]});
+      else
+	s:=Concatenation(s{[1..e]},"_{",s{[e+1..Length(s)]},"}");
+      fi;
+      names[i]:=s;
+    fi;
+  od;
+
+  s:="";
+  elm:=LetterRepAssocWord(elm);
+  len:= Length( elm );
+  i:= 2;
+  if len = 0 then
+    return( "id" );
+  else
+    g:=AbsInt(elm[1]);
+    e:=SignInt(elm[1]);
+    while i <= len do
+      h:=AbsInt(elm[i]);
+      if h=g then
+        e:=e+SignInt(elm[i]);
+      else
+	Append(s, names[g] );
+	if e<>1 then
+	  Append(s,"^{");
+	  Append(s,String(e));
+	  Append(s,"}");
+	fi;
+        g:=h;
+	e:=SignInt(elm[i]);
+      fi;
+      i:=i+1;
+    od;
+    Append(s, names[g] );
+    if e<>1 then
+      Append(s,"^{");
+      Append(s,String(e));
+      Append(s,"}");
+    fi;
+  fi;
+  return s;
 end);
 
 # operations for two associative words

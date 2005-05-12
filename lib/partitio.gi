@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This    file contains the  functions that    construct and modify ordered
 ##  partitions. These  functions  are used in  the backtrack  algorithms  for
@@ -174,111 +175,84 @@ BindGlobal("SplitCellTestfun2",function(Q,pt,no)
 end);
 
 InstallGlobalFunction( SplitCell, function( P, i, Q, j, g, out )
-local   a,  b,  l,  B,  tmp,  m,  x, inflag, outflag,test,k;
+local   a,  b,  l,  B,  tmp,  m,  x, inflag, outflag,test,k,Pcop,acop,maxmov;
+  
+  # If none or  all  points are  moved out,  do  not change <P>  and return
+  # 'false'.
 
-    a := P.firsts[ i ];
-    b := a + P.lengths[ i ];
-    l := b - 1;
+  a := P.firsts[ i ];
+  b := a + P.lengths[ i ];
+  l := b - 1;
+
+  # Collect  the points to  be moved out of  the <i>th  cell  of <P> at the
+  # right.
+
+  # if B is passed, we moved too many (or all) points
+  if IsInt(out)  then  
+    maxmov:=out;
+  else
+    maxmov:=P.lengths[i]-1; # maximum number to be moved out: Cellength-1
+  fi;
+
+  if IsPartition(Q) 
+    # if P.points is a range, or g not internal, we would crash
+    and IsPlistRep(P.points) and IsInternalRep(g) then
+    a:=SPLIT_PARTITION(P.points,Q.cellno,j,g,[a,l,maxmov]);
+    if a<0 then
+      return false;
+    fi;
+  else
+    # library version
 
     if IsPartition(Q) then
       test:=SplitCellTestfun1;
     else
       test:=SplitCellTestfun2;
     fi;
-    
-    # If none or  all  points are  moved out,  do  not change <P>  and return
-    # 'false'.
 
-    #T is this extra test actually worth it?
-    if out <> true  then
-      # we need that one image gets in and one image gets out
-      inflag:=true;
-      outflag:=true;
-      B:=P.points{[a..l]};
-      k:=1;
-      while (inflag or outflag) and k<=Length(B) do
-        x:=B[k]^g;
-	m:=test(Q,x,j);
-	inflag:=inflag and not m; 
-	outflag:=outflag and m;
-        k:=k+1;
-      od;
-      if inflag or outflag then
-        return false;
+    B:=l-maxmov;
+    a := a - 1;
+    # Points left of <a>  remain in the cell,   points right of  <b> move
+    # out.
+    while a < b  do
+      # Decrease <b> until a point remains in the cell.
+      repeat
+	b := b - 1;
+	# $b < B$ means that more than <out> points move out.
+	if b < B  then
+	  return false;
+	fi;
+      until not test(Q,P.points[ b ] ^ g,j);
+
+      # Increase <a> until a point moved out.
+      repeat
+	a := a + 1;
+      until (a>b) or test(Q,P.points[ a ] ^ g,j);
+
+      # Swap the points.
+      if a < b  then
+	tmp := P.points[ a ];
+	P.points[ a ] := P.points[ b ];
+	P.points[ b ] := tmp;
       fi;
 
-#      x := Q{ OnTuples( P.points{ [ a .. l ] }, g ) };
-#      if x = j + 0 * x  or  ForAll( x, i -> i <> j )  then
-#	  return false;
-#      fi;
-    fi;
+    od;
 
-    # Collect  the points to  be moved out of  the <i>th  cell  of <P> at the
-    # right.
-    a := a - 1;
-    if out <> true  then  B := l - out;
-                    else  B := 0;        fi;
-    if B > 0  then
+  fi;
 
-        # Points left of <a>  remain in the cell,   points right of  <b> move
-        # out.
-        while a < b  do
-
-            # Decrease <b> until a point remains in the cell.
-            repeat
-                b := b - 1;
-                
-                # $b < B$ means that more than <out> points move out.
-                if b < B  then
-                    return false;
-                fi;
-                
-            #until Q[ P.points[ b ] ^ g ] <> j;
-            until not test(Q,P.points[ b ] ^ g,j);
-
-            # Increase <a> until a point moved out.
-            repeat
-	      a := a + 1;
-            #until Q[ P.points[ a ] ^ g ] =  j;
-            until test(Q,P.points[ a ] ^ g,j);
-
-            # Swap the points.
-            if a < b  then
-                tmp := P.points[ a ];
-                P.points[ a ] := P.points[ b ];
-                P.points[ b ] := tmp;
-            fi;
-            
-        od;
-        
-    else  # Same as above, but without $b < B$ check.
-        while a < b  do
-            repeat
-                b := b - 1;
-            #until Q[ P.points[ b ] ^ g ] <> j;
-            until not test(Q,P.points[ b ] ^ g,j);
-            repeat
-                a := a + 1;
-            #until Q[ P.points[ a ] ^ g ] =  j;
-            until test(Q,P.points[ a ] ^ g,j);
-            if a < b  then
-                tmp := P.points[ a ];
-                P.points[ a ] := P.points[ b ];
-                P.points[ b ] := tmp;
-            fi;
-        od;
-    fi;
-
-    # Split the cell and introduce a new cell into <P>.
-    m := Length( P.firsts ) + 1;
-    P.cellno{ P.points{ [ a .. l ] } } := m + 0 * [ a .. l ];
-    P.firsts[ m ] := a;
-    P.lengths[ m ] := l - a + 1;
-    P.lengths[ i ] := P.lengths[ i ] - P.lengths[ m ];
-    
-    return P.lengths[ m ];
+  if a>l then
+    # no point moved out
+    return false;
+  fi;
+  # Split the cell and introduce a new cell into <P>.
+  m := Length( P.firsts ) + 1;
+  P.cellno{ P.points{ [ a .. l ] } } := m + 0 * [ a .. l ];
+  P.firsts[ m ] := a;
+  P.lengths[ m ] := l - a + 1;
+  P.lengths[ i ] := P.lengths[ i ] - P.lengths[ m ];
+  
+  return P.lengths[ m ];
 end );
-
 
 #############################################################################
 ##
@@ -328,19 +302,19 @@ end );
 ##  May behave undefined if there was no splitting before.
 ##
 InstallGlobalFunction( UndoRefinement, function( P )
-    local   M,  m;
+local M, pfm, plm, m;
     
     M := Length( P.firsts );
-    if P.firsts[ M ] = 1  then
+    pfm:=P.firsts[M];
+    if pfm = 1  then
         return false;
     fi;
+    plm:=P.lengths[M];
     
     # Fuse the last cell with the one stored before it in `<P>.points'.
-    m := P.cellno[ P.points[ P.firsts[ M ] - 1 ] ];
-    P.lengths[ m ] := P.lengths[ m ] + P.lengths[ M ];
-    P.cellno{ P.points
-            { [ P.firsts[ M ] .. P.firsts[ M ] + P.lengths[ M ] - 1 ] } }
-      := m + 0 * [ 1 .. P.lengths[ M ] ];
+    m := P.cellno[ P.points[ pfm - 1 ] ];
+    P.lengths[ m ] := P.lengths[ m ] + plm;
+    P.cellno{ P.points { [ pfm .. pfm + plm - 1 ] } } := m + 0 * [ 1 .. plm ];
     Unbind( P.firsts[ M ] );
     Unbind( P.lengths[ M ] );
     

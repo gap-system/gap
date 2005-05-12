@@ -1,0 +1,36 @@
+@Name
+Change the manual format to GAPDoc
+@Contact
+FL
+@Date
+August 13, 2003
+@Time
+3
+@Public
+No
+@Need
+3
+@NeedA
+0
+@Math
+0
+@Prog
+3
+@Descr
+At the moment we support two manual formats: The ``classic'' format and
+GAPDoc. Given the state of the classic format which is basically a
+collection of hacks, it would be desirable to change to GAPDoc.
+
+<P>
+To do so will require first a tool for a rough automatic translation of
+manual sections but given the unparsability of the old format a human has to
+look over the result. For most lines this is trivial, but still a lot of
+work is left.
+
+<P>
+The gain would be that we would not have to support the old tools and the
+old format any longer and would gain better manual features.
+@Manual
+@Ref
+@Rem
+@Application

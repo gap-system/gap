@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.pcgsspec_gi :=
     "@(#)$Id$";
@@ -605,12 +606,17 @@ function( pcgs )
 
 	w:=pcgssys.weights;
 	if w[Length(w)][1]=1 then
-	  SetIsPcgsCentralSeries(newpcgs,true);
+	  SetIndicesCentralNormalSteps( newpcgs, pcgssys.first );
+	  if Length(Set(RelativeOrders(newpcgs)))=1 then
+	    SetIndicesPCentralNormalStepsPGroup( newpcgs, pcgssys.first );
+	  fi;
 	fi;
 
         SetLGWeights( newpcgs, pcgssys.weights );
         SetLGLayers( newpcgs, pcgssys.layers );
         SetLGFirst( newpcgs, pcgssys.first );
+        SetIndicesEANormalSteps( newpcgs, pcgssys.first );
+        SetIndicesChiefNormalSteps( newpcgs, pcgssys.first );
         SetIsFiniteOrdersPcgs( newpcgs, true );
         SetIsPrimeOrdersPcgs( newpcgs, true );
     fi;
@@ -704,7 +710,7 @@ end);
 InstallMethod( IsomorphismSpecialPcGroup, "method for pc groups",
     true, [ IsPcGroup ], 0,
 function(G)
-local s,H,iso,pc;
+local s,H,iso,pc,w;
   s:=SpecialPcgs(G);
   H:=PcGroupWithPcgs(s);
   pc:=FamilyPcgs(H);
@@ -712,12 +718,25 @@ local s,H,iso,pc;
   SetLGLayers(pc,LGLayers(s));
   SetLGFirst(pc,LGFirst(s));
   SetIsSpecialPcgs(pc,true);
+  if Length(LGWeights(pc)) = 0 or LGWeights(pc)[Length(LGWeights(pc))][1]=1 then
+	SetIsPcgsCentralSeries(pc,true);
+  fi;
+  SetIndicesEANormalSteps( pc, LGFirst(pc) );
+  SetIndicesChiefNormalSteps( pc, LGFirst(pc) );
+  w:=LGWeights(pc);
+  if Length(w) > 0 and w[Length(w)][1]=1 then
+    SetIndicesCentralNormalSteps( pc, LGFirst(pc));
+    if Length(Set(RelativeOrders(pc)))=1 then
+      SetIndicesPCentralNormalStepsPGroup( pc, LGFirst(pc) );
+    fi;
+  fi;
+
 
   iso:=GroupHomomorphismByImagesNC(G,H,s,pc);
   SetIsBijective( iso, true );
   SetSpecialPcgs(H,pc);
   SetPcgs(H,pc);
-  # note: `ImagesSource' might bei
+  # note: `ImagesSource' might be
   # physically a different group than the `Range' H.
   SetSpecialPcgs(ImagesSource(iso),pc);
   SetPcgs(ImagesSource(iso),pc);
@@ -918,9 +937,9 @@ end;
 
 #############################################################################
 ##
-#M  IndicesNormalSteps( <pcgs> )
+#M  IndicesEANormalSteps( <pcgs> )
 ##
-InstallMethod( IndicesNormalSteps, "special pcgs: LGFirst", true,
+InstallMethod( IndicesEANormalSteps, "special pcgs: LGFirst", true,
         [ IsSpecialPcgs ], 0, LGFirst );
 
 DoCentralSeriesPcgsIfNilpot:=function(G)

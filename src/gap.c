@@ -7,6 +7,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the various read-eval-print loops and  related  stuff.
 */
@@ -322,7 +323,7 @@ int main (
 
     /* handle return-value or return-void command                      */
     else if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
-      Pr( "'return' must not be used in main read-eval-print loop",
+      Pr( "'return' must not be used in main read-eval-print loop\n",
 	  0L, 0L );
     }
 
@@ -339,8 +340,12 @@ int main (
 	
     /* stop the stopwatch                                          */
     AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
-	
-    UserHasQuit = 0;	/* quit has done its job if we are here */
+
+    if (UserHasQuit)
+      {
+	FlushRestOfInputLine();
+	UserHasQuit = 0;	/* quit has done its job if we are here */
+      }
 
   }
 
@@ -414,6 +419,26 @@ Obj FuncRuntime (
 {
   return INTOBJ_INT( SyTime() );
 }
+
+
+
+Obj FuncRUNTIMES( Obj     self)
+{
+  Obj    res;
+#if HAVE_GETRUSAGE
+  res = NEW_PLIST(T_PLIST, 4);
+  SET_LEN_PLIST(res, 4);
+  SET_ELM_PLIST(res, 1, INTOBJ_INT( SyTime() ));
+  SET_ELM_PLIST(res, 2, INTOBJ_INT( SyTimeSys() ));
+  SET_ELM_PLIST(res, 3, INTOBJ_INT( SyTimeChildren() ));
+  SET_ELM_PLIST(res, 4, INTOBJ_INT( SyTimeChildrenSys() ));
+#else
+  res = INTOBJ_INT( SyTime() );
+#endif
+  return res;
+   
+}
+
 
 
 /****************************************************************************
@@ -2237,7 +2262,6 @@ Obj FuncLoadedModules (
         }
         else if ( m->type == MODULE_STATIC ) {
             SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'s'] );
-            SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'d'] );
 	    CHANGED_BAG(list);
             C_NEW_STRING( str, SyStrlen(m->name), m->name );
             SET_ELM_PLIST( list, 3*i+2, str );
@@ -2388,6 +2412,53 @@ again:
     return 0;
 }
 
+Obj FuncGASMAN_STATS(Obj self)
+{
+  Obj res;
+  Obj row;
+  Obj entry;
+  UInt i,j;
+  Int x;
+  res = NEW_PLIST(T_PLIST_TAB_RECT + IMMUTABLE, 2);
+  SET_LEN_PLIST(res, 2);
+  for (i = 1; i <= 2; i++)
+    {
+      row = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, 6);
+      SET_ELM_PLIST(res, i, row);
+      CHANGED_BAG(res);
+      SET_LEN_PLIST(row, 6);
+      for (j = 1; j <= 6; j++)
+	{
+	  x = SyGasmanNumbers[i-1][j];
+
+	  /* convert x to GAP integer. x may be too big to be a small int */
+	  if (x < (1L << NR_SMALL_INT_BITS))
+	    entry = INTOBJ_INT(x);
+	  else
+	    entry = SUM( PROD(INTOBJ_INT(x >> (NR_SMALL_INT_BITS/2)),
+			      INTOBJ_INT(1 << (NR_SMALL_INT_BITS/2))),
+			 INTOBJ_INT( x % ( 1 << (NR_SMALL_INT_BITS/2))));
+	  SET_ELM_PLIST(row, j, entry);
+	}
+    }
+  return res;      
+}
+
+Obj FuncGASMAN_MESSAGE_STATUS( Obj self )
+{
+  return INTOBJ_INT(SyMsgsFlagBags);
+}
+
+Obj FuncGASMAN_LIMITS( Obj self )
+{
+  Obj list;
+  list = NEW_PLIST(T_PLIST_CYC+IMMUTABLE, 3);
+  SET_LEN_PLIST(list,3);
+  SET_ELM_PLIST(list, 1, INTOBJ_INT(SyStorMin));
+  SET_ELM_PLIST(list, 2, INTOBJ_INT(SyStorMax));
+  SET_ELM_PLIST(list, 3, INTOBJ_INT(SyStorKill));
+  return list;
+}
 
 /****************************************************************************
 **
@@ -3059,6 +3130,59 @@ Obj FuncQUIT_GAP( Obj self )
 
 /****************************************************************************
 **
+*F  MakeOptionsRecord()
+**
+**  Assemble a GAP readable record of all the command-line options
+**
+*/
+
+Obj MakeOptionsRecord( void )
+{
+  Obj optrec, list;
+  UInt i,j,optcount,len;
+  Char name[2], opt;
+  Char *intarg;
+  Obj thearg;
+  
+  /* export the command line arguments                                   */
+  optrec = NEW_PREC(255);
+  j = 1;
+  name[1] = '\0';
+  for (opt = '\1'; opt != '\177'; opt++)
+    {
+      optcount = getOptionCount( opt );
+      if (optcount != 0)
+	{
+	  name[0] = opt;
+	  SET_RNAM_PREC( optrec, j, RNamName(name));
+	  list = NEW_PLIST(T_PLIST+IMMUTABLE, optcount);
+	  
+	  for (i = 0; i < optcount; i++)
+	    {
+	      intarg = getOptionArg(opt, i);
+	      if (intarg == NULL)
+		SET_ELM_PLIST(list, i+1, False);
+	      else
+		{
+		  len = SyStrlen(intarg);
+		  thearg = NEW_STRING(len);
+		  SyStrncat(CSTR_STRING(thearg), intarg, len);
+		  SET_ELM_PLIST(list,i+1, thearg);
+		  CHANGED_BAG(list);
+		}
+	    }
+	  SET_LEN_PLIST(list, optcount);
+	  SET_ELM_PREC( optrec, j++, list);
+	  CHANGED_BAG(optrec);
+	}
+    }
+  ResizeBag(optrec, 2*sizeof(Obj)*j);
+  RetypeBag(optrec, T_PREC+IMMUTABLE);
+  return optrec;
+}
+
+/****************************************************************************
+**
 *V  Revisions . . . . . . . . . . . . . . . . . .  record of revision numbers
 */
 Obj Revisions;
@@ -3072,6 +3196,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "Runtime", 0, "",
       FuncRuntime, "src/gap.c:Runtime" },
+
+    { "RUNTIMES", 0, "",
+      FuncRUNTIMES, "src/gap.c:RUNTIMES" },
 
     { "SizeScreen", -1, "args",
       FuncSizeScreen, "src/gap.c:SizeScreen" },
@@ -3117,6 +3244,15 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "GASMAN", -1, "args",
       FuncGASMAN, "src/gap.c:GASMAN" },
+
+    { "GASMAN_STATS", 0, "",
+      FuncGASMAN_STATS, "src/gap.c:GASMAN_STATS" },
+
+    { "GASMAN_MESSAGE_STATUS", 0, "",
+      FuncGASMAN_MESSAGE_STATUS, "src/gap.c:GASMAN_MESSAGE_STATUS" },
+
+    { "GASMAN_LIMITS", 0, "",
+      FuncGASMAN_LIMITS, "src/gap.c:GASMAN_LIMITS" },
 
     { "SHALLOW_SIZE", 1, "object",
       FuncSHALLOW_SIZE, "src/gap.c:SHALLOW_SIZE" },
@@ -3242,7 +3378,14 @@ static Int PostRestore (
     StructInitInfo *    module )
 {
     UInt var;
+    Obj optrec;
   
+    optrec = MakeOptionsRecord();
+    var = GVarName("SY_RESTORE_OPTIONS");
+    MakeReadWriteGVar(var);
+    AssGVar(var, optrec);
+    MakeReadOnlyGVar(var);
+
     /* create a revision record                                            */
     Revisions = NEW_PREC(0);
     var = GVarName( "Revision" );
@@ -3250,27 +3393,7 @@ static Int PostRestore (
     AssGVar( var, Revisions );
     MakeReadOnlyGVar(var);
 
-    /* version info                                                        */
-/* either throw this away or maintain it properly !?  FL   
-   obsolete now -- other variable used AH
-    len = SyStrlen(version);
-    C_NEW_STRING(string, len, version);
-    var = GVarName( "VERSRC" );
-    MakeReadWriteGVar(var);
-    AssGVar( var, string );
-    MakeReadOnlyGVar(var);    */
-
     /* library name and other stuff                                        */
-    var = GVarName( "QUIET" );
-    MakeReadWriteGVar(var);
-    AssGVar( var, (SyQuiet  ? True : False) );
-    MakeReadOnlyGVar(var);
-
-    var = GVarName( "BANNER" );
-    MakeReadWriteGVar(var);
-    AssGVar( var, (SyBanner ? True : False) );
-    MakeReadOnlyGVar(var);
-
     var = GVarName( "DEBUG_LOADING" );
     MakeReadWriteGVar(var);
     AssGVar( var, (SyDebugLoading ? True : False) );
@@ -3300,19 +3423,17 @@ static Int InitLibrary (
     StructInitInfo *    module )
 {
     UInt                var;
+    Obj                 optrec;
+
+
+    optrec = MakeOptionsRecord();
+    var = GVarName("SY_COMMAND_LINE_OPTIONS");
+    AssGVar(var, optrec);
+    MakeReadOnlyGVar(var);
 
     /* init the completion function                                        */
     CompLists = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( CompLists, 0 );
-
-
-    var = GVarName( "CHECK_FOR_COMP_FILES" );
-    AssGVar( var, (SyCheckForCompletion ? True : False) );
-    MakeReadOnlyGVar(var);
-
-    var = GVarName( "DO_AUTOLOAD_PACKAGES" );
-    AssGVar( var, (SyAutoloadSharePackages ? True : False) );
-    MakeReadOnlyGVar(var);
 
     /* list of exit functions                                              */
     AtExitFunctions = NEW_PLIST( T_PLIST, 0 );

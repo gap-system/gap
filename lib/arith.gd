@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations of the arithmetic operations, and the
 ##  declarations of the categories for elements that allow those operations.
@@ -345,20 +346,34 @@ DeclareSynonym( "IsVectorTable",
 
 #############################################################################
 ##
+#F  IsOddAdditiveNestingDepthFamily( <Fam> )
+#F  IsOddAdditiveNestingDepthObject( <Fam> )
+##
+DeclareFilter( "IsOddAdditiveNestingDepthFamily" );
+DeclareFilter( "IsOddAdditiveNestingDepthObject" );
+
+
+#############################################################################
+##
 #C  IsRowVector( <obj> )
 ##
-##  A *row vector* is a vector (see~"IsVector") that is also a
-##  homogeneous list.  Typical examples are lists of integers, lists
-##  of finite field elements of the same characteristic, lists of
-##  polynomials from a common polynomial ring, and matrices.
+##  A *row vector* is a vector (see~"IsVector") that is also a homogeneous
+##  list of odd additive nesting depth
+##  (see~"Filters Controlling the Arithmetic Behaviour of Lists").
+##  Typical examples are lists of integers and rationals,
+##  lists of finite field elements of the same characteristic,
+##  and lists of polynomials from a common polynomial ring.
+##  Note that matrices are *not* regarded as row vectors, because they have
+##  even additive nesting depth.
 ##
 ##  The additive operations of the vector must thus be compatible with
 ##  that for lists, implying that the list entries are the
 ##  coefficients of the vector with respect to some basis.
 ##
-##  Note that not all row vectors admit a scalar product via `\*';
-##  for example, matrices are row vectors but the matrix product is defined
-##  in a different way.
+##  Note that not all row vectors admit a multiplication via `\*'
+##  (which is to be understood as a scalar product);
+##  for example, class functions are row vectors but the product of two
+##  class functions is defined in a different way.
 ##  For the installation of a scalar product of row vectors, the entries of
 ##  the vector must be ring elements; note that the default method expects
 ##  the row vectors to lie in `IsRingElementList', and this category may not
@@ -367,10 +382,11 @@ DeclareSynonym( "IsVectorTable",
 ##
 ##  Note that methods for special types of row vectors really must be
 ##  installed with the requirement `IsRowVector',
-## since `IsVector' may lead to a rank of the method below
-##  that of the default method for row vectors (see file `vecmat.gi').
+##  since `IsVector' may lead to a rank of the method below
+##  that of the default method for row vectors (see file `lib/vecmat.gi').
 ##
-DeclareSynonym( "IsRowVector", IsVector and IsHomogeneousList );
+DeclareSynonym( "IsRowVector",
+    IsVector and IsHomogeneousList and IsOddAdditiveNestingDepthObject );
 
 
 #############################################################################
@@ -916,7 +932,9 @@ DeclareProperty( "IsOne", IsMultiplicativeElementWithOne );
 ##
 ##  `ZeroSameMutability( <obj> )' is equivalent to `0 \* <obj>'.
 ##
-##  `ZeroAttr', `Zero', `ZeroOp' and `ZeroSM' are synonyms as listed above.
+##  `ZeroAttr' and `Zero' are synonyms of `ZeroImmutable'.
+##  `ZeroSM' is a synonym of `ZeroSameMutability'.
+##  `ZeroOp' is a synonym of `ZeroMutable'.
 ##
 ##  If <obj> is a domain or a family then `Zero' is defined as the zero
 ##  element of all elements in <obj>,
@@ -989,8 +1007,9 @@ DeclareOperationKernel( "+", [ IsExtAElement, IsExtAElement ], SUM );
 ##
 ##  `AdditiveInverseSameMutability( <elm> )' is equivalent to `-<elm>'.
 ##
-##  `AdditiveInverseAttr', `AdditiveInverse', `AdditiveInverseOp'
-##  and `AdditiveInverseSM' are synonyms as listed above.
+##  `AdditiveInverseAttr' and `AdditiveInverse' are synonyms of `AdditiveInverseImmutable'.
+##  `AdditiveInverseSM' is a synonym of `AdditiveInverseSameMutability'.
+##  `AdditiveInverseOp' is a synonym of `AdditiveInverseMutable'.
 ##
 ##  The default method of `AdditiveInverse' calls `AdditiveInverseMutable'
 ##  (note that methods for `AdditiveInverseMutable' must *not* delegate to
@@ -1059,8 +1078,9 @@ DeclareOperationKernel( "*", [ IsExtRElement, IsExtLElement ], PROD );
 ##  If <obj> is a multiplicative element then `OneSameMutability( <obj> )'
 ##  is equivalent to `<obj>^0'.
 ##
-##  `OneAttr', `One', `Identity', `OneOp', and `OneSM' are synonyms as listed
-##  above.
+##  `OneAttr', `One' and `Identity' are synonyms of `OneImmutable'.
+##  `OneSM' is a synonym of `OneSameMutability'.
+##  `OneOp' is a synonym of `OneMutable'.
 ##
 ##  If <obj> is a domain or a family then `One' is defined as the identity
 ##  element of all elements in <obj>, 
@@ -1144,11 +1164,12 @@ DeclareSynonym( "OneSM", OneSameMutability);
 ##
 ##  `InverseSameMutability( <elm> )' is equivalent to `<elm>^-1'.
 ##
-##  `InverseAttr', `Inverse', `InverseOp' and `InverseSM' are synonyms as
-##  listed above.
+##  `InverseAttr' and `Inverse' are synonyms of `InverseImmutable'.
+##  `InverseSM' is a synonym of `InverseSameMutability'.
+##  `InverseOp' is a synonym of `InverseMutable'.
 ##
-##  The default method of `Inverse' calls `InverseMutable' (note that methods
-##  for `InverseMutable' must *not* delegate to `Inverse');
+##  The default method of `InverseImmutable' calls `InverseMutable' (note that methods
+##  for `InverseMutable' must *not* delegate to `InverseImmutable');
 ##  other methods to compute inverses need to be installed only for
 ##  `InverseMutable' and (in the case of copyable objects)
 ##  `InverseSameMutability'.

@@ -1,11 +1,13 @@
 #############################################################################
 ##
 #W  ctblsymm.gd                 GAP library                    Goetz Pfeiffer
+#W                                                               Felix Noeske
 ##
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file  contains  the  declaration  of functions  needed for a  direct
 ##  computation of the character values of  wreath  products of a  group  $G$
@@ -168,13 +170,29 @@ DeclareGlobalFunction( "CharValueWreathSymmetric" );
 ##  where <tbl> is the character table of $G$.
 ##
 ##  The result has values for `ClassParameters' and `CharacterParameters'
-##  (see~"ctbllib:ClassParameters", "ctbllib:CharacterParameters" in the
-##  manual for the {\GAP} Character Table Library) stored,
+##  (see~"ctbllib:ClassParameters"
+##  in the manual for the {\GAP} Character Table Library) stored,
 ##  the entries in these lists are sequences of partitions.
 ##  Note that this parametrization prevents the principal character from
 ##  being the first one in the list of irreducibles.
 ##
 DeclareGlobalFunction( "CharacterTableWreathSymmetric" );
+
+
+#############################################################################
+##
+#V  CharTableDoubleCoverSymmetric
+##
+DeclareGlobalVariable( "CharTableDoubleCoverSymmetric",
+    "gen. char. table of the standard Schur double cover of symm. groups" );
+
+
+#############################################################################
+##
+#V  CharTableDoubleCoverAlternating
+##
+DeclareGlobalVariable( "CharTableDoubleCoverAlternating",
+    "generic char. table of the Schur double cover of alternating groups" );
 
 
 #############################################################################

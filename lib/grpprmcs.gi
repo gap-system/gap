@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grpprmcs_gi :=
     "@(#)$Id$";
@@ -130,9 +131,7 @@ InstallMethod( CompositionSeries,
 		 pcgs{ [ i - 1 .. Length( pcgs ) ] },
 		 Concatenation( GeneratorsOfGroup( fac ),
 		 List( [ i .. Length( pcgs ) ], k -> One( fac ) ) ) );
-	    if IsIdenticalObj(s,Parent(t)) then
-	      Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
-	    fi;
+            Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
 	    AddNaturalHomomorphismsPool(s,t,fahom);
             list[ i ] := t;
             s := t;
@@ -216,8 +215,9 @@ InstallMethod( CompositionSeries,
     od;
 
     # loop over the subgroups
-    s := SubgroupNC( Gr, normals[1] );
-    SetSize( s, Size( Gr ) );
+    #s := SubgroupNC( Gr, normals[1] );
+    #SetSize( s, Size( Gr ) );
+    s:=Gr;
     list := [ s ];
     for i  in [2..Length(normals)]  do
         t := SubgroupNC( s, normals[i] );
@@ -227,7 +227,7 @@ InstallMethod( CompositionSeries,
         SetIsSimpleGroup( fac, true );
 	fahom:=GroupHomomorphismByImagesNC( s, fac,
                         normals[i-1], factors[i-1] );
-	if IsIdenticalObj(s,Parent(t)) then
+	if IsIdenticalObj(Parent(t),s) then
 	  Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
 	fi;
         AddNaturalHomomorphismsPool(s, t,fahom);
@@ -243,7 +243,7 @@ InstallMethod( CompositionSeries,
     SetIsSimpleGroup( fac, true );
     fahom:=GroupHomomorphismByImagesNC( s, fac,
                     normals[Length(normals)], factors[Length(normals)] );
-    if IsIdenticalObj(s,Parent(t)) then
+    if IsIdenticalObj(Parent(t),s) then
       Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
     fi;
     AddNaturalHomomorphismsPool(s, t,fahom);
@@ -1325,7 +1325,6 @@ end );
 
 #############################################################################
 ##
-
 #M  PCore() . . . . . . . . . . . . . . . . . . p core of a permutation group
 ##
 ##  O_p(G), the p-core of G, is the maximal normal p-subgroup
@@ -1431,7 +1430,7 @@ InstallMethod( PCoreOp,
                 D := [];
                 C:= GeneratorsOfGroup( C );
                 for i in [1..Length( C )] do
-                    order := OrderPerm(C[i]);
+                    order := Order(C[i]);
                     if order mod p = 0  then
                         D[i] := C[i]^(order/p);
                     else
@@ -1542,7 +1541,10 @@ InstallMethod( RadicalGroup,
             GG,         # the image of G at this action
             hom,        # the homomorphism from G to GG
 	    map,	# natural homomorphism for radical.
-            solvable;   # list of generators for the radical
+            solvable,   # list of generators for the radical
+	    o,		# orbits of G
+	    b,		# blocks
+	    TryReduction;# function to test whether a hom. can reduce
 
     if IsTrivial(workgroup)  then
         return TrivialSubgroup(workgroup);
@@ -1554,11 +1556,73 @@ InstallMethod( RadicalGroup,
 
     n := LargestMovedPoint(workgroup);
     G := workgroup;
+
+    # if the degree is big, try to reduce it in a first step
+    if n>1000 then
+
+      TryReduction:=function(hom)
+      local s,f,k,map;
+	s:=Size(G)/Size(Image(hom)); # kernel size
+	# is the kernel solvable? If yes we can go to the image
+	f:=Collected(Factors(s));
+	# at most 2 primes or all primes to power 1 -> Solvable
+	if Length(f)<3 or ForAll(f,i->i[2]=1) then
+	  Info(InfoGroup,1,"solvable kernel size ",f);
+	  # OK, transfer result back
+	  k:=RadicalGroup(Image(hom));
+	  solvable:=PreImage(hom,k);
+	  map:=hom*NaturalHomomorphismByNormalSubgroup(Image(hom),k);
+	  SetKernelOfMultiplicativeGeneralMapping(map,solvable);
+	  AddNaturalHomomorphismsPool(G,solvable,map);
+	  return solvable;
+	fi;
+	return fail;
+      end;
+
+      # try orbits
+      o:=ShallowCopy(Orbits(G,MovedPoints(G)));
+      if Length(o)>1 then
+        Sort(o,function(a,b)return Length(a)<Length(b);end);
+        for i in o do
+	  Info(InfoGroup,1,"trying orbit length ",Length(o));
+	  hom:=ActionHomomorphism(G,i,"surjective");
+	  K:=TryReduction(hom);
+	  if K<>fail then
+	    return K;
+	  fi;
+	od;
+      fi;
+      # try blocks on orbits
+      for i in o do
+	b:=Blocks(G,i);
+	if Length(b)>1 then
+	  Info(InfoGroup,1,"trying blocks length ",Length(b));
+	  hom:=ActionHomomorphism(G,b,OnSets,"surjective");
+	  K:=TryReduction(hom);
+	  if K<>fail then
+	    return K;
+	  fi;
+        fi;
+      od;
+    fi;
+
     list := CompositionSeries(G);
     # normals := Copy(list[1]);
     # factorsize := list[3];
-    normals := List( [1..Length(list)-1],
-                     i->ShallowCopy(StabChainMutable(list[i]).generators));
+
+    #was:
+    #normals := List( [1..Length(list)-1],
+    #                 i->ShallowCopy(StabChainMutable(list[i]).generators));
+    # but not all subgroups in the comp.ser have their own stabchain.
+    normals:=[];
+    for i in [1..Length(list)-1] do
+      if HasStabChainMutable(list[i]) then
+        normals[i]:=ShallowCopy(StabChainMutable(list[i]).generators);
+      else
+        normals[i]:=ShallowCopy(GeneratorsOfGroup(list[i]));
+      fi;
+    od;
+
     factorsize := List([1..Length(list)-1],i->Size(list[i])/Size(list[i+1]));
     Add(normals, [()]);
     homlist := [];
@@ -1603,6 +1667,9 @@ InstallMethod( RadicalGroup,
                     actionlist := ActionAbelianCSPG(H,n);
 
                     Ggens:= StabChainMutable( G ).generators;
+		    if Length(Ggens)>5*Length(GeneratorsOfGroup(G)) then
+		      Ggens:=GeneratorsOfGroup(G);
+		    fi;
                     image:= List( Ggens,
                                 g -> ImageOnAbelianCSPG( g, actionlist ) );
 
@@ -1621,6 +1688,7 @@ InstallMethod( RadicalGroup,
                             Image(hom,normals[i][j]);
                         od;
                     od;
+		    Unbind(actionlist); # big object that is not needed later
                     G := GG;
                     index := index-1;
 

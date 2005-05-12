@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains attributes, properties and operations for univariate
 ##  polynomials over the rationals
@@ -105,6 +106,15 @@ DeclareGlobalFunction("TryCombinations");
 
 DeclareGlobalFunction("HeuGcdIntPolsExtRep"); # to permit recursive call
 DeclareGlobalFunction("HeuGcdIntPolsCoeffs"); # univariate version
+
+#############################################################################
+##
+#F  PolynomialModP(<pol>,<p>)
+##
+##  for a rational polynomial <pol> this function returns a polynomial over
+## the field with <p> elements, obtained by reducing the coefficients modulo
+## <p>.
+DeclareGlobalFunction("PolynomialModP");
 
 #############################################################################
 ##

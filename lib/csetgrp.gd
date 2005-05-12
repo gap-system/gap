@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations of operations for cosets.
 ##
@@ -69,7 +70,9 @@ DeclareAttribute("ComputedAscendingChains",IsGroup,
 ##  extension!
 ##
 ##  The option `refineIndex' can be used to tell {\GAP} that a specified
-##  step index is good enough.
+##  step index is good enough. The option `refineChainActionLimit' can be
+##  used to give an upper limit up to which index guaranteed refinement
+##  should be tried.
 ##
 DeclareGlobalFunction("RefinedChain");
 
@@ -194,7 +197,7 @@ DeclareOperation("RightCosetsNC",[IsGroup,IsGroup]);
 ##
 ##  This routine tries to find a subgroup <E> of <G>, such that $G>E>U$. If
 ##  $U$ is
-##  maximal, it returns false. This is done by finding minimal blocks for
+##  maximal, it returns `fail'. This is done by finding minimal blocks for
 ##  the operation of <G> on the right cosets of <U>.
 ##
 DeclareGlobalFunction("IntermediateGroup");

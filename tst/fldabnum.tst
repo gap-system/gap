@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  Exclude from testall.g: why?
+##
 
 gap> START_TEST("$Id$");
 
@@ -319,7 +321,7 @@ gap> Size( g );
 gap> IsAbelian( g );
 true
 
-gap> STOP_TEST( "fldabnum.tst", 87667500 );
+gap> STOP_TEST( "fldabnum.tst", 67500000 );
 
 
 #############################################################################

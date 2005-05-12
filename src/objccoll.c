@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file  contains  the collection functions of  combinatorial collectors
 **  for finite p-groups.  The code in this file  is an extension to the single

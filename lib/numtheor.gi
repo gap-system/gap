@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods mainly for integer primes.
 ##
@@ -547,10 +548,14 @@ RootModPrimePower := function ( n, k, p, l )
             s := RootModPrimePower( n, k, p, QuoInt(l+3,2) );
         fi;
 
-        # lift the root to $p^l$
-        Info( InfoNumtheor, 2, " lift root with Newton / Hensel" );
-        t := PowerModInt( s, k-1, p^l );
-        r := (s + (n - t * s) / (k * t)) mod p^l;
+	if s=fail then
+	  r:=fail;
+	else
+	  # lift the root to $p^l$
+	  Info( InfoNumtheor, 2, " lift root with Newton / Hensel" );
+	  t := PowerModInt( s, k-1, p^l );
+	  r := (s + (n - t * s) / (k * t)) mod p^l;
+	fi;
 
     fi;
 
@@ -992,8 +997,8 @@ end );
 ##
 #F  LogMod( <n>, <r>, <m> ) . . . . . .  discrete logarithm modulo an integer
 ##
-InstallGlobalFunction( LogMod,function(b,a,n)
-local m,m2,am,ai,l,g,c,i,p;
+InstallGlobalFunction( LogModShanks,function(b,a,n)
+local ai, m, m2, am, l, g, c, p, i;
   b:=b mod n;
   a:=a mod n;
   ai:=Gcdex(a,n);
@@ -1025,6 +1030,151 @@ local m,m2,am,ai,l,g,c,i,p;
       c:=c*ai mod n;
     od;
     return fail;
+  else
+    Error("not coprime");
+  fi;
+end);
+
+# Pollard Rho method for Index.
+# Implemented by Sean Gage and AH
+
+BindGlobal("LogModRhoIterate",function(n,g,p)
+local p3, zp3, q, i, x, xd, a, ad, b, bd, ans, m, r;
+  p3:=QuoInt(p,3);
+  zp3:=QuoInt(2*p,3);
+  q := p-1;
+  i := 1;
+  x := 1;
+  xd := 1;
+  a := 0;
+  ad := 0;
+  b := 0;
+  bd := 0;
+  ans := [];
+  repeat
+    if x < p3 then
+      x := (x * n) mod p;
+      a := (a + 1) mod q;
+    elif x < zp3 then
+      x := (x * x) mod p;
+      a := (a*2) mod q;
+      b := (b*2) mod q;
+    else
+      x := (x * g) mod p;
+      b := (b + 1) mod q;
+    fi;
+    if xd <p3 then
+      xd := (xd * n) mod p;
+      ad := (ad + 1) mod q;
+    elif xd < zp3 then
+      xd := (xd * xd) mod p;
+      ad := (ad*2) mod q;
+      bd := (bd*2) mod q;
+    else
+      xd := (xd * g) mod p;
+      bd := (bd + 1) mod q;
+    fi;
+    if xd < p3 then
+      xd := (xd * n) mod p;
+      ad := (ad + 1) mod q;
+    elif xd < zp3 then
+      xd := (xd * xd) mod p;
+      ad := (ad*2) mod q;
+      bd := (bd*2) mod q;
+    else
+      xd := (xd * g) mod p;
+      bd := (bd + 1) mod q;
+    fi;
+  until x=xd;
+
+  m := (a-ad) mod q;
+  r := (bd-b) mod q;
+  return [m,r];
+end);
+
+InstallGlobalFunction(DoLogModRho,function(q,r,ord,f,p)
+local fact, s, t, Q, R, MN, M, N, rep, d, k, theta, Qp,o,i;
+  Info(InfoNumtheor,1,"DoLogModRho(",q,",",r,",",ord,",",p,")");
+  fact:=[];
+  s:=ord;
+  for i in f do
+    t:=s/i;
+    if IsInt(t) then
+      s:=t;
+      Add(fact,i);
+    fi;
+  od;
+
+  if Length(fact)>1 then
+    d:=ord;
+    while (d=ord) and Length(fact)>0 do
+      s:=fact[Length(fact)];
+      Unbind(fact[Length(fact)]);
+      t:=ord/s;
+      Q:=PowerMod(q,s,p);
+      R:=PowerMod(r,s,p);
+      # iterate
+      MN:=LogModRhoIterate(Q,R,p);
+      M:=MN[1];
+      N:=MN[2];
+      rep:=GcdRepresentation(ord,s*M);
+      d:=rep[1]*ord+rep[2]*s*M;
+    od;
+    if d<ord then
+      k:=(rep[2]*s*N/d);
+      if Gcd(DenominatorRat(k),ord)<>1 then
+	return fail; # can't invert (can't happen if not primitive root)
+      fi;
+      k:=k mod ord;
+      theta:=PowerMod(r,ord/d,p);
+      Qp:=q/PowerMod(r,k,p) mod p;
+      i:=DoLogModRho(Qp,theta,d,f,p);
+      if i=fail then return i;fi; # bail out
+      o:=(k+i*(ord/d)) mod ord;
+      Assert(1,PowerMod(r,o,p)=q);
+      return o;
+    fi;
+  fi;
+  # naive case, iterate
+  MN:=LogModRhoIterate(q,r,p);
+  M:=MN[1];
+  N:=MN[2];
+  rep:=GcdRepresentation(ord,M);
+  d:=rep[1]*ord+rep[2]*M;
+  k:=(rep[2]*N/d);
+  if Gcd(DenominatorRat(k),ord)<>1 then
+    return fail; # can't invert (can't happen if not primitive root)
+  fi;
+  k:=k mod ord;
+  theta:=PowerMod(r,ord/d,p);
+  Qp:=q/PowerMod(r,k,p) mod p;
+  for i in [1..d] do
+    if Qp=1 then
+      Assert(1,PowerMod(r,k,p)=q);
+      return k;
+    fi;
+    k:=(k+ord/d) mod ord;
+    Qp:=Qp/theta mod p;
+  od;
+  # process failed (because r was not a primitive root)
+  return fail;
+end);
+
+InstallGlobalFunction( LogMod,function(b,a,n)
+local c, p,f,l;
+
+  b:=b mod n;
+  a:=a mod n;
+  if IsPrime(n) and Gcd(a,n)=1 then
+    # use rho method
+    f:=FactorsInt(n-1:quiet); # Quick factorization, don't stop if its too hard
+    l:=DoLogModRho(b,a,n-1,f,n);
+    if l<>fail then
+      return l;
+    fi;
+  fi;
+  if Gcd(a,n)=1 then
+    return LogModShanks(b,a,n);
   else
     # not coprime -- use old method
     c := 1;

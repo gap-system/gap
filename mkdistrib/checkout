@@ -20,8 +20,7 @@ rm -rf ${DISTNAME}
 
 
 # checkout the files
-echo "$0: exporting out version $VERSION of $DATE"
-CVSROOT=/gap/CVS
+echo "$0: exporting out version $FULLVERSION of $DATE"
 #cvs -Q export -r ${CVSBRANCH} -d $DISTNAME 4.0
 #cvs -Q export -d $DISTNAME 4.0
 cvs -Q export -D "now" -d $DISTNAME 4.0
@@ -33,15 +32,19 @@ fi
 
 # and add a tag
 echo "tag! (currently disabled)!"
-#echo "$0: tagging version $VERSION of $DATE"
+#echo "$0: tagging version $FULLVERSION of $DATE"
 #cvs tag -F -D "$DATE" "GAP4R$VERSION"
 
 
 # set the version
-chmod 644 $DISTNAME/lib/version.g
-rm $DISTNAME/lib/version.g
-echo "VERSION := \"4r$VERSION\";" > ${DISTNAME}/lib/version.g
-echo "DATE := \"$DATE\";" >> ${DISTNAME}/lib/version.g
+chmod 644 $DISTNAME/lib/system.g
+#rm $DISTNAME/lib/version.g
+#echo "VERSION := \"4.$FULLVERSION\";" > ${DISTNAME}/lib/version.g
+#echo "DATE := \"$DATE\";" >> ${DISTNAME}/lib/version.g
+
+sed "1,90s/4.dev/4.$FULLVERSION/g" ${DISTNAME}/lib/system.g > ${DISTNAME}/lib/vers2
+sed "1,90s/today/$DATE/g" ${DISTNAME}/lib/vers2 > ${DISTNAME}/lib/system.g
+rm -f ${DISTNAME}/lib/vers2
 
 # that's it
 exit 0

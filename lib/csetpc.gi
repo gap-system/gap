@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for cosets of pc groups
 ##
@@ -77,7 +78,7 @@ local r,st,nr,nst,ind,sff,f,m,i,j,ao,Npcgs,v,isi,
   # force elementary abelian Series
 
   sp:=PcgsElementaryAbelianSeries(G);
-  lgf:=IndicesNormalSteps(sp);
+  lgf:=IndicesEANormalSteps(sp);
   ll:=Length(lgf);
   #eas:=[];
   #for i in [1..Length(lgf)] do

@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997  
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file contains declarations for the subgroup lattice functions for
 ##  pc groups.
@@ -534,6 +535,9 @@ local g,	# group
       xo;	# xternal orbits
 
   g:=arg[1];
+  if Size(g)=1 then
+    return [g];
+  fi;
   if Length(arg)>1 and IsRecord(arg[Length(arg)]) then
     opt:=arg[Length(arg)];
   else
@@ -568,7 +572,7 @@ local g,	# group
                   i -> not ( HasIsConjugatorAutomorphism( i ) and
                              IsConjugatorAutomorphism( i ) ) ),
 		   IdentityMapping(g));
-      IsGroupOfAutomorphisms(funcs); # set filter
+      IsGroupOfAutomorphismsFiniteGroup(funcs); # set filter
       if IsTrivial( funcs ) then
 	func:=hom2;
 	b:=Parent(g);

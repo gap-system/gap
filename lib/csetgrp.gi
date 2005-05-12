@@ -6,11 +6,13 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the generic operations for cosets.
 ##
 Revision.csetgrp_gi:=
   "@(#)$Id$";
+
 
 #############################################################################
 ##
@@ -19,41 +21,37 @@ Revision.csetgrp_gi:=
 DeclareRepresentation( "IsRightCosetDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep and IsRightCoset, [] );
 
+
 #############################################################################
 ##
-#R  IsRightCosetEnumerator
+#M  Enumerator
 ##
-DeclareRepresentation( "IsRightCosetEnumerator",
-    IsDomainEnumerator and IsAttributeStoringRep,
-    [ "groupEnumerator", "representative" ] );
-
-InstallMethod( Enumerator, "for a right coset", true, [ IsRightCoset ], 0,
-function( C )
-local   enum;
-    
-  enum := Objectify( NewType( FamilyObj( C ), IsRightCosetEnumerator ),
-          rec( groupEnumerator := Enumerator( ActingDomain( C ) ),
-                representative := Representative( C ) ) );
-  SetUnderlyingCollection( enum, C );
-  if HasIsFinite( C ) then
-    SetIsFinite( enum, IsFinite( C ) );
-  fi;
-  SetLength(enum,Size(ActingDomain(C)));
-  return enum;
+BindGlobal( "NumberElement_RightCoset", function( enum, elm )
+    return Position( enum!.groupEnumerator, elm / enum!.representative, 0 );
 end );
 
-InstallMethod( \[\], "for right coset enumerator", true,
-  [ IsRightCosetEnumerator, IsPosInt ], 0,
-function( enum, pos )
-  return enum!.groupEnumerator[ pos ] * enum!.representative;
+BindGlobal( "ElementNumber_RightCoset", function( enum, pos )
+    return enum!.groupEnumerator[ pos ] * enum!.representative;
 end );
 
-InstallMethod( Position, "for right coset enumerator", true,
-  [ IsRightCosetEnumerator, IsMultiplicativeElementWithInverse, IsInt ], 0,
-function( enum, elm, after )
-  return Position( enum!.groupEnumerator, elm / enum!.representative,
-		  after );
+InstallMethod( Enumerator,
+    "for a right coset",
+    [ IsRightCoset ],
+    function( C )
+    local enum;
+
+    enum:= EnumeratorByFunctions( C, rec(
+               NumberElement     := NumberElement_RightCoset,
+               ElementNumber     := ElementNumber_RightCoset,
+
+               groupEnumerator   := Enumerator( ActingDomain( C ) ),
+               representative    := Representative( C ) ) );
+
+    SetLength( enum, Size( ActingDomain( C ) ) );
+
+    return enum;
 end );
+
 
 #############################################################################
 ##
@@ -93,19 +91,27 @@ end );
 ##  the operation of G on the Right Cosets of U.
 ##
 InstallGlobalFunction( IntermediateGroup, function(G,U)
-local o,b,img;
+local o,b,img,G1;
 
   if U=G then
     return fail;
   fi;
+  if IsPermGroup(G) and Length(GeneratorsOfGroup(G))>3 then
+    G1:=Group(SmallGeneratingSet(G));
+    if HasSize(G) then
+      SetSize(G1,Size(G));
+    fi;
+  else
+    G1:=G;
+  fi;
   o:=ActionHomomorphism(G,RightTransversal(G,U),OnRight,"surjective");
-  img:=ImagesSource(o);
+  img:=Range(o);
   b:=Blocks(img,MovedPoints(img));
   if Length(b)=1 then
     return fail;
   else
     b:=StabilizerOfBlockNC(img,First(b,i->1 in i));
-    b:=PreImages(o,b);
+    b:=PreImage(o,b);
     return b;
   fi;
 end );
@@ -115,13 +121,20 @@ end );
 #F  RefinedChain(<G>,<c>) . . . . . . . . . . . . . . . .  refine chain links
 ##
 InstallGlobalFunction(RefinedChain,function(G,cc)
-local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens;
+local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens,hardlimit;
   bound:=(10*LogInt(Size(G),10)+1)*Maximum(Factors(Size(G)));
   bound:=Minimum(bound,20000);
   c:=ValueOption("refineIndex");
   if IsInt(c) then
     bound:=c;
   fi;
+  c:=ValueOption("refineChainActionLimit");
+  if IsInt(c) then
+    hardlimit:=c;
+  else
+    hardlimit:=20000;
+  fi;
+
   c:=[];  
   for i in [2..Length(cc)] do  
     Add(c,cc[i-1]);
@@ -142,7 +155,8 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens;
 	if Size(b)=Size(a) or Index(b,a)>bound then
 	  cnt:=8+2^(LogInt(Index(bb,a),5)+2);
 	  repeat
-	    if Index(bb,a)<20000 then
+	    if Index(bb,a)<hardlimit and cnt<20 then
+	      # if random failed: do hard work
 	      b:=IntermediateGroup(bb,a);
 	      if b=fail then
 		b:=bb;
@@ -308,49 +322,37 @@ end);
 
 #############################################################################
 ##
-#R  IsDoubleCosetEnumerator
+#M  Enumerator
 ##
-DeclareRepresentation( "IsDoubleCosetEnumerator",
-    IsDomainEnumerator and IsAttributeStoringRep,
-    [ "leftgroupEnumerator", "leftgroup", "rightCosetReps", "leftsize" ] );
-
-InstallMethod(Enumerator, "for a double coset",true,[IsDoubleCoset],0,
-function( d )
-local   enum;
-  enum := Objectify( NewType( FamilyObj(d), IsDoubleCosetEnumerator ),
-	  rec( leftgroupEnumerator := Enumerator( LeftActingGroup( d ) ),
-		leftgroup := LeftActingGroup( d ),
-		leftsize := Size( LeftActingGroup( d ) ),
-		rightCosetReps := RepresentativesContainedRightCosets(d) ) );
-  SetUnderlyingCollection( enum, d );
-  if HasIsFinite( d ) then
-    SetIsFinite( enum, IsFinite( d ) );
-  fi;
-  return enum;
+BindGlobal( "ElementNumber_DoubleCoset", function( enum, pos )
+    pos:= pos-1;
+    return enum!.leftgroupEnumerator[ ( pos mod enum!.leftsize )+1 ] 
+           * enum!.rightCosetReps[ QuoInt( pos, enum!.leftsize )+1 ];
 end );
 
-InstallMethod( \[\], "for double coset enumerator", true,
-  [ IsDoubleCosetEnumerator, IsPosInt ], 0,
-function( enum, pos )
-  pos:=pos-1;
-  return enum!.leftgroupEnumerator[ (pos mod enum!.leftsize)+1] 
-        * enum!.rightCosetReps[QuoInt(pos,enum!.leftsize)+1];
-end );
+BindGlobal( "NumberElement_DoubleCoset", function( enum, elm )
+    local p;
 
-InstallMethod( Position, "for double coset enumerator", true,
-  [ IsRightCosetEnumerator, IsMultiplicativeElementWithInverse, IsInt ], 0,
-function( enum, elm, after )
-local p;
-  p:=First([1..Length(enum!.rightCosetReps)],
-       i->elm/enum!.rightCosetReps[i] in enum!.leftgroup);
-  p:=(p-1)*enum!.leftsize
-          +Position(enum!.leftgroupEnumerator,elm/enum!.rightCosetReps[p],0);
-  if p<=after then
-    return fail; # no double elements
-  else
+    p:= First( [ 1 .. Length( enum!.rightCosetReps ) ],
+               i -> elm / enum!.rightCosetReps[i] in enum!.leftgroup );
+    p:= (p-1) * enum!.leftsize
+        + Position( enum!.leftgroupEnumerator,
+                    elm / enum!.rightCosetReps[p], 0 );
     return p; 
-  fi;
 end );
+
+InstallMethod( Enumerator,
+    "for a double coset",
+    [ IsDoubleCoset ],
+    d -> EnumeratorByFunctions( d, rec(
+             NumberElement     := NumberElement_DoubleCoset,
+             ElementNumber     := ElementNumber_DoubleCoset,
+
+             leftgroupEnumerator := Enumerator( LeftActingGroup( d ) ),
+             leftgroup := LeftActingGroup( d ),
+             leftsize := Size( LeftActingGroup( d ) ),
+             rightCosetReps := RepresentativesContainedRightCosets( d ) ) ) );
+
 
 RightCosetCanonicalRepresentativeDeterminator := 
 function(U,a)
@@ -495,7 +497,9 @@ local c,a1,a2,r,s,t,rg,st,i,j,nr,o,oi,nu,step,p,pinv,img,rep,
     return [[One(G),Size(G)]];
   fi;
 
-  c:=AscendingChain(G,a);
+  # compute ascending chain and refine if necessarily (we anyhow need action
+  # on cosets).
+  c:=AscendingChain(G,a:refineChainActionLimit:=Index(G,a));
   r:=[One(G)];
   stabs:=[b];
   dcs:=[];
@@ -792,13 +796,14 @@ end);
 
 #############################################################################
 ##
-#M  RightTransversal( <G>, <U> )  . . . . . . . . . . . . . . for trivial <U>
+#M  RightTransversalOp( <G>, <U> )  . . . . . . . . . . . . . for trivial <U>
 ##
 InstallMethod( RightTransversalOp,
     "for trivial subgroup, call `EnumeratorSorted' for the big group",
     IsIdenticalObj,
     [ IsGroup, IsGroup and IsTrivial ],
     100,   # the method for pc groups has this offset but shall be avoided
+#T really?
 function( G, U )
   if IsSubgroupFpGroup(G) then
     TryNextMethod(); # this method is bad for the fp groups.

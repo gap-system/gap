@@ -8,6 +8,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file implements the  functions  handling  arbitrary  size  integers.
 **
@@ -334,7 +335,7 @@ Obj  FuncIntHexString( Obj self,  Obj str )
     UInt1 *p, a;
     TypDigit d;
     
-    if (! IS_STRING(str))
+    if (! IsStringConv(str))
         ErrorReturnObj("IntHexString: argument must be string (not a %s)",
           (Int)TNAM_OBJ(str), 0L,
           "");
@@ -520,7 +521,7 @@ Obj FuncLog2Int( Obj self, Obj integer)
 **
 */
 
-Obj STRING_INT_DEFAULT;
+Obj String;
 
 Obj FuncSTRING_INT( Obj self, Obj integer )
 {
@@ -626,7 +627,7 @@ Obj FuncSTRING_INT( Obj self, Obj integer )
   else {
 
       /* Very large integer, fall back on the GAP function */
-      return CALL_1ARGS( STRING_INT_DEFAULT, integer);
+      return CALL_1ARGS( String, integer);
   }
 }
   
@@ -1477,9 +1478,14 @@ Obj             ProdIntObj (
         res = ZERO( op );
     }
 
-    /* if the integer is one, return a copy of the operand                 */
+    /* if the integer is one, return the object if immutable
+       if mutable, add the object to its ZeroSameMutability to
+       ensure correct mutability propagation */
     else if ( TNUM_OBJ(n) == T_INT && INT_INTOBJ(n) ==  1 ) {
-        res = CopyObj( op, 0 );
+      if (IS_MUTABLE_OBJ(op))
+        res = SUM(ZERO(op),op);
+      else
+	res = op;
     }
 
     /* if the integer is minus one, return the inverse of the operand      */
@@ -3223,7 +3229,7 @@ static Int InitKernel (
     ImportGVarFromLibrary( "TYPE_INT_LARGE_POS",  &TYPE_INT_LARGE_POS );
     ImportGVarFromLibrary( "TYPE_INT_LARGE_NEG",  &TYPE_INT_LARGE_NEG );
 
-    ImportFuncFromLibrary( "STRING_INT_DEFAULT", &STRING_INT_DEFAULT );
+    ImportFuncFromLibrary( "String", &String );
     ImportFuncFromLibrary( "One", &OneAttr);
 
     /* install the kind functions                                          */

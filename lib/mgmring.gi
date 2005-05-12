@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for magma rings and their elements.
 ##
@@ -360,8 +361,8 @@ InstallMethod( \*,
     ElmTimesRingElm );
 
 InstallMethod( \*,
-    "for magma ring element, and integer",
-    [ IsElementOfMagmaRingModuloRelations, IsInt ],
+    "for magma ring element, and rational",
+    [ IsElementOfMagmaRingModuloRelations, IsRat ],
     ElmTimesRingElm );
 
 
@@ -386,12 +387,12 @@ end;
 InstallMethod( \*,
     "for ring element, and magma ring element",
     IsRingsMagmaRings,
-    [ IsRingElement, IsElementOfMagmaRingModuloRelations ],0,
+    [ IsRingElement, IsElementOfMagmaRingModuloRelations ],
     RingElmTimesElm );
 
 InstallMethod( \*,
-    "for integer, and magma ring element",
-    [ IsInt, IsElementOfMagmaRingModuloRelations ],0,
+    "for rational, and magma ring element",
+    [ IsRat, IsElementOfMagmaRingModuloRelations ],
     RingElmTimesElm );
 
 
@@ -403,14 +404,26 @@ InstallOtherMethod( InverseOp,
     "for magma ring element",
     [ IsElementOfMagmaRingModuloRelations ],
     function( x )
-
-    local coeffs, one, R, B, T;
+    local coeffs, inv1, inv2, one, R, B, T;
 
     coeffs:= CoefficientsAndMagmaElements( x );
 
-    # The zero element is not invertible.
     if IsEmpty( coeffs ) then
+      # The zero element is not invertible.
       return fail;
+    elif Length( coeffs ) = 2 then
+      # Inverting a scalar multiple of a magma element
+      # means to invert the scalar and the magma element.
+      inv1:= Inverse( coeffs[1] );
+      if inv1 = fail then
+        return fail;
+      fi;
+      inv2:= Inverse( coeffs[2] );
+      if inv2 = fail then
+        return fail;
+      fi;
+      return Objectify( FamilyObj( x )!.defaultType,
+                        [ ZeroCoefficient( x ), [ inv1, inv2 ] ] );
     fi;
 
     # An invertible element has an identity.
@@ -575,34 +588,6 @@ InstallMethod( \/,
     "for magma ring element, and integer",
     [ IsElementOfMagmaRingModuloRelations, IsInt ],
     ElmDivRingElm );
-
-
-#############################################################################
-##
-#M  InverseOp( <elm> ) . . . . . . . . . . .  inverse of a magma ring element
-##
-InstallOtherMethod( InverseOp,
-    "for free magma ring element",
-    [ IsElementOfMagmaRingModuloRelations ],
-    function( elm )
-    local F, z, inv1, inv2;
-    F:= FamilyObj( elm );
-    z:= ZeroCoefficient( elm );
-    elm:= CoefficientsAndMagmaElements( elm );
-    if Length( elm ) = 2 then
-      inv1:= Inverse( elm[1] );
-      if inv1 = fail then
-        return fail;
-      fi;
-      inv2:= Inverse( elm[2] );
-      if inv2 = fail then
-        return fail;
-      fi;
-      return Objectify( F!.defaultType, [ z, [ inv1, inv2 ] ] );
-    else
-      TryNextMethod();
-    fi;
-    end );
 
 
 #############################################################################
@@ -1047,99 +1032,6 @@ InstallMethod( \in,
     else
       TryNextMethod();
     fi;
-    end );
-
-
-#############################################################################
-##
-#M  Enumerator( <RM> )  . . . . . . .  for a free magma ring with finite ring
-##
-##  Let <RM> be a free magma ring over a finite left acting domain $R$
-##  of order $q$, say.
-##
-##  If $m_i$ is the $i$-th element in a fixed enumerator of the underlying
-##  magma then the element $\sum_{i=1}^k r_i m_i$ is at position
-##  $1 + \sum_{i=1}^k p_i q^{i-1}$, where $p_i+1$ is the position of the ring
-##  element $r_i$ in a fixed enumerator of $R$.
-##  Especially, the first element in the enumerator of <RM> is the zero
-##  element of <RM>.
-##
-DeclareRepresentation( "IsFreeMagmaRingEnumerator",
-    IsDomainEnumerator and IsAttributeStoringRep,
-    [ "family", "zerocoeff", "ringenum", "magmaenum", "zero" ] );
-
-InstallMethod( \[\],
-    "for enumerator of a free magma ring",
-    [ IsFreeMagmaRingEnumerator, IsPosInt ],
-    function( enum, nr )
-
-    local elm,  # element, result
-          i;    # loop over q-adic expansion
-
-    nr:= CoefficientsQadic( nr-1, Length( enum!.ringenum ) );
-    if Length( enum!.magmaenum ) < Length( nr ) then
-      Error( "too large number" );
-    fi;
-    elm:= enum!.zero;
-    for i in [ 1 .. Length( nr ) ] do
-      elm:= elm + ElementOfMagmaRing( enum!.family, enum!.zerocoeff,
-                                          [ enum!.ringenum[ nr[i]+1 ] ],
-                                          [ enum!.magmaenum[i] ] );
-    od;
-    return elm;
-    end );
-
-InstallMethod( Position,
-    "for enumerator of a free magma ring",
-    IsCollsElmsX,
-    [ IsFreeMagmaRingEnumerator, IsElementOfFreeMagmaRing, IsZeroCyc ],
-    function( enum, elm, zero )
-
-    local pos,    # position, result
-          q,      # cardinality of the ring
-          rpos,   # position in ring enumerator
-          mpos,   # position in magma enumerator
-          i;      # loop over the expression of `elm'
-
-    elm:= CoefficientsAndMagmaElements( elm );
-    pos:= 1;
-    q:= Length( enum!.ringenum );
-    for i in [ 2, 4 .. Length( elm ) ] do
-      rpos:= Position( enum!.ringenum, elm[i], 0 );
-      if rpos = fail then
-        return fail;
-      fi;
-      mpos:= Position( enum!.magmaenum, elm[ i-1 ], 0 );
-      if mpos = fail then
-        return fail;
-      fi;
-      pos:= pos + ( rpos - 1 ) * q ^ ( mpos - 1 );
-    od;
-    return pos;
-    end );
-
-
-InstallMethod( Enumerator,
-    "for enumerator of a free magma ring with finite ring",
-    [ IsFreeMagmaRing ],
-    function( RM )
-    local R, enum;
-
-    R:= LeftActingDomain( RM );
-    if not IsFinite( LeftActingDomain( RM ) ) then
-      TryNextMethod();
-    fi;
-
-    enum:= Objectify( NewType( FamilyObj( RM ),
-                               IsFreeMagmaRingEnumerator ),
-                    rec( family    := ElementsFamily( FamilyObj( RM ) ),
-                         zerocoeff := Zero( R ),
-                         ringenum  := Enumerator( R ),
-                         magmaenum := Enumerator( UnderlyingMagma( RM ) ),
-                         zero      := Zero( RM ) )
-                     );
-    SetUnderlyingCollection( enum, RM );
-    return enum;
     end );
 
 

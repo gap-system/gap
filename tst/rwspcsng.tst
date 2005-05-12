@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  Exclude from testall.g: why?
+##
 
 gap> START_TEST("$Id$");
 
@@ -1042,10 +1044,10 @@ gap> Print(ExtRepOfObj( ReducedQuotient( rws, w, l[1] ) ),"\n");
 
 #############################################################################
 
-gap> STOP_TEST( "rwspcsng.tst", 403645000 );
+gap> STOP_TEST( "rwspcsng.tst", 337100000 );
 
 
 #############################################################################
 ##
-#E  rwspcsng.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

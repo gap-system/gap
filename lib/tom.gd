@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations of the category and family of tables
 ##  of marks, and their properties, attributes, operations and functions.
@@ -224,6 +225,9 @@ Revision.tom_gd :=
 ##  but if `TableOfMarks' returns a table of marks object created from a
 ##  matrix then it may still happen that this object does not describe the
 ##  table of marks of a group.
+##
+##  For an overview of operations for table of marks objects,
+##  see the introduction to the Chapter~"Tables of Marks".
 ##
 DeclareAttribute( "TableOfMarks", IsGroup );
 DeclareAttribute( "TableOfMarks", IsString );
@@ -1186,10 +1190,10 @@ DeclareOperation( "RepresentativeTomByGeneratorsNC",
 #############################################################################
 ##
 #O  FusionCharTableTom( <tbl>, <tom> )  . . . . . . . . . . .  element fusion
-#O  PossibleFusionsCharTableTom( <tbl>, <tom>[, <quick>] )  .  element fusion
+#O  PossibleFusionsCharTableTom( <tbl>, <tom>[, <options>] ) .  element fusion
 ##
-##  Let <tbl> be the ordinary character table of the group $G$, and <tom> the
-##  table of marks of $G$.
+##  Let <tbl> be the ordinary character table of the group $G$, say,
+##  and <tom> the table of marks of $G$.
 ##  `FusionCharTableTom' determines the fusion of the classes of elements
 ##  from <tbl> to the classes of cyclic subgroups on <tom>, that is,
 ##  a list that contains at position $i$ the position of the class of cyclic
@@ -1222,10 +1226,20 @@ DeclareOperation( "RepresentativeTomByGeneratorsNC",
 ##  this fusion,
 ##  and if `FusionCharTableTom' returns `fail' then the length of this list
 ##  is different from $1$.
-##  The optional argument <quick>, a boolean, indicates whether a unique
-##  fusion shall be returned as soon as it has been determined,
-##  without further checks.
-##  The default value of <quick> is `false'.
+#T this is fishy!
+##
+##  The optional argument <options> must be a record that may have the
+##  following components.
+##  \beginitems
+##  `fusionmap' &
+##       a parametrized map which is an approximation of the desired map,
+##
+##  `quick' &
+##       a Boolean;
+##       if `true' then as soon as only one possibility remains
+##       this possibility is returned immediately;
+##       the default value is `false'.
+##  \enditems
 ##
 DeclareOperation( "FusionCharTableTom",
     [ IsOrdinaryTable, IsTableOfMarks ] );
@@ -1234,7 +1248,7 @@ DeclareOperation( "PossibleFusionsCharTableTom",
     [ IsOrdinaryTable, IsTableOfMarks ] );
 
 DeclareOperation( "PossibleFusionsCharTableTom",
-    [ IsOrdinaryTable, IsTableOfMarks, IsBool ] );
+    [ IsOrdinaryTable, IsTableOfMarks, IsRecord ] );
 
 
 #############################################################################

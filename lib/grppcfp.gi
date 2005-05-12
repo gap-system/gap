@@ -4,6 +4,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains some functions to convert a pc group into an
 ##  fp group and vice versa.
@@ -37,6 +38,11 @@ InstallGlobalFunction( IsomorphismFpGroupByPcgs, function( pcgs, str )
 
     n:=Length(pcgs);
     F    := FreeGroup( n, str );
+    if n=0 then
+      phi:=GroupHomomorphismByImagesNC(GroupOfPcgs(pcgs),F/[],[],[]);
+      SetIsBijective( phi, true );
+      return phi;
+    fi;
     gens := GeneratorsOfGroup( F );
     pis  := RelativeOrders( pcgs );
     rels := [ ];
@@ -106,20 +112,6 @@ function( G,p,nam )
     Error("pcgs does not generate the group");
   fi;
   return IsomorphismFpGroupByPcgs( p, nam);
-end );
-               
-#############################################################################
-##
-#F  SmithNormalFormSQ( mat )
-##
-##  returns D = diagonalised form, D = P * M * Q, I = Q^-1
-##
-InstallGlobalFunction( SmithNormalFormSQ, function( M )
-local r;
-  Info(InfoWarning,1,"Obsolete function  `SmithNormalFormSQ',\n",
-  "use `NormalFormIntMat' instead");
-  r:=NormalFormIntMat(M,15);
-  return rec(P:=r.rowtrans,Q:=r.coltrans,D:=r.normal,I:=r.coltrans^-1);
 end );
 
 #############################################################################
@@ -711,7 +703,6 @@ local field, dim, rep, lift,all,dims,allmo,mo,start,found,genum,genepi;
   field := GF(prime);
   start:=epi;
   dims:=List(CharacterDegrees(epi.image,prime),i->i[1]);
-dims:=[1..4];
 
   genum:=Length(Pcgs(epi.image)); # number of generators of the starting
                                   # group. (We need to consider nontrivial

@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file  contains declarations for Morpheus
 ##
@@ -35,10 +36,25 @@ DeclareAttribute("AutomorphismGroup",IsDomain);
 ##  `AutomorphismDomain'.
 DeclareProperty( "IsGroupOfAutomorphisms", IsGroup );
 
-InstallTrueMethod( IsHandledByNiceMonomorphism,IsGroupOfAutomorphisms );
+#############################################################################
+##
+#P  IsGroupOfAutomorphismsFiniteGroup(<G>)
+##
+##  indicates whether <G> consists of automorphisms of another finite group <H>.
+##  The group <H> can be obtained from <G> via the attribute
+##  `AutomorphismDomain'.
+DeclareProperty( "IsGroupOfAutomorphismsFiniteGroup", IsGroup );
+
+InstallTrueMethod( IsGroupOfAutomorphisms,IsGroupOfAutomorphismsFiniteGroup);
+InstallTrueMethod( IsFinite,IsGroupOfAutomorphismsFiniteGroup);
+InstallTrueMethod( IsHandledByNiceMonomorphism,
+  IsGroupOfAutomorphismsFiniteGroup);
 
 InstallSubsetMaintenance( IsGroupOfAutomorphisms,
     IsGroup and IsGroupOfAutomorphisms, IsGroup );
+
+InstallSubsetMaintenance( IsGroupOfAutomorphismsFiniteGroup,
+    IsGroup and IsGroupOfAutomorphismsFiniteGroup, IsGroup );
 
 #############################################################################
 ##

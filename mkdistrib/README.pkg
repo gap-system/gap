@@ -1,0 +1,13 @@
+The archives (with extensions .zoo, .zip, .tar.gz):
+
+  accpkgXXX
+      contains all current accepted GAP 4 packages. See
+          http://www.gap-system.org/Info4/share.html
+      for details about accepted GAP packages,
+
+  deppkgXXX
+      contains all current deposited GAP 4 package contributions. See
+          http://www.gap-system.org/Info4/deposit.html#pkg
+      for details about deposited packages,
+
+where XXX, YYY are version numbers or dates.

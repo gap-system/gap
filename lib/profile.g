@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the profiling functions.
 ##
@@ -733,35 +734,44 @@ end);
 #############################################################################
 ##
 #F  START_TEST( <id> )  . . . . . . . . . . . . . . . . . . . start test file
-##
-START_TIME := 0;
-START_NAME := "";
-
-START_TEST := function( name )
-    GASMAN("collect");
-    START_TIME := Runtime();
-    START_NAME := name;
-end;
-
-
-#############################################################################
-##
 #F  STOP_TEST( <file>, <fac> )  . . . . . . . . . . . . . . .  stop test file
 ##
-STOP_TEST := function( file, fac )
-    local   time;
+##  `START_TEST' and `STOP_TEST' are used in files that are read via
+##  `ReadTest'.
+##  We reinitialize the caches and the global random number generator,
+##  in order to be independent of the reading order of several test files.
+##
+##  Note that the functions in `tst/testutil.g' temporarily replace
+##  `STOP_TEST' before they call `ReadTest'.
+##
+START_TEST := function( name )
+    FlushCaches();
+    RANDOM_SEED(1);
+    GASMAN( "collect" );
+    GAPInfo.TestData.START_TIME := Runtime();
+    GAPInfo.TestData.START_NAME := name;
+end;
 
-    time := Runtime() - START_TIME;
-    Print( START_NAME, "\n" );
-    if time <> 0 then
+STOP_TEST := function( file, fac )
+    local time;
+
+    if not IsBound( GAPInfo.TestData.START_TIME ) then
+      Error( "`STOP_TEST' command without `START_TEST' command for `",
+             file, "'" );
+    fi;
+    time:= Runtime() - GAPInfo.TestData.START_TIME;
+    Print( GAPInfo.TestData.START_NAME, "\n" );
+    if time <> 0 and IsInt( fac ) then
       Print( "GAP4stones: ", QuoInt( fac, time ), "\n" );
     else
       Print( "GAP4stones: infinity\n" );
     fi;
+    Unbind( GAPInfo.TestData.START_TIME );
+    Unbind( GAPInfo.TestData.START_NAME );
 end;
 
 
 #############################################################################
 ##
-#E  profile.g . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

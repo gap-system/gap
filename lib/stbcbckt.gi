@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the basic   routines for permutation group   backtrack
 ##  algorithms that are based  on partitions. These  routines are used in the
@@ -224,7 +225,7 @@ InstallGlobalFunction( StratMeetPartition, function( arg )
     # `Set(cellsP{S[s]})'  is  the set of    (numbers of) cells  of <P>  that
     # contain a point from `S[s]/g'. A cell splits iff it contains points for
     # two such values of <s>.
-    if g = ()  then
+    if IsOne( g )  then
         cellsP := P.cellno;
     else
         cellsP := ListWithIdenticalEntries( Length( P.cellno ), 0 );
@@ -274,7 +275,7 @@ InstallGlobalFunction( StratMeetPartition, function( arg )
       for p in splits do
             # Last argument `true' means that the cell will split.
             i := SplitCell( P, p, lS, s, g, true );
-            if g <> ()  then
+            if not IsOne( g )  then
                 cell := Cell( P, NumberCells( P ) );
                 cellsP{ OnTuples( cell, g ) } := NumberCells( P ) + 0 * cell;
             fi;
@@ -1200,6 +1201,7 @@ InstallGlobalFunction( PartitionBacktrack,
             
         fi;
         a := rbase.base[ d ];
+        Info(InfoBckt,4,d,"th basepoint: ",a);
         
         # Intersect  the current cell of <P>  with  the mapped basic orbit of
         # <G> (and also with the one of <H> in the intersection case).
@@ -1227,6 +1229,11 @@ InstallGlobalFunction( PartitionBacktrack,
                 fi;
             od;
         fi;
+	if d=1 and ForAll(GeneratorsOfGroup(G),x->a^x=a) then
+	  orb[d][a]:=true; # ensure a is a possible image (can happen if
+			  # acting on permutations with more points)
+	fi;
+
         orB[ d ] := StructuralCopy( orb[ d ] );
         
         # Loop  over the candidate images  for the  current base point. First
@@ -1313,6 +1320,7 @@ InstallGlobalFunction( PartitionBacktrack,
                 # refinement was impossible, give up for this image.
                 image.bimg[ d ] := b;
                 IsolatePoint( image.partition, b );
+
                 if ProcessFixpoint( image, a, b, org[ d ][ b ] )  then
                     t := RRefine( rbase, image, false );
                 else
@@ -1946,7 +1954,7 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
             if len > max  then  max := len;  L := i;  fi;
             if len < min  then  min := len;  l := i;  fi;
         od;
-        order := Maximum( List( GeneratorsOfGroup( E ), OrderPerm ) );
+        order := Maximum( List( GeneratorsOfGroup( E ), Order) );
         if 2 * order < n  then  order := Cell( B, l );
                           else  order := Cell( B, L );  fi;
     fi;
@@ -2274,6 +2282,24 @@ InstallGlobalFunction( RepOpElmTuplesPermGroup,
         return fail;
     fi;
 
+    if IsTrivial(L) then
+      L:=SubgroupNC(G,Filtered( Concatenation(
+	     Filtered(e,gen->gen in G),
+	     StrongGeneratorsStabChain(StabChainMutable(G))),
+	   gen->OnTuples(e,gen)=e)); 
+    fi;
+    if IsTrivial(R) then
+      if repr then
+	R:=SubgroupNC(G,Filtered( Concatenation(
+	      Filtered(f,gen->gen in G),
+	      StrongGeneratorsStabChain(StabChainMutable(G))),
+	    gen->OnTuples(f,gen)=f)); 
+
+      else
+	R:=L;
+      fi;
+    fi;
+
 #    L := SubgroupNC( G, Concatenation( GeneratorsOfGroup( L ),
 #                 Filtered( Concatenation( StrongGenerators( G ),
 #                 Filtered( e, gen -> gen in G ) ),
@@ -2386,8 +2412,9 @@ InstallGlobalFunction( IsomorphismPermGroups, function( arg )
         F := First( GeneratorsOfGroup( F ), gen -> Order( gen ) <> 1 );
         return RepOpElmTuplesPermGroup( true, G, [ E ], [ F ], L, R );
     fi;
-    Omega := MovedPoints( Concatenation( GeneratorsOfGroup( G ),
-                     GeneratorsOfGroup( E ), GeneratorsOfGroup( F ) ) );
+    # `Suborbits' uses all points. (AH, 7/17/02)
+    Omega := [1..Maximum(MovedPoints( Concatenation( GeneratorsOfGroup( G ),
+	     GeneratorsOfGroup( E ), GeneratorsOfGroup( F ) ) ))];
 
     # test whether we have a chance mapping the groups (as their orbits fit
     # together)
@@ -2418,6 +2445,7 @@ InstallGlobalFunction( IsomorphismPermGroups, function( arg )
         Add( data, rbase.reggrp( F, Omega ) );
     fi;
 
+
     return PartitionBacktrack( G, Pr, true, rbase, data, L, R );
 end );
 
@@ -2441,8 +2469,9 @@ local   G,  E,  div, Omega,  Pr, rbase,  data,  N,  B,  L;
                      gen -> Order( gen ) <> 1 ) ];
         return RepOpElmTuplesPermGroup( false, G, E, E, L, L );
     fi;
-    Omega := MovedPoints( Concatenation( GeneratorsOfGroup( G ),
-                     GeneratorsOfGroup( E ) ) );
+    # `Suborbits' uses all points. (AH, 7/17/02)
+    Omega := [1..Maximum(MovedPoints( Concatenation( GeneratorsOfGroup( G ),
+	     GeneratorsOfGroup( E ) ) ))];
     Pr := gen -> ForAll( GeneratorsOfGroup( E ), g -> g ^ gen in E );
     if   Length( arg ) = 3  then  L := arg[ 3 ];
     elif IsSubset( G, E )   then  L := E;
@@ -2594,33 +2623,33 @@ local pl,i,p,W,op,S;
 	op:=ActionHomomorphism(G,Concatenation(p),"surjective"); #makes the blocks standard
 	W:=WreathProduct(SymmetricGroup(Length(p[1])),
 	     SymmetricGroup(Length(p)));
-	W:=Intersection(W,Image(op,G)); # the stabilizer
-	G:=PreImage(op,W);
+	if Size(W)<10^50 then
+	  W:=Intersection(W,Image(op,G)); # the stabilizer
+	  G:=PreImage(op,W);
+	else
+
+	  # because we want to keep the set property, we make p immutable
+	  p:=Immutable(Set(p));
+	  # the stabilizer is the set of all elements that map every set from
+	  # p into another set from p.  as a subgroup of the stabilizer
+	  # compute the stabilizer on set tuples
+	  S:=G;
+	  for i in p do
+	    S:=Stabilizer(S,i,OnSets);
+	  od;
+
+	  G:=SubgroupProperty(G,function(gen)
+				local i;
+				  for i in p do
+				    if not OnSets(i,gen) in p then
+				      return false;
+				    fi;
+				  od;
+				  return true;
+				end,
+				S);
+	fi;
       fi;
-
-#    # because we want to keep the set property, we make p immutable
-#    p:=Immutable(Set(p));
-#    # the stabilizer is the set of all elements that map every set from p into
-#    # another set from p.
-#    # as a subgroup of the stabilizer compute the stabilizer on set tuples
-#    S:=G;
-#    for i in p do
-#      S:=Stabilizer(S,i,OnSets);
-#      Print(i," ",Size(S),"\n");
-#    od;
-#
-#    G:=SubgroupProperty(G,function(gen)
-#                          local i;
-#			    for i in p do
-#			      if not OnSets(i,gen) in p then
-#				return false;
-#			      fi;
-#			    od;
-#			    return true;
-#			  end,
-#			  S);
-
-
     fi;
   od;
   return G;

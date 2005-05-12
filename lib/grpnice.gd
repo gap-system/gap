@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file  contains generic     methods   for groups handled    by  nice
 ##  monomorphisms..
@@ -135,7 +136,7 @@ BindGlobal( "AttributeMethodByNiceMonomorphism", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: Attribute",
         true,
         par,
         0,
@@ -162,7 +163,7 @@ BindGlobal( "AttributeMethodByNiceMonomorphismCollColl",
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: attribute CollColl",
         IsIdenticalObj,
         par,
 	0,
@@ -192,14 +193,17 @@ BindGlobal( "AttributeMethodByNiceMonomorphismCollElm", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: attribute CollElm",
         IsCollsElms,
         par,
         0,
         function( obj1, obj2 )
-            local   img;
-            img := ImagesRepresentative( NiceMonomorphism(obj1), obj2 );
-            if img = fail  then
+            local   nice,img;
+	    nice:=NiceMonomorphism(obj1);
+            img := ImagesRepresentative( nice, obj2 );
+            if img = fail or 
+	      not (img in ImagesSource(nice) and
+		PreImagesRepresentative(nice,img)=obj2) then
                 TryNextMethod();
             fi;
             return oper( NiceObject(obj1), img );
@@ -221,14 +225,17 @@ BindGlobal( "AttributeMethodByNiceMonomorphismElmColl", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: attributeElmColl",
         IsElmsColls,
         par,
         0,
         function( obj1, obj2 )
-            local   img;
-            img := ImagesRepresentative( NiceMonomorphism(obj2), obj1 );
-            if img = fail  then
+            local   nice,img;
+	    nice:=NiceMonomorphism(obj2);
+            img := ImagesRepresentative( nice, obj1 );
+            if img = fail or 
+	      not (img in ImagesSource(nice) and
+		PreImagesRepresentative(nice,img)=obj1) then
                 TryNextMethod();
             fi;
             return oper( img,NiceObject(obj2));
@@ -252,7 +259,7 @@ BindGlobal( "GroupMethodByNiceMonomorphism", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism:group",
         true,
         par,
         0,
@@ -280,7 +287,7 @@ BindGlobal( "GroupMethodByNiceMonomorphismCollOther", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: group CollOther",
         true,
         par,
         0,
@@ -309,7 +316,7 @@ BindGlobal( "GroupMethodByNiceMonomorphismCollColl", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism:group CollColl",
         IsIdenticalObj,
         par,
         0,
@@ -340,7 +347,7 @@ BindGlobal( "GroupMethodByNiceMonomorphismCollElm", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: group CollElm",
         IsCollsElms,
         par,
         0,
@@ -348,7 +355,9 @@ BindGlobal( "GroupMethodByNiceMonomorphismCollElm", function( oper, par )
             local   nice,  img,  img1;
             nice := NiceMonomorphism(obj1);
             img  := ImagesRepresentative( nice, obj2 );
-            if img = fail  then
+            if img = fail or 
+	      not (img in ImagesSource(nice) and
+		PreImagesRepresentative(nice,img)=obj2) then
                 TryNextMethod();
             fi;
             img1 := oper( NiceObject(obj1), img );
@@ -372,7 +381,7 @@ BindGlobal( "SubgroupMethodByNiceMonomorphism", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: Subgroup",
         true,
         par,
         0,
@@ -401,7 +410,7 @@ BindGlobal( "SubgroupsMethodByNiceMonomorphism", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: subgroups",
         true,
         par,
         0,
@@ -435,7 +444,7 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollOther",
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: subgroup CollOther",
         true,
         par,
         0,
@@ -466,7 +475,7 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollColl", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: Subgroup CollColl",
         IsIdenticalObj,
         par,
 	0,
@@ -476,7 +485,13 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollColl", function( oper, par )
                 TryNextMethod();
             fi;
             nice := NiceMonomorphism(obj1);
-            img := oper( NiceObject(obj1), Image(nice,obj2) );
+	    img:=ImagesSet(nice,obj2);
+            if img = fail or 
+	      not (IsSubset(ImagesSource(nice),img) and
+		PreImagesSet(nice,img)=obj2) then
+                TryNextMethod();
+            fi;
+            img := oper( NiceObject(obj1), img );
             sub := GroupByNiceMonomorphism( nice, img );
             SetParent( sub, obj1 );
             return sub;
@@ -499,7 +514,7 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollElm", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: subgroup CollElm",
         IsCollsElms,
         par,
         0,
@@ -507,7 +522,9 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollElm", function( oper, par )
             local   nice,  img,  img1,  sub;
             nice := NiceMonomorphism(obj1);
             img  := ImagesRepresentative( nice, obj2 );
-            if img = fail  then
+            if img = fail or 
+	      not (img in ImagesSource(nice) and
+		PreImagesRepresentative(nice,img)=obj2) then
                 TryNextMethod();
             fi;
             img1 := oper( NiceObject(obj1), img );
@@ -566,7 +583,7 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphism", function( oper, par )
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: GroupSeries",
         true,
         par,
         0,
@@ -599,7 +616,7 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollOther",
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: GroupSeries CollOther",
         true,
         par,
         0,
@@ -633,7 +650,7 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollColl",
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism: GroupSeries CollColl",
         IsIdenticalObj,
         par,
 	0,
@@ -669,7 +686,7 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollElm",
 
     # install the method
     InstallOtherMethod( oper,
-        "handled by nice monomorphism",
+        "handled by nice monomorphism:GroupSeries CollElm",
         IsCollsElms,
         par,
         0,
@@ -677,7 +694,9 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollElm",
             local   nice,  img,  list,  i;
             nice := NiceMonomorphism(obj1);
             img  := ImagesRepresentative( nice, obj2 );
-            if img = fail  then
+            if img = fail or 
+	      not (img in ImagesSource(nice) and
+		PreImagesRepresentative(nice,img)=obj2) then
                 TryNextMethod();
             fi;
             list := ShallowCopy( oper( NiceObject(obj1), img ) );

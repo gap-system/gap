@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for finitely presented groups
 ##  (fp groups).
@@ -437,11 +438,11 @@ DeclareGlobalFunction("SpanningTree");
 ##
 #F  RewriteWord( <aug>, <word> )
 ##
-##  RewriteWord rewrites <word> (which must be a word in the full group with
-##  respect to which the augmented coset table <aug> is given) in the
-##  subgroup generators given by the augmented coset table <aug>. It returns
-##  a Tietze-type word (i.e.~a list of integers), referring to the primary
-##  and secondary generators of <aug>.
+##  RewriteWord rewrites <word> (which must be a word in the underlying free
+##  group with respect to which the augmented coset table <aug> is given) in
+##  the subgroup generators given by the augmented coset table <aug>. It
+##  returns a Tietze-type word (i.e.~a list of integers), referring to the
+##  primary and secondary generators of <aug>.
 ##
 ##  If <word> is not contained in the subgroup, `fail' is returned.
 ##

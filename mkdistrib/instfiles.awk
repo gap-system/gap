@@ -26,7 +26,7 @@ BEGIN{
       eqlin=$0;
       gsub(/[ -~]/,"=",eqlin);
 
-      $0="\n\n   " $0 "\n   " eqlin;
+      $0="\n\n " eqlin;
     }
     else {
       $0="   " $0;

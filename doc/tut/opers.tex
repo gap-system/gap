@@ -50,14 +50,15 @@ it simply returns the stored value.
 This second method is also called the *system getter*.
 {\GAP} functions for which several methods can be available
 are called *operations*, so `Size' is an example of an operation.
-\begintt
-gap> G := Group( (1,2,3,4,5,6,7,8), (1,2) );; Size( G ); time;
+\beginexample
+gap> G := Group( (1,2,3,4,5,6,7,8), (1,2) );;
+gap> Size( G ); time > 0;   # the time may of course vary on your machine
 40320
-90   # this may of course vary on your machine
+true
 gap> Size( G ); time;
 40320
 0
-\endtt
+\endexample
 The convenient thing  for the user  is that  {\GAP} automatically chooses
 the right method  for the getter, i.e.,  it calls a real-work getter at
 most once  and the system getter  in all subsequent occurrences. *At most
@@ -333,6 +334,7 @@ saying `TraceImmediateMethods( true )'.
 gap> TraceImmediateMethods( true );
 gap> g:= Group( (1,2,3), (1,2) );;
 #I  immediate: Size
+#I  immediate: IsCyclic
 #I  immediate: IsCommutative
 #I  immediate: IsTrivial
 #I  immediate: IsStabChainViaChainSubgroup
@@ -344,6 +346,7 @@ gap> Size( g );
 #I  immediate: IsStabChainViaChainSubgroup
 #I  immediate: IsChainTypeGroup
 #I  immediate: IsNonTrivial
+#I  immediate: GeneralizedPcgs
 #I  Setter(Size): system setter
 #I  Size: system getter
 #I  immediate: IsPerfectGroup

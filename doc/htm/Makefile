@@ -6,7 +6,8 @@
 ##
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-BUILD = ../../etc/convert.pl -t
+BUILD = ../../etc/convert.pl -u
+BUILDIE = ../../etc/convert.pl -t
 
 default: all
 
@@ -49,13 +50,16 @@ theindex.htm: ref/chapters.htm tut/chapters.htm ext/chapters.htm \
 ../new/manual.dvi:
 	(cd ../new;tex manual)
 
-webdoc: ../tut/manual.dvi ../ref/manual.dvi ../ext/manual.dvi ../prg/manual.dvi ../new/manual.dvi
-	$(BUILD) -s ../tut tut
-	$(BUILD) -s ../ref ref
-	$(BUILD) -s ../ext ext
-	$(BUILD) -s ../prg prg
-	$(BUILD) -s ../new new
+ieversion: ../tut/manual.dvi ../ref/manual.dvi ../ext/manual.dvi ../prg/manual.dvi ../new/manual.dvi
+	$(BUILDIE) -c ../tut tut
+	$(BUILDIE) -c ../ref ref
+	$(BUILDIE) -c ../ext ext
+	$(BUILDIE) -c ../prg prg
+	$(BUILDIE) -c ../new new
 	./allhtmlindex
+
+clean:
+	rm -f indx*.htm ref/*.htm tut/*.htm prg/*.htm ext/*.htm new/*.htm
 
 
 

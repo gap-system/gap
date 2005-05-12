@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for groups with a polycyclic collector.
 ##
@@ -116,7 +117,7 @@ end );
 
 #############################################################################
 ##
-#M  SetInducedPcgs( <home>,<G>,<pcgs> )
+#F  SetInducedPcgs( <home>,<G>,<pcgs> )
 ##
 InstallGlobalFunction(SetInducedPcgs,function(home,G,pcgs)
   if not HasHomePcgs(G) then
@@ -179,9 +180,17 @@ InstallMethod( Pcgs,
 
 #############################################################################
 ##
+#M  GeneralizedPcgs( <G> )
+##
+InstallImmediateMethod( GeneralizedPcgs, IsGroup and HasPcgs, 0, Pcgs );
+
+#############################################################################
+##
 #M  HomePcgs( <G> )
 ##
-InstallMethod( HomePcgs, true, [ IsGroup ], 0, Pcgs );
+##  BH: changed Pcgs to G -> ParentPcgs (Pcgs(G))
+##
+InstallMethod( HomePcgs, true, [ IsGroup ], 0, G -> ParentPcgs( Pcgs( G ) ) );
 
 #############################################################################
 ##
@@ -222,7 +231,7 @@ local p,cs,csi,l,i,pcs,ins,j,u;
   l:=Length(pcs)+1;
   pcs:=PcgsByPcSequenceNC(FamilyObj(OneOfPcgs(p)),Reversed(pcs));
   # store the indices
-  SetIndicesNormalSteps(pcs,Reversed(List(ins,i->l-i)));
+  SetIndicesChiefNormalSteps(pcs,Reversed(List(ins,i->l-i)));
   return pcs;
 end);
 
@@ -915,9 +924,7 @@ function( G, n )
             modu,  max,  series,  comps,  sub,  new,  index,  order;
 
     spec := SpecialPcgs( G );
-    if Length( spec ) = 0 then
-        return 1;
-    fi;
+    if Length( spec ) = 0 then return 1; fi;
     first := LGFirst( spec );
     weights := LGWeights( spec );
     m := Length( spec );
@@ -925,13 +932,12 @@ function( G, n )
     # the first head
     i := 1;
     phi := 1;
-    while weights[first[i]][1] = 1 and weights[first[i]][2] = 1 do
+    while i <= Length(first)-1 and 
+          weights[first[i]][1] = 1 and weights[first[i]][2] = 1 do
         start := first[i];
         next  := first[i+1];
         p     := weights[start][3];
         d     := next - start;
-        r     := Length( Filtered( weights, x -> x[1] = 1 and x[3] = p ) );
-        phi   := phi * p^( n * ( r - d ) ); 
         for j in [0..d-1] do
             phi := phi * (p^n - p^j);
         od;
@@ -995,7 +1001,10 @@ function( G, n )
 end );
 
 RedispatchOnCondition(EulerianFunction,true,[IsGroup,IsPosInt],
-  [IsSolvableGroup,IsPosInt],0);
+  [IsSolvableGroup,IsPosInt], 
+  1 # make the priority higher than the default method computing
+    # the table of marks
+  ); 
 
 #############################################################################
 ##
@@ -1168,7 +1177,7 @@ local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
   fi;
 
   home:=HomePcgs(G);
-  if not HasIndicesNormalSteps(home) then
+  if not HasIndicesEANormalSteps(home) then
     home:=PcgsElementaryAbelianSeries(G);
   fi;
   # Calculate a (central)  elementary abelian series  with all pcgs induced
@@ -1177,11 +1186,11 @@ local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
   if IsPrimePowerInt( Size( G ) )  then
     p:=FactorsInt( Size( G ) )[ 1 ];
     home:=PcgsCentralSeries(G);
-    eas:=NormalSeriesByPcgs(home);
+    eas:=CentralNormalSeriesByPcgs(home);
     cent:=ReturnTrue;
   else
     home:=PcgsElementaryAbelianSeries(G);
-    eas:=NormalSeriesByPcgs(home);
+    eas:=EANormalSeriesByPcgs(home);
     # AH, 26-4-99: Test centrality not via `in' but via exponents
     cent:=function(pcgs,grpg,Npcgs,dep)
 	  local i,j;
@@ -1196,7 +1205,7 @@ local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
 	  end;
 
   fi;
-  indstep:=IndicesNormalSteps(home);
+  indstep:=IndicesEANormalSteps(home);
 
   Hp:=InducedPcgs(home,H);
 
@@ -1366,7 +1375,7 @@ local G,	   # common parent
     fi;
 
     home := HomePcgs( G );
-    if not HasIndicesNormalSteps(home) then
+    if not HasIndicesEANormalSteps(home) then
       home:=PcgsElementaryAbelianSeries(G);
     fi;
 
@@ -1375,8 +1384,8 @@ local G,	   # common parent
     eas:=fail;
     if IsPrimePowerInt( Size( G ) )  then
         p := FactorsInt( Size( G ) )[ 1 ];
-	home:=PcgsCentralSeries(G);
-	eas:=NormalSeriesByPcgs(home);
+	home:=PcgsPCentralSeriesPGroup(G);
+	eas:=PCentralNormalSeriesByPcgsPGroup(home);
 	if NT in eas then
 	  cent := ReturnTrue;
 	else
@@ -1386,7 +1395,7 @@ local G,	   # common parent
 
     if eas=fail then
 	home:=PcgsElementaryAbelianSeries([G,NT]);
-	eas:=NormalSeriesByPcgs(home);
+	eas:=EANormalSeriesByPcgs(home);
 	cent:=function(pcgs,grpg,Npcgs,dep)
 	      local i,j;
 		for i in grpg do
@@ -1400,7 +1409,7 @@ local G,	   # common parent
 	      end;
 
     fi;
-    indstep:=IndicesNormalSteps(home);
+    indstep:=IndicesEANormalSteps(home);
 
     # series to NT
     ea2:=List(eas,i->ClosureGroup(NT,i));
@@ -1408,6 +1417,11 @@ local G,	   # common parent
     for i in ea2 do
       if not i in eas then
 	Add(eas,i);
+      fi;
+    od;
+    for i in eas do
+      if not HasHomePcgs(i) then
+	SetHomePcgs(i,ParentPcgs(home));
       fi;
     od;
 
@@ -1493,6 +1507,10 @@ local i,P;
   G:=AsSubgroup(P,G);
   return G;
 end);
+
+# enforce solvability check.
+RedispatchOnCondition(CentralizerModulo,true,[IsGroup,IsGroup,IsObject],
+  [IsGroup and IsSolvableGroup,IsGroup and IsSolvableGroup,IsObject],0);
 
 #############################################################################
 ##
@@ -1760,7 +1778,7 @@ local e,	# EAS
 
   # compute a pcgs fitting the EAS
   pcgs:=PcgsChiefSeries(G);
-  e:=NormalSeriesByPcgs(pcgs);
+  e:=ChiefNormalSeriesByPcgs(pcgs);
 
   if not IsBound(G!.chiefSeriesPcgsIsFamilyInduced) then
     # test whether pcgs is family induced
@@ -2071,7 +2089,7 @@ InstallMethod(IsSimpleGroup,"for solvable groups",true,
           RankFilter(IsPermGroup)+1)
     -RankFilter(IsSolvableGroup),
 function(G)
-  return IsInt(Size(G)) and (Size(G)=1 or IsPrimeInt(Size(G)));
+  return IsInt(Size(G)) and IsPrimeInt(Size(G));
 end);
 
 #############################################################################
@@ -2082,7 +2100,7 @@ InstallMethod(ViewObj,"pc group",true,[IsPcGroup],0,
 function(G)
   if (not HasParent(G)) or
    Length(GeneratorsOfGroup(G))*Length(GeneratorsOfGroup(Parent(G)))
-     /VIEWLEN>50 then
+     / GAPInfo.ViewLength > 50 then
     Print("<pc group");
     if HasSize(G) then
       Print(" of size ",Size(G));

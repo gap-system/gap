@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for the computation of complements in
 ##  pc groups
@@ -81,6 +82,8 @@ DeclareOperation("ComplementclassesSolvableNC",
 ##  representatives for the conjugacy classes of complements of <N> in <G>.
 ##  Complements are subgroups <U> of <G> which intersect trivially with <N>
 ##  and together with <N> generate <G>.
+##
+##  At the moment only methods for a solvable <N> are available.
 DeclareOperation("Complementclasses",[IsGroup,IsGroup]);
 
 #############################################################################

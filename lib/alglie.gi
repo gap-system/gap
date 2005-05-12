@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for Lie algebras.
 ##
@@ -94,7 +95,7 @@ InstallMethod( LieDerivedSubalgebra,
 ##
 #M  LieDerivedSeries( <L> )
 ##
-InstallOtherMethod( LieDerivedSeries,
+InstallMethod( LieDerivedSeries,
     "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
@@ -132,6 +133,8 @@ InstallMethod( IsLieSolvable,
     return Dimension( D[ Length( D ) ] ) = 0;
     end );
 
+InstallTrueMethod( IsLieSolvable, IsLieNilpotent );
+
 
 #############################################################################
 ##
@@ -148,6 +151,9 @@ InstallMethod( IsLieNilpotent,
     D:= LieLowerCentralSeries( L );
     return Dimension( D[ Length( D ) ] ) = 0;
     end );
+
+    
+InstallTrueMethod( IsLieNilpotent, IsLieAbelian );
 
 
 #############################################################################
@@ -217,6 +223,8 @@ InstallMethod( IsLieAbelian,
     # Return the result.
     return true;
     end );
+
+InstallTrueMethod( IsLieAbelian, IsAlgebra and IsZeroMultiplicationRing );
 
 
 ##############################################################################
@@ -340,6 +348,11 @@ InstallMethod( LieCentralizer,
           vjl,
           pos;
 
+    # catch trivial case
+    if Dimension(S) = 0 then
+       return A;
+    fi;
+
     R:= LeftActingDomain( A );
     B:= Basis( A );
     T:= StructureConstantsTable( B );
@@ -418,6 +431,11 @@ InstallMethod( LieNormalizer,
           bas,
           b,
           pos;
+
+    # catch trivial case
+    if Dimension(U) = 0 then
+       return L;
+    fi;
 
     # We need not work if `U' knows to be an ideal in its parent `L'.
     if HasParent( U ) and IsIdenticalObj( L, Parent( U ) )
@@ -686,7 +704,7 @@ InstallMethod( RightDerivations,
     if n = 1 and offset = 1 then
       A:= [ [ One( R ) ] ];
     else
-      A:= NullspaceMat( A );
+      A:= NullspaceMatDestructive( A );
     fi;
 
     # Construct the generating matrices from the vectors.
@@ -784,7 +802,7 @@ InstallMethod( LeftDerivations,
     if n = 1 and offset = 1 then
       A:= [ [ One( R ) ] ];
     else
-      A:= NullspaceMat( A );
+      A:= NullspaceMatDestructive( A );
     fi;
 
     # Construct the generating matrices from the vectors.
@@ -1723,6 +1741,9 @@ InstallMethod( DirectSumDecomposition,
 
     F:= LeftActingDomain( L );
     n:= Dimension( L );
+    if n=0 then 
+        return [ L ];
+    fi;
 
     if RankMat( KillingMatrix( Basis( L ) ) ) = n then
 
@@ -1928,9 +1949,12 @@ InstallMethod( DirectSumDecomposition,
           i:=1;
           while i<= Length( B ) do
 
-            comlist:= List( bb, x -> List( B[i], y -> x*y ) );
-            comlist:= Filtered( Flat( comlist ), x -> x <> Zero( L ) );
-            if comlist <> [] then
+            comlist:= [ ];
+            for j in [1..Length(bb)] do
+                Append( comlist, List( B[i], y -> bb[j]*y ) );
+            od;
+
+            if not ForAll( comlist, x -> x = Zero(L) ) then
               Append( bb, B[i] );
               B:= Filtered( B, x -> x <> B[i] );
               i:= 1;
@@ -3459,6 +3483,125 @@ InstallMethod( UniversalEnvelopingAlgebra,
 
     return UniversalEnvelopingAlgebra( L, Basis(L) );
 end );
+
+
+#############################################################################
+##
+#F  IsSpaceOfUEAElements( <V> )
+##
+##  If <V> is a space of elements of a universal enveloping algebra,
+##  then the `NiceFreeLeftModuleInfo' value of <V> is a record with the
+##  following components.
+##  \beginitems
+##  `family' &
+##     the elements family of <V>,
+##
+##  `monomials' &
+##     a list of monomials occurring in the generators of <V>,
+##
+##
+##  `zerocoeff' &
+##     the zero coefficient of elements in <V>,
+##
+##  `zerovector' &
+##     the zero row vector in the nice free left module,
+##
+##  `characteristic' &
+##     the characteristic of the ground field.
+##  \enditems
+##  The `NiceVector' value of $v \in <V>$ is defined as the row vector of
+##  coefficients of $v$ w.r.t. the list `monomials'.
+##
+##
+DeclareHandlingByNiceBasis( "IsSpaceOfUEAElements",
+    "for free left modules of elements of a universal enveloping algebra" );
+
+
+#############################################################################
+##
+#M  NiceFreeLeftModuleInfo( <V> )
+#M  NiceVector( <V>, <v> )
+#M  UglyVector( <V>, <r> )
+##
+InstallHandlingByNiceBasis( "IsSpaceOfUEAElements", rec(
+    detect := function( F, gens, V, zero )
+      return IsElementOfFpAlgebraCollection( V );
+      end,
+
+    NiceFreeLeftModuleInfo := function( V )
+      local gens,
+            monomials,
+            gen,
+            list,
+            zero,
+            info;
+
+      gens:= GeneratorsOfLeftModule( V );
+
+      monomials:= [];
+
+      for gen in gens do
+        list:= ExtRepOfObj( gen )[2];
+        UniteSet( monomials, list{ [ 1, 3 .. Length( list ) - 1 ] } );
+      od;
+
+      zero:= Zero( LeftActingDomain( V ) );
+      info:= rec( monomials := monomials,
+                  zerocoeff := zero,
+                  characteristic:= Characteristic( LeftActingDomain( V ) ), 
+                  family    := ElementsFamily( FamilyObj( V ) ) );
+
+      # For the zero row vector, catch the case of empty `monomials' list.
+      if IsEmpty( monomials ) then
+        info.zerovector := [ zero ];
+      else
+        info.zerovector := ListWithIdenticalEntries( Length( monomials ),
+                                                     zero );
+      fi;
+
+      return info;
+      end,
+
+    NiceVector := function( V, v )
+      local info, c, monomials, i, pos;
+      info:= NiceFreeLeftModuleInfo( V );
+      c:= ShallowCopy( info.zerovector );
+      v:= ExtRepOfObj( v )[2];
+      monomials:= info.monomials;
+      for i in [ 2, 4 .. Length( v ) ] do
+        pos:= Position( monomials, v[ i-1 ] );
+        if pos = fail then
+          return fail;
+        fi;
+        c[ pos ]:= v[i];
+      od;
+      return c;
+      end,
+
+    UglyVector := function( V, r )
+      local info, list, i;
+      info:= NiceFreeLeftModuleInfo( V );
+      if Length( r ) <> Length( info.zerovector ) then
+        return fail;
+      elif IsEmpty( info.monomials ) then
+        if IsZero( r ) then
+          return Zero( V );
+        else
+          return fail;
+        fi;
+      fi;
+      list:= [];
+      for i in [ 1 .. Length( r ) ] do
+        if r[i] <> info.zerocoeff then
+          Add( list, info.monomials[i] );
+          Add( list, r[i] );
+        fi;
+      od;
+      return ObjByExtRep( info.family, [ info.characteristic, list ] );
+      end ) );
+
+
+
 
 
 #############################################################################
@@ -5246,7 +5389,7 @@ InstallGlobalFunction( NilpotentQuotientOfFpLieAlgebra,
 
     function( arg )
 
-      local FpL,L,weights,is_homogeneous,rels,weight,w,r,k,j,er,fol,maxw;
+      local FpL,L,weights,is_homogeneous,rels,weight,w,r,k,j,er,fol,maxw,N;
      
 
     # unwrapping the arguments...
@@ -5288,8 +5431,9 @@ InstallGlobalFunction( NilpotentQuotientOfFpLieAlgebra,
         if not is_homogeneous then break; fi;
       od;
 
-      return FpLieAlgebraEnumeration( FpL, maxw, weights, is_homogeneous );
-
+      N:= FpLieAlgebraEnumeration( FpL, maxw, weights, is_homogeneous );
+      SetIsLieNilpotent( Range(N), true );
+      return N;
 
 end ); 
 
@@ -5378,7 +5522,7 @@ InstallMethod( JenningsLieAlgebra,
           gens,      # List of the generators of the quotients J[i]/J[i+1],
                      # i.e., a basis of the Lie algebra.
           pos,       # list of positions: if pos[j] = p, then the element
-                     # gens[i] belongs to grades[p]
+                     # gens[j] belongs to grades[p]
           i,j,k,     # loop variables
           tempgens,
           t,         # integer
@@ -5523,6 +5667,7 @@ InstallMethod( JenningsLieAlgebra,
     od;
     SetPthPowerImages( B, pimgs );
     SetIsRestrictedLieAlgebra( L, true );
+    SetIsLieNilpotent( L, true );
 
     return L;
             
@@ -5549,7 +5694,7 @@ InstallMethod( PCentralLieAlgebra,
           gens,      # List of the generators of the quotients J[i]/J[i+1],
                      # i.e., a basis of the Lie algebra.
           pos,       # list of positions: if pos[j] = p, then the element
-                     # gens[i] belongs to grades[p]
+                     # gens[j] belongs to grades[p]
           i,j,k,     # loop variables
           tempgens,
           t,         # integer
@@ -5666,6 +5811,7 @@ InstallMethod( PCentralLieAlgebra,
                       )
               );
 
+    SetIsLieNilpotent( L, true );
     return L;
             
 end );

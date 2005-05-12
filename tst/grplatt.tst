@@ -8,6 +8,8 @@
 ##
 ##  This  file  tests the subgroup lattice program
 ##
+##  Exclude from testall.g: why?
+##
 
 gap> START_TEST("$Id$");
 
@@ -56,9 +58,10 @@ gap> AsSortedList(List(NormalSubgroups(g),Size));
 [ 1, 2, 4, 4, 4, 8 ]
 
 # thats all, folks
-gap> STOP_TEST( "grplatt.tst", 5761430000 );
+gap> STOP_TEST( "grplatt.tst", 4747200000 );
+
 
 #############################################################################
 ##
-#E  grplatt.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

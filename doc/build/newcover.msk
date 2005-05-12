@@ -1,6 +1,6 @@
   \centerline{\titlefont GAP}\bigskip
   \centerline{\secfont Release {{versionnumber}}}\medskip
-  \centerline{\secfont {{date}}}\bigskip\bigskip
+  \centerline{\secfont {{releaseday}}}\bigskip\bigskip
   \centerline{\titlefont New Features for Developers}\vfill
 %  \centerline{\secfont by}\vfill
   \centerline{\secfont The GAP Group}\bigskip

@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Finitely Presented Semigroups and Monoids}
 
@@ -321,6 +322,11 @@ Also, a reduction ordering has to be specified when building a rewriting
 system. If none is specified, the shortlex ordering is assumed
 (note that the procedure may terminate with a certain ordering and
 not with another one).
+
+On Unix systems it is possible to replace the built-in Knuth-Bendix by other
+routines, for example the package `kbmag' offers such a possibility.
+
+\Declaration{KB_REW}
 
 \>KnuthBendixRewritingSystem(<s>,<wordord>)
 \>KnuthBendixRewritingSystem(<m>,<wordord>)

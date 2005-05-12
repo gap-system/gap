@@ -24,9 +24,9 @@ function ( filter, q )
 
   local G,f;
 
-  if not IsPrimePowerInt(q) or q < 8 
+  if not IsPrimePowerInt(q)
     or SmallestRootInt(q) <> 2 or LogInt(q,2) mod 2 = 0
-  then Error("<q> must be a non - square power of 2 and >= 8"); fi;
+  then Error("<q> must be a non-square power of 2\n"); fi;
 
   f := GF(q);
   G := GroupByGenerators(
@@ -46,7 +46,7 @@ function ( filter, q )
   SetFieldOfMatrixGroup(G,f);
   SetIsFinite(G,true);
   SetSize(G,q^2*(q-1)*(q^2+1));
-  SetIsSimpleGroup(G,true);
+  if q > 2 then SetIsSimpleGroup(G,true); fi;
   return G;
 end );
 
@@ -66,9 +66,9 @@ function ( filter, q )
 
   local G,Ovoid,f,r,a,b,v;
 
-  if not IsPrimePowerInt(q) or q < 8 
+  if not IsPrimePowerInt(q)
     or SmallestRootInt(q) <> 2 or LogInt(q,2) mod 2 = 0
-  then Error("<q> must be a non - square power of 2 and >= 8"); fi;
+  then Error("<q> must be a non-square power of 2\n"); fi;
 
   f := GF(q);
   r := RootInt(2 * q);
@@ -89,7 +89,7 @@ function ( filter, q )
   G := Action(SuzukiGroupCons(IsMatrixGroup,q),Ovoid,OnLines);
   SetName(G,Concatenation("Sz(",String(q),")"));
   SetSize(G,q^2*(q-1)*(q^2+1));
-  SetIsSimpleGroup(G,true);
+  if q > 2 then SetIsSimpleGroup(G,true); fi;
   return G;
 end );
 

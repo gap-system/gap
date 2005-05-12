@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains functions for polynomials over finite fields
 ##
@@ -25,6 +26,15 @@ Revision.polyfinf_gi :=
 InstallGlobalFunction(FactorsCommonDegreePol,function( R, f, d )
 local   c,  ind,  br,  g,  h,  k,  i,dou;
 
+  # if <f> has degree 0, return f
+  dou:=DegreeOfLaurentPolynomial(f);
+  if dou<d then
+      return [];
+  # if <f> has degree <d>, return irreducible <f>
+  elif dou=d  then
+      return [f];
+  fi;
+
   c   := CoefficientsOfLaurentPolynomial(f);
   ind := IndeterminateNumberOfLaurentPolynomial(f);
   br  := CoefficientsRing(R);
@@ -32,16 +42,6 @@ local   c,  ind,  br,  g,  h,  k,  i,dou;
   # if <f> has a trivial constant term signal an error
   if c[2] <> 0  then
       Error("<f> must have a non-trivial constant term");
-  fi;
-
-  # if <f> has degree 0, return f
-  dou:=DegreeOfLaurentPolynomial(f);
-  if dou<d then
-      return [];
-
-  # if <f> has degree <d>, return irreducible <f>
-  elif Length(c[1])-1=d  then
-      return [f];
   fi;
 
   # choose a random polynomial <g> of degree less than 2*<d>
@@ -88,7 +88,7 @@ end);
 InstallMethod( FactorsSquarefree,"univariate polynomial over finite field",
     true, [ IsFiniteFieldPolynomialRing, IsUnivariatePolynomial, IsRecord ],0,
 function( R, f, opt )
-local   br,  ind,  c,  facs,  deg,  px,  pow,  cyc,  gcd,d;
+local   br,  ind,  c,  facs,  deg,  px,  pow,  cyc,  gcd,d,powc,fc,fam;
 
   br  := CoefficientsRing(R);
   ind := IndeterminateNumberOfLaurentPolynomial(f);
@@ -104,30 +104,37 @@ local   br,  ind,  c,  facs,  deg,  px,  pow,  cyc,  gcd,d;
 
   # in the following <pow> = x ^ (q ^ (<deg>+1))
   deg := 0;
-  px  := LaurentPolynomialByExtRep(
-	      FamilyObj(f), [One(br)],1, ind );
-  pow := PowerMod( px, Size(br), f );
+  #px  := LaurentPolynomialByExtRep(
+  #	      FamilyObj(f), [One(br)],1, ind );
+  #  pow := px;
+  px:=[Zero(br),-One(br)];
+  ConvertToVectorRep(px,br);
+  powc:=-px;
+  fc:=CoefficientsOfLaurentPolynomial(f)[1];
+  fam:=FamilyObj(One(br));
 
   # while <f> could still have two irreducible factors
   while 2*(deg+1) <= DegreeOfLaurentPolynomial(f)  do
 
+      #pow := PowerMod(pow,Size(br),f);
+      powc:=PowerModCoeffs(powc,Length(powc),Size(br),fc,Length(fc));
       # next degree and next cyclotomic polynomial x^(q^(<deg>+1))-x
       deg := deg + 1;
-      cyc := pow - px;
-      pow := PowerMod(pow,Size(br),f);
-
       if not IsBound(opt.onlydegs) or deg in opt.onlydegs  then
+	#cyc := pow - px;
+	cyc:=ShallowCopy(powc);
+	AddCoeffs(cyc,px);
+	cyc:=LaurentPolynomialByCoefficients(fam,cyc,0,ind);
+	# compute the gcd of <f> and <cyc>
+	gcd := GcdOp( f, cyc );
 
-	  # compute the gcd of <f> and <cyc>
-	  gcd := GcdOp( f, cyc );
-
-	  # split the gcd with 'FactorsCommonDegree'
-	  d:=DegreeOfLaurentPolynomial(gcd);
-	  if 0<d and d>=deg then
-	      Info(InfoPoly,3,"Factor Common Deg.",deg );
-	      Append(facs,FactorsCommonDegreePol(R,gcd,deg));
-	      f := Quotient(f,gcd);
-	  fi;
+	# split the gcd with 'FactorsCommonDegree'
+	d:=DegreeOfLaurentPolynomial(gcd);
+	if 0<d and d>=deg then
+	    Info(InfoPoly,3,"Factor Common Deg.",deg );
+	    Append(facs,FactorsCommonDegreePol(R,gcd,deg));
+	    f := Quotient(f,gcd);
+	fi;
       fi;
   od;
 
@@ -176,143 +183,145 @@ end);
 
 #############################################################################
 ##
-#M  Factors( <R>, <f> [,<opt>] )  . . . . . . . . . . . . . .  factors of <f>
+#M  Factors( <R>, <f>  )  . . . . . . . . . . . . . .  factors of <f>
 ##
-InstallGlobalFunction(FFPFactors,function (arg)
-    local   R,  cr,  f,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,  
-            facs,  h,  q,  char,  r;
-
-    # parse the arguments
-    R  := arg[1];
-    cr := CoefficientsRing(R);
-    f  := arg[2];
-    if Length(arg) > 2  then
-        opt := arg[3];
-    else
-        opt := rec();
-    fi;
-
-    # check if we already know a factorisation
-    irf := IrrFacsPol(f);
-    i   := PositionProperty( irf, i -> i[1] = cr );
-    if i <> fail  then
-      return irf[i][2];
-    fi;
-
-    # handle the trivial cases
-    ind := IndeterminateNumberOfLaurentPolynomial(f);
-    v   := CoefficientsOfLaurentPolynomial(f);
-    #fam := FamilyObj(v[1][1]);
-
-    if DegreeOfLaurentPolynomial(f) < 2 
-      or DegreeOfLaurentPolynomial(f)=infinity  then
-        Add( irf, [cr,[f]] );
-        return [f];
-
-    elif Length(v[1]) = 1  then
-        l:= ListWithIdenticalEntries( v[2],
-                IndeterminateOfUnivariateRationalFunction( f ) );
-        l[1] := l[1]*v[1][1];
-        Add( irf, [cr,l] );
-        return l;
-    fi;
-
-    # make the polynomial normed, remember the leading coefficient for later
-    g   := StandardAssociate(R,f);
-    l   := Quotient(f,g);
-    v   := CoefficientsOfLaurentPolynomial(g);
-    k   := LaurentPolynomialByExtRep( FamilyObj(f), v[1],0, ind );
-    v   := v[2];
-
-    # compute the derivative
-    d := Derivative(k);
-
-    # if the derivative is nonzero then $k / Gcd(k,d)$ is squarefree
-    if d <> Zero(R)  then
-
-      # compute the gcd of <k> and the derivative <d>
-      g := GcdOp( k, d );
-      if DegreeOfLaurentPolynomial(g)>0 then
-
-	# factor the squarefree quotient and the remainder
-	facs := FactorsSquarefree( R, Quotient(k,g), opt );
-      else
-	facs := FactorsSquarefree( R, k, opt );
-      fi;
-
-      if not (IsBound(opt.onlydegs) or IsBound(opt.stopdegs)) then
-	# tell the factors they are factors
-	for h in facs  do
-	  StoreFactorsPol(cr,h,[h]);
-	od;
-      fi;
-
-      if DegreeOfLaurentPolynomial(g)>0 then
-	for h in ShallowCopy(facs)  do
-	  q := Quotient( g, h );
-	  while q <> fail  do
-	    Add( facs, h );
-	    g := q;
-	    q := Quotient( g, h );
-	  od;
-	od;
-      fi;
-      if 0=DegreeOfLaurentPolynomial(g) then
-	if not IsOne(g) then
-	  facs[1]:=facs[1]*g;
-	fi;
-      else
-#T how shall this ever happen?
-        Append( facs, Factors(R,g,opt) );
-      fi;
-
-    # otherwise <k> is the <p>-th power of another polynomial <r>
-    else
-
-      # compute the <p>-th root of <f>
-      char := Characteristic(cr);
-      r    := RootsRepresentativeFFPol( R, k, char );
-
-      # factor this polynomial
-      h := Factors( R, r, opt );
-
-      # each factor appears <p> times in <k>
-      facs := [];
-      for i  in [ 1 .. char ]  do
-	Append( facs, h );
-      od;
-
-    fi;
-
-    # Sort the factorization
-    Sort(facs);
-    if v>0 then
-      ind := IndeterminateOfUnivariateRationalFunction(f);
-      facs:=Concatenation(List( [ 1 .. v ], x -> ind ),facs );
-    fi;
-
-    # return the factorization and store it
-    if l<>l^0 then
-      facs[1] := facs[1]*l;
-    fi;
-    if not (IsBound(opt.onlydegs) or IsBound(opt.stopdegs))  then
-      StoreFactorsPol(cr,f,facs);
-    fi;
-    Assert(2,Product(facs)=f);
-    return facs;
-
-end);
-
-
 InstallMethod( Factors, "polynomial over a finite field",
     IsCollsElms, [ IsFiniteFieldPolynomialRing, IsUnivariatePolynomial ],0,
-  FFPFactors);
 
-InstallOtherMethod( Factors, "polynomial over a finite field, option",
-    IsCollsElmsX, 
-    [ IsFiniteFieldPolynomialRing, IsUnivariatePolynomial,IsRecord ],0,
-  FFPFactors);
+function(R,f)
+local   cr,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,  
+	facs,  h,  q,  char,  r;
 
+  # parse the arguments
+  cr := CoefficientsRing(R);
+
+  opt:=ValueOption("factoroptions");
+  PushOptions(rec(factoroptions:=rec())); # options do not hold for
+                                          # subsequent factorizations
+  if opt=fail then
+    opt:=rec();
+  fi;
+
+  # check if we already know a factorisation
+  irf := IrrFacsPol(f);
+  i   := PositionProperty( irf, i -> i[1] = cr );
+  if i <> fail  then
+    PopOptions();
+    return irf[i][2];
+  fi;
+
+  # handle the trivial cases
+  ind := IndeterminateNumberOfLaurentPolynomial(f);
+  v   := CoefficientsOfLaurentPolynomial(f);
+  #fam := FamilyObj(v[1][1]);
+
+  if DegreeOfLaurentPolynomial(f) < 2 
+    or DegreeOfLaurentPolynomial(f)=infinity  then
+      Add( irf, [cr,[f]] );
+      PopOptions();
+      return [f];
+
+  elif Length(v[1]) = 1  then
+      l:= ListWithIdenticalEntries( v[2],
+	      IndeterminateOfUnivariateRationalFunction( f ) );
+      l[1] := l[1]*v[1][1];
+      Add( irf, [cr,l] );
+      PopOptions();
+      return l;
+  fi;
+
+  # make the polynomial normed, remember the leading coefficient for later
+  l:=LeadingCoefficient(f);
+  #g   := StandardAssociate(R,f);
+  #l   := Quotient(f,g);
+
+  v   := CoefficientsOfLaurentPolynomial(f);
+  if v[2]=0 then
+    k:=1/l*f;
+  else
+    k:=LaurentPolynomialByExtRep( FamilyObj(f), 1/l*v[1],0, ind );
+  fi;
+  v   := v[2];
+
+  # compute the derivative
+  d := Derivative(k);
+
+  # if the derivative is nonzero then $k / Gcd(k,d)$ is squarefree
+  if d <> Zero(R)  then
+
+    # compute the gcd of <k> and the derivative <d>
+    g := GcdOp( k, d );
+    if DegreeOfLaurentPolynomial(g)>0 then
+
+      # factor the squarefree quotient and the remainder
+      facs := FactorsSquarefree( R, Quotient(k,g), opt );
+    else
+      facs := FactorsSquarefree( R, k, opt );
+    fi;
+
+    if not (IsBound(opt.onlydegs) or IsBound(opt.stopdegs)) then
+      # tell the factors they are factors
+      for h in facs  do
+	StoreFactorsPol(cr,h,[h]);
+      od;
+    fi;
+
+    if DegreeOfLaurentPolynomial(g)>0 then
+      for h in ShallowCopy(facs)  do
+	q := Quotient( g, h );
+	while q <> fail  do
+	  Add( facs, h );
+	  g := q;
+	  q := Quotient( g, h );
+	od;
+      od;
+    fi;
+    if 0=DegreeOfLaurentPolynomial(g) then
+      if not IsOne(g) then
+	facs[1]:=facs[1]*g;
+      fi;
+    else
+#T how shall this ever happen?
+      Append( facs, Factors(R,g:factoroptions:=opt) );
+    fi;
+
+  # otherwise <k> is the <p>-th power of another polynomial <r>
+  else
+
+    # compute the <p>-th root of <f>
+    char := Characteristic(cr);
+    r    := RootsRepresentativeFFPol( R, k, char );
+
+    # factor this polynomial
+    h := Factors( R, r: factoroptions:=opt );
+
+    # each factor appears <p> times in <k>
+    facs := [];
+    for i  in [ 1 .. char ]  do
+      Append( facs, h );
+    od;
+
+  fi;
+
+  # Sort the factorization
+  Sort(facs);
+  if v>0 then
+    ind := IndeterminateOfUnivariateRationalFunction(f);
+    facs:=Concatenation(List( [ 1 .. v ], x -> ind ),facs );
+  fi;
+
+  # return the factorization and store it
+  if l<>l^0 then
+    facs[1] := facs[1]*l;
+  fi;
+  if not (IsBound(opt.onlydegs) or IsBound(opt.stopdegs))  then
+    StoreFactorsPol(cr,f,facs);
+  fi;
+  Assert(2,Product(facs)=f);
+  PopOptions();
+  return facs;
+
+end);
 
 #############################################################################
 ##
@@ -482,17 +491,17 @@ end);
 InstallGlobalFunction(FFPOrderKnownDividend,function ( R, g, f, pp )
 local   l,  a,  h,  n1,  pp1,  pp2,  k,  o,  q;
 
-  Info( InfoPoly, 3, "FFPOrderKnownDividend started with:" );
-  Info( InfoPoly, 3, "  <g>  = ", g );
-  Info( InfoPoly, 3, "  <f>  = ", f );
-  Info( InfoPoly, 3, "  <pp> = ", pp );
+  #Info( InfoPoly, 3, "FFPOrderKnownDividend started with:" );
+  #Info( InfoPoly, 3, "  <g>  = ", g );
+  #Info( InfoPoly, 3, "  <f>  = ", f );
+  #Info( InfoPoly, 3, "  <pp> = ", pp );
 
   # if <g> is constant return order 1
   if 0 = DegreeOfLaurentPolynomial(g)  then
-      Info( InfoPoly, 3, "  <g> is constant" );
+      #Info( InfoPoly, 3, "  <g> is constant" );
       l := CoefficientsOfUnivariatePolynomial(g);
       l := [ 1, l[1] ];
-      Info( InfoPoly, 3, "FFPOrderKnownDividend returns ", l );
+      #Info( InfoPoly, 3, "FFPOrderKnownDividend returns ", l );
       return l;
 
   # if the dividend is a prime, we must compute g^pp[1] to get the constant
@@ -500,12 +509,12 @@ local   l,  a,  h,  n1,  pp1,  pp2,  k,  o,  q;
       k := PowerMod( g, pp[1], f );
       l := CoefficientsOfUnivariatePolynomial(k);
       l := [ pp[1], l[1] ];
-      Info( InfoPoly, 3, "FFPOrderKnownDividend returns ", l );
+      #Info( InfoPoly, 3, "FFPOrderKnownDividend returns ", l );
       return l;
 
   # if the dividend is a prime power find the necessary power
   elif Length(pp) = 2  then
-      Info( InfoPoly, 3, "prime power, divide and conquer" );
+      #Info( InfoPoly, 3, "prime power, divide and conquer" );
       pp := ShallowCopy( pp );
       a  := QuoInt( pp[2], 2 );
       q  := pp[1] ^ a;
@@ -520,19 +529,19 @@ local   l,  a,  h,  n1,  pp1,  pp2,  k,  o,  q;
 	  l := FFPOrderKnownDividend( R, h, f, pp );
 	  o := [ q*l[1], l[2] ];
       fi;
-      Info( InfoPoly, 3, "FFPOrderKnownDividend returns ", o );
+      #Info( InfoPoly, 3, "FFPOrderKnownDividend returns ", o );
       return o;
 
   # split different primes.
   else
 
     # divide primes
-    Info( InfoPoly, 3, "  ", Length(pp)/2, " different primes" );
+    #Info( InfoPoly, 3, "  ", Length(pp)/2, " different primes" );
     n1  := QuoInt( Length(pp), 4 );
     pp1 := pp{[ n1*2+1 .. Length(pp) ]};
     pp2 := pp{[ 1 .. n1*2 ]};
-    Info( InfoPoly, 3, "    <pp1> = ", pp1 );
-    Info( InfoPoly, 3, "    <pp2> = ", pp2 );
+    #Info( InfoPoly, 3, "    <pp1> = ", pp1 );
+    #Info( InfoPoly, 3, "    <pp2> = ", pp2 );
 
       # raise <g> to the power <pp2>
       k   := FFPPowerModCheck( g, pp2, f );
@@ -546,7 +555,7 @@ local   l,  a,  h,  n1,  pp1,  pp2,  k,  o,  q;
       k := PowerMod( g, o[1], f );
       l := FFPOrderKnownDividend( R, k, f, pp2 );
       o := [ o[1]*l[1], l[2] ];
-      Info( InfoPoly, 3, "FFPOrderKnownDividend returns ", o );
+      #Info( InfoPoly, 3, "FFPOrderKnownDividend returns ", o );
       return o;
   fi;
 
@@ -572,7 +581,12 @@ local   fs,  F,  L,  phi,  B,  i,  d,  pp,  a,  deg;
   F := CoefficientsRing(R);
 
   # <phi>(m) gives ( minpol of 1^(1/m) )( F.char )
-  L := [ PrimePowersInt( Characteristic(F)-1 ) ];
+  # cache values
+  if not IsBound(F!.FFPUBOVAL) then
+    F!.FFPUBOVAL:=[ PrimePowersInt( Characteristic(F)-1 ) ];
+  fi;
+
+  L:=F!.FFPUBOVAL;
   phi := function( m )
       local	x, d, pp, i;
       if not IsBound( L[m] )  then
@@ -643,7 +657,10 @@ local   v,  R,  U,  x,  O,  n,  g,  q,  o;
   fi;
 
   # use 'UpperBoundOrder' to split <f> into irreducibles
-  R := DefaultRing(f);
+  #R := DefaultRing(f);
+  R:=PolynomialRing(
+        DefaultField(CoefficientsOfUnivariateLaurentPolynomial(f)[1]),
+       [IndeterminateNumberOfLaurentPolynomial(f)]);
   U := FFPUpperBoundOrder( R, f );
 
   # run through the irrducibles and compute their order
@@ -651,9 +668,10 @@ local   v,  R,  U,  x,  O,  n,  g,  q,  o;
   O := [];
   n := 1;
   for g  in U  do
-      o := FFPOrderKnownDividend(R,EuclideanRemainder(x,g[1]),g[1],g[3]);
+      #o := FFPOrderKnownDividend(R,EuclideanRemainder(R,x,g[1]),g[1],g[3]);
+      o := FFPOrderKnownDividend(R,QuotRemLaurpols(x,g[1],2),g[1],g[3]);
       q := Characteristic(CoefficientsRing(R))^g[2];
-      n := LcmOp( n, o[1]*q );
+      n := LcmInt( n, o[1]*q );
       Add( O, [ o[1]*q, o[2]^q ] );
   od;
 

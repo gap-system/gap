@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the immediate interpreter package.
 **
@@ -724,6 +725,8 @@ void IntrForIn ( void )
     if ( IntrIgnoring  > 0 ) { return; }
     if ( CompNowFuncs != 0 ) { return; }
 
+    
+    
     /* otherwise must be coding                                            */
     assert( IntrCoding > 0 );
     CodeForIn();

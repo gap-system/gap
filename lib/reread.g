@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the Reread function and its relatives
 ##  RereadLib, etc.
@@ -92,13 +93,6 @@ BIND_GLOBAL("RereadPrim",RereadAndCheckFunc("prim"));
 #F  RereadTrans( <name> ) . . . . . . . .  transitive perm groups library files
 ##
 BIND_GLOBAL("RereadTrans",RereadAndCheckFunc("trans"));
-    
-
-#############################################################################
-##
-#F  DoRereadPkg( <name> ) . . . . . . . . . . . . . . . . . . . package files
-##
-BIND_GLOBAL( "DoRereadPkg", RereadAndCheckFunc( "pkg" ) );
     
 
 #############################################################################

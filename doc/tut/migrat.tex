@@ -729,7 +729,7 @@ The level of an info class <class> is set to <level> by calling
 An `Info' statement is printed only if its second argument is smaller than
 or equal to the current info level.
 For example,
-\begintt
+\beginexample
 gap> test:= function( obj )
 > Info( InfoGroup, 2, "This is useful, isn't it?" );
 > return obj;
@@ -740,7 +740,7 @@ gap> SetInfoLevel( InfoGroup, 2 );
 gap> test( 1 );
 #I  This is useful, isn't it?
 1
-\endtt
+\endexample
 
 As in {\GAP}~3, if an info statement is ignored then its arguments are
 not evaluated.

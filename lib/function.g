@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file deals with functions.
 ##
@@ -74,6 +75,7 @@ BIND_GLOBAL( "TYPE_OPERATION",
 ##
 BIND_GLOBAL( "NameFunction", NAME_FUNC );
 
+
 #############################################################################
 ##
 #F  NumberArgumentsFunction( <func> )
@@ -82,6 +84,20 @@ BIND_GLOBAL( "NameFunction", NAME_FUNC );
 ##  functions that use `arg' to take a variable number of arguments, as well
 ##  as for operations, -1 is returned. For attributes, 1 is returned.
 BIND_GLOBAL( "NumberArgumentsFunction", NARG_FUNC );
+
+
+#############################################################################
+##
+#F  NamesLocalVariablesFunction( <func> )
+##
+##  returns a mutable list of strings;
+##  the first entries are the names of the arguments of the function <func>,
+##  in the same order as they were entered in the definition of <func>,
+##  and the remaining ones are the local variables as given in the `local'
+##  statement in <func>.
+##  (The number of arguments can be computed with `NumberArgumentsFunction'.)
+##
+BIND_GLOBAL( "NamesLocalVariablesFunction", NAMS_FUNC );
 
 
 #############################################################################

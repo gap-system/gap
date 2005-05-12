@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##
 Revision.ideal_gi :=
@@ -656,7 +657,7 @@ InstallMethod( \+,
     else
       return LeftIdealByGenerators( LeftActingRingOfIdeal( I1 ),
                  Concatenation( GeneratorsOfLeftIdeal( I1 ),
-                                GeneratorsOfLeftIdeal( I1 ) ) );
+                                GeneratorsOfLeftIdeal( I2 ) ) );
     fi;
     end );
 
@@ -671,7 +672,7 @@ InstallMethod( \+,
     else
       return RightIdealByGenerators( RightActingRingOfIdeal( I1 ),
                  Concatenation( GeneratorsOfRightIdeal( I1 ),
-                                GeneratorsOfRightIdeal( I1 ) ) );
+                                GeneratorsOfRightIdeal( I2 ) ) );
     fi;
     end );
 
@@ -686,7 +687,7 @@ InstallMethod( \+,
     else
       return TwoSidedIdealByGenerators( RightActingRingOfIdeal( I1 ),
                  Concatenation( GeneratorsOfTwoSidedIdeal( I1 ),
-                                GeneratorsOfTwoSidedIdeal( I1 ) ) );
+                                GeneratorsOfTwoSidedIdeal( I2 ) ) );
     fi;
     end );
 
@@ -846,6 +847,5 @@ InstallMethod( AsTwoSidedIdeal,
 
 #############################################################################
 ##
-#E  ideal.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
+#E
 

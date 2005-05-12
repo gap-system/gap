@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of those functions that are needed to
 ##  compute and test possible permutation characters.
@@ -400,7 +401,7 @@ DeclareGlobalFunction( "PermChars" );
 
 #############################################################################
 ##
-#F  Inequalities( <tbl>, <chars>[, <option>] )
+#O  Inequalities( <tbl>, <chars>[, <option>] )
 ##
 ##  Let <tbl> be the ordinary character table of a group $G$.
 ##  The condition $\pi(g) \geq 0$ for every possible permutation character
@@ -427,10 +428,11 @@ DeclareGlobalFunction( "PermChars" );
 ##  characters in their original order and by this guarantees the character
 ##  with the smallest degree to be considered first.
 ##  The other way, which is chosen if the string `\"small\"' is entered as
-##  third argument, tries to keep the number of intermediate inequalities
-##  small by eventually changing the order of characters.
+##  third argument <option>, tries to keep the number of intermediate
+##  inequalities small by eventually changing the order of characters.
 ##
-DeclareGlobalFunction( "Inequalities" );
+DeclareOperation( "Inequalities", [ IsOrdinaryTable, IsList ] );
+DeclareOperation( "Inequalities", [ IsOrdinaryTable, IsList, IsObject ] );
 
 
 #############################################################################
@@ -545,6 +547,7 @@ DeclareGlobalFunction( "PermCandidates" );
 ##  \item{3.}
 ##     have the character <nonfaithful> as maximal constituent with kernel
 ##     <norm_subgrp>.
+##  \endlist
 ##
 ##  Known values of the candidates must be nonnegative integers in <torso>,
 ##  the other positions of <torso> are unbound;

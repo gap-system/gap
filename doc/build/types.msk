@@ -190,21 +190,26 @@ sections~"prg:Logical Implications", "prg:Creating Categories",
 
 \Declaration{ShowImpliedFilters}
 
-\begintt
-gap> ShowImpliedFilters(IsRationalFunction);
+\beginexample
+gap> ShowImpliedFilters(IsMatrix);
 Implies:
+   IsGeneralizedRowVector
    IsNearAdditiveElementWithInverse
    IsAdditiveElement
-   IsMultiplicativeElementWithInverse
+   IsMultiplicativeElement
 
 
 May imply with:
-+IsZero
-+Tester(IsZero)
-   IsConstantRationalFunction
-   Tester(IsConstantRationalFunction)
-\endtt
++IsGF2MatrixRep
+   IsOrdinaryMatrix
 
++CategoryCollections(CategoryCollections(IsAdditivelyCommutativeElement))
+   IsAdditivelyCommutativeElement
+
++IsInternalRep
+   IsOrdinaryMatrix
+
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Categories}
@@ -328,8 +333,8 @@ gap> CategoriesOfObject(g);
   "CategoryCollections(IsMultiplicativeElementWithOne)", 
   "CategoryCollections(IsMultiplicativeElementWithInverse)", 
   "CategoryCollections(IsAssociativeElement)", 
-  "CategoryCollections(IsFiniteOrderElement)", "CategoryCollections(IS_PERM)",
-  "IsGeneralizedDomain", "IsMagma", "IsMagmaWithOne", 
+  "CategoryCollections(IsFiniteOrderElement)", "IsGeneralizedDomain", 
+  "CategoryCollections(IS_PERM)", "IsMagma", "IsMagmaWithOne", 
   "IsMagmaWithInversesIfNonzero", "IsMagmaWithInverses" ]
 \endexample
 
@@ -448,7 +453,7 @@ gap> g:=Group((1,2),(1,2,3));;Size(g);;
 gap> KnownAttributesOfObject(g);
 [ "Size", "OneImmutable", "NrMovedPoints", "MovedPoints", 
   "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", "Pcgs", 
-  "StabChainMutable", "StabChainOptions" ]
+  "GeneralizedPcgs", "StabChainMutable", "StabChainOptions" ]
 \endexample
 
 Several attributes have methods for more than one argument.  For example
@@ -528,15 +533,17 @@ true
 It is *not allowed* to set the value of such an intersection to `false'
 for an object.
 
-\begintt
+%notest
+\beginexample
 gap> Setter( prop )( Rationals, false );
 You cannot set an "and-filter" except to true
 not in any function
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or you can return true to set all components true,
-but you might really want to reset just one component to continue
-\endtt
-
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can type 'return true;' to set all components true
+(but you might really want to reset just one component) to continue
+brk> 
+\endexample
 
 \>AttributeValueNotSet( <attr>, <obj> ) F
 
@@ -634,21 +641,22 @@ gap> g:=Group((1,2),(1,2,3));;
 gap> KnownPropertiesOfObject(g);
 [ "IsFinite", "CanEasilyCompareElements", "CanEasilySortElements", 
   "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses", "IsAssociative", 
-  "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
-  "KnowsHowToDecompose", "IsChainTypeGroup", "IsStabChainViaChainSubgroup" ]
+  "IsSimpleSemigroup", "IsFinitelyGeneratedGroup", 
+  "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose", "IsChainTypeGroup", 
+  "IsStabChainViaChainSubgroup" ]
 gap> Size(g);
 6
 gap> KnownPropertiesOfObject(g);
 [ "IsEmpty", "IsTrivial", "IsNonTrivial", "IsFinite", 
   "CanEasilyCompareElements", "CanEasilySortElements", "IsDuplicateFree", 
-  "IsGeneratorsOfMagmaWithInverses", "IsAssociative", 
+  "IsGeneratorsOfMagmaWithInverses", "IsAssociative", "IsSimpleSemigroup", 
   "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
   "KnowsHowToDecompose", "IsPerfectGroup", "IsSolvableGroup", 
   "IsPolycyclicGroup", "IsChainTypeGroup", "IsStabChainViaChainSubgroup" ]
 gap> KnownTruePropertiesOfObject(g);
 [ "IsNonTrivial", "IsFinite", "CanEasilyCompareElements", 
   "CanEasilySortElements", "IsDuplicateFree", 
-  "IsGeneratorsOfMagmaWithInverses", "IsAssociative", 
+  "IsGeneratorsOfMagmaWithInverses", "IsAssociative", "IsSimpleSemigroup", 
   "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
   "KnowsHowToDecompose", "IsSolvableGroup", "IsPolycyclicGroup" ]
 \endexample

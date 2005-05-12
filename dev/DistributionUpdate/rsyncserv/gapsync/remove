@@ -1,0 +1,22 @@
+#!/bin/sh
+##
+##  $Id$    Frank Lübeck
+##
+##  Throw away the whole installation.
+##
+
+echo "Do you really want to remove this GAP installation? (y/n)"
+read -e YES
+if [ $YES'X' == 'yX' ]; then
+  binpath=`cat ../local/bin/binpath`
+  line="rm -f "$binpath"/gap "$binpath"/gapsync "$binpath"/gapL "$binpath"/gac"
+  echo $line
+  $line
+  cd ..
+  line="rm -rf "`pwd`
+  cd ..
+  echo $line
+  $line
+  echo "Bye."
+fi
+

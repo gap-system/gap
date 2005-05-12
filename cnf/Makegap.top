@@ -9,8 +9,6 @@
 ##  This  file compiles    and links  GAP.    It is  created from   the  file
 ##  "Makegap.in" in the directory `cnf/'.
 ##
-COPTS=
 CFLAGS=@CFLAGS@ $(COPTS)
-LOPTS=
 LDFLAGS=@LDFLAGS@ $(LOPTS)
 CC=@CC@

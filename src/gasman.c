@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains  the functions of  Gasman,  the  GAP  storage manager.
 **
@@ -210,9 +211,6 @@ const char * Revision_gasman_c =
 #define WORDS_BAG(size) (((size) + (sizeof(Bag)-1)) / sizeof(Bag))
 
 #define HEADER_SIZE 3
-#define SIZE_PTR(ptr) (*(((UInt *)p)+1))
-#define TNUM_PTR(ptr) (*((UInt *)p) & 0xFFL)
-#define FLAGS_PTR(ptr) (*((UInt *)p) >> 16)
 #define NTYPES 256
 
 
@@ -286,6 +284,24 @@ UInt                    AllocSizeBags;
 Bag *                   StopBags;
 Bag *                   EndBags;
 
+
+/* These macros, are (a) for more readable code, but more importantly
+   (b) to ensure that unsigned subtracts and divides are used (since
+   we know the ordering of the pointers. This is needed on > 2GB
+   workspaces on 32 but systems. The Size****Area functions return an
+   answer in units of a word (ie sizeof(UInt) bytes), which should
+   therefore be small enough not to cause problems. */
+
+#define SpaceBetweenPointers(a,b) (((UInt)((UInt)(a) - (UInt)(b)))/sizeof(Bag))
+
+#define SizeMptrsArea SpaceBetweenPointers(OldBags, MptrBags)
+#define SizeOldBagsArea SpaceBetweenPointers(YoungBags,OldBags)
+#define SizeYoungBagsArea SpaceBetweenPointers(AllocBags, YoungBags)
+#define SizeAllocationArea SpaceBetweenPointers(StopBags, AllocBags)
+#define SizeUnavailableArea SpaceBetweenPointers(EndBags, StopBags)
+
+#define SizeAllBagsArea SpaceBetweenPointers(AllocBags, OldBags)
+#define SizeWorkspace SpaceBetweenPointers(EndBags, MptrBags)
 
 /****************************************************************************
 **
@@ -781,21 +797,20 @@ void StartRestoringBags( UInt nBags, UInt maxSize)
   target = (8*nBags)/7 + (8*maxSize)/7; /* ideal workspace size */
   target = (target * sizeof (Bag) + (512L*1024L) - 1)/(512L*1024L)*(512L*1024L)/sizeof (Bag);
               /* make sure that the allocated amount of memory is divisible by 512 * 1024 */
-  if ((EndBags - MptrBags) < target)
+  if (SizeWorkspace < target)
     {
-      newmem  = (*AllocFuncBags)(sizeof(Bag)*(target- (EndBags - MptrBags))/1024,
-                                 0);
+      newmem  = (*AllocFuncBags)(sizeof(Bag)*(target- SizeWorkspace)/1024, 0);
       if (newmem == 0)
         {
           target = nBags + maxSize; /* absolute requirement */
           target = (target * sizeof (Bag) + (512L*1024L) - 1)/(512L*1024L)*(512L*1024L)/sizeof (Bag);
                /* make sure that the allocated amount of memory is divisible by 512 * 1024 */
-          if ((EndBags - MptrBags) < target)
-            (*AllocFuncBags)(sizeof(Bag)*(target- (EndBags - MptrBags))/1024, 1);
+          if (SizeWorkspace < target)
+            (*AllocFuncBags)(sizeof(Bag)*(target- SizeWorkspace)/1024, 1);
         }
       EndBags = MptrBags + target;
     }
-  OldBags = MptrBags + nBags + (EndBags - MptrBags - nBags - maxSize)/8;
+  OldBags = MptrBags + nBags + (SizeWorkspace - nBags - maxSize)/8;
   AllocBags = OldBags;
   NextMptrRestoring = (Bag)MptrBags;
   SizeAllBags = 0;
@@ -1044,7 +1059,7 @@ Bag NewBag (
 #endif
     
     /* check that a masterpointer and enough storage are available         */
-    if ( (FreeMptrBags == 0 || StopBags < AllocBags+HEADER_SIZE+WORDS_BAG(size))
+    if ( (FreeMptrBags == 0 || SizeAllocationArea < HEADER_SIZE+WORDS_BAG(size))
       && CollectBags( size, 0 ) == 0 )
     {
         return 0;
@@ -1285,7 +1300,7 @@ void            RetypeBag (
     else {
 
         /* check that enough storage for the new bag is available          */
-        if ( StopBags < AllocBags+HEADER_SIZE+WORDS_BAG(new_size)
+        if ( SizeAllocationArea <  HEADER_SIZE+WORDS_BAG(new_size)
           && CollectBags( new_size, 0 ) == 0 ) {
             return 0;
         }
@@ -1580,7 +1595,7 @@ void GenStackFuncBags ()
     Bag *               p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
 
-    top = (Bag*)&top;
+    top = (Bag*)((void*)&top);
     if ( StackBottomBags < top ) {
         for ( i = 0; i < sizeof(Bag*); i += StackAlignBags ) {
             for ( p = (Bag*)((char*)StackBottomBags + i); p < top; p++ )
@@ -2047,8 +2062,8 @@ again:
 
         /* if we dont get enough free storage or masterpointers do full gc */
         if ( EndBags < StopBags + WORDS_BAG(1024*AllocSizeBags)
-          || (OldBags-MptrBags)
-             <
+          || SizeMptrsArea <
+	     
 	     /*	     nrLiveBags+nrDeadBags+nrHalfDeadBags+ 4096 */
 	     /*      If this test triggered, but the one below didn't
 		     then a full collection would ensue which wouldn't
@@ -2057,6 +2072,7 @@ again:
 		     but I wasn't sure it always made sense         SL */
 
 	     /* change the test to avoid subtracting unsigned integers */
+	     
 	     WORDS_BAG(AllocSizeBags*1024)/7 +(NrLiveBags + NrHalfDeadBags) 
 	     ) {
             done = 0;
@@ -2089,8 +2105,8 @@ again:
             return 0;
 
         /* if less than 1/8th is free, get more storage (in 1/2 MBytes)    */
-        while ( ( EndBags < StopBags + (StopBags-OldBags)/7 ||
-		  EndBags - StopBags < WORDS_BAG(AllocSizeBags) )
+        while ( ( SpaceBetweenPointers(EndBags, StopBags) <  SpaceBetweenPointers(StopBags, OldBags)/7 ||
+		  SpaceBetweenPointers(EndBags, StopBags) < WORDS_BAG(AllocSizeBags) )
              && (*AllocFuncBags)(512,0) )
             EndBags += WORDS_BAG(512*1024L);
 
@@ -2099,22 +2115,22 @@ again:
 	AllocSizeBags = 7*(Endbags - StopBags)/8; */
 
         /* if less than 1/16th is free, prepare for an interrupt           */
-        if ( StopBags + (StopBags-OldBags)/15 < EndBags ) {
+        if (SpaceBetweenPointers(StopBags,OldBags)/15 < SpaceBetweenPointers(EndBags,StopBags) ) {
             /*N 1993/05/16 martin must change 'gap.c'                      */
             ;
         }
 
         /* if more than 1/8th is free, give back storage (in 1/2 MBytes)   */
-        while ( StopBags+(StopBags-OldBags)/7 <= EndBags-WORDS_BAG(512*1024L)
-		&& EndBags - StopBags > WORDS_BAG(AllocSizeBags) + WORDS_BAG(512*1024L)
+        while (SpaceBetweenPointers(StopBags,OldBags)/7 <= SpaceBetweenPointers(EndBags,StopBags)-WORDS_BAG(512*1024L)
+		&& SpaceBetweenPointers(EndBags,StopBags) > WORDS_BAG(AllocSizeBags) + WORDS_BAG(512*1024L)
              && (*AllocFuncBags)(-512,0) )
             EndBags -= WORDS_BAG(512*1024L);
 
         /* if we want to increase the masterpointer area                   */
-        if ( (UInt)(OldBags-MptrBags)-NrLiveBags < (UInt)(EndBags-StopBags)/7 ) {
+        if ( SpaceBetweenPointers(OldBags,MptrBags)-NrLiveBags < SpaceBetweenPointers(EndBags,StopBags)/7 ) {
 
             /* this is how many new masterpointers we want                 */
-            i = (EndBags-StopBags)/7 - ((OldBags-MptrBags)-NrLiveBags);
+            i = SpaceBetweenPointers(EndBags,StopBags)/7 - (SpaceBetweenPointers(OldBags,MptrBags)-NrLiveBags);
 
             /* move the bags area                                          */
             dst = AllocBags + i;
@@ -2153,11 +2169,11 @@ again:
 
     /* information after the check phase                                   */
     if ( MsgsFuncBags )
-        (*MsgsFuncBags)( FullBags, 5,
-                         ((char*)EndBags-(char*)StopBags)/1024 );
+      (*MsgsFuncBags)( FullBags, 5,
+		       SpaceBetweenPointers(EndBags, StopBags)/(1024/sizeof(Bag)));
     if ( MsgsFuncBags )
         (*MsgsFuncBags)( FullBags, 6,
-                         ((char*)EndBags-(char*)MptrBags)/1024 );
+			 SpaceBetweenPointers(EndBags, MptrBags)/(1024/sizeof(Bag)));
 
     /* reset the stop pointer                                              */
     if ( ! CacheSizeBags || EndBags < StopBags+WORDS_BAG(AllocSizeBags) )

@@ -1,0 +1,25 @@
+@Name
+Exceptions
+@Contact
+SL
+@Date
+August 13, 2003
+@Time
+2
+@Public
+No
+@Need
+2
+@NeedA
+0
+@Math
+0
+@Prog
+4
+@Descr
+Add exceptions for error handling to the GAP programming language (for
+example Python has such a feature).
+@Manual
+@Ref
+@Rem
+@Application

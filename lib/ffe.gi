@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for `FFE's.
 ##  Note that we must distinguish finite fields and fields that consist of
@@ -53,45 +54,43 @@ Revision.ffe_gi :=
 ##
 InstallMethod( \+,
     "for a FFE and a rational",
-    true,
-    [ IsFFE, IsRat ], 0,
+    [ IsFFE, IsRat ],
     function( ffe, rat )
-    rat:= ( NumeratorRat( rat ) * One( ffe ) ) / DenominatorRat( rat );
+    rat:= (rat mod Characteristic(ffe))*One(ffe);
     return ffe + rat;
     end );
 
 InstallMethod( \+,
     "for a rational and a FFE",
-    true,
-    [ IsRat, IsFFE ], 0,
+    [ IsRat, IsFFE ],
     function( rat, ffe )
-    rat:= ( NumeratorRat( rat ) * One( ffe ) ) / DenominatorRat( rat );
+    rat:= (rat mod Characteristic(ffe))*One(ffe);
     return rat + ffe;
     end );
 
 InstallMethod( \*,
     "for a FFE and a rational",
-    true,
-    [ IsFFE, IsRat ], 0,
+    [ IsFFE, IsRat ],
     function( ffe, rat )
     if IsInt( rat ) then
       # Avoid the recursion trap.
       TryNextMethod();
     fi;
-    rat:= ( NumeratorRat( rat ) * One( ffe ) ) / DenominatorRat( rat );
+    # Replace the rational by an equivalent integer.
+    rat:= rat mod Characteristic(ffe);
     return ffe * rat;
     end );
 
 InstallMethod( \*,
     "for a rational and a FFE",
-    true,
-    [ IsRat, IsFFE ], 0,
+    [ IsRat, IsFFE ],
     function( rat, ffe )
     if IsInt( rat ) then
       # Avoid the recursion trap.
       TryNextMethod();
     fi;
-    rat:= ( NumeratorRat( rat ) * One( ffe ) ) / DenominatorRat( rat );
+    # Replace the rational by an equivalent integer.
+    rat:= rat mod Characteristic(ffe);
     return rat * ffe;
     end );
 
@@ -301,11 +300,21 @@ end );
 #############################################################################
 ##
 #F  GaloisField( <p>^<d> )  . . . . . . . . . .  create a finite field object
+#F  GF( <p>^<d> )
 #F  GaloisField( <p>, <d> )
+#F  GF( <p>, <d> )
 #F  GaloisField( <subfield>, <d> )
+#F  GF( <subfield>, <d> )
 #F  GaloisField( <p>, <pol> )
+#F  GF( <p>, <pol> )
 #F  GaloisField( <subfield>, <pol> )
+#F  GF( <subfield>, <pol> )
 ##
+
+# in Finite field calculations we often ask again and again for the same GF.
+# Therefore cache the last entry.
+GFCACHE:=[0,0];
+
 InstallGlobalFunction( GaloisField, function ( arg )
 
     local F,         # the field, result
@@ -316,6 +325,10 @@ InstallGlobalFunction( GaloisField, function ( arg )
 
     # if necessary split the arguments
     if Length( arg ) = 1 and IsPosInt( arg[1] ) then
+
+	if arg[1]=GFCACHE[1] then
+	  return GFCACHE[2];
+	fi;
 
         # `GF( p^d )'
         p := SmallestRootInt( arg[1] );
@@ -454,6 +467,9 @@ InstallGlobalFunction( GaloisField, function ( arg )
       if not IsBound( GALOIS_FIELDS[p] ) then
         GALOIS_FIELDS[p]:= [];
       elif IsBound( GALOIS_FIELDS[p][d] ) then
+	if Length(arg)=1 then
+	  GFCACHE:=[arg[1],GALOIS_FIELDS[p][d]];
+	fi;
         return GALOIS_FIELDS[p][d];
       fi;
 
@@ -874,30 +890,80 @@ InstallMethod( Int,
 
 #############################################################################
 ##
+#M  IntFFESymm( <z> ) 
+##
+InstallMethod(IntFFESymm,"internal FFE",true,[ IsFFE and IsInternalRep ],0,
+function(z)
+local i,p;
+  p:=Characteristic(z);
+  i:=IntFFE(z);
+  if 2*i>p then
+    return i-p;
+  else
+    return i;
+  fi;
+end);
+
+
+#############################################################################
+##
+#M  IntFFESymm( <vector> )
+##
+InstallOtherMethod(IntFFESymm,"vector",true,
+  [IsRowVector and IsFFECollection ],0,
+    v -> List( v, IntFFESymm ) );
+
+#############################################################################
+##
 #M  String( <ffe> ) . . . . . .  convert a finite field element into a string
 ##
-InstallMethod( String,
-    "for an internal FFE",
-    true,
-    [ IsFFE and IsInternalRep ], 0,
-    function ( ffe )
-    local   str, root;
-    if   IsZero( ffe )  then
-        str := Concatenation("0*Z(",String(Characteristic(ffe)),")");
-    else
-        str := Concatenation("Z(",String(Characteristic(ffe)));
-        if DegreeFFE(ffe) <> 1  then
-            str := Concatenation(str,"^",String(DegreeFFE(ffe)));
-        fi;
-        str := Concatenation(str,")");
-        root:= Z( Characteristic( ffe ) ^ DegreeFFE( ffe ) );
-        if ffe <> root then
-            str := Concatenation(str,"^",String(LogFFE(ffe,root)));
-        fi;
+InstallMethod(String,"for an internal FFE",true,[IsFFE and IsInternalRep],0,
+function ( ffe )
+local   str, log,deg,char;
+  char:=Characteristic(ffe);
+  if   IsZero( ffe )  then
+    str := Concatenation("0*Z(",String(char),")");
+  else
+    str := Concatenation("Z(",String(char));
+    deg:=DegreeFFE(ffe);
+    if deg <> 1  then
+      str := Concatenation(str,"^",String(deg));
     fi;
-    ConvertToStringRep( str );
-    return str;
-    end );
+    str := Concatenation(str,")");
+    log:= LogFFE(ffe,Z( char ^ deg ));
+    if log <> 1 then
+      str := Concatenation(str,"^",String(log));
+    fi;
+  fi;
+  ConvertToStringRep( str );
+  return str;
+end );
+
+#############################################################################
+##
+#M  LaTeXObj( <ffe> ) . . . . . .  convert a finite field element into a string
+##
+InstallMethod(LaTeXObj,"for an internal FFE",true,[IsFFE and IsInternalRep],0,
+function ( ffe )
+local   str, log,deg,char;
+  char:=Characteristic(ffe);
+  if   IsZero( ffe )  then
+    str := Concatenation("0\*Z(",String(char),")");
+  else
+    str := Concatenation("Z(",String(char));
+    deg:=DegreeFFE(ffe);
+    if deg <> 1  then
+      str := Concatenation(str,"^{",String(deg),"}");
+    fi;
+    str := Concatenation(str,")");
+    log:= LogFFE(ffe,Z( char ^ deg ));
+    if log <> 1 then
+      str := Concatenation(str,"^{",String(log),"}");
+    fi;
+  fi;
+  ConvertToStringRep( str );
+  return str;
+end );
 
 
 #############################################################################

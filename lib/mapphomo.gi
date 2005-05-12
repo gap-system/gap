@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for properties of mappings preserving
 ##  algebraic structure.
@@ -272,20 +273,23 @@ InstallMethod( ImagesSet,
     CollFamSourceEqFamElms,
     [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
       IsGroup ],
-    function( map, elms )
-    local genimages,  img;
-    genimages:= List( GeneratorsOfMagmaWithInverses( elms ),
-                      gen -> ImagesRepresentative( map, gen ) );
-    if fail in genimages then
-      TryNextMethod();
-    fi;
+function( map, elms )
+  local genimages,  img;
+  genimages:= List( GeneratorsOfMagmaWithInverses( elms ),
+		    gen -> ImagesRepresentative( map, gen ) );
+  if fail in genimages then
+    TryNextMethod();
+  fi;
 
-    img := SubgroupNC( Range( map ), Concatenation(
-               GeneratorsOfMagmaWithInverses(
-                   CoKernelOfMultiplicativeGeneralMapping( map ) ),
-               genimages ) );
-    return img;
-    end );
+  img := SubgroupNC( Range( map ), Concatenation(
+	      GeneratorsOfMagmaWithInverses(
+		  CoKernelOfMultiplicativeGeneralMapping( map ) ),
+	      genimages ) );
+  if IsPermGroup(img) and HasSize(elms) then
+    StabChainOptions(img).limit:=Size(elms);
+  fi;
+  return img;
+end );
 
 InstallMethod( ImagesSet,
     "method for injective s.p. mapping respecting mult. & inv., and group",

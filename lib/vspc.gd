@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for vector spaces.
 ##
@@ -102,7 +103,7 @@ InstallTrueMethod( IsGaussianSpace,
 ##
 DeclareSynonymAttr( "IsDivisionRing",
         IsMagmaWithInversesIfNonzero
-    and IsLeftOperatorRing
+    and IsLeftOperatorRingWithOne
     and IsLeftVectorSpace
     and IsNonTrivial
     and IsAssociative );
@@ -263,8 +264,6 @@ DeclareHandlingByNiceBasis( "IsNonGaussianMatrixSpace",
 ##  one-dimensional subspaces of <V> (see also~"Subspaces").
 ##
 DeclareAttribute( "NormedRowVectors", IsGaussianSpace );
-
-DeclareSynonymAttr( "NormedVectors", NormedRowVectors );
 
 
 #############################################################################

@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains  the functions of the  package with the operations for
 **  generic lists.
@@ -40,6 +41,7 @@ const char * Revision_listoper_c =
 #define INCLUDE_DECLARATION_PART
 #include        "listoper.h"            /* operations for generic lists    */
 #undef  INCLUDE_DECLARATION_PART
+#include        "listfunc.h"            /* functions for generic lists    */
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
 #include        "opers.h"               /* TRY_NEXT_METHOD                 */
@@ -161,7 +163,7 @@ Int             InList (
     Obj                 objL,
     Obj                 listR )
 {
-    return POS_LIST( listR, objL, 0L );
+  return Fail != POS_LIST( listR, objL, INTOBJ_INT(0L) );
 }
 
 Obj             InListDefaultHandler (
@@ -978,6 +980,7 @@ Obj             ProdListList (
     Obj                 elmR;           /* one element of the right list   */
     Int                 lenL,lenR,len; /* length                          */
     Int                 i;              /* loop variable                   */
+    Int                 imm;
 
     /* get and check the length                                            */
     lenL = LEN_LIST( listL );
@@ -994,6 +997,7 @@ Obj             ProdListList (
 #endif
     /* loop over the entries and multiply and accumulate                   */
     listP = 0;
+    imm = 0;
     for (i = 1; i <= len; i++)
       {
         elmL = ELM0_LIST( listL, i );
@@ -1004,19 +1008,19 @@ Obj             ProdListList (
 	    if (listP)
 	      listP = SUM( listP, elmP );
 	    else
-	      listP = elmP;
+	      {
+		listP = elmP;
+		imm = !IS_MUTABLE_OBJ(listP);
+	      }
 	  }
     }
+
+    if (imm && IS_MUTABLE_OBJ(listP))
+      MakeImmutable(listP);
 
     if (!listP)
       ErrorMayQuit("Inner product multiplication of lists: no summands", 0, 0);
     
-    /* adjust mutability */
-
-    if ((IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR))
-	&& !IS_MUTABLE_OBJ(listP))
-      listP = SHALLOW_COPY_OBJ(listP);
-
     /* return the result                                                   */
     return listP;
 }
@@ -1040,9 +1044,31 @@ Obj             ProdListSclHandler (
 Obj             ProdListListHandler (
     Obj                 self,
     Obj                 listL,
-    Obj                 listR )
+    Obj                 listR,
+    Obj                 depthdiff)
 {
-    return ProdListList( listL, listR );
+  Obj prod;
+  prod = ProdListList( listL, listR );
+
+  /* possibly adjust mutability */
+  if (!IS_MUTABLE_OBJ(prod))
+    switch (INT_INTOBJ(depthdiff)) {
+    case -1:
+      if (IS_MUTABLE_OBJ(listL))
+	prod = SHALLOW_COPY_OBJ(prod);
+      break;
+    case 1:
+      if (IS_MUTABLE_OBJ(listR))
+	prod = SHALLOW_COPY_OBJ(prod);
+      break;
+    case 0:
+      break;
+    default:
+      ErrorReturnVoid("PROD_LIST_LIST_DEFAULT: depth difference should be -1, 0 or 1, not %i",
+		      INT_INTOBJ(depthdiff),0L,"you can return to carry on anyway");
+    }
+  return prod;
+	
 }
 
 
@@ -2099,6 +2125,226 @@ static Obj  FuncMONOM_TOT_DEG_LEX ( Obj self, Obj u, Obj  v ) {
   return LT( total, INTOBJ_INT(0)) ? True : False;
 }
 
+/****************************************************************************
+**
+*F  MONOM_GRLLEX( u, v ) . . . . . ``grlex'' ordering for internal monomials
+**
+**  This function  implements the ``grlex'' (degree, then lexicographic) ordering
+**  for monomials  of commuting indeterminates with x_1>x_2>x_3 etc. (this
+**  is standard textbook usage). It is in this  file because
+**  monomials  are presently implemented  as lists  of indeterminate-exponent
+**  pairs.  Should there be  more functions supporting polynomial arithmetic,
+**  then this function should go into a separate file.
+**
+**  Examples:      x^2y^3 < y^7,   x^4 y^5 < x^3 y^6
+*/
+static Obj  FuncMONOM_GRLEX( Obj self, Obj u, Obj  v ) {
+
+  Int4 i, lu, lv;
+
+  Obj  total,ai,bi;
+ 
+  while ( !(T_PLIST<=TNUM_OBJ(u) && TNUM_OBJ(u)<=LAST_PLIST_TNUM)
+	  || !IS_DENSE_LIST(u)) {
+      u = ErrorReturnObj(
+      "MONOM_TOT_DEG_LEX: first <list> must be a dense plain list (not a %s)", 
+      (Int)TNAM_OBJ(u), 0L, "you can replace <list> via 'return <list>;'" );
+  }
+  while ( !(T_PLIST<=TNUM_OBJ(v) && TNUM_OBJ(v)<=LAST_PLIST_TNUM) ||
+	  !IS_DENSE_LIST(v)) {
+      v = ErrorReturnObj(
+      "MONOM_TOT_DEG_LEX: first <list> must be a dense plain list (not a %s)", 
+      (Int)TNAM_OBJ(v), 0L, "you can replace <list> via 'return <list>;'" );
+  }
+    
+  lu = LEN_PLIST( u );
+  lv = LEN_PLIST( v );
+
+  /* compare the total degrees */
+  total = INTOBJ_INT(0);
+  for (i=2;i<=lu;i+=2) {
+    C_SUM_FIA(  total, total, ELM_PLIST( u, i ) );
+  }
+
+  for (i=2;i<=lv;i+=2) {
+    C_DIFF_FIA(  total, total, ELM_PLIST( v, i ) );
+  }
+
+  if ( ! (EQ( total, INTOBJ_INT(0))) ) {
+    /* degrees differ, use these */
+    return LT( total, INTOBJ_INT(0)) ? True : False;
+  }
+
+  /* now use lexicographic ordering */
+  i=1;
+  while (i<=lu && i<=lv) {
+    ai=ELM_PLIST(u,i);
+    bi=ELM_PLIST(v,i);
+    if (LT(bi,ai)) {
+      return True;
+    }
+    if (LT(ai,bi)) {
+      return False;
+    }
+    ai=ELM_PLIST(u,i+1);
+    bi=ELM_PLIST(v,i+1);
+    if (LT(ai,bi)) {
+      return True;
+    }
+    if (LT(bi,ai)) {
+      return False;
+    }
+    i+=2;
+  }
+  if (i<lv) {
+      return True;
+  }
+  return False;
+}
+
+
+/****************************************************************************
+**
+*F  ZIPPED_SUM_LISTS(z1,z2,zero,f)
+**
+**  implements the `ZippedSum' function to add polynomials in external
+**  representation. This is time critical and thus in the kernel.
+**  the function assumes that all lists are plists.
+*/
+static Obj  FuncZIPPED_SUM_LISTS( Obj self, Obj z1, Obj  z2, Obj zero, Obj f ) {
+
+  Int l1,l2,i;
+  Int i1,i2;
+  Obj sum,x,y;
+  Obj cmpfun,sumfun,a,b,c;
+
+  l1=LEN_LIST(z1);
+  l2=LEN_LIST(z2);
+  cmpfun=ELM_LIST(f,1);
+  sumfun=ELM_LIST(f,2);
+  sum=NEW_PLIST(T_PLIST,0);
+  SET_LEN_PLIST(sum,0);
+  i1=1;
+  i2=1;
+  while ((i1<=l1) && (i2<=l2)) {
+/* Pr("A= %d %d\n",i1,i2); */
+    /* if z1[i1] = z2[i2] then */
+    a=ELM_PLIST(z1,i1);
+    b=ELM_PLIST(z2,i2);
+    if (EQ(a,b)) {
+      /* the entries are equal */
+      x=ELM_PLIST(z1,i1+1);
+      y=ELM_PLIST(z2,i2+1);
+/* Pr("EQ, %d %d\n",INT_INTOBJ(x),INT_INTOBJ(y)); */
+      c=CALL_2ARGS(sumfun,x,y);
+      if (!(EQ(c,zero))) {
+/* Pr("Added %d\n",INT_INTOBJ(c),0L); */
+	AddList(sum,a);
+	AddList(sum,c);
+      }
+      i1=i1+2;
+      i2=i2+2;
+    }
+    else {
+      /* compare */
+      a=ELM_PLIST(z1,i1); /* in case the EQ triggered a GC */
+      b=ELM_PLIST(z2,i2);
+/* Pr("B= %d %d\n",ELM_LIST(a,1),ELM_LIST(b,1)); */
+      c=CALL_2ARGS(cmpfun,a,b);
+/* Pr("C= %d %d\n",c,0L); */
+
+      if ( /* this construct is taken from the compiler */
+	  (Obj)(UInt)(c != False) ) {
+	a=ELM_PLIST(z1,i1); 
+	AddList(sum,a);
+	c=ELM_PLIST(z1,i1+1);
+	AddList(sum,c);
+	i1=i1+2;
+      }
+      else {
+	b=ELM_PLIST(z2,i2); 
+	AddList(sum,b);
+	c=ELM_PLIST(z2,i2+1);
+	AddList(sum,c);
+	i2=i2+2;
+      } /* else */
+    } /*else (elif)*/
+  } /* while */
+
+  for (i=i1;i<l1;i+=2) {
+    AddList(sum,ELM_PLIST(z1,i));
+    AddList(sum,ELM_PLIST(z1,i+1));
+  }
+
+  for (i=i2;i<l2;i+=2) {
+    AddList(sum,ELM_PLIST(z2,i));
+    AddList(sum,ELM_PLIST(z2,i+1));
+  }
+  return sum;
+
+}
+
+/****************************************************************************
+**
+*F  FuncMONOM_PROD(m1,m2)
+**
+**  implements the multiplication of monomials. Both must be plain lists 
+**  of integers.
+*/
+static Obj  FuncMONOM_PROD( Obj self, Obj m1, Obj m2 ) {
+
+   UInt a,b,l1,l2,i1,i2,i;
+   Obj e,f,c,prod;
+
+   prod=NEW_PLIST(T_PLIST,0);
+   SET_LEN_PLIST(prod,0);
+   l1=LEN_LIST(m1);
+   l2=LEN_LIST(m2);
+   i1=1;
+   i2=1;
+   while ((i1<l1) && (i2<l2)) {
+     /* assume <2^28 variables) */
+     a=INT_INTOBJ(ELM_PLIST(m1,i1));
+     e=ELM_PLIST(m1,i1+1);
+     b=INT_INTOBJ(ELM_PLIST(m2,i2));
+     f=ELM_PLIST(m2,i2+1);
+     if (a==b) {
+       C_SUM_FIA(c,e,f); /* c=e+f, fast */
+       AddList(prod,INTOBJ_INT(a));
+       AddList(prod,c);
+       i1+=2;
+       i2+=2;
+     }
+     else {
+       if (a<b) {
+	 AddList(prod,INTOBJ_INT(a));
+	 AddList(prod,e);
+	 i1+=2;
+       }
+       else {
+	 AddList(prod,INTOBJ_INT(b));
+	 AddList(prod,f);
+	 i2+=2;
+       }
+     }
+
+   }
+
+  for (i=i1;i<l1;i+=2) {
+    AddList(prod,ELM_PLIST(m1,i));
+    AddList(prod,ELM_PLIST(m1,i+1));
+  }
+
+  for (i=i2;i<l2;i+=2) {
+    AddList(prod,ELM_PLIST(m2,i));
+    AddList(prod,ELM_PLIST(m2,i+1));
+  }
+  return prod;
+
+}
+
+
+
 
 /****************************************************************************
 **
@@ -2160,7 +2406,7 @@ static StructGVarFunc GVarFuncs [] = {
     { "PROD_LIST_SCL_DEFAULT", 2, "listL, listR",
       ProdListSclHandler, "src/listoper.c:PROD_LIST_SCL_DEFAULT" },
 
-    { "PROD_LIST_LIST_DEFAULT", 2, "listL, listR",
+    { "PROD_LIST_LIST_DEFAULT", 3, "listL, listR, depthDiff",
       ProdListListHandler, "src/listoper.c:PROD_LIST_LIST_DEFAULT" },
 
     { "ONE_MATRIX_MUTABLE", 1, "list",
@@ -2224,8 +2470,16 @@ static StructGVarFunc GVarFuncs [] = {
       FuncADD_TO_LIST_ENTRIES_PLIST_RANGE, "src/listfunc.c:ADD_TO_LIST_ENTRIES_PLIST_RANGE" },
 
     { "MONOM_TOT_DEG_LEX", 2, "monomial, monomial",
-      FuncMONOM_TOT_DEG_LEX,
-      "src/ratfun.c:FuncMONOM_TOT_DEG_LEX" },
+      FuncMONOM_TOT_DEG_LEX, "src/ratfun.c:FuncMONOM_TOT_DEG_LEX" },
+
+    { "MONOM_GRLEX", 2, "monomial, monomial",
+      FuncMONOM_GRLEX, "src/ratfun.c:FuncMONOM_GRLEX" },
+
+    { "ZIPPED_SUM_LISTS", 4, "list,list,zero,funclist",
+      FuncZIPPED_SUM_LISTS, "src/ratfun.c:FuncZIPPED_SUM_LISTS" },
+
+    { "MONOM_PROD", 2, "monomial, monomial",
+      FuncMONOM_PROD, "src/ratfun.c:FuncMONOM_PROD" },
 
     { 0 }
 

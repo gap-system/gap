@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions that deal with ranges.
 **
@@ -845,24 +846,31 @@ Int             IsPossRange (
 **
 **  'PosRange' is the function in 'PosListFuncs' for ranges.
 */
-Int             PosRange (
+Obj             PosRange (
     Obj                 list,
     Obj                 val,
-    Int                 start )
+    Obj                 start )
 {
     Int                 k;              /* position, result                */
     Int                 lenList;        /* length of <list>                */
     Int                 low;            /* first element of <list>         */
     Int                 inc;            /* increment of <list>             */
     Int                 v;              /* numerical value of <val>        */
+    Int    istart;
 
+    /* if the starting position is too big to be a small int
+       then there can't be anything to find */
+    if (!IS_INTOBJ(start))
+      return Fail;
+    
+    istart = INT_INTOBJ(start);
     /* get the length, the first element, and the increment of <list>      */
     lenList = GET_LEN_RANGE(list);
     low     = GET_LOW_RANGE(list);
     inc     = GET_INC_RANGE(list);
 
     /* look just beyond the end                                            */
-    if ( start == lenList ) {
+    if ( istart == lenList ) {
         k = 0;
     }
 
@@ -870,12 +878,12 @@ Int             PosRange (
     else if ( TNUM_OBJ(val) == T_INT ) {
         v = INT_INTOBJ(val);
         if ( 0 < inc
-          && low + start * inc <= v && v <= low + (lenList-1) * inc
+          && low + istart * inc <= v && v <= low + (lenList-1) * inc
           && (v - low) % inc == 0 ) {
             k = (v - low) / inc + 1;
         }
         else if ( inc < 0
-          && low + (lenList-1) * inc <= v && v <= low + start * inc
+          && low + (lenList-1) * inc <= v && v <= low + istart * inc
           && (v - low) % inc == 0 ) {
             k = (v - low) / inc + 1;
         }
@@ -886,7 +894,7 @@ Int             PosRange (
 
     /* for a record compare every entry                                    */
     else if ( TNUM_OBJ(val) == T_PREC ) {
-        for ( k = start+1; k <= lenList; k++ ) {
+        for ( k = istart+1; k <= lenList; k++ ) {
             if ( EQ( INTOBJ_INT( low + (k-1) * inc ), val ) )
                 break;
         }
@@ -901,7 +909,7 @@ Int             PosRange (
     }
 
     /* return the position                                                 */
-    return k;
+    return k == 0 ? Fail : INTOBJ_INT(k);
 }
 
 

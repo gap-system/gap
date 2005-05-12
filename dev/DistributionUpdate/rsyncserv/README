@@ -1,0 +1,27 @@
+      Setting up the (Linux) rsync distribution
+      =========================================
+
+## $Id$    Frank Lübeck
+
+
+(1) Choose a directory RSDIR and adjust the paths in 'rsyncd.conf' 
+    (search 'export3')
+
+(2) cd to RSDIR
+    mkdir gap4
+    
+(3) copy the archives gap4r4.tar.gz, tools4r4.tar.gz, xtom1r1.tar.gz and
+    packages-*.tar.gz to RSDIR/gap4
+
+(4) copy 'gapsync/InstForRsync' to RSDIR/gap4 and start it
+
+(5) copy the whole 'gapsync' directory to RSDIR/gap4/gap4r4 and move
+    the file 'colorprompt.g' in RSDIR/gap4/gap4r4/lib
+
+(6) start the server with 'startrsyncserver'
+
+(7) That's it.
+
+(8) For adjustments/improvements: edit scripts gapsync/InstForRsync
+    and gapsync/gapsync and repeat steps (4) to (6) 
+    

@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Vector Spaces}
 
@@ -466,8 +467,8 @@ gap> f:= NaturalHomomorphismBySubspace( V, W );
 gap> V:= Rationals^2;;
 gap> W:= VectorSpace( Rationals, [ [ 1, 0, 1 ], [ 1, 2, 3 ] ] );;
 gap> H:= Hom( Rationals, V, W );
-Hom( Rationals, ( Rationals^2 ), <vector space of dimension 
-2 over Rationals> )
+Hom( Rationals, ( Rationals^2 ), <vector space over Rationals, with 
+2 generators> )
 gap> Dimension( H );
 4
 \endexample

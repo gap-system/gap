@@ -1,0 +1,149 @@
+#!/bin/sh
+
+##  init and syncronization script for GAP 4.4 under Linux
+##  $Id$     Frank Lübeck
+if [ ! -f gapsync.issyncdir ]; then
+  echo Welcome to the GAP installation by syncronizing a reference installation.
+  echo 
+  echo "Remarks and suggestions to: Frank.Luebeck@Math.RWTH-Aachen.De"
+  echo
+  echo "You need: A Linux system"
+  a=`uname -s`
+  if [ $a'X' == LinuxX ]; then
+    echo "       ... looks ok"
+  else
+    echo "       ... hm, found: "$a
+  fi
+
+  echo "          on i686 compatible architecture"
+  a=`uname -m`
+  if [ $a'X' == i686X ]; then
+    echo "       ... looks ok"
+  else
+    echo "       ... hm, found: "$a
+  fi
+
+  echo "          the 'rsync' utility program"
+  rsync=`which rsync`
+  if [ $rsync'X' != X ]; then
+    echo "       ... found: "$rsync
+  else
+    echo "       ... hm, did not find 'rsync', please install it and start me again"
+    exit 1
+  fi
+
+  echo "          a directory with about 500 MB of free space"
+  echo
+  echo
+
+  echo "Please, tell me a path for the installation of GAP (default /usr/local/lib)"
+  echo "Everything will be stored in a subdirectory 'gap4r4', except for the start"
+  echo "scripts."
+  read -p '---> ' -e gappath
+  if [ $gappath'X' == 'X' ]; then
+    gappath="/usr/local/lib/gap4r4"
+  else
+    gappath=$gappath'/gap4r4'
+  fi
+
+  echo "Also, tell me a path for the scripts to start GAP (default /usr/local/bin)"
+  echo ""
+  read -p '---> ' -e binpath
+  if [ $binpath'X' == 'X' ]; then
+    binpath="/usr/local/bin"
+  fi
+  
+  echo "Going to syncronize GAP in: "$gappath
+
+  echo "Shall I start to copy GAP to your machine? (y/N)"
+  read -n 1 start
+  echo
+  if [ $start'X' != 'yX' ]; then
+    echo Ok, bye.
+    exit 2
+  fi
+
+  echo 'Creating directory: '$gappath
+  if ! mkdir -p $gappath; then
+    echo 'Cannot create directory '$gappath'   --- bye.'
+    exit 3
+  fi  
+  if ! cd $gappath; then
+    echo 'Cannot change to directory '$gappath'   --- bye.'
+    exit 4
+  fi
+
+  # adding a directory for customization
+  mkdir -p local/bin
+  mkdir -p local/pkg
+  mkdir -p bin
+
+  echo $binpath > local/bin/binpath
+else
+  rsync=`which rsync`
+  gappath=`pwd`/..
+  binpath=`cat ../local/bin/binpath`
+  cd $gappath
+fi
+
+line=''$rsync' -avz --delete --port 8731 --exclude=local/ --exclude=pkg/atlasrep/datagens/ --exclude=pkg/atlasrep/dataword/ beteigeuze.math.rwth-aachen.de::gap4r4/ .'
+echo 'Calling: '$line 
+
+if ! $line; then
+  echo 'Synchronization failed --- bye.'
+  exit 5
+fi
+
+# make sure to have the 'local' directory
+mkdir -p local/bin
+mkdir -p local/pkg
+
+echo "Creating new workspace."
+if [ -f local/bin/CreateWorkspace ]; then
+  echo "Using local/bin/CreateWorkspace ..."
+  local/bin/CreateWorkspace
+else
+  echo "Using gapsync/CreateWorkspace.sh ..."
+  echo "      (You can customize this by copying gapsync/CreateWorkspace.sh to"
+  echo "       local/bin/CreateWorkspace and editing this copy.)"
+  gapsync/CreateWorkspace.sh
+fi
+
+if [ ! -f $binpath/gap ]; then
+  rm -f local/bin/gap
+  echo "Creating start script "$binpath"/gap," 
+  echo "      (you can customize this by editing local/bin/gap)."
+  echo "#!/bin/sh" > local/bin/gap
+  echo "GAP_DIR="$gappath >> local/bin/gap
+  cat gapsync/gap.sh >> local/bin/gap
+  chmod 755 local/bin/gap
+
+  rm -f local/bin/gapL
+  echo "Creating start script "$binpath"/gapL," 
+  echo "      (you can customize this by editing local/bin/gapL)."
+  echo "#!/bin/sh" > local/bin/gapL
+  echo "GAP_DIR="$gappath >> local/bin/gapL
+  echo "BINPATH="$binpath >> local/bin/gapL
+  cat gapsync/gapL >> local/bin/gapL
+  chmod 755 local/bin/gapL
+  
+  rm -f local/bin/gapsync
+  echo "Adjusting update script "$binpath"/gapsync," 
+  echo "#!/bin/sh" > local/bin/gapsync
+  echo "cd "$gappath"/gapsync" >> local/bin/gapsync
+  cat gapsync/gapsync >> local/bin/gapsync
+  chmod 755 local/bin/gapsync
+ 
+  rm -f $binpath/{gap,gapL,gapsync,gac}
+  ln -s $gappath/local/bin/gap $binpath
+  ln -s $gappath/local/bin/gapL $binpath
+  ln -s $gappath/local/bin/gapsync $binpath
+  ln -s $gappath/local/bin/i686-pc-linux-gnu-gcc/gac $binpath
+  if [ ! -f $binpath/gap ]; then
+    echo "Error: Could not create link "$binpath"/gap"
+    exit 6
+  fi
+fi
+
+
+

@@ -11,6 +11,8 @@
 ##  (This holds also for minor changes such as the removal of whitespace or
 ##  the correction of typos.)
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -231,7 +233,8 @@ gap> Print(RationalizedMat( gm.mat ),"\n");
 [ [ 2666, -1, -2, 0, 0 ], [ 519550080, 0, 0, 0, 0 ], 
   [ 1770515712, 0, -2, 0, 0 ], [ 4337827830, 0, 0, 0, -1 ] ]
 
-gap> STOP_TEST( "cyclotom.tst", 5832500 );
+gap> STOP_TEST( "cyclotom.tst", 5700000 );
+
 
 #############################################################################
 ##

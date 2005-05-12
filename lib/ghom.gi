@@ -8,6 +8,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  1. Functions for creating group general mappings by images
 ##  2. Functions for creating natural homomorphisms
@@ -233,6 +234,9 @@ local   filter,  hom,pcgs,imgso,mapi;
   hom := rec();
   # generators := Immutable( gens ),
   # genimages  := Immutable( imgs ) );
+  if Length(gens)<>Length(imgs) then
+    Error("<gens> and <imgs> must be lists of same length");
+  fi;
 
   mapi:=[Immutable(gens),Immutable(imgs)];
   filter := IsGroupGeneralMappingByImages and HasSource and HasRange 
@@ -270,7 +274,8 @@ local   filter,  hom,pcgs,imgso,mapi;
   # (So we can used MappedWord for mapping)?
   if IsSubgroupFpGroup(G) then
     if HasIsWholeFamily(G) and IsWholeFamily(G) 
-      and gens=GeneratorsOfGroup(G) then
+      and List(gens,UnderlyingElement)
+          =List(GeneratorsOfGroup(G),UnderlyingElement) then
       filter := filter and IsFromFpGroupStdGensGeneralMappingByImages;
     else
       filter := filter and IsFromFpGroupGeneralMappingByImages;
@@ -457,7 +462,17 @@ InstallMethod( ImagesSource, "for GHBI", true,
     [ IsGroupHomomorphism ], 
     # 2, # rank higher than the next method to avoid infinite recursions
     0,
-    hom -> SubgroupNC( Range( hom ), MappingGeneratorsImages(hom)[2] ) );
+function(hom)
+local G;
+  G:=SubgroupNC( Range( hom ), MappingGeneratorsImages(hom)[2] );
+  if IsPermGroup(G) and HasSource(hom) and HasSize(Source(hom)) then
+    StabChainOptions(G).limit:=Size(Source(hom));
+  fi;
+  if HasIsInjective(hom) and HasSource(hom) and IsInjective(hom) then
+    UseIsomorphismRelation( Source(hom), G );
+  fi;
+  return G;
+end);
 
 
 # thanks to `MappingGeneratorsImages' this method is obsolete now.

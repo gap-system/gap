@@ -160,7 +160,7 @@ dnl ##
 dnl ## check for file access functions
 dnl ##
 
-AC_CHECK_FUNCS( access stat unlink mkdir )
+AC_CHECK_FUNCS( access stat unlink mkdir  mkdtemp mkstemp)
 AC_HEADER_STAT
 
 

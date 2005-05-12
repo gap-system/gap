@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains functions for polynomials over the rationals
 ##
@@ -680,6 +681,12 @@ end);
 BindGlobal("RPIGcd", function(R,f,g)
 local a,t;
 
+  # special case zero:
+  if IsZero(f) then
+    return g;
+  elif IsZero(g) then
+    return f;
+  fi;
   # compute the Beauzamy bound for the gcd
   t := rec(prime := 1000);
   t.brci:=CIUnivPols(f,g);
@@ -757,18 +764,37 @@ local brci,gcd,fam,fc,gc;
   return StandardAssociate(R,LaurentPolynomialByExtRep(fam,gcd,fc,brci));
 end);
 
-InstallMethod(\mod,"reduction of univariate integer polynomial at a prime",
+InstallMethod(\mod,"reduction of univariate rational polynomial at a prime",
   true,[IsUnivariatePolynomial,IsInt],0,
 function(f,p)
 local c;
   c:=CoefficientsOfLaurentPolynomial(f);
-  if Length(c[1])>0 and ForAny(c[1],i->not IsRat(i)) then
+  if Length(c[1])>0 and 
+      ForAny(c[1],i->not (IsRat(i) or IsAlgebraicElement(i))) then
     TryNextMethod();
   fi;
-  c:=[List(c[1],i->i mod p),c[2]];
   return LaurentPolynomialByCoefficients(
-      CoefficientsFamily(FamilyObj(f)),c[1],c[2],
+      CoefficientsFamily(FamilyObj(f)),List(c[1],i->i mod p),c[2],
       IndeterminateNumberOfLaurentPolynomial(f));
+end);
+
+InstallMethod(\mod,"reduction of general rational polynomial at a prime",
+  true,[IsPolynomial,IsInt],0,
+function(f,p)
+local c,d,i,m;
+  c:=ExtRepPolynomialRatFun(f);
+  d:=[];
+  for i in [2,4..Length(c)] do
+    if not (IsRat(c[i]) or IsAlgebraicElement(c[i])) then
+      TryNextMethod();
+    fi;
+    m:=c[i] mod p;
+    if m<>0 then
+      Add(d,c[i-1]);
+      Add(d,m);
+    fi;
+  od;
+  return PolynomialByExtRep(FamilyObj(f),d);
 end);
 
 #############################################################################
@@ -929,7 +955,7 @@ end);
 ##    minpol and denominator must be given
 ##
 InstallGlobalFunction(HenselBound,function(arg)
-local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,lb,bea,polc,ro;
+local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,lb,bea,polc,ro,rbpow;
 
   pol:=arg[1];
   if Length(arg)>1 then
@@ -951,7 +977,7 @@ local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,lb,bea,polc,ro;
         if IsRat(i) then
           Add(a,AbsInt(i));
         else
-          Add(a,Sum(i.coefficients,AbsInt)*nalpha);
+          Add(a,Sum(ExtRepOfObj(i),AbsInt)*nalpha);
         fi;
       od;
       a:=-a;
@@ -992,13 +1018,23 @@ local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,lb,bea,polc,ro;
     if bea>10^200 or n>1 then
       if rb=0 then
         rb:=RootBound(pol);
+	if rb>1000 and not IsInt(rb) then
+	  rb:=Int(rb+1);
+	fi;
+	rbpow:=[rb];
         a:=rb;
       fi;
       # now try factor deg k
       bin:=1;
       for j in [1..k] do
         bin:=bin*(k-j+1)/j;
-        w:=bin*rb^j;
+	if not IsBound(rbpow[j]) then
+	  rbpow[j]:=rbpow[j-1]*rb;
+	  if rbpow[j]>10 and not IsInt(rbpow[j]) then
+	    rbpow[j]:=Int(rbpow[j]+1);
+	  fi;
+	fi;
+        w:=bin*rbpow[j];
         if w>a then
           a:=w;
         fi;
@@ -1060,7 +1096,7 @@ local  fc,gc,a,m, n, i, k, c, q, val, brci,fam;
     for i in [0..m] do
       c:=f[(m-i+n)]/gc[n];
       if MaxNumeratorCoeffAlgElm(c)>a then 
-        Info(InfoPoly,3,"early break\n");
+        Info(InfoPoly,3,"early break");
         return fail;
       fi;
       for k in [1..n] do
@@ -1797,27 +1833,35 @@ local   fc,ind, v, g, q, s, r, x,shift;
 end);
 
 
-BindGlobal("RPFactors", function (arg)
-local r,R,cr,f,opt,irf,i;
+#############################################################################
+##
+#M  Factors(<R>,<f> ) . .  factors of rational polynomial
+##
+InstallMethod(Factors,"univariate rational polynomial",IsCollsElms,
+  [IsRationalsPolynomialRing,IsUnivariatePolynomial],0,
+function(R,f)
+local r,cr,opt,irf,i;
 
-  R:=arg[1];
+  opt:=ValueOption("factoroptions");
+  PushOptions(rec(factoroptions:=rec())); # options do not hold for
+                                          # subsequent factorizations
+  if opt=fail then
+    opt:=rec();
+  fi;
+
   cr:=CoefficientsRing(R);
-  f:=arg[2];
   irf:=IrrFacsPol(f);
   i:=PositionProperty(irf,i->i[1]=cr);
   if i<>fail then
     # if we know the factors,return
+    PopOptions();
     return irf[i][2];
   fi;
 
-  if Length(arg)>2 then
-    opt:=arg[3];
-  else 
-    opt:=rec();
-  fi;
   # handle trivial case
   if DegreeOfLaurentPolynomial(f) < 2  then
     StoreFactorsPol(cr,f,[f]);
+    PopOptions();
     return [f];
   fi;
 
@@ -1840,25 +1884,9 @@ local r,R,cr,f,opt,irf,i;
       StoreFactorsPol(cr,i,[i]);
     od;
   fi;
+  PopOptions();
   return r;
 
-end);
-
-#############################################################################
-##
-#M  Factors(<R>,<f> [,<opt>]) . .  factors of rational polynomial
-##
-InstallMethod(Factors,"univariate rational polynomial",IsCollsElms,
-  [IsRationalsPolynomialRing,IsUnivariatePolynomial],0,
-function(R,f)
-  return RPFactors(R,f);
-end);
-
-InstallOtherMethod(Factors,"univariate rational polynomial, w.  options",
- IsCollsElmsX,
-  [IsRationalsPolynomialRing,IsUnivariatePolynomial,IsRecord],0,
-function(R,f,opt)
-  return RPFactors(R,f,opt);
 end);
 
 #############################################################################
@@ -2014,6 +2042,9 @@ end);
 InstallGlobalFunction(HeuGcdIntPolsCoeffs,function(f,g)
 local xi, t, h, i, lf, lg, lh,fr,gr;
   
+  if IsEmpty(f) or IsEmpty(g) then
+    return fail;
+  fi;
   # first test value for heuristic gcd:
   xi:=2+2*Minimum(Maximum(List(f,AbsInt)),Maximum(List(g,AbsInt)));
   i:=0;
@@ -2108,6 +2139,14 @@ local nf,df,g;
     fi;
   fi;
   return fail;
+end);
+
+InstallGlobalFunction(PolynomialModP,function(pol,p)
+local f, cof;
+   f:=GF(p);
+   cof:=CoefficientsOfUnivariatePolynomial(pol);
+   return UnivariatePolynomial(f,cof*One(f),
+             IndeterminateNumberOfUnivariateRationalFunction(pol));
 end);
 
 #############################################################################

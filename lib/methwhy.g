@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file allows some fancy accesses to the method selection
 ##
@@ -127,7 +128,7 @@ local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
   flags:=[];
   fams:=[];
   for i in obj do
-    if IsFilter(i) then
+    if IsFilter(i) or IsIdenticalObj( i, IsObject ) then
       Add(flags,FLAGS_FILTER(i));
       Add(fams,fail);
     elif IsType(i) then

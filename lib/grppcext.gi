@@ -4,6 +4,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grppcext_gi :=
     "@(#)$Id$";
@@ -532,7 +533,7 @@ InstallGlobalFunction( CompatiblePairs, function( arg )
 
     translate:=false; # do we translate D in a permutation group?
     if HasDirectProductInfo(D) then
-      IsGroupOfAutomorphisms(DirectProductInfo(D).groups[1]);
+      IsGroupOfAutomorphismsFiniteGroup(DirectProductInfo(D).groups[1]);
       p1iso:=IsomorphismPermGroup(DirectProductInfo(D).groups[1]);
       p2iso:=IsomorphismPermGroup(DirectProductInfo(D).groups[2]);
       DP:=DirectProduct(ImagesSource(p1iso),ImagesSource(p2iso));

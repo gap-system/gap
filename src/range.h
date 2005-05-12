@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file declares the functions that deal with ranges.
 **
@@ -153,10 +154,10 @@ const char * Revision_range_h =
 **  after the first position <start> as a C integer.   0 is returned if <val>
 **  is not in the list.
 */
-extern  Int             PosRange (
+extern  Obj             PosRange (
             Obj                 list,
             Obj                 val,
-            Int                 start );
+            Obj                 start );
 
 
 /****************************************************************************

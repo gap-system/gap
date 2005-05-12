@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for files and directories.
 ##
@@ -30,7 +31,7 @@ BIND_GLOBAL( "DirectoriesFamily", NewFamily( "DirectoriesFamily" ) );
 #############################################################################
 ##
 #F  USER_HOME_EXPAND . . . . . . . . . . . . .  expand leading ~ in file name
-##  
+##
 DeclareGlobalFunction("USER_HOME_EXPAND");
 
 
@@ -43,9 +44,9 @@ DeclareGlobalFunction("USER_HOME_EXPAND");
 ##  directory in which {\GAP} was started.
 ##  It also understands absolute paths.
 ##
-##  If the variable `USER_HOME' is defined (this may depend on the operating
-##  system) then `Directory' understands a string with a leading `~'
-##  character for a path relative to the user's home directory.
+##  If the variable `GAPInfo.UserHome' is defined (this may depend on the
+##  operating system) then `Directory' understands a string with a leading
+##  `~' character for a path relative to the user's home directory.
 ##
 ##  Paths are otherwise taken relative to the current directory.
 ##
@@ -125,8 +126,14 @@ DeclareOperation( "ReadTest", [ IsString ] );
 ##
 DeclareOperation( "ReadAsFunction", [ IsString ] );
 
-
-BIND_GLOBAL( "DIRECTORIES_LIBRARY", rec() );
+#############################################################################
+##
+#F  DirectoryContents(<name>)
+## 
+##  This function returns a list of filenames/directory names that reside in
+##  the directory with name <name> (given as a string). It is an error, if
+##  such a directory does not exist. 
+DeclareGlobalFunction("DirectoryContents");
 
 
 #############################################################################
@@ -134,22 +141,25 @@ BIND_GLOBAL( "DIRECTORIES_LIBRARY", rec() );
 #F  DirectoriesLibrary(  )  . . . . . . . . . . .  directories of the library
 #F  DirectoriesLibrary( <name> )  . . . . . . . .  directories of the library
 ##
-##  returns the directory objects for the {\GAP} library <lib> as a list.
-##  <lib> must be one of `"lib"' (the default), `"grp"', `"prim"', and so on.
+##  returns the directory objects for the {\GAP} library <name> as a list.
+##  <name> must be one of `"lib"' (the default), `"grp"', `"prim"',
+##  and so on.
 ##  The string `""' is also legal and with this argument `DirectoriesLibrary'
 ##  returns the list of {\GAP} root directories; the return value of
-##  `DirectoriesLibrary("");' differs from `GAP_ROOT_PATHS' in that the
+##  `DirectoriesLibrary("");' differs from `GAPInfo.RootPaths' in that the
 ##  former is a list of directory objects and the latter a list of strings.
 ##
-##  The directory <lib> must exist in at least one of the root directories,
+##  The directory <name> must exist in at least one of the root directories,
 ##  otherwise `fail' is returned.
+#T why the hell was this defined that way?
+#T returning an empty list would be equally good!
 ##
 ##  As the files in the {\GAP} root directory (see~"GAP Root Directory") can
 ##  be distributed into different directories in the filespace a list of
-##  directories is returned.  In order to find an existing file in the {\GAP}
+##  directories is returned.  In order to find an existing file in a {\GAP}
 ##  root directory you should pass that list to `Filename' (see~"Filename")
 ##  as the first argument.
-##  In order to create a filename for a new file inside the {\GAP} root
+##  In order to create a filename for a new file inside a {\GAP} root
 ##  directory you should pass the first entry of that list.
 ##  However, creating files inside the {\GAP} root directory is not
 ##  recommended, you should use `DirectoryTemporary' instead.
@@ -162,102 +172,30 @@ BIND_GLOBAL( "DirectoriesLibrary", function( arg )
     elif 1 = Length(arg)  then
         name := arg[1];
     else
-        Error( "DirectoriesLibrary( [<name>] )" );
+        Error( "usage: DirectoriesLibrary( [<name>] )" );
     fi;
 
     if '\\' in name or ':' in name  then
         Error( "<name> must not contain '\\' or ':'" );
     fi;
-    if not IsBound(DIRECTORIES_LIBRARY.(name))  then
+    if not IsBound( GAPInfo.DirectoriesLibrary.( name ) )  then
         dirs := [];
-        for dir  in GAP_ROOT_PATHS  do
+        for dir  in GAPInfo.RootPaths  do
             path := Concatenation( dir, name );
             if IsDirectoryPath(path) = true  then
                 Add( dirs, Directory(path) );
             fi;
         od;
         if 0 < Length(dirs)  then
-            DIRECTORIES_LIBRARY.(name) := Immutable(dirs);
+            GAPInfo.DirectoriesLibrary.( name ) := Immutable(dirs);
         else
             return fail;
         fi;
     fi;
 
-    return DIRECTORIES_LIBRARY.(name);
+    return GAPInfo.DirectoriesLibrary.( name );
 end );
 
-
-#############################################################################
-##
-#F  DirectoriesPackagePrograms( <name> )
-##
-##  returns a list of the `bin/<architecture>' subdirectories of all
-##  packages <name> where <architecture> is the architecture on which {\GAP}
-##  has been compiled. The directories returned by
-##  `DirectoriesPackagePrograms' is the place where external binaries for
-##  the {\GAP} package <name> and the current architecture should be located.
-##
-BIND_GLOBAL( "DirectoriesPackagePrograms", function( name )
-    local   arch,  dirs,  dir,  path;
-
-    arch := GAP_ARCHITECTURE;
-    dirs := [];
-    for dir  in GAP_ROOT_PATHS  do
-        path := Concatenation( dir, "pkg/", name, "/bin/", arch, "/" );
-        Add( dirs, Directory(path) );
-    od;
-    return dirs;
-end );
-
-
-#############################################################################
-##
-#F  DirectoriesPackageLibrary( <name> [,<path>] )
-##
-##  takes the string <name>, a name of a {\GAP} package and returns a list of
-##  directory  objects  for  the  sub-directory/ies  containing  the  library
-##  functions of the {\GAP} package, up to one for each `pkg' sub-directory of
-##  a path in `GAP_ROOT_PATHS'. The default is that the library functions are
-##  in the subdirectory `lib' of the {\GAP} package's home directory. If this
-##  is not the case, then the second argument <path> needs to be present  and
-##  must be a string that is a path name relative to the  home  directory  of
-##  the {\GAP} package with name <name>.
-##
-BIND_GLOBAL( "DirectoriesPackageLibrary", function( arg )
-    local   name,  path,  dirs,  dir,  tmp;
-
-    if IsEmpty(arg) or 2 < Length(arg) then
-        Error( "usage: DirectoriesPackageLibrary( <name> [,<path>] )\n" );
-    elif not ForAll(arg, IsString) then
-        Error( "string argument(s) expected\n" );
-    fi;
-
-    name := arg[1];
-    if 1 = Length(arg)  then
-        path := "lib";
-    else
-        path := arg[2];
-    fi;
-
-    if '\\' in name or ':' in name  then
-        Error( "<name> must not contain '\\' or ':'" );
-    fi;
-    dirs := [];
-    for dir  in GAP_ROOT_PATHS  do
-        tmp := Concatenation( dir, "pkg/", name, "/", path );
-        if IsDirectoryPath(tmp) = true  then
-            Add( dirs, Directory(tmp) );
-        fi;
-    od;
-    if 0 < Length(dirs)  then
-        return dirs;
-    else
-        return fail;
-    fi;
-end );
-
-
-DIRECTORIES_PROGRAMS := false;
 
 
 #############################################################################
@@ -269,15 +207,12 @@ DIRECTORIES_PROGRAMS := false;
 ##  would usually represent `\$PATH'.
 ##
 BIND_GLOBAL( "DirectoriesSystemPrograms", function()
-    if DIRECTORIES_PROGRAMS = false  then
-        DIRECTORIES_PROGRAMS := List( DIRECTORIES_SYSTEM_PROGRAMS,
-                                      x -> Directory(x) );
+    if GAPInfo.DirectoriesPrograms = false  then
+        GAPInfo.DirectoriesPrograms :=
+            List( GAPInfo.DirectoriesSystemPrograms, Directory );
     fi;
-    return DIRECTORIES_PROGRAMS;
+    return GAPInfo.DirectoriesPrograms;
 end );
-
-
-BIND_GLOBAL( "DIRECTORIES_TEMPORARY", [] );
 
 
 #############################################################################
@@ -294,7 +229,7 @@ BIND_GLOBAL( "DIRECTORIES_TEMPORARY", [] );
 ##  `DirectoryTemporary' to construct    the  name  of the    directory   but
 ##  `DirectoryTemporary' is free to use only a  part of <hint> or even ignore
 ##  it completely.
-##  
+##
 ##  If `DirectoryTemporary' is  unable to create a  new  directory, `fail' is
 ##  returned.  In this case `LastSystemError' can be  used to get information
 ##  about the error.
@@ -314,7 +249,7 @@ BIND_GLOBAL( "DirectoryTemporary", function( arg )
     fi;
 
     # remember directory name and return
-    Add( DIRECTORIES_TEMPORARY, dir );
+    Add( GAPInfo.DirectoriesTemporary, dir );
     return Directory(dir);
 end );
 
@@ -338,15 +273,12 @@ if ARCH_IS_UNIX() then
 	  return;
       fi;
 
-      for i  in DIRECTORIES_TEMPORARY  do
+      for i  in GAPInfo.DirectoriesTemporary  do
 	  proc := Process( tmp, rm, input, output, [ "-rf", i ] );
       od;
 
   end );
 fi;
-
-
-DIRECTORY_CURRENT := false;
 
 
 #############################################################################
@@ -357,10 +289,10 @@ DIRECTORY_CURRENT := false;
 #T  THIS IS A HACK (will not work if SetDirectoryCurrent is implemented)
 ##
 BIND_GLOBAL( "DirectoryCurrent", function()
-    if IsBool(DIRECTORY_CURRENT)  then
-        DIRECTORY_CURRENT := Directory("./");
+    if IsBool( GAPInfo.DirectoryCurrent )  then
+        GAPInfo.DirectoryCurrent := Directory("./");
     fi;
-    return DIRECTORY_CURRENT;
+    return GAPInfo.DirectoryCurrent;
 end );
 
 
@@ -424,7 +356,7 @@ BIND_GLOBAL( "LoadStaticModule", function( arg )
         fi;
 
         if not LOAD_STAT( arg[1], arg[2] )  then
-            Error( "loading static module ", arg[1], 
+            Error( "loading static module ", arg[1],
                    " failed, possible crc mismatch" );
         fi;
     else
@@ -460,9 +392,20 @@ DeclareGlobalFunction( "Edit" );
 #############################################################################
 ##
 
-#O  CreateCompletionFiles( <path> ) . . . . . . . create "lib/readX.co" files
+#F  CreateCompletionFiles() . . . . . . . . . . . create "lib/readX.co" files
+#F  CreateCompletionFiles( <path> ) . . . . . . . create "lib/readX.co" files
 ##
-DeclareGlobalFunction("CreateCompletionFiles");
+##  To create  completion files you must  have write permissions to `<path>',
+##  which defaults to the  first root directory.   Start {\GAP} with the `-N'
+##  option (to  suppress the reading  of any existing completion files), then
+##  execute the command `CreateCompletionFiles( <path> );', where <path> is a
+##  string giving a   path to the home   directory of  {\GAP} (the  directory
+##  containing the `lib' directory).
+##
+##  This produces, in addition to lots of informational output,
+##  the completion files.
+##
+DeclareGlobalFunction( "CreateCompletionFiles" );
 
 
 #############################################################################

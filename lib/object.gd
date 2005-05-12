@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for all objects.
 ##
@@ -98,10 +99,12 @@ DeclareCategoryKernel( "IsCopyable", IsObject, IS_COPYABLE_OBJ );
 ##
 ##  tests whether <obj> is mutable.
 ##
-##  If an object is mutable, then it is also 
-##  copyable, and there should be a ShallowCopy method supplied for it.
-##  Note that no other filter must imply `IsMutable',
-##  since otherwise `Immutable' would be able to create paradoxical objects.
+##  If an object is mutable then it is also copyable (see~"IsCopyable"),
+##  and a `ShallowCopy' (see~"ShallowCopy") method should be supplied for it.
+##  Note that `IsMutable' must not be implied by another filter,
+##  since otherwise `Immutable' would be able to create paradoxical objects
+##  in the sense that `IsMutable' for such an object is `false' but the
+##  filter that implies `IsMutable' is `true'.
 ##
 DeclareCategoryKernel( "IsMutable", IsObject, IS_MUTABLE_OBJ );
 
@@ -112,8 +115,9 @@ InstallTrueMethod( IsCopyable, IsMutable);
 ##
 #O  Immutable( <obj> )
 ##
-##  returns an immutable structural copy of <obj> in which the subobjects
-##  are immutable copies of the subobjects of <obj>.
+##  returns an immutable structural copy (see~"StructuralCopy") of <obj>
+##  in which the subobjects are immutable *copies* of the subobjects of
+##  <obj>.
 ##  If <obj> is immutable then `Immutable' returns <obj> itself.
 ##
 ##  {\GAP} will complain with an error if one tries to change an
@@ -145,8 +149,8 @@ BIND_GLOBAL( "Immutable", IMMUTABLE_COPY_OBJ );
 ##  But for any copyable object <obj>, the definition should reflect the
 ##  idea of ``first level copying''.
 ##
-##  The definition of `ShallowCopy' for lists can be found
-##  in~"Duplication of Lists".
+##  The definition of `ShallowCopy' for lists (in particular for matrices)
+##  can be found in~"Duplication of Lists".
 ##
 DeclareOperationKernel( "ShallowCopy", [ IsObject ], SHALLOW_COPY_OBJ );
 
@@ -370,9 +374,22 @@ DeclareOperation( "RepresentationsOfObject", [ IsObject ] );
 DeclareRepresentation( "IsPackedElementDefaultRep", IsPositionalObjectRep,
     [ 1 ] );
 
+#############################################################################
+##
+#O  PostMakeImmutable( <obj> )  clean-up after MakeImmutable
+##
+##  This operation is called by the kernel immediately after making
+##  any COM_OBJ or POS_OBJ immutable using MakeImmutable
+##  It is intended that objects should have methods for this operation
+##  which make any appropriate subobjects immutable (eg list entries)
+##  other subobjects (eg MutableAttributes) need not be made immutable.
+##
+##  A default method does nothing.
+
+DeclareOperation( "PostMakeImmutable", [IsObject]);
+  
 
 #############################################################################
 ##
 #E
 ##
-

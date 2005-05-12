@@ -1,0 +1,228 @@
+#!/bin/sh
+
+##  a script for checking PackageInfo.g files, not perfect, but finds quite a
+##  few frequent problems with useful error reports
+##  (C)  Frank Lübeck
+##  $Id$
+
+gap4curr -T -q -b -r 2>&1 <<EOF
+Read("checkval.g");
+SetPrintFormattingStatus(OutputTextUser(), false);
+SizeScreen([255,100]);;
+Print("<h2>Checking PackageInfo.g file</h2>\n");
+Print("<ul>\n");
+Print("<li><b>Downloading given URL.</b><p>Trying to get <i>$1</i>.</p>\n<pre>\n");
+dir := DirectoryTemporary();;
+tnam := Filename(dir, "PackageInfo.g");;
+if not CheckURL("$1", tnam) then
+  Print("\n</pre><p>");
+  Print("Cannot download the given URL.");
+  Print("</p></li></ul>\n");
+  quit;
+fi;
+# first try to read file
+Print("<li><b>Trying reading with GAP.</b>\n<pre>\n");
+Unbind( GAPInfo.PackageInfoCurrent );
+READ(tnam);;
+if not IsBound(GAPInfo.PackageInfoCurrent) then
+  Print("\n</pre><p>");
+  Print("This file cannot be read as PackageInfo.g file by GAP.\n",
+         "Please correct the errors above and try this check again.\n");
+  Print("</p></li></ul>\n");
+  quit;
+else
+  Print("\n</pre></li>");
+fi;
+# use ValidatePackageInfo
+info := GAPInfo.PackageInfoCurrent;;
+Print("<li><b>Validating with GAP.</b>\n<pre>\n");
+val := ValidatePackageInfo(GAPInfo.PackageInfoCurrent);;
+Print("\n</pre>\n");
+if val then
+  Print("<p>Syntax check by GAP 4 is ok.</p></li>\n");
+else
+  Print("<p>This PackageInfo.g file doesn't pass GAP's <code>ValidatePackageInfo</code> check.",
+         "\nMaybe you want to make some changes as mentioned above and then",
+         " repeat this check.</p></li>\n");
+fi;
+
+# checking the Archive URLs
+Print("<li><b>Checking package archive(s).</b>\n");
+MAINARCHIVE := 0;;
+if IsBound(info.ArchiveURL) and IsBound(info.ArchiveFormats) then
+  exts := SplitString(info.ArchiveFormats, "", " \t\n\r,");
+  for a in exts do
+    noexts := Filtered(exts, a-> not a in [".zoo", "-win.zip", ".tar.gz",
+               ".tar.bz2"]);
+    if Length(noexts)>0 then
+      Print("<p>The currently recognized archive formats are: \n",
+      "   \".zoo\", \"-win.zip\", \".tar.gz\" and \".tar.bz2\"\n",
+      "but not the given ", noexts, "\n</p>\n");
+    fi;
+  od;
+  if Length(noexts) = Length(exts) then
+    Print("<p>The archive not offered in any recognized format.\n",
+           "(\".zoo\", \"-win.zip\", \".tar.gz\" and \".tar.bz2\")\n</p>\n");
+  else
+    for a in exts do
+      if not a in noexts then
+        url := Concatenation(info.ArchiveURL, a);
+        d := DirectoryTemporary();
+        tnam := Filename(d, Concatenation("archive", a));
+        Print("<p>Checking <i>",Basename(url),"</i>: \n<pre>\n");
+        if CheckURL(url, tnam) then
+          if MAINARCHIVE = 0 and CheckType(tnam, a) then
+            MAINARCHIVE := tnam;
+            MAINARCHIVEEXT := a;
+          else
+            CheckType(tnam, a);
+          fi;
+        fi;
+        Print("</pre></p>\n");
+      fi;
+    od;
+  fi;
+fi;
+Print("</li>\n");
+
+if IsBound(info.Persons) then
+ for p in info.Persons do
+   if IsBound(p.WWWHome) then
+     Print("<li><b>Checking WWWHome.</b> \n<p>Checking ",p.WWWHome,
+           " for availability and HTML type.</p> <pre>\n");
+     d := DirectoryTemporary();
+     tnam := Filename(d, "index.html");
+     if CheckURL(p.WWWHome, tnam) then
+       CheckType(tnam, "HTML");
+     fi;
+     Print("</pre></li>\n");
+   fi;
+ od;
+fi;
+
+if IsBound(info.README_URL) then
+  Print("<li><b>Checking README_URL.</b>\n<p>Checking  ",info.README_URL," for availability and text type.</p>\n<pre>\n");
+  d := DirectoryTemporary();
+  tnam := Filename(d, "README");
+  if CheckURL(info.README_URL, tnam) then
+    CheckType(tnam, "Text");
+  fi;
+  Print("</pre></li>\n");
+fi;
+
+if IsBound(info.PackageInfoURL) then
+  Print("<li><b>Checking PackageInfoURL.</b> \n<p>Checking ",info.PackageInfoURL," for availability and GAP readable type.</p>\n<pre>\n");
+  d := DirectoryTemporary();
+  tnam := Filename(d, "PackageInfo.g");
+  if CheckURL(info.PackageInfoURL, tnam) then
+    CheckPackageInfo(tnam);
+  fi;
+  Print("</pre></li>\n");
+fi;
+
+if IsBound(info.PackageWWWHome) then
+  Print("<li><b>Checking PackageWWWHome.</b>\n<p>Checking  ",info.PackageWWWHome," for availability and HTML type.</p>\n<pre>\n");
+  d := DirectoryTemporary();
+  tnam := Filename(d, "index.html");
+  if CheckURL(info.PackageWWWHome, tnam) then
+    CheckType(tnam, "HTML");
+  fi;
+  Print("</pre></li>\n");
+fi;
+
+if IsBound(info.PackageDoc) then  
+  unpackdir := Filename(DirectoryTemporary(), "");;
+  nam := "";
+  if MAINARCHIVE <> 0 then
+    Print("<li><b>Unpacking package archive for checking .PackageDoc entries.</b>\n");
+    if MAINARCHIVEEXT = ".zoo" then
+      Exec(Concatenation("cd ",unpackdir,"; unzoo -x ",MAINARCHIVE," 2>&1 >/dev/null"));
+    elif MAINARCHIVEEXT = ".tar.gz" then
+      Exec(Concatenation("cd ",unpackdir,"; tar xzf ",MAINARCHIVE," 2>&1 >/dev/null"));
+    elif MAINARCHIVEEXT = ".tar.bz2" then
+      Exec(Concatenation("cd ",unpackdir,"; tar xjf ",MAINARCHIVE," 2>&1 >/dev/null"));
+    elif MAINARCHIVEEXT = ".zip" then
+      Exec(Concatenation("cd ",unpackdir,"; unzip -a ",MAINARCHIVE," 2>&1 >/dev/null"));
+    fi;
+    nam := Difference(FilesDir(unpackdir,"d",1), FilesDir(unpackdir,"d",0));
+    if Length(nam) > 1 then
+      Print("<p>Unpacking package archive produces several directories(?):</p>",
+            "<pre>\n",nam,"\n</pre>\n");
+      nam := nam[1];
+    elif Length(nam) = 0 then
+      Print("<p>Could not unpack package archive, so cannot check .PackageDoc ",
+            "entries.</p>\n");
+      nam := "";
+    else
+      nam := nam[1];
+    fi;
+    Print("</li>\n");
+  fi;
+  if not IsList(info.PackageDoc) then
+    info.PackageDoc := [info.PackageDoc];
+  fi;
+  for book in info.PackageDoc do
+    Print("<li><b>Considering help book ",book.BookName,".</b>\n");
+    d := DirectoryTemporary();
+    if not IsBound(book.ArchiveURLSubset) and IsBound(book.Archive) then
+      Print("<b>Checking doc archive.</b> \n<p>",book.Archive," for availability and type.</p>\n<pre>\n");
+      tnam := Filename(d, Basename(book.Archive));
+      ext := Length(tnam);
+      while tnam[ext] <> '.' and ext > 1 do
+        ext := ext-1;
+      od;
+      if CheckURL(book.Archive, tnam) then
+        CheckType(tnam, tnam{[ext..Length(tnam)]});
+      fi;
+      Print("</pre>\n");
+    fi;
+    if IsBound(book.ArchiveURLSubset) and nam <> "" then 
+      Print("<p>Checking files for online copy of book.</p>\n");      
+      for x in book.ArchiveURLSubset do
+        if not IsExistingFile(Concatenation(nam,"/",x)) then
+          Print("<p>File or directory ",x," containing documentation is ",
+                "\nmissing in your package archive!</p>\n");
+        fi;
+      od;
+    fi;
+    if IsBound(book.HTMLStart) then
+      Print("<p>Checking if .HTMLStart file is there.</p>\n");      
+      if not IsExistingFile(Concatenation(nam,"/",book.HTMLStart)) then
+        Print("<p>HTML help book start file (.HTMLStart) ",book.HTMLStart,
+              "\nis missing in your package archive!</p>\n");
+      elif not CheckHTML(Concatenation(nam,"/",book.HTMLStart)) then
+        Print("<p>HTML help book start file (.HTMLStart) ",book.HTMLStart,
+              "\nis doesn't seem to be an HTML file!</p>\n");
+      fi;
+    fi;
+    if IsBound(book.PDFFile) then
+      Print("<p>Checking if .PDFFile file is there.</p>\n");      
+      if not IsExistingFile(Concatenation(nam,"/",book.PDFFile)) then
+        Print("<p>PDF version of help book (.PDFFile) ",book.PDFFile,
+              "\nis missing in your package archive!</p>\n");
+      elif not CheckPDF(Concatenation(nam,"/",book.PDFFile)) then
+        Print("<p>Entry .PDFFile (",book.PDFFile,
+              ")\ndoesn't seem to be a PDF file!</p>\n");
+      fi;
+    fi;
+    if IsBound(book.SixFile) then
+      Print("<p>Checking if .SixFile file is there.</p>\n");      
+      if not IsExistingFile(Concatenation(nam,"/",book.SixFile)) then
+        Print("<p><i>.six</i> file of help book (.SixFile) ",book.SixFile,
+              "\nis missing in your package archive!</p>\n");
+      elif not CheckText(Concatenation(nam,"/",book.SixFile)) then
+        Print("<p><i>.six</i> file of help book (.SixFile) ",book.SixFile,
+              "\ndoesn't seem to be a text file!</p>\n");
+      fi;
+    fi;
+    Print("\n</li>\n");
+  od;
+fi;
+
+Print("\n</ul>\n");
+
+
+EOF
+
+
+

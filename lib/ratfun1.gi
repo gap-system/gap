@@ -9,6 +9,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file  contains those  methods  for    rational  functions,  laurent
 ##  polynomials and polynomials and their families which are time critical
@@ -44,7 +45,7 @@ local f,typ,lc;
     typ := rfam!.threeLaurentPolynomialTypes[1];
   fi;
   
-  # slightly better to do this after the Length id determined 
+  # slightly better to do this after the Length has been determined 
   if IsFFECollection(coeff) and IS_PLIST_REP(coeff) then
     ConvertToVectorRep(coeff);
   fi;
@@ -362,7 +363,7 @@ end;
 
 ##  Low level workhorse for operations with monomials in Zipped form
 ##  ZippedSum( <z1>, <z2>, <czero>, <funcs> )
-ZIPPED_SUM_LISTS:= function( z1, z2, zero, f )
+ZIPPED_SUM_LISTS_LIB:= function( z1, z2, zero, f )
     local   sum,  i1,  i2,  i;
 
     sum := [];
@@ -484,9 +485,44 @@ end;
 ##
 #F  ZippedListQuotient  . . . . . . . . . . . .  divide a monomial by another
 ##
-ZippedListQuotient := function( l, r )
-  return ZippedSum( l, r, 0, [ \<, \- ] );
-end;
+BindGlobal("ZippedListQuotient",function( a, b )
+local l, m, i, j, c, e;
+  l:=Length(a);
+  m:=Length(b);
+  i:=1;
+  j:=1;
+  c:=[];
+  while i<l and j<m do
+    if a[i]=b[j] then
+      e:=a[i+1]-b[j+1];
+      if e<>0 then
+	Add(c,a[i]);
+	Add(c,e);
+      fi;
+      i:=i+2;
+      j:=j+2;
+    elif a[i]<b[j] then
+      Add(c,a[i]);
+      Add(c,a[i+1]);
+      i:=i+2;
+    else
+      Add(c,b[j]);
+      Add(c,-b[j+1]);
+      j:=j+2;
+    fi;
+  od;
+  while i<l do
+    Add(c,a[i]);
+    Add(c,a[i+1]);
+    i:=i+2;
+  od;
+  while j<m do
+    Add(c,b[j]);
+    Add(c,-b[j+1]);
+    j:=j+2;
+  od;
+  return c;
+end);
 
 # Arithmetic 
 
@@ -543,7 +579,7 @@ local a,b,fam,i, j;
         # let the coefficients decide
         return a[i+1]<b[j+1];
       fi;
-    elif MonomialTotalDegreeLess(a[i],b[j]) then
+    elif MonomialExtGrlexLess(a[i],b[j]) then
       # a is strictly smaller
       return true;
     else
@@ -868,7 +904,13 @@ local i,j,p,z,s,u,o;
     return [];
   fi;
 
-  z:=Zero(l1[1]);
+  # this is faster than calling only `Zero'.
+  s:=FamilyObj(l1[1]);
+  if HasZero(s) then
+    z:=Zero(s);
+  else
+    z:=Zero(l1[1]);
+  fi;
 
   p:=[];
   for i  in [ 1 .. m+n-1 ]  do
@@ -896,10 +938,10 @@ end;
 REMOVE_OUTER_COEFFS_GENERIC:=function( l, c )
 local   n,  m,  i;
 
-  if 0 = Length(l)  then
+  n := Length(l);
+  if 0 = n  then
       return 0;
   fi;
-  n := Length(l);
   while 0 < n and l[n] = c  do
       Unbind(l[n]);
       n := n-1;
@@ -914,10 +956,10 @@ local   n,  m,  i;
   if 0 = m  then
       return 0;
   fi;
-  for i  in [ m+1 .. n ]  do
-      l[i-m] := l[i];
+  for i in [ m+1 .. n ]  do
+      l[i-m]:=l[i];
   od;
-  for i  in [ 1 .. m ]  do
+  for i  in [1 .. m]  do
       Unbind(l[n-i+1]);
   od;
   return m;
@@ -1301,86 +1343,5 @@ local c,i,j,m,ex;
     Add(c[ex],e[i+1]);
   od;
   return c;
-end;
-
-
-
-#############################################################################
-##
-#F  PolynomialReduction(poly,plist,order)
-##
-POLYNOMIAL_REDUCTION:=function(poly,plist,order)
-local fam,quot,elist,lmp,lmo,lmc,x,y,z,mon,mon2,qmon,noreduce,
-      ep,pos,di,opoly;
-  opoly:=poly;
-  fam:=FamilyObj(poly);
-  quot:=List(plist,i->Zero(poly));
-  elist:=List(plist,ExtRepPolynomialRatFun);
-  lmp:=List(elist,i->LeadingMonomialPosExtRep(fam,i,order));
-  lmo:=List([1..Length(lmp)],i->elist[i][lmp[i]]);
-  lmc:=List([1..Length(lmp)],i->elist[i][lmp[i]+1]);
-
-  repeat
-    ep:=ExtRepPolynomialRatFun(poly);
-    # now try whether we can reduce anywhere.
-
-    x:=Length(ep)-1;
-    noreduce:=true;
-    while x>0 and noreduce do
-      mon:=ep[x];
-      y:=1;
-      while y<=Length(plist) and noreduce do
-	mon2:=lmo[y];
-	#check whether the monomial at position x is a multiple of the
-	#y-th leading monomial
-        z:=1;
-	pos:=1;
-	qmon:=[]; # potential quotient
-	noreduce:=false;
-	while noreduce=false and z<=Length(mon2) and pos<=Length(mon) do
-	  if mon[pos]>mon2[z] then
-	    noreduce:=true; # indet in mon2 does not occur in mon -> does not
-	                   # divide
-	  elif mon[pos]<mon2[z] then
-	    Append(qmon,mon{[pos,pos+1]}); # indet only in mon
-	    pos:=pos+2;
-	  else
-	    # the indets are the same
-	    di:=mon[pos+1]-mon2[z+1];
-	    if di>0 then
-	      #divides and there is remainder
-	      Append(qmon,[mon[pos],di]);
-	    elif di<0 then
-	      noreduce:=true; # exponent to small
-	    fi;
-	    pos:=pos+2;
-	    z:=z+2;
-	  fi;
-	od;
-
-	# if there is a tail in mon2 left, cannot divide
-	if z<=Length(mon2) then
-	  noreduce:=true;
-	fi;
-        y:=y+1;
-      od;
-      x:=x-2;
-    od;
-    if noreduce=false then
-      x:=x+2;y:=y-1; # re-correct incremented numbers
-
-      # is there a tail in mon? if yes we need to append it
-      if pos<Length(mon) then
-        Append(qmon,mon{[pos..Length(mon)]});
-      fi;
-
-      # reduce!
-      qmon:=PolynomialByExtRep(fam,[qmon,ep[x+1]/lmc[y]]); #quotient monomial
-
-      quot[y]:=quot[y]+qmon;
-      poly:=poly-qmon*plist[y]; # reduce
-    fi;
-  until noreduce;
-  return [poly,quot];
 end;
 

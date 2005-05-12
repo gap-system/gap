@@ -4,6 +4,7 @@
 #W                                                           Alexander Hulpke
 ##
 #Y  (C) 2000 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.schur_gd :=
     "@(#)$Id$";

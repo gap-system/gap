@@ -541,7 +541,7 @@ using a suitable action of the group.
 gap> cos:= RightCosets( g, Subgroup( g, [ g1 ] ) );;
 gap> Length( cos );
 24
-gap> hom:= OperationHomomorphism( g, cos, OnRight );;
+gap> hom:= ActionHomomorphism( g, cos, OnRight );;
 gap> im:= Image( hom );
 Group([ (2,3,5,9,15)(4,7,12,8,14)(10,17,23,20,24)(11,19,22,16,13), 
   (1,2,4,8,3,6,11,20,17,19)(5,10,18,7,13,22,12,21,24,15)(9,16)(14,23) ])

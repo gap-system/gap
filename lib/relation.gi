@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation for binary relations, equivalence
 ##  relations and equivalence classes on and over sets. 
@@ -717,14 +718,15 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
         ## Non recursive implementation of a depth first visit
         ##   from a vertex using a stack explicitly to remember 
         ##   its depth recursion.
-  
+        ##
         DFSVisitNR := function(s)
         
-            local v,u,pushed,  ## vertices and boolean variable
+            local v,u,         ## vertices
                   stack, top;  ## stack variables
 
             top:=1;
             stack := [s];
+            pi[s] :=s;
             
             ## Loop until we can discover no more vertices from s
             ##    
@@ -732,36 +734,38 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
 
                 ## Initialization for the top of the stack
                 ##
-                pushed := false;
-                
                 u := stack[top];
                 color[u] := 1;
                 dtime[u] := time+1;
                 time     := time +1;
 
-                ## Push each undicovered vertex in the adjacency list
-                ##   on the stack
+                ## Find the first undiscovered vertex adjacent to u
                 ##
-                for v in adj[u] do
-                   if color[v]=0 then
-                       pi[v] := u;
-                       top := top +1;
-                       stack[top] := v;
-                       pushed := true;
-                   fi;
-                od;
-
-                ## If no vertices have been pushed on the stack
-                ##    then pop the vertex, set it's color to fully 
-                ##    discovered, and finish time
+                v := First(adj[u],x->color[x]=0);
+             
+                ## If no undiscovered vertices exist pop the vertex u
+                ##   from the stack and record it's finish time and color
+                ##   it fully discovered
                 ##
-                if not pushed then
+                if v=fail then
                     u := stack[top];
                     top := top-1;
                     color[u] := 2;
                     ftime[u] := time+1;
                     time := time +1;
-                fi;    
+
+                ## Otherwise color the vertex, record it's discover
+                ##   time and predesessor edge, and push on the stack.
+                ##
+                else
+                    color[v]:=1;
+                    dtime[v] := time+1;
+                    time     := time +1;
+                    pi[v] := u;
+                    top := top +1;
+                    stack[top] := v;
+                fi;
+
             od;
         end;
 

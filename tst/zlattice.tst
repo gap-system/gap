@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -18,7 +20,7 @@ rec( basis := [  ], relations := [ [ 1, 0 ], [ 0, 1 ] ],
   transformation := [  ], mue := [  ], B := [  ] )
 
 
-gap> STOP_TEST( "zlattice.tst", 10000000 );
+gap> STOP_TEST( "zlattice.tst", 800000 );
 
 
 #############################################################################

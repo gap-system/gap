@@ -6,6 +6,7 @@
 *H  @(#)$Id$
 **
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 */
 #include        "system.h"              /* system dependent part           */

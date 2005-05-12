@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+    <link href="rsyncserv.css" type="text/css" rel="StyleSheet" />
+
+    <title>GAP on Linux via Rsync</title>
+  </head>
+
+  <body>
+    <h1>Using <code>rsync</code> for a binary installation of <span
+    class="pkg">GAP</span></h1>
+
+<p>
+This service is introduced at the same time as <span
+class="pkg">GAP</span>&nbsp;4.4 and should be considered <i>experimental</i>
+until some experiences are gathered. Any reports or suggestions are welcome.
+</p>
+
+<p>
+The idea is to install <span class="pkg">GAP</span> on Linux by syncronizing 
+via the internet with a reference installation. Some features are:
+</p>
+
+<ul>
+<li>A compiled <span class="pkg">GAP</span> is already included in the
+distribution. It is compiled with some optimizations  and statically
+linked. Depending on the operating system kernel <span
+class="pkg">GAP</span> jobs can use up to 2&nbsp;GB or 3&nbsp;GB of main
+memory.
+</li>
+<li>All distributed packages are installed, this is the main point which
+makes installation easier compared to a  direct installation  from 
+the sources.
+</li>
+<li>
+...
+</li>
+</ul>
+
+<h2>How to Get <span class="pkg">GAP</span> via this Service</h2>
+<p>
+(and not directly from the <a
+href="http://www.math.rwth-aachen.de:8001/GAP/xxx/tmpsite/Download/index.html">
+<span class="pkg">GAP</span> site</a>.)
+</p>
+
+<p>
+You need: a machine with PC architecture (i686) running under 
+<a href="http://www.linux.org">Linux</a>, a directory with about 500&nbsp;MB of
+free space and the <code>rsync</code> program (if you don't have
+<code>rsync</code>, there is certainly a package with this name in your
+Linux distribution).
+</p>
+
+<p>
+Then copy the start script by
+</p>
+<pre>   rsync --port=8731 -azv beteigeuze.math.rwth-aachen.de::gap4r4/gapsync/gapsync .
+</pre>
+<p>
+Call this script:
+</p>
+<pre>   ./gapsync
+</pre>
+<p>
+You are asked for two directories. The first is for the installation. 
+Everything is copied into a subdirectory <code>gap4r4</code> of this directory
+(the default is <code>/usr/local/lib</code>). The second directory should be
+one in your standard path of executable programs. The following scripts are
+put in that directory (the default is <code>/usr/local/bin</code>):
+</p>
+<dl>
+<dt><code>gap</code></dt>
+<dd>for calling <span class="pkg">GAP</span></dd>
+<dt><code>gapL</code></dt>
+<dd>for calling <span class="pkg">GAP</span>, loading a workspace and then
+reading a users <code>~/.gaprc</code> file (if it exists)</dd>
+<dt><code>gapsync</code></dt>
+<dd>for updating this <span class="pkg">GAP</span> installation</dd>
+<dt><code>gac</code></dt>
+<dd>for calling the <span class="pkg">GAP</span> compiler</dd>
+<dt><code></code></dt>
+<dd></dd>
+</dl>
+<p>After giving these two directories, answer <code>y</code> to the next
+question to start the installation. Depending on your network connection
+you can use <span class="pkg">GAP</span> after a certain number of 
+minutes (about 130&nbsp;MB must be transfered via the internet; with a fast
+local connection it takes less than three minutes, and we tried an
+installation via DSL modem which took less than 30 minutes).
+</p>
+
+<h2>Updating</h2>
+
+<p>You can update the installation by calling the script
+</p>
+<pre>   gapsync
+</pre>
+<p>which was installed during initialization and mentioned above. The
+syncronization will usually take just a few seconds. A new workspace is 
+created after each syncronization locally.</p>
+<p>An update should not be made while a <span class="pkg">GAP</span>
+job is running. If you have long running jobs do not use an automatic, say
+nightly, update.</p>
+
+<h2>Customization</h2>
+<p>
+You can customize the <code>gap</code>, <code>gapL</code>,
+<code>gapsync</code> scripts by editing the files in the
+<code>local/bin</code> subdirectory of this <span class="pkg">GAP</span>
+installation.
+</p>
+<p>
+You can customize the workspace used in your installation by copying
+<code>gapsync/CreateWorkspace.sh</code> to
+<code>local/bin/CreateWorkspace</code> and editing the latter.
+For example, you may want another set of packages preloaded.
+</p>
+<p>Additional packages can be installed in the <code>local/pkg</code>
+subdirectory.
+</p>
+<p>
+If you change things outside the <code>local</code> subdirectory they are
+deleted with the next call of <code>gapsync</code>. If you find errors in
+this part, please report them.
+</p>
+<p>The command <code>ReadLib("colorprompt.g");</code> within 
+<span class="pkg">GAP</span> loads a demo which configures the prompt and
+<span class="pkg">GAP</span> to appear in different colors. In case you like
+this, put this command in your <code>~/.gaprc</code> file.
+</p>
+
+<h2>Removing this Installation</h2>
+<p>To remove this <span class="pkg">GAP</span> installation go to the
+subdirectory <code>gapsync</code> inside your installation and call
+</p>
+<pre>   ./remove
+</pre>
+<p>(this just deletes the links to the four scripts mentioned above and the
+whole installation directory (starting <code>gap4r4</code>, so including
+any custom installations in the <code>gap4r4/local</code> subdirectory.
+</p>
+<p>You can also just delete or forget about the <code>gapsync</code> script
+and use the installed <span class="pkg">GAP</span> like any standard
+installation.
+</p>
+
+<h2>Feedback</h2>
+
+<p>Please send comments and suggestions to 
+<a
+href="mailto:Frank.Luebeck@Math.RWTH-Aachen.De">Frank.Luebeck@Math.RWTH-Aachen.De</a>.
+</p>
+
+  </body>
+</html>
+

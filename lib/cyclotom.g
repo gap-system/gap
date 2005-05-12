@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file deals with cyclotomics.
 ##
@@ -230,7 +231,8 @@ SetIsUFDFamily( CyclotomicsFamily, true );
 ##  `infinity' is a special {\GAP} object that lies in `CyclotomicsFamily'.
 ##  It is larger than all other objects in this family.
 ##  `infinity' is mainly used as return value of operations such as `Size'
-##  and `Dimension' for infinite resp.~infinite dimensional domains.
+##  and `Dimension' for infinite and infinite dimensional domains,
+##  respectively.
 ##
 ##  Note that *no* arithmetic operations are provided for `infinity',
 ##  in particular there is no problem to define what `0 * infinity' or
@@ -285,7 +287,7 @@ InstallMethod( \<,
 ##  A cyclotomic is called *integral* or a *cyclotomic integer* if all
 ##  coefficients of its minimal polynomial over the rationals are integers.
 ##  Since the underlying basis of the external representation of cyclotomics
-##  is an integral basis (see~"Integral Bases for Abelian Number Fields"),
+##  is an integral basis (see~"Integral Bases of Abelian Number Fields"),
 ##  the subring of cyclotomic integers in a cyclotomic field is formed
 ##  by those cyclotomics for which the external representation is a list of
 ##  integers.

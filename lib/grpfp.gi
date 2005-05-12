@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for finitely presented groups (fp groups).
 ##  Methods for subgroups of fp groups can also be found in `sgpres.gi'.
@@ -67,6 +68,15 @@ function( obj )
   return String( obj![1] );
 end );
 
+#############################################################################
+##
+#M  LaTeXObj( <elm> ) . . . . . . . for packed word in default representation
+##
+InstallMethod( LaTeXObj,"for an element of an f.p. group (default repres.)",
+  true, [ IsElementOfFpGroup and IsPackedElementDefaultRep ],0,
+function( obj )
+  return LaTeXObj( obj![1] );
+end );
 
 #############################################################################
 ##
@@ -132,86 +142,9 @@ InstallMethod( One, "for an f.p. group element", true, [ IsElementOfFpGroup ],
 InstallMethod( OneOp, "for an f.p. group element", true,[IsElementOfFpGroup ],
     0, obj -> One( FamilyObj( obj ) ) );
 
-
-#############################################################################
-##
-#M  \*( <elm1>, <elm2> )  . . . . . . . . .  for two elements of a f.p. group
-##
-InstallMethod( \*,
-    "for two f.p. group elements",
-    IsIdenticalObj,
-    [ IsElementOfFpGroup,
-      IsElementOfFpGroup ],
-    0,
-    function( left, right )
-    local fam;
-    fam:= FamilyObj( left );
-    return ElementOfFpGroup( fam,
-               UnderlyingElement( left ) * UnderlyingElement( right ) );
-    end );
-
-#############################################################################
-##
-#M  \=( <elm1>, <elm2> )  . . . . . . . . .  for two elements of a f.p. group
-##
-InstallMethod( \=, "for two f.p. group elements", IsIdenticalObj,
-    [ IsElementOfFpGroup, IsElementOfFpGroup ],0,
-# this is the only method that may ever be called!
-function( left, right )
-  if UnderlyingElement(left)=UnderlyingElement(right) then
-    return true;
-  fi;
-  return FpElmEqualityMethod(FamilyObj(left))(left,right);
-end );
-
-#############################################################################
-##
-#M  \<( <elm1>, <elm2> )  . . . . . . . . .  for two elements of a f.p. group
-##
-InstallMethod( \<, "for two f.p. group elements", IsIdenticalObj,
-    [ IsElementOfFpGroup, IsElementOfFpGroup ],0,
-# this is the only method that may ever be called!
-function( left, right )
-  return FpElmComparisonMethod(FamilyObj(left))(left,right);
-end );
-
-InstallMethod( FpElmEqualityMethod, "via perm rep.", true,
-  [IsElementOfFpGroupFamily],
-  # rank it higher than the following Knuth-Bendix method
-  1,
-function( fam )
-local hom,gp;
-  gp:=CollectionsFamily(fam)!.wholeGroup;
-  if HasIsFinite(gp) and not IsFinite(gp) then
-    TryNextMethod();
-  fi;
-  hom:=IsomorphismPermGroupOrFailFpGroup(gp);
-  if hom=fail then
-    TryNextMethod();
-  fi;
-  return function(left,right);
-	   return Image(hom,left)=Image(hom,right);
-	 end;
-end );
-
-InstallMethod( FpElmComparisonMethod, "via perm rep.", true,
-  [IsElementOfFpGroupFamily],
-  # rank it higher than a potential Knuth-Bendix
-  1,
-function( fam )
-local hom,gp;
-  gp:=CollectionsFamily(fam)!.wholeGroup;
-  if HasIsFinite(gp) and not IsFinite(gp) then
-    TryNextMethod();
-  fi;
-  hom:=IsomorphismPermGroupOrFailFpGroup(gp);
-  if hom=fail then
-    TryNextMethod();
-  fi;
-  return function(left,right);
-	   return Image(hom,left)<Image(hom,right);
-	 end;
-end );
+InstallGlobalFunction(SetReducedMultiplication,function(o)
+  FamilyObj(One(o))!.reduce:=true;
+end);
 
 ################################################
 # Gpword2MSword
@@ -279,13 +212,108 @@ local  wlist, i,l;
   return AssocWordByLetterRep(FamilyObj(id),w);
 end);
 
-InstallMethod( FpElmEqualityMethod, "via Knuth-Bendix", true,
+
+#############################################################################
+##
+#M  \*( <elm1>, <elm2> )  . . . . . . . . .  for two elements of a f.p. group
+##
+InstallMethod( \*, "for two f.p. group elements",
+    IsIdenticalObj, [ IsElementOfFpGroup, IsElementOfFpGroup ], 0,
+function( left, right )
+local fam,k;
+  fam:= FamilyObj( left );
+  if IsBound(fam!.reduce) and fam!.reduce=true then
+    k:=FpElmKBRWS(fam);
+    return ElementOfFpGroup( fam,
+	     MSword2gpword(UnderlyingElement(One(fam)),
+	       ReducedForm(k[2],
+		 Gpword2MSword(k[3],
+		   UnderlyingElement(left)*UnderlyingElement(right),0)),0));
+  else
+    return ElementOfFpGroup( fam,
+	      UnderlyingElement( left ) * UnderlyingElement( right ) );
+  fi;
+end );
+
+#############################################################################
+##
+#M  \=( <elm1>, <elm2> )  . . . . . . . . .  for two elements of a f.p. group
+##
+InstallMethod( \=, "for two f.p. group elements", IsIdenticalObj,
+    [ IsElementOfFpGroup, IsElementOfFpGroup ],0,
+# this is the only method that may ever be called!
+function( left, right )
+  if UnderlyingElement(left)=UnderlyingElement(right) then
+    return true;
+  fi;
+  return FpElmEqualityMethod(FamilyObj(left))(left,right);
+end );
+
+#############################################################################
+##
+#M  \<( <elm1>, <elm2> )  . . . . . . . . .  for two elements of a f.p. group
+##
+InstallMethod( \<, "for two f.p. group elements", IsIdenticalObj,
+    [ IsElementOfFpGroup, IsElementOfFpGroup ],0,
+# this is the only method that may ever be called!
+function( left, right )
+  return FpElmComparisonMethod(FamilyObj(left))(left,right);
+end );
+
+InstallMethod( FpElmEqualityMethod, "via perm rep.", true,
+  [IsElementOfFpGroupFamily],
+  # rank it higher than the following Knuth-Bendix method
+  1,
+function( fam )
+local hom,gp;
+  gp:=CollectionsFamily(fam)!.wholeGroup;
+  if HasIsFinite(gp) and not IsFinite(gp) then
+    TryNextMethod();
+  fi;
+  hom:=IsomorphismPermGroupOrFailFpGroup(gp);
+  if hom=fail then
+    TryNextMethod();
+  fi;
+  return function(left,right);
+	   return Image(hom,left)=Image(hom,right);
+	 end;
+end );
+
+InstallMethod( FpElmComparisonMethod, "via perm rep.", true,
+  [IsElementOfFpGroupFamily],
+  # rank it higher than a potential Knuth-Bendix
+  1,
+function( fam )
+local hom,gp;
+  gp:=CollectionsFamily(fam)!.wholeGroup;
+  if HasIsFinite(gp) and not IsFinite(gp) then
+    TryNextMethod();
+  fi;
+  hom:=IsomorphismPermGroupOrFailFpGroup(gp);
+  if hom=fail then
+    TryNextMethod();
+  fi;
+  return function(left,right);
+	   return Image(hom,left)<Image(hom,right);
+	 end;
+end );
+
+InstallMethod( FpElmKBRWS, "via Knuth-Bendix", true,
   [IsElementOfFpGroupFamily],0,
 function( fam )
 local iso,k,id;
   iso:=IsomorphismFpMonoid(CollectionsFamily(fam)!.wholeGroup);
   id:=UnderlyingElement(Image(iso,One(fam)));
   k:=ReducedConfluentRewritingSystem(Image(iso));
+  return [iso,k,id];
+end );
+
+InstallMethod( FpElmEqualityMethod, "via Knuth-Bendix", true,
+  [IsElementOfFpGroupFamily],0,
+function( fam )
+local iso,k,id;
+  id:=FpElmKBRWS(fam);
+  iso:=id[1];k:=id[2];id:=id[3];
   return function(left,right);
 	   return ReducedForm(k,Gpword2MSword(id,UnderlyingElement(left),0))
 	         =ReducedForm(k,Gpword2MSword(id,UnderlyingElement(right),0));
@@ -298,13 +326,26 @@ InstallMethod( FpElmComparisonMethod, "via Knuth-Bendix", true,
   [IsElementOfFpGroupFamily],0,
 function( fam )
 local iso,k,id;
-  iso:=IsomorphismFpMonoid(CollectionsFamily(fam)!.wholeGroup);
-  id:=UnderlyingElement(Image(iso,One(fam)));
-  k:=ReducedConfluentRewritingSystem(Image(iso));
+  id:=FpElmKBRWS(fam);
+  iso:=id[1];k:=id[2];id:=id[3];
   return function(left,right);
 	   return ReducedForm(k,Gpword2MSword(id,UnderlyingElement(left),0))
 	         <ReducedForm(k,Gpword2MSword(id,UnderlyingElement(right),0));
 	 end;
+end );
+
+#############################################################################
+##
+#M  Order <elm> ) 
+##
+InstallMethod( Order,"fp group element", [ IsElementOfFpGroup ],0,
+function( elm )
+local gp;
+   gp:=CollectionsFamily(FamilyObj(elm))!.wholeGroup;
+   if not HasIsomorphismPermGroup(gp) then
+     TryNextMethod(); # don't try the hard way
+   fi;
+   return Order(Image(IsomorphismPermGroup(gp),elm));
 end );
 
 #############################################################################
@@ -384,9 +425,13 @@ local S;
     IsSubgroupOfWholeGroupByQuotientRep and IsAttributeStoringRep ),
         rec(quot:=Q,sub:=U) ); 
   SetParent(S,fam!.wholeGroup);
-  if CanComputeIndex(Q,U) then
-    SetIndexInWholeGroup(S,Index(Q,U));
-#T better IndexNC?
+  if CanComputeIndex(Q,U) and HasSize(Q) then
+    SetIndexInWholeGroup(S,IndexNC(Q,U));
+    if IndexNC(Q,U)<infinity then
+      SetIsFinitelyGeneratedGroup(S,true);
+    fi;
+  elif HasIsFinite(Q) and IsFinite(Q) then
+    SetIsFinitelyGeneratedGroup(S,true);
   fi;
   # transfer normality information
   if (HasIsNormalInParent(U) and Q=Parent(U)) or
@@ -543,6 +588,26 @@ function(G,H)
   return IsNormal(H!.quot,H!.sub);
 end);
 
+InstallMethod(IsFinitelyGeneratedGroup,"subgroups of fp group",true,
+  [IsSubgroupFpGroup],0,
+function(U)
+local G;
+  G:=FamilyObj(U)!.wholeGroup;
+  if not IsFinitelyGeneratedGroup(G) then
+    TryNextMethod();
+  fi;
+  if CanComputeIndex(G,U) and Index(G,U)<infinity  then
+    return true;
+  fi;
+  Info(InfoWarning,1,
+    "Forcing index computation to test whether subgroup is finitely generated"
+    );
+ if Index(G,U)<infinity then
+   return true;
+ fi;
+ TryNextMethod(); # give up
+end);
+
 #############################################################################
 ##
 #M  GeneratorsOfGroup( <F> )  . . . . . . . . . . . . . . .  for a f.p. group
@@ -574,11 +639,13 @@ function( G )
             row,        # a row of <mat>
             rel,        # a relator of <G>
             p,          # position of <g> or its inverse in <gens>
-            i;          # loop variable
+            i,          # loop variable
+	    word,
+	    inv;
 
     Fam := ElementsFamily( FamilyObj( G ) );
     gens := FreeGeneratorsOfFpGroup( G );
-    genind:=List(gens,i->GeneratorSyllable(i,1));
+    genind:=List(gens,i->AbsInt(LetterRepAssocWord(i)[1]));
 
     # handle groups with no relators
     if IsEmpty( RelatorsOfFpGroup( G ) ) then
@@ -590,12 +657,17 @@ function( G )
     for rel  in RelatorsOfFpGroup( G ) do
         row := [];
         for i  in [ 1 .. Length( gens ) ]  do
-            row[i] := 0;
+	  row[i] := 0;
         od;
-        for i  in [ 1 .. NrSyllables( rel ) ]  do
-	  p := Position( genind, GeneratorSyllable(rel,i));
-	  row[p]:=row[p]+ExponentSyllable(rel,i);
-        od;
+        #for i  in [ 1 .. NrSyllables( rel ) ]  do
+	#  p := Position( genind, GeneratorSyllable(rel,i));
+	#  row[p]:=row[p]+ExponentSyllable(rel,i);
+        #od;
+	word:=LetterRepAssocWord(rel);
+	for i in [1..Length(rel)] do
+	  p:=Position(genind,AbsInt(word[i]));
+	  row[p]:=row[p]+SignInt(word[i]);
+	od;
         Add( mat, row );
     od;
 
@@ -603,7 +675,14 @@ function( G )
     DiagonalizeMat( Integers, mat );
 
     # return the abelian invariants
-    return AbelianInvariantsOfList( DiagonalOfMat( mat ) );
+    inv:=AbelianInvariantsOfList( DiagonalOfMat( mat ) );
+    if 0 in inv then
+      SetSize(G,infinity);
+    elif Length(gens)=1 or (HasIsAbelian(G) and IsAbelian(G)) then
+      # abelian
+      SetSize(G,Product(inv));
+    fi;
+    return inv;
 end );
 
 
@@ -614,19 +693,26 @@ end );
 InstallMethod( AbelianInvariants,
   "for a subgroup of a finitely presented group", true,
   [ IsSubgroupFpGroup ], 0,
-function( H )
+function(H)
 
-    local G;
+    local G,inv;
 
-    if IsGroupOfFamily( H ) then
+    if IsGroupOfFamily(H) then
       TryNextMethod();
     fi;
 
     # Get the whole group `G' of `H'.
-    G:= FamilyObj( H )!.wholeGroup;
+    G:= FamilyObj(H)!.wholeGroup;
 
     # Call the global function for subgroups of f.p. groups.
-    return AbelianInvariantsSubgroupFpGroup( G, H );
+    inv:=AbelianInvariantsSubgroupFpGroup( G, H );
+    if 0 in inv then
+      SetSize(H,infinity);
+    elif HasIsAbelian(H) and IsAbelian(H) then
+      # abelian
+      SetSize(H,Product(inv));
+    fi;
+    return inv;
 end );
 
 #############################################################################
@@ -687,10 +773,10 @@ InstallMethod( CosetTable,
     0,
 function( G, H );
 
-    if G <> FamilyObj( H )!.wholeGroup then
+    if G <> FamilyObj(H)!.wholeGroup then
         Error( "<H> must be a subgroup of <G>" );
     fi;
-    return CosetTableInWholeGroup( H );
+    return CosetTableInWholeGroup(H);
 
 end );
 
@@ -750,7 +836,8 @@ function ( fgens, grels, fsgens )
   # catch trivial subgroup generators
   if ForAny(fsgens,i->Length(i)=0) then
     fsgens:=Filtered(fsgens,i->Length(i)>0);
-  elif Length(fgens)=0 then
+  fi;
+  if Length(fgens)=0 then
     return [];
   fi;
   # call the TC plugin
@@ -1381,11 +1468,15 @@ InstallMethod( CanComputeIndex,"subgroup of full fp groups",IsIdenticalObj,
 InstallMethod( IndexInWholeGroup, "for subgroups of fp groups",
     [ IsSubgroupFpGroup ],
 function( H )
-local T;
+local T,i;
 
     # Get the coset table of <H> in its whole group.
     T := CosetTableInWholeGroup( H );
-    return IndexCosetTab( T );
+    i:=IndexCosetTab( T );
+    if HasGeneratorsOfGroup(H) and Length(GeneratorsOfGroup(H))=0 then
+      SetSize(FamilyObj(H)!.wholeGroup,i);
+    fi;
+    return i;
 end );
 
 InstallMethod( IndexInWholeGroup, "for full fp group",
@@ -1399,7 +1490,7 @@ InstallMethod(ConjugateGroup,"subgroups of fp group with coset table",
   IsCollsElms, [IsSubgroupFpGroup and HasCosetTableInWholeGroup,
 	       IsMultiplicativeElementWithInverse],0,
 function(U,g)
-local V,t,w,wi,i,j,e,pos;
+local t, w, wi, word, pos, V, i;
   t:=CosetTableInWholeGroup(U);
   if Length(t)<2 then
     return U; # the whole group
@@ -1408,18 +1499,28 @@ local V,t,w,wi,i,j,e,pos;
   # the image of g in the permutation group
   w:=UnderlyingElement(g);
   wi:=[1..IndexCosetTab(t)];
-  for i in [1..NumberSyllables(w)] do
-    e:=ExponentSyllable(w,i);
-    if e<0 then
-      pos:=2*GeneratorSyllable(w,i);
-      e:=-e;
+#  for i in [1..NumberSyllables(w)] do
+#    e:=ExponentSyllable(w,i);
+#    if e<0 then
+#      pos:=2*GeneratorSyllable(w,i);
+#      e:=-e;
+#    else
+#      pos:=2*GeneratorSyllable(w,i)-1;
+#    fi;
+#    for j in [1..e] do
+#      wi:=t[pos]{wi}; # multiply permutations
+#    od;
+#  od;
+  word:=LetterRepAssocWord(w);
+  for i in [1..Length(word)] do
+    if word[i]<0 then
+      pos:=-2*word[i];
     else
-      pos:=2*GeneratorSyllable(w,i)-1;
+      pos:=2*word[i]-1;
     fi;
-    for j in [1..e] do
-      wi:=t[pos]{wi}; # multiply permutations
-    od;
+    wi:=t[pos]{wi}; # multiply permutations
   od;
+
   w:=PermList(wi)^-1;
   t:=List(t,i->OnTuples(i{wi},w));
   StandardizeTable(t);
@@ -1614,12 +1715,12 @@ InstallMethod(Intersection2,"subgroups of fp group by quotient",IsIdenticalObj,
 function ( G, H )
 local d,A,B,e1,e2,Ag,Bg,s,sg,u,v;
 
-  # its worth to check inclusion first
-  if IndexInWholeGroup(G)<=IndexInWholeGroup(H) and IsSubset(G,H) then
-    return H;
-  elif IndexInWholeGroup(H)<=IndexInWholeGroup(G) and IsSubset(H,G) then
-    return G;
-  fi;
+  # it is not worth to check inclusion first since we're reducing afterwards
+  #if IndexInWholeGroup(G)<=IndexInWholeGroup(H) and IsSubset(G,H) then
+  #  return H;
+  #elif IndexInWholeGroup(H)<=IndexInWholeGroup(G) and IsSubset(H,G) then
+  #  return G;
+  #fi;
 
   A:=G!.quot;
   B:=H!.quot;
@@ -1631,15 +1732,34 @@ local d,A,B,e1,e2,Ag,Bg,s,sg,u,v;
   # form the sdp
   sg:=List([1..Length(Ag)],i->Image(e1,Ag[i])*Image(e2,Bg[i]));
   s:=SubgroupNC(d,sg);
-  Assert(1,GeneratorsOfGroup(s)=sg);
+  if HasSize(A) and HasSize(B) and IsPermGroup(s) then
+    StabChainOptions(s).limit:=Size(d);
+  fi;
 
   # get both subgroups in the direct product via the projections
   # instead of intersecting both preimages with s we only intersect the
   # intersection
+
   u:=PreImagesSet(Projection(d,1),G!.sub);
+  SetSize(u,Size(G!.sub)*Size(B));
   v:=PreImagesSet(Projection(d,2),H!.sub);
+  SetSize(v,Size(H!.sub)*Size(A));
   u:=Intersection(u,v);
-  u:=Intersection(u,s);
+  if Size(s)<Size(d) then
+    u:=Intersection(u,s);
+  fi;
+
+  # reduce
+  if IsPermGroup(s) and (Size(s)=Size(A) or Size(s)=Size(B)) then
+    d:=SmallerDegreePermutationRepresentation(s);
+    A:=Image(d,s);
+    if NrMovedPoints(A)<NrMovedPoints(s) then
+      Info(InfoFpGroup,3,"reduced degree from ",NrMovedPoints(s)," to ",
+           NrMovedPoints(A));
+      s:=A;
+      u:=Image(d,u);
+    fi;
+  fi;
 
   return SubgroupOfWholeGroupByQuotientSubgroup(FamilyObj(G),s,u);
 end);
@@ -1735,12 +1855,8 @@ end);
 ##
 #M  IsAbelian( <G> )  . . . . . . . . . . . .  test if an fp group is abelian
 ##
-InstallMethod( IsAbelian,
-    "for finitely presented groups",
-    true,
-    [ IsSubgroupFpGroup and IsGroupOfFamily ],
-    0,
-
+InstallMethod( IsAbelian, "for finitely presented groups", true,
+    [ IsSubgroupFpGroup and IsGroupOfFamily ], 0,
 function( G )
     local   isAbelian,  # result
             gens,       # generators of <G>
@@ -1770,6 +1886,16 @@ function( G )
 
 end );
 
+InstallMethod( IsAbelian, "finite fp grp", true,
+    [ IsSubgroupFpGroup and HasSize and IsFinite ], 0,
+function(G)
+local l;
+  l:=AbelianInvariants(G);
+  if 0 in l then
+    Error("G not finite");
+  fi;
+  return Product(l,1)=Size(G);
+end);
 
 #############################################################################
 ##
@@ -1838,7 +1964,7 @@ end);
 InstallOtherMethod( IsomorphismFpGroup,"for simple permutation groups",true,
   [IsPermGroup and IsSimpleGroup,IsString],0,
 function(G,str)
-local l,iso,fp;
+local l,iso,fp,stbc,gens;
   # use the perfect groups library
   PerfGrpLoad(Size(G));
   if Size(G)<10^6 and IsRecord(PERFRec) and
@@ -1859,7 +1985,9 @@ local l,iso,fp;
     od;
   fi;
 
-  return IsomorphismFpGroupByGeneratorsNC( G, SmallGeneratingSet(G), str );
+  stbc:=StabChainMutable(G);
+  gens:=StrongGeneratorsStabChain(stbc);
+  return IsomorphismFpGroupByGeneratorsNC( G, gens, str:chunk );
 end);
 
 #############################################################################
@@ -2646,6 +2774,7 @@ BindGlobal( "DoLowIndexSubgroupsFpGroup", function ( arg )
                     perms[g]:=PermList(table[2*g-1]{[1..nrcos]});
 		  od;
 		  Q:=Group(perms);
+		  Size(Q); # force size -- we anyhow need stabchain
 	          sub:=SubgroupOfWholeGroupByQuotientSubgroup(FamilyObj(G),
 			 Q,Stabilizer(Q,1));
 
@@ -2661,7 +2790,7 @@ BindGlobal( "DoLowIndexSubgroupsFpGroup", function ( arg )
 #		    sub:=SubgroupOfWholeGroupByCosetTable(FamilyObj(G),
 #		           tableInWholeGroup);
 
-		    if HasSize( G ) then
+		    if HasSize( G ) and Size(G)<>infinity then
 		      SetSize( sub, Size( G ) / Index(G,sub) );
 		    fi;
 
@@ -3023,8 +3152,8 @@ InstallGlobalFunction( MostFrequentGeneratorFpGroup, function ( G )
     # initialize a list of the generators and their inverses
     gens2 := [ ]; gens2[numgens] := 0;
     for i in [ 1 .. numgens ] do
-        gens2[i] := GeneratorSyllable(gens[i],1);
-        gens2[numgens+i] := -gens2[i];
+      gens2[i] := AbsInt(LetterRepAssocWord(gens[i])[1]);
+      gens2[numgens+i] := -gens2[i];
     od;
 
     # convert the relators to vectors of generator numbers and count their
@@ -3109,57 +3238,87 @@ end );
 ##  is automatically cyclically reduced).
 ##
 InstallGlobalFunction( RelatorRepresentatives, function ( rels )
-    local   cyc, fam, i, j, length, list, min, rel, reversed, reps,g;
+local reps, word, length, fam, reversed, cyc, min, g, rel, i;
 
     reps := [ ];
 
     # loop over all nontrivial relators
     for rel in rels  do
-        length := NrSyllables( rel );
-        if length > 0  then
 
-            # invert the exponents to their negative values in order to get
-            # an appropriate lexicographical ordering of the relators.
-            fam := FamilyObj( rel );
+#        length := NrSyllables( rel );
+#        if length > 0  then
+#
+#            # invert the exponents to their negative values in order to get
+#            # an appropriate lexicographical ordering of the relators.
+#            fam := FamilyObj( rel );
+#
+#            list := ShallowCopy(ExtRepOfObj( rel ));
+#            for i in [ 2, 4 .. Length( list ) ] do
+#                list[i] := -list[i];
+#            od;
+#            reversed := ObjByExtRep( fam, list );
+#
+##            # find the minimal cyclic permutation
+#            cyc := reversed;
+#            min := cyc;
+#            if cyc^-1 < min  then min := cyc^-1;  fi;
+#            for i  in [ 1 .. length ]  do
+#	      g:=ObjByExtRep(fam,[GeneratorSyllable(reversed,i),
+#	                          SignInt(ExponentSyllable(reversed,i))]);
+#              for j in [1..AbsInt(ExponentSyllable(reversed,i))] do
+#                cyc := cyc ^ g;
+#                if cyc    < min  then min := cyc;     fi;
+#                if cyc^-1 < min  then min := cyc^-1;  fi;
+#	      od;
+#            od;
+#
+#            # if the relator is new, add it to the representatives
+#	    min:=Immutable([ Length( min ), min ] );
+#            if not min in reps  then
+#                AddSet( reps,min);
+#            fi;
+#
+#        fi;
 
-            list := ShallowCopy(ExtRepOfObj( rel ));
-            for i in [ 2, 4 .. Length( list ) ] do
-                list[i] := -list[i];
-            od;
-            reversed := ObjByExtRep( fam, list );
 
-            # find the minimal cyclic permutation
-            cyc := reversed;
-            min := cyc;
-            if cyc^-1 < min  then min := cyc^-1;  fi;
-            for i  in [ 1 .. length ]  do
-	      g:=ObjByExtRep(fam,[GeneratorSyllable(reversed,i),
-	                          SignInt(ExponentSyllable(reversed,i))]);
-              for j in [1..AbsInt(ExponentSyllable(reversed,i))] do
-                cyc := cyc ^ g;
-                if cyc    < min  then min := cyc;     fi;
-                if cyc^-1 < min  then min := cyc^-1;  fi;
-	      od;
-            od;
+      word:=LetterRepAssocWord(rel);
+      length:=Length(word);
+      if length>0 then
+	# invert the exponents to their negative values in order to get
+	# an appropriate lexicographical ordering of the relators.
+	fam:=FamilyObj( rel );
+	reversed:=AssocWordByLetterRep(fam,-word);
 
-            # if the relator is new, add it to the representatives
-	    min:=Immutable([ Length( min ), min ] );
-            if not min in reps  then
-                AddSet( reps,min);
-            fi;
+	# find the minimal cyclic permutation
+	cyc:=reversed;
+	min:=cyc;
+	if cyc^-1<min then min:=cyc^-1;fi;
+	for i in [1..length] do
+	  g:=AssocWordByLetterRep(fam,word{[i]});
+	  cyc:=cyc^g;
+	  if cyc<min then min:=cyc;fi;
+	  if cyc^-1<min then min:=cyc^-1;fi;
+	od;
 
-        fi;
+	# if the relator is new, add it to the representatives
+	min:=Immutable([ Length( min ), min ] );
+	if not min in reps  then
+	  AddSet( reps,min);
+	fi;
+
+      fi;
     od;
 
     # reinvert the exponents.
     for i in [ 1 .. Length( reps ) ]  do
-        rel := reps[i][2];
-        fam := FamilyObj( rel );
-        list := ShallowCopy(ExtRepOfObj( rel ));
-        for j in [ 2, 4 .. Length( list ) ] do
-            list[j] := -list[j];
-        od;
-        reps[i] := ObjByExtRep( fam, list );
+      rel := reps[i][2];
+      fam := FamilyObj( rel );
+#        list := ShallowCopy(ExtRepOfObj( rel ));
+#        for j in [ 2, 4 .. Length( list ) ] do
+#            list[j] := -list[j];
+#        od;
+#        reps[i] := ObjByExtRep( fam, list );
+      reps[i]:=AssocWordByLetterRep(fam,-LetterRepAssocWord(rel));
     od;
 
     # return the representatives
@@ -3225,12 +3384,15 @@ local   gens,                   # group generators
 	nums, invnums,          # numbers list and inverse
 	cols, invcols,          # columns list and inverse
 	p, p1, p2,              # positions of generators
+	l,m,poslist,
 	i, j, k;                # loop variables
 
     # get the arguments
     gens := arg[1];
-    gennums:=
-      List(gens,i->GeneratorSyllable(i,1)); # the indices of the generators
+    # the indices of the generators
+    gennums:= List(gens,i->AbsInt(LetterRepAssocWord(i)[1])); 
+
+    poslist:=List([1..Maximum(gennums)],i->Position(gennums,i));
     rels := arg[2];
     table := arg[3];
     ignore := false;
@@ -3265,36 +3427,30 @@ local   gens,                   # group generators
 #            cyc := cyc ^ Subword( rel, base, base );
 #        od;
 
-	# work in ext. rep.
-	es:=ExtRepOfObj(rel);
+        # work in letter rep
+	es:=LetterRepAssocWord(rel);
 
-	# conjugate with first generator
-	cyc:=ShallowCopy(es);
-	p:=SignInt(cyc[2]);
-	if cyc[1]=cyc[Length(cyc)-1] then
-	  cyc[Length(cyc)]:=cyc[Length(cyc)]+p;
-	else
-	  Append(cyc,[cyc[1],p]);
-	fi;
-	cyc[2]:=cyc[2]-p;
-	if cyc[2]=0 then
-	  cyc:=cyc{[3..Length(cyc)]};
-	fi;
+	base:=2;
+	l:=Length(es);
+	m:=l-base+1;
 
-        while cyc <> es do
-            base := base + 1;
-	    p:=SignInt(cyc[2]);
-	    if cyc[1]=cyc[Length(cyc)-1] then
-	      cyc[Length(cyc)]:=cyc[Length(cyc)]+p;
-	    else
-	      Append(cyc,[cyc[1],p]);
-	    fi;
-	    cyc[2]:=cyc[2]-p;
-	    if cyc[2]=0 then
-	      cyc:=cyc{[3..Length(cyc)]};
-	    fi;
+	while (base<=l) and (es{[base..l]}<>es{[1..m]} or 
+			     es{[1..base-1]}<>es{[m+1..l]}) do
+	  base:=base+1;
+	  m:=m-1;
+	od;
+	base:=base-1;
 
-        od;
+#	m:=base;
+#	base:=1;
+#        cyc := rel ^ Subword( rel, base, base );
+#        while cyc <> rel do
+#            base := base + 1;
+#            cyc := cyc ^ Subword( rel, base, base );
+#        od;
+#	if m<>base then
+#	  Error("Y");
+#	fi;
 
 	# ignore square relators
 	if length <> 2 or base <> 1 or not ignore then
@@ -3308,36 +3464,28 @@ local   gens,                   # group generators
 	    invnums := [ ]; invnums[extleng] := 0;
 	    invcols := [ ]; invcols[extleng] := 0;
 
-	    # compute the lists
-	    i := 0; # number of current syllable
-	    j := 1;  k := base2 + 3;
-	    es:=0; # exponent index in word
-	    while es < base do
-		i:=i+1;
-		gen:=GeneratorSyllable(rel,i);
-		p:=Position(gennums,gen);
-		exp:=ExponentSyllable(rel,i);
-		if exp<0 then
-		    p1:=2*p;
-		    p2:=2*p-1;
-		    exp:=-exp;
+            # compute the lists
+            i := 0;  j := 1;  k := base2 + 3;
+	    rel:=LetterRepAssocWord(rel);
+            while i < base do
+                i := i + 1;  j := j + 2;  k := k - 2;
+                gen := rel[i];
+		if gen>0 then
+		  p:=poslist[gen];
+		  p1 := 2 * p - 1;
+		  p2 := 2 * p;
 		else
-		    p1:=2*p-1;
-		    p2:=2*p;
-		fi;
-
-		while exp>0 and es<base do
-		    j := j + 2;  k := k - 2;
-		    nums[j]   := p1;         invnums[k-1] := p1;
-		    nums[j-1] := p2;         invnums[k]   := p2;
-		    cols[j]   := table[p1];  invcols[k-1] := table[p1];
-		    cols[j-1] := table[p2];  invcols[k]   := table[p2];
-		    Add( relsGen[p1], [ nums, cols, j ] );
-		    Add( relsGen[p2], [ invnums, invcols, k ] );
-		    exp:=exp-1;
-		    es:=es+1;
-	       od;
-	    od;
+		  p:=poslist[-gen];
+		  p1 := 2 * p;
+		  p2 := 2 * p - 1;
+                fi;
+                nums[j]   := p1;         invnums[k-1] := p1;
+                nums[j-1] := p2;         invnums[k]   := p2;
+                cols[j]   := table[p1];  invcols[k-1] := table[p1];
+                cols[j-1] := table[p2];  invcols[k]   := table[p2];
+                Add( relsGen[p1], [ nums, cols, j ] );
+                Add( relsGen[p2], [ invnums, invcols, k ] );
+            od;
 
 	    while j < extleng do
 		j := j + 1;
@@ -3435,7 +3583,7 @@ end);
 ##
 #M  Size( <G> )  . . . . . . . . . . . . . size of a finitely presented group
 ##
-InstallMethod( Size, "for finitely presented groups", true,
+InstallMethod(Size, "for finitely presented groups", true,
     [ IsSubgroupFpGroup and IsGroupOfFamily ], 0,
 function( G )
 local   fgens,      # generators of the free group
@@ -3479,11 +3627,8 @@ end );
 ##
 #M  Size( <H> )  . . . . . . size of s subgroup of a finitely presented group
 ##
-InstallMethod( Size,
-    "for subgroups of finitely presented groups",
-    true,
-    [ IsSubgroupFpGroup ],
-    0,
+InstallMethod(Size,"subgroups of finitely presented groups",true,
+    [ IsSubgroupFpGroup ], 0,
 
 function( H )
     local G;
@@ -3495,6 +3640,16 @@ function( H )
     return Size( G ) / IndexInWholeGroup( H );
 
 end );
+
+InstallMethod(Size,"infinite abelianization",true,
+    [IsSubgroupFpGroup and HasAbelianInvariants],0,
+function(G)
+  if 0 in AbelianInvariants(G) then
+    return infinity;
+  else
+    TryNextMethod();
+  fi;
+end);
 
 
 #############################################################################
@@ -3860,7 +4015,8 @@ local A,B,Q,gens,int,i,fam;
   A:=U!.sub;
   # generators of G in permutation image
   gens:=List(GeneratorsOfGroup(G),elm->
-    MappedWord(elm,FreeGeneratorsOfWholeGroup(U),GeneratorsOfGroup(Q)));
+    MappedWord(UnderlyingElement(elm),
+      FreeGeneratorsOfWholeGroup(U),GeneratorsOfGroup(Q)));
   B:=Subgroup(Q,gens);
   int:=IntermediateSubgroups(B,A);
   B:=[];
@@ -3875,12 +4031,13 @@ end);
 ##
 #F  GQuotients(<F>,<G>)  . . . . . epimorphisms from F onto G up to conjugacy
 ##
-InstallMethod(GQuotients,"whole fp group",true,
+InstallMethod(GQuotients,"whole fp group to finite group",true,
   [IsSubgroupFpGroup and IsWholeFamily,IsGroup and IsFinite],1,
 function (F,G)
 local Fgens,	# generators of F
       rels,	# power relations
       cl,	# classes of G
+      imgo,imgos,sel,
       e,	# excluded orders (for which the presentation collapses
       u,	# trial generating set's group
       pimgs,	# possible images
@@ -3904,7 +4061,11 @@ local Fgens,	# generators of F
   elif Length(Fgens)=1 then
     Info(InfoMorph,1,"Cyclic group: only one quotient possible");
     # a cyclic group has at most one quotient
-    if not IsCyclic(G) then
+
+    # force size (in abelian invariants)
+    e:=AbelianInvariants(F);
+
+    if not IsCyclic(G) or (IsFinite(F) and not IsInt(Size(F)/Size(G))) then
       return [];
     else
       # get the cyclic gens
@@ -3965,12 +4126,18 @@ local Fgens,	# generators of F
   h:=MorClassLoop(G,pimgs, rec(gens:=Fgens,to:=G,from:=F,
 			       free:=FreeGeneratorsOfFpGroup(F),
                                rels:=List(RelatorsOfFpGroup(F),i->[i,1])),13);
-  Info(InfoMorph,2,"Test kernels");
+  Info(InfoMorph,2,"Found ",Length(h)," maps, test kernels");
+  imgos:=[];
   cl:=[];
   u:=[];
   for i in h do
-    if not KernelOfMultiplicativeGeneralMapping(i) in u then
+    imgo:=List(Fgens,j->Image(i,j));
+    imgo:=Concatenation(imgo,MorFroWords(imgo));
+    imgo:=List(imgo,Order);
+    sel:=Filtered([1..Length(imgos)],i->imgos[i]=imgo);
+    if not KernelOfMultiplicativeGeneralMapping(i) in u{sel} then
       Add(u,KernelOfMultiplicativeGeneralMapping(i));
+      Add(imgos,imgo);
       Add(cl,i);
     fi;
   od;
@@ -4163,7 +4330,7 @@ function(G)
     if HasSize(G) then
       Print(" of size ",Size(G));
     fi;
-    if Length(GeneratorsOfGroup(G))>VIEWLEN*10 then
+    if Length(GeneratorsOfGroup(G)) > GAPInfo.ViewLength * 10 then
       Print(" with ",Length(GeneratorsOfGroup(G))," generators>");
     else
       Print(" on the generators ",GeneratorsOfGroup(G),">");
@@ -4175,7 +4342,7 @@ function(G)
 	G!.gensWordLengthSum:=Sum(List(GeneratorsOfGroup(G),
 	         i->Length(UnderlyingElement(i))));
       fi;
-      if G!.gensWordLengthSum<=VIEWLEN*30 then
+      if G!.gensWordLengthSum <= GAPInfo.ViewLength * 30 then
         Print(GeneratorsOfGroup(G));
       else
         Print("<",Length(GeneratorsOfGroup(G))," generators>");

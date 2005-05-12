@@ -98,10 +98,12 @@ gap> Length(primes);
 \endexample
 The list itself however must  exist before a  value can be  assigned to a
 position of the list.  This list may be the empty list `[ ]'.
-\begintt
+\beginexample
 gap> lll[1]:= 2;
 Variable: 'lll' must have a value
-\endtt
+
+\endexample
+
 \beginexample
 gap> lll:= []; lll[1]:= 2;
 [  ]
@@ -278,7 +280,8 @@ properties:
     has been copied, so that changes to the  old list will not affect the
     new one.  In other words, the new  list has no  mutable subobjects in
     common with the old list.
-\begintt
+%notest
+\beginexample
 gap> list := [ 1, 2, "three", [ 4 ] ];; copy := Immutable( list );;
 gap> list[3][5] := 'w';; list; copy;
 [ 1, 2, "threw", [ 4 ] ]
@@ -290,7 +293,7 @@ Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can 'return;' and ignore the assignment to continue
 brk> quit;
-\endtt
+\endexample
 As a consequence of  these rules, in the  immutable copy of a list  which
 contains an already immutable list as subobject, this immutable subobject
 need not be copied,  because it is unchangeable. Immutable lists are
@@ -797,7 +800,7 @@ To prove that the order of `m' is infinite, we also could look at the
 minimal polynomial of `m' over the rationals.
 \beginexample
 gap> f:= MinimalPolynomial( Rationals, m );;  Factors( f );
-[ -2+x_1, 3+x_1^2 ]
+[ x_1-2, x_1^2+3 ]
 \endexample
 `Factors'  returns a list of  irreducible factors  of the polynomial `f'.
 The first  irreducible factor $X-2$ reveals   that 2 is an  eigenvalue of

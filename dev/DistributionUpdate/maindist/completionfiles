@@ -1,0 +1,23 @@
+#!/bin/sh
+#############################################################################
+##
+##  $Id$
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+line='cd '${DISTROOT}'/'${DISTNAME}
+echo $line
+$line 
+
+echo 'compiling GAP ...'
+./configure
+make
+
+echo 'creating completion files ...'
+echo "CreateCompletionFiles();quit;" | bin/gap.sh -N -A -r
+
+exit 0
+

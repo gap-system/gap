@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 %%  The documentation in this chapter corresponds to the declarations in the
 %%  library files `ctblfuns.gd', `ctbllatt.gd', `ctblmoli.gd', `ctblpope.gd'.
@@ -18,6 +19,15 @@
 
 This chapter describes operations for *class functions of finite groups*.
 For operations concerning *character tables*, see Chapter~"Character Tables".
+
+Several examples in this chapter require the {\GAP} Character Table Library
+to be available.
+If it is not yet loaded then we load it now.
+
+\beginexample
+gap> LoadPackage( "ctbllib" );
+true
+\endexample
 
 \Declaration{IsClassFunction}
 
@@ -70,12 +80,12 @@ CharacterTable( <pc group of size 8 with 3 generators> )
 gap> t2:= CharacterTable( grps[2] );  SetName( t2, "t2" );
 CharacterTable( <pc group of size 8 with 3 generators> )
 gap> irr1:= Irr( grps[1] );
-[ Character( t1, [ 1, 1, 1, 1, 1 ] ), Character( t1, [ 1, 1, -1, 1, -1 ] ), 
-  Character( t1, [ 1, -1, 1, 1, -1 ] ), Character( t1, [ 1, -1, -1, 1, 1 ] ), 
+[ Character( t1, [ 1, 1, 1, 1, 1 ] ), Character( t1, [ 1, -1, -1, 1, 1 ] ), 
+  Character( t1, [ 1, -1, 1, 1, -1 ] ), Character( t1, [ 1, 1, -1, 1, -1 ] ), 
   Character( t1, [ 2, 0, 0, -2, 0 ] ) ]
 gap> irr2:= Irr( grps[2] );
-[ Character( t2, [ 1, 1, 1, 1, 1 ] ), Character( t2, [ 1, 1, -1, 1, -1 ] ), 
-  Character( t2, [ 1, -1, 1, 1, -1 ] ), Character( t2, [ 1, -1, -1, 1, 1 ] ), 
+[ Character( t2, [ 1, 1, 1, 1, 1 ] ), Character( t2, [ 1, -1, -1, 1, 1 ] ), 
+  Character( t2, [ 1, -1, 1, 1, -1 ] ), Character( t2, [ 1, 1, -1, 1, -1 ] ), 
   Character( t2, [ 2, 0, 0, -2, 0 ] ) ]
 gap> irr1 = irr2;
 true
@@ -83,7 +93,7 @@ gap> IsSSortedList( irr1 );
 false
 gap> irr1[1] < irr1[2];
 false
-gap> irr1[3] < irr1[2];
+gap> irr1[2] < irr1[3];
 true
 \endexample
 
@@ -132,7 +142,7 @@ gap> phi:= ClassFunction( g, [ 1, -1, 0, 2, -2 ] );
 ClassFunction( D8, [ 1, -1, 0, 2, -2 ] )
 gap> psi:= ClassFunction( tbl,
 >              List( Irr( g ), chi -> ScalarProduct( chi, phi ) ) );
-ClassFunction( D8, [ -3/8, 5/8, 9/8, 1/8, -1/4 ] )
+ClassFunction( D8, [ -3/8, 1/8, 9/8, 5/8, -1/4 ] )
 gap> chi:= VirtualCharacter( g, [ 0, 0, 8, 0, 0 ] );
 VirtualCharacter( D8, [ 0, 0, 8, 0, 0 ] )
 gap> reg:= Character( tbl, [ 8, 0, 0, 0, 0 ] );
@@ -688,8 +698,8 @@ rec( summands := [ rec( numer := [ -24, -12, -24 ], r := 5, k := 1 ),
       rec( numer := [ -45/4, 75/4, -15/4, -15/4 ], r := 2, k := 2 ), 
       rec( numer := [ -1 ], r := 1, k := 3 ), 
       rec( numer := [ -15/4 ], r := 1, k := 1 ) ], size := 60, degree := 3, 
-  numer := 1-x_1^2-x_1^3+x_1^6+x_1^7-x_1^9, 
-  denom := 1-2*x_1^2-x_1^3+x_1^4+x_1^5+x_1^7+x_1^8-x_1^9-2*x_1^10+x_1^12, 
+  numer := -x_1^9+x_1^7+x_1^6-x_1^3-x_1^2+1, 
+  denom := x_1^12-2*x_1^10-x_1^9+x_1^8+x_1^7+x_1^5+x_1^4-x_1^3-2*x_1^2+1, 
   denominfo := [ 5, 1, 3, 1, 2, 2 ], numerstring := "1-z^2-z^3+z^6+z^7-z^9", 
   denomstring := "(1-z^5)*(1-z^3)*(1-z^2)^2", 
   ratfun := ( 1-z^2-z^3+z^6+z^7-z^9 ) / ( (1-z^5)*(1-z^3)*(1-z^2)^2 ) )

@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementations of methods and functions
 ##  for straight line programs.
@@ -1916,7 +1917,7 @@ local l,m;
   if l=0 then
     return true;
   fi;
-  return EvalStraightLineProgElm(slp)=();
+  return IsOne( EvalStraightLineProgElm(slp) );
 end);
 
 InstallOtherMethod( CycleLengthOp, "straight line program perms", true,
@@ -1963,12 +1964,42 @@ end);
 
 #############################################################################
 ##
+#M  LetterRepAssocWord
+##
+InstallMethod(LetterRepAssocWord,"for a straight line program word",true,
+  [IsAssocWord and IsStraightLineProgElm],0,
+function(slp)
+  return LetterRepAssocWord(EvalStraightLineProgElm(slp));
+end);
+
+#############################################################################
+##
 #M  NumberSyllables
 ##
 InstallMethod(NumberSyllables,"for a straight line program word",true,
   [IsAssocWord and IsStraightLineProgElm],0,
 function(slp)
   return NumberSyllables(EvalStraightLineProgElm(slp));
+end);
+
+#############################################################################
+##
+#M  GeneratorSyllable
+##
+InstallMethod(GeneratorSyllable,"for a straight line program word",true,
+  [IsAssocWord and IsStraightLineProgElm,IsPosInt],0,
+function(slp,pos)
+  return GeneratorSyllable(EvalStraightLineProgElm(slp),pos);
+end);
+
+#############################################################################
+##
+#M  ExponentSyllable
+##
+InstallMethod(ExponentSyllable,"for a straight line program word",true,
+  [IsAssocWord and IsStraightLineProgElm,IsPosInt],0,
+function(slp,pos)
+  return GeneratorSyllable(EvalStraightLineProgElm(slp),pos);
 end);
 
 #############################################################################

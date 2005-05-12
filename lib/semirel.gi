@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for Green's equivalence relations on
 ##  semigroups. 
@@ -506,6 +507,18 @@ InstallMethod(GreensJClasses, "for generic finite semigroups", true,
         return classes; 
     end);
 
+InstallMethod(GreensHClasses, "for an Green's Class", true,
+    [IsGreensClass],0,
+    function(gc)
+        local e,class;
+
+        class :=[];
+        for e in Elements(gc) do
+            AddSet(class,GreensHClassOfElement(AssociatedSemigroup(gc),e));
+        od;
+        return class;
+    end);
+
 #############################################################################
 ##
 ##  The following operations are constructors for Green's class with
@@ -866,10 +879,14 @@ InstallMethod(IsGreensLessThanOrEqual, "for two Green's equivalence classes",
             return a in 
                 LeftMagmaIdealByGenerators(AssociatedSemigroup(gcR),[b]); 
         fi;
-        if IsGreensJClass(gcL) and IsGreensJClass(gcR) then 
+        if (IsGreensJClass(gcL) and IsGreensJClass(gcR)) or 
+           (IsGreensDClass(gcL) and IsGreensDClass(gcR) and 
+              IsFinite(AssociatedSemigroup(gcL))) then
             return a in 
                 MagmaIdealByGenerators(AssociatedSemigroup(gcR),[b]);
         fi;
+
+            
 
         Error("Green's classes are not of the same type or not L,R, or J classes");
     end);
@@ -893,6 +910,24 @@ InstallMethod(IsGroupHClass, "for generic H class", true,
     [IsGreensHClass], 0, h->Representative(h)^2 in h);
 
 
+############################################################################
+##
+#M  GroupHClassOfGreensDClass( <Dclass> )
+##
+##  for a D class <Dclass> of a semigroup,
+##  returns a group H class of the D class, or `fail' if there is no
+##  group H class.
+##
+InstallMethod(GroupHClassOfGreensDClass, "for finite H classes", true,
+    [IsGreensDClass], 0, 
+    function(d)
+        local idm, hc;
+        if not IsRegularDClass(d) then return fail; fi;
+
+        idm := First(d,IsIdempotent);
+        return GreensHClassOfElement(AssociatedSemigroup(d),idm);
+       
+    end);
 
 #############################################################################
 ##
@@ -1114,6 +1149,7 @@ InstallMethod(GreensRRelation, "for generic semigroups", true,
         fi;
         
         SetIsGreensRelation(sc,true);
+        SetIsGreensRRelation(sc,true);  
         SetAssociatedSemigroup(sc,s);
         SetIsLeftSemigroupCongruence(sc,true);
 
@@ -1152,6 +1188,7 @@ InstallMethod(GreensLRelation, "for generic semigroups", true,
         fi;
         
         SetIsGreensRelation(sc,true);
+        SetIsGreensLRelation(sc,true);  
         SetAssociatedSemigroup(sc,s);
         SetIsRightSemigroupCongruence(sc,true);
         
@@ -1190,6 +1227,7 @@ InstallMethod(GreensJRelation, "for generic semigroups", true,
         fi;
         
         SetIsGreensRelation(sc,true);
+        SetIsGreensJRelation(sc,true);  
         SetAssociatedSemigroup(sc,s);
 
         return sc;
@@ -1227,6 +1265,7 @@ InstallMethod(GreensDRelation, "for generic semigroups", true,
         fi;
         
         SetIsGreensRelation(sc,true);
+        SetIsGreensDRelation(sc,true);  
         SetAssociatedSemigroup(sc,s);
 
         return sc;
@@ -1265,6 +1304,7 @@ InstallMethod(GreensHRelation, "for generic semigroups", true,
         
         
         SetIsGreensRelation(sc,true);
+        SetIsGreensHRelation(sc,true);  
         SetAssociatedSemigroup(sc,s);
 
         return sc;
@@ -1368,6 +1408,13 @@ InstallMethod(\in, "for Greens classes and generic semigroups",
         ## If the element is the representative of gc return true 
         ##
         if e=Representative(gc) then return true; fi;
+
+        ## If the Green's class elements is known essentially 
+        ##    use the list.
+        ##
+        if HasIsFinite(AssociatedSemigroup(gc)) then 
+            return e in Elements(gc);
+        fi;
         
         if HasIsGreensRClass(gc) then
             C := GreensRClassOfElement(AssociatedSemigroup(gc),e);
@@ -1378,7 +1425,7 @@ InstallMethod(\in, "for Greens classes and generic semigroups",
         elif HasIsGreensHClass(gc) then
             return e in RClassOfHClass(gc) and e in LClassOfHClass(gc);
         elif HasIsGreensDClass(gc) then
-                        
+            TryNextMethod();                        
         fi;
 
         return IsGreensLessThanOrEqual(gc, C) and 

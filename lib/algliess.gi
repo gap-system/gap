@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains functions to construct semisimple Lie algebras of type
 ##  $A_n$, $B_n$, $C_n$, $D_n$, $E_6$, $E_7$, $E_8$, $F_4$, $G_2$,
@@ -319,7 +320,7 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
         if type = "B" then 
             
             # In this case we construct D_{n+1}.
-            if n < 1 then
+            if n <= 1 then
                 Error( "<n> must be >= 2");
             fi;
             C:= 2*IdentityMat( n+1 );
@@ -650,6 +651,8 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
         od;
 
         SetCartanMatrix( R, C );
+        
+        SetSemiSimpleType( L, Concatenation( type, String( n ) ) );
     fi;
     
     SetRootSystem( L, R );

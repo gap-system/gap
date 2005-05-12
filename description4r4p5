@@ -1,0 +1,187 @@
+
+  Release 4.4.5 (May 2005)
+
+  Fixed bugs
+
+   1. GroupWithGenerators returned a meaningless group object
+      instead of signaling an error when it was called with an
+      empty list of generators.
+   2. A rare problem with the choice of prime in the
+      Dixon-Schneider Algorithm for computing the character
+      table of a group. [Reported by Jack Schmidt]
+   3. DirectProduct for trivial permutation groups returned a
+      strange object.
+   4. When computing preimages under an embedding into a direct
+      product of permutation groups, if the element was not in
+      the image of the embedding then a permutation had been
+      returned instead of fail.
+   5. A problem with PolynomialReduction running into an
+      infinite loop.
+   6. Adding linear mappings with different image domains was
+      not possible. [Reported by Pasha Zusmanovich]
+   7. Multiplying group ring elements with rationals was not
+      possible. [Reported by Laurent Bartholdi]
+   8. Random now works for finite fields of size larger than 2^
+      28. [Reported by Jack Schmidt]
+   9. Two problems with PowerMod for polynomials. [Reported by
+      Jack Schmidt]
+  10. Univariate polynomial creators did modify the coefficient
+      list passed. [Reported by Juergen Mueller]
+  11. Some methods for computing the sum of ideals returned the
+      first summand instead of the sum. [Reported by Alexander
+      Konovalov]
+  12. Some code and comments in the GAP kernel assumed that
+      there is no garbage collection during the core printing
+      function Pr, which is not correct. This could cause GAP in
+      rare cases to crash during printing permutations,
+      cyclotomics or strings with zero bytes. [Reported by
+      Warwick Harvey]
+  13. Fixed IntHexString to accept arguments not in IsStringRep;
+      the argument is now first converted if necessary.
+      [Reported by Kenn Heinrich]
+  14. Wrong result in Intersection for PC groups.
+  15. The function CompareVersionNumbers erroneously ignored
+      leading non-digit characters.
+      A new feature in the corrected version is an optional
+      third argument "equal", which causes the function to
+      return true only if the first two arguments describe equal
+      version numbers; documentation is available in the
+      ext-manual. This new feature is used in LoadPackage, now
+      one can require a specific version of a package.
+      The library code still contained parts of the handling of
+      completion files for packages, which does not work and
+      therefore had already been removed from the documentation.
+      This code has now been removed.
+      Now a new component PreloadFile is supported in 
+      PackageInfo.g files; if it is bound then the file in
+      question is read immediately before the package or its
+      documentation is loaded.
+  16. The library code for stabilizer chains contained quite
+      some explicit references to the identity (). This is
+      unfortunate if one works with permutation groups, the
+      elements of which are not plain permutations but objects
+      which carry additional information like a memory, how they
+      were obtained from the group generators. For such cases it
+      is much cleaner to use the One(...) operation instead of
+      (), such that the library code can be used for a richer
+      class of group objects. This fix contains only rather
+      trivial changes () to One(...) which were carefully
+      checked by me. The tests for permutation groups all run
+      without a problem. However, it is relatively difficult to
+      provide test code for this particular change, since the
+      "improvement" only shows up when one generates new group
+      objects. This is for example done in the package recog
+      which is in preparation. [Reported by Akos Seress and Max
+      Neunhoeffer]
+  17. Using {} to select elements of a known inhomogenous dense
+      list produced a list that might falsely claim to be known
+      inhomogenous, which could lead to a segfault if the list
+      typing code tried to mark it homogenous, since the code
+      intended to catch such errors also had a bug. [Reported by
+      Steve Linton]
+  18. The record for the generic iterator construction of
+      subspaces domains of non-row spaces was not complete.
+  19. The result of String for strings not in IsStringRep that
+      occur as list entries or record components was erroneously
+      missing the doublequotes around the strings.
+  20. This bug causes InducedPcgs(pcgs, H) to return a pcgs
+      which is not induced wrt. the parent pcgs of pcgs. This
+      may cause unpredictable behaviour, e. g. when
+      SiftedPcElement is used subsequently. [Reported by
+      Alexander Konovalov]
+  21. Fixed a bug in SmallGroupsInformation(512).
+  22. PowerModCoeffs with exponent 1 for compressed vectors did
+      not reduce (a copy of) the input vector before returning
+      it. [Reported by Frank Luebeck]
+  23. Sorting a mutable non-plain list (e.g., a compressed
+      matrix over fields of order < 257) could potentially
+      destroy that object. [Reported by Alexander Hulpke]
+  24. When a workspace has been created without packages (-A
+      option) and is loaded into a GAP session without packages
+      (same option) then an error message is printed.
+  25. So far the functions IsPrimeInt and IsProbablyPrimeInt are
+      essentially the same except that IsPrimeInt issues an
+      additional warning when (non-proven) probable primes are
+      considered as primes.
+      These warnings now print the probable primes in question
+      as well; if a probable prime is used several times then
+      the warning is also printed several times; there is no
+      longer a warning for some known large primes; the warnings
+      can be switched off. See ?Ref: IsPrimeInt for more
+      details.
+      If we get a reasonable primality test in GAP we will
+      change the definition of IsPrimeInt to do a proper test.
+  26. Corrected some names of primitive groups in degree 26.
+      [Reported by Robert F Bailey]
+  27. Under rare circumstances computing the closure of a
+      permutation group by a normalizing element could produce a
+      corrupt stabilizer chain. (The underlying algorithm uses
+      random elements, probability of failure was below 1
+      percent) [Reported by Thomas Breuer]
+
+  New or improved functionality
+
+   1. Several changes for ConwayPolynomial:
+        + many new pre-computed polynomials
+        + put data in several separate files (only read when
+          needed)
+        + added info on origins of pre-computed polynomials
+        + improved performance of ConwayPolynomial and
+          IsPrimitivePolynomial for p < 256
+        + improved documentation of ConwayPolynomial
+        + added and documented new functions
+          IsCheapConwayPolynomial and RandomPrimitivePolynomial
+   2. Added method for NormalBase for extensions of finite
+      fields.
+   3. Added more help viewers for the HTML version of the
+      documentation (firefox, mozilla, konqueror, w3m, safari).
+   4. New function ColorPrompt. (Users of former versions of a
+      colorprompt.g file: Now you just need a ColorPrompt(true);
+      in your .gaprc file.)
+   5. Specialised kernel functions to support GUAVA 2.0. GAP
+      will only load GUAVA in version at least 2.002 after this
+      update.
+   6. Now there is a kernel function CYC_LIST for converting a
+      list of rationals into a cyclotomic, without arithmetics
+      overhead.
+   7. New functions ContinuedFractionExpansionOfRoot and
+      ContinuedFractionApproximationOfRoot for computing
+      continued fraction expansions and continued fraction
+      approximations of real roots of polynomials with integer
+      coefficients.
+   8. A method for computing structure descriptions for finite
+      groups, available via StructureDescription.
+   9. This change contains the new, extended version of the
+      SmallGroups package. For example, the groups of orders p^
+      4, p^5, p^6 for arbitrary primes p, the groups of
+      square-free order and the groups of cube-free order at
+      most 50000 are included now. For more detailed information
+      see the announcement of the extended package.
+  10. The function ShowPackageVariables gives an overview of the
+      global variables in a package. It is thought as a utility
+      for package authors and referees. (It uses the new
+      function IsDocumentedVariable.)
+  11. The mechanisms for testing GAP has been improved:
+        + The information whether a test file belongs to the
+          list in tst/testall.g is now stored in the test file
+          itself.
+        + Some targets for testing have been added to the
+          Makefile in the GAP root directory, the output of the
+          tests goes to the new directory dev/log.
+        + Utility functions for testing are in the new file tst/
+          testutil.g. Now the loops over (some or all) files tst
+          /*.tst can be performed with a function call, and the
+          file tst/testall.g can be created automatically; the
+          file tst/testfull.g is now obsolete. The
+          remormalization of the scaling factors can now be done
+          using a GAP function, so the file tst/renorm.g is
+          obsolete.
+        + Now the functions START_TEST and STOP_TEST use
+          components in GAPInfo instead of own globals, and the
+          random number generator is always reset in START_TEST.
+        + GAPInfo.SystemInformation now takes two arguments, now
+          one can use it easier in the tests.
+  12. MultiplicationTable is now an attribute, and the
+      construction of a magma, monoid, etc. from multiplication
+      tables has been unified.
+

@@ -4,6 +4,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.randiso_gd :=
     "@(#)$Id$";
@@ -30,6 +31,9 @@ DeclareGlobalFunction( "CodePcGroup" );
 #F PcGroupCode( <code>, <size> )
 ##
 ## returns a pc group of size <size> corresponding to <code>.
+## The argument <code> must be a valid code for a pcgs, otherwise anything
+## may happen. Valid codes are usually obtained by one of the functions
+## `CodePcgs' or `CodePcGroup'.
 DeclareGlobalFunction( "PcGroupCode" );
 
 #############################################################################
@@ -52,9 +56,9 @@ DeclareGlobalFunction( "RandomSpecialPcgsCoded" );
 ##
 #F RandomIsomorphismTest( <list>, <n> )
 ##
-## Here <list> must be a list of pc groups and <n> a non-negative integer.
-## Returns a sublist of <list> where isomorphic copies detected by the 
-## probabilistic test have been removed.
+## <list> must be a list of code records of pc groups and <n> a non-negative 
+## integer. Returns a sublist of <list> where isomorphic copies detected by 
+## the probabilistic test have been removed.
 DeclareGlobalFunction( "RandomIsomorphismTest" );
 
 #############################################################################
@@ -64,5 +68,6 @@ DeclareGlobalFunction( "RandomIsomorphismTest" );
 ## returns a list of disjoint sublist of <list> such that no two isomorphic
 ## groups can be in the same sublist.
 DeclareGlobalFunction( "ReducedByIsomorphisms" );
+
 
 

@@ -1,0 +1,32 @@
+@Name
+Rewrite the ANUPQ in GAP
+@Contact
+BE
+@Date
+August 13, 2003
+@Time
+3
+@Public
+No
+@Need
+4
+@NeedA
+2
+@Math
+4
+@Prog
+4
+@Descr
+The existing ANUPQ interface has bugs that seem to be unresolvable. Instead
+of trying to understand the code and clean it up it might be easier and more
+desirable to rewrite the ANUPQ completely in GAP.
+
+There is already an existing PQ in GAP whose performance seems to be
+sufficient; what would be needed is to add functionality for Descendants and
+Isomorphism test.
+@Manual
+@Ref
+@Rem
+@Application
+The ANUPQ functionality is quite desirable and we know of several people who
+use Magma just because of this feature.

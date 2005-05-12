@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file  contains  the methods for  subgroup presentations  in finitely
 ##  presented groups (fp groups).
@@ -30,7 +31,8 @@ local M;
   if Length(M)=0 then
     return [];
   else
-    return AbelianInvariantsOfList( ElementaryDivisorsMat(M));
+    DiagonalizeMat( Integers, M );
+    return AbelianInvariantsOfList(DiagonalOfMat(M));
   fi;
 end );
 
@@ -50,7 +52,8 @@ local M;
   if Length(M)=0 then
     return [];
   else
-    return AbelianInvariantsOfList( ElementaryDivisorsMat(M));
+    DiagonalizeMat( Integers, M );
+    return AbelianInvariantsOfList(DiagonalOfMat(M));
   fi;
 end );
 
@@ -74,7 +77,8 @@ local M;
   if Length(M)=0 then
     return [];
   else
-    return AbelianInvariantsOfList( ElementaryDivisorsMat(M));
+    DiagonalizeMat( Integers, M );
+    return AbelianInvariantsOfList(DiagonalOfMat(M));
   fi;
 end );
 
@@ -352,10 +356,13 @@ InstallGlobalFunction( AugmentedCosetTableMtc,
       if IsStraightLineProgElm(rel) then
         rel:=EvalStraightLineProgElm(rel);
       fi;
-        length := Length( rel );
+      length := Length( rel );
+      nums := [ ]; 
+      cols := [ ]; 
+      if length>0 then
         length2 := 2 * length;
-        nums := [ ]; nums[length2] := 0;
-        cols := [ ]; cols[length2] := 0;
+	nums[length2] := 0;
+	cols[length2] := 0;
 
         # compute the lists.
         i := 0;  j := 0;
@@ -374,7 +381,8 @@ InstallGlobalFunction( AugmentedCosetTableMtc,
             nums[j]   := p1;  cols[j]   := table[p1];
             nums[j-1] := p2;  cols[j-1] := table[p2];
         od;
-        Add( subgroup, [ nums, cols ] );
+      fi;
+      Add( subgroup, [ nums, cols ] );
     od;
 
     # define the primary subgroup generators.
@@ -1190,7 +1198,9 @@ end);
 InstallMethod(CosetTableBySubgroup,"use `CosetTableInWholeGroup",
   IsIdenticalObj, [IsSubgroupFpGroup,IsSubgroupFpGroup],0,
 function(G,H)
-  if IndexInWholeGroup(G)>1 then
+  if IndexInWholeGroup(G)>1 or not IsIdenticalObj(G,Parent(G))
+      or List(GeneratorsOfGroup(G),UnderlyingElement)
+         <>FreeGeneratorsOfFpGroup(Parent(G)) then
     TryNextMethod();
   fi;
   return CosetTableInWholeGroup(H);
@@ -2096,7 +2106,7 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
 
     local app2, coFacTable, cols, cosTable, factor, ggensi, grel,greli, i,
           index, j, length, nums, numgens, numrels, p, rels, total, tree,
-          treelength, type,si,ei,nneg;
+          treelength, type,si,ei,nneg,word;
 
     # check the type for being zero.
     type := aug.type;
@@ -2105,7 +2115,7 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
     fi;
 
     # initialize some local variables.
-    ggensi := List(aug.groupGenerators,i->GeneratorSyllable(i,1));
+    ggensi := List(aug.groupGenerators,i->AbsInt(LetterRepAssocWord(i)[1]));
     cosTable := aug.cosetTable;
     coFacTable := aug.cosetFactorTable;
     index := Length( cosTable[1] );
@@ -2133,31 +2143,49 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
       CompletionBar(InfoFpGroup,2,"Relator Loop:",greli/Length(prels));
       grel:=prels[greli];
 
-        # get two copies of the group relator, one as a list of words in the
-        # factor table columns and one as a list of words in the coset table
-        # column numbers.
-        length := Length( grel );
+      # get two copies of the group relator, one as a list of words in the
+      # factor table columns and one as a list of words in the coset table
+      # column numbers.
+      length := Length( grel );
+      if length>0 then
+
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
 
 	i:=0;
-        for si in [ 1 .. NrSyllables(grel) ]  do
-	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
-	  nneg:=ExponentSyllable(grel,si)>0;
-	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
-	    i:=i+1;
-	    if nneg then
-	      nums[2*i]   := p-1;
-	      nums[2*i-1] := p;
-	      cols[2*i]   := cosTable[p-1];
-	      cols[2*i-1] := cosTable[p];
-	    else
-	      nums[2*i]   := p;
-	      nums[2*i-1] := p-1;
-	      cols[2*i]   := cosTable[p];
-	      cols[2*i-1] := cosTable[p-1];
-	    fi;
-	  od;
+#        for si in [ 1 .. NrSyllables(grel) ]  do
+#	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+#	  nneg:=ExponentSyllable(grel,si)>0;
+#	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+#	    i:=i+1;
+#	    if nneg then
+#	      nums[2*i]   := p-1;
+#	      nums[2*i-1] := p;
+#	      cols[2*i]   := cosTable[p-1];
+#	      cols[2*i-1] := cosTable[p];
+#	    else
+#	      nums[2*i]   := p;
+#	      nums[2*i-1] := p-1;
+#	      cols[2*i]   := cosTable[p];
+#	      cols[2*i-1] := cosTable[p-1];
+#	    fi;
+#	  od;
+#	od;
+	word:=LetterRepAssocWord(grel);
+	for si in [1..Length(word)] do
+	  p:=2*Position(ggensi,AbsInt(word[si]));
+	  i:=i+1;
+	  if word[si]>0 then
+	    nums[2*i]:=p-1;
+	    nums[2*i-1]:=p;
+	    cols[2*i]:=cosTable[p-1];
+	    cols[2*i-1]:=cosTable[p];
+	  else
+	    nums[2*i]:=p;
+	    nums[2*i-1]:=p-1;
+	    cols[2*i]:=cosTable[p];
+	    cols[2*i-1]:=cosTable[p-1];
+	  fi;
 	od;
 
         # loop over all cosets and determine the subgroup relators which are
@@ -2181,6 +2209,7 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
             # add the resulting subgroup relator to rels.
             numrels := AddAbelianRelator( rels, numrels );
         od;
+      fi;
     od;
     CompletionBar(InfoFpGroup,2,"Relator Loop:",false);
 
@@ -2188,33 +2217,52 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
     for j in [ 1 .. numgens ] do
       CompletionBar(InfoFpGroup,2,"Generator Loop:",j/numgens);
 
-        # get two copies of the subgroup generator, one as a list of words in
-        # the factor table columns and one as a list of words in the coset
-        # table column numbers.
-        grel := aug.primaryGeneratorWords[j];
-        length := Length( grel );
+      # get two copies of the subgroup generator, one as a list of words in
+      # the factor table columns and one as a list of words in the coset
+      # table column numbers.
+      grel := aug.primaryGeneratorWords[j];
+      length := Length( grel );
+
+      if length>0 then
+
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
 
 	i:=0;
-        for si in [ 1 .. NrSyllables(grel) ]  do
-	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
-	  nneg:=ExponentSyllable(grel,si)>0;
-	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
-	    i:=i+1;
-	    if nneg then
-	      nums[2*i]   := p-1;
-	      nums[2*i-1] := p;
-	      cols[2*i]   := cosTable[p-1];
-	      cols[2*i-1] := cosTable[p];
-	    else
-	      nums[2*i]   := p;
-	      nums[2*i-1] := p-1;
-	      cols[2*i]   := cosTable[p];
-	      cols[2*i-1] := cosTable[p-1];
-	    fi;
-	  od;
-        od;
+#        for si in [ 1 .. NrSyllables(grel) ]  do
+#	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+#	  nneg:=ExponentSyllable(grel,si)>0;
+#	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+#	    i:=i+1;
+#	    if nneg then
+#	      nums[2*i]   := p-1;
+#	      nums[2*i-1] := p;
+#	      cols[2*i]   := cosTable[p-1];
+#	      cols[2*i-1] := cosTable[p];
+#	    else
+#	      nums[2*i]   := p;
+#	      nums[2*i-1] := p-1;
+#	      cols[2*i]   := cosTable[p];
+#	      cols[2*i-1] := cosTable[p-1];
+#	    fi;
+#	  od;
+#        od;
+	word:=LetterRepAssocWord(grel);
+	for si in [1..Length(word)] do
+	  p:=2*Position(ggensi,AbsInt(word[si]));
+	  i:=i+1;
+	  if word[si]>0 then
+	    nums[2*i]:=p-1;
+	    nums[2*i-1]:=p;
+	    cols[2*i]:=cosTable[p-1];
+	    cols[2*i-1]:=cosTable[p];
+	  else
+	    nums[2*i]:=p;
+	    nums[2*i-1]:=p-1;
+	    cols[2*i]:=cosTable[p];
+	    cols[2*i-1]:=cosTable[p-1];
+	  fi;
+	od;
 
         # scan coset 1 through the current subgroup generator and collect the
         # factors of its invers (!) in rel.
@@ -2230,11 +2278,20 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
         app2[4] := 1;
         ApplyRel2( app2, cols, nums );
 
-        # add as last factor the generator number j.
-        rels[numrels][j] := rels[numrels][j] + 1;
+      else
+        # trivial generator
+        numrels := numrels + 1;
+        if numrels > total then
+            total := total + 1;
+            rels[total] := ListWithIdenticalEntries( numgens, 0 );
+        fi;
+      fi;
 
-        # add the resulting subgroup relator to rels.
-        numrels := AddAbelianRelator( rels, numrels );
+      # add as last factor the generator number j.
+      rels[numrels][j] := rels[numrels][j] + 1;
+
+      # add the resulting subgroup relator to rels.
+      numrels := AddAbelianRelator( rels, numrels );
     od;
 
     # reduce the relator list to its proper size.
@@ -2269,14 +2326,14 @@ InstallGlobalFunction( RewriteSubgroupRelators,
 
     local app2, coFacTable, cols, convert, cosTable, factor, ggensi,
           greli,grel, i, index, j, last, length, nums, numgens, p, rel, rels,
-          treelength, type,si,nneg,ei;
+          treelength, type,si,nneg,ei,word;
 
     # check the type.
     type := aug.type;
     if type <> 2 then  Error( "invalid type; it should be 2" );  fi;
 
     # initialize some local variables.
-    ggensi := List(aug.groupGenerators,i->GeneratorSyllable(i,1));
+    ggensi := List(aug.groupGenerators,i->AbsInt(LetterRepAssocWord(i)[1]));
     cosTable := aug.cosetTable;
     coFacTable := aug.cosetFactorTable;
     index := Length( cosTable[1] );
@@ -2302,23 +2359,39 @@ InstallGlobalFunction( RewriteSubgroupRelators,
         cols := [ ]; cols[2*length] := 0;
 
 	i:=0;
-        for si in [ 1 .. NrSyllables(grel) ]  do
-	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
-	  nneg:=ExponentSyllable(grel,si)>0;
-	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
-	    i:=i+1;
-	    if nneg then
-	      nums[2*i]   := p-1;
-	      nums[2*i-1] := p;
-	      cols[2*i]   := cosTable[p-1];
-	      cols[2*i-1] := cosTable[p];
-	    else
-	      nums[2*i]   := p;
-	      nums[2*i-1] := p-1;
-	      cols[2*i]   := cosTable[p];
-	      cols[2*i-1] := cosTable[p-1];
-	    fi;
-	  od;
+#        for si in [ 1 .. NrSyllables(grel) ]  do
+#	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+#	  nneg:=ExponentSyllable(grel,si)>0;
+#	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+#	    i:=i+1;
+#	    if nneg then
+#	      nums[2*i]   := p-1;
+#	      nums[2*i-1] := p;
+#	      cols[2*i]   := cosTable[p-1];
+#	      cols[2*i-1] := cosTable[p];
+#	    else
+#	      nums[2*i]   := p;
+#	      nums[2*i-1] := p-1;
+#	      cols[2*i]   := cosTable[p];
+#	      cols[2*i-1] := cosTable[p-1];
+#	    fi;
+#	  od;
+#	od;
+	word:=LetterRepAssocWord(grel);
+	for si in [1..Length(word)] do
+	  p:=2*Position(ggensi,AbsInt(word[si]));
+	  i:=i+1;
+	  if word[si]>0 then
+	    nums[2*i]:=p-1;
+	    nums[2*i-1]:=p;
+	    cols[2*i]:=cosTable[p-1];
+	    cols[2*i-1]:=cosTable[p];
+	  else
+	    nums[2*i]:=p;
+	    nums[2*i-1]:=p-1;
+	    cols[2*i]:=cosTable[p];
+	    cols[2*i-1]:=cosTable[p-1];
+	  fi;
 	od;
 
         # loop over all cosets and determine the subgroup relators which are
@@ -2352,33 +2425,51 @@ InstallGlobalFunction( RewriteSubgroupRelators,
     for j in [ 1 .. numgens ] do
       CompletionBar(InfoFpGroup,2,"Generator Loop:",j/numgens);
 
-        # get two copies of the subgroup generator, one as a list of words in
-        # the factor table columns and one as a list of words in the coset
-        # table column numbers.
-        grel := aug.primaryGeneratorWords[j];
-        length := Length( grel );
+      # get two copies of the subgroup generator, one as a list of words in
+      # the factor table columns and one as a list of words in the coset
+      # table column numbers.
+      grel := aug.primaryGeneratorWords[j];
+      length := Length( grel );
+
+      if length>0 then
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
 
 	i:=0;
-        for si in [ 1 .. NrSyllables(grel) ]  do
-	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
-	  nneg:=ExponentSyllable(grel,si)>0;
-	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
-	    i:=i+1;
-	    if nneg then
-	      nums[2*i]   := p-1;
-	      nums[2*i-1] := p;
-	      cols[2*i]   := cosTable[p-1];
-	      cols[2*i-1] := cosTable[p];
-	    else
-	      nums[2*i]   := p;
-	      nums[2*i-1] := p-1;
-	      cols[2*i]   := cosTable[p];
-	      cols[2*i-1] := cosTable[p-1];
-	    fi;
-	  od;
-        od;
+#        for si in [ 1 .. NrSyllables(grel) ]  do
+#	  p:=2*Position(ggensi,GeneratorSyllable(grel,si));
+#	  nneg:=ExponentSyllable(grel,si)>0;
+#	  for ei in [1..AbsInt(ExponentSyllable(grel,si))] do
+#	    i:=i+1;
+#	    if nneg then
+#	      nums[2*i]   := p-1;
+#	      nums[2*i-1] := p;
+#	      cols[2*i]   := cosTable[p-1];
+#	      cols[2*i-1] := cosTable[p];
+#	    else
+#	      nums[2*i]   := p;
+#	      nums[2*i-1] := p-1;
+#	      cols[2*i]   := cosTable[p];
+#	      cols[2*i-1] := cosTable[p-1];
+#	    fi;
+#	  od;
+#        od;
+	word:=LetterRepAssocWord(grel);
+	for si in [1..Length(word)] do
+	  p:=2*Position(ggensi,AbsInt(word[si]));
+	  i:=i+1;
+	  if word[si]>0 then
+	    nums[2*i]:=p-1;
+	    nums[2*i-1]:=p;
+	    cols[2*i]:=cosTable[p-1];
+	    cols[2*i-1]:=cosTable[p];
+	  else
+	    nums[2*i]:=p;
+	    nums[2*i-1]:=p-1;
+	    cols[2*i]:=cosTable[p];
+	    cols[2*i-1]:=cosTable[p-1];
+	  fi;
+	od;
 
         # scan coset 1 through the current subgroup generator and collect the
         # factors of its inverse (!) in rel.
@@ -2405,6 +2496,10 @@ InstallGlobalFunction( RewriteSubgroupRelators,
                 AddSet( rels, CopyRel( rel ) );
             fi;
         fi;
+      else
+        # trivial generator
+	AddSet(rels,[j]);
+      fi;
     od;
     CompletionBar(InfoFpGroup,2,"Generator Loop:",false);
 
@@ -2527,7 +2622,7 @@ end );
 #F  RewriteWord( <aug>, <word> )
 ##
 InstallGlobalFunction(RewriteWord,function ( aug, word )
-local cft, ct, w,c,i,j,g,e,ind;
+local cft, ct, w,l,c,i,j,g,e,ind;
 
   # check the type.
   Assert(1,aug.type=2);
@@ -2539,28 +2634,44 @@ local cft, ct, w,c,i,j,g,e,ind;
   # translation table for group generators to numbers
   if not IsBound(aug.transtab) then
     # should do better, also cope with inverses
-    aug.transtab:=List(aug.groupGenerators,i->GeneratorSyllable(i,1));
+    aug.transtab:=List(aug.groupGenerators,i->AbsInt(LetterRepAssocWord(i)[1]));
   fi;
 
   w:=[];
   c:=1; # current coset
-  for i in [1..NrSyllables(word)] do
-    g:=GeneratorSyllable(word,i);
-    e:=ExponentSyllable(word,i);
-    if e<0 then
+
+  #for i in [1..NrSyllables(word)] do
+  #  g:=GeneratorSyllable(word,i);
+  #  e:=ExponentSyllable(word,i);
+  #  if e<0 then
+  #    ind:=2*aug.transtab[g];
+  #    e:=-e;
+  #  else
+  #    ind:=2*aug.transtab[g]-1;
+  #  fi;
+  #  for j in [1..e] do
+  #    # apply the generator, collect cofactor
+  #    if cft[ind][c]<>0 then
+#	Add(w,cft[ind][c]); #cofactor
+#      fi;
+#      c:=ct[ind][c]; # new coset number
+#    od;
+#  od;
+  l:=LetterRepAssocWord(word);
+  for i in l do
+    g:=AbsInt(i);
+    if g<0 then
       ind:=2*aug.transtab[g];
-      e:=-e;
     else
       ind:=2*aug.transtab[g]-1;
     fi;
-    for j in [1..e] do
-      # apply the generator, collect cofactor
-      if cft[ind][c]<>0 then
-	Add(w,cft[ind][c]); #cofactor
-      fi;
-      c:=ct[ind][c]; # new coset number
-    od;
+    # apply the generator, collect cofactor
+    if cft[ind][c]<>0 then
+      Add(w,cft[ind][c]); #cofactor
+    fi;
+    c:=ct[ind][c]; # new coset number
   od;
+
   # make sure we got back to start
   if c<>1 then 
     return fail;

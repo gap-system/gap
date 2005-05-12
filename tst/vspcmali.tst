@@ -11,6 +11,8 @@
 ##  (The test files 'vspcrow.tst' and 'vspcmat.tst' should contain the same
 ##  tests.)
 ##
+##  Exclude from testall.g: why?
+##
 
 gap> START_TEST("$Id$");
 
@@ -351,7 +353,7 @@ VectorSpace( GF(3^2), [ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ),
   LieObject( [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ] ), 
   LieObject( [ [ 0*Z(3), Z(3)^0 ], [ 0*Z(3), 0*Z(3) ] ] ) ] )
 gap> Intersection( v, c );
-<vector space over GF(3^2), with 0 generators>
+<vector space of dimension 0 over GF(3^2)>
 gap> Intersection( v, f ) = v;
 true
 
@@ -423,7 +425,8 @@ SemiEchelonBasis( <vector space of dimension 2 over Rationals>,
 [ LieObject( [ [ 1, 2 ], [ 3, 4 ] ] ), LieObject( [ [ 0, 0 ], [ 0, 1 ] ] ) ] )
 
 
-gap> STOP_TEST( "vspcmali.tst", 35942500 );
+gap> STOP_TEST( "vspcmali.tst", 43600000 );
+
 
 #############################################################################
 ##

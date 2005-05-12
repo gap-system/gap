@@ -9,8 +9,8 @@
 ##  sanity test for primitive groups library -- takes 30-40 minutes on
 ##  a PIII/500, and need 400MB of RAM
 ##
-##  Do NOT add this to testall untill the typical developers desktop
-##  is big and fast enough
+##  Exclude from testall.g until the typical developer's desktop
+##  is big and fast enough.
 ##
 
 gap> START_TEST("$Id$");
@@ -29,13 +29,12 @@ gap> checkdegree := function(n)
 >             Error("Failure at ",g," degree ",n,"\n");
 >         fi;
 >     od;
-> end;
-function( n ) ... end
+> end;;
 gap> for n in [2..999] do 
 >     checkdegree(n);
 > od;
 
-gap> STOP_TEST( "primsan.tst", 105797500 );
+gap> STOP_TEST( "primsan.tst", 411290800000 );
 
 
 #############################################################################

@@ -7,6 +7,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This  file contains the functions  that mainly operate  on boolean lists.
 **  Because boolean lists are  just a special case  of lists many  things are
@@ -172,7 +173,7 @@ void SaveBlist (
     SaveSubObj(ADDR_OBJ(bl)[0]);
     ptr = BLOCKS_BLIST(bl);
     for (i = 1; i <= NUMBER_BLOCKS_BLIST( bl ); i++ )
-        SaveUInt(*ptr);
+        SaveUInt(*ptr++);
     return;
 }
 
@@ -751,34 +752,40 @@ void AsssBlistImm (
 **
 **  'PosBlist' is the function in 'PosListFuncs' for boolean lists.
 */
-Int PosBlist (
+Obj PosBlist (
     Obj                 list,
     Obj                 val,
-    Int                 start )
+    Obj                 start )
 {
     Int                 k;              /* position, result                */
     Int                 len;            /* logical length of the list      */
     UInt *              ptr;            /* pointer to the blocks           */
     UInt                i,  j;          /* loop variables                  */
+    UInt                istart;
+
+    if (!IS_INTOBJ(start))
+      return Fail;
+    
+    istart = INT_INTOBJ(start);
 
     len = LEN_BLIST(list);
 
     /* look just beyond end                                                */
-    if ( len == start ) {
+    if ( len == istart ) {
         k = 0;
     }
 
     /* look for 'true'                                                     */
     else if ( val == True ) {
         ptr = BLOCKS_BLIST(list);
-        if ( ptr[start/BIPEB] >> (start%BIPEB) != 0 ) {
-            i = start/BIPEB;
-            for ( j = start%BIPEB; j < BIPEB; j++ ) {
+        if ( ptr[istart/BIPEB] >> (istart%BIPEB) != 0 ) {
+            i = istart/BIPEB;
+            for ( j = istart%BIPEB; j < BIPEB; j++ ) {
                 if ( (ptr[i] & (1UL << j)) != 0 )  break;
             }
         }
         else {
-            for ( i = start/BIPEB+1; i < (len-1)/BIPEB; i++ ) {
+            for ( i = istart/BIPEB+1; i < (len-1)/BIPEB; i++ ) {
                 if ( ptr[i] != 0UL )  break;
             }
             for ( j = 0; j < BIPEB; j++ ) {
@@ -791,14 +798,14 @@ Int PosBlist (
     /* look for 'false'                                                    */
     else if ( val == False ) {
         ptr = BLOCKS_BLIST(list);
-        if ( ~ptr[start/BIPEB] >> (start%BIPEB) != 0 ) {
-            i = start/BIPEB;
-            for ( j = start%BIPEB; j < BIPEB; j++ ) {
+        if ( ~ptr[istart/BIPEB] >> (istart%BIPEB) != 0 ) {
+            i = istart/BIPEB;
+            for ( j = istart%BIPEB; j < BIPEB; j++ ) {
                 if ( (ptr[i] & (1UL<<j)) == 0 )  break;
             }
         }
         else {
-            for ( i = start/BIPEB+1; i < (len-1)/BIPEB; i++ ) {
+            for ( i = istart/BIPEB+1; i < (len-1)/BIPEB; i++ ) {
                 if ( ptr[i] != ~(UInt)0 )  break;
             }
             for ( j = 0; j < BIPEB; j++ ) {
@@ -814,7 +821,10 @@ Int PosBlist (
     }
 
     /* return the position                                                 */
-    return k;
+    if (k == 0)
+      return Fail;
+    else
+      return INTOBJ_INT(k);
 }
 
 
@@ -1277,7 +1287,7 @@ Obj FuncBLIST_LIST (
     Int                 lenList;        /* logical length of the list      */
     Obj *               ptrSub;         /* pointer to the sublist          */
     UInt                lenSub;         /* logical length of sublist       */
-    UInt                i, j, k, l;     /* loop variables                  */
+    UInt                i, j, k = 0, l;     /* loop variables                  */
     long                s, t;           /* elements of a range             */
 
     /* get and check the arguments                                         */
@@ -1351,9 +1361,11 @@ Obj FuncBLIST_LIST (
 
                 /* otherwise it may be a record, let 'PosRange' handle it  */
                 else {
-                    k = PosRange( list, ptrSub[l], 0L );
-                    if ( k != 0 )
-                        ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
+		  Obj pos;
+                    pos = PosRange( list, ptrSub[l], 0L );
+		    if (pos != Fail)
+		      k = INT_INTOBJ(pos);
+		    ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
                 }
 
             }
@@ -1827,7 +1839,7 @@ Obj FuncUNITE_BLIST_LIST (
     Int                 lenList;        /* logical length of the list      */
     Obj *               ptrSub;         /* pointer to the sublist          */
     UInt                lenSub;         /* logical length of sublist       */
-    UInt                i, j, k, l;     /* loop variables                  */
+    UInt                i, j, k = 0, l;     /* loop variables                  */
     long                s, t;           /* elements of a range             */
 
     /* get and check the arguments                                         */
@@ -1921,9 +1933,11 @@ Obj FuncUNITE_BLIST_LIST (
 
                 /* otherwise it may be a record, let 'PosRange' handle it  */
                 else {
-                    k = PosRange( list, ptrSub[l], 0L );
-                    if ( k != 0 )
-                        ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
+		  Obj pos;
+                    pos = PosRange( list, ptrSub[l], 0L );
+		    if (pos != Fail)
+		      k = INT_INTOBJ(pos);
+		    ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
                 }
 
             }

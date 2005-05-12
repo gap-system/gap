@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -628,10 +630,10 @@ gap> Size(Normalizer(G,Subgroup(G,[G.1,G.2])));
 
 #############################################################################
 
-gap> STOP_TEST( "grppcnrm.tst", 1948650000 );
+gap> STOP_TEST( "grppcnrm.tst", 1385300000 );
 
 
 #############################################################################
 ##
-#E  grppcnrm.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

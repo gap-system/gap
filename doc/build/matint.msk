@@ -7,31 +7,176 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Integral matrices and lattices}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Linear equations over the integers and Integral Matrices}
+
+\Declaration{NullspaceIntMat}
+\beginexample
+gap> mat:=[[1,2,7],[4,5,6],[7,8,9],[10,11,19],[5,7,12]];;
+gap> NullspaceMat(mat);   
+[ [ -7/4, 9/2, -15/4, 1, 0 ], [ -3/4, -3/2, 1/4, 0, 1 ] ]
+gap> NullspaceIntMat(mat);                              
+[ [ 1, 18, -9, 2, -6 ], [ 0, 24, -13, 3, -7 ] ]
+\endexample
+
+\Declaration{SolutionIntMat}
+\beginexample
+gap> mat:=[[1,2,7],[4,5,6],[7,8,9],[10,11,19],[5,7,12]];;
+gap> SolutionMat(mat,[95,115,182]);
+[ 47/4, -17/2, 67/4, 0, 0 ]
+gap> SolutionIntMat(mat,[95,115,182]);   
+[ 2285, -5854, 4888, -1299, 0 ]
+\endexample
+
+\Declaration{SolutionNullspaceIntMat}
+\beginexample
+gap> mat:=[[1,2,7],[4,5,6],[7,8,9],[10,11,19],[5,7,12]];;
+gap> SolutionNullspaceIntMat(mat,[95,115,182]);
+[ [ 2285, -5854, 4888, -1299, 0 ], 
+  [ [ 1, 18, -9, 2, -6 ], [ 0, 24, -13, 3, -7 ] ] ]
+\endexample
+
+\Declaration{BaseIntMat}
+\beginexample
+gap> mat:=[[1,2,7],[4,5,6],[10,11,19]];;
+gap> BaseIntMat(mat);                  
+[ [ 1, 2, 7 ], [ 0, 3, 7 ], [ 0, 0, 15 ] ]
+\endexample
+
+\Declaration{BaseIntersectionIntMats}
+\beginexample
+gap> nat:=[[5,7,2],[4,2,5],[7,1,4]];;
+gap> BaseIntMat(nat);
+[ [ 1, 1, 15 ], [ 0, 2, 55 ], [ 0, 0, 64 ] ]
+gap> BaseIntersectionIntMats(mat,nat);
+[ [ 1, 5, 509 ], [ 0, 6, 869 ], [ 0, 0, 960 ] ]
+\endexample
+
+\Declaration{ComplementIntMat}
+\beginexample
+gap> m:=IdentityMat(3);;
+gap> n:=[[1,2,3],[4,5,6]];;
+gap> ComplementIntMat(m,n);
+rec( complement := [ [ 0, 0, 1 ] ], sub := [ [ 1, 2, 3 ], [ 0, 3, 6 ] ], 
+  moduli := [ 1, 3 ] )
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Normal Forms over the Integers}
 
-\Declaration{DiagonalizeIntMatNormDriven}
-
-\Declaration{SNFNormDriven}
-
-\Declaration{SNFofREF}
-
-\Declaration{HNFNormDriven}
-
+\Declaration{TriangulizedIntegerMat}
+\Declaration{TriangulizedIntegerMatTransform}
 \Declaration{TriangulizeIntegerMat}
 
-\Declaration{SmithNormalFormIntegerMat}
+\beginexample
+gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+gap> TriangulizedIntegerMat(m);
+[ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ]
+gap> n:=TriangulizedIntegerMatTransform(m);
+rec( normal := [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], 
+  rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+  rowQ := [ [ 1, 0, 0 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], rank := 3, 
+  signdet := 1, rowtrans := [ [ 1, 0, 0 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ] )
+gap> n.rowtrans*m=n.normal;
+true
+gap> TriangulizeIntegerMat(m); m;
+[ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ]
+\endexample
 
+The Hermite Normal Form (HNF), $H$ of an integer matrix, $A$  is a row
+equivalent upper triangular form such that all off-diagonal entries are
+reduced modulo the diagonal entry of the column they are in.  There
+exists a unique unimodular matrix $Q$ such that $QA = H$. 
 \Declaration{HermiteNormalFormIntegerMat}
+\Declaration{HermiteNormalFormIntegerMatTransform}
+\beginexample
+gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+gap> HermiteNormalFormIntegerMat(m);          
+[ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ]
+gap> n:=HermiteNormalFormIntegerMatTransform(m);
+rec( normal := [ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], 
+  rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+  rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], rank := 3, 
+  signdet := 1, 
+  rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ] )
+gap> n.rowtrans*m=n.normal;
+true
+\endexample
 
-\Declaration{TriangulizedIntegerMat}
- 
+The Smith Normal Form,$S$, of an integer matrix $A$ is the unique 
+equivalent diagonal form with $S_i$ dividing $S_j$ for $i \< j$. There 
+exist unimodular integer matrices $P, Q$ such that $PAQ = S.$ 
+\Declaration{SmithNormalFormIntegerMat}
+\Declaration{SmithNormalFormIntegerMatTransforms}
+\Declaration{DiagonalizeIntMat}
+
+\beginexample
+gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+gap> SmithNormalFormIntegerMat(m);          
+[ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ]
+gap> n:=SmithNormalFormIntegerMatTransforms(m);  
+rec( normal := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ], 
+  rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+  rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+  colC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+  colQ := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ], rank := 3, 
+  signdet := 1, 
+  rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+  coltrans := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ] )
+gap> n.rowtrans*m*n.coltrans=n.normal;
+true
+gap> DiagonalizeIntMat(m);m;
+[ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ]
+\endexample
+
+All these routines build on the following ``workhorse'' routine:
 \Declaration{NormalFormIntMat}
+\beginexample
+gap> m:=[[1,15,28],[4,5,6],[7,8,9]];;
+gap> NormalFormIntMat(m,0);  # Triangular, no transforms
+rec( normal := [ [ 1, 15, 28 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], rank := 3, 
+  signdet := 1 )
+gap> NormalFormIntMat(m,6);  # Hermite Normal Form with row transforms
+rec( normal := [ [ 1, 0, 1 ], [ 0, 1, 1 ], [ 0, 0, 3 ] ], 
+  rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+  rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], rank := 3, 
+  signdet := 1, 
+  rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ] )
+gap> NormalFormIntMat(m,13); # Smith Normal Form with both transforms        
+rec( normal := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ], 
+  rowC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+  rowQ := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+  colC := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+  colQ := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ], rank := 3, 
+  signdet := 1, 
+  rowtrans := [ [ -2, 62, -35 ], [ 1, -30, 17 ], [ -3, 97, -55 ] ], 
+  coltrans := [ [ 1, 0, -1 ], [ 0, 1, -1 ], [ 0, 0, 1 ] ] )
+gap> last.rowtrans*m*last.coltrans;
+[ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 3 ] ]
+\endexample
 
+\Declaration{AbelianInvariantsOfList}
+\beginexample
+gap> AbelianInvariantsOfList([4,6,2,12]);
+[ 2, 2, 3, 3, 4, 4 ]
+\endexample
+
+%\ Declaration{DiagonalizeIntMatNormDriven}
+%\ Declaration{SNFNormDriven}
+%\ Declaration{SNFofREF}
+%\ Declaration{HNFNormDriven}
+ 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Determinant of an integer matrix}
+\index{determinant!integer matrix}
+
+\Declaration{DeterminantIntMat}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Decompositions}

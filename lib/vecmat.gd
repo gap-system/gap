@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the basic operations for creating and doing arithmetic
 ##  with vectors.
@@ -83,6 +84,9 @@ DeclareSynonym( "ConvertToGF2VectorRep", CONV_GF2VEC );
 #F  ConvertToVectorRep( <list> )
 #F  ConvertToVectorRep( <list> , <field> )
 #F  ConvertToVectorRep( <list> , <fieldsize> )
+#F  ConvertToVectorRepNC( <list> )
+#F  ConvertToVectorRepNC( <list> , <field> )
+#F  ConvertToVectorRepNC( <list> , <fieldsize> )
 ##
 ##  `ConvertToVectorRep( <list> )' converts <list> to an internal
 ##  vector representation if possible.
@@ -90,10 +94,13 @@ DeclareSynonym( "ConvertToGF2VectorRep", CONV_GF2VEC );
 ##  `ConvertToVectorRep( <list> , <field> )' converts <list> to an
 ##  internal vector representation appropriate for a vector over
 ##  <field>.
+##
 ##  It is forbidden to call this function unless <list> is a plain
 ##  list or a vector, <field> a field, and all elements
 ##  of <list> lie in <field>, violation of this condition can lead to
-##  unpredictable behaviour or a system crash.
+##  unpredictable behaviour or a system crash. (Setting the assertion level
+##  to at least 2 might catch some violations before a crash,
+##  see~"SetAssertionLevel".)
 ##
 ##  Instead of a <field> also its size <fieldsize> may be given.
 ##
@@ -105,24 +112,32 @@ DeclareSynonym( "ConvertToGF2VectorRep", CONV_GF2VEC );
 ##
 ##  The return value is the size of the field over which the vector
 ##  ends up written, if it is written in a compressed representation.
-##  Otherwise it is `true' if the vector does consist entirely of elements
-##  of finite fields and `fail' otherwise.
 ##  
 ##
-DeclareGlobalFunction( "ConvertToVectorRep");
+DeclareGlobalFunction( "ConvertToVectorRepNC");
+DeclareSynonym( "ConvertToVectorRep",ConvertToVectorRepNC);
 
 #############################################################################
 ##
 #F  ConvertToMatrixRep( <list> )
 #F  ConvertToMatrixRep( <list>, <field> )
 #F  ConvertToMatrixRep( <list>, <fieldsize> )
+#F  ConvertToMatrixRepNC( <list> )
+#F  ConvertToMatrixRepNC( <list>, <field> )
+#F  ConvertToMatrixRepNC( <list>, <fieldsize> )
 ##
 ##  `ConvertToMatrixRep( <list> )' converts <list> to an internal
 ##  matrix representation if possible.  `ConvertToMatrixRep( <list> ,
 ##  <field> )' converts <list> to an internal matrix representation
-##  appropriate for a matrix over <field>. It is forbidden to call
+##  appropriate for a matrix over <field>.
+##
+##  It is forbidden to call
 ##  this function unless all elements of <list> are vectors with
 ##  entries in  <field>.
+##  Violation of this condition can lead to
+##  unpredictable behaviour or a system crash. (Setting the assertion level
+##  to at least 2 might catch some violations before a crash,
+##  see~"SetAssertionLevel".)
 ##
 ##  Instead of a <field> also its size <fieldsize> may be given.
 ##
@@ -133,11 +148,15 @@ DeclareGlobalFunction( "ConvertToVectorRep");
 ##
 ##  The return value is the size of the field over which the matrix
 ##  ends up written, if it is written in a compressed representation.
-##  Otherwise it is `fail'. 
+##
+##  In general, it is better to call `ImmutableMatrix'
+##  (see~"ImmutableMatrix") instead since this function can also deal with
+##  mutable rows or rows locked in a wrong representation.
 ##
 ##
 
-DeclareGlobalFunction( "ConvertToMatrixRep");
+DeclareGlobalFunction( "ConvertToMatrixRepNC");
+DeclareSynonym("ConvertToMatrixRep",ConvertToMatrixRepNC);
 
 #############################################################################
 ##
@@ -246,7 +265,7 @@ end );
 ##  *identical* to <matrix> if a conversion is not possible.
 ##  If <change> is `true', the rows of `matrix' (or `matrix' itself) may be
 ##  changed to become immutable (otherwise they are copied first).
-DeclareGlobalFunction( "ImmutableMatrix");
+DeclareOperation( "ImmutableMatrix",[IsObject,IsMatrix]);
 
 
 #############################################################################

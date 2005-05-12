@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of operations for semigroups.
 ##
@@ -243,6 +244,25 @@ DeclareOperation("IsRegularSemigroupElement", [IsSemigroup,
 ##  returns `true' if <S> is regular---i.e. if every D class of <S> is regular.
 ##
 DeclareProperty("IsRegularSemigroup", IsSemigroup);
+
+#############################################################################
+##
+#O  DisplaySemigroup( <S> )
+##
+##  Produces a convenient display of a semigroup's DClass
+##  structure.   Let <S> have degree $n$.   Then for each $r\leq n$, we
+##  show all D classes of rank $n$.   
+##
+##  A regular D class with a single H class of size 120 appears as
+##  \beginexample
+##  *[H size = 120, 1 L classes, 1 R classes] 
+##  \endexample
+##  (the \* denoting regularity).
+##
+##
+DeclareOperation("DisplaySemigroup", 
+    [IsSemigroup]);
+
 
 #############################################################################
 ##

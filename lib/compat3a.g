@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the non-destructive part of the {\GAP}~3 compatibility
 ##  mode,
@@ -116,6 +117,13 @@ DeclareSynonym( "CharDegAgGroup", CharacterDegrees );
 #F  CharFFE( <ffe> )  . . . . . . . . . . . . . . . . . characteristic of FFE
 ##
 DeclareSynonym( "CharFFE", Characteristic );
+
+
+#############################################################################
+##
+##  Some functions are declared in the character table library.
+##
+LoadPackage( "ctbllib" );
 
 
 #############################################################################
@@ -306,7 +314,11 @@ DeclareSynonym( "Denominator", DenominatorRat );
 ##
 #F  DepthVector( <vec> )
 ##
-DeclareSynonym( "DepthVector", PositionNonZero );
+##  This variable is also defined in the `autpgrp' package.
+##
+if not IsBound( DepthVector ) then
+  DeclareSynonym( "DepthVector", PositionNonZero );
+fi;
 
 
 #############################################################################
@@ -699,13 +711,6 @@ InstallOtherMethod( Order,
 
 #############################################################################
 ##
-#F  OrderCyc( <cyc> ) . . . . . . . . . . . . . . . . . order of a cyclotomic
-##
-DeclareSynonym( "OrderCyc", Order );
-
-
-#############################################################################
-##
 #M  PermutationCharacter( <P> ) . . . . . . . . . . . for a permutation group
 ##
 ##  Note that the manual of {\GAP}~3 did *not* require <P> to be transitive,
@@ -990,6 +995,96 @@ DeclareSynonym( "TomMat", TableOfMarks );
 ##
 DeclareSynonym( "TransformingPermutationsCharTables",
     TransformingPermutationsCharacterTables );
+
+
+#############################################################################
+##
+##  The following functions had been in `lib/obsolete.g' in {\GAP}~4.3,
+##  and were sorted out with the release of {\GAP}~4.4.)
+##
+
+#############################################################################
+##
+##  Obsolete synonyms, see the functions with names where ``Operation'' is
+##  replaced by ``Action''.
+##
+DeclareSynonym( "RepresentativeOperation", RepresentativeAction );
+DeclareSynonym( "RepresentativeOperationOp", RepresentativeActionOp );
+DeclareSynonym( "Operation", Action );
+DeclareSynonym( "IsOperationHomomorphism", IsActionHomomorphism );
+DeclareSynonym( "IsOperationHomomorphismByOperators",
+    IsActionHomomorphismByActors);
+DeclareSynonym( "IsOperationHomomorphismSubset",
+    IsActionHomomorphismSubset);
+DeclareSynonym( "IsOperationHomomorphismByBase",
+    IsActionHomomorphismByBase);
+DeclareSynonym( "IsLinearOperationHomomorphism",
+    IsLinearActionHomomorphism);
+DeclareSynonymAttr( "FunctionOperation", FunctionAction );
+DeclareSynonym( "OperationHomomorphism", ActionHomomorphism );
+DeclareSynonymAttr( "OperationHomomorphismAttr", ActionHomomorphismAttr );
+DeclareSynonym( "OperationHomomorphismConstructor",
+    ActionHomomorphismConstructor);
+DeclareSynonymAttr( "SurjectiveOperationHomomorphismAttr",
+    SurjectiveActionHomomorphismAttr );
+DeclareSynonym( "ImageElmOperationHomomorphism", ImageElmActionHomomorphism );
+DeclareSynonym( "SparseOperationHomomorphism", SparseActionHomomorphism );
+DeclareSynonym( "SortedSparseOperationHomomorphism",
+    SortedSparseActionHomomorphism );
+
+
+#############################################################################
+##
+##  relics of vector space basis stuff (from times when only unary methods
+##  could be installed for attributes and thus additional non-attributes had
+##  been introduced)
+##
+
+#############################################################################
+##
+#A  BasisOfDomain( <V> )
+#O  BasisByGenerators( <V>, <vectors> )
+#O  BasisByGeneratorsNC( <V>, <vectors> )
+#A  SemiEchelonBasisOfDomain( <V> )
+#O  SemiEchelonBasisByGenerators( <V>, <vectors> )
+#O  SemiEchelonBasisByGeneratorsNC( <V>, <vectors> )
+##
+DeclareSynonymAttr( "BasisOfDomain", Basis );
+DeclareSynonym( "BasisByGenerators", Basis );
+DeclareSynonym( "BasisByGeneratorsNC", BasisNC );
+DeclareSynonymAttr( "SemiEchelonBasisOfDomain", SemiEchelonBasis );
+DeclareSynonym( "SemiEchelonBasisByGenerators", SemiEchelonBasis );
+DeclareSynonym( "SemiEchelonBasisByGeneratorsNC", SemiEchelonBasisNC );
+
+
+#############################################################################
+##
+#O  NewBasis( <V>[, <gens>] )
+##
+##  This operation is obsolete.
+##  The idea to introduce it was that its methods were allowed to call
+##  `Objectify', whereas `Basis' methods were thought to call `NewBasis'.
+##
+DeclareSynonym( "NewBasis", Basis );
+
+
+#############################################################################
+##
+#O  MutableBasisByGenerators( <F>, <gens>[, <zero>] )
+##
+DeclareSynonym( "MutableBasisByGenerators", MutableBasis );
+
+
+#############################################################################
+##
+##  Some relics of the old primitive groups library.
+##
+BindGlobal( "AffinePermGroupByMatrixGroup", function( arg )
+    return AffineActionByMatrixGroup( arg[1] );
+end );
+
+DeclareSynonym( "PrimitiveAffinePermGroupByMatrixGroup",
+    AffineActionByMatrixGroup );
 
 
 #############################################################################

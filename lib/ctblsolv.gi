@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains character table methods for solvable groups.
 ##
@@ -22,7 +23,7 @@ InstallMethod( CharacterDegrees,
     "for an abelian group, and an integer p (just strip off the p-part)",
     [ IsGroup and IsAbelian, IsInt ],
     RankFilter(IsZeroCyc), # There is a method for groups for
-			   # the integer zero which is worse
+                           # the integer zero which is worse
     function( G, p )
     G:= Size( G );
     if p <> 0 then
@@ -65,7 +66,6 @@ end );
 ##  The kernel of <v> is returned.
 ##
 BindGlobal( "KernelUnderDualAction", function( N, Npcgs, v )
-
     local gens, # generators list
           i, j;
 
@@ -89,7 +89,6 @@ end );
 #F  ProjectiveCharDeg( <G> ,<z> ,<q> )
 ##
 InstallGlobalFunction( ProjectiveCharDeg, function( G, z, q )
-
     local oz,       # the order of `z'
           N,        # normal subgroup of `G'
           t,
@@ -382,9 +381,8 @@ InstallMethod( CharacterDegrees,
     "for a solvable group and an integer (Conlon's algorithm)",
     [ IsGroup and IsSolvableGroup, IsInt ],
     RankFilter(IsZeroCyc), # There is a method for groups for
-			   # the integer zero which is worse
+                           # the integer zero which is worse
     function( G, q )
-
     local r,      # list of degrees, result
           N,      # elementary abelian normal subgroup of `G'
           p,      # prime divisor of the order of `N'
@@ -495,7 +493,6 @@ InstallMethod( CharacterDegrees,
 #F  CoveringTriplesCharacters( <G>, <z> ) . . . . . . . . . . . . . . . local
 ##
 InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
-
     local oz,
           h,
           img,
@@ -664,7 +661,6 @@ InstallMethod( IrrConlon,
     "for a group",
     [ IsGroup ],
     function( G )
-
     local mulmoma,    # local function: multiply monomial matrices
           ct,         # character table of `G'
           ccl,        # conjugacy classes of `G'
@@ -848,12 +844,20 @@ InstallMethod( Irr,
 ##
 InstallValue( BaumClausenInfoDebug, rec(
     makemat:= function( record, e )
-        local dim, mat, i;
+        local dim, mat, diag, gcd, i;
         dim:= Length( record.diag );
         mat:= NullMat( dim, dim );
-        e:= E(e);
+        diag:= record.diag;
+        gcd:= Gcd( diag );
+        if gcd = 0 then
+          e:= 1;
+        else
+          gcd:= GcdInt( gcd, e );
+          e:= E( e / gcd );
+          diag:= diag / gcd;
+        fi;
         for i in [ 1 .. dim ] do
-          mat[i][ record.perm[i] ]:= e^record.diag[ record.perm[i] ];
+          mat[i][ record.perm[i] ]:= e^diag[ record.perm[i] ];
         od;
         return mat;
     end,
@@ -896,7 +900,6 @@ InstallMethod( BaumClausenInfo,
     "for a (solvable) group",
     [ IsGroup ],
     function( G )
-
     local e,             # occurring roots of unity are `e'-th roots
           pcgs,          # Pcgs of `G'
           lg,            # length of `pcgs'
@@ -1040,8 +1043,16 @@ InstallMethod( BaumClausenInfo,
       # compute its position in the composition series.
       abel:= Position( cs, ImagesSet( hom, ssr.ssr ) );
 
-    fi;
+      # If `G' is supersolvable then `abel = lg+1',
+      # but the last *nontrivial* member of the chain is normal and abelian,
+      # so we choose this group.
+      # (Otherwise we would have the technical problem in step 4 that the
+      # matrix `M' would be empty.)
+      if lg < abel then
+        abel:= lg;
+      fi;
 
+    fi;
 
     # Step 2:
     # Compute the representations of `cs[ abel ]',
@@ -1112,7 +1123,6 @@ InstallMethod( BaumClausenInfo,
       p:= indices[i];
 
       # `pexp' describes $g_i^p$.
-      #was: pexp:= ExponentsOfPcElement( pcgs, pcgs[i]^p );
       pexp:= ExponentsOfRelativePower( pcgs,i);
 # { ? } ??
 
@@ -1219,7 +1229,7 @@ InstallMethod( BaumClausenInfo,
       roots:= [ 0 .. p-1 ] * ( e/p );
 
       Info( InfoGroup, 2,
-            "BaumClausenInfo: compute repr. of step ", i );
+            "BaumClausenInfo: Compute repres. of step ", i );
 
       # Step A:
       # Compute representations of $G_i$ arising from *linear*
@@ -1583,18 +1593,18 @@ InstallMethod( BaumClausenInfo,
               # Note that $B_u = [ [ 1 ] ]$ for $0\leq u\leq p-2$,
               # and $B_{p-1} = \Phi_0(g_i^p)$.
 
-              # Next we compute the image under $A_{u-1}$;
-              # this matrix is in the $u$-th column block
-              # and in the $\pi(u-1)$-th row block of $D$.
+              # Next we compute the image under $A_{\pi^{u-1}(0)}$;
+              # this matrix is in the $(\pi^{u-1}(0)+1)$-th column block
+              # and in the $(\pi^u(0)+1)$-th row block of $D^{g_j}$.
               # Since we do not have this matrix explicitly,
               # we use the conjugate representation and the action
               # encoded by `cexp'.
               # Note the necessary initial shift because we use the
               # whole representation $D$ and not a single constituent;
-              # so we shift by `pi[u] - 1'.
+              # so we shift by $\pi^u(0)+1$.
 #T `perm' is nontrivial only for v = 1, this should make life easier.
               value:= 0;
-              image:= pi[u];
+              image:= pi[l];
               for v in [ 1 .. lg-i+1 ] do
                 for w in [ 1 .. cexp[v] ] do
                   image:= D[v].perm[ image ];
@@ -1773,16 +1783,16 @@ InstallMethod( BaumClausenInfo,
               image:= Xlist[j][ Forb[ pi[l] ] ].perm[1];
               value:= Xlist[j][ Forb[ pi[l] ] ].diag[ image ];
 
-              # Next we compute the image under $A_{u-1}$;
-              # this matrix is in the $u$-th column block
-              # and in the $\pi(u-1)$-th row block of $D$.
+              # Next we compute the image under $A_{\pi^{u-1}(0)}$;
+              # this matrix is in the $(\pi^{u-1}(0)+1)$-th column block
+              # and in the $(\pi^u(0)+1)$-th row block of $D^{g_j}$.
               # Since we do not have this matrix explicitly,
               # we use the conjugate representation and the action
               # encoded by `cexp'.
               # Note the necessary initial shift because we use the
               # whole representation $D$ and not a single constituent;
-              # so we shift by `dim * ( pi[u] - 1 )'.
-              image:= dim * ( pi[u] - 1 ) + image;
+              # so we shift by `dim' times $\pi^u(0)+1$.
+              image:= dim * ( pi[l] - 1 ) + image;
               for v in [ 1 .. lg-i+1 ] do
                 for w in [ 1 .. cexp[v] ] do
                   image:= D[v].perm[ image ];
@@ -1897,12 +1907,12 @@ InstallMethod( BaumClausenInfo,
 #F  IrreducibleRepresentationsByBaumClausen( <G> )  .  for a supersolv. group
 ##
 BindGlobal( "IrreducibleRepresentationsByBaumClausen", function( G )
-
     local mrep,    # list of images lists for the result
           info,    # result of `BaumClausenInfo'
-          Ee,      # root of unity
           lg,      # composition length of `G'
           rep,     # loop over the representations
+          gcd,     # g.c.d. of the exponents in `rep'
+          Ee,      # complex root of unity needed for `rep'
           images,  # one list of images
           dim,     # current dimension
           i, k,    # loop variabes
@@ -1910,23 +1920,31 @@ BindGlobal( "IrreducibleRepresentationsByBaumClausen", function( G )
 
     mrep:= [];
     info:= BaumClausenInfo( G );
-    Ee:= E( info.exponent );
     lg:= Length( info.pcgs );
 
     # Compute the images of linear representations on the pcgs.
     for rep in info.lin do
-      Add( mrep, List( rep, x -> [ [ Ee^x ] ] ) );
-#T for not too big exponent store the powers Ee^x (compute only once)?
+      gcd:= Gcd( rep );
+      if gcd = 0 then
+        Add( mrep, List( rep, x -> [ [ 1 ] ] ) );
+      else
+        gcd:= GcdInt( gcd, info.exponent );
+        Ee:= E( info.exponent / gcd );
+        Add( mrep, List( rep / gcd, x -> [ [ Ee^x ] ] ) );
+      fi;
     od;
 
     # Compute the images of nonlinear representations on the pcgs.
     for rep in info.nonlin do
       images:= [];
       dim:= Length( rep[1].perm );
+      gcd:= GcdInt( Gcd( List( rep, x -> Gcd( x.diag ) ) ), info.exponent );
+      Ee:= E( info.exponent / gcd );
       for i in [ 1 .. lg ] do
         mat:= NullMat( dim, dim, Rationals );
         for k in [ 1 .. dim ] do
-          mat[k][ rep[i].perm[k] ]:= Ee^rep[i].diag[ rep[i].perm[k] ];
+          mat[k][ rep[i].perm[k] ]:=
+              Ee^( rep[i].diag[ rep[i].perm[k] ] / gcd );
         od;
         images[i]:= mat;
       od;
@@ -1978,7 +1996,6 @@ InstallMethod( IrreducibleRepresentations,
     "for a finite group over a finite field",
     [ IsGroup and IsFinite, IsField and IsFinite ],
     function( G, f )
-
     local md, hs, gens, M, mats, H, hom;
 
     md := IrreducibleModules( G, f, 0 );
@@ -2003,20 +2020,21 @@ InstallMethod( IrrBaumClausen,
     "for a (solvable) group",
     [ IsGroup ],
     function( G )
-
     local mulmoma,        # local function  to multiply monomial matrices
           ccl,            # conjugacy classes of `G'
           tbl,            # character table of `G'
           info,           # result of `BaumClausenInfo'
           pcgs,           # value of `info.pcgs'
           lg,             # composition length
-          evl,            #
+          evl,            # list encoding exponents of class representatives
           i, j, k,        # loop variables
           exps,           # exponent vector of a group element
           t,              # intermediate representation value
-          Ee,             # complex root of unity
           irreducibles,   # list of irreducible characters
           rep,            # loop over the representations
+          gcd,            # g.c.d. of the exponents in `rep'
+          q,              # 
+          Ee,             # complex root of unity needed for `rep'
           chi,            # one character values list
           deg,            # character degree
           idmat,          # identity matrix
@@ -2034,66 +2052,71 @@ InstallMethod( IrrBaumClausen,
 
     tbl:= CharacterTable( G );
     ccl:= ConjugacyClasses( tbl );
+    SetExponent( G, Exponent( tbl ) );
     info:= BaumClausenInfo( G );
+
+    # The trivial group does not admit matrix arithmetic for evaluations.
+    if IsTrivial( G ) then
+      return [ Character( G, [ 1 ] ) ];
+    fi;
+
     pcgs:= info.pcgs;
     lg:= Length( pcgs );
 
-    evl:= [];
-    for i in [ 2 .. Length( ccl ) ] do
-      exps:= ExponentsOfPcElement( pcgs, Representative( ccl[i] ) );
-      t:= [];
-      for j in [ 1 .. lg ] do
-        for k in [ 1 .. exps[j] ] do
-          Add( t, j );
-        od;
-      od;
-      evl[ i-1 ]:= t;
-    od;
-
-    Ee:= E( info.exponent );
-    irreducibles:= [];
+    exps:= List( ccl,
+                 c -> ExponentsOfPcElement( pcgs, Representative( c ) ) );
 
     # Compute the linear irreducibles.
-    for rep in info.lin do
-      chi:= [ 1 ];
-      for j in evl do
-
-        # Compute the value of the representation at the representative.
-        t:= 0;
-        for k in j do
-          t:= t + rep[k];
-        od;
-        Add( chi, Ee^t );
-
-      od;
-      Add( irreducibles, Character( tbl, chi ) );
-    od;
+    # Compute the roots of unity only once for all linear characters.
+    # ($q$-th roots suffice, where $q$ divides the number of linear
+    # characters and the known exponent; we do *not* compute the smallest
+    # possible roots for each representation.)
+    q:= Gcd( info.exponent, Length( info.lin ) );
+    gcd:= info.exponent / q;
+    Ee:= E(q);
+    Ee:= List( [ 0 .. q-1 ], i -> Ee^i );
+    irreducibles:= List( info.lin, rep ->
+        Character( tbl, Ee{ ( ( exps * rep ) / gcd mod q ) + 1 } ) );
 
     # Compute the nonlinear irreducibles.
-    for rep in info.nonlin do
-      deg:= Length( rep[1].perm );
-      chi:= [ deg ];
-      idmat:= rec( perm := [ 1 .. deg ], diag := [ 1 .. deg ] * 0 );
-      for j in evl do
-
-        # Compute the value of the representation at the representative.
-        t:= idmat;
-        for k in j do
-          t:= mulmoma( t, rep[k] );
+    if not IsEmpty( info.nonlin ) then
+      evl:= [];
+      for i in [ 2 .. Length( ccl ) ] do
+        t:= [];
+        for j in [ 1 .. lg ] do
+          for k in [ 1 .. exps[i][j] ] do
+            Add( t, j );
+          od;
         od;
-
-        # Compute the character value.
-        trace:= 0;
-        for k in [ 1 .. deg ] do
-          if t.perm[k] = k then
-            trace:= trace + Ee^t.diag[k];
-          fi;
-        od;
-        Add( chi, trace );
-
+        evl[ i-1 ]:= t;
       od;
-      Add( irreducibles, Character( tbl, chi ) );
-    od;
+      for rep in info.nonlin do
+        gcd:= GcdInt( Gcd( List( rep, x -> Gcd( x.diag ) ) ), info.exponent );
+        Ee:= E( info.exponent / gcd );
+        deg:= Length( rep[1].perm );
+        chi:= [ deg ];
+        idmat:= rec( perm := [ 1 .. deg ], diag := [ 1 .. deg ] * 0 );
+        for j in evl do
+
+          # Compute the value of the representation at the representative.
+          t:= idmat;
+          for k in j do
+            t:= mulmoma( t, rep[k] );
+          od;
+
+          # Compute the character value.
+          trace:= 0;
+          for k in [ 1 .. deg ] do
+            if t.perm[k] = k then
+              trace:= trace + Ee^( t.diag[k] / gcd );
+            fi;
+          od;
+          Add( chi, trace );
+
+        od;
+        Add( irreducibles, Character( tbl, chi ) );
+      od;
+    fi;
 
     # Return the result.
     return irreducibles;
@@ -2112,7 +2135,6 @@ InstallMethod( IrrBaumClausen,
 ##
 InstallGlobalFunction( InducedRepresentationImagesRepresentative,
     function( rep, H, R, g )
-
     local len, blocks, i, k, kinv, j;
 
     len:= Length( R );
@@ -2145,7 +2167,6 @@ end );
 ##  of <rep> to <H> is computed.
 ##
 InstallGlobalFunction( InducedRepresentation, function( arg )
-
     local rep, G, H, R, gens, images, map;
 
     # Get and check the arguments.

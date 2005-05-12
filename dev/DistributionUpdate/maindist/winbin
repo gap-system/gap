@@ -1,0 +1,67 @@
+#!/bin/sh
+#############################################################################
+##
+##  $Id$
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+TGZ=${DISTROOT}'/wincode.tgz'
+BINTGZ=${DISTROOT}'/winbin.tgz'
+
+if [ \! -f ${BINTGZ} ];  then
+  echo "No archive "${BINTGZ}" found, packing source."
+  cd ${DISTROOT}'/'${DISTNAME}
+  tar zcf ${TGZ} src/* cnf/* configure "configure.in" \
+          "Makefile.in" "sysinfo.in" gap.shi
+
+  echo "Transfer the file:  "${TGZ}
+  echo "to a PC with installed cygwin. Extract the file using"
+  echo "      tar zxf wincode.tgz "
+  echo "and call"
+  echo "     ./configure"
+  echo "     make"
+  echo "     tar zcf winbin.tgz bin/i686-pc-cygwin-gcc/gap.exe"
+  echo "Then copy the resulting winbin.tgz archive to"
+  echo "     "${DISTROOT}"/winbin.tgz"
+  echo "on this machine and leave by typing 'exit'."
+  (cd ${DISTROOT};bash)
+  echo "Thanks!"
+fi
+if [ \! -f ${BINTGZ} ];  then
+  echo ${BINTGZ}" not found"
+  exit 1
+else
+  echo "Found "${BINTGZ}
+  echo "Adding it to main zoo archive."
+  cd ${DISTROOT}'/'${DISTNAME}
+  tar zxf ${BINTGZ}
+  # these should be already in the repository
+ # # copy libs in place
+ # cp /gap/4.0/bin/cygwin1.dll bin
+ # cp /gap/4.0/bin/libW11.dll bin
+ # cp /gap/4.0/bin/rxvt.exe bin
+ # cp /gap/4.0/bin/regtool.exe bin
+  if [ \! -x bin/i686-pc-cygwin-gcc/gap.exe ];  then
+     echo "PANIC: no executable has been created"
+     exit 1
+  fi
+  cd ${DISTROOT}
+  zooarchive=gap${RBVERSION}.zoo
+  if [ \! -f  ${DISTROOT}/${zooarchive} ];  then
+     echo "PANIC: zoo archive to add to not yet created: "\
+           ${DISTROOT}"/"${zooarchive}
+     exit 1
+  fi
+  cp ${DISTNAME}/bin/i686-pc-cygwin-gcc/gap.exe ${DISTNAME}/bin/gapw95.exe 
+  (echo "!BINARY!"; echo "/end") | zoo ahc ${zooarchive} ${DISTNAME}/bin/gapw95.exe
+  #find ${DISTNAME}/bin/i686-pc-cygwin-gcc \
+  #    -type f -exec sh -c \
+  #    '(echo "!BINARY!"; echo "/end") |  zoo ahc '${zooarchive}' '{} ";"
+  echo "added Windows binary to zoo archive."
+  exit 0
+fi
+
+

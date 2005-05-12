@@ -6,8 +6,10 @@
 **
 *Y  Copyright (C)  1997,  School of Mathematical and Computational Sciences,
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 *Y                        University of St Andrews, Scotland
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions that deal with weak pointer objects
 **  A weak pointer object looks like a plain list, except that its entries

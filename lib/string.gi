@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains functions for strings.
 ##
@@ -312,22 +313,19 @@ end);
 ##
 #F  LowercaseString( <string> ) . . . string consisting of lower case letters
 ##
+LOWERCASETRANSTABLE := 0;
 InstallGlobalFunction(LowercaseString , function( str )
-local result, i, pos;
-
-    result:= "";
-    for i in str do
-      pos:= Position( CHARS_UALPHA, i );
-      if pos = fail then
-        Add( result, i );
-      else
-        Add( result, CHARS_LALPHA[ pos ] );
-      fi;
-    od;
-    ConvertToStringRep( result );
-    return result;
+  local res;
+  # initialize translation table before first use
+  if LOWERCASETRANSTABLE = 0 then
+    LOWERCASETRANSTABLE := List([0..255], CHAR_INT);
+    LOWERCASETRANSTABLE{1+[65..90]} := LOWERCASETRANSTABLE{1+[97..122]};
+  fi;
+  # now delegate to kernels TranslateString
+  res := ShallowCopy(str);
+  TranslateString(res, LOWERCASETRANSTABLE);
+  return res;
 end);
-
 
 #############################################################################
 ##
@@ -341,6 +339,16 @@ InstallOtherMethod( Int,
 
 function( str )
     local   m,  z,  d,  i,  s;
+ 
+    # use kernel parser for longer strings:
+    if Length(str) > 24 then
+      z := EvalString(str);
+      if IsInt(z) then
+        return z;
+      else
+        Error("not string of integer: ", str, "\n");
+      fi;
+    fi;
 
     m := 1;
     z := 0;
@@ -350,6 +358,7 @@ function( str )
             m := m * -1;
             d := i+1;
         else
+            # this is quite fast since it is done in a kernel loop
             s := Position( CHARS_DIGITS, str[i] );
             if s <> fail  then
                 z := 10 * z + (s-1);
@@ -475,43 +484,46 @@ InstallMethod( SplitString,
         "for three strings",
         true,
         [ IsString, IsString, IsString ], 0,
-function( string, seps, wspace )
-    local   substrings,  a,  z;
-
-    ##  make sets from char lists
-    seps := Set(seps);
-    wspace := Set(wspace);
-
-    ##  store the substrings in a list.
-    substrings := [];
-
-    ##  a is the position after the last separator/white space.
-    a := 1;
-    z := 0;
-
-    for z in [1..Length( string )] do
-        ##  Whenever we encounter a separator or a white space, the substring
-        ##  starting after the last separator/white space is cut out.  The
-        ##  only difference between white spaces and separators is that white
-        ##  spaces don't separate empty strings.  
-        if string[z] in wspace then
-            if a < z then
-                Add( substrings, string{[a..z-1]} );
-            fi;
-            a := z+1;
-        elif string[z] in seps then
-            Add( substrings, string{[a..z-1]} );
-            a := z+1;
-        fi;
-    od;
-
-    ##  Pick up a substring at the end of the string.  Note that a trailing
-    ##  separator does not produce an empty string.
-    if a <= z  then
-        Add( substrings, string{[a..z]} );
-    fi;
-    return substrings;
-end );
+##  function( string, seps, wspace )
+##      local   substrings,  a,  z;
+##  
+##      ##  make sets from char lists
+##      seps := Set(seps);
+##      wspace := Set(wspace);
+##  
+##      ##  store the substrings in a list.
+##      substrings := [];
+##  
+##      ##  a is the position after the last separator/white space.
+##      a := 1;
+##      z := 0;
+##  
+##      for z in [1..Length( string )] do
+##          ##  Whenever we encounter a separator or a white space, the substring
+##          ##  starting after the last separator/white space is cut out.  The
+##          ##  only difference between white spaces and separators is that white
+##          ##  spaces don't separate empty strings.  
+##          if string[z] in wspace then
+##              if a < z then
+##                  Add( substrings, string{[a..z-1]} );
+##              fi;
+##              a := z+1;
+##          elif string[z] in seps then
+##              Add( substrings, string{[a..z-1]} );
+##              a := z+1;
+##          fi;
+##      od;
+##  
+##      ##  Pick up a substring at the end of the string.  Note that a trailing
+##      ##  separator does not produce an empty string.
+##      if a <= z  then
+##          Add( substrings, string{[a..z]} );
+##      fi;
+##      return substrings;
+##  end 
+# moved to kernel
+SplitStringInternal
+);
 
 InstallMethod( SplitString,
         "for a string and two characters",
@@ -585,13 +597,51 @@ end);
 
 #############################################################################
 ##
+#F  RemoveCharacters( <string>, <todelete> )
+##
+# moved into kernels string.c
+##  InstallGlobalFunction( "RemoveCharacters", function( string, todelete )
+##      local len, posto, posfrom, i;
+##  
+##      len:= Length( string );
+##      posto:= 0;
+##      posfrom:= 1;
+##      while posfrom <= len do
+##        if not string[ posfrom ] in todelete then
+##          posto:= posto + 1;
+##          string[ posto ]:= string[ posfrom ];
+##        fi;
+##        posfrom:= posfrom + 1;
+##      od;
+##      for i in [ len, len-1 .. posto + 1 ] do
+##        Unbind( string[i] );
+##      od;
+##  end );
+
+InstallGlobalFunction("RemoveCharacters", REMOVE_CHARACTERS);
+
+
+#############################################################################
+##
 #F  EvalString( <expr> ) . . . . . . . . . . . . evaluate a string expression
 ##
-InstallGlobalFunction("EvalString", function( expr )
-  local tmp;
-  tmp := Concatenation( "return ", expr, ";" );
-  return ReadAsFunction( InputTextString( tmp ) )();
-end );
+_EVALSTRINGTMP := 0;
+InstallGlobalFunction("EvalString", function( s )
+  local a, f, res;
+  a := "_EVALSTRINGTMP:=";
+  Append(a, s);
+  Add(a, ';');
+  Unbind(_EVALSTRINGTMP);
+  f := InputTextString(a);
+  Read(f);
+  if not IsBound(_EVALSTRINGTMP) then
+    Error("Could not evaluate string.\n");
+  fi;
+  res := _EVALSTRINGTMP;
+  Unbind(_EVALSTRINGTMP);
+  return res;
+end);
+Unbind(_EVALSTRINGTMP);
 
 #############################################################################
 ##
@@ -676,6 +726,9 @@ InstallGlobalFunction(FileString, function(arg)
     append := arg[3];
   else
     append := false;
+  fi;
+  if not (IsString(name) and IsString(str) and IsBool(append)) then
+      Error("Usage: FileString(<name>, <str> [, <append> ])");
   fi;
   out := OutputTextFile(name, append);
   if out=fail then

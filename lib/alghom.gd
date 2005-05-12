@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains declarations of operations for algebra(-with-one)
 ##  homomorphisms.
@@ -204,7 +205,8 @@ DeclareOperation( "MakePreImagesInfoOperationAlgebraHomomorphism",
 ##
 #A  IsomorphismFpAlgebra( <A> )
 ##
-##  isomorphism from the algebra <A> onto a finitely presented algebra.
+##  isomorphism from the algebra <A> onto a finitely presented algebra. Currently this
+##  is only implemented for associative algebras with one.
 ##
 DeclareAttribute( "IsomorphismFpFLMLOR", IsFLMLOR );
 

@@ -296,7 +296,7 @@ ID_GROUP_FUNCS[ 7 ] := function( G, inforec )
 
         # and find <s>
         y := First( [2..q-1], t -> t^p mod q = 1 );
-        s := LogMod( s, y, q );
+        s := LogMod( s, y, q ) mod OrderMod( y, q );
 
         typ := s; # the typ is Gpqr( s )
     fi;

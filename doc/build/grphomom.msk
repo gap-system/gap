@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Group Homomorphisms}
 
@@ -417,6 +418,16 @@ by testing or setting the property `IsGroupOfAutomorphisms'
 {\GAP} will try itself to find such a nice monomorphism once calculations in
 the automorphism group are done.
 
+Note that nice homomorphisms inherit down to subgroups, but cannot
+necessarily be extended from a subgroup to the whole group. Thus when
+working with a group of automorphisms, it can be beneficial to 
+enforce calculation of the nice monomorphism for the whole
+group (for example by explicitly calling `Random(G)' and ignoring
+the result -- it will be stored internally) at the start of the calculation.
+Otherwise {\GAP} might first calculate a nice monomorphism for the subgroup,
+only to be forced to calculate a new nice monomorphism for the whole group
+later on.
+
 \Declaration{AssignNiceMonomorphismAutomorphismGroup}
 
 If a good domain for a faithful permutation action is known already, a
@@ -456,7 +467,7 @@ Group([ (1,2,3,4), (1,2) ])
 gap> h:=Group((1,2,3),(1,2));
 Group([ (1,2,3), (1,2) ])
 gap> quo:=GQuotients(g,h);
-[ [ (1,2,3,4), (1,2) ] -> [ (2,3), (1,2) ] ]
+[ [ (1,4,2,3), (1,2,4) ] -> [ (2,3), (1,2,3) ] ]
 \endexample
 
 \Declaration{IsomorphicSubgroups}

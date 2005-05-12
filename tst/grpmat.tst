@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -54,8 +56,10 @@ gap> img:=Image( iso );;
 gap> Size(img);
 67010895544320000
 
-gap> STOP_TEST( "grpmat.tst", 1553569776 );
+gap> STOP_TEST( "grpmat.tst", 1331700000 );
+
 
 #############################################################################
 ##
-#E  grpmat.tst  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

@@ -8,6 +8,7 @@
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementations for dictionaries.
 ##
@@ -799,17 +800,39 @@ InstallOtherMethod(AddDictionary,"for hash tables",true,
 # (faster) dictionary methods.
 InstallGlobalFunction(DoubleHashDictSize,
 function( hash )
-  local oldKeyArray, oldValueArray, i;
+  local oldKeyArray, oldValueArray, i,j,l;
   oldKeyArray := hash!.KeyArray;
   oldValueArray := hash!.ValueArray;
+  # compact
+  l:=Length(oldKeyArray);
+  i:=1; # read 
+  j:=1; # write
+  while i<=l do
+    if oldKeyArray[i]<>fail then
+      if i>j then
+	oldKeyArray[j]:=oldKeyArray[i];
+	oldValueArray[j]:=oldValueArray[i];
+      fi;
+      j:=j+1;
+    fi;
+    i:=i+1;
+  od;
+  for i in [l,l-1..j] do
+    Unbind(oldKeyArray[i]);
+    Unbind(oldValueArray[i]);
+  od;
+
   hash!.LengthArray := hash!.LengthArray * 2;
   hash!.LengthArrayHalf := Int(hash!.LengthArray / 2);
   hash!.KeyArray := ListWithIdenticalEntries( hash!.LengthArray, fail );
   hash!.ValueArray := [];
   hash!.NumberKeys := 0;
-  for i in [1..Length(oldKeyArray)] do
+  l:=Length(oldKeyArray);
+  for i in [l,l-1..1] do
     if oldKeyArray[i] <> fail then
       HashDictAddDictionary( hash, oldKeyArray[i], oldValueArray[i] );
+      Unbind(oldKeyArray[i]);
+      Unbind(oldValueArray[i]);
     fi;
   od;
 end );

@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Strings and Characters}
 
@@ -32,8 +33,8 @@ gap> s2 := "Hello world.";
 "Hello world."
 gap> s1 = s2;
 true
-gap> s3 := "";
-""           # the empty string
+gap> s3 := "";  # the empty string
+""
 gap> s3 = [];
 true
 gap> IsString( [] );
@@ -43,16 +44,18 @@ true
 false
 gap> IsString( [ '1', '2', '3' ] );
 true
-gap> IsString( [ '1', '2', , '4' ] );  IsString( [ '1', '2', 3 ] );
-false        # strings must be dense
-false        # strings must only contain characters
+gap> IsString( [ '1', '2', , '4' ] );  # strings must be dense
+false
+gap> IsString( [ '1', '2', 3 ] );  # strings must only contain characters
+false
 \endexample
-\begintt
+
+%notest
+\beginexample
 gap> s := "\007";
 "\007"
 gap> Print(s); # rings bell in many terminals
-gap> 
-\endtt
+\endexample
 
 Note that a string is just a special case of a list.
 So everything that is possible for lists (see~"Lists") is also possible
@@ -99,7 +102,7 @@ to the output stream/file. (But depending on  the type of the stream and the
 presence of some special characters used  as hints for line breaks there may
 be sent some additional newline (or backslash and newline) characters.
 
-\begintt
+\beginexample
 gap> s4:= "abc\"def\nghi";;
 gap> View( s4 );  Print( "\n" );
 "abc\"def\nghi"
@@ -112,25 +115,27 @@ abc"def
 ghi
 gap> s := "German uses strange characters: \344\366\374\337\n";
 "German uses strange characters: äöüß\n"
-gap> PrintObj(s);
-"German uses strange characters: \344\366\374\337\n"gap> 
 gap> Print(s);
 German uses strange characters: äöüß
-\endtt
+gap> PrintObj(s);
+"German uses strange characters: \344\366\374\337\n"gap> 
+\endexample
 
 Note that only those line breaks are printed by `Print' that are contained
 in the string (`\\n' characters, see~"Special Characters"),
 as is shown in the example below.
 
-\begintt
+%notest
+\beginexample
 gap> s1;
 "Hello world."
 gap> Print( s1 );
-Hello world.gap> Print( s1, "\nnext line\n" );
+Hello world.gap> Print( s1, "\n" );
+Hello world.
+gap> Print( s1, "\nnext line\n" );
 Hello world.
 next line
-gap> 
-\endtt
+\endexample
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -286,7 +291,6 @@ true
 \Declaration{IsUpperAlphaChar}
 \Declaration{IsAlphaChar}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Comparisons of Strings}
 
@@ -301,10 +305,10 @@ are not equal and `false' otherwise.
 \beginexample
 gap> "Hello world.\n" = "Hello world.\n";
 true
-gap> "Hello World.\n" = "Hello world.\n";
-false # string comparison is case sensitive
-gap> "Hello world." = "Hello world.\n";
-false # the first string has no <newline>
+gap> "Hello World.\n" = "Hello world.\n";  # string comparison is case sensitive
+false
+gap> "Hello world." = "Hello world.\n";  # the first string has no <newline>
+false
 gap> "Goodbye world.\n" = "Hello world.\n";
 false
 gap> [ 'a', 'b' ] = "ab";
@@ -317,14 +321,14 @@ The ordering of strings is lexicographically according to the order
 implied by the underlying, system dependent, character set.
 
 \beginexample
-gap> "Hello world.\n" < "Hello world.\n";
-false # the strings are equal
-gap> "Hello World.\n" < "Hello world.\n";
-true # in ASCII uppercase letters come before lowercase letters
-gap> "Hello world." < "Hello world.\n";
-true # prefixes are always smaller
-gap> "Goodbye world.\n" < "Hello world.\n";
-true # `G' comes before `H', in ASCII at least
+gap> "Hello world.\n" < "Hello world.\n";  # the strings are equal
+false
+gap> "Hello World." < "Hello world.";  # in ASCII capitals range before small letters
+true
+gap> "Hello world." < "Hello world.\n";  # prefixes are always smaller
+true
+gap> "Goodbye world.\n" < "Hello world.\n";  # `G' comes before `H', in ASCII at least
+true
 \endexample
 
 Strings can be compared via `\<' with certain {\GAP} objects that are not
@@ -413,6 +417,59 @@ For the possibility to print {\GAP} objects to strings, see~"String Streams".
 \Declaration{Chomp}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Character Conversion}
+
+The following functions convert characters in their internal integer values
+and vice versa. Note that the number corresponding to a particular character
+might depend on the system used. While most systems use an extension of
+ASCII, in particular character values outside the range 32-126 might differ
+between architectures.
+
+All functions in this section are internal and behaviour is undefined if
+invarid arguments are given.
+
+\>INT_CHAR(<char>) F
+
+returns an integer value in the range 0-255 that corresponds to <char>.
+
+\>CHAR_INT(<int>) F
+
+returns a character which corresponds to the integer value <int>, which must
+be in the range 0-255.
+
+\beginexample
+gap> c:=CHAR_INT(65);
+'A'
+gap> INT_CHAR(c);
+65
+\endexample
+
+\>SINT_CHAR(<char>) F
+
+returns a signed integer value in the range $-128$--127 that corresponds to
+<char>.
+
+\>CHAR_SINT(<int>) F
+
+returns a character which corresponds to the signed integer value <int>,
+which must be in the range $-128$--127.
+
+The signed and unsigned integer functions behave the same for values in the
+range from 0 to 127.
+
+\beginexample
+gap> SINT_CHAR(c);
+65
+gap> c:=CHAR_SINT(-20);;
+gap> SINT_CHAR(c);
+-20
+gap> INT_CHAR(c);
+236
+gap> SINT_CHAR(CHAR_INT(255));
+-1
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operations to Evaluate Strings}
 
 \index{evaluation!strings}
@@ -436,7 +493,9 @@ when a wrong character is found in the string. This function can be used
 integers from respectively into {\GAP}. Note that the translation between
 integers and their hexa-decimal representation costs linear computation time
 in terms of the number of digits, while translation from and into decimal
-representation needs substantial computations.
+representation needs substantial computations. If <str> is not in compact
+string representation then "ConvertToStringRep" is applied to it as side
+effect.
 
 \beginexample
 gap> Int("12345")+1;

@@ -4,6 +4,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  The  '<Something>RowVector' functions operate  on row vectors, that is to
 ##  say (where it  makes sense) that the vectors  must have the  same length,
@@ -835,7 +836,7 @@ function( l1, n1, exp, l2, n2 )
             n1 := ReduceCoeffs( l1, Length(l1), l2, n2 );
         fi;
     od;
-    return c;
+    return c{[1..n3]};
 end );
 
 
@@ -1035,8 +1036,8 @@ InstallMethod(DistancesDistributionVecFFEsVecFFE,"generic",IsCollsElms,
   [IsList, IsList],0,
 function(vecs,vec)
 local d,i;
-  ConvertToMatrixRep(vecs);
-  ConvertToVectorRep(vec);
+  ConvertToMatrixRepNC(vecs);
+  ConvertToVectorRepNC(vec);
   d:=ListWithIdenticalEntries(Length(vec)+1,0);
   for i in vecs do
     i:=DistanceVecFFE(i,vec);
@@ -1069,8 +1070,8 @@ InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
         [IsMatrix,IsFFECollection and IsField, IsList],0,
         function(mat,f,vec)
     local d,fdi,i,j,veclis,mult,mults,fdip,q, ok8;
-    ConvertToMatrixRep(mat,f);
-    ConvertToVectorRep(vec,f);
+    ConvertToMatrixRepNC(mat,f);
+    ConvertToVectorRepNC(vec,f);
     # build the data structures
     f:=AsSSortedList(f);
     Assert(1,f[1]=Zero(f[1]));
@@ -1127,19 +1128,19 @@ InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
         ok8 := true;
         for i in veclis do
             for j in [1..q] do
-                if q <> ConvertToVectorRep(i[j],q) then
+                if q <> ConvertToVectorRepNC(i[j],q) then
                     i[j] := PlainListCopy(i[j]);
                     MakeImmutable(i[j]);
-                    if q <> ConvertToVectorRep(i[j],q) then
+                    if q <> ConvertToVectorRepNC(i[j],q) then
                         ok8 := false;
                     fi;
                 fi;
             od;
         od;
-        if q <> ConvertToVectorRep(vec,q) then
+        if q <> ConvertToVectorRepNC(vec,q) then
             vec := PlainListCopy(vec);
             MakeImmutable(vec);
-            if q <> ConvertToVectorRep(vec,q) then
+            if q <> ConvertToVectorRepNC(vec,q) then
                 ok8 := false;
             fi;
         fi;
@@ -1166,12 +1167,12 @@ end);
 #M  AClosestVectorCombinationsMatFFEVecFFE( <mat>,<f>,<vec>,<l>,<stop> )
 ##
 
-AClosVecLib:=function(veclis,vec,sum,pos,l,m,cnt,stop,bd,bv)
+AClosVecLib:=function(veclis,vec,sum,pos,l,m,cnt,stop,bd,bv,coords,bcoords)
     local i,di,vp;
     if    # if this vector has coeff 0 there must be at least cnt+1 free positions
         # to come up with the right number of vectors 
       (l>cnt+pos) then
-        bd:=AClosVecLib(veclis,vec,sum,pos+1,l,m,cnt,stop,bd,bv);
+        bd:=AClosVecLib(veclis,vec,sum,pos+1,l,m,cnt,stop,bd,bv,coords,bcoords);
         
         if bd<=stop then
             return bd;
@@ -1181,6 +1182,9 @@ AClosVecLib:=function(veclis,vec,sum,pos,l,m,cnt,stop,bd,bv)
     vp:=veclis[pos];
     for i in [1..m] do
         AddRowVector(sum,vp[i]);
+        if coords <> false then
+            coords[pos] := i;
+        fi;
         if cnt = 0 then
             # test this vector
             di:=DistanceVecFFE(sum,vec);
@@ -1188,13 +1192,16 @@ AClosVecLib:=function(veclis,vec,sum,pos,l,m,cnt,stop,bd,bv)
                 # store new optimum
                 bd:=di;
                 bv{[1..Length(sum)]}:=sum;
+                if coords <> false then
+                    bcoords{[1..Length(veclis)]} := coords;
+                fi;
                 if bd <= stop then
                     return bd;
                 fi;
             fi;
         else
             if pos<l then
-                bd:=AClosVecLib(veclis,vec,sum,pos+1,l,m,cnt-1,stop,bd,bv);
+                bd:=AClosVecLib(veclis,vec,sum,pos+1,l,m,cnt-1,stop,bd,bv,coords,bcoords);
                 if bd<=stop then
                     return bd;
                 fi;
@@ -1203,30 +1210,29 @@ AClosVecLib:=function(veclis,vec,sum,pos,l,m,cnt,stop,bd,bv)
     od;
     # reset component to 0
     AddRowVector(sum,vp[m+1]);
+    coords[pos] := 0;
     return bd;
 end;
 
-
-InstallMethod(AClosestVectorCombinationsMatFFEVecFFE,"generic",
-        function(a,b,c,d,e)
-    return HasElementsFamily(a) and IsIdenticalObj(b,c)
-           and IsIdenticalObj(ElementsFamily(a),b);
-end,
-  [IsMatrix,IsFFECollection and IsField, IsList, IsInt,IsInt],0,
-  function(mat,f,vec,cnt,stop)
-    local b,fdi,i,j,veclis,mult,mults,fdip, q, ok8;
+AClosestVectorDriver :=
+  function(mat,f,vec,cnt,stop,coords)
+    local b,fdi,i,j,veclis,mult,mults,fdip, q, ok8,c,bc;
 
     # special case: combination of 0 vectors
     if cnt=0 then
-      return Zero(vec);
+        if coords then
+            return [Zero(vec),ListWithIdenticalEntries(Length(mat),Zero(f))];
+        else
+            return Zero(vec);
+        fi;
     fi;
    
     if cnt > Length(mat) then
       Error("First list needs at least ", cnt, " vectors . . .\n");
     fi;
     
-    ConvertToMatrixRep(mat);
-    ConvertToVectorRep(vec,f);
+    ConvertToMatrixRepNC(mat);
+    ConvertToVectorRepNC(vec,f);
     
     # build the data structures
     f:=AsSSortedList(f);
@@ -1270,7 +1276,15 @@ end,
                 DIST_GF2VEC_GF2VEC(j,j);
             od;
         od;
-        b:=A_CLOS_VEC(veclis,vec,cnt-1,stop);
+        if coords then
+            b := A_CLOS_VEC_COORDS(veclis,vec,cnt-1,stop);
+            ConvertToVectorRepNC(b[1],2);
+            b[2] := f{1+b[2]};
+        else
+            b:=A_CLOS_VEC(veclis,vec,cnt-1,stop);
+            ConvertToVectorRepNC(b,2);
+        fi;
+	return b;
     elif q <= 256 then
         #
         # 8 bit case, have to get everything over one field!
@@ -1279,38 +1293,76 @@ end,
         ok8 := true;
         for i in veclis do
             for j in [1..q] do
-                if q <> ConvertToVectorRep(i[j],q) then
+                if q <> ConvertToVectorRepNC(i[j],q) then
                     i[j] := PlainListCopy(i[j]);
                     MakeImmutable(i[j]);
-                    if q <> ConvertToVectorRep(i[j],q) then
+                    if q <> ConvertToVectorRepNC(i[j],q) then
                         ok8 := false;
                     fi;
                 fi;
             od;
         od;
-        if q <> ConvertToVectorRep(vec,q) then
+        if q <> ConvertToVectorRepNC(vec,q) then
             vec := PlainListCopy(vec);
             MakeImmutable(vec);
-            if q <> ConvertToVectorRep(vec,q) then
+            if q <> ConvertToVectorRepNC(vec,q) then
                 ok8 := false;
             fi;
         fi;
         
         if ok8 then
-            return A_CLOSEST_VEC8BIT(veclis, vec, cnt-1, stop);
+            if coords then
+                b := A_CLOSEST_VEC8BIT_COORDS(veclis,vec,cnt-1,stop);
+                b[2] := f{1+b[2]};
+            else
+                return A_CLOSEST_VEC8BIT(veclis, vec, cnt-1, stop);
+            fi;
         fi;
     fi;
     # no kernel method available, use library recursion
     b:=ListWithIdenticalEntries(Length(vec),0);
-    AClosVecLib(veclis,vec,ZeroOp(vec),1,Length(veclis),
-            Length(f)-1, 
-            cnt-1,        # the routine uses 0 offset
-            stop,
-            Length(b)+1,  # value 1 larger than worst
-            b);
-    ConvertToVectorRep(b);
+    if coords then
+        c := ListWithIdenticalEntries(Length(mat),0);
+        bc:= ListWithIdenticalEntries(Length(mat),0);
+        AClosVecLib(veclis,vec,ZeroOp(vec),1,Length(veclis),
+                Length(f)-1, 
+                cnt-1,        # the routine uses 0 offset
+                stop,
+                Length(b)+1,  # value 1 larger than worst
+                b, c, bc);
+        ConvertToVectorRepNC(b);
+        return [b,f{1+bc}];
+    else
+        AClosVecLib(veclis,vec,ZeroOp(vec),1,Length(veclis),
+                Length(f)-1, 
+                cnt-1,        # the routine uses 0 offset
+                stop,
+                Length(b)+1,  # value 1 larger than worst
+                b, false,false);
+        ConvertToVectorRepNC(b);
+        return b;
+    fi;
+end;        
 
-  return b;
+
+InstallMethod(AClosestVectorCombinationsMatFFEVecFFE,"generic",
+        function(a,b,c,d,e)
+    return HasElementsFamily(a) and IsIdenticalObj(b,c)
+           and IsIdenticalObj(ElementsFamily(a),b);
+end,
+  [IsMatrix,IsFFECollection and IsField, IsList, IsInt,IsInt],0,
+  function(mat,f,vec,cnt,stop)
+    return AClosestVectorDriver(mat,f,vec,cnt,stop,false);
+end);
+
+InstallMethod(AClosestVectorCombinationsMatFFEVecFFECoords,"generic",
+        function(a,b,c,d,e)
+    return HasElementsFamily(a) and IsIdenticalObj(b,c)
+           and IsIdenticalObj(ElementsFamily(a),b);
+end,
+  [IsMatrix,IsFFECollection and IsField, IsList, IsInt,IsInt],0,
+  function(mat,f,vec,cnt,stop)
+    return AClosestVectorDriver(mat,f,vec,cnt,stop,true);
 end);
 
 #############################################################################
@@ -1424,23 +1476,23 @@ InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
     od;
     v := ListWithIdenticalEntries(n, felts[1]);
     w := ZeroOp(t[1]);
-    if 2 < q and q < 256 then
+    if 2 <= q and q < 256 then
         
         # 8 bit case, need to get all vectors over the right field
         ok8 := true;
-        if q <> ConvertToVectorRep(v,q) then
+        if q <> ConvertToVectorRepNC(v,q) then
             v := PlainListCopy(v);
-            ok8 := ok8 and q = ConvertToVectorRep(v,q);
+            ok8 := ok8 and q = ConvertToVectorRepNC(v,q);
         fi;
-        if ok8 and q <> ConvertToVectorRep(w,q) then
+        if ok8 and q <> ConvertToVectorRepNC(w,q) then
             w := PlainListCopy(w);
-            ok8 := ok8 and q = ConvertToVectorRep(w,q);
+            ok8 := ok8 and q = ConvertToVectorRepNC(w,q);
         fi;
         for x in vl{[1..n]} do
             for i in [1..q+1] do
-                if ok8 and q <> ConvertToVectorRep(x[i],q) then
+                if ok8 and q <> ConvertToVectorRepNC(x[i],q) then
                     x[i] := PlainListCopy(x[i]);
-                    ok8 := ok8 and q = ConvertToVectorRep(x[i],q);
+                    ok8 := ok8 and q = ConvertToVectorRepNC(x[i],q);
                 fi;
             od;
         od;

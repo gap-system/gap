@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for division rings.
 ##
@@ -517,11 +518,16 @@ InstallMethod( GeneratorsOfRingWithOne,
 ##
 EnumeratorOfPrimeField := function( F )
     local one;
-    if not IsFinite( F ) then
-      Error( "sorry, cannot compute elements list of infinite field <F>" );
+    if   not IsFinite( F ) then
+      TryNextMethod();
     fi;
     one:= One( F );
-    return AsSSortedListList( List( [ 0 .. Size( F ) - 1 ], i -> i * one ) );
+    if   Size( F ) <= MAXSIZE_GF_INTERNAL then
+      return AsSSortedListList( List( [ 0 .. Size( F ) - 1 ], i -> i * one ) );
+    elif IsZmodnZObj( one ) then
+      return EnumeratorOfZmodnZ( F );
+    fi;
+    TryNextMethod();
 end;
 
 InstallMethod( Enumerator,
@@ -529,17 +535,15 @@ InstallMethod( Enumerator,
     [ IsField and IsPrimeField ],
     EnumeratorOfPrimeField );
 
-InstallMethod( AsList,
+InstallMethod( EnumeratorSorted,
     "for a prime field",
     [ IsField and IsPrimeField ],
     EnumeratorOfPrimeField );
 
-
-#T InstallMethod( EnumeratorSorted, [ IsField and IsPrimeField ],
-#T     EnumeratorOfPrimeField );
-#T 
-#T InstallMethod( AsSSortedList, [ IsField and IsPrimeField ],
-#T     EnumeratorOfPrimeField );
+InstallMethod( AsList,
+    "for a prime field",
+    [ IsField and IsPrimeField ],
+    F -> AsList( EnumeratorOfPrimeField( F ) ) );
 
 
 #############################################################################
@@ -555,7 +559,6 @@ InstallMethod( AsList,
 ##  of <F>.
 ##
 BindGlobal( "DivisionRing_IsSubset", function( D, F )
-
     local CF;
 
     CF:= LeftActingDomain( F );

@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C) 1993, 1997
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the parts of the Dixon-Schneider specific to pc groups
 ##

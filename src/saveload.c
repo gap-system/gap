@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions concerned with saving and loading
 **  the workspace. There are support functions in gasman.c and elsewhere
@@ -30,6 +31,7 @@ const char * Revision_saveload_c =
 #include        "sysfiles.h"            /* file input/output               */
 #include        "plist.h"               /* plain lists                     */
 #include        "float.h"               /* floating points */
+#include        "compstat.h"            /* statically compiled modules     */
 
 #define INCLUDE_DECLARATION_PART
 #include        "saveload.h"            /* saving and loading              */
@@ -659,11 +661,16 @@ static void WriteSaveHeader( void )
 {
   UInt i;
   UInt globalcount = 0;
-#ifdef SYS_IS_64_BIT
-  SaveCStr( "GAP 4.0 beta 64 bit");
+  
+  SaveCStr("GAP workspace");
+  SaveCStr(SyKernelVersion);
+
+#ifdef SYS_IS_64_BIT             
+  SaveCStr("64 bit");
 #else
-  SaveCStr("GAP 4.0 beta 32 bit");
+  SaveCStr("32 bit");
 #endif
+
   WriteEndiannessMarker();
   
   SaveCStr("Counts and Sizes");
@@ -679,6 +686,7 @@ static void WriteSaveHeader( void )
 
   for ( i = NrBuiltinModules; i < NrModules; i++)
     {
+      SaveUInt(Modules[i]->type);
       SaveUInt(Modules[i]->isGapRootRelative);
       SaveCStr(Modules[i]->filename);
     }
@@ -770,18 +778,47 @@ void LoadWorkspace( Char * fname )
   OpenForLoad( fname );
 
   /* Check file header */
-  /* this and its opposite number in saving should use proper version
-     information */
+
   LoadCStr(buf,256);
+  if (SyStrncmp (buf, "GAP ", 4) != 0) {
+     Pr("File %s does not appear to be a GAP workspae.\n", (long) fname, 0L);
+     SyExit(1);
+  }
+
+  if (SyStrcmp (buf, "GAP workspace") == 0) {
+
+     LoadCStr(buf,256);
+     if (SyStrcmp (buf, SyKernelVersion) != 0) {
+        Pr("This workspace is not compatible with GAP kernel (%s, present: %s).\n", 
+           (long)buf, (long)SyKernelVersion);
+        SyExit(1);
+     }
+
+     LoadCStr(buf,256);
 #ifdef SYS_IS_64_BIT             
-  if (SyStrcmp(buf,"GAP 4.0 beta 64 bit") != 0)
+     if (SyStrcmp(buf,"64 bit") != 0)
 #else
-  if (SyStrcmp(buf,"GAP 4.0 beta 32 bit") != 0)
+     if (SyStrcmp(buf,"32 bit") != 0)
 #endif
-    {
-      Pr("Header is bad\n",0L,0L);
-      SyExit(1);
-    }
+        {
+           Pr("This workspace was created by a %s version of GAP.\n", (long)buf, 0L);
+           SyExit(1);
+        }
+  } else {
+     
+     /* try if it is an old workspace */
+
+#ifdef SYS_IS_64_BIT             
+     if (SyStrcmp(buf,"GAP 4.0 beta 64 bit") != 0)
+#else 
+     if (SyStrcmp(buf,"GAP 4.0 beta 32 bit") != 0)
+#endif
+        Pr("File %s probably isn't a GAP workspace.\n", (long)fname, 0L);
+     else 
+        Pr("This workspace was created by an old version of GAP.\n", 0L, 0L);
+     SyExit(1);
+  } 
+  
   CheckEndiannessMarker();
   
   LoadCStr(buf,256);
@@ -811,29 +848,58 @@ void LoadWorkspace( Char * fname )
 
   for (i = 0; i < nMods; i++)
     {
+      UInt type = LoadUInt();
       isGapRootRelative = LoadUInt();
       LoadCStr(buf,256);
       if (isGapRootRelative)
         READ_GAP_ROOT( buf);
       else
 	{
-	  InitInfoFunc init;
 	  StructInitInfo *info = NULL;
-	  
-	  init = SyLoadModule(buf);
-	  if ((Int)init == 1 || (Int) init == 3 || (Int) init == 5 || (Int) init == 7 ||
-	      0 == (info = (*init)()) )
-	    {
-	      Pr("Failed to load needed dynamic module %s, error code %d\n",
-		 (Int)buf, (Int) init);
+ 	  /* Search for user module static case first */
+	  if (type == MODULE_STATIC) { 
+	    UInt k;
+	    for ( k = 0;  CompInitFuncs[k];  k++ ) {
+	      info = (*(CompInitFuncs[k]))();
+	      if ( info == 0 ) {
+		continue;
+	      }
+	      if ( ! SyStrcmp( buf, info->name ) ) {
+		break;
+	      }
+	    }
+	    if ( CompInitFuncs[k] == 0 ) {
+	      Pr( "Static module %s not found in loading kernel\n",
+		  (Int)buf, 0L );
 	      SyExit(1);
 	    }
-	      /* link and init me                                                    */
-	  info->isGapRootRelative = 0;
-	  (info->initKernel)(info);
-	  RecordLoadedModule(info, buf);
-	}
-
+	
+	  } else {
+	    /* and dynamic case */
+	    InitInfoFunc init; 
+	
+	    init = SyLoadModule(buf);
+	    
+	    if ((Int)init == 1 || (Int) init == 3 || (Int) init == 5 || (Int) init == 7)
+	      {
+		Pr("Failed to load needed dynamic module %s, error code %d\n",
+		   (Int)buf, (Int) init);
+		SyExit(1);
+	      }
+	    info = (*init)();
+	     if (info == 0 )
+	       {
+		Pr("Failed to init needed dynamic module %s, error code %d\n",
+		   (Int)buf, (Int) info);
+		SyExit(1);
+	       }
+	  }
+	/* link and init me                                                    */
+	info->isGapRootRelative = 0;
+	(info->initKernel)(info);
+	RecordLoadedModule(info, buf);
+      }
+      
     }
 
   /* Now the kernel variables that point into the workspace */

@@ -6,6 +6,7 @@
 ##  
 #Y  Copyright (C)  2001,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 2001 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##  
 ## The files helpbase.g{d,i} contain the interface between GAP's online help
 ## and the actual help books.
@@ -18,6 +19,43 @@ Revision.helpbase_gi :=
 #F  # # # # # internal utility functions dealing with strings  # # # # # # #
 ##  
 
+#############################################################################
+##  
+#F  StringStreamInputTextFile( <filename> ) . . . . . . .  
+##                 content of file as string stream, all '\r' are removed
+##  
+##  This is useful for text files with text to display, because the files
+##  can come with UNIX or DOS/Win line breaks.
+##  If this turns out to be of general interest, it can be officially
+##  documented.
+##  
+InstallGlobalFunction(StringStreamInputTextFile, function(fname)
+  local s;
+  s := StringFile(fname);
+  if s = fail then
+    return s;
+  fi;
+  RemoveCharacters(s,"\r");
+  return InputTextString(s);
+end);
+
+#############################################################################
+##  
+#F  IsDocumentedVariable( <varname> ) . . . . . . .  check documentation for
+#F  name of global variable
+##  
+##  Returns `true' if <varname> is a string which is the name of a bound global
+##  variable and if there exists a help section with this name as index entry
+##  (up to case).
+##  
+##  This utility will first be used in some debug tools showing what is newly
+##  installed by loading a package. Can be documented if desired.
+##  
+BindGlobal("IsDocumentedVariable",  varname -> 
+      IsBoundGlobal( varname ) and 
+      not IsEmpty( HELP_GET_MATCHES( 
+                 HELP_KNOWN_BOOKS[1], SIMPLE_STRING( varname ), true )[1] )
+);
 
 #############################################################################
 ##  
@@ -148,16 +186,16 @@ end);
 InstallGlobalFunction(SIMPLE_STRING, function(str)
   local trans;
   # we simply list here in Position i how character i-1 should be translated
-  trans := 
-"\000\>\<\c\004\005\006\007\b\t\n\013\014\r\016\017\020\021\022\023\024\025\
-\026\027\030\031\032\033\034\035\036\037  \000   &\000   + -. \
-0123456789: < >? abcd\
-efghijklmnopqrstuvwxyz \000  _\000abcdefghijklmnopqrstuvwxyz    \
-\177\200\201\202\
-\203\204\205\206\207\210\211\212\213\214\215\216\217\220\221\222\223\224\225\
-\226\227\230\231\232\233\234\235\236\237\238\
-¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿aaaaaa\
-aceeeeiiiidnooooo×ouuuuypsaaaaaaaceeeeiiiidnooooo÷ouuuuypy";
+  trans :=Concatenation(
+"\000\>\<\c\004\005\006\007\b\t\n\013\014\r\016\017\020\021\022\023\024\025",
+"\026\027\030\031\032\033\034\035\036\037  \000   &\000   + -. ",
+"0123456789: < >? abcd",
+"efghijklmnopqrstuvwxyz \000  _\000abcdefghijklmnopqrstuvwxyz    ",
+"\177\200\201\202",
+"\203\204\205\206\207\210\211\212\213\214\215\216\217\220\221\222\223\224\225",
+"\226\227\230\231\232\233\234\235\236\237\238",
+"¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿aaaaaa",
+"aceeeeiiiidnooooo×ouuuuypsaaaaaaaceeeeiiiidnooooo÷ouuuuypy");
 
   CONV_STRING(str);
   str := trans{List(str, INT_CHAR) + 1};
@@ -176,7 +214,7 @@ end);
 ##  
 ##  For  the   main  books   of  the  GAP   library  this   is  included
 ##  here,   for    packages   these   initializations   are    done   by
-##  `DeclarePackage(Auto)Documentation'.
+##  `LoadPackageDocumentation'.
 ##  
 ##  In the  path for a  help book  there must be   a file `manual.six'. It
 ##  contains the  indexing information used for  the search of  a topic in
@@ -312,14 +350,14 @@ InstallValue(HELP_BOOKS_INFO, rec());
 ##  known book.
 ##  
 InstallGlobalFunction(HELP_BOOK_INFO, function( book )
-  local pos, bnam, path, dirs, six, stream, line, handler;
+  local pos, bnam, nnam, path, dirs, six, stream, line, handler;
 
   # if this is already a record return it
   if IsRecord(book)  then
     return book;
   fi;
   
-  book := STRING_LOWER(book);
+  book := LowercaseString(book);
   pos := Position(HELP_KNOWN_BOOKS[1], book);
   if pos = fail  then
     # try to match beginning 
@@ -375,10 +413,11 @@ InstallGlobalFunction(HELP_BOOK_INFO, function( book )
   fi;
   # give up if handler functions are not (yet) loaded
   if not IsBound(HELP_BOOK_HANDLER.(handler)) then
-    Print("\n#W WARNING: No handler for help book `", bnam,
+    Print("\n#W WARNING: No handler for help book `",
+          HELP_KNOWN_BOOKS[2][pos][1],
           "' available,\n#W removing this book.\n");
     if handler = "GapDocGAP" then
-      Print("#W HINT: Install the GAPDoc package, see\n",
+      Print("#W HINT: Install and load the GAPDoc package, see\n",
             "#W http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc\n");
     fi;
     HELP_KNOWN_BOOKS[1][pos] := Concatenation("XXXX ", bnam, ": THROWN OUT");
@@ -689,7 +728,7 @@ end);
 
 # choosing one of last shown  list of matches
 InstallGlobalFunction(HELP_SHOW_FROM_LAST_TOPICS, function(nr)
-  if Length(HELP_LAST.TOPICS) < nr then
+  if nr = 0 or Length(HELP_LAST.TOPICS) < nr then
     Print("Help:  No such topic.\n");
     return false;
   fi;
@@ -789,7 +828,8 @@ InstallValue(HELP_TOPIC_RING, ListWithIdenticalEntries( HELP_RING_SIZE,
                                              "welcome to gap" ));
 # here we store the last shown topic, initialized with 0 (leading to
 # show "Tutorial: Help", see below)
-InstallValue(HELP_LAST, rec(MATCH := 0, BOOK := 0, NEXT_VIEWER := false));
+InstallValue(HELP_LAST, rec(MATCH := 0, BOOK := 0, 
+             NEXT_VIEWER := false, TOPICS := []));
 NAMES_SYSTEM_GVARS:= "to be defined in init.g";
 
 InstallGlobalFunction(HELP, function( str )

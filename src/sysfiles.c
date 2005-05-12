@@ -8,6 +8,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  The  files  "system.c" and  "sysfiles.c"   contain  all operating  system
 **  dependent functions.  File and  stream operations are implemented in this
@@ -40,6 +41,7 @@ const char * Revision_sysfiles_c =
 #include        "string.h"              /* strings                         */
 
 #include        "records.h"             /* generic records                 */
+#include        "bool.h"                /* Global True and False           */
 
 #include <assert.h>
 #include <fcntl.h>
@@ -870,6 +872,9 @@ Char * SyWinCmd (
     const Char *        bb;             /* pointer into the temporary      */
     Char *              b;              /* pointer into the temporary      */
     UInt                i;              /* loop variable                   */
+#if SYS_IS_CYGWIN32
+    UInt                len1;           /* temporary storage for len       */
+#endif
 
     /* if not running under a window handler, don't do nothing             */
     if ( ! SyWindow )
@@ -911,11 +916,22 @@ Char * SyWinCmd (
     /* read the arguments of the answer                                    */
     b = WinCmdBuffer;
     i = len;
+#if SYS_IS_CYGWIN32
+    len1 = len;
+    while ( 0 < i ) {
+        len = read( 0, b, i );
+        b += len;
+        i  -= len;
+        s  += len;
+    }
+    len = len1;
+#else
     while ( 0 < i ) {
         len = read( 0, b, i );
         i  -= len;
         s  += len;
     }
+#endif
 
     /* shrink '@@' into '@'                                                */
     for ( bb = b = WinCmdBuffer;  0 < len;  len-- ) {
@@ -1068,6 +1084,10 @@ Int SyFopen (
 	SyExit(2);
       }
     
+#if SYS_IS_CYGWIN32
+    if(SyStrlen(mode) >= 2 && mode[1] == 'b')
+       flags |= O_BINARY;
+#endif
     /* try to open the file                                                */
     if ( 0 <= (syBuf[fid].fp = open(name,flags, 0644)) ) {
         syBuf[fid].pipe = 0;
@@ -1216,7 +1236,6 @@ Int SyFopen (
     syBuf[fid].fsspec = fsspec;  
     syBuf[fid].bufno = -1;  /* no buffer allocated */
 	syBuf[fid].isTTY = 0;
-//    SySetBuffering (fid);
     return fid;
 }
 
@@ -2609,7 +2628,7 @@ UInt SyIsIntr ( void )
  */
 extern  char *  getenv ( const char *);
 
-#if SYS_BSD || linux
+#if SYS_BSD || linux|| SYS_IS_CYGWIN32
 #include <sys/ioctl.h>             /* for TIOCGWINSZ */
 #endif
 
@@ -3470,7 +3489,7 @@ Int SyFseek (
  * (actually linux missing)
  */
 
-#if CYGWIN
+#if SYS_IS_CYGWIN32
 #  define LINE_END_HACK 1
 #endif
 
@@ -3480,26 +3499,28 @@ Int syGetchTerm (
 {
     Char                ch;
     Char                str[2];
-
+    Int ret;
 
     /* retry on errors or end-of-file. Ignore 0 bytes */
 
 #if LINE_END_HACK
  tryagain:
 #endif
-    while ( read( syBuf[fid].fp, &ch, 1 ) != 1 || ch == '\0' ) 
-	   ; 
+    while ( (ret = read( syBuf[fid].fp, &ch, 1 )) == -1 && errno == EAGAIN ) ;
+    if (ret <= 0) return EOF;
 
     /* if running under a window handler, handle special characters        */
     if ( SyWindow && ch == '@' ) {
         do {
-            while ( read(syBuf[fid].fp, &ch, 1) != 1 || ch == '\0' )
-                ;
+            while ( (ret = read(syBuf[fid].fp, &ch, 1)) == -1 && 
+                    errno == EAGAIN ) ;
+            if (ret <= 0) return EOF;
         } while ( ch < '@' || 'z' < ch );
         if ( ch == 'y' ) {
 	    do {
-		while ( read(syBuf[fid].fp, &ch, 1) != 1 || ch == '\0' )
-		    ;
+		while ( (ret = read(syBuf[fid].fp, &ch, 1)) == -1 && 
+                        errno == EAGAIN );
+                if (ret <= 0) return EOF;
 	    } while ( ch < '@' || 'z' < ch );
 	    str[0] = ch;
 	    str[1] = 0;
@@ -4647,6 +4668,7 @@ Char * syFgets (
 
             case CTR('I'): /* try to complete the identifier before dot    */
                 if ( p == line || IS_SEP(p[-1]) ) {
+		  /* If we don't have an identifier to complete, insert a tab */
                     ch2 = ch & 0xff;
                     for ( q = p; ch2; ++q ) {
                         ch3 = *q; *q = ch2; ch2 = ch3;
@@ -4654,72 +4676,118 @@ Char * syFgets (
                     *q = '\0'; ++p;
                 }
                 else {
+
+		  /* Locate in q the current identifier */
                     if ( (q = p) > line ) do {
                         --q;
                     } while ( q>line && (!IS_SEP(*(q-1)) || IS_SEP(*q)));
+
+		    /* determine if the thing immediately before the current identifier
+		       is a . */
                     rn = (line < q && *(q-1) == '.' 
                                    && (line == q-1 || *(q-2) != '.'));
+
+		    /* Copy the current identifier into buffer */
                     r = buffer;  s = q;
                     while ( s < p )  *r++ = *s++;
                     *r = '\0';
+
                     if ( (rn ? iscomplete_rnam( buffer, p-q )
-                             : iscomplete_gvar( buffer, p-q )) ) {
-                           if ( last != CTR('I') )
-                            syEchoch( CTR('G'), fid );
-                        else {
-                            syWinPut( fid, "@c", "" );
-                            syEchos( "\n    ", fid );
-                            syEchos( buffer, fid );
-                            while ( (rn ? completion_rnam( buffer, p-q )
-                                        : completion_gvar( buffer, p-q )) ) {
-                                syEchos( "\n    ", fid );
-                                syEchos( buffer, fid );
-                            }
-                            syEchos( "\n", fid );
-                            for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
-                                syEchoch( *q, fid );
-                            for ( q = old; q < old+sizeof(old); ++q )
-                                *q = ' ';
-                            oldc = 0;
-                            syWinPut( fid, (fid == 0 ? "@i" : "@e"), "" );
-                        }
+			  : iscomplete_gvar( buffer, p-q )) ) {
+		      /* Complete already, just beep for single tab */
+		      if ( last != CTR('I') )
+			syEchoch( CTR('G'), fid );
+		      else {
+			
+			/* Double tab after a complete identifier
+			   print list of completions */
+			syWinPut( fid, "@c", "" );
+			syEchos( "\n    ", fid );
+			syEchos( buffer, fid );
+			while ( (rn ? completion_rnam( buffer, p-q )
+				 : completion_gvar( buffer, p-q )) ) {
+			  syEchos( "\n    ", fid );
+			  syEchos( buffer, fid );
+			}			
+			syEchos( "\n", fid );
+
+			/* Reprint the prompt and input line so far */
+			for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
+			  syEchoch( *q, fid );
+			for ( q = old; q < old+sizeof(old); ++q )
+			  *q = ' ';
+			oldc = 0;
+			syWinPut( fid, (fid == 0 ? "@i" : "@e"), "" );
+		      }
                     }
                     else if ( (rn ? ! completion_rnam( buffer, p-q )
                                   : ! completion_gvar( buffer, p-q )) ) {
+		      
+		      /* Not complete, and there are no completions */
                         if ( last != CTR('I') )
+			  
+			  /* beep after 1 tab */
                             syEchoch( CTR('G'), fid );
                         else {
-                            syWinPut( fid, "@c", "" );
-                            syEchos("\n    identifier has no completions\n",
-                                    fid);
-                            for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
-                                syEchoch( *q, fid );
-                            for ( q = old; q < old+sizeof(old); ++q )
-                                *q = ' ';
-                            oldc = 0;
-                            syWinPut( fid, (fid == 0 ? "@i" : "@e"), "" );
+			  
+			  /* print a message otherwise */
+			  syWinPut( fid, "@c", "" );
+			  syEchos("\n    identifier has no completions\n",
+				  fid);
+			  for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
+			    syEchoch( *q, fid );
+			  for ( q = old; q < old+sizeof(old); ++q )
+			    *q = ' ';
+			  oldc = 0;
+			  syWinPut( fid, (fid == 0 ? "@i" : "@e"), "" );
                         }
                     }
                     else {
+
+		      /* not complete and we have a completion. Now
+			 we have to find the longest common prefix of all the completions  */
+		        
                         t = p;
+
+			/* Insert the necessary part of the current completion */
                         for ( s = buffer+(p-q); *s != '\0'; s++ ) {
+			  
+			  /* Insert a character from buffer into the line, I think */
                             ch2 = *s;
                             for ( r = p; ch2; r++ ) {
                                 ch3 = *r; *r = ch2; ch2 = ch3;
                             }
                             *r = '\0'; p++;
                         }
+
+			/* Now we work through the alternative
+			   completions reducing p, each time to point
+			   just after the longest common stem t
+			   meanwhile still points to the place where
+			   we started this batch of completion, so if
+			   p gets down to t, we have nothing
+			   unambiguous to add */
+			
                         while ( t < p
                              && (rn ? completion_rnam( buffer, t-q )
                                     : completion_gvar( buffer, t-q )) ) {
+
+			  /* check the length of common prefix */
                             r = t;  s = buffer+(t-q);
                             while ( r < p && *r == *s ) {
                                 r++; s++;
                             }
                             s = p;  p = r;
+			    
+			    /* Now close up over the part of the
+			       completion which turned out to be
+			       ambiguous */
                             while ( *s != '\0' )  *r++ = *s++;
                             *r = '\0';
                         }
+
+			/* OK, now we have done the largest possible completion.
+			   If it was nothing then we can't complete. Deal appropriately */
                         if ( t == p ) {
                             if ( last != CTR('I') )
                                 syEchoch( CTR('G'), fid );
@@ -4741,6 +4809,8 @@ Char * syFgets (
                                 syWinPut( fid, (fid == 0 ? "@i" : "@e"), "");
                             }
                         }
+
+			/* If we managed to do some completion then we're happy */
                     }
                 }
                 break;
@@ -5982,6 +6052,18 @@ Char * SyFindGapRootFile ( Char * filename )
 extern  char * tmpnam ( char * );
 #endif
 
+#if HAVE_MKSTEMP
+Char *SyTmpname ( void )
+{
+  static char name[1024];
+  static char *base = "/tmp/gaptempfile.XXXXXX";
+  name[0] = 0;
+  SyStrncat(name, base, SyStrlen(base)+1);
+  close(mkstemp(name));
+  return name;
+}
+
+#else
 Char * SyTmpname ( void )
 {
     static Char   * base = 0;
@@ -6017,6 +6099,7 @@ Char * SyTmpname ( void )
     *s = (Char)0;
     return name;
 }
+#endif
 #endif
 
 /****************************************************************************
@@ -6115,6 +6198,23 @@ Char * SyTmpname ( void )
 **
 *f  SyTmpdir( <hint> )  . . . . . . . . . . . . . . . . . . . . using `mkdir'
 */
+
+
+#if HAVE_MKDTEMP
+Char * SyTmpdir( Char * hint )
+{
+  static char name[1024];
+  static char *base = "/tmp/";
+  name[0] = 0;
+  SyStrncat(name, base, SyStrlen(base)+1);
+  if (hint)
+      SyStrncat(name, hint, SyStrlen(hint)+1);
+  else
+    SyStrncat(name, "gaptempdir", 11);
+  SyStrncat(name, ".XXXXXX", 7);
+  return mkdtemp(name);
+}
+#else
 #if HAVE_MKDIR
 
 Char * SyTmpdir ( Char * hint )
@@ -6128,6 +6228,7 @@ Char * SyTmpdir ( Char * hint )
         return 0;
 
     /* create a new directory                                              */
+    unlink( tmp ); 
     res = mkdir( tmp, 0777 );
     if ( res == -1 ) {
         SySetErrorNo();
@@ -6139,7 +6240,7 @@ Char * SyTmpdir ( Char * hint )
 
 
 #endif
-
+#endif
 #if SYS_MAC_MWC
 
 Char * SyTmpdir ( Char * hint )
@@ -6299,6 +6400,16 @@ static Int postRestore (
     MakeReadWriteGVar( gvar);
     AssGVar( gvar, tmp );
     MakeReadOnlyGVar(gvar);
+
+    /* teaching mode? */
+    gvar = GVarName("TEACHING_MODE");
+    MakeReadWriteGVar( gvar);
+    if (SyBreakSuppress) 
+      AssGVar( gvar,True );
+    else
+      AssGVar( gvar,False );
+    MakeReadOnlyGVar(gvar);
+
         
 
     /* return success                                                      */

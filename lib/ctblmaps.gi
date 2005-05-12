@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains those functions that are used to construct maps,
 ##  (mostly fusion maps and power maps).
@@ -23,8 +24,6 @@ Revision.ctblmaps_gi :=
 
 #T UpdateMap: assertions for returned `true' in the library occurrences
 
-#T use structure constants in `PossibleClassFusions'
-
 
 #############################################################################
 ##
@@ -39,10 +38,8 @@ Revision.ctblmaps_gi :=
 ##
 InstallMethod( PowerMap,
     "for a character table, and an integer",
-    true,
-    [ IsNearlyCharacterTable, IsInt ], 0,
+    [ IsNearlyCharacterTable, IsInt ],
     function( tbl, n )
-
     local known, erg;
 
     if IsPosInt( n ) then
@@ -63,10 +60,8 @@ InstallMethod( PowerMap,
 
 InstallMethod( PowerMap,
     "for a character table, and two integers",
-    true,
-    [ IsNearlyCharacterTable, IsInt, IsInt ], 0,
+    [ IsNearlyCharacterTable, IsInt, IsInt ],
     function( tbl, n, class )
-
     local known, erg;
 
     if IsPosInt( n ) then
@@ -85,10 +80,8 @@ InstallMethod( PowerMap,
 ##
 InstallMethod( PowerMapOp,
     "for ordinary table with group, and positive integer",
-    true,
-    [ IsOrdinaryTable and HasUnderlyingGroup, IsPosInt ], 0,
+    [ IsOrdinaryTable and HasUnderlyingGroup, IsPosInt ],
     function( tbl, n )
-
     local G, map, p;
 
     if n = 1 then
@@ -118,8 +111,7 @@ InstallMethod( PowerMapOp,
 ##
 InstallMethod( PowerMapOp,
     "for ordinary table, and positive integer",
-    true,
-    [ IsOrdinaryTable, IsPosInt ], 0,
+    [ IsOrdinaryTable, IsPosInt ],
     function( tbl, n )
     local i, powermap, nth_powermap, pmap;
 
@@ -157,16 +149,14 @@ InstallMethod( PowerMapOp,
 ##
 InstallOtherMethod( PowerMapOp,
     "for ordinary table, and two positive integers",
-    true,
-    [ IsOrdinaryTable, IsPosInt, IsPosInt ], 0,
+    [ IsOrdinaryTable, IsInt, IsPosInt ],
     function( tbl, n, class )
-
     local i, powermap, image, range, pmap;
 
     powermap:= ComputedPowerMaps( tbl );
     if n = 1 then
       return class;
-    elif IsBound( powermap[n] ) then
+    elif 0 < n and IsBound( powermap[n] ) then
       return powermap[n][ class ];
     fi;
 
@@ -202,8 +192,7 @@ InstallOtherMethod( PowerMapOp,
 ##
 InstallMethod( PowerMapOp,
     "for character table and negative integer",
-    true,
-    [ IsCharacterTable, IsInt and IsNegRat ], 0,
+    [ IsCharacterTable, IsInt and IsNegRat ],
     function( tbl, n )
     return PowerMap( tbl, -n ){ InverseClasses( tbl ) };
     end );
@@ -215,8 +204,7 @@ InstallMethod( PowerMapOp,
 ##
 InstallMethod( PowerMapOp,
     "for character table and zero",
-    true,
-    [ IsCharacterTable, IsZeroCyc ], 0,
+    [ IsCharacterTable, IsZeroCyc ],
     function( tbl, zero )
     return ListWithIdenticalEntries( NrConjugacyClasses( tbl ), 1 );
     end );
@@ -227,11 +215,11 @@ InstallMethod( PowerMapOp,
 #M  PowerMapOp( <modtbl>, <n> )
 ##
 InstallMethod( PowerMapOp,
-    "for Brauer table and positive integer",
-    true,
-    [ IsBrauerTable, IsPosInt ], 0,
+    "for Brauer table and integer",
+    [ IsBrauerTable, IsInt ],
     function( tbl, n )
     local fus, ordtbl;
+
     ordtbl:= OrdinaryCharacterTable( tbl );
     fus:= GetFusionMap( tbl, ordtbl );
     return InverseMap( fus ){ PowerMap( ordtbl, n ){ fus } };
@@ -244,11 +232,10 @@ InstallMethod( PowerMapOp,
 ##
 InstallOtherMethod( PowerMapOp,
     "for Brauer table and two integers",
-    true,
-    [ IsBrauerTable, IsPosInt, IsPosInt ], 0,
+    [ IsBrauerTable, IsInt, IsPosInt ],
     function( tbl, n, class )
     local fus, ordtbl;
-#T check whether the map is stored already!
+
     ordtbl:= OrdinaryCharacterTable( tbl );
     fus:= GetFusionMap( tbl, ordtbl );
     return Position( fus, PowerMap( ordtbl, n, fus[ class ] ) );
@@ -261,8 +248,7 @@ InstallOtherMethod( PowerMapOp,
 ##
 InstallMethod( ComputedPowerMaps,
     "for a nearly character table",
-    true,
-    [ IsNearlyCharacterTable ], 0,
+    [ IsNearlyCharacterTable ],
     tbl -> [] );
 
 
@@ -272,8 +258,7 @@ InstallMethod( ComputedPowerMaps,
 ##
 InstallMethod( PossiblePowerMaps,
     "for an ordinary character table and a prime (add empty options record)",
-    true,
-    [ IsOrdinaryTable, IsPosInt ], 0,
+    [ IsOrdinaryTable, IsPosInt ],
     function( ordtbl, prime )
     return PossiblePowerMaps( ordtbl, prime, rec() );
     end );
@@ -285,10 +270,8 @@ InstallMethod( PossiblePowerMaps,
 ##
 InstallMethod( PossiblePowerMaps,
     "for an ordinary character table, a prime, and a record",
-    true,
-    [ IsOrdinaryTable, IsPosInt, IsRecord ], 0,
+    [ IsOrdinaryTable, IsPosInt, IsRecord ],
     function( ordtbl, prime, arec )
-
     local chars,          # list of characters to be used
           decompose,      # boolean: is decomposition of characters allowed?
           approxpowermap, # known approximation of the power map
@@ -475,8 +458,7 @@ InstallMethod( PossiblePowerMaps,
 ##
 InstallOtherMethod( PossiblePowerMaps,
     "for a Brauer character table and a prime",
-    true,
-    [ IsBrauerTable, IsPosInt ], 0,
+    [ IsBrauerTable, IsPosInt ],
     function( modtbl, prime )
     local ordtbl, poss, fus, inv;
     ordtbl:= OrdinaryCharacterTable( modtbl );
@@ -497,8 +479,7 @@ InstallOtherMethod( PossiblePowerMaps,
 ##
 InstallMethod( PossiblePowerMaps,
     "for a Brauer character table, a prime, and a record",
-    true,
-    [ IsBrauerTable, IsPosInt, IsRecord ], 0,
+    [ IsBrauerTable, IsPosInt, IsRecord ],
     function( modtbl, prime, arec )
     local ordtbl, poss, fus, inv, quick, decompose;
     ordtbl:= OrdinaryCharacterTable( modtbl );
@@ -544,9 +525,9 @@ InstallGlobalFunction( ElementOrdersPowerMap, function( powermap )
     if 2 <= InfoLevel( InfoCharacterTable ) then
       for i in primes do
         if ForAny( powermap[i], IsList ) then
-          Print( "#I ElementOrdersPowerMap: ", Ordinal( i ),
+          Print( "#I  ElementOrdersPowerMap: ", Ordinal( i ),
                  " power map not unique at classes\n",
-                 "#I ", Filtered( [ 1 .. nccl ],
+                 "#I  ", Filtered( [ 1 .. nccl ],
                                   x -> IsList( powermap[i][x] ) ),
                  " (ignoring these entries)\n" );
         fi;
@@ -578,9 +559,9 @@ InstallGlobalFunction( ElementOrdersPowerMap, function( powermap )
     od;
     if     2 <= InfoLevel( InfoCharacterTable )
        and ForAny( elementorders, IsUnknown ) then
-      Print( "#I ElementOrdersPowerMap: element orders not determined for",
+      Print( "#I  ElementOrdersPowerMap: element orders not determined for",
              " classes in\n",
-             "#I ", Filtered( [ 1 .. nccl ],
+             "#I  ", Filtered( [ 1 .. nccl ],
                               x -> IsUnknown( elementorders[x] ) ), "\n" );
     fi;
     return elementorders;
@@ -714,7 +695,7 @@ end );
 InstallMethod( FusionConjugacyClasses,
     "for two groups",
     IsIdenticalObj,
-    [ IsGroup, IsGroup ], 0,
+    [ IsGroup, IsGroup ],
     function( H, G )
     local tbl1, tbl2, fus;
 
@@ -733,22 +714,18 @@ InstallMethod( FusionConjugacyClasses,
 
 InstallMethod( FusionConjugacyClasses,
     "for a group homomorphism",
-    true,
-    [ IsGeneralMapping ], 0,
+    [ IsGeneralMapping ],
     FusionConjugacyClassesOp );
 
 InstallMethod( FusionConjugacyClasses,
     "for a group homomorphism, and two nearly character tables",
-    true,
-    [ IsGeneralMapping, IsNearlyCharacterTable, IsNearlyCharacterTable ], 0,
+    [ IsGeneralMapping, IsNearlyCharacterTable, IsNearlyCharacterTable ],
     FusionConjugacyClassesOp );
 
 InstallMethod( FusionConjugacyClasses,
     "for two nearly character tables",
-    true,
-    [ IsNearlyCharacterTable, IsNearlyCharacterTable ], 0,
+    [ IsNearlyCharacterTable, IsNearlyCharacterTable ],
     function( tbl1, tbl2 )
-
     local hom, fus;
 
     # Check whether the fusion map is stored already.
@@ -773,10 +750,8 @@ InstallMethod( FusionConjugacyClasses,
 ##
 InstallMethod( FusionConjugacyClassesOp,
     "for a group homomorphism",
-    true,
-    [ IsGeneralMapping ], 0,
+    [ IsGeneralMapping ],
     function( hom )
-
     local Sclasses, Rclasses, nccl, fusion, i, image, j;
 
     Sclasses:= ConjugacyClasses( PreImagesRange( hom ) );
@@ -811,10 +786,8 @@ InstallMethod( FusionConjugacyClassesOp,
 ##
 InstallMethod( FusionConjugacyClassesOp,
     "for a group homomorphism, and two character tables",
-    true,
-    [ IsGeneralMapping, IsOrdinaryTable, IsOrdinaryTable ], 0,
+    [ IsGeneralMapping, IsOrdinaryTable, IsOrdinaryTable ],
     function( hom, tbl1, tbl2 )
-
     local Sclasses, Rclasses, nccl, fusion, i, image, j;
 
     Sclasses:= ConjugacyClasses( tbl1 );
@@ -849,11 +822,9 @@ InstallMethod( FusionConjugacyClassesOp,
 ##
 InstallMethod( FusionConjugacyClassesOp,
     "for two ordinary tables with groups",
-    IsIdenticalObj,
     [ IsOrdinaryTable and HasUnderlyingGroup,
-      IsOrdinaryTable and HasUnderlyingGroup ], 0,
+      IsOrdinaryTable and HasUnderlyingGroup ],
     function( tbl1, tbl2 )
-
     local i, k, t, p,  # loop and help variables
           Sclasses,    # conjugacy classes of S
           Rclasses,    # conjugacy classes of R
@@ -893,10 +864,8 @@ InstallMethod( FusionConjugacyClassesOp,
 
 InstallMethod( FusionConjugacyClassesOp,
     "for two ordinary tables",
-    IsIdenticalObj,
-    [ IsOrdinaryTable, IsOrdinaryTable ], 0,
+    [ IsOrdinaryTable, IsOrdinaryTable ],
     function( tbl1, tbl2 )
-
     local fusion;
 
     if   Size( tbl2 ) < Size( tbl1 ) then
@@ -956,8 +925,7 @@ InstallMethod( FusionConjugacyClassesOp,
 
 InstallMethod( FusionConjugacyClassesOp,
     "for two Brauer tables",
-    IsIdenticalObj,
-    [ IsBrauerTable, IsBrauerTable ], 0,
+    [ IsBrauerTable, IsBrauerTable ],
     function( tbl1, tbl2 )
     local fus, ord1, ord2;
 
@@ -1009,8 +977,7 @@ InstallMethod( FusionConjugacyClassesOp,
 ##
 InstallMethod( ComputedClassFusions,
     "for a nearly character table",
-    true,
-    [ IsNearlyCharacterTable ], 0,
+    [ IsNearlyCharacterTable ],
     tbl -> [] );
 
 
@@ -1019,7 +986,6 @@ InstallMethod( ComputedClassFusions,
 #F  GetFusionMap( <source>, <destin>[, <specification>] )
 ##
 InstallGlobalFunction( GetFusionMap, function( arg )
-
     local source,
           destin,
           specification,
@@ -1099,7 +1065,6 @@ end );
 #F  StoreFusion( <source>, <fusionmap>, <destination> )
 ##
 InstallGlobalFunction( StoreFusion, function( source, fusion, destination )
-
     local fus;
 
     # (compatibility with {\GAP}~3)
@@ -1171,8 +1136,7 @@ end );
 ##
 InstallMethod( NamesOfFusionSources,
     "for a nearly character table",
-    true,
-    [ IsNearlyCharacterTable ], 0,
+    [ IsNearlyCharacterTable ],
     tbl -> [] );
 
 
@@ -1182,7 +1146,6 @@ InstallMethod( NamesOfFusionSources,
 ##
 InstallMethod( PossibleClassFusions,
     "for two ordinary character tables",
-    IsIdenticalObj,
     [ IsNearlyCharacterTable, IsNearlyCharacterTable ],
     function( subtbl, tbl )
     return PossibleClassFusions( subtbl, tbl,
@@ -1205,13 +1168,12 @@ InstallMethod( PossibleClassFusions,
     "for two ordinary character tables, and a parameters record",
     [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsRecord ],
     function( subtbl, tbl, parameters )
-
 #T support option `no branch' ??
-
     local subchars,            # known characters of the subgroup
           chars,               # known characters of the supergroup
           decompose,           # decomposition into `chars' allowed?
           quick,               # stop in case of a unique solution
+          verify,              # check s.c. also in case of only one orbit
           maxamb,              # parameter, omit characters of higher indet.
           minamb,              # parameter, omit characters of lower indet.
           maxlen,              # parameter, branch only up to this number
@@ -1221,6 +1183,7 @@ InstallMethod( PossibleClassFusions,
           flag,                # result of `MeetMaps'
           subtbl_powermap,     # known power maps of `subtbl'
           tbl_powermap,        # known power maps of `tbl'
+          p,                   # position in `subtbl_powermap'
           taut,                # table automorphisms of `tbl', or `false'
           grp,                 # admissible subgroup of automorphisms
           imp,                 # list of improvements
@@ -1250,8 +1213,9 @@ InstallMethod( PossibleClassFusions,
       chars:= [];
     fi;
 
-    # parameter `quick'
+    # parameters `quick' and `verify'
     quick:= IsBound( parameters.quick ) and parameters.quick = true;
+    verify:= IsBound( parameters.verify ) and parameters.verify = true;
 
     # Is `decompose' explicitly allowed or forbidden?
     if IsBound( parameters.decompose ) then
@@ -1316,8 +1280,18 @@ InstallMethod( PossibleClassFusions,
     fi;
 
     # Check consistency of fusion and power maps.
+    # (If necessary then compute power maps of `subtbl' that are avaiable
+    # in `tbl'.)
     subtbl_powermap := ComputedPowerMaps( subtbl );
     tbl_powermap    := ComputedPowerMaps( tbl );
+    if IsOrdinaryTable( subtbl ) and HasIrr( subtbl ) then
+      for p in [ 1 .. Length( tbl_powermap ) ] do
+        if IsBound( tbl_powermap[p] )
+           and not IsBound( subtbl_powermap[p] ) then
+          PowerMap( subtbl, p );
+        fi;
+      od;
+    fi;
     if not TestConsistencyMaps( subtbl_powermap, fus, tbl_powermap ) then
       Info( InfoCharacterTable, 2,
             "PossibleClassFusions: inconsistency of fusion and power maps" );
@@ -1391,8 +1365,12 @@ InstallMethod( PossibleClassFusions,
               "PossibleClassFusions: indeterminateness too small for test\n",
               "#I    of decomposability" );
         poss:= [ fus ];
+      elif IsEmpty( chars ) then
+        Info( InfoCharacterTable, 2,
+              "PossibleClassFusions: no characters given for test ",
+              "of decomposability" );
+        poss:= [ fus ];
       else
-#T only if `chars' is nonempty!
         Info( InfoCharacterTable, 2,
               "PossibleClassFusions: now test decomposability of",
               " rational restrictions" );
@@ -1444,6 +1422,28 @@ InstallMethod( PossibleClassFusions,
                                   quick:= quick ) ) );
     od;
 
+    if    HasAutomorphismsOfTable( subtbl )
+       or IsCharacterTable( subtbl ) then
+      subtaut:= AutomorphismsOfTable( subtbl );
+    else
+      subtaut:= GroupByGenerators( [], () );
+    fi;
+#T would not be needed if there is just one possibility!!
+    subgroupfusions:= RepresentativesFusions( subtaut, subgroupfusions,
+                          Group( () ) );
+
+    if verify or 1 < Length( subgroupfusions ) then
+
+      # Use the structure constants criterion.
+      # (Since table automorphisms preserve structure constants,
+      # it is sufficient to check representatives only.)
+      Info( InfoCharacterTable, 2,
+            "PossibleClassFusions: test structure constants" );
+      subgroupfusions:=
+          ConsiderStructureConstants( subtbl, tbl, subgroupfusions, quick );
+
+    fi;
+
     # Make orbits under the admissible subgroup of `taut'
     # to get the whole set of all subgroup fusions,
     # where admissible means that if there was an approximation `fusionmap'
@@ -1462,7 +1462,7 @@ InstallMethod( PossibleClassFusions,
                                           y->permchar[y]=permchar[y^x]) );
       fi;
       subgroupfusions:= Set( Concatenation( List( subgroupfusions,
-          x -> OrbitFusions( GroupByGenerators( [], () ), x, grp ) ) ) );
+          x -> OrbitFusions( subtaut, x, grp ) ) ) );
     fi;
 
     if not IsEmpty( approxfus ) then
@@ -1480,14 +1480,9 @@ InstallMethod( PossibleClassFusions,
     if 2 <= InfoLevel( InfoCharacterTable ) then
 
       # If possible make orbits under the groups of table automorphisms.
-      if ForAll( subgroupfusions, x -> ForAll( x, IsInt ) ) then
+      if     1 < Length( subgroupfusions )
+         and ForAll( subgroupfusions, x -> ForAll( x, IsInt ) ) then
 
-        if    HasAutomorphismsOfTable( subtbl )
-           or IsCharacterTable( subtbl ) then
-          subtaut:= AutomorphismsOfTable( subtbl );
-        else
-          subtaut:= GroupByGenerators( [], () );
-        fi;
         if taut = false then
           taut:= GroupByGenerators( [], () );
         fi;
@@ -1497,7 +1492,7 @@ InstallMethod( PossibleClassFusions,
 
       # Print the messages.
       if ForAny( subgroupfusions, x -> ForAny( x, IsList ) ) then
-        Print( "#I PossibleClassFusions: ", Length( subgroupfusions ),
+        Print( "#I  PossibleClassFusions: ", Length( subgroupfusions ),
                " parametrized solution" );
         if Length( subgroupfusions ) = 1 then
           Print( ",\n" );
@@ -1508,7 +1503,7 @@ InstallMethod( PossibleClassFusions,
                " given characters\n",
                "#I    and maximal checked ambiguity of ", maxamb, "\n" );
       else
-        Print( "#I PossibleClassFusions: ", Length( subgroupfusions ),
+        Print( "#I  PossibleClassFusions: ", Length( subgroupfusions ),
                " solution" );
         if Length( subgroupfusions ) = 1 then
           Print( "\n" );
@@ -1530,7 +1525,6 @@ InstallMethod( PossibleClassFusions,
 ##
 InstallMethod( PossibleClassFusions,
     "for two Brauer tables",
-    IsIdenticalObj,
     [ IsBrauerTable, IsBrauerTable ],
     function( submodtbl, modtbl )
 
@@ -1558,7 +1552,6 @@ InstallMethod( PossibleClassFusions,
 ##
 InstallGlobalFunction( OrbitFusions,
     function( subtblautomorphisms, fusionmap, tblautomorphisms )
-
     local i, orb, gen, image;
 
     orb:= [ fusionmap ];
@@ -1599,7 +1592,6 @@ end );
 ##
 InstallGlobalFunction( RepresentativesFusions,
     function( subtblautomorphisms, listoffusionmaps, tblautomorphisms )
-
     local stable, gens, orbits, orbit;
 
     if IsEmpty( listoffusionmaps ) then
@@ -1692,7 +1684,6 @@ end );
 #F  CompositionMaps( <paramap2>, <paramap1>, <class> )
 ##
 InstallGlobalFunction( CompositionMaps, function( arg )
-
     local i, j, map1, map2, class, result, newelement;
 
     if Length(arg) = 2 and IsList(arg[1]) and IsList(arg[2]) then
@@ -1705,7 +1696,6 @@ InstallGlobalFunction( CompositionMaps, function( arg )
           result[i]:= CompositionMaps( map2, map1, i );
         fi;
       od;
-      return result;
 
     elif Length( arg ) = 3
          and IsList( arg[1] ) and IsList( arg[2] ) and IsInt( arg[3] ) then
@@ -1714,26 +1704,29 @@ InstallGlobalFunction( CompositionMaps, function( arg )
       map1:= arg[2];
       class:= arg[3];
       if IsInt( map1[ class ] ) then
-        return map2[ map1[ class ] ];
+        result:= map2[ map1[ class ] ];
+        if IsList( result ) and Length( result ) = 1 then
+          result:= result[1];
+        fi;
       else
         result:= [];
         for j in map1[ class ] do
-
           newelement:= map2[j];
           if IsList( newelement ) and not IsString( newelement ) then
             UniteSet( result, newelement );
           else
             AddSet( result, newelement );
           fi;
-
         od;
         if Length( result ) = 1 then result:= result[1]; fi;
-        return result;
       fi;
+
     else
       Error(" usage: CompositionMaps( <map2>, <map1>, <class> ) resp.\n",
             "        CompositionMaps( <map2>, <map1> )" );
     fi;
+
+    return result;
 end );
 
 
@@ -1785,11 +1778,14 @@ end );
 
 
 #############################################################################
+## 
+#M  Indirected( <character>, <paramap> )
 ##
-#F  Indirected( <character>, <paramap> )
-##
-InstallGlobalFunction( Indirected, function( character, paramap )
+InstallMethod( Indirected,
+    [ IsList, IsList ],
+    function( character, paramap )
     local i, imagelist, indirected;
+
     indirected:= [];
     for i in [ 1 .. Length( paramap ) ] do
       if IsInt( paramap[i] ) then
@@ -1804,7 +1800,7 @@ InstallGlobalFunction( Indirected, function( character, paramap )
       fi;
     od;
     return indirected;
-end );
+    end );
 
 
 #############################################################################
@@ -1906,7 +1902,6 @@ end );
 #F  MeetMaps( <map1>, <map2> )
 ##
 InstallGlobalFunction( MeetMaps, function( map1, map2 )
-
     local i;      # loop over the classes
 
     for i in [ 1 .. Maximum( Length( map1 ), Length( map2 ) ) ] do
@@ -1952,7 +1947,6 @@ end );
 ##
 InstallGlobalFunction( ImproveMaps,
     function( map2, map1, composition, class )
-
     local j, map1_i, newvalue;
 
     map1_i:= map1[ class ];
@@ -2007,7 +2001,6 @@ end );
 ##  map3[i] ---> map4[ map3[i] ]
 ##
 InstallGlobalFunction( CommutativeDiagram, function( arg )
-
     local i, paramap1, paramap2, paramap3, paramap4, imp1, imp2, imp4,
           globalimp1, globalimp2, globalimp3, globalimp4, newimp1, newimp2,
           newimp4, map2_map1, map4_map3, composition, imp;
@@ -2099,7 +2092,6 @@ end );
 ##
 InstallGlobalFunction( CheckFixedPoints,
     function( inside1, between, inside2 )
-
     local i, j, improvements, errors, image;
 
     improvements:= [];
@@ -2164,7 +2156,6 @@ end );
 ##  inside1[i] ----> between[ inside1[i] ]
 ##
 InstallGlobalFunction( TransferDiagram, function( arg )
-
     local i, inside1, between, inside2, imp1, impb, imp2, globalimp1,
           globalimpb, globalimp2, newimp1, newimpb, newimp2, bet_ins1,
           ins2_bet, composition, imp, check;
@@ -2259,7 +2250,6 @@ end );
 #F  TestConsistencyMaps( <powermap1>, <fusionmap>, <powermap2>, <fus_imp> )
 ##
 InstallGlobalFunction( TestConsistencyMaps, function( arg )
-
     local i, j, x, powermap1, powermap2, pos, fusionmap, imp,
           fus_improvements, tr;
 
@@ -2370,7 +2360,6 @@ end );
 ##
 InstallGlobalFunction( ContainedSpecialVectors,
     function( tbl, chars, paracharacter, func )
-
     local i, j, x, classes, unknown, images, number, index, direction,
           pos, oldvalue, newvalue, norm, sum, possibilities, order;
 
@@ -2438,17 +2427,18 @@ end );
 #F  IntScalarProducts( <tbl>, <chars>, <candidate> )
 ##
 InstallGlobalFunction( IntScalarProducts, function( tbl, chars, candidate )
-
-    local i, classes, order, char, weighted;
+    local classes, order, weighted, i, char;
 
     classes:= SizesConjugacyClasses( tbl );
     order:= Size( tbl );
     weighted:= [];
-    for char in chars do
-      for i in [ 1 .. Length( char ) ] do
-        weighted[i]:= classes[i] * char[i];
-      od;
-      if not IsInt( weighted * candidate / order ) then return false; fi;
+    for i in [ 1 .. Length( candidate ) ] do
+      weighted[i]:= classes[i] * candidate[i];
+    od;
+    for char in List( chars, ValuesOfClassFunction ) do
+      if not IsInt( ( weighted * char ) / order ) then
+        return false;
+      fi;
     od;
     return true;
 end );
@@ -2460,18 +2450,19 @@ end );
 ##
 InstallGlobalFunction( NonnegIntScalarProducts,
     function( tbl, chars, candidate )
-
-    local i, sc, classes, order, char, weighted;
+    local classes, order, weighted, i, char, sc;
 
     classes:= SizesConjugacyClasses( tbl );
     order:= Size( tbl );
     weighted:= [];
-    for char in chars do
-      for i in [ 1 .. Length( char ) ] do
-        weighted[i]:= classes[i] * char[i];
-      od;
-      sc:= weighted * candidate / order;
-      if not IsInt( sc ) or IsNegRat( sc ) then return false; fi;
+    for i in [ 1 .. Length( candidate ) ] do
+      weighted[i]:= classes[i] * candidate[i];
+    od;
+    for char in List( chars, ValuesOfClassFunction ) do
+      sc:= ( weighted * char ) / order;
+      if ( not IsInt( sc ) ) or IsNegRat( sc ) then
+        return false;
+      fi;
     od;
     return true;
 end );
@@ -2516,7 +2507,6 @@ end );
 ##
 BindGlobal( "StepModGauss",
     function( matrix, moduls, nonzerocol, col )
-
     local i, k, x, y, z, a, b, c, d, val, stepmodgauss;
 
     if IsEmpty( matrix ) then
@@ -2570,7 +2560,6 @@ end );
 ##  <matrix> is changed, the triangular matrix is returned.
 ##
 BindGlobal( "ModGauss", function( matrix, moduls )
-
     local i, modgauss, nonzerocol, row;
 
     modgauss:= [];
@@ -2592,7 +2581,6 @@ end );
 ##
 InstallGlobalFunction( ContainedDecomposables,
     function( constituents, moduls, parachar, func )
-
     local i, x, matrix, fusion, newmoduls, candidate, classes,
           nonzerocol,
           possibilities,   # global list of all $\chi$
@@ -2893,7 +2881,6 @@ end );
 #F  InitPowerMap( <tbl>, <prime> )
 ##
 InstallGlobalFunction( InitPowerMap, function( tbl, prime )
-
     local i, j, k,        # loop variables
           powermap,       # power map for prime `prime', result
           centralizers,   # centralizer orders of `tbl'
@@ -3072,7 +3059,6 @@ end );
 ##
 InstallGlobalFunction( Congruences, function( arg )
 #T more restrictive implementation!
-
     local i, j,
           tbl,       # character table, first argument
           chars,     # list of characters, second argument
@@ -3193,7 +3179,6 @@ end );
 ##
 InstallGlobalFunction( ConsiderKernels, function( arg )
 #T more restrictive implementation!
-
     local i,
           tbl,
           tbl_size,
@@ -3296,7 +3281,6 @@ end );
 ##
 InstallGlobalFunction( ConsiderSmallerPowerMaps, function( arg )
 #T more restrictive implementation!
-
     local i, j,            # loop variables
           tbl,             # character table
           tbl_orders,      #
@@ -3417,7 +3401,6 @@ end );
 ##
 InstallGlobalFunction( MinusCharacter,
     function( character, prime_powermap, prime )
-
     local i, j, minuscharacter, diff, power;
 
     minuscharacter:= [];
@@ -3465,7 +3448,6 @@ end );
 ##
 InstallGlobalFunction( PowerMapsAllowedBySymmetrizations,
     function( tbl, subchars, chars, pow, prime, parameters )
-
     local i, j, x, indeterminateness, numbofposs, lastimproved, minus, indet,
           poss, param, remain, possibilities, improvemap, allowedmaps, rat,
           powerchars, maxlen, contained, minamb, maxamb, quick;
@@ -3724,7 +3706,6 @@ end );
 #F  InitFusion( <subtbl>, <tbl> )
 ##
 InstallGlobalFunction( InitFusion, function( subtbl, tbl )
-
     local subcentralizers,
           subclasses,
           subsize,
@@ -3882,7 +3863,6 @@ end );
 ##
 InstallGlobalFunction( CheckPermChar,
     function( subtbl, tbl, fusionmap, permchar )
-
     local centralizers,
           subsize,
           classes,
@@ -4031,7 +4011,6 @@ end );
 ##
 InstallGlobalFunction( ConsiderTableAutomorphisms,
     function( parafus, grp )
-
     local i,
           support,
           images,
@@ -4158,10 +4137,10 @@ end );
 ##
 InstallGlobalFunction( FusionsAllowedByRestrictions,
     function( subtbl, tbl, subchars, chars, fus, parameters )
-
-    local x, i, j, indeterminateness, numbofposs, lastimproved, restricted,
+    local i, indeterminateness, numbofposs, lastimproved, restricted,
           indet, rat, poss, param, remain, possibilities, improvefusion,
-          allowedfusions, maxlen, contained, minamb, maxamb, quick;
+          allowedfusions, maxlen, contained, minamb, maxamb, quick,
+          testdec, subpowermaps, powermaps;
 
     if IsEmpty( chars ) then
       return [ fus ];
@@ -4181,10 +4160,25 @@ InstallGlobalFunction( FusionsAllowedByRestrictions,
     minamb:= parameters.minamb;
     maxamb:= parameters.maxamb;
     quick:= parameters.quick;
+    if IsBound( parameters.testdec ) then
+      testdec:= parameters.testdec;
+    else
+      testdec:= NonnegIntScalarProducts;
+    fi;
+    if IsBound( parameters.subpowermaps ) then
+      subpowermaps:= parameters.subpowermaps;
+    else
+      subpowermaps:= ComputedPowerMaps( subtbl );
+    fi;
+    if IsBound( parameters.powermaps ) then
+      powermaps:= parameters.powermaps;
+    else
+      powermaps:= ComputedPowerMaps( tbl );
+    fi;
 
     # May we return immediately?
     if quick and Indeterminateness( fus ) < minamb then
-      Info( InfoCharacterTable, 2,
+      Info( InfoCharacterTable + InfoTom, 2,
             "FusionsAllowedByRestrictions: indeterminateness of the map\n",
             "#I    is smaller than the parameter value `minamb'; returned" );
       return [ fus ];
@@ -4205,7 +4199,7 @@ InstallGlobalFunction( FusionsAllowedByRestrictions,
       indeterminateness[i]:= indet;
       if indet = 1 then
         if not quick
-           and not NonnegIntScalarProducts(subtbl,subchars,restricted) then
+           and not testdec( subtbl, subchars, restricted ) then
           return [];
         fi;
       elif indet < minamb then
@@ -4266,7 +4260,7 @@ InstallGlobalFunction( FusionsAllowedByRestrictions,
           indeterminateness[i]:= indet;
           if indet = 1 then
             if not quick and
-               not NonnegIntScalarProducts(subtbl,subchars,restricted) then
+               not testdec( subtbl, subchars, restricted ) then
               return false;
             fi;
           elif indet < minamb then
@@ -4281,12 +4275,13 @@ InstallGlobalFunction( FusionsAllowedByRestrictions,
             if param <> restricted then
 
               # improvement found
+              Info( InfoCharacterTable + InfoTom, 2,
+                    "FusionsAllowedByRestrictions: improvement found ",
+                    "at character ", i, "\n" );
               UpdateMap( chars[i], fus, param );
               lastimproved:= i;
-
 #T call of TestConsistencyMaps ? ( with respect to improved classes )
 #T (only for locally valid power maps!!)
-
               indeterminateness[i]:= Indeterminateness(
                                         CompositionMaps( chars[i], fus ) );
             fi;
@@ -4317,7 +4312,7 @@ InstallGlobalFunction( FusionsAllowedByRestrictions,
     numbofposs        := numbofposs{ remain };
 
     if IsEmpty( chars ) then
-      Info( InfoCharacterTable, 2,
+      Info( InfoCharacterTable + InfoTom, 2,
             "FusionsAllowedByRestrictions: no character with indet.\n",
             "#I    between ", minamb, " and ", maxamb, " significant now" );
       return [ fus ];
@@ -4328,7 +4323,7 @@ InstallGlobalFunction( FusionsAllowedByRestrictions,
       # branch according to a significant character
       # with minimal number of possible restrictions
       i:= Position( numbofposs, Minimum( numbofposs ) );
-      Info( InfoCharacterTable, 2,
+      Info( InfoCharacterTable + InfoTom, 2,
             "FusionsAllowedByRestrictions: branch at character\n",
             "#I     ", CharacterString( chars[i], "" ),
             " (", numbofposs[i], " calls)" );
@@ -4350,7 +4345,7 @@ InstallGlobalFunction( FusionsAllowedByRestrictions,
         fi;
       od;
 
-      Info( InfoCharacterTable, 2,
+      Info( InfoCharacterTable + InfoTom, 2,
             "FusionsAllowedByRestrictions: return from branch at",
             " character\n",
             "#I     ", CharacterString( chars[i], "" ),
@@ -4364,7 +4359,7 @@ InstallGlobalFunction( FusionsAllowedByRestrictions,
       restricted:= CompositionMaps( chars[i], fus );
       class:= 1;
       while not IsList( restricted[ class ] ) do class:= class + 1; od;
-      Info( InfoCharacterTable, 2,
+      Info( InfoCharacterTable + InfoTom, 2,
             "FusionsAllowedByRestrictions: branch at class ",
             class, "\n#I     (", Length( fus[ class ] ),
             " calls)" );
@@ -4383,7 +4378,7 @@ InstallGlobalFunction( FusionsAllowedByRestrictions,
           fi;
         fi;
       od;
-      Info( InfoCharacterTable, 2,
+      Info( InfoCharacterTable + InfoTom, 2,
             "FusionsAllowedByRestrictions: return from branch at class ",
             class );
     fi;
@@ -4397,12 +4392,77 @@ InstallGlobalFunction( FusionsAllowedByRestrictions,
         return [];
       fi;
     fi;
-    return allowedfusions( ComputedPowerMaps( subtbl ),
-                           ComputedPowerMaps( tbl ),
+    return allowedfusions( subpowermaps,
+                           powermaps,
                            chars,
                            fus,
                            indeterminateness,
                            numbofposs );
+end );
+
+
+#############################################################################
+##
+#F  ConsiderStructureConstants( <subtbl>, <tbl>, <fusions>, <quick> )
+##
+##  Note that because of
+##  $a_{ij\overline{k}} = a_{ji\overline{k}} = a_{ik\overline{j}}$,
+##  we may assume $i \leq j \leq k$.
+##
+#T avoid computing the same s.c. in the supergroup several times; cache?
+##
+InstallGlobalFunction( ConsiderStructureConstants,
+    function( subtbl, tbl, fusions, quick )
+    local inv, parm, nccl, i, j, k, kk, subsc, sc, trpl;
+
+    # We do nothing if the irreducibles are not yet known.
+    if not HasIrr( subtbl ) or not HasIrr( tbl ) then
+      return fusions;
+    fi;
+
+    # Check the condition for all possible fusions.
+    inv:= InverseClasses( subtbl );
+    parm:= Parametrized( fusions );
+    nccl:= Length( parm );
+    for i in [ 1 .. nccl ] do
+      for j in [ i .. nccl ] do
+        for k in [ j .. nccl ] do
+          kk:= inv[k];
+          if IsInt( parm[i] ) and IsInt( parm[j] ) and IsInt( parm[kk] ) then
+            # Check this triple only if `quick = false'.
+            if not quick then
+              subsc:= ClassMultiplicationCoefficient( subtbl, i, j, kk );
+              sc:= ClassMultiplicationCoefficient( tbl, parm[i], parm[j],
+                       parm[kk] );
+              if sc < subsc then
+                Info( InfoCharacterTable, 2,
+                      "ConsiderStructureConstants: contradiction for ",
+                      [ i, j, kk ] );
+                return [];
+              fi;
+            fi;
+          else
+            # The possible fusions differ on this triple.
+            subsc:= ClassMultiplicationCoefficient( subtbl, i, j, kk );
+            for trpl in Set( List( fusions, x -> x{ [ i, j, kk ] } ) ) do
+              sc:= ClassMultiplicationCoefficient( tbl, trpl[1], trpl[2],
+                       trpl[3] );
+              if sc < subsc then
+                Info( InfoCharacterTable, 2,
+                      "ConsiderStructureConstants: improvement for ",
+                      [ i, j, kk ] );
+                fusions:= Filtered( fusions,
+                                    x -> x{ [ i, j, kk ] } <> trpl );
+                parm:= Parametrized( fusions );
+              fi;
+            od;
+          fi;
+        od;
+      od;
+    od;
+
+    # Return the maps that satisfy the condition.
+    return fusions;
 end );
 
 

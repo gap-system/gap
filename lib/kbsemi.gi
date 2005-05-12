@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains code for the Knuth-Bendix rewriting system for semigroups
 ##  and monoids.
@@ -457,12 +458,12 @@ function(kbrws)
   # if the semigroup of the kbrws does not have a 
   # ReducedConfluentRws build one from kbrws and then store it in 
   # the semigroup
- # if not HasReducedConfluentRewritingSystem(
- #           SemigroupOfRewritingSystem(kbrws)) then
-#   rws := ReducedConfluentRewritingSystemFromKbrwsNC(kbrws);
-#   SetReducedConfluentRewritingSystem(SemigroupOfRewritingSystem(kbrws),
-#         rws);
-#  fi;
+  if not HasReducedConfluentRewritingSystem(
+           SemigroupOfRewritingSystem(kbrws)) then
+   rws := ReducedConfluentRwsFromKbrwsNC(kbrws);
+   SetReducedConfluentRewritingSystem(SemigroupOfRewritingSystem(kbrws),
+         rws);
+  fi;
 
 end);
 
@@ -478,12 +479,12 @@ function(kbrws)
   # if the monoid of the kbrws does not have a 
   # ReducedConfluentRws build one from kbrws and then store it in 
   # the monoid 
-#  if not HasReducedConfluentRewritingSystem(
-#            MonoidOfRewritingSystem(kbrws)) then
-#   rws := ReducedConfluentRewritingSystemFromKbrwsNC(kbrws);
-#   SetReducedConfluentRewritingSystem(SemigroupOfRewritingSystem(kbrws),
-#         rws);
-#  fi;
+  if not HasReducedConfluentRewritingSystem(
+            MonoidOfRewritingSystem(kbrws)) then
+   rws := ReducedConfluentRwsFromKbrwsNC(kbrws);
+   SetReducedConfluentRewritingSystem(MonoidOfRewritingSystem(kbrws),
+         rws);
+  fi;
 
 end);
 

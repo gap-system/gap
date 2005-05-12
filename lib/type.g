@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file defines the format of families and types. Some functions 
 ##  are moved to type1.g, which is compiled
@@ -32,7 +33,14 @@ BIND_GLOBAL( "POS_FIRST_FREE_TYPE", 5 );
 ##
 #F  NEW_TYPE_NEXT_ID  . . . . . . . . . . . . GAP integer numbering the types
 ##
-NEW_TYPE_NEXT_ID := -(2^28);
+if TNUM_OBJ(2^30) = 0 then
+    NEW_TYPE_NEXT_ID := -(2^60);
+    NEW_TYPE_ID_LIMIT:= 2^60-1;
+else
+    NEW_TYPE_NEXT_ID := -(2^28);
+    NEW_TYPE_ID_LIMIT := 2^28-1;
+#    NEW_TYPE_ID_LIMIT := NEW_TYPE_NEXT_ID + 1000000;
+fi;
 
 
 #############################################################################

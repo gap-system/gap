@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for mutable bases, in the representations of
 ##  - mutable bases that store immutable bases
@@ -453,7 +454,7 @@ InstallMethod( ImmutableBasis,
     [ IsMutableBasis and IsMutableBasisViaNiceMutableBasisRep ], 0,
     function( MB )
 
-    local M, nice, vectors;
+    local M, nice, vectors, B;
 
     M:= MB!.leftModule;
 
@@ -474,7 +475,11 @@ InstallMethod( ImmutableBasis,
       vectors:= [];
 
     fi;
-    return BasisNC( M, vectors );
+    B:= BasisNC( M, vectors );
+    if HasIsSmallList( vectors ) then
+      SetIsSmallList( B, IsSmallList( vectors ) );
+    fi;
+    return B;
     end );
 
 

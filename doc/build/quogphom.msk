@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 2000 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \PreliminaryChapter{Quotient groups by homomorphisms}
 
@@ -49,7 +50,6 @@ It also has one property for each kind of source.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operations on hom cosets}
 
-\Declaration{IsTrivialHomCosetRep}
 \Declaration{Homomorphism}[quogphom]!{for quotient groups by homomorphisms}
 \Declaration{SourceElt}
 \Declaration{ImageElt}

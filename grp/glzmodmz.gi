@@ -38,10 +38,10 @@ InstallGlobalFunction( SizeOfGLdZmodmZ,
 ##
 #M  SpecialLinearGroupCons( IsNaturalSL, <d>, Integers mod <m> )
 ##
-InstallOtherMethod( SpecialLinearGroupCons,
-                    "natural SL for dimension and residue class ring", true, 
-                    [ IsMatrixGroup and IsFinite, IsPosInt,
-                      IsRing and IsFinite ], 0,
+InstallMethod( SpecialLinearGroupCons,
+               "natural SL for dimension and residue class ring",
+               [ IsMatrixGroup and IsFinite, IsPosInt,
+                 IsRing and IsFinite and IsZmodnZObjNonprimeCollection ],
 
   function ( filter, d, R )
 
@@ -72,10 +72,10 @@ InstallOtherMethod( SpecialLinearGroupCons,
 ##
 #M  GeneralLinearGroupCons( IsNaturalGL, <d>, Integers mod <m> )
 ##
-InstallOtherMethod( GeneralLinearGroupCons,
-                    "natural GL for dimension and residue class ring", true,
-                    [ IsMatrixGroup and IsFinite, IsPosInt,
-                      IsRing and IsFinite ], 0,
+InstallMethod( GeneralLinearGroupCons,
+               "natural GL for dimension and residue class ring",
+               [ IsMatrixGroup and IsFinite, IsPosInt,
+                 IsRing and IsFinite and IsZmodnZObjNonprimeCollection ],
 
   function ( filter, d, R )
 

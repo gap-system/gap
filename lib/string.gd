@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for functions for strings.
 ##
@@ -245,6 +246,17 @@ DeclareGlobalFunction( "LowercaseString" );
 ##  Also see~"Chomp".
 ##
 DeclareOperation( "SplitString", [IsString, IsObject, IsObject] );
+
+
+#############################################################################
+##
+# F  RemoveCharacters( <string>, <todelete> )
+##
+##  For a mutable string <string> and a list <todelete> of characters,
+##  `RemoveCharacters' removes the characters in <todelete> from <string>.
+##
+DeclareGlobalFunction( "RemoveCharacters" );
+
 
 #############################################################################
 ##

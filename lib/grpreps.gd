@@ -4,12 +4,14 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grpreps_gd :=
     "@(#)$Id$";
 
 #############################################################################
 ##
+#O  AbsoluteIrreducibleModules( <G>, <F>, <dim> )
 #O  AbsolutIrreducibleModules( <G>, <F>, <dim> )
 ##
 ##  returns a list of length 2. The first entry is a generating system of
@@ -17,6 +19,7 @@ Revision.grpreps_gd :=
 ##  <G> over the field <F> in dimension <dim>, given as MeatAxe modules
 ##  (see~"GModuleByMats").
 DeclareOperation( "AbsolutIrreducibleModules", [ IsGroup, IsField, IsInt ] );
+DeclareSynonym("AbsoluteIrreducibleModules",AbsolutIrreducibleModules);
 
 #############################################################################
 ##
@@ -34,7 +37,7 @@ DeclareOperation( "IrreducibleModules", [ IsGroup, IsField, IsInt ] );
 ##
 ##  returns a list of length 2. The first entry is a generating system of
 ##  <G>. The second entry is the regular module of <G> over <F>, given as a
-##  MeatAxe modules (see~"GModuleByMats").
+##  MeatAxe module (see~"GModuleByMats").
 DeclareOperation( "RegularModule", [ IsGroup, IsField ] );
 
 #############################################################################

@@ -8,8 +8,11 @@
 ##
 ##  This  file  tests the automorphism routines
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
+
 gap> g:=Group((16,18,17),(14,15)(17,18),(17,18),(13,14,15),
 > (11,12)(13,15)(16,18,17),
 > (10,12)(13,14),(8,9)(10,12),(7,8)(14,15)(16,18,17),
@@ -54,13 +57,14 @@ gap> b:=AsList(VectorSpace(GF(2),b.factorspace));;
 gap> com:=List(b,ocr.cocycleToComplement);;
 gap> List(com,Size);
 [ 60, 60, 60, 60 ]
-gap> List(com,i->Number(com,j->RepresentativeOperation(g,i,j)<>fail));
+gap> List(com,i->Number(com,j->RepresentativeAction(g,i,j)<>fail));
 [ 1, 1, 1, 1 ]
 
 # that's all, folks
-gap> STOP_TEST( "onecohom.tst", 226515000 );
+gap> STOP_TEST( "onecohom.tst", 303400000 );
+
 
 #############################################################################
 ##
-#E  onecohom.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

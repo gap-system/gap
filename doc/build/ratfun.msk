@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Polynomials and Rational Functions}
 
@@ -22,10 +23,12 @@ $r_{1,0}x_1+r_{1,1}x_1x_2+r_{0,1}x_2+\cdots$ with $r_{i,j}\in R$.
 A polynomial ring of rank 1 is called an *univariate* polynomial ring, its
 elements are *univariate polynomials*.
 
-Polynomial rings of smaller rank
-naturally embed in rings of higher rank; if $S$ is a subring of $R$ then a
-polynomial ring over $S$ naturally embeds in a polynomial ring over $R$ of
-the same rank.
+Polynomial rings of smaller rank naturally embed in rings of higher rank; if
+$S$ is a subring of $R$ then a polynomial ring over $S$ naturally embeds in
+a polynomial ring over $R$ of the same rank. Note however that {\GAP} does
+not consider $R$ as a subset of a polynomial ring over $R$; for example the
+zero of $R$ ($0$) and the zero of the polynomial ring ($0x^0$) are different
+objects.
 
 Internally, indeterminates are represented by positive integers, but it is
 possible to give names to them to have them printed in a nicer way. Beware,
@@ -39,9 +42,6 @@ rational functions*. Again $A$ embeds naturally into $Q$ and {\GAP} will
 perform this embedding implicitly. (In fact it implements the ring of rational
 functions over $R$.) To avoid problems with leading
 coefficients, however, $R$ must be a unique factorization domain.
-
-%%  The operations for rational functions were implemented by Frank Celler and
-%%  Alexander Hulpke with help from Werner Nickel and Andrew Solomon.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Indeterminates}
@@ -92,7 +92,7 @@ gap> a:=Indeterminate(GF(3),5);
 x_5
 gap> SetName(a,"ah");
 gap> a^5+a;
-ah+ah^5
+ah^5+ah
 \endexample
 
 \Declaration{CIUnivPols}
@@ -112,7 +112,7 @@ therefore all arithmetic operations are applicable to rational functions.
 gap> x:=Indeterminate(Rationals,1);;y:=Indeterminate(Rationals,2);;
 gap> f:=3+x*y+x^5;;g:=5+x^2*y+x*y^2;;
 gap> a:=g/f;
-(5+x_1^2*x_2+x_1*x_2^2)/(3+x_1*x_2+x_1^5)
+(x_1^2*x_2+x_1*x_2^2+5)/(x_1^5+x_1*x_2+3)
 \endexample
 
 Note that the quotient `<f>/<g>' of two polynomials might be represented as
@@ -155,10 +155,10 @@ $`Numerator'(<g>)*`Denominator'(<f>)$.
 gap> x:=Indeterminate(Rationals,"x");;y:=Indeterminate(Rationals,"y");;
 gap> f:=3+x*y+x^5;;g:=5+x^2*y+x*y^2;;
 gap> a:=g/f;
-(5+x^2*y+x*y^2)/(3+x*y+x^5)
+(x^2*y+x*y^2+5)/(x^5+x*y+3)
 gap> b:=(g*f)/(f^2);
-(15+5*x*y+3*x^2*y+3*x*y^2+5*x^5+x^3*y^2+x^2*y^3+x^7*y+x^6*y^2)/(9+6*x*y+x^2*y^\
-2+6*x^5+2*x^6*y+x^10)
+(x^7*y+x^6*y^2+5*x^5+x^3*y^2+x^2*y^3+3*x^2*y+3*x*y^2+5*x*y+15)/(x^10+2*x^6*y+6\
+*x^5+x^2*y^2+6*x*y+9)
 gap> a=b;
 true
 \endexample
@@ -166,16 +166,17 @@ true
 \>`<f> \< <g>'{smaller!rational functions}
 
 The ordering of rational functions is defined in several steps. Monomials
-(products of indeterminates) are sorted first by total-degree and then
-lexicographically (see~"MonomialTotalDegreeLess"). Products of monomials
+(products of indeterminates) are sorted first by degree, then
+lexicographically (with $x_1>x_2$)
+(see~"MonomialGrlexOrdering"). Products of monomials
 with ring elements (``terms'') are compared first by their monomials and
 then by their coefficients.
 
 \beginexample
-gap> x<y;
+gap> x>y;
 true
 gap> x^2*y<x*y^2;
-true
+false
 gap> x*y<x^2*y;
 true
 gap> x^2*y < 5* y*x^2;
@@ -208,7 +209,7 @@ and then lexicographically on the coefficients.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Properties and Attributes of Rational Functions}
 
-\Declaration{IsRationalFunction}
+\Declaration{IsPolynomialFunction}
 
 \Declaration{NumeratorOfRationalFunction}
 \Declaration{DenominatorOfRationalFunction}
@@ -231,7 +232,7 @@ false
 \Declaration{AsPolynomial}
 \beginexample
 gap> AsPolynomial((x*y+x^2*y^3)/y);
-x+x^2*y^2
+x^2*y^2+x
 \endexample
 
 \Declaration{IsUnivariateRationalFunction}
@@ -270,9 +271,9 @@ ignore the word ``Laurent'' if it occurs in a description.
 \Declaration{DegreeOfLaurentPolynomial}
 \beginexample
 gap> p:=UnivariatePolynomial(Rationals,[1,2,3,4],1);
-1+2*x+3*x^2+4*x^3
+4*x^3+3*x^2+2*x+1
 gap> UnivariatePolynomialByCoefficients(FamilyObj(1),[9,2,3,4],73);
-9+2*x_73+3*x_73^2+4*x_73^3
+4*x_73^3+3*x_73^2+2*x_73+9
 gap> CoefficientsOfUnivariatePolynomial(p);
 [ 1, 2, 3, 4 ]
 gap> DegreeOfLaurentPolynomial(p);
@@ -294,7 +295,7 @@ Z(5)^2
 gap> LeadingCoefficient(p);
 4
 gap> Derivative(p);
-2+6*x+12*x^2
+12*x^2+6*x+2
 \endexample
 
 \Declaration{RootsOfUPol}
@@ -313,7 +314,7 @@ The info class for univariate polynomials is `InfoPoly'.
 \Declaration{DegreeIndeterminate}
 \beginexample
 gap> f:=x^5+3*x*y+9*y^7+4*y^5*x+3*y+2;
-2+3*y+3*x*y+x^5+4*x*y^5+9*y^7
+9*y^7+4*x*y^5+x^5+3*x*y+3*y+2
 gap> DegreeIndeterminate(f,1);
 5
 gap> DegreeIndeterminate(f,y);
@@ -323,7 +324,7 @@ gap> DegreeIndeterminate(f,y);
 \Declaration{PolynomialCoefficientsOfPolynomial}
 \beginexample
 gap> PolynomialCoefficientsOfPolynomial(f,2);
-[ 2+x^5, 3+3*x, 0, 0, 0, 4*x, 0, 9 ]
+[ x^5+2, 3*x+3, 0, 0, 0, 4*x, 0, 9 ]
 \endexample
 
 \Declaration{LeadingCoefficient}
@@ -342,22 +343,22 @@ gap> LeadingCoefficient(f);
 \Declaration{Derivative}
 \beginexample
 gap> Derivative(f,2);
-3+3*x+20*x*y^4+63*y^6
+63*y^6+20*x*y^4+3*x+3
 \endexample
 \Declaration{Discriminant}
 \beginexample
 gap> Discriminant(f,1);
-50000+300000*y+675000*y^2+675000*y^3+253125*y^4+62208*y^5+900000*y^7+4050000*y\
-^8+6489720*y^9+3037500*y^10+1105920*y^13+6075000*y^14+18225000*y^15+13668750*y\
-^16+1474560*y^17+19208040*y^21+27337500*y^22+262144*y^25+20503125*y^28
+20503125*y^28+262144*y^25+27337500*y^22+19208040*y^21+1474560*y^17+13668750*y^\
+16+18225000*y^15+6075000*y^14+1105920*y^13+3037500*y^10+6489720*y^9+4050000*y^\
+8+900000*y^7+62208*y^5+253125*y^4+675000*y^3+675000*y^2+300000*y+50000
 \endexample
 
 \Declaration{Resultant}
 \beginexample
 gap> Resultant(x^4+y,y^4+x,1);
-y+y^16
+y^16+y
 gap> Resultant(x^4+y,y^4+x,2);
-x+x^16
+x^16+x
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -377,7 +378,7 @@ given!
 \Declaration{OnIndeterminates}
 \beginexample
 gap> OnIndeterminates(x^7*y+x*y^4,(1,17)(2,28));
-x_17*x_28^4+x_17^7*x_28
+x_17^7*x_28+x_17*x_28^4
 gap> Stabilizer(Group((1,2,3,4),(1,2)),x*y,OnIndeterminates);
 Group([ (1,2), (3,4) ])
 \endexample
@@ -389,7 +390,7 @@ Group([ (1,2), (3,4) ])
 \Declaration{MinimalPolynomial}
 \beginexample
 gap> MinimalPolynomial(Rationals,[[2,0],[0,2]]);
--2+x
+x-2
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -398,7 +399,7 @@ gap> MinimalPolynomial(Rationals,[[2,0],[0,2]]);
 \Declaration{CyclotomicPolynomial}
 \beginexample
 gap> CyclotomicPolynomial(Rationals,5);
-1+x+x^2+x^3+x^4
+x^4+x^3+x^2+x+1
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -427,20 +428,20 @@ factorization found so far.
 
 \beginexample
 gap> f:= CyclotomicPolynomial( GF(2), 7 );
-Z(2)^0+x_1+x_1^2+x_1^3+x_1^4+x_1^5+x_1^6
+x_1^6+x_1^5+x_1^4+x_1^3+x_1^2+x_1+Z(2)^0
 gap> Factors( f );
-[ Z(2)^0+x_1+x_1^3, Z(2)^0+x_1^2+x_1^3 ]
+[ x_1^3+x_1+Z(2)^0, x_1^3+x_1^2+Z(2)^0 ]
 gap> Factors( PolynomialRing( GF(8) ), f );
-[ Z(2^3)+x_1, Z(2^3)^2+x_1, Z(2^3)^3+x_1, Z(2^3)^4+x_1, Z(2^3)^5+x_1, 
-  Z(2^3)^6+x_1 ]
+[ x_1+Z(2^3), x_1+Z(2^3)^2, x_1+Z(2^3)^3, x_1+Z(2^3)^4, x_1+Z(2^3)^5, 
+  x_1+Z(2^3)^6 ]
 gap> f:= MinimalPolynomial( Rationals, E(4) );
-1+x^2
+x^2+1
 gap> Factors( f );
-[ 1+x^2 ]
+[ x^2+1 ]
 gap> Factors( PolynomialRing( Rationals ), f );
-[ 1+x^2 ]
+[ x^2+1 ]
 gap> Factors( PolynomialRing( CF(4) ), f );
-[ -E(4)+x, E(4)+x ]
+[ x+-E(4), x+E(4) ]
 \endexample
 
 \Declaration{FactorsSquarefree}
@@ -448,10 +449,23 @@ gap> Factors( PolynomialRing( CF(4) ), f );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Polynomials over the Rationals}
 
-The following functions are only available to polynomials with rations
+The following functions are only available to polynomials with rational
 coefficients:
 
 \Declaration{PrimitivePolynomial}
+
+\Declaration{PolynomialModP}
+\Declaration{GaloisType}
+\Declaration{ProbabilityShapes}
+\beginexample
+gap> f:=x^9-9*x^7+27*x^5-39*x^3+36*x-8;;
+gap> GaloisType(f);
+25
+gap> TransitiveGroup(9,25);
+[1/2.S(3)^3]3
+gap> ProbabilityShapes(f);
+[ 25 ]
+\endexample
 
 The following operations are used by {\GAP} inside the factorization algorithm
 but might be of interest also in other contexts.
@@ -479,9 +493,9 @@ extended versions for Laurent polynomials exist).
 \beginexample
 gap> p:=LaurentPolynomialByCoefficients(FamilyObj(1),
 > [1,2,3,4,5],-2);
-x^-2+2*x^-1+3+4*x+5*x^2
+5*x^2+4*x+3+2*x^-1+x^-2
 gap> NumeratorOfRationalFunction(p);DenominatorOfRationalFunction(p);
-1+2*x+3*x^2+4*x^3+5*x^4
+5*x^4+4*x^3+3*x^2+2*x+1
 x^2
 gap> CoefficientsOfLaurentPolynomial(p*p);
 [ [ 1, 4, 10, 20, 35, 44, 46, 40, 25 ], -4 ]
@@ -527,6 +541,46 @@ gap> r:=PolynomialRing(GF(7),["x","y","z","z2"]);
 PolynomialRing(..., [ x, y, z, z2 ])
 \endexample
 
+If you need to work with a polynomial ring and its indeterminates the
+following two approaches will produce a ring that contains given variables
+(see section~"Indeterminates" for details about the internal numbering):
+Either, first create the ring and then get the indeterminates as
+`IndeterminatesOfPolynomialRing'. 
+
+\beginexample
+gap> r := PolynomialRing(Rationals,["x","y"]);;
+gap> indets := IndeterminatesOfPolynomialRing(r);;
+gap> x := indets[1]; y := indets[2];
+x
+y
+\endexample
+
+Alternatively, first create the
+indeterminates and then create the ring including these indeterminates.
+\beginexample
+gap> x:=X(Rationals,"x");;y:=X(Rationals,"y");;
+gap> PolynomialRing(Rationals,[x,y]);;
+\endexample
+
+As a convenient shortcut, intended mainly for interactive working, the
+indeterminates of a polynomial ring 'r' can be accessed as 'r.<i>',
+which corresponds exactly to `IndeterminatesOfPolynomialRing(r)[<i>]'
+or, if they have names, as 'r.<name>'. *Note* that the number <i> is
+*not* an indeterminate number, but simply an index into the
+indeterminates list of `r';
+
+\beginexample
+gap> r := PolynomialRing(Rationals, ["x", "y"] );;
+gap> r.1; r.2; r.x; r.y;
+x
+y
+x
+y
+gap> IndeterminateNumberOfLaurentPolynomial(r.1);
+7
+\endexample
+
+
 As {\GAP} objects polynomials can exist without a polynomial ring being
 defined and polynomials cannot be associated to a particular polynomial
 ring. (For example dividing a polynomial which is in a polynomial ring over
@@ -542,9 +596,9 @@ rationals, not in a rational function over the integers.)
 gap> IsPolynomialRing(r);
 true
 gap> IsFiniteFieldPolynomialRing(r);
-true
-gap> IsRationalsPolynomialRing(r);
 false
+gap> IsRationalsPolynomialRing(r);
+true
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -564,39 +618,157 @@ true
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Polynomial Reduction}
+\Section{Monomial Orderings}
 
-The functions described in this section and their syntax might be subject to
-change in future releases.
+It is often desirable to consider the monomials within a polynomial to be
+arranged with respect to a certain ordering. Such an ordering is called a
+*monomial ordering* if it is total, invariant under multiplication with
+other monomials and admits no infinite descending chains. For details on
+monomial orderings see \cite{coxlittleoshea}.
 
-\Declaration{PolynomialReduction}!{function}
-
-The polynomial reduction requires an ordering on monomials. This must be a
-function that takes two monomials without coefficients (in the form of lists
-as described in "The Defining Attributes of Rational Functions", for example
-`[3,1,4,1,5,9]') and returns whether one is smaller than the other.
+In {\GAP}, monomial orderings are represented by objects that provide a way
+to compare monomials (as polynomials as well as -- for efficiency purposes
+within algorithms -- in the internal representation as lists). 
 
 Normally the ordering chosen should be *admissible*, i.e. it
 must be compatible with products: If $a\<b$ then $ca\<cb$ for all monomials
 $a,b$ and $c$.
 
-Currently two admissible orderings are available:
-\Declaration{MonomialTotalDegreeLess}
-\Declaration{MonomialRevLexicoLess}
-
+\Declaration{IsMonomialOrdering}
+\Declaration{LeadingMonomialOfPolynomial}
 \beginexample
 gap> x:=X(Rationals,"x");;y:=X(Rationals,"y");;z:=X(Rationals,"z");;
-gap> bas:=[x^3*y*z,x*y^2*z,z*y*z^3+x];
-[ x^3*y*z, x*y^2*z, x+y*z^4 ]
-gap> PolynomialReduction(x^7*z*bas[1]+y^5*bas[3]+x*z,bas,
-> MonomialTotalDegreeLess);
-[ x*z, [ x^7*z, 0, y^5 ] ]
+gap> lexord:=MonomialLexOrdering();grlexord:=MonomialGrlexOrdering();
+MonomialLexOrdering()
+MonomialGrlexOrdering()
+gap> f:=2*x+3*y+4*z+5*x^2-6*z^2+7*y^3;          
+7*y^3+5*x^2-6*z^2+2*x+3*y+4*z
+gap> LeadingMonomialOfPolynomial(f,lexord);
+x^2
+gap> LeadingMonomialOfPolynomial(f,grlexord);
+y^3
 \endexample
 
-\Declaration{LeadingMonomialPosExtRep}
+\Declaration{LeadingTermOfPolynomial}
+\Declaration{LeadingCoefficientOfPolynomial}
+\beginexample
+gap> LeadingTermOfPolynomial(f,lexord);
+5*x^2
+gap> LeadingTermOfPolynomial(f,grlexord);
+7*y^3
+gap> LeadingCoefficientOfPolynomial(f,lexord);
+5
+\endexample
 
-At the moment {\GAP} does not contain any facilities to compute
-Gr{\accent127 o}bner bases.
+Each monomial ordering provides two functions to compare monomials. These
+functions work as ``is less than'', i.e. they return `true' if and only if
+the left argument is smaller.
+
+\Declaration{MonomialComparisonFunction}
+\beginexample
+gap> MonomialComparisonFunction(lexord);
+function( a, b ) ... end
+gap> l:=[f,Derivative(f,x),Derivative(f,y),Derivative(f,z)];;
+gap> Sort(l,MonomialComparisonFunction(lexord));l;
+[ -12*z+4, 21*y^2+3, 10*x+2, 7*y^3+5*x^2-6*z^2+2*x+3*y+4*z ]
+\endexample
+
+\Declaration{MonomialExtrepComparisonFun}
+
+The following monomial orderings are predefined in {\GAP}:
+
+\Declaration{MonomialLexOrdering}
+
+\beginexample
+gap> l:=List(Tuples([1..3],3),i->x^(i[1]-1)*y^(i[2]-1)*z^(i[3]-1));
+[ 1, z, z^2, y, y*z, y*z^2, y^2, y^2*z, y^2*z^2, x, x*z, x*z^2, x*y, x*y*z, 
+  x*y*z^2, x*y^2, x*y^2*z, x*y^2*z^2, x^2, x^2*z, x^2*z^2, x^2*y, x^2*y*z, 
+  x^2*y*z^2, x^2*y^2, x^2*y^2*z, x^2*y^2*z^2 ]
+gap> Sort(l,MonomialComparisonFunction(MonomialLexOrdering()));l;
+[ 1, z, z^2, y, y*z, y*z^2, y^2, y^2*z, y^2*z^2, x, x*z, x*z^2, x*y, x*y*z, 
+  x*y*z^2, x*y^2, x*y^2*z, x*y^2*z^2, x^2, x^2*z, x^2*z^2, x^2*y, x^2*y*z, 
+  x^2*y*z^2, x^2*y^2, x^2*y^2*z, x^2*y^2*z^2 ]
+gap> Sort(l,MonomialComparisonFunction(MonomialLexOrdering([y,z,x])));l;
+[ 1, x, x^2, z, x*z, x^2*z, z^2, x*z^2, x^2*z^2, y, x*y, x^2*y, y*z, x*y*z, 
+  x^2*y*z, y*z^2, x*y*z^2, x^2*y*z^2, y^2, x*y^2, x^2*y^2, y^2*z, x*y^2*z, 
+  x^2*y^2*z, y^2*z^2, x*y^2*z^2, x^2*y^2*z^2 ]
+gap> Sort(l,MonomialComparisonFunction(MonomialLexOrdering([z,x,y])));l;
+[ 1, y, y^2, x, x*y, x*y^2, x^2, x^2*y, x^2*y^2, z, y*z, y^2*z, x*z, x*y*z, 
+  x*y^2*z, x^2*z, x^2*y*z, x^2*y^2*z, z^2, y*z^2, y^2*z^2, x*z^2, x*y*z^2, 
+  x*y^2*z^2, x^2*z^2, x^2*y*z^2, x^2*y^2*z^2 ]
+\endexample
+
+\Declaration{MonomialGrlexOrdering}
+\Declaration{MonomialGrevlexOrdering}
+
+\beginexample
+gap> Sort(l,MonomialComparisonFunction(MonomialGrlexOrdering()));l;
+[ 1, z, y, x, z^2, y*z, y^2, x*z, x*y, x^2, y*z^2, y^2*z, x*z^2, x*y*z, 
+  x*y^2, x^2*z, x^2*y, y^2*z^2, x*y*z^2, x*y^2*z, x^2*z^2, x^2*y*z, x^2*y^2, 
+  x*y^2*z^2, x^2*y*z^2, x^2*y^2*z, x^2*y^2*z^2 ]
+gap> Sort(l,MonomialComparisonFunction(MonomialGrevlexOrdering()));l;
+[ 1, z, y, x, z^2, y*z, x*z, y^2, x*y, x^2, y*z^2, x*z^2, y^2*z, x*y*z, 
+  x^2*z, x*y^2, x^2*y, y^2*z^2, x*y*z^2, x^2*z^2, x*y^2*z, x^2*y*z, x^2*y^2, 
+  x*y^2*z^2, x^2*y*z^2, x^2*y^2*z, x^2*y^2*z^2 ]
+gap> Sort(l,MonomialComparisonFunction(MonomialGrlexOrdering([z,y,x])));l;
+[ 1, x, y, z, x^2, x*y, y^2, x*z, y*z, z^2, x^2*y, x*y^2, x^2*z, x*y*z, 
+  y^2*z, x*z^2, y*z^2, x^2*y^2, x^2*y*z, x*y^2*z, x^2*z^2, x*y*z^2, y^2*z^2, 
+  x^2*y^2*z, x^2*y*z^2, x*y^2*z^2, x^2*y^2*z^2 ]
+\endexample
+
+\Declaration{EliminationOrdering}
+
+\Declaration{PolynomialReduction}
+\Declaration{PolynomialReducedRemainder}
+\Declaration{PolynomialDivisionAlgorithm}
+\beginexample
+gap> bas:=[x^3*y*z,x*y^2*z,z*y*z^3+x];;
+gap> pol:=x^7*z*bas[1]+y^5*bas[3]+x*z;;                                        
+gap> PolynomialReduction(pol,bas,MonomialLexOrdering()); 
+[ -y*z^5, [ x^7*z, 0, y^5+z ] ]
+gap> PolynomialReducedRemainder(pol,bas,MonomialLexOrdering());
+-y*z^5
+gap> PolynomialDivisionAlgorithm(pol,bas,MonomialLexOrdering());
+[ -y*z^5, [ x^7*z, 0, y^5+z ] ]
+\endexample
+
+\Declaration{MonomialExtGrlexLess}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Groebner Bases}
+
+A *Groebner Basis* of an ideal $I$i, in a polynomial ring $R$, with
+respect to a monomial ordering, is a set of ideal generators <G> such that
+the ideal generated by the leading monomials of all polynomials in <G> is
+equal to the ideal generated by the leading monomials of all polynomials
+in <I>.
+
+For more details on Groebner bases see \cite{coxlittleoshea}.
+
+\Declaration{GroebnerBasis}
+\beginexample
+gap> l:=[x^2+y^2+z^2-1,x^2+z^2-y,x-y];;
+gap> GroebnerBasis(l,MonomialLexOrdering());
+[ x^2+y^2+z^2-1, x^2+z^2-y, x-y, -y^2-y+1, -z^2+2*y-1, 1/2*z^4+2*z^2-1/2 ]
+gap> GroebnerBasis(l,MonomialLexOrdering([z,x,y]));
+[ x^2+y^2+z^2-1, x^2+z^2-y, x-y, -y^2-y+1 ]
+gap> GroebnerBasis(l,MonomialGrlexOrdering());
+[ x^2+y^2+z^2-1, x^2+z^2-y, x-y, -y^2-y+1, -z^2+2*y-1 ]
+\endexample
+
+\Declaration{ReducedGroebnerBasis}
+\beginexample
+gap> ReducedGroebnerBasis(l,MonomialGrlexOrdering());
+[ x-y, z^2-2*y+1, y^2+y-1 ]
+gap> ReducedGroebnerBasis(l,MonomialLexOrdering());    
+[ z^4+4*z^2-1, -1/2*z^2+y-1/2, -1/4*z^2+x-1/4 ]
+gap> ReducedGroebnerBasis(l,MonomialLexOrdering([y,z,x]));
+[ 1, x^2+x-1, z^2-x+1/2, -x+y ]
+\endexample
+
+\Declaration{StoredGroebnerBasis}
+
+\Declaration{InfoGroebner}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Rational Function Families}
@@ -609,12 +781,13 @@ the coefficients, all polynomials whose coefficients lie in the same family
 are ``compatible''.
 
 \Declaration{RationalFunctionsFamily}
-\Declaration{IsRationalFunctionsFamily}
-\begintt
+\Declaration{IsPolynomialFunctionsFamily}
+%notest
+\beginexample
 gap> fam:=RationalFunctionsFamily(FamilyObj(1));
 NewFamily( "RationalFunctionsFamily(...)", [ 618, 620 ],
 [ 82, 85, 89, 93, 97, 100, 103, 107, 111, 618, 620 ] )
-\endtt
+\endexample
 
 \Declaration{CoefficientsFamily}
 
@@ -715,14 +888,14 @@ and `IndeterminateNumberOfUnivariateRationalFunction'
 \Declaration{PolynomialByExtRep}
 \beginexample
 gap> fam:=RationalFunctionsFamily(FamilyObj(1));;
-gap> p:=PolynomialByExtRep(fam,[[1,2],1,[2,1,9,7],3]);
-x^2+3*y*x_9^7
+gap> p:=PolynomialByExtRep(fam,[[1,2],1,[2,1,15,7],3]);
+3*y*x_15^7+x^2
 gap> q:=p/(p+1);
-(x^2+3*y*x_9^7)/(1+x^2+3*y*x_9^7)
+(3*y*x_15^7+x^2)/(3*y*x_15^7+x^2+1)
 gap> ExtRepNumeratorRatFun(q);
-[ [ 1, 2 ], 1, [ 2, 1, 9, 7 ], 3 ]
+[ [ 1, 2 ], 1, [ 2, 1, 15, 7 ], 3 ]
 gap> ExtRepDenominatorRatFun(q);
-[ [  ], 1, [ 1, 2 ], 1, [ 2, 1, 9, 7 ], 3 ]
+[ [  ], 1, [ 1, 2 ], 1, [ 2, 1, 15, 7 ], 3 ]
 \endexample
 \Declaration{LaurentPolynomialByExtRep}
 

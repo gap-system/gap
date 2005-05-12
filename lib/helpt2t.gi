@@ -29,10 +29,10 @@ HELP_FLUSHRIGHT:=true;
 InstallGlobalFunction(HELP_PRINT_SECTION_TEXT, function(arg)
 local   book, chapter, section, key, subkey, MatchKey, ssectypes,
 	info, chap, filename, stream, p, q, lico, 
-        line, i, lines, IsIgnoredLine, macro, macroarg, tail,
+        line, i, j, lines, IsIgnoredLine, macro, macroarg, tail,
         ttenv, text, verbatim, nontex, item, initem, displaymath, align,
         lastblank, singleline, rund, blanks, SetArg, FlushLeft, Gather,
-        width, buff, EmptyLine, ll, start, keynotfound; 
+        width, buff, EmptyLine, ll, start, keynotfound, verb, URLends; 
 
   # flush buffer ... then add empty line
   EmptyLine := function()
@@ -230,7 +230,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
 
   # open the stream and read in the help
   filename := Filename( info.directories, info.filenames[chapter] );
-  stream := InputTextFile(filename);
+  stream := StringStreamInputTextFile(filename);
   if section = 0  then
       SeekPositionStream( stream, chap[1] );
       Add( lines, FILLED_LINE( info.chapters[chapter], info.bookname, '_' ) );
@@ -307,6 +307,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
           p:=PositionSublist(line,"\\>");
           if p<>fail then
 
+              Gather(); # needed in case of continuations
               lico:=FlushLeft(NormalizedWhitespace(line{[p+2..Length(line)]}));
               if ForAny(ssectypes, type -> MatchKey(lico, type)) then
                   key := fail;
@@ -559,6 +560,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                   tail:=line{[p+1..Length(line)]};
                   line:=line{[1..p-1]};
                   macroarg := "";
+                  macro := "";
                   if tail = "" then
                       # if line ends in a \ indicating a continuation as
                       # ... we put it back
@@ -681,7 +683,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                           macro := macro{[1]};
 
                       elif macro="copyright" then
-                          macro := "C";
+                          macro := "(c)";
 
                       elif macro in ["GAP", "MOC", "CAS", "ATLAS"] then
                           ; # nothing to do it's right already
@@ -698,6 +700,8 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                           macro:="'";
                       elif macro in ["dots","ldots","cdots","vdots"] then
                           macro:="...";
+                      elif macro="cdot" then
+                          macro:=" . ";
                       elif macro="dot" then
                           macro:=".";
 
@@ -797,6 +801,8 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                           macro:="<";
                       elif macro="rangle" then
                           macro:=">";
+                      elif macro="ne" or macro="neq" then
+                          macro:=" <> ";
                       elif macro="le" or macro="leq" then
                           macro:=" <= ";
                       elif macro="ge" or macro="geq" then
@@ -945,7 +951,12 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                       buff:=buff{[p+1..Length(buff)]}; # letter p is the ' '
 
                       if HELP_FLUSHRIGHT and ' ' in line then
-                          # remove trailing blanks
+                          # remove leading and trailing blanks
+			  ll:=1;
+			  while ll<Length(line) and line[ll]=' ' do
+			    ll:=ll+1;
+			  od;
+			  line:=line{[ll..Length(line)]};
                           ll:=Length(line);
                           while ll>0 and line[ll]=' ' do
                               ll:=ll-1;
@@ -1002,28 +1013,106 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
   od;
   CloseStream(stream);
 
+  # Now we replace ~s by spaces, except in URLs and in `...'
+  # (a TeX ~ is a tie which for on-line help amounts to an unstretchable space)
+  verb := false; # Set to true inside `...' (named for LaTeX \verb|...|)
   for i in [1 .. Length(lines)] do
-    p := PositionSublist(lines[i],"URL{");
-    if p=fail then
-      lines[i] := ReplacedString( lines[i], "~", " " );
-    elif Position(lines[i],'~')<>fail then
-      # a URL may have a ~ 
-      while p<>fail do
-        tail:=lines[i]{[p+3..Length(lines[i])]};
-        line:=lines[i]{[1..p+2]};
-        SetArg();
-        if macroarg="" then # abort ... no matching '}'
-          line:=Concatenation(line,tail);
-          break;
-        else
-          line:=Concatenation(
-                    line,"{",ReplacedString(macroarg,"~","\\tilde"),"}",tail);
-        fi;
-        p:=PositionSublist(line,"URL{",Length(line) - Length(tail));
+    # we assume URLs are not broken over lines, URLs don't contain `...'
+    # environments and `...' environments don't contain URLs
+    for j in [1 .. Length(lines[i])] do
+      # replace a sequence of ~s at the beginning of a line by spaces
+      if lines[i][j] = '~' then
+        lines[i][j] := ' ';
+      else
+        break;
+      fi;
+    od;
+    q := 0;
+    if verb then
+      q := Position(lines[i],''');
+      while q<>fail and q<Length(lines[i]) and lines[i][q+1]=''' do
+        q := Position(lines[i],''',q+1);
       od;
-      lines[i] := ReplacedString( line, "~", " " );
-      lines[i] := ReplacedString( lines[i], "\\tilde", "~" );
+      if q=fail then
+        q := Length(lines[i]);
+      else
+        verb := false;
+      fi;
+      tail := lines[i]{[q+1..Length(lines[i])]};
+      line := ReplacedString(lines[i]{[1..q]},"~","\\tilde");
+      q := Length(line);
+      lines[i] := Concatenation(line,tail);
     fi;
+    p := PositionSublist(lines[i],"URL{",q);
+    URLends := [];
+    while p<>fail do
+      tail:=lines[i]{[p+3..Length(lines[i])]};
+      line:=lines[i]{[1..p+2]};
+      SetArg();
+      if macroarg="" then # abort ... no matching '}'
+        lines[i]:=Concatenation(line,tail);
+        Add(URLends, [p, Length(lines[i])]);
+        break;
+      else
+        lines[i]:=Concatenation(
+                    line,"{",ReplacedString(macroarg,"~","\\tilde"),"}",tail);
+      fi;
+      Add(URLends, [p, Length(lines[i]) - Length(tail)]);
+      p:=PositionSublist(lines[i],"URL{",Length(lines[i]) - Length(tail));
+    od;
+    p := q;
+    while not verb and p < Length(lines[i]) do
+      while p < Length(lines[i]) do
+        # this loop sets p to the beginning of the next `...' environment
+        # ... or sets p = fail if there isn't one
+        p := Position(lines[i], '`', p);
+        if p=fail then
+          break;
+        fi;
+        while not IsEmpty(URLends) and p > URLends[1][2] do
+          URLends := URLends{[2..Length(URLends)]}; #pop URLends
+        od;
+        # Have found a ` ... is it the beginning of a `...' environment?
+        # It is if: it is not inside a URL, and 
+        #           ` is not followed by ` unless its followed by ``.
+        if IsEmpty(URLends) or p < URLends[1][1] then     # not inside a URL
+          if p+1 < Length(lines[i]) and
+             lines[i]{[p+1..p+2]} in ["`'", "''"] then
+             # ``' or `'' (special cases: ` or ' inside `...')
+            p := p + 2; # skip over (nothing to do)
+          elif p = Length(lines[i]) or                      # ` (at end of line)
+               lines[i][p+1]<>'`'   or                      # ` (on its own)
+               p+1 < Length(lines[i]) and lines[i][p+2]='`' # ```
+               then
+            verb := true; 
+            break;
+          else # `` (but not ```) ... not a `...' environment 
+            p := p + 1; # continue searching after second `
+          fi;
+        fi;
+      od;  
+      if not verb then # ... or equivalently: if p = fail
+        break;
+      fi;
+      q := Position(lines[i],''',p);
+      while q<>fail and q<Length(lines[i]) and lines[i][q+1]=''' do
+        q := Position(lines[i],''',q+1);
+      od;
+      if q=fail then
+        q := Length(lines[i]);
+      else
+        verb := false; # changed for when we finish this pass of the loop
+      fi;
+      tail := lines[i]{[q+1..Length(lines[i])]};
+      line := Concatenation(lines[i]{[1..p]},
+                            ReplacedString(lines[i]{[p+1..q]},"~","\\tilde"));
+      lines[i] := Concatenation(line,tail);
+      q := Length(line);
+    od;  
+    # at this point any ~ that should not be changed to a blank has been
+    # temporarily replaced by: \tilde
+    lines[i] := ReplacedString( lines[i], "~", " " );
+    lines[i] := ReplacedString( lines[i], "\\tilde", "~" );
   od;
 
   EmptyLine();

@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 ##
@@ -115,8 +117,11 @@ gap> ForAll(GreensHClasses(t4),
 > and KernelOfTransformation(j) = KernelOfTransformation(Representative(i))
 > ));
 true
-gap> STOP_TEST( "semirel.tst", 100000000 );
+
+gap> STOP_TEST( "semirel.tst", 337100000 );
+
+
 #############################################################################
 ##
-#E  semirel.tst . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

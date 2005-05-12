@@ -51,6 +51,22 @@ modules, but to obtain the complete relation to the original module, the
 bases used are needed as well.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Module Constructions}
+
+\>TensorProductGModule (<m1>,<m2>) F
+
+TensorProductGModule calculates the tensor product of the modules
+<m1> and <m2>. 
+They are assumed to be modules over the same algebra so, in particular,
+they  should have the same number of generators.
+
+\>WedgeGModule (<module>)
+
+WedgeGModule calculates the wedge product of a <G>-module.
+That is the action on antisymmetric tensors.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Selecting a Different MeatAxe}
 
 All MeatAxe routines are accessed via the global variable `MTX', which is a
@@ -101,6 +117,7 @@ returns the degree of the splitting field as extension of the prime field.
 \Section{Finding Submodules}
 
 \>MTX.SubmoduleGModule( <module>, <subspace> ) F
+\>MTX.SubGModule( <module>, <subspace> ) F
 
 <subspace> should be a subspace of (or a vector in) the underlying vector
 space of <module> i.e. the full row space of the same dimension and over
@@ -238,6 +255,47 @@ returns a basis of all homomorphisms from the irreducible module
 Let <cf> be the output of `MTX.CollectedFactors'. This routine
 tries to find a group algebra element that has nullity zero on all
 composition factors except number <nr>.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{Invariant Forms}
+
+The functions in this section can only be applied to an absolutely irreducible
+MeatAxe module <module>.
+
+\>MTX.InvariantBilinearForm(<module>) F
+
+returns an invariant bilinear form, which may be symmetric or anti-symmetric,
+of <module>, or `fail' if no such form exists.
+
+\>MTX.InvariantSesquilinearForm(<module>) F
+
+returns an invariant hermitian (= self-adjoint) sesquilinear form of <module>,
+which must be defined over a finite field whose order is a square,
+or `fail' if no such form exists.
+
+\>MTX.InvariantQuadraticForm(<module>) F
+
+returns an invariant quadratic form of <module>,
+or `fail' if no such form exists. If the characteristic of the field over
+which <module> is defined is not 2, then the invariant bilinear form (if
+any) divided by two will be returned. In characteristic 2, the form
+returned will be lower triangular.
+
+\>MTX.BasisInOrbit(<module>) F
+
+returns a basis of the underlying vector space of <module> which is contained
+in an orbit of the action of the generators of module on that space. This is
+used by `MTX.InvariantQuadraticForm' in characteristic 2.
+
+\>MTX.OrthogonalSign(<module>) F
+
+for an even dimensional module, returns 1 or -1, according as
+`MTX.InvariantQuadraticForm(<module>)' is of + or - type. For an odd
+dimensional module, returns 0. For a module with no invariant
+quadratic form, returns `fail'. This calculation uses an algorithm due
+to Jon Thackray.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Smash MeatAxe}

@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file mainly installs the kernel methods for 8 bit vectors
 ##
@@ -206,7 +207,7 @@ InstallMethod( \+, "For a GF2 vector and an 8 bit vector of char 2",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRep(v,GF(Q_VEC8BIT(w)));
+        ConvertToVectorRepNC(v,GF(Q_VEC8BIT(w)));
         return v+w;
     fi;
 end);
@@ -218,7 +219,7 @@ InstallMethod( \+, "For an 8 bit vector of char 2 and a GF2 vector",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRep(v,GF(Q_VEC8BIT(w)));
+        ConvertToVectorRepNC(v,GF(Q_VEC8BIT(w)));
         return w+v;
     fi;
 end);
@@ -338,7 +339,7 @@ function( a, b )
     if DegreeFFE(a) > 8 or IsLockedRepresentationVector(b) then
         TryNextMethod();
     else
-        ConvertToVectorRep(b,Field(a));
+        ConvertToVectorRepNC(b,Field(a));
         return a*b;
     fi;
 end );
@@ -373,7 +374,7 @@ function( b, a )
     if DegreeFFE(b) > 8 or IsLockedRepresentationVector(a) then
         TryNextMethod();
     else
-        ConvertToVectorRep(a,Field(b));
+        ConvertToVectorRepNC(a,Field(b));
         return b*a;
     fi;
 end );
@@ -396,7 +397,7 @@ InstallMethod( \-, "For a GF2 vector and an 8 bit vector of char 2",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRep(v,GF(Q_VEC8BIT(w)));
+        ConvertToVectorRepNC(v,GF(Q_VEC8BIT(w)));
         return v-w;
     fi;
 end);
@@ -408,7 +409,7 @@ InstallMethod( \-, "For an 8 bit vector of char 2 and a GF2 vector",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRep(v,GF(Q_VEC8BIT(w)));
+        ConvertToVectorRepNC(v,GF(Q_VEC8BIT(w)));
         return w-v;
     fi;
 end);
@@ -517,7 +518,7 @@ InstallMethod( \*, "For a GF2 vector and an 8 bit vector of char 2",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRep(v,GF(Q_VEC8BIT(w)));
+        ConvertToVectorRepNC(v,GF(Q_VEC8BIT(w)));
         return v*w;
     fi;
 end);
@@ -529,7 +530,7 @@ InstallMethod( \*, "For an 8 bit vector of char 2 and a GF2 vector",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRep(v,GF(Q_VEC8BIT(w)));
+        ConvertToVectorRepNC(v,GF(Q_VEC8BIT(w)));
         return w*v;
     fi;
 end);
@@ -677,7 +678,7 @@ InstallOtherMethod( AddCoeffs, "8 bit vector and GF2 vector", IsCollsCollsElms,
     if IsLockedRepresentationVector(w) then
         TryNextMethod();
     else
-        ConvertToVectorRep(w, Q_VEC8BIT(v));
+        ConvertToVectorRepNC(w, Q_VEC8BIT(v));
         return ADD_COEFFS_VEC8BIT_3(v,w,x);
     fi;
 end);
@@ -690,7 +691,7 @@ InstallOtherMethod( AddCoeffs, "GF2 vector and 8 bit vector", IsCollsCollsElms,
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRep(v, Q_VEC8BIT(w));
+        ConvertToVectorRepNC(v, Q_VEC8BIT(w));
         return ADD_COEFFS_VEC8BIT_3(v,w,x);
     fi;
 end);
@@ -711,7 +712,7 @@ InstallOtherMethod( AddCoeffs, "8 bit vector and GF2 vector", IsIdenticalObj,
     if IsLockedRepresentationVector(w) then
         TryNextMethod();
     else
-        ConvertToVectorRep(w, Q_VEC8BIT(v));
+        ConvertToVectorRepNC(w, Q_VEC8BIT(v));
         return ADD_COEFFS_VEC8BIT_2(v,w);
     fi;
 end);
@@ -723,7 +724,7 @@ InstallOtherMethod( AddCoeffs, "GF2 vector and 8 bit vector", IsIdenticalObj,
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        ConvertToVectorRep(v, Q_VEC8BIT(w));
+        ConvertToVectorRepNC(v, Q_VEC8BIT(w));
         return ADD_COEFFS_VEC8BIT_2(v,w);
     fi;
 end);
@@ -828,8 +829,8 @@ BindGlobal("ADJUST_FIELDS_VEC8BIT",
       p:=Characteristic(v);
       e:=Lcm(LogInt(Q_VEC8BIT(v),p),LogInt(Q_VEC8BIT(w),p));
       if p^e > 256 or
-         p^e <> ConvertToVectorRep(v,p^e) or
-         p^e <> ConvertToVectorRep(w,p^e) then
+         p^e <> ConvertToVectorRepNC(v,p^e) or
+         p^e <> ConvertToVectorRepNC(w,p^e) then
           return fail;
       fi;
   fi;
@@ -888,6 +889,11 @@ InstallMethod( PowerModCoeffs,
         TryNextMethod();
     fi;
     
+    if exp = 1 then
+        pow := ShallowCopy(v);
+        ReduceCoeffs(pow,lv,w,lw);
+        return pow;
+    fi;
     wshifted := MAKE_SHIFTED_COEFFS_VEC8BIT(w, lw);
     pow := v;
     lpow := lv;

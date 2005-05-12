@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for matrix groups.
 ##
@@ -149,6 +150,39 @@ local f,i,j,veclist,acts;
   return f^Length(veclist[1]);
 end);
 
+BindGlobal("BasisVectorsForMatrixAction",function(G)
+local F, gens, evals, espaces, is, ise, gen, i, j;
+
+  F := DefaultFieldOfMatrixGroup(G);
+  # `Cyclotomics', the default field for rational matrix groups causes
+  # problems with a subsequent factorization
+  if IsIdenticalObj(F,Cyclotomics) then
+    F:=FieldOfMatrixGroup(G);
+  fi;
+  gens := ShallowCopy( GeneratorsOfGroup( G ) ); # Need copy for mutability
+  while Length( gens ) < 10 do
+      Add( gens, PseudoRandom( G ) );
+  od;
+
+  evals := [];  espaces := [];
+  for gen in gens do
+      evals := Concatenation( evals, GeneralisedEigenvalues(F,gen) );
+      espaces := Concatenation( espaces, GeneralisedEigenspaces(F,gen) );
+  od;
+
+  is:=[];
+  # the `AddSet' wil automatically put small spaces first
+  for i in [1..Length(espaces)] do
+    for j in [i+1..Length(espaces)] do
+      ise:=Intersection(espaces[i],espaces[j]);
+      if Dimension(ise)>0 and not ise in is then
+	Add(is,ise);
+      fi;
+    od;
+  od;
+  return Concatenation(List(is,i->BasisVectors(Basis(i))));
+end);
+
 #############################################################################
 ##
 #F  DoSparseLinearActionOnFaithfulSubset( <G>,<act>,<sort> )
@@ -164,16 +198,20 @@ function(G,act,sort)
 local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
       v,zero,zerov,en,lo,dim,field,start,acts,base,R,dict,xset;
 
-  field:=FieldOfMatrixGroup(G);
+  field:=DefaultFieldOfMatrixGroup(G);
   dict := NewDictionary( One(G)[1], true , field ^ Length( One( G ) ) );
   acts:=GeneratorsOfGroup(G);
 
   if Length(acts)=0 then
     start:=One(G);
   elif act=OnRight then
-    start:=acts[1];
+    start:=Concatenation(BasisVectorsForMatrixAction(G),One(G));
   elif act=OnLines then
-    start:=One(G);
+    j:=One(G);
+    start:=Concatenation(List(BasisVectorsForMatrixAction(G),
+	    x->OnLines(x,j)),j);
+  else
+    Error("illegal action");
   fi;
 
   zerov:=Zero(start[1]);
@@ -294,7 +332,7 @@ local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
 
   hom := ActionHomomorphism( xset,"surjective" );
   SetIsInjective(hom,true); # we know by construction that its injective.
-  R:=Group(permimg,());
+  R:=Group(permimg,()); # `permimg' arose from `PermList'
   SetBaseOfGroup(R,xset!.basePermImage);
 
   if HasSize(G) and act=OnRight then
@@ -311,6 +349,7 @@ local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
 #
 #  SetFilterObj( hom, IsActionHomomorphismByBase );
 #  RUN_IN_GGMBI:=p;
+  base:=ImmutableMatrix(field,base);
   SetLinearActionBasis(hom,base);
 
   return hom;
@@ -321,7 +360,7 @@ end);
 #M  IsomorphismPermGroup( <mat-grp> )
 ##
 BindGlobal( "NicomorphismOfGeneralMatrixGroup", function( grp,canon,sort )
-  local   nice;
+local   nice,img;
   # don't be too clever if it is a matrix over a non-field domain
   if not IsField(DefaultFieldOfMatrixGroup(grp)) then
     #nice:=ActionHomomorphism( grp,AsSSortedList(grp),OnRight,"surjective");
@@ -345,7 +384,8 @@ BindGlobal( "NicomorphismOfGeneralMatrixGroup", function( grp,canon,sort )
     if not ( (HasIsNaturalGL(grp) and IsNaturalGL(grp)) or
              (HasIsNaturalSL(grp) and IsNaturalSL(grp)) ) then
       # improve via blocks
-      nice:=nice*SmallerDegreePermutationRepresentation(Image(nice));
+      img:=Image(nice);
+      nice:=nice*SmallerDegreePermutationRepresentation(img);
     fi;
   fi;
 
@@ -370,7 +410,8 @@ end);
 ##
 #M  NiceMonomorphism( <mat-grp> )
 ##
-InstallMethod( NiceMonomorphism, [ IsMatrixGroup and IsFinite ],
+InstallMethod( NiceMonomorphism,"use NicomorphismOfGeneralMatrixGroup",
+  [ IsMatrixGroup and IsFinite ],
   G->NicomorphismOfGeneralMatrixGroup(G,false,true));
 
 #############################################################################
@@ -406,7 +447,7 @@ local gens,s,dom,mon,no;
   s:=StabChainOp(no,rec(base:=List(BaseOfGroup(dom),
 				      i->Position(HomeEnumerator(dom),i))));
   # call the recursive function to do the work
-  gens:=SCMinSmaGens(no,s,[],(),true).gens;
+  gens:= SCMinSmaGens( no, s, [], One( no ), true ).gens;
   SetMinimalStabChain(G,s);
   return List(gens,i->PreImagesRepresentative(mon,i));
 end);
@@ -426,7 +467,7 @@ local s,dom,mon,no;
   s:=StabChainOp(no,rec(base:=List(BaseOfGroup(dom),
 				      i->Position(HomeEnumerator(dom),i))));
   # call the recursive function to do the work
-  SCMinSmaGens(no,s,[],(),false);
+  SCMinSmaGens( no, s, [], One( no ), false );
   return s;
 end);
 
@@ -437,13 +478,14 @@ end);
 InstallOtherMethod(LargestElementGroup,"matrix group via niceo",
   [IsMatrixGroup and IsFinite],
 function(G)
-local s,dom,mon;
+local s,dom,mon, img;
   mon:=CanonicalNiceMonomorphism(G);
   dom:=UnderlyingExternalSet(mon);
-  s:=StabChainOp(Image(mon,G),rec(base:=List(BaseOfGroup(dom),
+  img:= Image( mon, G );
+  s:=StabChainOp( img, rec(base:=List(BaseOfGroup(dom),
 				      i->Position(HomeEnumerator(dom),i))));
   # call the recursive function to do the work
-  s:=LargestElementStabChain(s,());
+  s:= LargestElementStabChain( s, One( img ) );
   return PreImagesRepresentative(mon,s);
 end);
 
@@ -501,7 +543,8 @@ InstallMethod( ViewObj,
 function(G)
 local gens;
   gens:=GeneratorsOfGroup(G);
-  if Length(gens)>0 and Length(gens)*Length(gens[1])^2/VIEWLEN>8 then
+  if Length(gens)>0 and Length(gens)*
+                        Length(gens[1])^2 / GAPInfo.ViewLength > 8 then
     Print("<matrix group");
     if HasSize(G) then
       Print(" of size ",Size(G));
@@ -577,10 +620,12 @@ InstallMethod(IsSubgroupSL,"determinant test for generators",
 #M  <mat> in <G>  . . . . . . . . . . . . . . . . . . . .  is form invariant?
 ##
 InstallMethod( \in, "respecting bilinear form", IsElmsColls,
-        [ IsMatrix, IsFullSubgroupGLorSLRespectingBilinearForm ],
+    [ IsMatrix, IsFullSubgroupGLorSLRespectingBilinearForm ],
+    NICE_FLAGS,  # this method is better than the one using a nice monom.
 function( mat, G )
     local inv;
-    if IsSubgroupSL(G) and not IsOne(DeterminantMat(mat)) then
+    if not IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
+       or ( IsSubgroupSL( G ) and not IsOne( DeterminantMat( mat ) ) ) then
       return false;
     fi;
     inv:= InvariantBilinearForm(G).matrix;
@@ -588,15 +633,18 @@ function( mat, G )
 end );
 
 InstallMethod( \in, "respecting sesquilinear form", IsElmsColls,
-        [ IsMatrix, IsFullSubgroupGLorSLRespectingSesquilinearForm ],
+    [ IsMatrix, IsFullSubgroupGLorSLRespectingSesquilinearForm ],
+    NICE_FLAGS,  # this method is better than the one using a nice monom.
 function( mat, G )
-    local f, inv;
-    if IsSubgroupSL(G) and not IsOne(DeterminantMat(mat)) then
+    local pow, inv;
+    if not IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
+       or ( IsSubgroupSL( G ) and not IsOne( DeterminantMat( mat ) ) ) then
       return false;
     fi;
-    f:= FrobeniusAutomorphism( FieldOfMatrixGroup( G ) );
+    pow:= RootInt( Size( FieldOfMatrixGroup( G ) ) );
     inv:= InvariantSesquilinearForm(G).matrix;
-    return mat * inv * List( TransposedMat( mat ), row -> OnTuples(row,f))
+    return mat * inv * List( TransposedMat( mat ),
+                             row -> List( row, x -> x^pow ) )
            = inv;
 end );
 
@@ -902,6 +950,31 @@ InstallGlobalFunction( "BlowUpIsomorphism", function( matgrp, B )
         Basis, B );
 
     return iso;
+    end );
+
+
+#############################################################################
+##
+##  stuff concerning invariant forms of matrix groups
+#T add code for computing invariant forms,
+#T and transforming matrices for normalizing the forms
+#T (which is useful, e.g., for embedding the groups from AtlasRep into
+#T the unitary, symplectic, or orthogonal groups in question)
+##
+
+
+#############################################################################
+##
+#M  InvariantBilinearForm( <matgrp> )
+##  
+InstallMethod( InvariantBilinearForm,
+    "for a matrix group with known `InvariantQuadraticForm'",
+    [ IsMatrixGroup and HasInvariantQuadraticForm ],
+    function( matgrp )
+    local Q;
+
+    Q:= InvariantQuadraticForm( matgrp ).matrix;
+    return rec( matrix:= ( Q + TransposedMat( Q ) ) );
     end );
 
 

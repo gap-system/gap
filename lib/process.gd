@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for process.
 ##
@@ -51,10 +52,10 @@ Revision.process_gd :=
 ##
 ##  If a program of a {\GAP} package which does not only consist of {\GAP}
 ##  code needs to be launched in a directory relative to certain data
-##  libraries, then the first entry of `DirectoryPackageLibrary' should be
+##  libraries, then the first entry of `DirectoriesPackageLibrary' should be
 ##  used.
-##  The argument of `DirectoryPackageLibrary' should be the path to the data
-##  library relative to the package directory.
+##  The argument of `DirectoriesPackageLibrary' should be the path to the
+##  data library relative to the package directory.
 ##
 ##  If a program calls other programs and needs to be launched in a directory
 ##  containing the executables for such a {\GAP} package then the first entry
@@ -66,6 +67,7 @@ Revision.process_gd :=
 ##
 ##  *Examples*
 ##
+##  %notest
 ##  \beginexample
 ##  gap> path := DirectoriesSystemPrograms();;
 ##  gap> ls := Filename( path, "ls" );;
@@ -75,6 +77,7 @@ Revision.process_gd :=
 ##  awk    ls     mkdir
 ##  \endexample
 ##  
+##  %notest
 ##  \beginexample
 ##  gap> # current directory, here the root directory
 ##  gap> Process( DirectoryCurrent(), ls, stdin, stdout, ["-c"] );;
@@ -82,6 +85,7 @@ Revision.process_gd :=
 ##  src    dev    etc    tbl    doc    pkg    small  tom
 ##  \endexample
 ##
+##  %notest
 ##  \beginexample
 ##  gap> # create a temporary directory
 ##  gap> tmpdir := DirectoryTemporary();;
@@ -129,23 +133,24 @@ Revision.process_gd :=
 ##  In order to find a system program use `DirectoriesSystemPrograms'
 ##  together with `Filename'.
 ##
-##  \begintt
+##  \beginexample
 ##  gap> path := DirectoriesSystemPrograms();;
 ##  gap> date := Filename( path, "date" );
 ##  "/bin/date"
-##  \endtt
+##  \endexample
 ##
 ##  Now execute `date' with no argument and no input, collect the output into
 ##  a string stream.
 ##
-##  \begintt
+##  %notest
+##  \beginexample
 ##  gap> str := "";; a := OutputTextString(str,true);;
 ##  gap> Process( DirectoryCurrent(), date, InputTextNone(), a, [] );
 ##  0
 ##  gap> CloseStream(a);
 ##  gap> Print(str);
 ##  Fri Jul 11 09:04:23 MET DST 1997
-##  \endtt
+##  \endexample
 ##
 UNBIND_GLOBAL( "Process" );
 DeclareOperation( "Process",
@@ -159,14 +164,16 @@ DeclareOperation( "Process",
 ##  `Exec' runs a shell in the current directory to execute the command given
 ##  by the string <cmd> with options `<option1>, ..., <optionN>'.
 ##
-##  \begintt
+##  %notest
+##  \beginexample
 ##  gap> Exec( "date" );
 ##  Thu Jul 24 10:04:13 BST 1997
-##  \endtt
+##  \endexample
 ##
 ##  <cmd> is interpreted by the shell and therefore we can make use of the
 ##  various features that a shell offers as in following example.
 ##
+##  %notest
 ##  \beginexample
 ##  gap> Exec( "echo \"GAP is great!\" > foo" );
 ##  gap> Exec( "cat foo" );

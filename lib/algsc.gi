@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for elements of algebras given by structure
 ##  constants (s.~c.).
@@ -28,6 +29,17 @@
 Revision.algsc_gi :=
     "@(#)$Id$";
 
+
+#T need for the norm of a quaternion?
+#T (note: returns an element in the coefficients domain, not in the algebra!
+#T f( a b[1] + b b[2] + c b[3] + d b[4] ) = a^2 +b^2 +c^2 + d^2.)
+#T
+#T     NormQuat := function( quat )
+#T         if not IsQuaternion( quat ) then
+#T           Error( "<quat> must be a quaternion" );
+#T         fi;
+#T         return Sum( List( ExtRepOfObj( quat ), c -> c^2 ) );
+#T     end;
 
 #############################################################################
 ##
@@ -600,11 +612,12 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
     if HasIsAssociative( F ) and IsAssociative( F ) then
       filter:= filter and IsAssociativeElement;
     fi;
-    if     IsCyclotomicCollection( F ) and IsField( F )
+    if     IsNegRat( a ) and IsNegRat( b )
+#T it suffices if the parameters are real and negative
+       and IsCyclotomicCollection( F ) and IsField( F )
        and ForAll( GeneratorsOfDivisionRing( F ),
                    x -> x = ComplexConjugate( x ) ) then
       filter:= filter and IsZDFRE;
-#T holds more generally?
     fi;
 
     # Construct the algebra.
@@ -618,13 +631,14 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
               "e", "i", "j", "k" ],
             filter );
 
-    # A quaternion algebra with parameters $-1$ over a real field
+    # A quaternion algebra with negative parameters over a real field
     # is a division ring.
-    if     a = -1 and b = -1
+    if     IsNegRat( a ) and IsNegRat( b )
+       and IsCyclotomicCollection( F ) and IsField( F )
        and ForAll( GeneratorsOfDivisionRing( F ),
                    x -> x = ComplexConjugate( x ) ) then
       SetFilterObj( A, IsMagmaWithInversesIfNonzero );
-#T better: use `DivisionRingByGenerators' !
+#T better use `DivisionRingByGenerators'?
     fi;
 
     # Return the quaternion algebra.
@@ -647,17 +661,21 @@ InstallMethod( OneOp,
 ##
 #M  InverseOp( <quat> ) . . . . . . . . . . . . . . . . . .  for a quaternion
 ##
+##  Let $a$ and $b$ be the parameters from which the algebra of <quat> was
+##  constructed.
 ##  The inverse of $c_1 e + c_2 i + c_3 j + c_4 k$ is
 ##  $c_1/z e - c_2/z i - c_3/z j - c_4/z k$
-##  where $z = c_1^2 + c_2^2 + c_3^2 + c_4^2$.
+##  where $z = c_1^2 - c_2^2 a - c_3^2 b + c_4^2 a b$.
 ##
 InstallMethod( InverseOp,
     "for a quaternion",
     [ IsQuaternion and IsSCAlgebraObj ],
     function( quat )
-    local data, z;
+    local data, z, a, b;
     data:= ExtRepOfObj( quat );
-    z:= data[1]^2 + data[2]^2 + data[3]^2 + data[4]^2;
+    a:= FamilyObj( quat )!.sctable[2][2][2][1];
+    b:= FamilyObj( quat )!.sctable[3][3][2][1];
+    z:= data[1]^2 - data[2]^2 * a - data[3]^2 * b + data[4]^2 * a * b;
     if IsZero( z ) then
       return fail;
     fi;

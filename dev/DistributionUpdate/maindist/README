@@ -1,0 +1,97 @@
+           Creating Main Archives of GAP Distribution
+           ==========================================
+
+##  $Id$
+
+
+To do this one needs:
+  - a UNIX machine
+  - 1 GB disc space
+  - sh + std progs like cp, mv and so on
+  - cvs and access to GAPs CVS repository 
+  - tex (big)
+  - perl
+  - tth 
+  - C compiler, make
+  - zoo, unzoo, tar, gzip, bzip2, python (for repack)
+  - persons who provide Win and Mac binaries (but all except Win and Mac
+    works and can be tested without this)
+
+Here are the steps to wrap release archives:
+
+(0) *only* before the first serious attempt to wrap a release candidate:
+    create a CVS tag and branch from the current repository, use a command
+    like:
+       cvs tag -b -D now GAP4r4
+
+    Make sure that the dlls and .exe programs under bin are up-to-date. 
+
+(1) edit 'setvar': 
+        - choose a directory for the wrapping (should have about
+          1GB of free space)
+        - choose a GAPCVSVERSION ("-D now" during test and using the tag 
+          from step (0) (say "-r GAP4r4") for the real wrapping
+        - give VERSION and FULLVERSION
+	- set the values for the package archive.
+
+(1b) The `doit' script will do all of 2-7 in one step.
+
+(2) use 'checkout' to get current files from repository (if necessary, first 
+    login to the CVS repository) as well as the packages archive.
+
+(3) use 'fixpermissions' to fix permissions
+
+(4) create the documentation:
+        - Current versions of packages will have been copied to `'pkg' by
+	  the `checkout' script.
+        - use 'makedoc'
+        
+(5) create completion files: (if necessary on your system set the
+    environment variables CC, COPTS, LOPTS, such that gap compiles with
+    (configure; make))
+    call 'completionfiles'
+
+(6) pack the main gap4...zoo archive and tools...zoo with 'zooandtag'
+    NOTE: our CVS repository contains many files in the 4.0 tree which
+    should not be included in the distributed archive. So, we need to 
+    give an explicit list of the files to be included which is contained in 
+    this 'zooandtag' script. To keep this list simple, files not intended for
+    distribution should, if possible,  be inside directories which are not 
+    distributed at all. 
+    Furthermore, the script lists separately the files which are text files
+    and those which are binary files (to manage line break syntax on
+    different operating systems).
+    If new executable files are added to the distribution, don't forget to 
+    add them in the corresponding list in the 'fixpermissions' script.
+
+In no particular order:
+
+(7) add the Windows binary by
+        - call 'winbin'
+        - follow the printed instructions
+        (or copy an existing archive winbin.tgz to the given place)
+
+(7b) add the data directories (trans, prim, small) with 'zooandtagdata'.
+    Note: This is separated from 'zooandtag' above such that one can have
+    the windows binaries in the archive *before* the large data libraries.
+    When testing the Windows version one can thus stop extraction early.
+
+(8) add the Mac binary
+     ...?
+     
+(9) *only* for 4.4:  add the main archive of the tomlib package and
+    create xtom1r1.zoo by
+        - (optional, if Thomas provides the tomlib1r1.zoo and
+          tomlibxt1r1.zoo archives): copy these to $DISTROOT
+        - call 'addtomlib4.4'
+
+Finally:
+
+(10) for publishing the archives, apply 'repack.py' to create the other 
+     formats (.tar.gz, .tar.bz2, -win.zip).
+
+(11) That's it! Now start to install from these archives, run all sorts of
+     tests, try packages, ..., release!
+
+
+

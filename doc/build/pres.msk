@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Presentations and Tietze Transformations}
 
@@ -72,8 +73,8 @@ gap> P := PresentationViaCosetTable( G );
 gap> TzPrintRelators( P );
 #I  1. f2^3
 #I  2. f1^6
-#I  3. f1*f2*f1*f2*f1*f2*f1*f2*f1*f2*f1*f2
-#I  4. f1*f2*f1^-1*f2*f1*f2^-1*f1^-1*f2*f1*f2*f1^-1*f2^-1
+#I  3. f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1*f1^-1*f2^-1
+#I  4. f1*f2*f1^-1*f2^-1*f1*f2^-1*f1^-1*f2*f1*f2^-1*f1^-1*f2^-1
 #I  5. f1^-3*f2*f1*f2*f1^-1*f2^-1*f1^-1*f2^-1*f1^-2*f2
 \endexample
 
@@ -98,7 +99,7 @@ gap> RelatorsOfFpGroup( G );
 [ c^2, b^4, a*c*a*c*a*c, a*b^-2*a*b^-2*a*b^-2, a^11, 
   a^2*b*a^-2*b^-2*a*b^-1*a^2*b^-1, a*b*a^-1*b*a^-1*b^-1*a*b*a^-1*b*a^-1*b^-1, 
   a^2*b*a^2*b^-2*a^-1*b*a^-1*b^-1*a^-1*b^-1, 
-  a^2*b^-1*a^-1*b^-1*a*c*b*c*a*b*a*b, a^4*b*a^2*b*a^-2*c*a*b*a^-1*c ]
+  a*b*a*b*a^2*b^-1*a^-1*b^-1*a*c*b*c, a^4*b*a^2*b*a^-2*c*a*b*a^-1*c ]
 \endexample
 
 Before it is returned, the resulting presentation is being simplified by
@@ -412,10 +413,10 @@ gap> TzPrintGenerators( P );
 gap> TzPrintRelators( P );
 #I  1. f3^2
 #I  2. f2^4
-#I  3. f2*f3*f2*f3
+#I  3. f2^-1*f3*f2^-1*f3
 #I  4. f1^5
 #I  5. f1^2*f2*f1*f2^-1
-#I  6. f1*f2^-2*f3*f1*f3*f1^-1*f3
+#I  6. f1^-1*f3*f1*f3*f1^-1*f2^2*f3
 \endexample
 
 \Declaration{TzPrintLengths}
@@ -441,19 +442,19 @@ gap> TzPrint( P );
 #I  relators:
 #I  1.  2  [ 3, 3 ]
 #I  2.  4  [ 2, 2, 2, 2 ]
-#I  3.  4  [ 2, 3, 2, 3 ]
+#I  3.  4  [ -2, 3, -2, 3 ]
 #I  4.  5  [ 1, 1, 1, 1, 1 ]
 #I  5.  5  [ 1, 1, 2, 1, -2 ]
-#I  6.  8  [ 1, -2, -2, 3, 1, 3, -1, 3 ]
+#I  6.  8  [ -1, 3, 1, 3, -1, 2, 2, 3 ]
 \endexample
 
 \Declaration{TzPrintPairs}
 
 \beginexample
 gap> TzPrintPairs( P, 3 );
-#I  1.  3  occurrences of  f2^-1 * f3
-#I  2.  2  occurrences of  f2 * f3
-#I  3.  2  occurrences of  f1^-1 * f3
+#I  1.  3  occurrences of  f2 * f3
+#I  2.  2  occurrences of  f2^-1 * f3
+#I  3.  2  occurrences of  f1 * f3
 \endexample
 
 Finally, there is a function `TzPrintOptions'. It is described in section
@@ -1116,52 +1117,51 @@ gap> H := Subgroup( G, [ a, c ] );;
 gap> SetInfoLevel( InfoFpGroup, 1 );
 gap> P := PresentationSubgroupMtc( G, H );;
 #I  index = 240  total = 4737  max = 4507
-#I  MTC defined 2 primary and 4446 secondary subgroup generators
+#I  MTC defined 2 primary and 4444 secondary subgroup generators
 #I  there are 246 generators and 617 relators of total length 2893
 #I  calling DecodeTree
-#I  there are 115 generators and 382 relators of total length 1837
-#I  there are 69 generators and 298 relators of total length 1785
-#I  there are 44 generators and 238 relators of total length 1767
-#I  there are 35 generators and 201 relators of total length 2030
-#I  there are 26 generators and 177 relators of total length 2084
-#I  there are 23 generators and 167 relators of total length 2665
-#I  there are 20 generators and 158 relators of total length 2848
-#I  there are 20 generators and 148 relators of total length 3609
-#I  there are 21 generators and 148 relators of total length 5170
-#I  there are 24 generators and 148 relators of total length 7545
-#I  there are 27 generators and 146 relators of total length 11477
-#I  there are 32 generators and 146 relators of total length 18567
-#I  there are 36 generators and 146 relators of total length 25440
-#I  there are 39 generators and 146 relators of total length 38070
-#I  there are 43 generators and 146 relators of total length 54000
-#I  there are 41 generators and 143 relators of total length 64970
-#I  there are 8 generators and 129 relators of total length 20031
-#I  there are 7 generators and 125 relators of total length 27614
-#I  there are 4 generators and 113 relators of total length 36647
-#I  there are 3 generators and 108 relators of total length 44128
-#I  there are 2 generators and 103 relators of total length 35394
-#I  there are 2 generators and 102 relators of total length 34380
+#I  there are 114 generators and 385 relators of total length 1860
+#I  there are 69 generators and 294 relators of total length 1855
+#I  there are 43 generators and 235 relators of total length 2031
+#I  there are 35 generators and 207 relators of total length 2348
+#I  there are 25 generators and 181 relators of total length 3055
+#I  there are 19 generators and 165 relators of total length 3290
+#I  there are 20 generators and 160 relators of total length 5151
+#I  there are 23 generators and 159 relators of total length 8177
+#I  there are 25 generators and 159 relators of total length 12241
+#I  there are 29 generators and 159 relators of total length 18242
+#I  there are 34 generators and 159 relators of total length 27364
+#I  there are 38 generators and 159 relators of total length 41480
+#I  there are 41 generators and 159 relators of total length 62732
+#I  there are 45 generators and 159 relators of total length 88872
+#I  there are 46 generators and 159 relators of total length 111092
+#I  there are 44 generators and 155 relators of total length 158181
+#I  there are 32 generators and 155 relators of total length 180478
+#I  there are 7 generators and 133 relators of total length 29897
+#I  there are 4 generators and 119 relators of total length 28805
+#I  there are 3 generators and 116 relators of total length 35209
+#I  there are 2 generators and 111 relators of total length 25658
+#I  there are 2 generators and 111 relators of total length 22634
 gap> TzGoGo( P );
-#I  there are 2 generators and 101 relators of total length 19076
-#I  there are 2 generators and 84 relators of total length 6552
-#I  there are 2 generators and 38 relators of total length 1344
-#I  there are 2 generators and 9 relators of total length 94
-#I  there are 2 generators and 8 relators of total length 86
+#I  there are 2 generators and 108 relators of total length 11760
+#I  there are 2 generators and 95 relators of total length 6482
+#I  there are 2 generators and 38 relators of total length 1464
+#I  there are 2 generators and 8 relators of total length 116
+#I  there are 2 generators and 7 relators of total length 76
+#I  there are 2 generators and 6 relators of total length 66
+#I  there are 2 generators and 6 relators of total length 52
 gap> TzPrintGenerators( P );
-#I  1.  _x1   43 occurrences
-#I  2.  _x2   43 occurrences
+#I  1.  _x1   26 occurrences
+#I  2.  _x2   26 occurrences
 gap> TzPrint( P );
 #I  generators: [ _x1, _x2 ]
 #I  relators:
 #I  1.  3  [ 1, 1, 1 ]
 #I  2.  3  [ 2, 2, 2 ]
-#I  3.  8  [ 1, -2, 1, -2, 1, -2, 1, -2 ]
-#I  4.  8  [ 1, 2, 1, 2, 1, 2, 1, 2 ]
-#I  5.  14  [ -2, 1, 2, 1, -2, -1, 2, 1, -2, -1, -2, 1, 2, -1 ]
-#I  6.  16  [ -1, 2, 1, 2, -1, 2, 1, 2, -1, 2, 1, 2, -1, 2, 1, 2 ]
-#I  7.  16  [ 2, 1, -2, 1, 2, 1, -2, 1, 2, 1, -2, 1, 2, 1, -2, 1 ]
-#I  8.  18  [ -2, -1, 2, -1, -2, 1, -2, -1, 2, -1, -2, 1, -2, -1, 2, -1, -2, 
-  1 ]
+#I  3.  8  [ 2, -1, 2, -1, 2, -1, 2, -1 ]
+#I  4.  8  [ 2, 1, 2, 1, 2, 1, 2, 1 ]
+#I  5.  14  [ -1, -2, 1, 2, 1, -2, -1, 2, 1, -2, -1, -2, 1, 2 ]
+#I  6.  16  [ 1, 2, 1, -2, 1, 2, 1, -2, 1, 2, 1, -2, 1, 2, 1, -2 ]
 gap> K :=  FpGroupPresentation( P );
 <fp group on the generators [ _x1, _x2 ]>
 gap> SetInfoLevel( InfoFpGroup, 0 );

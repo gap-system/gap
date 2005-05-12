@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains some methods applicable to objects in general.
 ##
@@ -428,11 +429,46 @@ end );
 ##  enclosing doublequotes.
 ##
 InstallMethod( Display,
-    "generic: use Print",
-    true,
-    [ IsObject ], 0,
-    function( obj ) Print(obj, "\n"); end );
+        "generic: use Print",
+        true,
+        [ IsObject ], 0,
+        function( obj ) 
+    Print(obj, "\n"); 
+end );
+    
+#############################################################################
+##
+#M  PostMakeImmutable( <obj> ) . . . . . . . . . . . . .do nothing in general
+##  
 
+InstallMethod( PostMakeImmutable,
+        "unless otherwise directed, do nothing",
+        true,
+        [IsObject], 0,
+        function( obj)
+    return;
+end );
+
+#############################################################################
+##
+#M  SetName( <obj>,<name> )
+##
+##  generic routine to test 2nd argument
+##
+InstallMethod( SetName, "generic test routine", true, [ IsObject,IsObject ],
+  # override setter
+  SUM_FLAGS+1,
+function( obj,str ) 
+  if not IsString(str) then
+    Error("SetName: <name> must be a string");
+  fi;
+  TryNextMethod();
+end );
+    
+#############################################################################
+##
+#M  PostMakeImmutable( <obj> ) . . . . . . . . . . . . .do nothing in general
+##  
 
 #############################################################################
 ##

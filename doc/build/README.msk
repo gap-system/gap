@@ -1,0 +1,122 @@
+                  README for GAP {{versionnumber}}
+
+These archives contain the current release of GAP. It is version {{versionnumber}}
+
+All files are available in the following formats:
+
+  - extension .tar.gz  -  standard format for UNIX/Linux/OS X systems 
+          or .tar.bz2     (use gunzip/bunzip2 and tar for unpacking)
+
+  - extension .zoo     -  all systems, use the provided
+                          util/unzoo.c, (UNIX, OS X)
+                          bin/mac/unzoo4r4-PPC.sit  (MacOS PPC)
+                          bin/win/unzoo.exe, (Windows)
+                          for unpacking
+
+  - extension -win.zip -  standard format for Windows/DOS systems
+                          (here text files have DOS-style line
+                           breaks, they might not work under other
+			   architectures)
+
+The following contains brief installation  instructions.
+More detailed informations can be found on the GAP web pages 
+(http://www.gap-system.org) and in the `Installation'' chapter of
+the GAP reference manual. (You can find an HTML version of this manual also
+on the GAP web pages.) You also will find copyright and license information
+on those web pages.
+
+If after reading the information on the web pages you still face
+unsurmountable problems, please send an email to
+support@gap-system.org, describing your problems. (Include the
+operating system you are using and the error messages or indications of
+installation failure that you get.)
+
+Once installation is complete, please send a short note to
+support@gap-system.org to inform us of the installation.
+
+For a complete installation fetch the files
+
+   gap{{versionsuffix}}    ....   The main GAP system
+   packages{{versionsuffix}}  ....   Contributed packages
+
+(with the extensions of your choice, see above).
+Note,  that certain  packages  will not  or  not fully  work  on Windows  or
+Macintosh systems, see the package infos on our Web pages for details.
+   
+and  (optional additional tables of marks, need about 80 MB on disc)
+
+   xtom{{versionsuffix}} ....
+
+(In contrast to older versions, the installation archives provided will
+always contain the most recent bugfix -- if you install GAP afresh you do not
+need to fetch any bugfix.)
+
+INSTALLATION UNDER UNIX AND OS X
+
+While the `gap{{versionsuffix}}' archive must be unpacked *in* the directory
+in which you want GAP's root directory to sit (say, '/usr/local/lib/', a
+subdirectory '{{gapdirname}}' is created), the
+`packages{{versionsuffix}}' archive must be extracted into the
+`{{gapdirname}}/pkg' subdirectory created by the first extraction.
+
+To compile GAP on UNIX/Linux/OS X systems you can often just say
+
+  ./configure
+  make
+
+inside  GAP's root  directory and  copy  the start  script bin/gap.sh  under
+some  name (probably  'gap')  into  a generally  used  bin directory  (e.g.,
+/usr/local/bin).
+
+(OS X in the ``Panther'' (10.3) release gets a substantial speedup when
+using:
+
+  make COPTS="-fast -mcpu=7450"                    (on a G4) or
+  make COPTS="-O3 -mtune=G5 -mcpu=G5 -mpowerpc64"  (on a G5)
+
+instead of the simple `make' call.
+
+Note  that some  packages need  further installation/configuration.  See the
+README.* files in the 'pkg' subdirectory.
+
+INSTALLATION UNDER WINDOWS
+
+Decompress  'gap{{versionsuffix}}-win.zip'   on  the  top-level  directory   of  drive  C:\.
+This  creates  a  directory  C:\{{ucgapdirname}},   the  'GAP  root  directory'.  Then
+extract  'packages{{versionsuffix}}-win.zip' into  C:\{{ucgapdirname}}\pkg\.   
+Click  on C:\gap{{versionsuffix}}\bin\gapw95.exe to start GAP.
+(It is possible that using the rxvt shell via
+C:\{{ucgapdirname}}\bin\gaprxvt.bat will give a nicer user interface. 
+However, please note that we cannot provide support for this shell.)
+
+To make  GAP accessible  from the  start menu,  create a  link 'GAP
+{{versionnumber}}' to
+C:\{{ucgapdirname}}\bin\gapw95.exe in a submenu of the start menu of your choice.
+
+(If you want to install GAP in  another directory, you will have to create a
+suitable batch file  -- see the `Installation' chapter of the reference
+manual on the web pages.)
+
+For getting  access to the  documentation via the  start menu, you  can also
+create such  links to the manual books, e.g. to C:\{{ucgapdirname}}\doc\ref\manual.pdf
+resp. C:\{{ucgapdirname}}\doc\htm\ref\chapters.htm
+for the  PDF- resp. HTML  version of the  reference manual.  Of course,
+this requires viewers for the respective types of files to be installed.
+
+INSTALLATION ON MAC OS
+
+Decompress  'unzoo4r4-...sit' (using,  e. g.  , Stuffit
+Expander). You should now have an application 'unzoo'.
+
+Move this application and gap{{versionsuffix}}.zoo  into the  folder in
+which you want  to install  GAP and decompress  it by dragging it onto the
+'unzoo' application icon.
+
+.  This  should  have  created  a  folder  'gap{{versionsuffix}}' with a 
+'GAP 4 ...' application in this directory.
+
+To install the GAP packages,  move 'packages{{versionsuffix}}.zoo' into the  
+folder 'pkg' inside '{{gapdirname}}' and decompress them there.
+
+  The GAP Group
+

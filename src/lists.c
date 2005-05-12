@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the generic list package.
 **
@@ -1764,7 +1765,7 @@ Obj FuncIS_POSS_LIST_DEFAULT (
 #define POS_LIST(list,obj,start) \
                         ((*PosListFuncs[TNUM_OBJ(list)])(list,obj,start))
 */
-Int             (*PosListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj obj, Int start );
+Obj             (*PosListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj obj, Obj start );
 
 Obj             PosListOper;
 
@@ -1773,9 +1774,7 @@ Obj             PosListHandler2 (
     Obj                 list,
     Obj                 obj )
 {
-    Int                 pos;
-    pos = POS_LIST( list, obj, 0L );
-    return ( 0 < pos ? INTOBJ_INT(pos) : Fail );
+    return POS_LIST( list, obj, INTOBJ_INT(0) );
 }
 
 Obj             PosListHandler3 (
@@ -1784,21 +1783,20 @@ Obj             PosListHandler3 (
     Obj                 obj,
     Obj                 start )
 {
-    Int                 pos;
-    while ( ! IS_INTOBJ(start) || INT_INTOBJ(start) < 0 ) {
+    while ( TNUM_OBJ(start) != T_INTPOS &&
+	    (! IS_INTOBJ(start) || INT_INTOBJ(start) < 0) ) {
         start = ErrorReturnObj(
             "Position: <start> must be a nonnegative integer (not a %s)",
             (Int)TNAM_OBJ(start), 0L,
             "you can replace <start> via 'return <start>;'" );
     }
-    pos = POS_LIST( list, obj, INT_INTOBJ(start) );
-    return ( 0 < pos ? INTOBJ_INT(pos) : Fail );
+    return POS_LIST( list, obj, start );
 }
 
-Int             PosListError (
+Obj             PosListError (
     Obj                 list,
     Obj                 obj,
-    Int                 start )
+    Obj                 start )
 {
     list = ErrorReturnObj(
         "Position: <list> must be a list (not a %s)",
@@ -1807,20 +1805,25 @@ Int             PosListError (
     return POS_LIST( list, obj, start );
 }
 
-Int             PosListDefault (
+Obj             PosListDefault (
     Obj                 list,
     Obj                 obj,
-    Int                 start )
+    Obj                 start )
 {
     Int                 lenList;
     Obj                 elm;
     Int                 i;
 
+    /* if the starting position is too big to be a small int
+       then there can't be anything to find */
+    if (!IS_INTOBJ(start))
+      return Fail;
+
     /* get the length of the list                                          */
     lenList = LEN_LIST( list );
 
     /* loop over all bound entries of the list, and compare against <obj>  */
-    for ( i = start+1; i <= lenList; i++ ) {
+    for ( i = INT_INTOBJ(start)+1; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
         if ( elm != 0 && EQ( elm, obj ) ) {
             break;
@@ -1829,27 +1832,19 @@ Int             PosListDefault (
 
     /* return the position if found, and 0 otherwise                       */
     if ( i <= lenList ) {
-        return i;
+      return INTOBJ_INT(i);
     }
     else {
-        return 0L;
+      return Fail;
     }
 }
 
-Int             PosListObject (
+Obj             PosListObject (
     Obj                 list,
     Obj                 obj,
-    Int                 start )
+    Obj                 start )
 {
-    Obj                 pos;
-    pos = DoOperation3Args( PosListOper, list, obj, INTOBJ_INT(start) );
-    while ( pos!=Fail && ( TNUM_OBJ(pos)!=T_INT || INT_INTOBJ(pos)<1 ) ) {
-      pos = ErrorReturnObj(
-        "Position: method must return a positive integer or fail (not a %s)",
-        (Int)TNAM_OBJ(pos), 0L,
-        "you can replace position <pos> via 'return <pos>;'" );
-    }
-    return ( pos == Fail ? 0 : INT_INTOBJ( pos ) );
+    return DoOperation3Args( PosListOper, list, obj, start );
 }
 
 Obj FuncPOS_LIST_DEFAULT (
@@ -1858,7 +1853,7 @@ Obj FuncPOS_LIST_DEFAULT (
     Obj                 obj,
     Obj                 start )
 {
-    return INTOBJ_INT( PosListDefault( list, obj, INT_INTOBJ(start) ) );
+    return PosListDefault( list, obj, start ) ;
 }
 
 

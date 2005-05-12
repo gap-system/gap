@@ -28,28 +28,13 @@ cp ../mkdistrib/psfonts.map new
 # build the documentation
 ./make_doc
 
+# this is the mozilla version. Build IE version
+cp -r htm htmmoz
+(cd htm;make clean;make ieversion)
+mv htm htmie
+mv htmmoz htm
+
 # fetch the `INSTALL' files from the manual
-cd htm/ref
-rm -rf ../../../../INSTALL*
-lynx -dump -nolist -underscore `fgrep -l "Porting GAP" C*.htm`| awk -f ${BINDIR}/instfiles.awk
-
-cat ${BINDIR}/INSTALL.hdr ../../../../INSTALL > tempfile
-mv tempfile ../../../../INSTALL
-cat ${BINDIR}/INSTALL.WIN.hdr ../../../../INSTALL.WIN > tempfile
-mv tempfile ../../../../INSTALL.WIN
-cat ${BINDIR}/INSTALL-MAC.hdr ../../../../INSTALL-MAC.TXT > tempfile
-mv tempfile ../../../../INSTALL-MAC.TXT
-rm tempfile
-
-# the small HTML version
-echo "small HTML documentation"
-cd ../..
-mkdir htm_small
-cd htm_small
-cp ../htm/Makefile .
-cp ../htm/onehtmlindex .
-cp ../htm/allhtmlindex .
-mkdir ref tut ext prg new
-make webdoc
+grep -v "^%" ref/README.tex > ../../README
 
 exit 0

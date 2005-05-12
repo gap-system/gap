@@ -7,6 +7,8 @@
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -63,7 +65,7 @@ gap> List( Irr( S4 ){ [ 1, 3, 4 ] },
 [ rec( isInduced := false, comment := "linear character" ), 
   rec( isInduced := true, comment := "induced from component '.character'", 
       character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), 
-        [ 1, 1, E(3), E(3)^2 ] ) ), 
+        [ 1, 1, E(3)^2, E(3) ] ) ), 
   rec( isInduced := false, comment := "all maximal normal subgroups checked" 
      ) ]
 gap> TestMonomial( S4 );
@@ -111,10 +113,10 @@ gap> MinimalNonmonomialGroup(  1, 14 );
 gap> MinimalNonmonomialGroup(  2, 14 );
 (2^(1+6)Y4):D14
 
-gap> STOP_TEST( "ctblmono.tst", 231440000 );
+gap> STOP_TEST( "ctblmono.tst", 259000000 );
+
 
 #############################################################################
 ##
 #E
-##
 

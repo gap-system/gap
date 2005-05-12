@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C) 1993, 1997
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation of the Dixon-Schneider algorithm
 ##
@@ -381,10 +382,10 @@ end;
 ##  images of the irreducibles are known, they may be given in newmod.
 ##
 InstallGlobalFunction( DxIncludeIrreducibles, function(arg)
-
-local i,pcomp,m,r,D,neue,tm,news;
+local i,pcomp,m,r,D,neue,tm,news,opt;
 
   D:=arg[1];
+  opt:=ValueOption("noproject");
   # force computation of all images under $\cal T$. We will need this
   # (among others),to be sure,that we can keep the stabilizers
   neue:=arg[2];
@@ -412,26 +413,27 @@ local i,pcomp,m,r,D,neue,tm,news;
     DxRegisterModularChar(D,i);
   od;
 
-  pcomp:=NullspaceMat(D.projectionMat*TransposedMat(D.modulars));
-
-  for i in [1..Length(D.raeume)] do
-    r:=D.raeume[i];
-    if r.dim = Length(r.base[1]) then
-      # trivial case: Intersection with full space in the beginning
-      r:=rec(base:=pcomp);
-    else
-      r:=rec(base:=SumIntersectionMat(pcomp,r.base)[2]);
-    fi;
-    r.dim:=Length(r.base);
-    # note stabilizer
-    if IsBound(D.raeume[i].stabilizer) then
-      r.stabilizer:=D.raeume[i].stabilizer;
-    fi;
-    if r.dim>0 then
-      DxActiveCols(D,r);
-    fi;
-    D.raeume[i]:=r;
-  od;
+  if opt<>true then
+    pcomp:=NullspaceMat(D.projectionMat*TransposedMat(D.modulars));
+    for i in [1..Length(D.raeume)] do
+      r:=D.raeume[i];
+      if r.dim = Length(r.base[1]) then
+	# trivial case: Intersection with full space in the beginning
+	r:=rec(base:=pcomp);
+      else
+	r:=rec(base:=SumIntersectionMat(pcomp,r.base)[2]);
+      fi;
+      r.dim:=Length(r.base);
+      # note stabilizer
+      if IsBound(D.raeume[i].stabilizer) then
+	r.stabilizer:=D.raeume[i].stabilizer;
+      fi;
+      if r.dim>0 then
+	DxActiveCols(D,r);
+      fi;
+      D.raeume[i]:=r;
+    od;
+  fi;
   D.raeume:=Filtered(D.raeume,i->i.dim>0);
 end );
 
@@ -509,7 +511,6 @@ local H,T,c,a,e,f,i,j,k,l,m,p,ch,el,ur,s,hom,gens,onc,G;
 
     ch:=[];
     i:=m;
-    # run through all characters trying every combination of the generators
     p:=List([1..m],i->0);
     while i>0 do
       # construct tensor product systematically
@@ -1103,7 +1104,7 @@ local i,newRaeume,raum,neuer,j,ch,irrs,mods,incirrs,incmods,nb,rt,neuc;
   od;
   D.raeume:=newRaeume;
   if Length(incirrs)>0 then
-    DxIncludeIrreducibles(D,incirrs,incmods);
+    DxIncludeIrreducibles(D,incirrs,incmods:noproject);
   fi;
 end;
 
@@ -1714,14 +1715,14 @@ DoubleCentralizerOrbit := function(D,c1,c2)
   else
     Info(InfoCharacterTable,2,"using DoubleCosets;");
     cent:=Centralizer(D.classes[inv]);
-    l:=DoubleCosets(D.group,cent,Centralizer(D.classes[c2]));
+    l:=DoubleCosetRepsAndSizes(D.group,cent,Centralizer(D.classes[c2]));
     s1:=Size(cent);
     e:=[];
     s:=[];
     x:=D.classreps[inv];
     for i in l do
-      Add(e,x^Representative(i));
-      Add(s,Size(i)/s1);
+      Add(e,x^i[1]);
+      Add(s,i[2]/s1);
     od;
     return [e,s];
   fi;
@@ -1764,6 +1765,7 @@ StandardClassMatrixColumn := function(D,M,r,t)
       w:=Length(orb.orbits[t])=1 and Length(orb.orbits[r])=1;
       for i in [1..Length(T[1])] do
 	e:=T[1][i]*z;
+	Unbind(T[1][i]);
         if w then
           c:=D.rationalidentification(D,e);
           if c in orb.uniqueIdentifications then
@@ -1795,6 +1797,7 @@ StandardClassMatrixColumn := function(D,M,r,t)
     else # Small Group
       for i in [1..Length(T[1])] do
         s:=D.ClassElement(D,T[1][i] * z);
+	Unbind(T[1][i]);
         M[s][t]:=M[s][t]+T[2][i];
       od;
     fi;
@@ -1949,7 +1952,8 @@ local G,     # group
   exp:=Exponent(G);
   prime:=exp+1;
 
-  while prime<Maximum(100,5*k) do
+  while prime<Maximum(100,5*k) 
+    or ForAny([prime-1,prime,prime+1],x->IsInt(Size(G)/x)) do
     prime:=prime+exp;
   od;
 
@@ -2237,17 +2241,23 @@ end );
 # Amer. Math. Soc., Providence, RI, 1993. 
 
 BindGlobal("DixonRepGHchi",function(G,H,chi)
-local cg,ch,d,i,j,pos,theta,hl,alpha,A,x,ra,l,r,res,mats,alonin,hom,rt,rti,
-      rtl,wert,bw,bx,AF,cnt,sum,sp;
-  cg:=ConjugacyClasses(G);
+local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
+      sum, A, x, ra, l, rt, rti, rtl, r, alonin, wert, bx, mats, hom, i;
+
+  tblG:=UnderlyingCharacterTable(chi);
+  if UnderlyingGroup(tblG)<>G then
+    Error("inconsistent groups");
+  fi;
+  cg:=ConjugacyClasses(tblG);
   d:=chi[1];
 
-  Irr(H);
-  FusionConjugacyClasses(H,G);
-  res:=Restricted(chi,H);
+  tblH:=CharacterTable(H);
+  Irr(tblH);
+  FusionConjugacyClasses(tblH,tblG);
+  res:=Restricted(chi,tblH);
   pos:=1;
   theta:=fail;
-  hl:=Filtered(Irr(H),i->i[1]=1);
+  hl:=Filtered(Irr(tblH),i->i[1]=1);
   while theta=fail and pos<=Length(hl) do
     sp:=ScalarProduct(res,hl[pos]);
     if sp=1 then
@@ -2264,7 +2274,7 @@ local cg,ch,d,i,j,pos,theta,hl,alpha,A,x,ra,l,r,res,mats,alonin,hom,rt,rti,
 
   Info(InfoCharacterTable,2,"DixonRepGHchi ",Size(G),",",Size(H),":\n",chi);
 
-  ch:=ConjugacyClasses(H);
+  ch:=ConjugacyClasses(tblH);
 
   alpha:=function(t)
   local ti,s,hi,z,elm,pos;
@@ -2355,7 +2365,7 @@ local cg,ch,d,i,j,pos,theta,hl,alpha,A,x,ra,l,r,res,mats,alonin,hom,rt,rti,
   hom:=GroupHomomorphismByImagesNC(G,Group(mats),
     GeneratorsOfGroup(G),mats);
 
-  SetIsBijective(hom,true);
+  SetIsSurjective(hom,true);
   return hom;
 end);
 

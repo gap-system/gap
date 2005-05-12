@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.grpperm_gd :=
     "@(#)$Id$";
@@ -237,6 +238,7 @@ DeclareAttribute( "SocleTypePrimitiveGroup", IsPermGroup );
 ##
 DeclareGlobalFunction( "DiagonalSocleAction" );
 
+DeclareGlobalFunction("MovedPointsPerms");
 
 #############################################################################
 ##

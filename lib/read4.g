@@ -8,7 +8,9 @@ ReadLib( "methwhy.g"   );
 ##  the help system
 ReadLib( "pager.gi"    );
 ReadLib( "helpbase.gi"  );
-ReadLib( "helpview.gi"  );
+#  moved to init.g, because completion doesn't work with if-statements
+#  around function definitions!
+#ReadLib( "helpview.gi"  );
 ReadLib( "helpt2t.gi"   );
 ReadLib( "helpdef.gi"   );
 

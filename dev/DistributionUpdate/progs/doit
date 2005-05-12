@@ -1,0 +1,22 @@
+#!/bin/sh
+
+#  Frank Lübeck
+#  $Id$
+
+# this file defines the log- and error-file, calls yor
+
+#####  edit here, give your GAP executable, and  mail address(es) for
+#####  sending the log and error files as notification
+#export GAP=gap
+export GAP=g4l
+
+export MAILTO=luebeck
+#####
+#####
+
+export DAT=`date -u "+%Y_%m_%d-%H_%M_UTC"`
+
+echo "" | $GAP -q PackageInfoUtils.g do.g > ../log/$DAT'-log' 2> ../log/$DAT'-error'
+
+cat ../log/$DAT'-log' ../log/$DAT'-error' | mail -s "Pkg Update `date`" $MAILTO 
+

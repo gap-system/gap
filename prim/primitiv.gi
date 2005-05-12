@@ -11,12 +11,6 @@
 Revision.primitiv_gi:=
   "@(#)$Id$";
 
-#############################################################################
-##
-## tell GAP about the component
-##
-DeclareComponent("trans","1.0");
-
 Unbind(PRIMGRP);
 
 #############################################################################
@@ -51,11 +45,13 @@ local s,fname,ind,new;
 
     # are there too many groups stored?
     s:=Sum(Filtered(PRIMGRP,i->IsBound(i)),Length);
-    while s>200 do
-      s:=s-PRIMLENGTHS[PRIMLOAD[1]];
-      Unbind(PRIMGRP[PRIMLOAD[1]]);
-      PRIMLOAD:=PRIMLOAD{[2..Length(PRIMLOAD)]};
-    od;
+    if IsBound(PRIMLOAD[1]) then
+      while s>200 do
+	s:=s-PRIMLENGTHS[PRIMLOAD[1]];
+	Unbind(PRIMGRP[PRIMLOAD[1]]);
+	PRIMLOAD:=PRIMLOAD{[2..Length(PRIMLOAD)]};
+      od;
+    fi;
 
     ind:=PRIMINDX[deg];
     new:=Filtered([1..Length(PRIMINDX)],i->PRIMINDX[i]=ind);
@@ -72,7 +68,7 @@ end);
 BIND_GLOBAL("PRIMGrp",function(deg,nr)
   PrimGrpLoad(deg);
   if nr>PRIMLENGTHS[deg] then
-    Error("There are only ",PRIMLENGTHS[deg]," groups of degree ",nr,"\n");
+    Error("There are only ",PRIMLENGTHS[deg]," groups of degree ",deg,"\n");
   fi;
   return PRIMGRP[deg][nr];
 end);
@@ -119,9 +115,9 @@ PGICS:=[];
 
 InstallMethod(PrimitiveIdentification,"generic",true,[IsPermGroup],0,
 function(grp)
-local dom,deg,PD,s,cand,a,p,b,i,ag,bg,q;
+local dom,deg,PD,s,cand,a,p,b,i,ag,bg,q,gl,hom;
   dom:=MovedPoints(grp);
-  if not IsTransitive(grp,dom) and IsPrimitive(grp,dom) then
+  if not (IsTransitive(grp,dom) and IsPrimitive(grp,dom)) then
     Error("Group must operate primitively");
   fi;
   deg:=Length(dom);
@@ -229,6 +225,19 @@ local dom,deg,PD,s,cand,a,p,b,i,ag,bg,q;
     p:=p{s};
   fi;
 
+  if Length(cand)>1 and ForAll(p,i->ONanScottType(i)="1") 
+     and ONanScottType(grp)="1" then
+    gl:=Factors(NrMovedPoints(grp));
+    gl:=GL(Length(gl),gl[1]);
+    hom:=IsomorphismPermGroup(gl);
+    s:=List(p,i->Subgroup(gl,LinearActionLayer(i,Pcgs(Socle(i)))));
+    b:=Subgroup(gl,LinearActionLayer(grp,Pcgs(Socle(grp))));
+    s:=Filtered([1..Length(cand)],
+	i->RepresentativeAction(Image(hom,gl),Image(hom,s[i]),Image(hom,b))<>fail);
+    cand:=cand{s};
+    p:=p{s};
+  fi;
+
   if Length(cand)=1 then
     return cand[1];
   else
@@ -292,7 +301,7 @@ local arglis,i,j,a,b,l,p,deg,gut,g,grp,nr,f,RFL,ind,it;
   if not IsInt(l) then
     Error("wrong arguments");
   fi;
-  deg:=[2..Length(PRIMINDX)];
+  deg:=PRIMRANGE;
   # do we ask for the degree?
   p:=Position(arglis,NrMovedPoints);
   if p<>fail then
@@ -302,7 +311,7 @@ local arglis,i,j,a,b,l,p,deg,gut,g,grp,nr,f,RFL,ind,it;
       p:=[p];
     fi;
     if IsList(p) then
-      f:=not IsSubset(deg,p);
+      f:=not IsSubset(deg,Difference(p,[1]));
       deg:=Intersection(deg,p);
     else
       # b is a function (wondering, whether anyone will ever use it...)
@@ -311,6 +320,25 @@ local arglis,i,j,a,b,l,p,deg,gut,g,grp,nr,f,RFL,ind,it;
     fi;
   else
     f:=true; #warnung weil kein Degree angegeben ?
+    b:=true;
+    for a in [Size,Order] do
+      p:=Position(arglis,a);
+      if p<>fail then
+	p:=arglis[p+1];
+	if IsList(p) then
+	  p:=Maximum(p);
+	fi;
+	if IsInt(p) then
+	  deg:=Filtered(deg,j->j<=p);
+	  b:=false;
+	  f:=true;
+	fi;
+      fi;
+    od;
+    if b then
+      Info(InfoWarning,1,"No degree restriction given!\n",
+	   "#I  A search over the whole library will take a long time!");
+    fi;
   fi;
   gut:=[];
   for i in deg do

@@ -6,10 +6,10 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
-##  This file contains the implementation of Rees Matrix semigroups
+##  This file contains the implementation of Rees matrix semigroups.
 ##
-
 Revision.reesmat_gi :=
     "@(#)$Id$";
 
@@ -25,7 +25,7 @@ Revision.reesmat_gi :=
 ##  This can be thought of as a matrix with zero everywhere
 ##  except for an occurrence of <s> at row <i> and column <lambda>
 ##
-DeclareRepresentation("IsReesMatrixSemigroupElementRep", 
+DeclareRepresentation("IsReesMatrixSemigroupElementRep",
 	IsComponentObjectRep and IsAttributeStoringRep, rec());
 
 
@@ -38,8 +38,8 @@ DeclareRepresentation("IsReesMatrixSemigroupElementRep",
 ##
 ##  Notice that:
 ##  <a> must be in UnderlyingSemigroupOfReesMatrixSemigroup<R>
-##  <i> must be in the range 1 .. ColumnsOfReesMatrixSemigroup(R)
-##  <lambda> must be in the range 1 .. RowsOfReesMatrixSemigroup(R)
+##  <i> must be in the range 1 .. RowsOfReesMatrixSemigroup(R)
+##  <lambda> must be in the range 1 .. ColumnsOfReesMatrixSemigroup(R)
 ##
 InstallGlobalFunction(ReesMatrixSemigroupElement,
 function(R, a, i, lambda)
@@ -59,8 +59,8 @@ function(R, a, i, lambda)
   fi;
 
 	# check that <i> and <lambda> are in the correct range
-	if not (i in [1 .. ColumnsOfReesMatrixSemigroup(R)] and 
-		lambda in [1 .. RowsOfReesMatrixSemigroup(R)]) then
+	if not (i in [1 .. RowsOfReesMatrixSemigroup(R)] and
+		lambda in [1 .. ColumnsOfReesMatrixSemigroup(R)]) then
 			Error("ReesMatrixSemigroupElement -  indices out of range");
 	fi;
 
@@ -70,8 +70,8 @@ function(R, a, i, lambda)
 	SetColumnIndexOfReesMatrixSemigroupElement(elt, lambda);
 	SetRowIndexOfReesMatrixSemigroupElement(elt, i);
 	return elt;
-
 end);
+
 
 #############################################################################
 ##
@@ -82,8 +82,8 @@ end);
 ##
 ##  Notice that:
 ##  <a> must be in UnderlyingSemigroupOfReesMatrixSemigroup<R>
-##  <i> must be in the range 1 .. ColumnsOfReesMatrixSemigroup(R)
-##  <lambda> must be in the range 1 .. RowsOfReesMatrixSemigroup(R)
+##  <i> must be in the range 1 .. RowsOfReesMatrixSemigroup(R)
+##  <lambda> must be in the range 1 .. ColumnsOfReesMatrixSemigroup(R)
 ##
 InstallGlobalFunction(ReesZeroMatrixSemigroupElement,
 function(R, a, i, lambda)
@@ -103,8 +103,8 @@ function(R, a, i, lambda)
   fi;
 
 	# check that <i> and <lambda> are in the correct range
-	if not (i in [1 .. ColumnsOfReesZeroMatrixSemigroup(R)] and 
-		lambda in [1 .. RowsOfReesZeroMatrixSemigroup(R)]) then
+	if not (i in [1 .. RowsOfReesZeroMatrixSemigroup(R)] and
+		lambda in [1 .. ColumnsOfReesZeroMatrixSemigroup(R)]) then
 			Error("ReesZeroMatrixSemigroupElement -  indices out of range");
 	fi;
 
@@ -128,7 +128,6 @@ function(R, a, i, lambda)
     	SetRowIndexOfReesZeroMatrixSemigroupElement(elt, i);
     	return elt;
     fi;
-
 end);
 
 
@@ -141,28 +140,24 @@ end);
 ##
 ##  Install methods for subsemigroups.
 ##
-InstallMethod(SandwichMatrixOfReesZeroMatrixSemigroup, 
+InstallMethod(SandwichMatrixOfReesZeroMatrixSemigroup,
 	"for a subsemigroup of a Rees zero matrix semigroup",
-	true,
-	[IsSubsemigroupReesZeroMatrixSemigroup], 0,
+	[IsSubsemigroupReesZeroMatrixSemigroup],
 	R->SandwichMatrixOfReesZeroMatrixSemigroup(FamilyObj(R)!.wholeSemigroup));
 
 InstallMethod(RowsOfReesZeroMatrixSemigroup,
  "for a subsemigroup of a Rees zero matrix semigroup",
-  true,
-  [IsSubsemigroupReesZeroMatrixSemigroup], 0,
+  [IsSubsemigroupReesZeroMatrixSemigroup],
   R->RowsOfReesZeroMatrixSemigroup(FamilyObj(R)!.wholeSemigroup));
 
 InstallMethod(ColumnsOfReesZeroMatrixSemigroup,
  "for a subsemigroup of a Rees zero matrix semigroup",
-  true,
-  [IsSubsemigroupReesZeroMatrixSemigroup], 0,
+  [IsSubsemigroupReesZeroMatrixSemigroup],
   R->ColumnsOfReesZeroMatrixSemigroup(FamilyObj(R)!.wholeSemigroup));
 
 InstallMethod(UnderlyingSemigroupOfReesZeroMatrixSemigroup,
  "for a subsemigroup of a Rees zero matrix semigroup",
-  true,
-  [IsSubsemigroupReesZeroMatrixSemigroup], 0,
+  [IsSubsemigroupReesZeroMatrixSemigroup],
   R->UnderlyingSemigroupOfReesZeroMatrixSemigroup(FamilyObj(R)!.wholeSemigroup));
 
 #############################################################################
@@ -174,28 +169,24 @@ InstallMethod(UnderlyingSemigroupOfReesZeroMatrixSemigroup,
 ##
 ##  Install methods for subsemigroups.
 ##
-InstallMethod(SandwichMatrixOfReesMatrixSemigroup, 
+InstallMethod(SandwichMatrixOfReesMatrixSemigroup,
 	"for a subsemigroup of a Rees matrix semigroup",
-	true,
-	[IsSubsemigroupReesMatrixSemigroup], 0,
+	[IsSubsemigroupReesMatrixSemigroup],
 	R->SandwichMatrixOfReesMatrixSemigroup(FamilyObj(R)!.wholeSemigroup));
 
 InstallMethod(RowsOfReesMatrixSemigroup,
  "for a subsemigroup of a Rees matrix semigroup",
-  true,
-  [IsSubsemigroupReesMatrixSemigroup], 0,
+  [IsSubsemigroupReesMatrixSemigroup],
   R->RowsOfReesMatrixSemigroup(FamilyObj(R)!.wholeSemigroup));
 
 InstallMethod(ColumnsOfReesMatrixSemigroup,
  "for a subsemigroup of a Rees matrix semigroup",
-  true,
-  [IsSubsemigroupReesMatrixSemigroup], 0,
+  [IsSubsemigroupReesMatrixSemigroup],
   R->ColumnsOfReesMatrixSemigroup(FamilyObj(R)!.wholeSemigroup));
 
 InstallMethod(UnderlyingSemigroupOfReesMatrixSemigroup,
  "for a subsemigroup of a Rees matrix semigroup",
-  true,
-  [IsSubsemigroupReesMatrixSemigroup], 0,
+  [IsSubsemigroupReesMatrixSemigroup],
   R->UnderlyingSemigroupOfReesMatrixSemigroup(FamilyObj(R)!.wholeSemigroup));
 
 
@@ -209,10 +200,10 @@ InstallMethod(UnderlyingSemigroupOfReesMatrixSemigroup,
 ##
 InstallGlobalFunction(ReesMatrixSemigroup,
 function(S, sandmat)
-	local 
+	local
 				x, 				# a row of the matrix
 				rowlen, 	# length of a row of the matrix
-				Y, 				# a list of booleans 
+				Y, 				# a list of booleans
 				eType,		# the type of an element
 				fam,			# the family of an element
                 z,              # the zero of S
@@ -236,21 +227,21 @@ function(S, sandmat)
 
 	# Now we can make the semigroup
 	# Create a new family.
-	fam := NewFamily( "FamilyElementsReesMatrixSemigroup", 
+	fam := NewFamily( "FamilyElementsReesMatrixSemigroup",
 		IsReesMatrixSemigroupElement );
 
 	# Create the rees matrix semigroup.
 	T := Objectify( NewType( CollectionsFamily( fam ),
-		IsWholeFamily and	IsReesMatrixSemigroup and IsAttributeStoringRep ), 
+		IsWholeFamily and	IsReesMatrixSemigroup and IsAttributeStoringRep ),
 		rec() );
 
-	eType := NewType(fam, 
-		IsReesMatrixSemigroupElement and IsReesMatrixSemigroupElementRep, 
+	eType := NewType(fam,
+		IsReesMatrixSemigroupElement and IsReesMatrixSemigroupElementRep,
 		T); # The element type now stores the Semigroup in the Type Data
 
 	# Store the element type in the semigroup
 	T!.eType := eType;
-	
+
 	# Any subsemigroups given by generators will have this as
 	# the whole semigroup
 	FamilyObj( T )!.wholeSemigroup := T;
@@ -261,8 +252,8 @@ function(S, sandmat)
 	SetUnderlyingSemigroupOfReesMatrixSemigroup(T, S);
 
 	return T;
+end );
 
-end ); 
 
 #############################################################################
 ##
@@ -274,10 +265,10 @@ end );
 ##
 InstallGlobalFunction(ReesZeroMatrixSemigroup,
 function(S, sandmat)
-	local 
+	local
 				x, 				# a row of the matrix
 				rowlen, 	# length of a row of the matrix
-				Y, 				# a list of booleans 
+				Y, 				# a list of booleans
 				eType,		# the type of an element
 				fam,			# the family of an element
                 z,              # the zero of S
@@ -301,21 +292,21 @@ function(S, sandmat)
 
 	# Now we can make the semigroup
 	# Create a new family.
-	fam := NewFamily( "FamilyElementsReesZeroMatrixSemigroup", 
+	fam := NewFamily( "FamilyElementsReesZeroMatrixSemigroup",
 		IsReesZeroMatrixSemigroupElement );
 
 	# Create the rees matrix semigroup.
 	T := Objectify( NewType( CollectionsFamily( fam ),
-		IsWholeFamily and	IsReesZeroMatrixSemigroup and IsAttributeStoringRep ), 
+		IsWholeFamily and	IsReesZeroMatrixSemigroup and IsAttributeStoringRep ),
 		rec() );
 
-	eType := NewType(fam, 
-		IsReesZeroMatrixSemigroupElement and IsReesMatrixSemigroupElementRep, 
+	eType := NewType(fam,
+		IsReesZeroMatrixSemigroupElement and IsReesMatrixSemigroupElementRep,
 		T); # The element type now stores the Semigroup in the Type Data
 
 	# Store the element type in the semigroup
 	T!.eType := eType;
-	
+
 	# Any subsemigroups given by generators will have this as
 	# the whole semigroup
 	FamilyObj( T )!.wholeSemigroup := T;
@@ -337,8 +328,7 @@ function(S, sandmat)
     SetMultiplicativeZero(T, ReesZeroMatrixSemigroupElement(T, z, 1, 1));
 
 	return T;
-
-end ); 
+end );
 
 
 ############################################################################
@@ -347,11 +337,11 @@ end );
 ##
 ##	for s simple semigroup <S>.
 ##	for a 0-simple semigroup <S>.
-##	
+##
 BindGlobal( "BuildIsomorphismReesMatrixSemigroupWithMap",
-function( s,groupHclass, phi)
+function( s1,groupHclass, phi)
 
-	local	e,								# a representative of H
+	local	e,s,iso,								# a representative of H
 				lclassesrep,			# list of representatives of the L classes
 				rclassesrep,			# list of representatives of the R classes
 				R,L,							# greens R and L relations on s
@@ -363,7 +353,10 @@ function( s,groupHclass, phi)
 				semi,							# the underlying semigroup of the Rees Matrix smg
 				reesfun,
 				reessmg;					# the Rees Matrix Semigroup built from s
-			
+
+        iso := IsomorphismTransformationSemigroup(s1);
+        s := Range(iso);
+
 	if not( IsSimpleSemigroup(s) or IsZeroSimpleSemigroup(s) ) then
 		Error( "Can only build isomorphism for simple or 0-simple semigroups");
 	fi;
@@ -383,24 +376,27 @@ function( s,groupHclass, phi)
 	# now we need to build the matrix
 
 	# pick a representative of h
-	e := Representative( groupHclass );
+	e := Image(iso, groupHclass );
 	# now we have to fix an element in each of the H classes in the R class of e
 	# notice that this will also be a list of l classes rep for all l classes of s
 	lclassesrep := [];
 	R := GreensRRelation( s );
-	r := EquivalenceClassOfElementNC( R, e);
+        r := GreensRClassOfElement(s,e);
+	#r := EquivalenceClassOfElementNC( R, e);
 	for h in GreensHClasses(r) do
-		Add( lclassesrep, Representative(h) );
+		AddSet( lclassesrep, PreImage(iso,Representative(h)) );
 	od;
 
 	# do the same for the H classes in the L class of e
   rclassesrep := [];
   L := GreensLRelation( s );
-  l := EquivalenceClassOfElementNC( L, e);
+  l := GreensLClassOfElement(s,e);
+  #l := EquivalenceClassOfElementNC( L, e);
   for h in GreensHClasses(l) do
-    Add( rclassesrep, Representative(h) );
+    AddSet( rclassesrep, PreImage(iso,Representative(h)) );
   od;
- 	
+ 
+
 	# now build the matrix
 	# it is going to be a m times n matrix, where m is the length of el
 	# and m is the length of er
@@ -409,7 +405,7 @@ function( s,groupHclass, phi)
 
 	# We need a matrix with entries in semi
 	# (ie, entries in the perm group isom to h or perm group with zero adjoined)
-	# From the theory we know that in the simple case the product of an element from 
+	# From the theory we know that in the simple case the product of an element from
 	# the list  rclassesrep with one formn lclassesrep will be in the H class of e
 	# and in the zero simple case it will be in that H class or else is zero
 	# so the following makes sense
@@ -420,7 +416,7 @@ function( s,groupHclass, phi)
 			# the entries of the matrix corresponds to the products lclassesrep[j]*rclassesrep[i]
 			# in the permgroup (or zero perm group in zero simple case)
 			# so they will be the unique preimage under phi of lclassesrep[j]*rclassesrep[i]
-			p := ImagesRepresentative( InverseGeneralMapping(phi), lclassesrep[i]*rclassesrep[j]);
+			p := ImagesRepresentative( InverseGeneralMapping(phi), Image(iso,lclassesrep[i]*rclassesrep[j]));
 			Add( matrix[ i ], p );
 		od;
 	od;
@@ -428,30 +424,29 @@ function( s,groupHclass, phi)
 	# we have all the ingredients to build the ReesMatrix semigroup
 
 	if iszerosimple then
-		reessmg:= ReesZeroMatrixSemigroup( semi, matrix);	
+		reessmg:= ReesZeroMatrixSemigroup( semi, matrix);
 	else
 		reessmg:= ReesMatrixSemigroup( semi, matrix);
-	fi;	
-		
+	fi;
+
 	# now we need to build the isomorphism
 
 	reesfun := function( x )
 		local el,j,i,y;
 
 		if iszerosimple and ReesZeroMatrixSemigroupElementIsZero( x ) then
-			return MultiplicativeZero( s );
+			return MultiplicativeZero( s1 );
 		fi;
 
 		i := RowIndexOfReesMatrixSemigroupElement( x );
 		j := ColumnIndexOfReesMatrixSemigroupElement( x );
-		y := ImagesRepresentative( phi, UnderlyingElementOfReesMatrixSemigroupElement(x)); 
+		y := ImagesRepresentative( phi, UnderlyingElementOfReesMatrixSemigroupElement(x));
 		el := rclassesrep[ i ] * y * lclassesrep[ j ];
 
 		return el;
 	end;
 
-	return MagmaHomomorphismByFunctionNC( reessmg, s, reesfun);
-
+	return MagmaHomomorphismByFunctionNC( reessmg, s1, reesfun);
 end);
 
 
@@ -463,15 +458,16 @@ end);
 ##  Returns an isomorphism from <S> to an isomorphic Rees Matrix Semigroup
 ##
 InstallMethod( IsomorphismReesMatrixSemigroup,
-  "for a finite simple semigroup", true,
-  [IsSimpleSemigroup], 0,
-function(s)
-	local	it,						# iterator od the semigroup
+  "for a finite simple semigroup",
+  [IsSimpleSemigroup],
+function(s1)
+	local	it,s,iso,		# iterator od the semigroup
 				d,						# the unique D class of the semigroup
 				groupHclass,	# group H class of d
 				phi,					# isomorphism from groupHclass to a perm group
 				injection_perm_group;
-
+                iso := IsomorphismTransformationSemigroup(s1);
+                s := Range(IsomorphismTransformationSemigroup(s1));
 	#############################################
 	# for a simple semigroup and a group H class.
 	# Returns the injection from the perm group isomorphic to H, to S.
@@ -495,7 +491,7 @@ function(s)
 		# phi is bijective, there is no choice for the image rep,
 		# and everything is fixed and well defined
 		invfun := x -> ImagesRepresentative( geninvphi, x);
-		invphi := MappingByFunction( g, s, invfun);	
+		invphi := MappingByFunction( g, s, invfun);
 
 		return invphi;
 
@@ -511,15 +507,19 @@ function(s)
 
 	# first get a group H class
 	it := Iterator( s );
-	d := EquivalenceClassOfElementNC( GreensDRelation( s ), NextIterator( it ) );
+
+        d := GreensDClassOfElement(s,NextIterator(it));
+
+        #d := EquivalenceClassOfElementNC( GreensDRelation( s ), NextIterator( it ) );
 	groupHclass := GroupHClassOfGreensDClass( d );
 
-	# the a mapping from the perm group (to which groupHclass is isomorphic) to s 
-	phi := injection_perm_group( s, groupHclass );
-	
-	return BuildIsomorphismReesMatrixSemigroupWithMap( s, groupHclass, phi); 
+	# the a mapping from the perm group (to which groupHclass is isomorphic) to s
+	phi := injection_perm_group( s, groupHclass);
 
+	return BuildIsomorphismReesMatrixSemigroupWithMap( s1,
+               PreImage(iso,Representative(groupHclass)), phi);
 end);
+
 
 ############################################################################
 ##
@@ -529,16 +529,18 @@ end);
 ##  Returns an isomorphism from <S> to an isomorphic Rees Matrix Semigroup
 ##
 InstallMethod( IsomorphismReesMatrixSemigroup,
-  "for a finite 0-simple semigroup", true,
-  [IsZeroSimpleSemigroup], 0,
-function(s)
-  local e,						# an element of the semigroup
+  "for a finite 0-simple semigroup",
+  [IsZeroSimpleSemigroup],
+function(s1)
+  local e,s,iso,						# an element of the semigroup
         it,           # iterator od the semigroup
         d,            # the unique D class of the semigroup
-        groupHclass,  # group H class of d 
-        phi,          # the mapping from permgroup with zero to s 
+        groupHclass,  # group H class of d
+        phi,          # the mapping from permgroup with zero to s
 				injection_zero_perm_group;
 
+        iso := IsomorphismTransformationSemigroup(s1);
+        s := Range(IsomorphismTransformationSemigroup(s1));
 	###########################################################
 	# for a zero simple semigroup and a non zero group H class.
 	# Returns the injection from the perm group with zero adjoined
@@ -548,7 +550,7 @@ function(s)
 						csi,				# the injection from g to zero g
 	    	    geninvphi,  # the general mapping that is the inverse of phi
 						geninvcsi,	# the general mapping that is the inverse of csi
-      	  	inj, 		    # the actual mapping we are looking for 
+      	  	inj, 		    # the actual mapping we are looking for
 						zerog,			# g with a zero adjoined
 						fun,				#	the function that will give rise to the mapping we want
     	    	g;          # the perm group
@@ -579,7 +581,7 @@ function(s)
 				return MultiplicativeZero( s );
 			fi;
 			y := ImagesRepresentative( geninvcsi, x );
-		
+
 			# other elements have a unique preimage in g
 			# and that obatined pre image has a unique premiage in h, therefore in s
 			return ImagesRepresentative( geninvphi, y );
@@ -601,14 +603,15 @@ function(s)
 
   # first get a nonzero group H class
   it := Iterator( s );
-	
+
 	# there are at least two elements in s, since s is 0-simple
 	# so find a non zero element and fix its d class
 	e := NextIterator( it );
 	if e=MultiplicativeZero( s ) then
 		e := NextIterator( it );
 	fi;
-  d := EquivalenceClassOfElementNC( GreensDRelation( s ), e);
+  d:= GreensDClassOfElement(s,e);
+  #d := EquivalenceClassOfElementNC( GreensDRelation( s ), e);
 
 	# hence get a non zero h class of the semigroup
   groupHclass := GroupHClassOfGreensDClass( d );
@@ -618,21 +621,22 @@ function(s)
 	# to the semigroup s
 	phi := injection_zero_perm_group( s, groupHclass);
 
-  return BuildIsomorphismReesMatrixSemigroupWithMap( s, groupHclass, phi);
+  return BuildIsomorphismReesMatrixSemigroupWithMap( s1,
+         PreImage(iso,Representative(groupHclass)), phi);
 
 end);
+
 
 ############################################################################
 ##
 #M  AssociatedReesMatrixSemigroupOfDClass( <D> )
 ##
-InstallMethod(AssociatedReesMatrixSemigroupOfDClass, "for d class", true,
-    [IsGreensDClass], 0,
+InstallMethod(AssociatedReesMatrixSemigroupOfDClass, "for d class",
+    [IsGreensDClass],
 function( D )
-
     local h, phi, g, gz, fun, map, r, l, rreps, lreps, n, m, mat;
 
-    if not IsFinite(Parent(D)) then
+    if not IsFinite(AssociatedSemigroup(D)) then
         TryNextMethod();
     fi;
 
@@ -655,15 +659,24 @@ function( D )
         return x^phi;
     end;
 
-    map:= MappingByFunction(Parent(D), gz, fun);
+    map:= MappingByFunction(AssociatedSemigroup(D), gz, fun);
 
-    r:= EquivalenceClassOfElement(GreensRRelation(Parent(D)), 
+    r:= EquivalenceClassOfElement(GreensRRelation(AssociatedSemigroup(D)),
         Representative(D));
-    l:= EquivalenceClassOfElement(GreensLRelation(Parent(D)), 
+    l:= EquivalenceClassOfElement(GreensLRelation(AssociatedSemigroup(D)),
         Representative(D));
 
+    # AS: Replace this
+    # rreps:= List(l, x->Representative(
+                          # GreensHClassOfElement(AssociatedSemigroup(D),x)));
+    # lreps:= List(r, x->Representative(
+                          # GreensHClassOfElement(AssociatedSemigroup(D),x)));
+
+
+    # AS: with this
     rreps:= List(GreensHClasses(l), Representative);
     lreps:= List(GreensHClasses(r), Representative);
+
 
     n:= Length(rreps);
     m:= Length(lreps);
@@ -677,91 +690,6 @@ function( D )
     fi;
 end);
 
-############################################################################
-##
-#R  IsReesMatrixSemigroupEnumeratorRep( <enum> )
-#M  EnumeratorSorted( <R> )
-##
-##	for a Rees Matrix Semigroup
-## 	Elements are enumerated respecting their order, hence we get the
-##	enumerator sorted
-##
-DeclareRepresentation("IsReesMatrixSemigroupEnumeratorRep",
-	IsDomainEnumerator and IsAttributeStoringRep,
-	["currentlist","row","column","element","itunder"]);
-
-InstallMethod( Enumerator, "for a Rees matrix semigroup", true, 
-	[IsReesMatrixSemigroup], 0,
-function( r )
-	
-	local	s,			# the underlying semigroup
-				m,			# the number of rows of the matrix
-				n,			# the number of columns of the matrix
-				its,		# the iterator of the semigroup s
-				enumdata, enum;
-
-	# This method only works for the whole Rees matrix semigroup.
-	if FamilyObj(r)!.wholeSemigroup <> r then
-		TryNextMethod();
-	fi;
-
-	s := UnderlyingSemigroupOfReesMatrixSemigroup( r );
-	its := Iterator( s ); 
-
-	enumdata:= rec( currentlist := [], row:=1 , 
-									column:=0, element:=NextIterator(its), itunder:=its);
-
-  enum := Objectify(NewType(FamilyObj(r), IsReesMatrixSemigroupEnumeratorRep), 
-					enumdata);
-  SetUnderlyingCollection(enum, r);
-
-  return enum;
-
-end);
-
-############################################################################
-##
-#M  EnumeratorSorted( <R> )
-##
-##  for a Rees Zero Matrix semigroup
-##
-InstallMethod( Enumerator, "for a Rees zero matrix semigroup", true, 
-	[IsReesZeroMatrixSemigroup], 0,
-function( r )
-	
-	local	s,			# the underlying semigroup
-				matrix,	# the matrix of the rees matrix semigroup
-				m,			# the number of rows of the matrix
-				n,			# the number of columns of the matrix
-				its,		# the iterator of the semigroup s
-				x,      # the first element of s
-				enumdata, enum;
-
-	s := UnderlyingSemigroupOfReesZeroMatrixSemigroup( r );
-	its := Iterator( s ); 
-  x := NextIterator(its);
-
-	enumdata:= rec( currentlist := [], row:=1 , 
-					column:=0, element:=x, itunder:=its);
-
-	Add( enumdata!.currentlist, MultiplicativeZero( r ));
-	# recall that r has a zero iff s has a zero
-	# and if the zero of s is the first element of s
-	# we should move to the next one
-	if x=MultiplicativeZero(s) then 
-    if not IsDoneIterator(enumdata!.itunder) then
-			enumdata!.element:= NextIterator( enumdata!.itunder);
-    fi;
-	fi;
-
-  enum := Objectify(NewType(FamilyObj(r), IsReesMatrixSemigroupEnumeratorRep), 
-					enumdata);
-  SetUnderlyingCollection(enum, r);
-
-  return enum;
-
-end);
-	
 
 #############################################################################
 ##
@@ -774,11 +702,10 @@ end);
 ##
 BindGlobal("ReesMatrixSemigroupEnumeratorGetElement",
 function(enum, k)
-
   local r,					# the Rees Matrix semigroup we are enumerating
 				s,					# the underlying semigroup
 				matrix,			# the matrix
-				m,					# the number of rows of the matrix 
+				m,					# the number of rows of the matrix
 				n,					# the number of columns of the matrix
 				new;				# the new element found
 
@@ -796,19 +723,19 @@ function(enum, k)
 	# there are no more elements to be listed
 	# There are no more elements to be listed if the iterator of s is exausted
 	# and both the indexes of row and column are as big as they can be
-  while Length( enum!.currentlist ) < k and 
-		not (IsDoneIterator(enum!.itunder) and enum!.column=n and enum!.row =m)   do 
+  while Length( enum!.currentlist ) < k and
+		not (IsDoneIterator(enum!.itunder) and enum!.column=n and enum!.row =m)   do
 
 		if enum!.column < n then
 			enum!.column := enum!.column + 1;
 		elif enum!.row < m then
 			enum!.row := enum!.row + 1;
 			enum!.column := 1;
-		else 
+		else
 			enum!.element := NextIterator( enum!.itunder );
 			enum!.column := 1;
 			enum!.row := 1;
-		fi;				
+		fi;
 
 		new := ReesMatrixSemigroupElement( r, enum!.element, enum!.row, enum!.column);
 		Add( enum!.currentlist, new );
@@ -822,6 +749,7 @@ function(enum, k)
 
 end);
 
+
 #############################################################################
 ##
 #F  ReesZeroMatrixSemigroupEnumeratorGetElement( <enum>, <k> )
@@ -833,13 +761,12 @@ end);
 ##
 BindGlobal("ReesZeroMatrixSemigroupEnumeratorGetElement",
 function(enum, k)
-
-  local r,					# the Rees Matrix semigroup we are enumerating
-				s,					# the underlying semigroup
-				matrix,			# the matrix
-				m,					# the number of rows of the matrix 
-				n,					# the number of columns of the matrix
-				new;				# the new element found
+  local r,		# the Rees Matrix semigroup we are enumerating
+	s,		# the underlying semigroup
+	matrix,		# the matrix
+	m,		# the number of rows of the matrix
+	n,		# the number of columns of the matrix
+	new;		# the new element found
 
   if k <= Length( enum!.currentlist ) then
     return [ true, enum!.currentlist[k] ];
@@ -855,27 +782,27 @@ function(enum, k)
 	# there are no more elements to be listed
 	# There are no more elements to be listed if the iterator of s is exausted
 	# and both the indexes of row and column are as big as they can be
-  while Length( enum!.currentlist ) < k and 
-		not (IsDoneIterator(enum!.itunder) and enum!.column=n and enum!.row =m) do 
+  while Length( enum!.currentlist ) < k and
+		not (IsDoneIterator(enum!.itunder) and enum!.column=n and enum!.row =m) do
 
 		if enum!.column < n then
 			enum!.column := enum!.column + 1;
 		elif enum!.row < m then
 			enum!.row := enum!.row + 1;
 			enum!.column := 1;
-		else 
+		else
 			enum!.element := NextIterator( enum!.itunder );
       # here we have to check whether the element of s we
       # obtained is the zero or not - if it is the zero
       # of s it will generate only 0 and hence we should skip it
 			if enum!.element=MultiplicativeZero(s) then
-				if not(IsDoneIterator(enum!.itunder)) then 
+				if not(IsDoneIterator(enum!.itunder)) then
 					enum!.element := NextIterator( enum!.itunder );
         fi;
       fi;
 			enum!.column := 1;
 			enum!.row := 1;
-		fi;				
+		fi;
 
 		new := ReesZeroMatrixSemigroupElement( r, enum!.element, enum!.row, enum!.column);
 		Add( enum!.currentlist, new );
@@ -894,49 +821,122 @@ end);
 ##
 #M  \[\]( <E>, <n> )
 ##
-##  Returns the <n>th element of a Rees Matrix Semigroup enumerator. 
+##  Returns the <n>-th element of the Rees matrix semigroup enumerator <E>.
 ##
-InstallMethod(\[\], "for a Rees matrix semigroup enumerator", true,
-  [IsReesMatrixSemigroupEnumeratorRep, IsPosInt], 0,
-function(enum, n)
+BindGlobal( "ElementNumber_ReesMatrixSemigroupEnumerator",
+    function( enum, n )
   if IsBound(enum[n]) then
     return enum!.currentlist[n];
   else
     Error("Position out of range");
   fi;
-end);
+end );
 
 
 #############################################################################
 ##
 #M  IsBound\[\]( <E>, <n> )
 ##
-##  Returns true if the enumerator has size at least <n>.
+##  Returns true if the enumerator <E> has size at least <n>.
 ##
-InstallMethod(IsBound\[\], "for a Rees matrix semigroup enumerator", true,
-  [IsReesMatrixSemigroupEnumeratorRep, IsPosInt], 0,
-function(enum, n)
-  local pair;
+BindGlobal( "IsBound_ReesMatrixSemigroupEnumerator", function( enum, n )
+    local pair;
 
-	if IsReesMatrixSemigroup(UnderlyingCollection(enum)) then
-	    pair:= ReesMatrixSemigroupEnumeratorGetElement( enum, n);
-	else
-		pair:= ReesZeroMatrixSemigroupEnumeratorGetElement( enum, n);
-	fi;
-  return pair[1];
-end);
+    if IsReesMatrixSemigroup(UnderlyingCollection(enum)) then
+      pair:= ReesMatrixSemigroupEnumeratorGetElement( enum, n);
+    else
+      pair:= ReesZeroMatrixSemigroupEnumeratorGetElement( enum, n);
+    fi;
+    return pair[1];
+end );
+
+
+############################################################################
+##
+#M  Enumerator( <R> ) . . . . . . . . . . . . .  for a Rees matrix semigroup
+##
+##  Elements are enumerated respecting their order, hence we get the
+##  enumerator sorted.
+#T but the enumerator does not store this, and the method is also not
+#T installed for `EnumeratorSorted'!
+#T (what about the method further down?)
+##
+InstallMethod( Enumerator, "for a Rees matrix semigroup",
+    [ IsReesMatrixSemigroup ],
+    function( r )
+    local its;    # an iterator of the underlying semigroup
+
+    # This method only works for the whole Rees matrix semigroup.
+    if FamilyObj( r )!.wholeSemigroup <> r then
+      TryNextMethod();
+    fi;
+
+    its:= Iterator( UnderlyingSemigroupOfReesMatrixSemigroup( r ) );
+
+    return EnumeratorByFunctions( r, rec(
+        ElementNumber := ElementNumber_ReesMatrixSemigroupEnumerator,
+        NumberElement := NumberElement_SemigroupIdealEnumerator,
+        IsBound\[\]   := IsBound_ReesMatrixSemigroupEnumerator,
+        Length        := Length_SemigroupIdealEnumerator,
+        Membership    := Membership_SemigroupIdealEnumerator,
+
+        currentlist   := [],
+        row           := 1,
+        column        := 0,
+        element       := NextIterator( its ),
+        itunder       := its ) );
+end );
+
+
+############################################################################
+##
+#M  Enumerator( <R> ) . . . . . . . . . . . for a Rees zero matrix semigroup
+##
+InstallMethod( Enumerator, "for a Rees zero matrix semigroup",
+    [ IsReesZeroMatrixSemigroup ],
+    function( r )
+    local s,    # the underlying semigroup
+          its,  # the iterator of the semigroup s
+          x,    # the first element of s
+          enum;
+
+    s := UnderlyingSemigroupOfReesZeroMatrixSemigroup( r );
+    its := Iterator( s );
+    x := NextIterator( its );
+
+    enum:= EnumeratorByFunctions( r, rec(
+        ElementNumber := ElementNumber_ReesMatrixSemigroupEnumerator,
+        NumberElement := NumberElement_SemigroupIdealEnumerator,
+        IsBound\[\]   := IsBound_ReesMatrixSemigroupEnumerator,
+        Length        := Length_SemigroupIdealEnumerator,
+        Membership    := Membership_SemigroupIdealEnumerator,
+
+        currentlist   := [ MultiplicativeZero( r ) ],
+        row           := 1,
+        column        := 0,
+        element       := x,
+        itunder       := its ) );
+
+    # recall that r has a zero iff s has a zero
+    # and if the zero of s is the first element of s
+    # we should move to the next one
+    if x = MultiplicativeZero( s ) then
+      if not IsDoneIterator( its ) then
+        enum!.element:= NextIterator( its );
+      fi;
+    fi;
+
+    return enum;
+end );
 
 
 #############################################################################
 ##
-#M  Size( <R> ) 
-##
-##	for a Rees Matrix Semigroup
+#M  Size( <R> ) . . . . . . . . . . . . . . . . . for a Rees matrix semigroup
 ##
 InstallMethod( Size,
     "for a Rees matrix semigroup",
-    true,
-    [ IsReesMatrixSemigroup ], 0,
+    [ IsReesMatrixSemigroup ],
 function(r)
   local s, m, n, sizeofr;
 
@@ -952,21 +952,19 @@ function(r)
 #		sizeofr := (Size( s ) - 1) * m * n + 1;
 #	else
     sizeofr := Size( s ) * m * n;
-#	fi;	
+#	fi;
 
    return sizeofr;
 end);
 
+
 #############################################################################
 ##
-#M  Size( <R> ) 
-##
-##	for a Rees Zero Matrix Semigroup
+#M  Size( <R> ) . . . . . . . . . . . . . .  for a Rees zero matrix semigroup
 ##
 InstallMethod( Size,
     "for a Rees zero matrix semigroup",
-    true,
-    [ IsReesZeroMatrixSemigroup ], 0,
+    [ IsReesZeroMatrixSemigroup ],
 function(r)
   local s, m, n, sizeofr;
 
@@ -986,44 +984,40 @@ end);
 
 ############################################################################
 ##
-#A  Print(<rmelt>)
+#M  PrintObj( <rmelt> ) . . . . .  for an element of a Rees Matrix semigroup
 ##
-##  Print an element of a Rees Matrix semigroup
-##
-InstallMethod(PrintObj, "for elements of Rees matrix semigroups", true,
-[IsReesMatrixSemigroupElement], 0,
+InstallMethod( PrintObj, "for elements of Rees matrix semigroups",
+[IsReesMatrixSemigroupElement],
 function(x)
-		Print("(",UnderlyingElementOfReesMatrixSemigroupElement(x), 
+		Print("(",UnderlyingElementOfReesMatrixSemigroupElement(x),
 		";",RowIndexOfReesMatrixSemigroupElement(x),
 		",",ColumnIndexOfReesMatrixSemigroupElement(x), ")");
 end);
 
+
 ############################################################################
 ##
-#A  Print(<rmelt>)
+#M  PrintObj( <rmelt> ) . . . for an element of a zero Rees Matrix semigroup
 ##
-##  Print an element of a Zero Rees Matrix semigroup
-##
-InstallMethod(PrintObj, "for elements of Rees zero matrix semigroups", true,
-[IsReesZeroMatrixSemigroupElement], 0,
+InstallMethod( PrintObj, "for elements of Rees zero matrix semigroups",
+[IsReesZeroMatrixSemigroupElement],
 function(x)
     if ReesZeroMatrixSemigroupElementIsZero(x) then
         Print("0");
     else
-		Print("(",UnderlyingElementOfReesZeroMatrixSemigroupElement(x), 
+		Print("(",UnderlyingElementOfReesZeroMatrixSemigroupElement(x),
 		";",RowIndexOfReesZeroMatrixSemigroupElement(x),
 		",",ColumnIndexOfReesZeroMatrixSemigroupElement(x), ")");
     fi;
 end);
 
+
 ############################################################################
 ##
-#A  View(<R>)
+#M  ViewObj( <R> ) . . . . . . . . . . . . . .  for a  Rees matrix semigroup
 ##
-##  Print a  Rees matrix semigroup
-##
-InstallMethod(ViewObj, "for Rees matrix semigroups", true,
-[IsSubsemigroupReesMatrixSemigroup], 0,
+InstallMethod( ViewObj, "for Rees matrix semigroups",
+    [ IsSubsemigroupReesMatrixSemigroup ],
 function(R)
     if not HasIsWholeFamily(R) then
     	Print("Subsemigroup of Rees Matrix Semigroup over ",
@@ -1034,14 +1028,13 @@ function(R)
     fi;
 end);
 
+
 ############################################################################
 ##
-#A  View(<R>)
+#M  ViewObj( <R> ) . . . . . . . . . . . . for a  Rees zero matrix semigroup
 ##
-##  Print a  Rees Zero matrix semigroup
-##
-InstallMethod(ViewObj, "for Rees zero matrix semigroups", true,
-[IsSubsemigroupReesZeroMatrixSemigroup], 0,
+InstallMethod( ViewObj, "for Rees zero matrix semigroups",
+    [ IsSubsemigroupReesZeroMatrixSemigroup ],
 function(R)
     if not HasIsWholeFamily(R) then
     	Print("Subsemigroup of Rees Zero Matrix Semigroup over ",
@@ -1055,12 +1048,10 @@ end);
 
 ############################################################################
 ##
-#A  Print(<R>)
+#M  PrintObj( <R> ) . . . . . . . . . . . . . .  for a Rees matrix semigroup
 ##
-##  Print a  Rees matrix semigroup
-##
-InstallMethod(PrintObj, "for Rees matrix semigroups", true,
-[IsSubsemigroupReesMatrixSemigroup], 0,
+InstallMethod( PrintObj, "for Rees matrix semigroups",
+[IsSubsemigroupReesMatrixSemigroup],
 function(R)
     if not HasIsWholeFamily(R) then
     	Print("Subsemigroup of Rees Matrix Semigroup over ",
@@ -1071,14 +1062,13 @@ function(R)
     fi;
 end);
 
+
 ############################################################################
 ##
-#A  Print(<R>)
+#M  PrintObj( <R> ) . . . . . . . . . . . . for a Rees zero matrix semigroup
 ##
-##  Print a  Rees Zero matrix semigroup
-##
-InstallMethod(PrintObj, "for Rees zero matrix semigroups", true,
-[IsSubsemigroupReesZeroMatrixSemigroup], 0,
+InstallMethod( PrintObj, "for Rees zero matrix semigroups",
+[IsSubsemigroupReesZeroMatrixSemigroup],
 function(R)
     if not HasIsWholeFamily(R) then
     	Print("Subsemigroup of Rees Zero Matrix Semigroup over ",
@@ -1095,21 +1085,21 @@ end);
 #M  <rmelt> * <rmelt>
 ##
 ##  The product of two rees matrix semigroup elements (a;i,lambda)
-##  and (b; j, mu) is (aM_{lambda,j}b; i, mu) 
+##  and (b; j, mu) is (aM_{lambda,j}b; i, mu)
 ##  where M is the sandwich matrix
 ##
 InstallMethod(\*,
-"for two elements of a Rees matrix semigroup", 
+"for two elements of a Rees matrix semigroup",
 IsIdenticalObj,
 [IsReesMatrixSemigroupElement, IsReesMatrixSemigroupElement], 0,
 function(x, y)
-  local 
+  local
 				R,						# Rees Matrix semigroup
 				M,						# sandwich matrix
 				a, b, 				#Underlying elements of x and y resp
 				i, j, 				# Row indices of x, y resp
 				lambda, mu, 	#column indices of x, y resp
-				c;						# The resulting element of the underlying semigroup 
+				c;						# The resulting element of the underlying semigroup
 
 	R := DataType(TypeObj(x));
 
@@ -1125,17 +1115,18 @@ function(x, y)
 
 	M := SandwichMatrixOfReesMatrixSemigroup(R);
 
-	c := a*M[lambda][j]*b;
+	c := a*M[j][lambda]*b;
 
 	return ReesMatrixSemigroupElement(R, c, i, mu);
 end);
+
 
 ############################################################################
 ##
 #M  <rmelt> * <rmelt>
 ##
 ##  The product of two rees matrix semigroup elements (a;i,lambda)
-##  and (b; j, mu) is (aM_{lambda,j}b; i, mu) 
+##  and (b; j, mu) is (aM_{lambda,j}b; i, mu)
 ##  where M is the sandwich matrix
 ##
 InstallMethod(\*,
@@ -1143,14 +1134,14 @@ InstallMethod(\*,
 IsIdenticalObj,
 [IsReesZeroMatrixSemigroupElement, IsReesZeroMatrixSemigroupElement], 0,
 function(x, y)
-  local 
+  local
 				R,						# Rees Matrix semigroup
 				M,						# sandwich matrix
 				S,						# underlying semigroup
 				a, b, 				#Underlying elements of x and y resp
 				i, j, 				# Row indices of x, y resp
 				lambda, mu, 	#column indices of x, y resp
-				c;						# The resulting element of the underlying semigroup 
+				c;						# The resulting element of the underlying semigroup
 
 	R := DataType(TypeObj(x));
 
@@ -1173,10 +1164,10 @@ function(x, y)
 	M := SandwichMatrixOfReesZeroMatrixSemigroup(R);
 
 	S := UnderlyingSemigroupOfReesZeroMatrixSemigroup(R);
-	
-	c := a*M[lambda][j]*b;
 
-	if IsMultiplicativeZero(S,c) then	
+	c := a*M[j][lambda]*b;
+
+	if IsMultiplicativeZero(S,c) then
 		return  MultiplicativeZero(R);
 	fi;
 
@@ -1194,19 +1185,18 @@ end);
 ##  a = b and i < j; or
 ##  a = b and i = j and lambda < mu;
 ##
-
 InstallMethod(\<,
 "for two elements of a Rees matrix semigroup",
 IsIdenticalObj,
 [IsReesMatrixSemigroupElement, IsReesMatrixSemigroupElement], 0,
 function(x, y)
-  local 
+  local
 				a,b, 							# Underlying elements
 				i, j, 						# row indices
 				lambda, mu; 			# column indices
 
 
-	
+
 #	if ReesZeroMatrixSemigroupElementIsZero(x) and
 #			ReesZeroMatrixSemigroupElementIsZero(y) then
 #		return false;
@@ -1230,7 +1220,7 @@ function(x, y)
 		return true;
 	elif (a > b) then
 		return false;
-	elif (i < j) then	
+	elif (i < j) then
 		return true;
 	elif (i > j) then
 		return false;
@@ -1239,8 +1229,8 @@ function(x, y)
 	else
 		return false;
 	fi;
-	
 end);
+
 
 ############################################################################
 ##
@@ -1252,19 +1242,18 @@ end);
 ##  a = b and i < j; or
 ##  a = b and i = j and lambda < mu;
 ##
-
 InstallMethod(\<,
 "for two elements of a Rees zero matrix semigroup",
 IsIdenticalObj,
 [IsReesZeroMatrixSemigroupElement, IsReesZeroMatrixSemigroupElement], 0,
 function(x, y)
-  local 
+  local
 				a,b, 							# Underlying elements
 				i, j, 						# row indices
 				lambda, mu; 			# column indices
 
 
-	
+
 	if ReesZeroMatrixSemigroupElementIsZero(x) and
 			ReesZeroMatrixSemigroupElementIsZero(y) then
 		return false;
@@ -1288,7 +1277,7 @@ function(x, y)
 		return true;
 	elif (a > b) then
 		return false;
-	elif (i < j) then	
+	elif (i < j) then
 		return true;
 	elif (i > j) then
 		return false;
@@ -1297,7 +1286,6 @@ function(x, y)
 	else
 		return false;
 	fi;
-	
 end);
 
 
@@ -1307,34 +1295,34 @@ end);
 ##
 ##  tests equality of two rees matrix semigroup elements
 ##
-
 InstallMethod(\=, "for two elements of a Rees matrix semigroup",
 IsIdenticalObj,
 [IsReesMatrixSemigroupElement,
-IsReesMatrixSemigroupElement], 0,
+IsReesMatrixSemigroupElement],
 function(a, b)
 
-#	if ReesZeroMatrixSemigroupElementIsZero(a) and 
+#	if ReesZeroMatrixSemigroupElementIsZero(a) and
 #			ReesZeroMatrixSemigroupElementIsZero(b) then
 #		return true;
 #	fi;
 
-#	if ReesZeroMatrixSemigroupElementIsZero(a) or 
+#	if ReesZeroMatrixSemigroupElementIsZero(a) or
 #			ReesZeroMatrixSemigroupElementIsZero(b) then
 #		return false;
 #	fi;
 
-	return 
-			(RowIndexOfReesMatrixSemigroupElement(a) = 
-			RowIndexOfReesMatrixSemigroupElement(b)) 
+	return
+			(RowIndexOfReesMatrixSemigroupElement(a) =
+			RowIndexOfReesMatrixSemigroupElement(b))
 		and
-			(ColumnIndexOfReesMatrixSemigroupElement(a) = 
-			ColumnIndexOfReesMatrixSemigroupElement(b)) 
+			(ColumnIndexOfReesMatrixSemigroupElement(a) =
+			ColumnIndexOfReesMatrixSemigroupElement(b))
 		and
-			(UnderlyingElementOfReesMatrixSemigroupElement(a) = 
+			(UnderlyingElementOfReesMatrixSemigroupElement(a) =
 			UnderlyingElementOfReesMatrixSemigroupElement(b));
 
 end);
+
 
 ############################################################################
 ##
@@ -1342,31 +1330,30 @@ end);
 ##
 ##  tests equality of two rees matrix semigroup elements
 ##
-
 InstallMethod(\=, "for two elements of a Rees zero matrix semigroup",
 IsIdenticalObj,
 [IsReesZeroMatrixSemigroupElement,
-IsReesZeroMatrixSemigroupElement], 0,
+IsReesZeroMatrixSemigroupElement],
 function(a, b)
 
-	if ReesZeroMatrixSemigroupElementIsZero(a) and 
+	if ReesZeroMatrixSemigroupElementIsZero(a) and
 			ReesZeroMatrixSemigroupElementIsZero(b) then
 		return true;
 	fi;
 
-	if ReesZeroMatrixSemigroupElementIsZero(a) or 
+	if ReesZeroMatrixSemigroupElementIsZero(a) or
 			ReesZeroMatrixSemigroupElementIsZero(b) then
 		return false;
 	fi;
 
-	return 
-			(RowIndexOfReesZeroMatrixSemigroupElement(a) = 
-			RowIndexOfReesZeroMatrixSemigroupElement(b)) 
+	return
+			(RowIndexOfReesZeroMatrixSemigroupElement(a) =
+			RowIndexOfReesZeroMatrixSemigroupElement(b))
 		and
-			(ColumnIndexOfReesZeroMatrixSemigroupElement(a) = 
-			ColumnIndexOfReesZeroMatrixSemigroupElement(b)) 
+			(ColumnIndexOfReesZeroMatrixSemigroupElement(a) =
+			ColumnIndexOfReesZeroMatrixSemigroupElement(b))
 		and
-			(UnderlyingElementOfReesZeroMatrixSemigroupElement(a) = 
+			(UnderlyingElementOfReesZeroMatrixSemigroupElement(a) =
 			UnderlyingElementOfReesZeroMatrixSemigroupElement(b));
 
 end);
@@ -1375,5 +1362,4 @@ end);
 #############################################################################
 ##
 #E
-
 

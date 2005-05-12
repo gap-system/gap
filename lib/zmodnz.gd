@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the design of the rings $Z / n Z$ and their elements.
 ##
@@ -158,6 +159,13 @@ DeclareOperation( "ZmodnZObj", [ IsInt, IsPosInt ] );
 ##  $n$.
 ##
 DeclareAttribute( "ModulusOfZmodnZObj", IsZmodnZObj );
+
+
+#############################################################################
+##
+#F  EnumeratorOfZmodnZ( <R> ). . . . . . . . . . . . . enumerator for Z / n Z
+##
+DeclareGlobalFunction( "EnumeratorOfZmodnZ" );
 
 
 #############################################################################

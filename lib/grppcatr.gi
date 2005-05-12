@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for attributes of polycylic groups.
 ##
@@ -122,7 +123,7 @@ end);
 InstallMethod( ElementaryAbelianSeries,
     "pcgs computable groups using `PcgsElementaryAbelianSeries'", true, 
     [ IsGroup and CanEasilyComputePcgs and IsFinite ], 0,
-  G->NormalSeriesByPcgs(PcgsElementaryAbelianSeries(G)));
+  G->EANormalSeriesByPcgs(PcgsElementaryAbelianSeries(G)));
 
 
 #############################################################################
@@ -577,6 +578,9 @@ end );
 InstallMethod(SmallGeneratingSet,"using minimal generating set",true,
   [IsPcGroup and IsFinite],0,
 function (G)
+  if Length(Pcgs(G))>14 then
+    TryNextMethod();
+  fi;
   return MinimalGeneratingSet(G);
 end);
 
@@ -585,10 +589,14 @@ InstallOtherMethod( GeneratorOfCyclicGroup,"pc groups",true,
 function ( G )
 local g;
   g:=MinimalGeneratingSet(G);
-  if Length(g)>1 then
+  if Length(g)=1 then
+    return g[1];
+  elif IsTrivial(G) then
+    # trivial group
+    return One(G);
+  else
     Error("not cyclic");
   fi;
-  return g[1];
 end);
 
 #############################################################################
@@ -794,7 +802,7 @@ InstallGlobalFunction (CentrePcGroup, function( G )
                         Add( matlist, conj );  
                     fi;
                 od;       
-                cent[j] := Difference( cent[j], newgens );
+                cent[j] := Filtered( cent[j], g -> not g in newgens );
 
                 if Length( matlist ) > 0  then
 

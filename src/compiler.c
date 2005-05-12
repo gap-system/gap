@@ -8,6 +8,7 @@
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the GAP to C compiler.
 */
@@ -130,7 +131,7 @@ void SetCompileOpts( Char *opts )
   Int i;
   while (*s)
     {
-      while (isspace(*s))
+      while (IsSpace(*s))
 	s++;
       for (i = 0; i < N_CompOpts; i++)
 	{
@@ -5753,7 +5754,7 @@ Int CompileFunc (
     /* emit the initialization code                                        */
     Emit( "\n/* <name> returns the description of this module */\n" );
     Emit( "static StructInitInfo module = {\n" );
-    if ( ! SyStrcmp( "Init__Dynamic", name ) ) {
+    if (  SyStrcmp( "Init__Dynamic", name ) ) {
         Emit( "/* type        = */ %d,\n",     MODULE_DYNAMIC ); 
     }
     else {

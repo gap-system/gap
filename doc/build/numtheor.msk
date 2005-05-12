@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Number Theory}
 
@@ -34,9 +35,11 @@ gap> PrimeResidues( 0 );  PrimeResidues( 1 );  PrimeResidues( 20 );
 \atindex{Euler's totient function}{@Euler's totient function}
 
 \beginexample
-gap> Phi( 12 );  Phi( 2^13-1 );  Phi( 2^15-1 );
+gap> Phi( 12 );
 4
-8190        # which proves that 2^(13)-1 is a prime
+gap> Phi( 2^13-1 );  # this proves that 2^(13)-1 is a prime
+8190
+gap> Phi( 2^15-1 );
 27000
 \endexample
 
@@ -50,8 +53,8 @@ gap> Lambda( 10 );
 4
 gap> Lambda( 30 );
 4
-gap> Lambda( 561 );
-80        # 561 is the smallest Carmichael number
+gap> Lambda( 561 );  # 561 is the smallest Carmichael number
+80
 \endexample
 
 \Declaration{GeneratorsPrimeResidues}
@@ -74,9 +77,10 @@ rec( primes := [ 2, 3, 5 ], exponents := [ 3, 2, 1 ],
 \index{multiplicative order of an integer}
 
 \beginexample
-gap> OrderMod( 2, 7 );  OrderMod( 3, 7 );
+gap> OrderMod( 2, 7 );
 3
-6        # 3 is a primitive root modulo 7
+gap> OrderMod( 3, 7 );  # 3 is a primitive root modulo 7
+6
 \endexample
 
 \Declaration{LogMod}
@@ -97,12 +101,14 @@ fail
 \index{generator!of the prime residue group}
 
 \beginexample
-gap> PrimitiveRootMod( 409 );  PrimitiveRootMod( 541, 2 );
-21        # largest primitive root for a prime less than 2000
+gap> PrimitiveRootMod( 409 );      # largest primitive root for a prime less than 2000
+21
+gap> PrimitiveRootMod( 541, 2 );
 10
-gap> PrimitiveRootMod( 337, 327 );  PrimitiveRootMod( 30 );
-fail        # 327 is the largest primitive root mod 337
-fail        # there exists no primitive root modulo 30
+gap> PrimitiveRootMod( 337, 327 ); # 327 is the largest primitive root mod 337
+fail
+gap> PrimitiveRootMod( 30 );       # there exists no primitive root modulo 30
+fail
 \endexample
 
 \Declaration{IsPrimitiveRootMod}
@@ -111,13 +117,15 @@ fail        # there exists no primitive root modulo 30
 \index{generator!of the prime residue group}
 
 \beginexample
-gap> IsPrimitiveRootMod( 2, 541 ); IsPrimitiveRootMod( -539, 541 );
+gap> IsPrimitiveRootMod( 2, 541 );
 true
-true        # same computation as above
+gap> IsPrimitiveRootMod( -539, 541 );  # same computation as above;
+true
 gap> IsPrimitiveRootMod( 4, 541 );
 false
 gap> ForAny( [1..29], r -> IsPrimitiveRootMod( r, 30 ) );
-false        # there does not exist a primitive root modulo 30
+false
+gap> # there is no a primitive root modulo 30
 \endexample
 
 
@@ -129,12 +137,12 @@ false        # there does not exist a primitive root modulo 30
 \index{residue!quadratic}
 
 \beginexample
-gap> Jacobi( 11, 35 );
-1         # 9^2 = 11 mod 35
-gap> Jacobi( 6, 35 );
--1        # thus there is no r such that r^2 = 6 mod 35
-gap> Jacobi( 3, 35 );
-1         # even though there is no r with r^2 = 3 mod 35
+gap> Jacobi( 11, 35 );  # 9^2 = 11 mod 35
+1
+gap> Jacobi( 6, 35 );   # it is -1, thus there is no r such that r^2 = 6 mod 35
+-1
+gap> Jacobi( 3, 35 );   # it is 1 even though there is no r with r^2 = 3 mod 35
+1
 \endexample
 
 \Declaration{Legendre}
@@ -142,12 +150,12 @@ gap> Jacobi( 3, 35 );
 \index{residue!quadratic}
 
 \beginexample
-gap> Legendre( 5, 11 );
-1         # 4^2 = 5 mod 11
-gap> Legendre( 6, 11 );
--1        # thus there is no r such that r^2 = 6 mod 11
-gap> Legendre( 3, 35 );
--1        # thus there is no r such that r^2 = 3 mod 35
+gap> Legendre( 5, 11 );  # 4^2 = 5 mod 11
+1
+gap> Legendre( 6, 11 );  # it is -1, thus there is no r such that r^2 = 6 mod 11
+-1
+gap> Legendre( 3, 35 );  # it is -1, thus there is no r such that r^2 = 3 mod 35
+-1
 \endexample
 
 \Declaration{RootMod}
@@ -156,21 +164,21 @@ gap> Legendre( 3, 35 );
 \index{root!of an integer modulo another}
 
 \beginexample
-gap> RootMod( 64, 1009 );
-1001        # note 'RootMod' does not return 8 in this case but -8
+gap> RootMod( 64, 1009 );  # note 'RootMod' does not return 8 in this case but -8;
+1001
 gap> RootMod( 64, 3, 1009 );
 518
 gap> RootMod( 64, 5, 1009 );
 656
 gap> List( RootMod( 64, 1009 ) * RootsUnityMod( 1009 ),
->          x -> x mod 1009 );
-[ 1001, 8 ]        # set of all square roots of 64 mod 1009
+>          x -> x mod 1009 );  # set of all square roots of 64 mod 1009
+[ 1001, 8 ]
 \endexample
 
 \Declaration{RootsMod}
 
 \beginexample
-gap> RootsMod( 1, 7*31 );   # the same as `RootsUnityMod( 7*31 )'
+gap> RootsMod( 1, 7*31 );  # the same as `RootsUnityMod( 7*31 )'
 [ 1, 92, 125, 216 ]
 gap> RootsMod( 7, 7*31 );
 [ 21, 196 ]
@@ -191,8 +199,8 @@ gap> RootsUnityMod( 7*31 );  RootsUnityMod( 3, 7*31 );
 gap> RootsUnityMod( 5, 7*31 );
 [ 1, 8, 64, 78, 190 ]
 gap> List( RootMod( 64, 1009 ) * RootsUnityMod( 1009 ),
->          x -> x mod 1009 );
-[ 1001, 8 ]        # set of all square roots of 64 mod 1009
+>          x -> x mod 1009 );  # set of all square roots of 64 mod 1009
+[ 1001, 8 ]
 \endexample
 
 
@@ -201,34 +209,27 @@ gap> List( RootMod( 64, 1009 ) * RootsUnityMod( 1009 ),
 
 \Declaration{Sigma}
 
-\begintt
-gap> Sigma( 0 );
-Error, Sigma: <n> must not be 0 called from
-... 4 lines omitted here ...
-brk> quit;
-\endtt
 \beginexample
-gap> Sigma( 1 );  Sigma( 1009 );  Sigma( 8128 ) = 2*8128;
+gap> Sigma( 1 );
 1
-1010        # thus 1009 is a prime
-true        # thus 8128 is a perfect number
+gap> Sigma( 1009 );  # 1009 is a prime
+1010
+gap> Sigma( 8128 ) = 2*8128;  # 8128 is a perfect number
+true
 \endexample
 
 
 \Declaration{Tau}
 
-\begintt
-gap> Tau( 0 );
-Error, Tau: <n> must not be 0 called from
-... 4 lines omitted here ...
-brk> quit;
-\endtt
 \beginexample
-gap> Tau( 1 );  Tau( 1013 );  Tau( 8128 );  Tau( 36 );
+gap> Tau( 1 );
 1
-2        # thus 1013 is a prime
+gap> Tau( 1013 );  # thus 1013 is a prime
+2
+gap> Tau( 8128 );
 14
-9        # the result is odd if and only if the argument is a perfect square
+gap> Tau( 36 );  # the result is odd if and only if the argument is a perfect square
+9
 \endexample
 
 \Declaration{MoebiusMu}
@@ -240,6 +241,38 @@ gap> MoebiusMu( 60 );  MoebiusMu( 61 );  MoebiusMu( 62 );
 1
 \endexample
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Continued Fractions}
+
+\Declaration{ContinuedFractionExpansionOfRoot}
+
+\beginexample
+gap> x := Indeterminate(Integers);;
+gap> ContinuedFractionExpansionOfRoot(x^2-7,20);
+[ 2, 1, 1, 1, 4, 1, 1, 1, 4, 1, 1, 1, 4, 1, 1, 1, 4, 1, 1, 1 ]
+gap> ContinuedFractionExpansionOfRoot(x^2-7,0);
+[ 2, 1, 1, 1, 4 ]
+gap> ContinuedFractionExpansionOfRoot(x^3-2,20);
+[ 1, 3, 1, 5, 1, 1, 4, 1, 1, 8, 1, 14, 1, 10, 2, 1, 4, 12, 2, 3 ]
+gap> ContinuedFractionExpansionOfRoot(x^5-x-1,50);
+[ 1, 5, 1, 42, 1, 3, 24, 2, 2, 1, 16, 1, 11, 1, 1, 2, 31, 1, 12, 5, 1, 7, 11, 
+  1, 4, 1, 4, 2, 2, 3, 4, 2, 1, 1, 11, 1, 41, 12, 1, 8, 1, 1, 1, 1, 1, 9, 2, 
+  1, 5, 4 ]
+\endexample
+
+\Declaration{ContinuedFractionApproximationOfRoot}
+
+\beginexample
+gap> ContinuedFractionApproximationOfRoot(x^2-2,10);
+3363/2378
+gap> 3363^2-2*2378^2;
+1
+gap> z := ContinuedFractionApproximationOfRoot(x^5-x-1,20);
+499898783527/428250732317
+gap> z^5-z-1;
+486192462527432755459620441970617283/
+14404247382319842421697357558805709031116987826242631261357
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Miscellaneous}
@@ -248,18 +281,23 @@ gap> MoebiusMu( 60 );  MoebiusMu( 61 );  MoebiusMu( 62 );
 \index{representation!as a sum of two squares}
 
 \beginexample
-gap> TwoSquares( 5 ); TwoSquares( 11 );
+gap> TwoSquares( 5 );
 [ 1, 2 ]
-fail            # no representation exists
-gap> TwoSquares( 16 );  TwoSquares( 45 );
+gap> TwoSquares( 11 );  # there is no representation
+fail
+gap> TwoSquares( 16 );
 [ 0, 4 ]
-[ 3, 6 ]        # 3 is the minimal possible gcd because 9 divides 45
-gap> TwoSquares( 125 );  TwoSquares( 13*17 );
-[ 2, 11 ]        # not [ 5, 10 ] because this has not minimal gcd
-[ 5, 14 ]        # [10,11] would be the other possible representation
-gap> TwoSquares( 848654483879497562821 );
-#I  beyond the guaranteed bound of the probabilistic primality test
-[ 6305894639, 28440994650 ]        # 848654483879497562821 is prime
+gap> TwoSquares( 45 );  # 3 is the minimal possible gcd because 9 divides 45
+[ 3, 6 ]
+gap> TwoSquares( 125 );  # it is not [5,10] because their gcd is not minimal
+[ 2, 11 ]
+gap> TwoSquares( 13*17 );  # [10,11] would be the other possible representation
+[ 5, 14 ]
+gap> TwoSquares( 848654483879497562821 );  # 848654483879497562821 is prime
+#I  IsPrimeInt: probably prime, but not proven: 848654483879497562821
+#I  FactorsInt: used the following factor(s) which are probably primes:
+#I        848654483879497562821
+[ 6305894639, 28440994650 ]
 \endexample
 
 

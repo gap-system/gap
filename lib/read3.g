@@ -5,7 +5,6 @@
 ReadLib( "tuples.gd"   );
 ReadLib( "rvecempt.gd" );
 
-ReadLib( "domain.gd"   );
 ReadLib( "extaset.gd"  );
 ReadLib( "extlset.gd"  );
 ReadLib( "extrset.gd"  );
@@ -53,6 +52,8 @@ ReadLib( "algrep.gd"   );
 ReadLib( "lierep.gd"   );
 ReadLib( "integer.gd"  );
 ReadLib( "numtheor.gd" );
+ReadLib( "contfrac.gd" );
+
 ReadLib( "string.gd"   );
 
 ReadLib( "ratfun.gd"   );
@@ -81,6 +82,7 @@ ReadLib( "rws.gd"      );
 ReadLib( "rwspcclt.gd" );
 ReadLib( "rwsgrp.gd"   );
 ReadLib( "rwspcgrp.gd" );
+ReadLib( "groebner.gd" );
 
 
 # files dealing with polycyclic generating systems
@@ -108,6 +110,9 @@ ReadLib( "ghomperm.gd" );
 ReadLib( "gpprmsya.gd" );
 
 ReadLib( "addgphom.gd" );
+
+ReadLib( "grpnames.g"  );
+ReadLib( "grpnames.gd" );
 
 # files dealing with quotient computations
 ReadLib( "quotsys.gd" );
@@ -215,6 +220,7 @@ ReadLib("proto.gd");
 
 ReadLib("other.gd");
 
+ReadLib("gasman.gd");
 
 #############################################################################
 ##

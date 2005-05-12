@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for polycylic generating systems.
 ##
@@ -17,10 +18,11 @@ Revision.pcgs_gd :=
 #C  IsGeneralPcgs(<obj>)
 ##
 ##  The category of general pcgs. Each modulo pcgs is a general pcgs.
-##  Relative orders are known for general pcgs, but it might not be
-##  possible to compute exponent vectors or other elementary operations 
-##  with respect to a general pcgs. (For performance reasons immediate
-##  methods are always ignored for Pcgs.)
+##  Relative orders are known for general pcgs, but it might not be possible
+##  to compute exponent vectors or other elementary operations with respect
+##  to a general pcgs. (For performance reasons immediate methods are always
+##  ignored for Pcgs.)
+
 DeclareCategory( "IsGeneralPcgs",
     IsHomogeneousList and IsDuplicateFreeList and IsConstantTimeAccessList
     and IsFinite and IsMultiplicativeElementWithInverseCollection
@@ -120,35 +122,241 @@ DeclareAttribute( "PcSeries", IsPcgs );
 
 #############################################################################
 ##
-#A  IndicesNormalSteps( <pcgs> )
+#P  IsPcgsElementaryAbelianSeries( <pcgs> )
+##
+##  returns `true' if the pcgs <pcgs> refines an elementary abelian series.
+##  `IndicesEANormalSteps' then gives the indices in the Pcgs, at which the
+##  subgroups of this series start. 
+DeclareProperty("IsPcgsElementaryAbelianSeries", IsPcgs );
+
+#############################################################################
+##
+#A  PcgsElementaryAbelianSeries( <G> )
+#A  PcgsElementaryAbelianSeries( [<G>,<N1>,<N2>,....])
+##
+##  computes a pcgs for <G> that refines an elementary abelian series.
+##  `IndicesEANormalSteps' gives the indices in the Pcgs, at which the
+##  normal subgroups of this series start.  The second variant returns a
+##  pcgs that runs through the normal subgroups <N1>, <N2>, etc.
+DeclareAttribute( "PcgsElementaryAbelianSeries", IsGroup );
+
+#############################################################################
+##
+#A  IndicesEANormalSteps(<pcgs>)
 ##
 ##  Let <pcgs> be a pcgs obtained as corresponding to a series of normal
-##  subgroups with elementary abelian factors (for example
-##  `PcgsElementaryAbelianSeries', `PcgsChiefSeries' or
-##  `PcgsCentralSeries'). Then `IndicesNormalSteps' returns a sorted list of
+##  subgroups with elementary abelian factors (for example from calling
+##  `PcgsElementaryAbelianSeries')
+##  Then `IndicesEANormalSteps' returns a sorted list of
 ##  integers, indicating the tails of <pcgs> which generate these normal
 ##  subgroup of <G>. If $i$ is an element of this list, $(g_i, \ldots, g_n)$
 ##  is a normal subgroup of <G>.  The list always starts with 1 and ends
 ##  with n+1. (These indices form *one* series with elementary abelian
 ##  subfactors, not necessarily the most refined one.)
 ##
+##  The attribute `EANormalSeriesByPcgs' returns the actual series of
+##  subgroups.
+##
 ##  For arbitrary pcgs not obtained as belonging to a special series such a
-##  set of indices not necessarily exists, and `IndicesNormalSteps' is not
+##  set of indices not necessarily exists, and `IndicesEANormalSteps' is not
 ##  guaranteed to work in this situation.
 ##
-##  Typically, `IndicesNormalSteps' is set by calls to operations that
-##  compute a particular pcgs such as `PcgsElementaryAbelianSeries'. (Note,
-##  however, that in an existing pcgs this attribute might have been set
-##  already differently by a previous calculation. In this case the pcgs is
-##  never `IsPcgsElementaryAbelianSeries', even though it could be.)
+##  Typically, `IndicesEANormalSteps' is set by
+##  `PcgsElementaryAbelianSeries'.
+DeclareAttribute( "IndicesEANormalSteps", IsPcgs );
+
+#############################################################################
+##
+#A  EANormalSeriesByPcgs(<pcgs>)
+##
+##  Let <pcgs> be a pcgs obtained as corresponding to a series of normal
+##  subgroups with elementary abelian factors (for example from calling
+##  `PcgsElementaryAbelianSeries'). This attribute returns the actual series
+##  of normal subgroups, corresponding to `IndicesEANormalSteps'.
+DeclareAttribute("EANormalSeriesByPcgs",IsPcgs);
+
+#############################################################################
+##
+#P  IsPcgsCentralSeries( <pcgs> )
+##
+##  returns `true' if the pcgs <pcgs> refines an central elementary abelian
+##  series.  `IndicesCentralNormalSteps' then gives the indices in the Pcgs,
+##  at which the subgroups of this series start. 
+DeclareProperty("IsPcgsCentralSeries", IsPcgs );
+
+#############################################################################
+##
+#A  PcgsCentralSeries( <G> )
+##
+##  computes a pcgs for <G> that refines a central elementary abelian series.
+##  `IndicesCentralNormalSteps' gives the indices in the Pcgs, at which the
+##  normal subgroups of this series start.
+DeclareAttribute( "PcgsCentralSeries", IsPcgs);
+
+#############################################################################
+##
+#A  IndicesCentralNormalSteps(<pcgs>)
+##
+##  Let <pcgs> be a pcgs obtained as corresponding to a series of normal
+##  subgroups with central elementary abelian factors (for example from calling
+##  `PcgsCentralSeries')
+##  Then `IndicesCentralNormalSteps' returns a sorted list of
+##  integers, indicating the tails of <pcgs> which generate these normal
+##  subgroup of <G>. If $i$ is an element of this list, $(g_i, \ldots, g_n)$
+##  is a normal subgroup of <G>.  The list always starts with 1 and ends
+##  with n+1. (These indices form *one* series with central elementary abelian
+##  subfactors, not necessarily the most refined one.)
+##
+##  The attribute `CentralNormalSeriesByPcgs' returns the actual series of
+##  subgroups.
+##
+##  For arbitrary pcgs not obtained as belonging to a special series such a
+##  set of indices not necessarily exists, and `IndicesCentralNormalSteps'
+##  is not guaranteed to work in this situation.
+##
+##  Typically, `IndicesCentralNormalSteps' is set by
+##  `PcgsCentralSeries'.
+DeclareAttribute( "IndicesCentralNormalSteps", IsPcgs );
+
+#############################################################################
+##
+#A  CentralNormalSeriesByPcgs(<pcgs>)
+##
+##  Let <pcgs> be a pcgs obtained as corresponding to a series of normal
+##  subgroups with central elementary abelian factors (for example from
+##  calling `PcgsCentralSeries'). This attribute returns the actual series
+##  of normal subgroups, corresponding to `IndicesCentralNormalSteps'.
+DeclareAttribute("CentralNormalSeriesByPcgs",IsPcgs);
+
+#############################################################################
+##
+#P  IsPcgsPCentralSeriesPGroup( <pcgs> )
+##
+##  returns `true' if the pcgs <pcgs> refines an $p$-central elementary
+##  abelian series for a $p$-group.  `IndicesPCentralNormalStepsPGroup' then
+##  gives the indices in the Pcgs, at which the subgroups of this series
+##  start. 
+DeclareProperty("IsPcgsPCentralSeriesPGroup", IsPcgs );
+
+#############################################################################
+##
+#A  PcgsPCentralSeriesPGroup( <G> )
+##
+##  computes a pcgs for the $p$-group <G> that refines a $p$-central
+##  elementary abelian series.  `IndicesPCentralNormalStepsPGroup' gives the
+##  indices in the Pcgs, at which the normal subgroups of this series start.
+DeclareAttribute( "PcgsPCentralSeriesPGroup", IsPcgs);
+
+#############################################################################
+##
+#A  IndicesPCentralNormalStepsPGroup(<pcgs>)
+##
+##  Let <pcgs> be a pcgs obtained as corresponding to a series of normal
+##  subgroups with $p$-central elementary abelian factors (for example from
+##  calling `PcgsPCentralSeriesPGroup').
+##  Then `IndicesPCentralNormalStepsPGroup' returns a sorted list of
+##  integers, indicating the tails of <pcgs> which generate these normal
+##  subgroup of <G>. If $i$ is an element of this list, $(g_i, \ldots, g_n)$
+##  is a normal subgroup of <G>.  The list always starts with 1 and ends
+##  with n+1. (These indices form *one* series with central elementary abelian
+##  subfactors, not necessarily the most refined one.)
+##
+##  The attribute `PCentralNormalSeriesByPcgsPGroup' returns the actual
+##  series of subgroups.
+##
+##  For arbitrary pcgs not obtained as belonging to a special series such a
+##  set of indices not necessarily exists, and
+##  `IndicesPCentralNormalStepsPGroup'
+##  is not guaranteed to work in this situation.
+##
+##  Typically, `IndicesPCentralNormalStepsPGroup' is set by
+##  `PcgsPCentralSeriesPGroup'.
+DeclareAttribute( "IndicesPCentralNormalStepsPGroup", IsPcgs );
+
+#############################################################################
+##
+#A  PCentralNormalSeriesByPcgsPGroup(<pcgs>)
+##
+##  Let <pcgs> be a pcgs obtained as corresponding to a series of normal
+##  subgroups with $p$-central elementary abelian factors (for example from
+##  calling `PcgsPCentralSeriesPGroup'). This attribute returns the actual
+##  series of normal subgroups, corresponding to
+##  `IndicesPCentralNormalStepsPGroup'.
+DeclareAttribute("PCentralNormalSeriesByPcgsPGroup",IsPcgs);
+
+#############################################################################
+##
+#P  IsPcgsChiefSeries( <pcgs> )
+##
+##  returns `true' if the pcgs <pcgs> refines a chief series.
+##  `IndicesChiefNormalSteps' then gives the indices in the Pcgs, at which the
+##  subgroups of this series start. 
+DeclareProperty("IsPcgsChiefSeries", IsPcgs );
+
+#############################################################################
+##
+#A  PcgsChiefSeries( <G> )
+##
+##  computes a pcgs for <G> that refines a chief series.
+##  `IndicesChiefNormalSteps' gives the indices in the Pcgs, at which the
+##  normal subgroups of this series start.
+DeclareAttribute( "PcgsChiefSeries", IsGroup );
+
+#############################################################################
+##
+#A  IndicesChiefNormalSteps(<pcgs>)
+##
+##  Let <pcgs> be a pcgs obtained as corresponding to a chief series
+##  for example from calling `PcgsChiefSeries').
+##  Then `IndicesChiefNormalSteps' returns a sorted list of
+##  integers, indicating the tails of <pcgs> which generate these normal
+##  subgroup of <G>. If $i$ is an element of this list, $(g_i, \ldots, g_n)$
+##  is a normal subgroup of <G>.  The list always starts with 1 and ends
+##  with n+1. (These indices form *one* series with elementary abelian
+##  subfactors, not necessarily the most refined one.)
+##
+##  The attribute `ChiefNormalSeriesByPcgs' returns the actual series of
+##  subgroups.
+##
+##  For arbitrary pcgs not obtained as belonging to a special series such a
+##  set of indices not necessarily exists, and `IndicesChiefNormalSteps' is not
+##  guaranteed to work in this situation.
+##
+##  Typically, `IndicesChiefNormalSteps' is set by
+##  `PcgsChiefSeries'.
+DeclareAttribute( "IndicesChiefNormalSteps", IsPcgs );
+
+#############################################################################
+##
+#A  ChiefNormalSeriesByPcgs(<pcgs>)
+##
+##  Let <pcgs> be a pcgs obtained as corresponding to a chief series
+##  (for example from calling
+##  `PcgsChiefSeries'). This attribute returns the actual series
+##  of normal subgroups, corresponding to `IndicesChiefNormalSteps'.
+DeclareAttribute("ChiefNormalSeriesByPcgs",IsPcgs);
+
+#############################################################################
+##
+#A  IndicesNormalSteps( <pcgs> )
+##
+##
+##  returns the indices of *all* steps in the pc series, which are normal in
+##  the group defined by the pcgs.
+##
+##  (In general, this function yields a slower performance than the more
+##  specialized index functions for elementary abelian series etc.)
 DeclareAttribute( "IndicesNormalSteps", IsPcgs );
 
 #############################################################################
 ##
 #A  NormalSeriesByPcgs( <pcgs> )
 ##
-##  returns the series of all normal subgroups contained in the pc series
-##  determined by <pcgs>.
+##  returns the subgroups the pc series, which are normal in
+##  the group defined by the pcgs.
+##
+##  (In general, this function yields a slower performance than the more
+##  specialized index functions for elementary abelian series etc.)
 DeclareAttribute( "NormalSeriesByPcgs", IsPcgs);
 
 #############################################################################
@@ -461,31 +669,6 @@ DeclareOperation(
 ##  prepending <gens>. No checks are performed that this really yields an
 ##  induced pcgs.
 DeclareOperation( "ExtendedPcgs", [ IsModuloPcgs, IsList ] );
-
-#############################################################################
-##
-#P  IsPcgsElementaryAbelianSeries( <pcgs> )
-##
-##  returns `true' if the pcgs <pcgs> refines an elementary abelian series.
-##  `IndicesNormalSteps' gives the indices in the Pcgs, at which the normal
-##  subgroups of this series start.
-DeclareProperty( "IsPcgsElementaryAbelianSeries", IsPcgs );
-
-#############################################################################
-##
-#P  IsPcgsCentralSeries( <pcgs> )
-##
-##  returns `true' if the pcgs <pcgs> refines a central series.
-##  `IndicesNormalSteps' gives the indices in the Pcgs, at which the normal
-##  subgroups of this series start.
-DeclareProperty( "IsPcgsCentralSeries", IsPcgs );
-
-
-#############################################################################
-##
-#P  IsPcgsPCentralSeriesPGroup( <pcgs> )
-##
-DeclareProperty( "IsPcgsPCentralSeriesPGroup", IsPcgs );
 
 
 #############################################################################

@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains  the categories, attributes, properties and operations
 ##  for polynomial rings.
@@ -152,17 +153,30 @@ DeclareAttribute( "IndeterminatesOfPolynomialRing", IsPolynomialRing );
 
 #############################################################################
 ##
-#O  PolynomialRing( <ring>, <rank>, [<avoid>] )
-#O  PolynomialRing( <ring>, <names>, [<avoid>] )
-#O  PolynomialRing( <ring>, <indets> )
+#O  PolynomialRing( <ring>, <rank>, [<avoid>] ) 
+#O  PolynomialRing( <ring>, <names>, [<avoid>] ) 
+#O  PolynomialRing( <ring>, <indets> ) 
+#O PolynomialRing( <ring>, <indetnums> )
 ##
 ##  creates a polynomial ring over <ring>. If a positive integer <rank> is
-##  given, this creates the polynomial ring in <rank> indeterminates
-##  (differing from the indeterminates contained in <avoid> if given). The
+##  given, this creates the polynomial ring in <rank> indeterminates.  These
+##  indeterminates will have the internal index numbers 1 to <rank>.  The
 ##  second usage takes a list <names> of strings and returns a polynomial
-##  ring in indeterminates labelled by <names>. In the third use, a list of
-##  positive integers <indets> is given. This creates the polynomial ring in
-##  the indeterminates labelled by <indets>.
+##  ring in indeterminates labelled by <names>.  These indeterminates have
+##  ``new'' internal index numbers as if they had been created by calls to
+##  `Indeterminate'.  (If the argument <avoid> is given it contains
+##  indeterminates that should be avoided, in this case internal index
+##  numbers are incremented to skip these variables).
+##  In the third version, a
+##  list of indeterminates <indets> is given. This creates the polynomial
+##  ring in the indeterminates <indets>. Finally, the fourth version
+##  specifies indeterminates by their index number.
+##
+##  To get the indeterminates of a polynomial ring use
+##  `IndeterminatesOfPolynomialRing'. (Indeterminates created independently
+##  with `Indeterminate' will usually differ, though they might be given the
+##  same name and display identically -- see section~"Indeterminates"). 
+##
 DeclareOperation( "PolynomialRing",
     [ IsRing, IsObject ] );
 

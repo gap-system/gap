@@ -8,6 +8,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains (representation dependent)
 ##
@@ -1357,7 +1358,9 @@ InstallMethod( CompositionMapping2,
   [ IsGeneralMapping and IsOne, IsGeneralMapping ],
   SUM_FLAGS + 1,  # should be higher than the rank for a zero mapping
 function( id, map )
-  if not IsSubset(Source(id),ImagesSource(map)) then
+  if    not IsSubset(Source(id),Range(map))
+    and not IsSubset(Source(id),ImagesSource(map))
+  then
     # if the identity is defined on something smaller, we need to take a
     # true `CompositionMapping'.
     TryNextMethod();

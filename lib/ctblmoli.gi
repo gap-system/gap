@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for Molien series.
 ##
@@ -106,7 +107,6 @@ end );
 ##  $$
 ##
 InstallGlobalFunction( CoefficientTaylorSeries, function( numer, r, k, l )
-
     local i, m, u, v, g, coeff, lower, summand, mu;
 
     m:= Length( numer ) - 1;
@@ -146,42 +146,51 @@ end );
 #F  SummandMolienSeries( <tbl>, <psi>, <chi>, <i> )
 ##
 InstallGlobalFunction( SummandMolienSeries, function( tbl, psi, chi, i )
-
     local x,          # indeterminate
+          numer,      # numerator in summands corresp. to `i'-th class
+          a,          # multiplicities of cycl. pol. in the denominator
           ev,         # eigenvalues of `psi' at class `i'
           n,          # element order of class `i'
           e,          # `E(n)'
-          numer,      # numerator in summands corresp. to `i'-th class
           div,        # divisors of `n'
-          a,          # multiplicities of cycl. pol. in the denominator
           d,          # loop over `div'
           roots,      # exponents of `d'-th prim. roots
           r;          # loop over `roots'
 
-    x  := Indeterminate( Cyclotomics );
-    ev := EigenvaluesChar( tbl, psi, i );
-    n  := Length( ev );
-    e  := E(n);
+    x:= Indeterminate( Cyclotomics );
 
-    # numerator of summands corresponding to `i'-th class
-    numer:= chi[i] * e ^ Sum( [ 1 .. n ], j -> j * ev[j] ) * One( x );
+    if chi[i] = 0 then
+      numer := Zero(x);
+      a     := [ 1, 1 ];
+    else
 
-    div:= ShallowCopy( DivisorsInt( n ) );
-    RemoveSet( div, 1 );
-    a:= List( [ 1 .. n ], x -> 0 );
-    a[1]:= ev[n];
-
-    for d in div do
-
-      # compute $a_d$, that is, the maximal multiplicity of `ev[k]'
-      # for all `k' with $\gcd(n,k) = n / d$.
-      roots:= ( n / d ) * PrimeResidues( d );
-      a[d]:= Maximum( ev{ roots } );
-      for r in roots do
-        numer:= numer * ( x - e ^ r ) ^ ( a[d] - ev[r] );
+      ev := EigenvaluesChar( tbl, psi, i );
+      n  := Length( ev );
+      e  := E(n);
+  
+      # numerator of summands corresponding to `i'-th class
+      numer:= chi[i] * e ^ Sum( [ 1 .. n ], j -> j * ev[j] ) * One( x );
+  
+      div:= ShallowCopy( DivisorsInt( n ) );
+      RemoveSet( div, 1 );
+      a:= List( [ 1 .. n ], x -> 0 );
+      a[1]:= ev[n];
+  
+      for d in div do
+  
+        # compute $a_d$, that is, the maximal multiplicity of `ev[k]'
+        # for all `k' with $\gcd(n,k) = n / d$.
+        roots:= ( n / d ) * PrimeResidues( d );
+        a[d]:= Maximum( ev{ roots } );
+        for r in roots do
+          if a[d] <> ev[r] then
+            numer:= numer * ( x - e ^ r ) ^ ( a[d] - ev[r] );
+          fi;
+        od;
+  
       od;
 
-    od;
+    fi;
 
     return rec( numer := numer,
                 a     := a );
@@ -196,7 +205,6 @@ end );
 #F  MolienSeries( <tbl>, <psi>, <chi> )
 ##
 InstallGlobalFunction( MolienSeries, function( arg )
-
     local tbl,          # character table, first argument
           psi,          # character of `tbl', second argument
           chi,          # character of `tbl', optional third argument
@@ -231,6 +239,7 @@ InstallGlobalFunction( MolienSeries, function( arg )
           series,       # Molien series, result
           denom,        # smallest common denominator for the summands
           denomstring,  # string of `denom', in factored form
+          c,            # coefficients & valuation
           numerstring,  # string of `numer'
           denominfo,    # list of pairs `[ r, k ]' in the denominator
           rkpairs,      # list of pairs of the form `[ r, k ]'
@@ -527,16 +536,14 @@ InstallGlobalFunction( MolienSeries, function( arg )
     denomstring:= denomstring{ [ 1 .. Length(denomstring)-1] };
     ConvertToStringRep( denomstring );
 
+    c:= CoefficientsOfLaurentPolynomial( numer );
     numerstring:= StringOfUnivariateRationalPolynomialByCoefficients(
-        CoefficientsOfLaurentPolynomial( numer )[1], "z" );
+        Concatenation( ListWithIdenticalEntries( c[2], 0 ), c[1] ), "z" );
 
     # Compute the series.
     series:= numer / denom;
+#T avoid forming this quotient!
     SetIsUnivariateRationalFunction( series, true );
-
-    # No polynomial is needed to correct the result
-    # if everything worked well.
-    Assert( 1, IsEmpty( pol ) );
 
     # Set the info record.
     SetMolienSeriesInfo( series,
@@ -562,7 +569,6 @@ end );
 ##
 InstallGlobalFunction( MolienSeriesWithGivenDenominator,
     function( molser, list )
-
     local info,
           denominfo,
           x,
@@ -570,9 +576,11 @@ InstallGlobalFunction( MolienSeriesWithGivenDenominator,
           denom,
           pair,
           numer,
+          c,
           numerstring,
           denomstring,
           rr, kk,
+          coeffs,
           series;
 
     if not HasMolienSeriesInfo( molser ) then
@@ -594,8 +602,9 @@ InstallGlobalFunction( MolienSeriesWithGivenDenominator,
     fi;
 
     # Create the strings for numerator and denominator.
+    c:= CoefficientsOfLaurentPolynomial( numer );
     numerstring:= StringOfUnivariateRationalPolynomialByCoefficients(
-        CoefficientsOfLaurentPolynomial( numer )[1], "z" );
+        Concatenation( ListWithIdenticalEntries( c[2], 0 ), c[1] ), "z" );
 
     denomstring:= "";
     for pair in Reversed( list ) do
@@ -616,8 +625,12 @@ InstallGlobalFunction( MolienSeriesWithGivenDenominator,
     denomstring:= denomstring{ [ 1 .. Length(denomstring)-1] };
     ConvertToStringRep( denomstring );
 
-    # Create the Molien series object.
-    series:= info.numer / info.denom;
+    # Create the Molien series object (create the rat. function
+    # from the given one, without division).
+    coeffs:= CoefficientsOfUnivariateRationalFunction( info.ratfun );
+    series:= UnivariateRationalFunctionByExtRep( FamilyObj( info.ratfun ),
+        coeffs[1], coeffs[2], coeffs[3],
+        IndeterminateNumberOfUnivariateRationalFunction( info.ratfun ) );
     SetIsUnivariateRationalFunction( series, true );
 #T why is this not automatically maintained?
     SetMolienSeriesInfo( series,
@@ -626,11 +639,9 @@ InstallGlobalFunction( MolienSeriesWithGivenDenominator,
                               summands:= info.summands,
                               size:= info.size,
                               degree:= info.degree,
-#T obsolete since `pol' must be empty
-#T                              pol:= info.pol,
-                              ratfun:= info.ratfun,
 
                               # These components are new.
+                              ratfun:= series,
                               numer:= numer,
                               denom:= denom,
                               denominfo := Immutable( list ),
@@ -654,16 +665,14 @@ end;
 
 InstallMethod( ViewObj,
     "for a Molien series",
-    true,
     [ IsRationalFunction and IsUnivariateRationalFunction
-      and HasMolienSeriesInfo ], 0,
+      and HasMolienSeriesInfo ],
     ViewMolienSeries );
 
 InstallMethod( PrintObj,
     "for a Molien series",
-    true,
     [ IsRationalFunction and IsUnivariateRationalFunction
-      and HasMolienSeriesInfo ], 0,
+      and HasMolienSeriesInfo ],
     ViewMolienSeries );
 
 
@@ -672,23 +681,16 @@ InstallMethod( PrintObj,
 #F  ValueMolienSeries( series, i )
 ##
 InstallGlobalFunction( ValueMolienSeries, function( series, i )
-
     local value;
 
     series:= MolienSeriesInfo( series );
     value:= Sum( series.summands,
-                 s -> CoefficientTaylorSeries( s.numer, s.r, s.k, i ) );
+                 s -> CoefficientTaylorSeries( s.numer, s.r, s.k, i ), 0 );
 
     # There is a factor $\frac{(-1)^{\psi(1)}}{\|G\|}$.
     if series.degree mod 2 = 1 then
       value:= AdditiveInverse( value );
     fi;
-
-#T obsolete since `pol' must be empty
-#T    # There may be an influence of the polynomial summand.
-#T    if i < Length( series.pol ) then
-#T      value:= value + series.pol[ i+1 ];
-#T    fi;
 
     return value / series.size;
 end );
@@ -696,5 +698,5 @@ end );
 
 #############################################################################
 ##
-#E  ctblmoli.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

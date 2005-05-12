@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the operations for groups with a polycyclic collector.
 ##
@@ -143,7 +144,12 @@ DeclareAttribute(
 ##  `HasPcgs' is *not* set for <G>!
 DeclareAttribute( "Pcgs", IsGroup );
 
-
+#############################################################################
+##
+#A  GeneralizedPcgs( <G> )  . . . . . . . . . . . . . . . . . pcgs of a group
+##
+##  returns a generalized pcgs for the group <G>.
+DeclareAttribute( "GeneralizedPcgs", IsGroup );
 
 #############################################################################
 ##
@@ -159,47 +165,6 @@ DeclareFilter( "CanEasilyComputePcgs" );
 
 # to satisfy method installation requirements
 InstallTrueMethod(IsGroup,CanEasilyComputePcgs);
-
-#############################################################################
-##
-#A  PcgsElementaryAbelianSeries( <G> )
-#A  PcgsElementaryAbelianSeries( [<G>,<N1>,<N2>,....])
-##
-##  computes a pcgs for <G> that refines an elementary abelian series.
-##  `IndicesNormalSteps' gives the indices in the Pcgs, at which the normal
-##  subgroups of this series start.
-##  The second variant returns a pcgs that runs through the normal subgroups
-##  <N1>, <N2>, etc.
-DeclareAttribute( "PcgsElementaryAbelianSeries", IsGroup );
-
-#############################################################################
-##
-#A  PcgsChiefSeries( <G> )
-##
-##  computes a pcgs for <G> that refines a chief series.
-##  `IndicesNormalSteps' gives the indices in the Pcgs, at which normal
-##  subgroups start.
-DeclareAttribute( "PcgsChiefSeries", IsGroup );
-
-#############################################################################
-##
-#A  PcgsCentralSeries( <G> )
-##
-##  computes a pcgs for <G> that refines a central series.
-##  `IndicesNormalSteps' gives the indices in the Pcgs, at which normal
-##  subgroups start.
-##  If <G> is not nilpotent, the result is undefined.
-DeclareAttribute( "PcgsCentralSeries", IsGroup );
-
-#############################################################################
-##
-#A  PcgsPCentralSeriesPGroup( <G> )
-##
-##  computes a pcgs for <G> that refines the lower $p$-central series.
-##  `IndicesNormalSteps' gives the indices in the Pcgs, at which normal
-##  subgroups start.
-##  If <G> is not a $p$-group, the result is undefined.
-DeclareAttribute( "PcgsPCentralSeriesPGroup", IsGroup );
 
 
 #############################################################################

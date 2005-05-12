@@ -22,7 +22,7 @@ DeclareConstructor( "SuzukiGroupCons", [ IsGroup, IsInt ] );
 #F  Sz( [<filt>, ] <q> )
 ##
 ##  Constructs a group isomorphic to the Suzuki group Sz( <q> )
-##  over the field with <q> elements, where $q \ge 8$ is a non - square
+##  over the field with <q> elements, where <q> is a non-square
 ##  power of 2.
 ##
 ##  If <filt> is not given it defaults to `IsMatrixGroup',

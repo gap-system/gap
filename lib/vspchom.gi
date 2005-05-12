@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for general linear mappings of finite
 ##  dimensional free left modules.
@@ -874,9 +875,8 @@ InstallOtherMethod( \+,
     if    Source( map1 ) <> Source( map2 )
        or Range( map1 ) <> Range( map2 ) then
       Error( "<map1> and <map2> must have same source and range" );
-    elif  PreImagesRange( map1 ) <> PreImagesRange( map2 )
-       or ImagesSource( map1 ) <> ImagesSource( map2 ) then
-      Error( "<map1> and <map2> must have same (pre)image" );
+    elif  PreImagesRange( map1 ) <> PreImagesRange( map2 ) then
+      Error( "<map1> and <map2> must have same preimage" );
     fi;
 
     if     IsBound( map1!.basispreimage ) then
@@ -946,9 +946,8 @@ InstallOtherMethod( \+,
     if    Source( map1 ) <> Source( map2 )
        or Range( map1 ) <> Range( map2 ) then
       Error( "<map1> and <map2> must have same source and range" );
-    elif  PreImagesRange( map1 ) <> PreImagesRange( map2 )
-       or ImagesSource( map1 ) <> ImagesSource( map2 ) then
-      Error( "<map1> and <map2> must have same (pre)image" );
+    elif  PreImagesRange( map1 ) <> PreImagesRange( map2 ) then
+      Error( "<map1> and <map2> must have same preimage" );
     fi;
 
     if     IsBound( map2!.basispreimage ) then

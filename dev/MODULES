@@ -132,6 +132,7 @@ Proposer: Alexander, 20-Apr-01
 Seconder: Steve, 23-May-01
 Files: grpfp
 Author: Volkmar Felsch, Alexander Hulpke, Martin Schoenert
+Maintainer: Volkmar Felsch, Alexander Hulpke
 Description: Methods for subgroups and elements of finitely presented
 groups (excludes subgroup presentations and Tietze transformations).
 
@@ -372,3 +373,54 @@ Files:       macsrc/maccon.c, macsrc/maccon.h, /macdefs.h, macsrc/macdocs.c,
 Authors:     Burkhard Hšfling
 Description: This set of files provides the implementation of system dependent
              GAP functions and a user interface to run GAP under MacOS
+
+Name: 	Identification of Galois groups
+Proposer: 	Alexander Hulpke
+Seconder: 	Frank L"ubeck (May 4, 2003), Joachim Neub"user (May 5, 2003)
+Files: 	galois.g*
+Author&Maintainer: 	Alexander Hulpke
+Description:	 functionality for determining the permutation isomorphism type of a Galois group.
+
+Name:        Characters and Character Degrees of certain solvable groups
+Proposer:    Thomas Breuer
+Seconder:    Frank L"ubeck (July 15, 2003), Joachim Neub"user (July 15, 2003)
+Files:       lib/ctblsolv.gd, lib/ctblsolv.gi
+Authors:     Hans Ulrich Besche, Thomas Breuer
+Maintainer:  Thomas Breuer
+Description: Computation of irreducible character degrees of solvable groups,
+             using the algorithm of Conlon (see [Con90b]),
+             and of irreducible characters of (abelian by) supersolvable
+             groups, using the algorithms of Baum-Clausen (see [BC94]) and
+             Conlon (see [Con90a])
+
+Name:        Possible Permutation Characters
+Proposer:    Thomas Breuer
+Seconder:    Frank L"ubeck (July 31, 2003), Joachim Neub"user (June 17, 2003)
+Files:       lib/ctblpope.gd, lib/ctblpope.gi,
+             sections ``Possible Permutation Characters'' and
+             ``Computing Possible Permutation Characters'' in
+             doc/build/ctblfuns.msk
+Authors:     Thomas Breuer, G"otz Pfeiffer
+Maintainer:  Thomas Breuer
+Description: Computation of characters that have certain properties of
+             permutation characters, as is described in [Bre91], [Pfe91],
+             [BP98]
+
+Name:        Monomiality Questions
+Proposer:    Thomas Breuer
+Seconder:    Frank L"ubeck (July 31, 2003), Joachim Neub"user (June 17, 2003)
+Files:       lib/ctblmono.gd, lib/ctblmono.gi, doc/build/ctblmono.msk,
+             tst/ctblmono.tst
+Authors:     Thomas Breuer, Erzs'ebet Horv'ath
+Maintainer:  Thomas Breuer
+Description: Monomiality of finite (solvable) groups and their characters
+
+Name:        Possible Class Fusions, Possible Power Maps
+Proposer:    Thomas Breuer
+Seconder:    Frank L"ubeck (July 31, 2003), Joachim Neub"user (June 17, 2003)
+Files:       lib/ctblmaps.gd, lib/ctblmaps.gi, doc/build/ctblmaps.msk
+Authors:     Thomas Breuer
+Maintainer:  Thomas Breuer
+Description: Computation of possible class fusions and possible power maps,
+             based on [Bre91], [Bre99]
+

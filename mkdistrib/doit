@@ -7,7 +7,11 @@
 ##  to extract the current  version, compile it, run  the test file, and  zoo
 ##  everything up
 ##
-. `dirname $0`/setvar $1
+##  usage: doit ver subver    
+##  e.g. doit 3 2    will create release 4.3.2, the directory will still be
+##  called gap4r3.
+##
+. `dirname $0`/setvar $1 $2
 
 
 # checkout the new version
@@ -34,6 +38,15 @@ echo "======================================================================"
 echo
 if ${BINDIR}/windowscompile;  then echo;  else
     echo "PANIC: cannot create winooze version"
+    exit 1
+fi
+
+# Get packages to ensure manual references are OK
+echo
+echo "======================================================================"
+echo
+if ${BINDIR}/getparch;  then echo;  else
+    echo "PANIC: cannot get packages"
     exit 1
 fi
 

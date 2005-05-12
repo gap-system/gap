@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the function interpreter package.
 **
@@ -850,8 +851,13 @@ Obj DoExecFunc0args (
 
     CHECK_RECURSION_AFTER
 
-    /* return the result                                                   */
-    return ReturnObjStat;
+      /* return the result                                                   */
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 Obj             DoExecFunc1args (
@@ -880,7 +886,12 @@ Obj             DoExecFunc1args (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return ReturnObjStat;
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 Obj             DoExecFunc2args (
@@ -911,7 +922,12 @@ Obj             DoExecFunc2args (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return ReturnObjStat;
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 Obj             DoExecFunc3args (
@@ -944,7 +960,12 @@ Obj             DoExecFunc3args (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return ReturnObjStat;
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 Obj             DoExecFunc4args (
@@ -979,7 +1000,12 @@ Obj             DoExecFunc4args (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return ReturnObjStat;
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 Obj             DoExecFunc5args (
@@ -1016,7 +1042,12 @@ Obj             DoExecFunc5args (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return ReturnObjStat;
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 Obj             DoExecFunc6args (
@@ -1055,7 +1086,12 @@ Obj             DoExecFunc6args (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return ReturnObjStat;
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 Obj             DoExecFuncXargs (
@@ -1098,7 +1134,12 @@ Obj             DoExecFuncXargs (
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return ReturnObjStat;
+      {
+	Obj                 returnObjStat;
+	returnObjStat = ReturnObjStat;
+	ReturnObjStat = (Obj)0;
+	return returnObjStat;
+      }
 }
 
 

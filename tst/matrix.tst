@@ -7,6 +7,9 @@
 ##
 #Y  (C) 1998 School Math. and Comp. Sci., University of St Andrews, Scotland
 ##  
+##  Exclude from testall.g: why?
+##
+
 gap> START_TEST("$Id$");
 gap> ##
 gap> ##
@@ -278,7 +281,7 @@ gap> ##
 gap> x := Indeterminate(Integers,1);;
 gap> hm := [[x,x^0,0*x,0*x], [x^0,x,x^0,0*x], [0*x,x^0,x,x^0], [0*x,0*x,x^0,x]];;
 gap> DeterminantMatDivFree(hm);
-1-3*x_1^2+x_1^4
+x_1^4-3*x_1^2+1
 gap> ##
 gap> ## Simple matrix functions for testing
 gap> ##
@@ -537,7 +540,9 @@ gap> ## Matrices as Linear Mappings
 gap> ##
 gap> ##
 gap> ########################################################################
-gap> STOP_TEST( "matrix.tst", 1000000000 );
+gap> STOP_TEST( "matrix.tst", 3542900000 );
+
 #############################################################################
 ##
-#E  matrix.tst  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

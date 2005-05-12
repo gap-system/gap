@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for process.
 ##
@@ -157,25 +158,37 @@ InstallMethod( Process,
       IsOutputTextStream,
       IsList ],
 function( dir, prg, input, output, args )
-    local   name_input,  new,  name_output,  res,  new_output;
+    local   name_input,  new,  name_output,  res,  new_output, alloutput,allinput;
 
     # convert input into a file
     if not IsInputTextFileRep(input)  then
-        while PROCESS_INPUT_TEMPORARY = fail or
-          IsExistingFile( PROCESS_INPUT_TEMPORARY ) = true do
+	if (IsString(PROCESS_INPUT_TEMPORARY) and
+	  (IsReadableFile(PROCESS_INPUT_TEMPORARY) or
+	  IsWritableFile(PROCESS_INPUT_TEMPORARY))) then
+	  PROCESS_INPUT_TEMPORARY:=fail;
+	fi;
+        while PROCESS_INPUT_TEMPORARY = fail do
             PROCESS_INPUT_TEMPORARY := TmpName();
         od;
-        name_input := PROCESS_INPUT_TEMPORARY;
+	name_input := PROCESS_INPUT_TEMPORARY;
         new := OutputTextFile( name_input, true );
-        WriteAll( new, ReadAll(input) );
+        allinput := ReadAll(input);
+        if allinput= fail then
+            allinput := "";
+        fi;
+        WriteAll( new, allinput );
         CloseStream(new);
         input := InputTextFile( name_input );
     fi;
 
     # convert output into a file
     if not IsOutputTextFileRep(output)  then
-        while PROCESS_OUTPUT_TEMPORARY = fail or
-          IsExistingFile( PROCESS_OUTPUT_TEMPORARY ) = true do
+	if (IsString(PROCESS_OUTPUT_TEMPORARY) and
+	  (IsReadableFile(PROCESS_OUTPUT_TEMPORARY) or
+	  IsWritableFile(PROCESS_OUTPUT_TEMPORARY))) then
+	  PROCESS_OUTPUT_TEMPORARY:=fail;
+	fi;
+        while PROCESS_OUTPUT_TEMPORARY = fail do
             PROCESS_OUTPUT_TEMPORARY := TmpName();
         od;
         name_output := PROCESS_OUTPUT_TEMPORARY;
@@ -196,9 +209,12 @@ function( dir, prg, input, output, args )
     if IsBound(name_output)  then
         CloseStream(new_output);
         new := InputTextFile(name_output);
-        WriteAll( output, ReadAll(new) );
+        alloutput := ReadAll(new);
         CloseStream(new);
         RemoveFile(name_output);
+        if alloutput <> fail then
+            WriteAll( output, alloutput );
+        fi;
     fi;
 
     # return result of process
@@ -216,6 +232,10 @@ InstallGlobalFunction( Exec, function( arg )
 
     # simply concatenate the arguments
     cmd := ShallowCopy( arg[1] );
+    if not IsString(cmd) then
+      Error("the command ",cmd," is not a name.\n",
+      "possibly a binary is missing or has not been compiled.");
+    fi;
     for i  in [ 2 .. Length(arg) ]  do
         Append( cmd, " " );
         Append( cmd, arg[i] );

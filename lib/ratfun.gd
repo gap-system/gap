@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci.,  University of St  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the categories,  attributes, properties and operations
 ##  for  rational functions, Laurent polynomials   and polynomials and  their
@@ -29,34 +30,48 @@ DeclareInfoClass( "InfoPoly" );
 
 #############################################################################
 ##
+#C  IsPolynomialFunction(<obj>)
 #C  IsRationalFunction(<obj>)
+##
+##  A polynomial function is an element of a polynomial ring (not
+##  necessarily an UFD).
 ##
 ##  A rational function is an element of the quotient field of a polynomial
 ##  ring over an UFD. It is represented as a quotient of two polynomials,
 ##  its numerator (see~"NumeratorOfRationalFunction") and
 ##  its denominator (see~"DenominatorOfRationalFunction")
-DeclareCategory( "IsRationalFunction", IsRingElementWithInverse and IsZDFRE);
+DeclareCategory( "IsPolynomialFunction", IsRingElementWithInverse and IsZDFRE);
+DeclareCategory( "IsRationalFunction", IsPolynomialFunction);
 
+DeclareCategoryCollections( "IsPolynomialFunction" );
 DeclareCategoryCollections( "IsRationalFunction" );
 
 #############################################################################
 ##
+#C  IsPolynomialFunctionsFamilyElement(<obj>)
 #C  IsRationalFunctionsFamilyElement(<obj>)
 ##
-##  A rational function is an element of a rational functions family if the
-##  coefficent ring is an UFD. (Otherwise it is not possible to define the
-##  family of all rational functions, see "Polynomials over non-UFD rings".)
-DeclareCategory( "IsRationalFunctionsFamilyElement", IsRationalFunction );
+##  A polynomial is an element of a polynomial functions family. If the
+## underlying domain is an UFD, it is even a
+## `IsRationalFunctionsFamilyElement'.
+DeclareCategory("IsPolynomialFunctionsFamilyElement",IsPolynomialFunction);
+DeclareCategory("IsRationalFunctionsFamilyElement", 
+  IsRationalFunction and IsPolynomialFunctionsFamilyElement );
 
 #############################################################################
 ##
+#C  IsPolynomialFunctionsFamily(<obj>)
 #C  IsRationalFunctionsFamily(<obj>)
 ##
-##  Is the category of a family of rational functions.
+##  `IsPolynomialFunctionsFamily' is the category of a family of polynomials.
+##  For families over an UFD, the category becomes
+##  `IsRationalFunctionsFamily' (as rational functions and quotients are only
+##  provided for families over an UFD.)
 ##
 #T  1996/10/14 fceller can this be done with `CategoryFamily'?
 ##
-DeclareCategory( "IsRationalFunctionsFamily", IsFamily and IsUFDFamily );
+DeclareCategory( "IsPolynomialFunctionsFamily", IsFamily );
+DeclareCategory( "IsRationalFunctionsFamily", IsPolynomialFunctionsFamily and IsUFDFamily );
 
 #############################################################################
 ##
@@ -74,13 +89,10 @@ DeclareCategory("IsRationalFunctionOverField", IsRationalFunction );
 #A  RationalFunctionsFamily( <fam> )
 ##
 ##  creates a   family  containing rational functions  with   coefficients
-##  in <fam>. This family <fam> *must* be a UFD, that is to say, there are no
-##  zero divisors, the family must have a one, be commutative and the
-##  factorisation of an  elements into irreducible  elements of the  family
-##  must be unique (up to units and order).
+##  in <fam>. 
 ##  All elements of the `RationalFunctionsFamily' are rational functions
 ##  (see~"IsRationalFunction").
-DeclareAttribute( "RationalFunctionsFamily", IsUFDFamily );
+DeclareAttribute( "RationalFunctionsFamily", IsFamily );
 
 #############################################################################
 ##
@@ -99,7 +111,7 @@ DeclareAttribute( "CoefficientsFamily", IsFamily );
 ##  As no proper multivariate gcd has been implemented yet, numerators and
 ##  denominators are not guaranteed to be reduced!
 ##
-DeclareAttribute( "NumeratorOfRationalFunction", IsRationalFunction );
+DeclareAttribute( "NumeratorOfRationalFunction", IsPolynomialFunction);
 
 #############################################################################
 ##
@@ -124,7 +136,7 @@ DeclareAttribute( "DenominatorOfRationalFunction", IsRationalFunction );
 ##  quotient of a polynomial by a ring element as a polynomial again, but it
 ##  will have to be represented as a rational function.
 ##
-DeclareProperty( "IsPolynomial", IsRationalFunction );
+DeclareProperty( "IsPolynomial", IsPolynomialFunction );
 
 
 #############################################################################
@@ -136,7 +148,7 @@ DeclareProperty( "IsPolynomial", IsRationalFunction );
 ##  numerator and the denominator of <p> is one.
 ##
 DeclareAttribute( "AsPolynomial",
-  IsRationalFunction and IsPolynomial);
+  IsPolynomialFunction and IsPolynomial);
 
 #############################################################################
 ##
@@ -164,7 +176,7 @@ DeclareSynonymAttr("IsUnivariatePolynomial",
 ##  is a monomial. Therefore every univariate polynomial is a
 ##  Laurent polynomial.
 ##
-DeclareProperty( "IsLaurentPolynomial", IsRationalFunction );
+DeclareProperty( "IsLaurentPolynomial", IsPolynomialFunction );
 
 InstallTrueMethod( IsUnivariateRationalFunction,IsLaurentPolynomial );
 InstallTrueMethod( IsLaurentPolynomial, IsUnivariatePolynomial );
@@ -176,7 +188,7 @@ InstallTrueMethod( IsLaurentPolynomial, IsUnivariatePolynomial );
 ##  A  constant  rational   function is  a    function  whose  numerator  and
 ##  denominator are polynomials of degree 0.
 ##
-DeclareProperty( "IsConstantRationalFunction", IsRationalFunction );
+DeclareProperty( "IsConstantRationalFunction", IsPolynomialFunction );
 InstallTrueMethod( IsUnivariateRationalFunction, IsConstantRationalFunction );
 
 #############################################################################
@@ -185,7 +197,7 @@ InstallTrueMethod( IsUnivariateRationalFunction, IsConstantRationalFunction );
 ##
 ##  This property indicates whether <ratfun> is the zero element of the
 ##  field of rational functions.
-DeclareSynonymAttr("IsZeroRationalFunction",IsZero and IsRationalFunction);
+DeclareSynonymAttr("IsZeroRationalFunction",IsZero and IsPolynomialFunction);
 
 InstallTrueMethod( IsConstantRationalFunction,IsZeroRationalFunction );
 
@@ -214,7 +226,7 @@ DeclareRepresentation("IsRationalFunctionDefaultRep",
 ##  external representation of the polynomial.
 DeclareRepresentation("IsPolynomialDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep 
-    and IsRationalFunction and IsPolynomial,["zeroCoefficient","numerator"]);
+    and IsPolynomialFunction and IsPolynomial,["zeroCoefficient","numerator"]);
 
 
 #############################################################################
@@ -229,7 +241,7 @@ DeclareRepresentation("IsPolynomialDefaultRep",
 ##  (see~"IndeterminateNumberOfLaurentPolynomial").
 DeclareRepresentation("IsLaurentPolynomialDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep
-    and IsRationalFunction and IsLaurentPolynomial, [] );
+    and IsPolynomialFunction and IsLaurentPolynomial, [] );
 
 #############################################################################
 ##
@@ -243,7 +255,7 @@ DeclareRepresentation("IsLaurentPolynomialDefaultRep",
 ##  (see~"IndeterminateNumberOfUnivariateRationalFunction").
 DeclareRepresentation("IsUnivariateRationalFunctionDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep
-    and IsRationalFunction and IsUnivariateRationalFunction, [] );
+    and IsPolynomialFunction and IsUnivariateRationalFunction, [] );
 
 
 #1 
@@ -252,7 +264,8 @@ DeclareRepresentation("IsUnivariateRationalFunctionDefaultRep",
 ##  `[<mon>,<coeff>,<mon>,<coeff>,...]' where <mon> is a monomial in
 ##  expanded form (that is given as list) and <coeff> its coefficient. The
 ##  monomials must be sorted according to the total degree/lexicographic
-##  order (implemented by the function `MonomialTotalDegreeLess'). We call
+##  order (This is the same as given by the ``grlex'' monomial ordering,
+##  see~"MonomialGrlexOrdering"). We call
 ##  this the *external representation* of a polynomial. (The
 ##  reason for ordering is that addition of polynomials becomes linear in
 ##  the number of monomials instead of quadratic; the reason for the
@@ -274,7 +287,7 @@ DeclareRepresentation("IsUnivariateRationalFunctionDefaultRep",
 ##  returns the external representation of the numerator polynomial of the
 ##  rational function <ratfun>. Numerator and Denominator are not guaranteed
 ##  to be cancelled against each other.
-DeclareAttribute("ExtRepNumeratorRatFun",IsRationalFunction);
+DeclareAttribute("ExtRepNumeratorRatFun",IsPolynomialFunction);
 
 #############################################################################
 ##
@@ -292,7 +305,7 @@ DeclareAttribute("ExtRepDenominatorRatFun",IsRationalFunction);
 ##  returns the zero of the coefficient ring. This might be needed to
 ##  represent the zero polynomial for which the external representation of
 ##  the numerator is the empty list.
-DeclareOperation("ZeroCoefficientRatFun",[IsRationalFunction]);
+DeclareOperation("ZeroCoefficientRatFun",[IsPolynomialFunction]);
 
 #############################################################################
 ##
@@ -302,7 +315,7 @@ DeclareOperation("ZeroCoefficientRatFun",[IsRationalFunction]);
 ##  `ExtRepNumeratorRatFun' is that rational functions might know to be a
 ##  polynomial but can still have a non-vanishing denominator. In this case
 ##  `ExtRepPolynomialRatFun' has to call a quotient routine.
-DeclareAttribute("ExtRepPolynomialRatFun",IsRationalFunction and IsPolynomial);
+DeclareAttribute("ExtRepPolynomialRatFun",IsPolynomialFunction and IsPolynomial);
 
 #############################################################################
 ##
@@ -378,6 +391,7 @@ DeclareGlobalFunction( "LaurentPolynomialByExtRep");
 ##  by the external representation <extrep>.
 ##  No test for validity of the arguments is performed.
 DeclareGlobalFunction( "PolynomialByExtRep" );
+DeclareSynonym( "PolynomialByExtRepNC",PolynomialByExtRep);
 
 #############################################################################
 ##
@@ -455,11 +469,11 @@ DeclareSynonymAttr("IndeterminateNumberOfUnivariateLaurentPolynomial",
 ##  `HasIndeterminateName' tests whether indeterminate <nr> has already been
 ##  assigned a name 
 DeclareOperation( "IndeterminateName",
-  [IsRationalFunctionsFamily,IsPosInt]);
+  [IsPolynomialFunctionsFamily,IsPosInt]);
 DeclareOperation( "HasIndeterminateName",
-  [IsRationalFunctionsFamily,IsPosInt]);
+  [IsPolynomialFunctionsFamily,IsPosInt]);
 DeclareOperation( "SetIndeterminateName",
-  [IsRationalFunctionsFamily,IsPosInt,IsString]);
+  [IsPolynomialFunctionsFamily,IsPosInt,IsString]);
 
 
 
@@ -551,7 +565,7 @@ DeclareOperation( "UnivariateRationalFunctionByCoefficients",
 ##  The second version takes an univariate rational function and specializes
 ##  the value of its indeterminate to <val>. Again, an optional argument
 ##  <one> may be given.
-DeclareOperation("Value",[IsRationalFunction,IsList,IsList]);
+DeclareOperation("Value",[IsPolynomialFunction,IsList,IsList]);
 
 #############################################################################
 ##
@@ -561,6 +575,15 @@ DeclareOperation("Value",[IsRationalFunction,IsList,IsList]);
 ##  permuting the indeterminates as it permutes points.
 DeclareGlobalFunction("OnIndeterminates");
 
+#############################################################################
+##
+#F ConstituentsPolynomial(<pol>)
+##                               
+##  Given a polynomial <pol> this function returns a record with components
+##  `variables': A list of the variables occuring in <pol>, `monomials': A
+##  listr of the monomials in <pol>, and `coefficients': A (corresponding)
+##  list of coefficients. 
+DeclareGlobalFunction("ConstituentsPolynomial");
 
 #4
 ##  \index{Expanded form of monomials}
@@ -574,10 +597,13 @@ DeclareGlobalFunction("OnIndeterminates");
 
 #############################################################################
 ##
-#F  MonomialTotalDegreeLess( <a>, <b> )
+#F  MonomialExtGrlexLess(<a>,<b>)
 ##
-##  implements comparison of monomial by the total degree order. This is
-##  the order {\GAP} naturally puts on monomials. The function takes two
+##  implements comparison of monomial in their external representation by a 
+##  ``grlex'' order with $x_1>x_2$
+##  (This is exactly the same as the ordering by
+##  `MonomialGrlexOrdering()', see~ "Monomial Orderings").
+##  The function takes two
 ##  monomials <a> and <b> in expanded form and returns whether the first is
 ##  smaller than the second. (This ordering is also used by {\GAP}
 ##  internally for representing polynomials as a linear combination of
@@ -585,31 +611,17 @@ DeclareGlobalFunction("OnIndeterminates");
 ##
 ##  See section~"The Defining Attributes of Rational Functions" for details
 ##  on the expanded form of monomials.
-DeclareGlobalFunction("MonomialTotalDegreeLess");
-
-#############################################################################
-##
-#F  MonomialRevLexicoLess(<a>,<b>)
-##
-##  implements comparison of monomials by the position/lexicographic
-##  order.
-##  The function takes two
-##  monomials <a> and <b> in expanded form and returns whether the first is
-##  smaller than the second.
-##
-##  See section~"The Defining Attributes of Rational Functions" for details
-##  on the expanded form of monomials.
-DeclareGlobalFunction("MonomialRevLexicoLess");
+DeclareGlobalFunction("MonomialExtGrlexLess");
 
 #############################################################################
 ##
 #F  LeadingMonomial(<pol>)  . . . . . . . .  leading monomial of a polynomial
 ##
 ##  returns the leading monomial (with respect to the ordering given by
-##  "MonomialTotalDegreeLess" of the polynomial <pol> as a list
+##  "MonomialExtGrlexLess" of the polynomial <pol> as a list
 ##  containing indeterminate numbers and exponents.
 ##
-DeclareOperation( "LeadingMonomial", [ IsRationalFunction ] );
+DeclareOperation( "LeadingMonomial", [ IsPolynomialFunction ] );
 
 #############################################################################
 ##
@@ -618,7 +630,7 @@ DeclareOperation( "LeadingMonomial", [ IsRationalFunction ] );
 ##  returns the leading coefficient (that is the coefficient of the leading
 ##  monomial, see~"LeadingMonomial") of the polynomial <pol>.
 ##
-DeclareOperation("LeadingCoefficient", [IsRationalFunction]);
+DeclareOperation("LeadingCoefficient", [IsPolynomialFunction]);
 
 #############################################################################
 ##
@@ -670,7 +682,7 @@ DeclareOperation("DegreeIndeterminate",[IsPolynomial,IsPosInt]);
 ##  number <ind>) when viewing <ratfun> as univariate in <ind>.
 ##
 DeclareAttribute("Derivative",IsUnivariateRationalFunction);
-DeclareOperation("Derivative",[IsRationalFunction,IsPosInt]);
+DeclareOperation("Derivative",[IsPolynomialFunction,IsPosInt]);
 
 #############################################################################
 ##
@@ -695,22 +707,6 @@ DeclareOperation( "Resultant",[ IsPolynomial, IsPolynomial, IsPosInt]);
 ##  indeterminate number <ind>).
 ##
 DeclareOperation("Discriminant",[IsPolynomial]);
-
-# basic polynomial reduction stuff
-
-#############################################################################
-##
-#F  PolynomialReduction(<poly>,<gens>,<order>)
-##
-##  reduces the polynomial <poly> by the ideal generated by the polynomials
-##  in <gens>, using the order <order> of monomials.  Unless <gens> is a
-##  Gr{\accent127 o}bner basis the result is not guaranteed to be unique.
-##
-##  The operation returns a list of length two, the first entry is the
-##  remainder after the reduction. The second entry is a list of quotients
-##  corresponding to <gens>.
-DeclareGlobalFunction("PolynomialReduction");
-
 
 #6
 ##  Technical functions for rational functions
@@ -829,6 +825,9 @@ DeclareGlobalFunction("RandomPol");
 ##  [ <monomial less>, <coefficient sum> ] containing a monomial comparison
 ##  and a coefficient addition function. This list can be found in the
 ##  component `<fam>!.zippedSum' of the rational functions family.
+##
+##  Note that <coefficient sum> must be a proper ``summation'' function, not
+##  a function computing differences.
 ##
 DeclareOperation( "ZippedSum", [ IsList, IsList, IsObject, IsList ] );
 

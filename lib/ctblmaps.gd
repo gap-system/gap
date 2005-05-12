@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declaration of those functions that are used
 ##  to construct maps (mostly fusion maps and power maps).
@@ -222,7 +223,7 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##       a parametrized map which is an approximation of the desired map
 ##
 ##  `decompose': &
-##       a boolean;
+##       a Boolean;
 ##       a `true' value indicates that all constituents of the
 ##       symmetrizations of `chars' computed for criterion 6. lie in `chars',
 ##       so the symmetrizations can be decomposed into elements of `chars';
@@ -230,7 +231,7 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##       and `Irr( <tbl> )' is known, otherwise `false',
 ##
 ##  `quick': &
-##       a boolean;
+##       a Boolean;
 ##       if `true' then the subroutines are called with value `true' for
 ##       the argument <quick>;
 ##       especially, as soon as only one possibility remains
@@ -588,6 +589,12 @@ DeclareAttributeSuppCT( "NamesOfFusionSources",
 ##      This condition is checked for all characters specified below,
 ##      the corresponding function is `FusionsAllowedByRestrictions'
 ##      (see~"FusionsAllowedByRestrictions").
+##  \item{6.}
+##      The class multiplication coefficients in <subtbl> do not exceed the
+##      corresponding coefficients in <tbl>.
+##      This is checked in `ConsiderStructureConstants'
+##      (see~"ConsiderStructureConstants", and see also the comment on the
+##      parameter `verify' below).
 ##  \endlist
 ##
 ##  If <subtbl> and <tbl> are Brauer tables then the possibilities are
@@ -608,7 +615,7 @@ DeclareAttributeSuppCT( "NamesOfFusionSources",
 ##       a parametrized map which is an approximation of the desired map,
 ##
 ##  `decompose' &
-##       a boolean;
+##       a Boolean;
 ##       a `true' value indicates that all constituents of the restrictions
 ##       of `chars' computed for criterion 5. lie in `subchars',
 ##       so the restrictions can be decomposed into elements of `subchars';
@@ -620,12 +627,21 @@ DeclareAttributeSuppCT( "NamesOfFusionSources",
 ##       affording that permutation character are computed,
 ##
 ##  `quick' &
-##       a boolean;
+##       a Boolean;
 ##       if `true' then the subroutines are called with value `true' for
 ##       the argument <quick>;
 ##       especially, as soon as only one possibility remains
-##       this possibility is returned immediately;
-##       the default value is `false'
+##       then this possibility is returned immediately;
+##       the default value is `false',
+##
+##  `verify' &
+##       a Boolean;
+##       if `false' then `ConsiderStructureConstants' is called only if more
+##       than one orbit of possible class fusions exists, under the action
+##       of the groups of table automorphisms;
+##       the default value is `false' (because the computation of the
+##       structure constants is usually very time comsuming, compared with
+##       checking the other criteria),
 ##
 ##  `parameters' &
 ##       a record with components `maxamb', `minamb' and `maxlen'
@@ -782,14 +798,14 @@ DeclareGlobalFunction( "ProjectionMap" );
 
 #############################################################################
 ##
-#F  Indirected( <character>, <paramap> )
+#O  Indirected( <character>, <paramap> )
 ##
 ##  For a map <character> and a parametrized map <paramap>, `Indirected'
 ##  returns a parametrized map whose entry at position $i$ is
 ##  `<character>[ <paramap>[<i>] ]' if `<paramap>[<i>]' is an integer,
 ##  and an unknown (see Chapter~"Unknowns") otherwise.
 ##
-DeclareGlobalFunction( "Indirected" );
+DeclareOperation( "Indirected", [ IsList, IsList ] );
 
 
 #############################################################################
@@ -1140,7 +1156,7 @@ DeclareGlobalFunction( "InitPowerMap" );
 ##  <approxmap> a parametrized map that is an approximation for the
 ##  <prime>-th power map of <tbl>
 ##  (e.g., a list returned by `InitPowerMap', see~"InitPowerMap"),
-##  and <quick> a boolean.
+##  and <quick> a Boolean.
 ##
 ##  The <quick> value `true' means that only those classes are considered
 ##  for which <approxmap> lists more than one possible image.
@@ -1224,7 +1240,7 @@ DeclareGlobalFunction( "MinusCharacter" );
 ##  <tbl>,
 ##  and <parameters> a record with components
 ##  `maxlen', `minamb', `maxamb' (three integers),
-##  `quick' (a boolean),
+##  `quick' (a Boolean),
 ##  and `contained' (a function).
 ##  Usual values of `contained' are `ContainedCharacters' or
 ##  `ContainedPossibleCharacters'.
@@ -1341,7 +1357,7 @@ DeclareGlobalFunction( "ConsiderTableAutomorphisms" );
 ##  fusion of <subtbl> in <tbl>,
 ##  and <parameters> a record with components
 ##  `maxlen', `minamb', `maxamb' (three integers),
-##  <quick> (a boolean),
+##  <quick> (a Boolean),
 ##  and `contained' (a function).
 ##  Usual values of `contained' are `ContainedCharacters' or
 ##  `ContainedPossibleCharacters'.
@@ -1391,6 +1407,27 @@ DeclareGlobalFunction( "ConsiderTableAutomorphisms" );
 ##  map.
 ##
 DeclareGlobalFunction( "FusionsAllowedByRestrictions" );
+
+
+#############################################################################
+##
+#F  ConsiderStructureConstants( <subtbl>, <tbl>, <fusions>, <quick> )
+##
+##  Let <subtbl> and <tbl> be ordinary character tables and <fusions> be a
+##  list of possible class fusions from <subtbl> to <tbl>.
+##  `ConsiderStructureConstants' returns the list of those maps $\sigma$ in
+##  <fusions> with the property that for all triples $(i,j,k)$ of class
+##  positions, $`ClassMultiplicationCoefficient'( <subtbl>, i, j, k )$ is not
+##  bigger than $`ClassMultiplicationCoefficient'( <tbl>, \sigma[i],
+##  \sigma[j], \sigma[k] )$;
+##  see~"ClassMultiplicationCoefficient!for character tables" for the
+##  definition of class multiplication coefficients/structure constants.
+##
+##  The argument <quick> must be a Boolean; if it is `true' then only those
+##  triples are checked for which for which at least two entries in <fusions>
+##  have different images.
+##
+DeclareGlobalFunction( "ConsiderStructureConstants" );
 
 
 #############################################################################

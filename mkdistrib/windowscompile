@@ -44,8 +44,13 @@ if [ \! -x bin/i686-pc-cygwin-gcc/gap.exe ];  then
     echo "PANIC: no executable has been created"
     exit 1
 fi
-if [ \! -f /gap/4.0/bin/cygwin1.dll ];  then
-    echo "PANIC: no cygwin1.dll in /gap/4.0/bin"
+# copy libs in place
+cp /gap/4.0/bin/cygwin1.dll bin
+cp /gap/4.0/bin/libW11.dll bin
+cp /gap/4.0/bin/rxvt.exe bin
+cp /gap/4.0/bin/regtool.exe bin
+if [ \! -f bin/cygwin1.dll ];  then
+    echo "PANIC: no cygwin1.dll in bin"
     exit 1
 fi
 rm winbin.tgz

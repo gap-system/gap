@@ -1,0 +1,27 @@
+#!/bin/sh
+#############################################################################
+##
+##  $Id$
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+line='cd '${DISTROOT}
+echo $line
+$line 
+
+pre=${DISTNAME}
+zooarchive=gap${RBVERSION}.zoo
+
+echo 'Adding and tagging text files to archive '${DISTROOT}/$zooarchive
+
+find \
+   $pre/{prim,trans} \
+   $pre/small \
+       -type f -exec sh -c \
+       '(echo "!TEXT!"; echo "/end") |  zoo ahc '${zooarchive}' '{} ";"
+             
+exit 0
+

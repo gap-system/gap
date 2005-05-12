@@ -6,23 +6,23 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
-##  This file contains the implementation of magmas, monoids, and groups via
-##  the multiplication table.
+##  This file contains the implementation of magmas, monoids, and groups from
+##  a multiplication table.
 ##
 Revision.grptbl_gd :=
     "@(#)$Id$";
 
 
 #############################################################################
+##  
+#F  MagmaByMultiplicationTableCreator( <A>, <domconst> )
+##  
+##  This is a utility for the uniform construction of a magma,
+##  a magma-with-one, or a magma-with-inverses from a multiplication table.
 ##
-#R  IsMagmaByMultiplicationTableObj( <obj> )
-##
-##  At position 1 of the element $m_i$, the number $i$ is stored.
-##
-DeclareRepresentation( "IsMagmaByMultiplicationTableObj",
-    IsPositionalObjectRep and IsMultiplicativeElementWithInverse,
-    [ 1 ] );
+DeclareGlobalFunction( "MagmaByMultiplicationTableCreator" );
 
 
 #############################################################################
@@ -114,7 +114,8 @@ DeclareGlobalFunction( "GroupByMultiplicationTable" );
 
 #############################################################################
 ##
-#F  MultiplicationTable( <elms> )
+#A  MultiplicationTable( <elms> )
+#A  MultiplicationTable( <M> )
 ##
 ##  For a list <elms> of elements that form a magma $M$,
 ##  `MultiplicationTable' returns a square matrix $A$ of positive integers
@@ -123,7 +124,11 @@ DeclareGlobalFunction( "GroupByMultiplicationTable" );
 ##  This matrix can be used to construct a magma isomorphic to $M$,
 ##  using `MagmaByMultiplicationTable'.
 ##
-DeclareGlobalFunction( "MultiplicationTable" );
+##  For a magma <M>, `MultiplicationTable' returns the multiplication table
+##  w.r.t.~the sorted list of elements of <M>.
+##
+DeclareAttribute( "MultiplicationTable", IsHomogeneousList );
+DeclareAttribute( "MultiplicationTable", IsMagma );
 
 
 #############################################################################

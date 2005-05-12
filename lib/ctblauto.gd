@@ -71,7 +71,9 @@ DeclareOperation( "MatrixAutomorphisms", [ IsMatrix, IsList, IsPermGroup ] );
 
 #############################################################################
 ##
-#O  TableAutomorphisms( <tbl>, <characters>[, \"closed\"] )
+#O  TableAutomorphisms( <tbl>, <characters> )
+#O  TableAutomorphisms( <tbl>, <characters>, \"closed\" )
+#O  TableAutomorphisms( <tbl>, <characters>, <subgroup> )
 ##
 ##  `TableAutomorphisms' returns the permutation group of those matrix
 ##  automorphisms (see~"MatrixAutomorphisms") of the list <characters>
@@ -81,7 +83,9 @@ DeclareOperation( "MatrixAutomorphisms", [ IsMatrix, IsList, IsPermGroup ] );
 ##
 ##  If <characters> is closed under Galois conjugacy --this is always
 ##  fulfilled for ordinary character tables--
-##  the string `\"closed\"' may be entered as third argument.
+##  the string `\"closed\"' may be entered as the third argument.
+##  Alternatively, a known subgroup <subgroup> of the table automorphisms
+##  can be entered as the third argument.
 ##
 ##  The attribute `AutomorphismsOfTable' (see~"AutomorphismsOfTable")
 ##  can be used to compute and store the table automorphisms for the case
@@ -91,6 +95,8 @@ DeclareOperation( "TableAutomorphisms",
     [ IsNearlyCharacterTable, IsList ] );
 DeclareOperation( "TableAutomorphisms",
     [ IsNearlyCharacterTable, IsList, IsString ] );
+DeclareOperation( "TableAutomorphisms",
+    [ IsNearlyCharacterTable, IsList, IsPermGroup ] );
 
 
 #############################################################################

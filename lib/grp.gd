@@ -9,6 +9,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations of operations for groups.
 ##
@@ -343,14 +344,38 @@ InstallFactorMaintenance( IsPerfectGroup,
 
 #############################################################################
 ##
+#P  IsSporadicSimpleGroup( <G> )
+##
+##  A group is *sporadic simple* if it is one of the $26$ sporadic simple
+##  groups; these are (in {\ATLAS} notation, see~\cite{CCN85}) $M_{11}$,
+##  $M_{12}$, $J_1$, $M_{22}$, $J_2$, $M_{23}$, $HS$, $J_3$, $M_{24}$,
+##  $M^cL$, $He$, $Ru$, $Suz$, $O^{\prime}N$, $Co_3$, $Co_2$, $Fi_{22}$,
+##  $HN$, $Ly$, $Th$, $Fi_{23}$, $Co_1$, $J_4$, $Fi_{24}^{\prime}$, $B$,
+##  and $M$.
+##
+##  This property can be used for example for selecting the character tables
+##  of the sporadic simple groups,
+##  see the documentation of the {\GAP} package CTblLib.
+##
+DeclareProperty( "IsSporadicSimpleGroup", IsGroup );
+
+InstallIsomorphismMaintenance( IsSporadicSimpleGroup,
+    IsGroup and IsSporadicSimpleGroup, IsGroup );
+
+
+#############################################################################
+##
 #P  IsSimpleGroup( <G> )
 ##
-##  A group is *simple* if it has no nontrivial normal subgroups.
+##  A group is *simple* if it is nontrivial and has no nontrivial normal
+##  subgroups.
 ##
 DeclareProperty( "IsSimpleGroup", IsGroup );
 
 InstallIsomorphismMaintenance( IsSimpleGroup,
     IsGroup and IsSimpleGroup, IsGroup );
+
+InstallTrueMethod( IsSimpleGroup, IsGroup and IsSporadicSimpleGroup );
 
 
 #############################################################################
@@ -429,10 +454,14 @@ InstallTrueMethod( IsPolycyclicGroup,
 ##
 #A  AbelianInvariants( <G> )
 ##
-##  returns the abelian invariants of the commutator factor group of the
-##  group <G>.
-##  They are given as a list of the orders of a set of independent
-##  generators of $G/G'$ (see "IndependentGeneratorsOfAbelianGroup").
+##  returns the abelian invariants (also sometimes called primary
+##  decomposition) of the commutator factor group of the
+##  group <G>. These are given as a list of prime-powers or zeroes and
+##  describe the
+##  structure of $G/G'$ as a direct product of cyclic groups of prime power
+##  (or infinite) order.
+##  
+## (See "IndependentGeneratorsOfAbelianGroup" to obtain actual generators).
 ##
 DeclareAttribute( "AbelianInvariants", IsGroup );
 
@@ -859,6 +888,16 @@ DeclareAttribute( "NormalMaximalSubgroups", IsGroup );
 
 #############################################################################
 ##
+#A  MinimalNormalSubgroups( <G> )
+##
+##  is a list containing those nontrivial normal subgroups of the group <G>
+##  that are minimal among the nontrivial normal subgroups.
+##
+DeclareAttribute( "MinimalNormalSubgroups", IsGroup );
+
+
+#############################################################################
+##
 #A  NormalSubgroups( <G> )
 ##
 ##  returns a list of all normal subgroups of <G>.
@@ -980,7 +1019,8 @@ DeclareAttribute( "SmallGeneratingSet", IsGroup );
 #A  SupersolvableResiduum( <G> )
 ##
 ##  is the supersolvable residuum of the group <G>, that is,
-##  its smallest normal subgroup with supersolvable factor group.
+##  its smallest normal subgroup $N$ such that the factor group $<G> / N$ is
+##  supersolvable.
 ##
 DeclareAttribute( "SupersolvableResiduum", IsGroup );
 
@@ -989,11 +1029,13 @@ DeclareAttribute( "SupersolvableResiduum", IsGroup );
 ##
 #F  SupersolvableResiduumDefault( <G> ) . . . . supersolvable residuum of <G>
 ##
-##  `SupersolvableResiduumDefault' returns a record with components
+##  For a group <G>, `SupersolvableResiduumDefault' returns a record with the
+##  following components.
 ##  \beginitems
 ##  `ssr': &
-##      the supersolvable residuum of the group <G>, that is,
-##      the largest normal subgroup of <G> with supersolvable factor group,
+##      the supersolvable residuum of <G>, that is,
+##      the largest normal subgroup $N$ of <G> such that the factor group
+##      $<G> / N$ is supersolvable,
 ##
 ##  `ds': &
 ##      a chain of normal subgroups of <G>,
@@ -1078,7 +1120,9 @@ DeclareAttribute( "UpperCentralSeriesOfGroup", IsGroup );
 ##
 ##  returns the  number  of <n>-tuples $(g_1, g_2,  \ldots g_n)$ of elements
 ##  of the group <G>  that  generate the  whole group <G>.
-##  The elements of an <n>-tuple need not be different.
+##  The elements of an <n>-tuple need not be different. If the Library of 
+##  Tables of Marks (see Chapter "Tables of Marks") covers the group <G>,
+##  you may also use `EulerianFunctionByTom' (see "EulerianFunctionByTom").
 ##
 DeclareOperation( "EulerianFunction", [ IsGroup, IsPosInt ] );
 
@@ -1277,7 +1321,7 @@ DeclareOperation( "FactorGroupNC", [ IsGroup, IsGroup ] );
 #O  IndexNC( <G>, <U> )
 ##
 ##  For a subgroup <U> of the group <G>, `Index' returns the index
-##  $[<G>:<U>] = {|<G>| \over |<G>|}$ of <U> in <G>.
+##  $[<G>:<U>] = {|<G>| \over |<U>|}$ of <U> in <G>.
 ##  The `NC' version does not test whether <U> is contained in <G>.
 ##
 InParentFOA( "Index", IsGroup, IsGroup, DeclareAttribute );
@@ -1523,9 +1567,10 @@ DeclareOperation( "NrConjugacyClassesInSupergroup", [ IsGroup, IsGroup ] );
 #F  Factorization( <G>, <elm> )
 ##
 ##  returns a factorization of <elm> as word in the generators of <G> given in
-##  the attribute `GeneratorsOfGroup'. (The corresponding free generators can
-##  be obtained via the family <fam> of the result as
-##  `CollectionsFamily(<fam>)!.wholeGroup'.)
+##  the attribute `GeneratorsOfGroup'. The component `<G>!.factFreeMap'
+##  will contain a map <map> from the group <G> to the free group in which
+##  the word is expressed. The attribute `MappingGeneratorsImages' of this
+##  map gives a list of generators and corresponding letters.
 ##
 ##  The algorithm used computes all elements of the group to ensure a short
 ##  word is found. Therefore this function should *not* be used when the
@@ -1604,6 +1649,34 @@ DeclareGlobalFunction( "Group" );
 DeclareSynonym( "Subgroup", SubmagmaWithInverses );
 
 DeclareSynonym( "SubgroupNC", SubmagmaWithInversesNC );
+
+#############################################################################
+##
+#F  SubgroupByProperty( <G>, <prop> )
+##
+##  creates a subgroup of <G> consisting of those elements fulfilling
+##  <prop> (which is a tester function).
+##  No test is done whether the property actually defines a subgroup.
+##
+DeclareGlobalFunction( "SubgroupByProperty" );
+
+#############################################################################
+##
+#A  ElementTestFunction( <G> )
+##
+##  This attribute contains a function that provides an element test for the
+##  group <G>.
+##
+DeclareAttribute( "ElementTestFunction", IsGroup );
+
+#############################################################################
+##
+#F  SubgroupShell( <G> )
+##
+##  creates a subgroup of <G> which at this point is not yet specified
+##  further (but will be later, for example by assigning a generating set).
+##
+DeclareGlobalFunction( "SubgroupShell" );
 
 
 #############################################################################
@@ -1886,4 +1959,5 @@ DeclareGlobalFunction("Group_PseudoRandom");
 #############################################################################
 ##
 #E
+
 

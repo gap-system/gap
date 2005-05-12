@@ -315,11 +315,14 @@ The *arithmetic operators* are `+', `-', `*',
 The *logical operators* are `not', `and', and `or'
 (see~"Operations for Booleans").
 
+The following example shows a very simple expression with value 4 and a
+more complex expression.
+
 \beginexample
-gap> 2 * 2;  # a very simple expression with value
+gap> 2 * 2;
 4
 gap> 2 * 2 + 9 = Fibonacci(7) and Fibonacci(13) in Primes;
-true      # a more complex expression
+true
 \endexample
 
 For the precedence of operators, see~"Comparisons".
@@ -441,7 +444,8 @@ marks the global variable named by the string <name> as read-write.
 
 A warning is given if <name> is already read-write.
 
-\begintt
+%notest
+\beginexample
 gap> xx := 17;
 17
 gap> IsReadOnlyGlobal("xx");
@@ -454,7 +458,7 @@ Variable: 'xx' is read only
 not in any function
 Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
-you can return after making it writable to continue
+you can 'return;' after making it writable to continue
 brk> quit;
 gap> IsReadOnlyGlobal("xx");
 true
@@ -463,7 +467,7 @@ gap> xx := 16;
 16
 gap> IsReadOnlyGlobal("xx");
 false
-\endtt
+\endexample
 
 A group of functions are also supplied for accessing and altering the
 values assigned to global variables. Use of these functions differs
@@ -623,15 +627,17 @@ about a procedure call.
 
 \beginexample
 gap> Fibonacci( 11 );
-  # a call to the function `Fibonacci' with actual argument `11'
 89
 \endexample
 
-\begintt
+The above example shows a call to the function `Fibonacci' with actual
+argument `11', the following one shows a call to the operation
+`RightCosets' where the second actual argument is another function call.
+
+%notest
+\beginexample
 gap> RightCosets( G, Intersection( U, V ) );;
-  # a call to the operation `RightCosets'
-  # where the second actual argument is another function call
-\endtt
+\endexample
 
 \>`<function-var>( <arg-expr>[, <arg-expr>, ...][ : [ <option-expr> [,<option-expr>, ....]]])'{function call!with options}
 
@@ -648,21 +654,25 @@ the same syntax as the components of a record expression. The one
 exception to this is that a component name may appear without a value,
 in which case the value `true' is silently inserted.
 
-\begintt
+The following example shows a call to `Size' passing the options `hard'
+(with the value `true') and `tcselection' (with the string ``external''
+as value).
+
+%notest
+\beginexample
 gap> Size( fpgrp : hard, tcselection := "external" );
-  # a call to `Size' passing the options `hard' (value `true') and 
-  # `tcselection' (value the string "external")
-\endtt
+\endexample
 
 Options supplied with function calls in this way are passed down using 
 the global options stack described in chapter "ref:Options Stack", so that
 the call above is exactly equivalent to
 
-\begintt
+%notest
+\beginexample
 gap> PushOptions( rec( hard := true, tcselection := "external") );
 gap> Size( fpgrp );
 gap> PopOptions( );
-\endtt
+\endexample
 
 *Note* that any option may be passed with any function, whether or not 
 it has any actual meaning for that function, or any function called by 
@@ -703,12 +713,15 @@ The comparison operators have  higher precedence than the logical operators
 \index{operators!precedence}
 (see~"Operations for Booleans"), but lower precedence than the arithmetic
 operators (see~"Arithmetic Operators").
-Thus, for example, `<a> * <b> = <c> and <d>' is interpreted as
+Thus, for instance, `<a> * <b> = <c> and <d>' is interpreted as
 `((<a> * <b>) = <c>) and <d>)'.
 
+The following example shows a comparison where the left operand is an
+expression.
+
 \beginexample
-gap> 2 * 2 + 9 = Fibonacci(7);  # a comparison where the left
-true                            # operand is an expression
+gap> 2 * 2 + 9 = Fibonacci(7);
+true
 \endexample
 
 For the underlying operations of the operators introduced above,
@@ -836,13 +849,15 @@ emphasize this difference.
 
 Using expressions as statements is treated as syntax error.
 
-\begintt
+%notest
+\beginexample
+gap> i := 7;;
 gap> if i <> 0 then k = 16/i; fi;
 Syntax error: := expected
 if i <> 0 then k = 16/i; fi;
                  ^
 gap> 
-\endtt
+\endexample
 
 As you can see from the example this warning does in particular address
 those users who are used to languages where `=' instead of `:=' denotes
@@ -893,19 +908,22 @@ can leave the break  loop  with `quit;'.  If you enter  `return
 <return-expr>;' the value of the expression <return-expr> is assigned to
 the variable, and execution continues after the assignment.
 
-\begintt
+%notest
+\beginexample
 gap> f1:= function( x ) Print( "value: ", x, "\n" ); end;;
 gap> f2:= function( x ) return f1( x ); end;;
 gap> f2( 4 );
 value: 4
 Function Calls: <func> must return a value at
 return f1( x );
+ called from
 <function>( <arguments> ) called from read-eval-loop
-Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
-or you can return a value for the result to continue
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can supply one by 'return <value>;' to continue
 brk> return "hello";
 "hello"
-\endtt
+\endexample
 
 In the above example, the function `f2' calls `f1' with argument `4',
 and since `f1' does not return a value (but only prints a line ``{`value:
@@ -937,11 +955,12 @@ some  effect. Procedures are called  only for  this effect. As  a
 convention the name of a procedure is a verb, denoting what the procedure
 does, e.g., `Print', `Append' and `Sort'.
 
-\begintt
+%notest
+\beginexample
 gap> Read( "myfile.g" );   # a call to the procedure Read
 gap> l := [ 1, 2 ];;
 gap> Append( l, [3,4,5] );  # a call to the procedure Append
-\endtt
+\endexample
 
 There are a few exceptions of {\GAP} functions that do both return
 a value and produce some effect.
@@ -1013,8 +1032,8 @@ gap> if 0 < i then
 >  else
 >    s := 0;
 >  fi;
-gap> s;
-1    # the sign of i
+gap> s;  # the sign of i
+1
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1045,13 +1064,16 @@ execution continues with the next statement immediately following the
 <statements>, after which the next evaluation of <bool-expr> may cause
 another error.
 
+The following example shows a `while' loop that sums up the squares
+$1^2, 2^2, \ldots$ until the sum exceeds 200.
+
 \beginexample
 gap> i := 0;; s := 0;;
 gap> while s <= 200 do
 >    i := i + 1; s := s + i^2;
 >  od;
 gap> s;
-204    # sum of the first i squares larger than 200
+204
 \endexample
 
 A `while' loop may be left prematurely using `break', see "Break".
@@ -1085,13 +1107,17 @@ execution continues with the next statement  immediately following the
 <statements>, after which the next evaluation of <bool-expr> may cause
 another error.
 
+The `repeat' loop in the following example has the same purpose as the
+`while' loop in the preceding example, namely to sum up the squares
+$1^2, 2^2, \ldots$ until the sum exceeds 200.
+
 \beginexample
 gap> i := 0;; s := 0;;
 gap> repeat
 >    i := i + 1; s := s + i^2;
 >  until s > 200;
 gap> s;
-204    # sum of the first i squares larger than 200
+204
 \endexample
 
 A `repeat' loop may be left prematurely using `break', see "Break".
@@ -1244,11 +1270,9 @@ gap> for x in g do
 > fi; od;
 gap> x;
 (1,4,3)(2,6,5)
-\endexample
-\begintt
 gap> break;
 A break statement can only appear inside a loop
-\endtt
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Continue}\null
@@ -1257,9 +1281,8 @@ A break statement can only appear inside a loop
 \>`continue;'{continue statement}@{`continue' statement}
 
 The statement `continue;' causes the rest of the current iteration of
-the innermost loop enclosing it to be skipped. The next iteration
-begins immediately. It is an error to use this statement other than
-inside a loop.
+the innermost loop enclosing it to be skipped. It is an error to use
+this statement other than inside a loop.
 
 \beginexample
 gap> g := Group((1,2,3),(1,2));
@@ -1272,11 +1295,9 @@ gap> for x in g do
 (2,3)
 (1,3)
 (1,2)
-\endexample
-\begintt
 gap> continue;
 A continue statement can only appear inside a loop
-\endtt
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Function}\nolabel
@@ -1984,4 +2005,3 @@ $\{$`a'$|$...$|$`z'$|$`A'$|$...$|$`Z'$|$`0'$|$...$|$`9'$|$`_'$\}$\cr
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                       
 %E
-

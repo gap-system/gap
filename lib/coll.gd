@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for collections.
 ##
@@ -22,7 +23,7 @@ Revision.coll_gd :=
 ##  The most important kinds of collections are *homogeneous lists*
 ##  (see~"Lists") and *domains* (see~"Domains").
 ##  Note that a list is never a domain, and a domain is never a list.
-##  A list is a collection if and only if it is homogeneous.
+##  A list is a collection if and only if it is nonempty and homogeneous.
 ##
 ##  Basic operations for collections are `Size' (see~"Size")
 ##  and `Enumerator' (see~"Enumerator");
@@ -229,7 +230,7 @@ end );
 ##  is stored, which is used for choosing an appropriate ordering of the
 ##  entries when the lists are enlarged in a call to
 ##  `InstallSubsetMaintenance'.
-##  
+##
 ##  The meaning of the entries is as follows.
 ##  \beginitems
 ##  <filtsuper> &
@@ -462,7 +463,7 @@ end );
 
 
 #############################################################################
-##                                                          
+##
 #V  ISOMORPHISM_MAINTAINED_INFO
 ##
 ##  is a list of lists of the form
@@ -611,17 +612,17 @@ end );
 ##  `[ <filtsnum>, <filtsden>, <filtsfac>, <opr>, <testopr>, <settopr> ]'
 ##  which is used for calls of `UseFactorRelation( <num>, <den>, <fac> )'.
 ##  This list is enlarged by calls to `InstallFactorMaintenance'.
-##  
+##
 ##  The meaning of the entries is as follows.
 ##  \beginitems
 ##  <filtsnum> &
 ##      required filter for <num>,
 ##
 ##  <filtsden> &
-##      required filter for <den>,                                           
+##      required filter for <den>,
 ##
 ##  <filtsfac> &
-##      required filter for <fac>,                                           
+##      required filter for <fac>,
 ##
 ##  <opr> &
 ##      operation whose value is inherited from <num> to <fac>,
@@ -646,7 +647,7 @@ BIND_GLOBAL( "FACTOR_MAINTAINED_INFO", [] );
 ##  <denom> may be `fail', for example if <factor> is just known to be a
 ##  factor of <numer> but <denom> is not available as a {\GAP} object;
 ##  in this case those factor relations are used that are installed without
-##  special requirements for <denom>. 
+##  special requirements for <denom>.
 ##
 ##  `UseFactorRelation' is designed to be called automatically
 ##  whenever factor structures of domains are constructed.
@@ -761,7 +762,7 @@ end );
 ##  an iterator of <C> need not store all elements of <C>,
 ##  for example it is possible to construct an iterator of some infinite
 ##  domains, such as the field of rational numbers.
-##  
+##
 ##  `Iterator' returns a mutable *iterator* <iter> for its argument.
 ##  If this is a list <list> (which may contain holes),
 ##  then <iter> iterates over the elements (but not the holes) of <list> in
@@ -886,6 +887,42 @@ DeclareOperation( "NextIterator", [ IsIterator and IsMutable ] );
 ##  exactly one element <elm> (see~"IsTrivial").
 ##
 DeclareGlobalFunction( "TrivialIterator" );
+
+
+#############################################################################
+##
+#F  IteratorByFunctions( <record> )
+##
+##  `IteratorByFunctions' returns a (mutable) iterator <iter> for which
+##  `NextIterator', `IsDoneIterator', and `ShallowCopy'
+##  are computed via prescribed functions.
+##
+##  Let <record> be a record with at least the following components.
+##  \beginitems
+##  `NextIterator' &
+##      a function taking one argument <iter>,
+##      which returns the next element of <iter> (see~"NextIterator");
+##      for that, the components of <iter> are changed,
+##
+##  `IsDoneIterator' &
+##      a function taking one argument <iter>,
+##      which returns `IsDoneIterator( <iter> )' (see~"IsDoneIterator");
+##
+##  `ShallowCopy' &
+##      a function taking one argument <iter>,
+##      which returns a record for which `IteratorByFunctions' can be called
+##      in order to create a new iterator that is independent of <iter> but
+##      behaves like <iter> w.r.t. the operations `NextIterator' and
+##      `IsDoneIterator'.
+##  \enditems
+##  Further (data) components may be contained in <record> which can be used
+##  by these function.
+##
+##  `IteratorByFunctions' does *not* make a shallow copy of <record>,
+##  this record is changed in place
+##  (see~"prg:Creating Objects" in ``Programming in {\GAP}'').
+##
+DeclareGlobalFunction( "IteratorByFunctions" );
 
 
 #############################################################################
@@ -1075,7 +1112,7 @@ DeclareOperation( "Random", [ IsListOrCollection ] );
 ##  input will always produce the same result, even if random calculations
 ##  are involved.
 ##
-##  See `StatusRandom' for a description on how to reset the random number
+##  See `StateRandom' for a description on how to reset the random number
 ##  generator to a previous state.
 ##
 DeclareSynonym( "RandomList", RANDOM_LIST);
@@ -1102,6 +1139,9 @@ DeclareSynonym( "RandomList", RANDOM_LIST);
 ##
 DeclareGlobalFunction( "StateRandom" );
 DeclareGlobalFunction( "RestoreStateRandom" );
+
+# older documentation referred to `StatusRandom'. 
+DeclareSynonym("StatusRandom",StateRandom);
 
 #############################################################################
 ##
@@ -1192,6 +1232,123 @@ DeclareAttribute( "EnumeratorSorted", IsListOrCollection );
 ##  action on this set.
 ##
 DeclareGlobalFunction( "EnumeratorOfSubset" );
+
+
+#############################################################################
+##
+#F  EnumeratorByFunctions( <D>, <record> )
+#F  EnumeratorByFunctions( <Fam>, <record> )
+##
+##  `EnumeratorByFunctions' returns an immutable, dense, and duplicate-free
+##  list <enum> for which `IsBound', element access, `Length', and `Position'
+##  are computed via prescribed functions.
+##
+##  Let <record> be a record with at least the following components.
+##  \beginitems
+##  `ElementNumber' &
+##      a function taking two arguments <enum> and <pos>,
+##      which returns `<enum>[ <pos> ]' (see~"Basic Operations for Lists");
+##      it can be assumed that the argument <pos> is a positive integer,
+##      but <pos> may be larger than the length of <enum> (in which case
+##      an error must be signalled);
+##      note that the result must be immutable since <enum> itself is
+##      immutable,
+##
+##  `NumberElement' &
+##      a function taking two arguments <enum> and <elm>,
+##      which returns `Position( <enum>, <elm> )' (see~"Position");
+##      it cannot be assumed that <elm> is really contained in <enum>
+##      (and `fail' must be returned if not);
+##      note that for the three argument version of `Position', the
+##      method that is available for duplicate-free lists suffices.
+##  \enditems
+##  Further (data) components may be contained in <record> which can be used
+##  by these function.
+##
+##  If the first argument is a domain <D> then <enum> lists the elements of
+##  <D> (in general <enum> is *not* sorted),
+##  and methods for `Length', `IsBound', and `PrintObj' may use <D>.
+#T is this really true for `Length'?
+##
+##  If one wants to describe the result without creating a domain then the
+##  elements are given implicitly by the functions in <record>,
+##  and the first argument must be a family <Fam> which will become the
+##  family of <enum>;
+##  if <enum> is not homogeneous then <Fam> must be `ListsFamily',
+##  otherwise it must be the collections family of any element in <enum>.
+##  In this case, additionally the following component in <record> is
+##  needed.
+##  \beginitems
+##  `Length' &
+##      a function taking the argument <enum>,
+##      which returns the length of <enum> (see~"Length").
+##  \enditems
+##
+##  The following components are optional; they are used if they are present
+##  but default methods are installed for the case that they are missing.
+##  \beginitems
+##  `IsBound\\[\\]' &
+##      a function taking two arguments <enum> and <k>,
+##      which returns `IsBound( <enum>[ <k> ] )'
+##      (see~"Basic Operations for Lists");
+##      if this component is missing then `Length' is used for computing the
+##      result,
+##
+##  `Membership' &
+##      a function taking two arguments <elm> and <enum>,
+##      which returns `true' is <elm> is an element of <enum>,
+##      and `false' otherwise (see~"Basic Operations for Lists");
+##      if this component is missing then `NumberElement' is used
+##      for computing the result,
+##
+##  `AsList' &
+##      a function taking one argument <enum>, which returns a list with the
+##      property that the access to each of its elements will take roughly
+##      the same time (see~"IsConstantTimeAccessList");
+##      if this component is missing then `ConstantTimeAccessList' is used
+##      for computing the result,
+##
+##  `ViewObj' and `PrintObj' &
+##      two functions that print what one wants to be printed when
+##      `View( <enum> )' or `Print( <enum> )' is called
+##      (see~"View and Print"),
+##      if the `ViewObj' component is missing then the `PrintObj' method is
+##      used as a default.
+##  \enditems
+##
+##  If the result is known to have additional properties such as being
+##  strictly sorted (see~"IsSSortedList") then it can be useful to set
+##  these properties after the construction of the enumerator,
+##  before it is used for the first time.
+##  And in the case that a new sorted enumerator of a domain is implemented
+##  via `EnumeratorByFunctions', and this construction is installed as a
+##  method for the operation `Enumerator' (see~"Enumerator"),
+##  then it should be installed also as a method for `EnumeratorSorted'
+##  (see~"EnumeratorSorted").
+##
+##  Note that it is *not* checked that `EnumeratorByFunctions' really returns
+##  a dense and duplicate-free list.
+##  `EnumeratorByFunctions' does *not* make a shallow copy of <record>,
+##  this record is changed in place
+##  (see~"prg:Creating Objects" in ``Programming in {\GAP}'').
+##
+##  It would be easy to implement a slightly generalized setup for
+##  enumerators that need not be duplicate-free (where the three argument
+##  version of `Position' is supported),
+##  but the resulting overhead for the methods seems not to be justified.
+##
+DeclareGlobalFunction( "EnumeratorByFunctions" );
+
+
+#############################################################################
+##
+#A  UnderlyingCollection( <enum> )
+##
+##  An enumerator of a domain can delegate the task to compute its length to
+##  `Size' for the underlying domain, and `ViewObj' and `PrintObj' methods
+##  may refer to this domain.
+##
+DeclareAttribute( "UnderlyingCollection", IsListOrCollection );
 
 
 #############################################################################
@@ -1397,20 +1554,6 @@ DeclareGlobalFunction( "Elements" );
 
 #############################################################################
 ##
-#F  ListSorted( <C> )
-#F  AsListSorted( <C> )
-##
-##  These operations are obsolete and will vanish in future versions. They
-##  are included solely for temporary compatibility with some beta releases
-##  but should *never* be used.
-##  Use `SSortedList' and `AsSSortedList' instead!
-
-# DeclareGlobalFunction("ListSorted");
-# DeclareGlobalFunction("AsListSorted");
-
-
-#############################################################################
-##
 #F  Sum( <list>[, <init>] ) . . . . . . . . . . sum of the elements of a list
 #F  Sum( <C>[, <init>] )  . . . . . . . . sum of the elements of a collection
 #F  Sum( <list>, <func>[, <init>] ) . . . . .  sum of images under a function
@@ -1423,6 +1566,14 @@ DeclareGlobalFunction( "Elements" );
 ##  to the elements of the dense list <list> resp.~the collection <C>,
 ##  and returns the sum of the results.
 ##  In either case `Sum' returns `0' if the first argument is empty.
+##
+##  The general rules for arithmetic operations apply
+##  (see~"Mutability Status and List Arithmetic"),
+##  so the result is immutable if and only if all summands are immutable.
+##
+##  If <list> or <C> contains exactly one element then this element (or its
+##  image under <func> if applicable) itself is returned, not a shallow copy
+##  of this element.
 ##
 ##  If an additional initial value <init> is given,
 ##  `Sum' returns the sum of <init> and the elements of the first argument
@@ -1459,6 +1610,14 @@ DeclareOperation( "SumOp", [ IsListOrCollection ] );
 ##  to the elements of the dense list <list> resp.~the collection <C>,
 ##  and returns the product of the results.
 ##  In either case `Product' returns `1' if the first argument is empty.
+##
+##  The general rules for arithmetic operations apply
+##  (see~"Mutability Status and List Arithmetic"),
+##  so the result is immutable if and only if all summands are immutable.
+##
+##  If <list> or <C> contains exactly one element then this element (or its
+##  image under <func> if applicable) itself is returned, not a shallow copy
+##  of this element.
 ##
 ##  If an additional initial value <init> is given,
 ##  `Product' returns the product of <init> and the elements of the first
@@ -1614,7 +1773,7 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##  a list or collection &
 ##      this introduces a new for-loop in the sequence of nested
 ##      for-loops and if-statements;
-##      
+##
 ##  a function returning a list or collection &
 ##      this introduces a new for-loop in the sequence of nested
 ##      for-loops and if-statements, where the loop-range depends on
@@ -1667,7 +1826,7 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##  \endexample
 ##  In the following example, `\<' is the comparison operation:
 ##  \beginexample
-##  gap> ListX( l, l, \<, pair );    
+##  gap> ListX( l, l, \<, pair );
 ##  [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ], [ 3, 4 ] ]
 ##  \endexample
 ##
@@ -1703,6 +1862,15 @@ DeclareGlobalFunction( "SumX" );
 ##
 DeclareGlobalFunction( "ProductX" );
 
+#############################################################################
+##
+#O  Perform( <list>, <func>)
+##
+##  `Perform( <list>, <func> )' applies func to every element of
+##  <list>, discarding any return values. It does not return a value.
+##
+
+DeclareGlobalFunction( "Perform" );
 
 #############################################################################
 ##
@@ -1740,6 +1908,8 @@ DeclareOperation( "IsSubset", [ IsListOrCollection, IsListOrCollection ] );
 ##
 ##  The result of `Intersection' is the set of elements that lie in every of
 ##  the collections <C1>, <C2>, etc.
+##  If the result is a list then it is mutable and new, i.e., not identical
+##  to any of <C1>, <C2>, etc.
 ##
 ##  Methods can be installed for the operation `Intersection2' that takes
 ##  only two arguments.
@@ -1771,6 +1941,8 @@ DeclareOperation( "Intersection2",
 ##
 ##  The result of `Union' is the set of elements that lie in any of the
 ##  collections <C1>, <C2>, etc.
+##  If the result is a list then it is mutable and new, i.e., not identical
+##  to any of <C1>, <C2>, etc.
 ##
 ##  Methods can be installed for the operation `Union2' that takes only two
 ##  arguments.
@@ -1795,6 +1967,8 @@ DeclareOperation( "Union2", [ IsListOrCollection, IsListOrCollection ] );
 ##  Note that <C2> need not be a subset of <C1>.
 ##  The elements of <C2>, however, that are not elements of <C1> play no role
 ##  for the result.
+##  If the result is a list then it is mutable and new, i.e., not identical
+##  to <C1> or <C2>.
 ##
 DeclareOperation( "Difference", [ IsListOrCollection, IsListOrCollection ] );
 

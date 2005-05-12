@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -192,4 +194,9 @@ gap> Size(UnderlyingRelation(rel));
 45
 gap> Size(GeneratorsOfEquivalenceRelationPartition(EquivalenceRelationByPairs(dom,el)));
 9 
-gap> STOP_TEST( "relation.tst", 37930000 );
+gap> STOP_TEST( "relation.tst", 38100000 );
+
+#############################################################################
+##
+#E
+

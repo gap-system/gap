@@ -7,6 +7,8 @@
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  Exclude from testall.g: why?
+##
 
 gap> START_TEST("$Id$");
 
@@ -27,10 +29,10 @@ SL(7,2)
 gap> HasChainSubgroup(G);  
 true
 
-gap> STOP_TEST( "rss.tst", 123000000 );
+gap> STOP_TEST( "rss.tst", 59900000 );
 
 
 #############################################################################
 ##
 #E  
-##
+

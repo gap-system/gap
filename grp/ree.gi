@@ -19,7 +19,7 @@ function ( filter, q )
 local theta, m, f, bas, one, zero, x, h, r, gens, G, i;
 
   m:=Int((LogInt(q,3)-1)/2);
-  if m<1 or q<>3^(1+2*m) then
+  if m<0 or q<>3^(1+2*m) then
     Error("Usage: ReeGroup(<filter>,3^(1+2m))");
   fi;
 
@@ -80,12 +80,11 @@ local theta, m, f, bas, one, zero, x, h, r, gens, G, i;
   SetFieldOfMatrixGroup(G,f);
   SetIsFinite(G,true);
   SetSize(G,q^3*(q-1)*(q^3+1));
-  SetIsSimpleGroup(G,true);
+  if q > 3 then SetIsSimpleGroup(G,true); fi;
   return G;
 end );
 
 
 #############################################################################
 ##
-#E  ree.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
+#E  ree.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . .  ends here

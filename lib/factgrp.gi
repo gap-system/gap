@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations of operations for factor group maps
 ##
@@ -663,7 +664,7 @@ local H,o,i,s,gut,erg,k,loop;
       erg:=SubdirectDiagonalPerms(erg,List(GeneratorsOfGroup(G),i->Image(s,i)));
     od;
     if NrMovedPoints(erg)<NrMovedPoints(G) then
-      s:=Group(erg,());
+      s:=Group(erg,());  # `erg' arose from `SubdirectDiagonalPerms'
       SetSize(s,Size(G));
       s:=GroupHomomorphismByImagesNC(G,s,GeneratorsOfGroup(G),erg);
       SetIsBijective(s,true);
@@ -984,14 +985,21 @@ InstallMethod(NaturalHomomorphismByNormalSubgroupOp,
 function(G,N)
 local h;
 
-  # catch the trivial case N=G (N=1 is a separately installed method)
+  # catch the trivial case N=G 
   if CanComputeIndex(G,N) and Index(G,N)=1 then
-    h:=GroupByGenerators( [], () );
+    h:=GroupByGenerators( [], () );  # a new group is created
     h:=GroupHomomorphismByImagesNC( G, h, GeneratorsOfGroup( G ),
-                                    List( GeneratorsOfGroup( G ), i -> () ));
+           List( GeneratorsOfGroup( G ), i -> () ));  # a new group is created
     SetKernelOfMultiplicativeGeneralMapping( h, G );
     return h;
   fi;
+ 
+  # catch trivial case N=1 (IsTrivial might not be set)
+  if (HasSize(N) and Size(N)=1) or (HasGeneratorsOfGroup(N) and
+    ForAll(GeneratorsOfGroup(N),IsOne)) then
+    return IdentityMapping(G);
+  fi;
+
 
   # check, whether we already know a factormap
   DoCheapActionImages(G);

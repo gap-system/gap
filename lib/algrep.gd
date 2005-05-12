@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for general modules over algebras.
 ##
@@ -573,6 +574,26 @@ DeclareOperation( "FullSparseRowSpace", [ IsRing, IsInt ] );
 ##
 DeclareHandlingByNiceBasis( "IsDirectSumElementsSpace",
     "for free left modules of direct-sum-elements" );
+
+###############################################################################
+##
+#O   TranslatorSubalgebra( <M>, <U>, <W> )
+##
+##   Here <M> is an algebra module, and <U> and <W> are two subspaces of <M>. 
+##   Let <A> be the algebra acting on <M>. This function returns the subspace
+##   of elements of <A> that map <U> into <W>. If <W> is a sub-algebra-module
+##   (i.e., closed under the action of <A>), then this space is a subalgebra
+##   of <A>. 
+##
+##   This function works for left, or right modules over a
+##   finite-dimensional algebra. We
+##   stress that it is not checked whether <U> and <W> are indeed subspaces
+##   of <M>. If this is not the case nothing is guaranteed about the behaviour
+##   of the function.
+##
+DeclareOperation( "TranslatorSubalgebra", 
+[ IsAlgebraModule, IsFreeLeftModule, IsFreeLeftModule ] );
+
 
 
 #############################################################################

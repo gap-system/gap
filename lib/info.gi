@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This package sets up a GAP level prototype of the new Info messages
 ##  system, parts of which will eventually have to be moved into
@@ -347,29 +348,44 @@ fi;
 DeclareInfoClass( "InfoPerformance" );
 SetInfoLevel( InfoPerformance, 1 );
 
+#############################################################################
+##
+#V  InfoTeaching
+##
+##  This info class has a default level of 1.
+##  Warnings can be switched off by setting its level to zero
+##
+if not IsBound(InfoTeaching) then
+  DeclareInfoClass( "InfoTeaching" );
+  if not TEACHING_MODE then
+    SetInfoLevel( InfoTeaching, 1 );
+  fi;
+fi;
+
 InstallGlobalFunction(CompletionBar,function(c,a,s,v)
-local w,i;
+local out,w,i;
   if InfoLevel(c)>=a then
+    out:=OutputTextUser();
     if not IsRat(v) then
-      Print("\n");
+      PrintTo(out,"\n");
       return;
     fi;
     w:=SizeScreen()[1];
     for i in [1..w] do
-      Print("\r");
+      PrintTo(out,"\r");
     od;
-    Print("\c");
+    PrintTo(out,"\c");
     w:=w-Length(s)-5;
     v:=v*w;
-    Print(s," ");
+    PrintTo(out,s," ");
     for i in [1..w] do
       if v>0 then
-	Print("#");
+	PrintTo(out,"#");
       else
-	Print(" ");
+	PrintTo(out," ");
       fi;
       v:=v-1;
     od;
-    Print("|\c");
+    PrintTo(out,"|\c");
   fi;
 end);

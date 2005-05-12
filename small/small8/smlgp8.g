@@ -316,10 +316,6 @@ end;
 
 #############################################################################
 ##                          
-#F SELECT_SMALL_GROUPS_FUNCS[ 14 ]( funcs, vals, inforec, all, id )
+#F SELECT_SMALL_GROUPS_FUNCS[ 14 ]( funcs, vals, inforec, all, id, idList )
 ##                  
-SELECT_SMALL_GROUPS_FUNCS[ 14 ] := function( size, funcs,vals,inforec,all,id)
-    local result, i, g, ok, j;
-
-    Error( "no selection function available for groups of size 1536" );
-end;      
+SELECT_SMALL_GROUPS_FUNCS[ 14 ] := SELECT_SMALL_GROUPS_FUNCS[ 11 ];

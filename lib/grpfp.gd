@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for finitely presented groups
 ##  (fp groups).
@@ -170,6 +171,31 @@ DeclareAttribute( "FpElmEqualityMethod",IsElementOfFpGroupFamily);
 ##  used to compare elements in <fam>.
 ##
 DeclareAttribute( "FpElmComparisonMethod",IsElementOfFpGroupFamily);
+
+#############################################################################
+##
+#F  SetReducedMultiplication(<f>)
+#F  SetReducedMultiplication(<e>)
+#F  SetReducedMultiplication(<fam>)
+##
+##  for an fp group <f>, an element <e> of it or the family <fam> of its
+##  elements
+##  this function will force immediate reduction when multiplying, keeping
+##  words short at extra cost per multiplication.
+##
+DeclareGlobalFunction("SetReducedMultiplication");
+
+#############################################################################
+##
+#A  FpElmKBRWS(<fam>)
+##
+##  If <fam> is the elements family of a finitely presented group this
+##  attribute returns a list [<iso>,<k>,<id>] where <iso> is a isomorphism to an
+##  fp monoid, <k> a confluent rewriting system for the image of <iso> and
+##  <id> the element in the free monoid corresponding to the image of the
+##  identity element under <iso>.
+##
+DeclareAttribute( "FpElmKBRWS",IsElementOfFpGroupFamily);
 
 
 #############################################################################

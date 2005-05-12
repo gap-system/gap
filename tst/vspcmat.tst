@@ -8,6 +8,8 @@
 ##
 ##  (The test file 'vspcrow.tst' should contain the same tests.)
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -308,7 +310,7 @@ VectorSpace( GF(3^2), [ [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ],
   [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ], 
   [ [ 0*Z(3), Z(3)^0 ], [ 0*Z(3), 0*Z(3) ] ] ] )
 gap> Intersection( v, c );
-<vector space over GF(3^2), with 0 generators>
+<vector space of dimension 0 over GF(3^2)>
 gap> Intersection( v, f ) = v;
 true
 
@@ -384,7 +386,8 @@ gap> CloseMutableBasis( mb, [ [ 0, 1 ], [ 1, 0 ] ] );
 gap> IsContainedInSpan( mb, [ [ 1, 1 ], [ 1, 1 ] ] );
 true
 
-gap> STOP_TEST( "vspcmat.tst", 33682500 );
+gap> STOP_TEST( "vspcmat.tst", 51800000 );
+
 
 #############################################################################
 ##

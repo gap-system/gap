@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file  contains declarations for subgroup latices
 ##
@@ -194,6 +195,8 @@ local   G,		   # group
 	zupposPrime,       # corresponding prime
 	zupposPower,       # index of power of generator
 	ZupposSubgroup,    # function to compute zuppos for subgroup
+	zuperms,	   # permutation of zuppos by group
+	Gimg,		   # grp image under zuperms
 	nrClasses,         # number of classes
 	classes,           # list of all classes
 	classesZups,       # zuppos blist of classes
@@ -215,7 +218,12 @@ local   G,		   # group
 	Jzups,             # zuppos of a conjugate of <I>
 	Kzups,             # zuppos of a representative in <classes>
 	reps,              # transversal of <N> in <G>
-	h,i,k,l,r;      # loop variables
+	ac,
+	transv,
+	factored,
+	mapped,
+	expandmem,
+	h,i,k,l,ri,rl,r;      # loop variables
 
     G:=arg[1];
     noperf:=false;
@@ -229,13 +237,15 @@ local   G,		   # group
       func:=false;
     fi;
 
+    expandmem:=ValueOption("Expand")=true;
+
   # if store is true, an element list will be kept in `Ielms' if possible
   ZupposSubgroup:=function(U,store)
   local elms,zups;
     if Size(U)=Size(G) then
       if store then Ielms:=fail;fi;
       zups:=BlistList([1..Length(zuppos)],[1..Length(zuppos)]);
-    elif Size(U)>5*10^5 then
+    elif Size(U)>10^4 then
       # the group is very big - test the zuppos with `in'
       Info(InfoLattice,3,"testing zuppos with `in'");
       if store then Ielms:=fail;fi;
@@ -254,7 +264,32 @@ local   G,		   # group
 
     # compute a system of generators for the cyclic sgr. of prime power size
     zuppos:=Zuppos(G);
+
     Info(InfoLattice,1,"<G> has ",Length(zuppos)," zuppos");
+
+    # compute zuppo permutation
+    if IsPermGroup(G) then
+      zuppos:=List(zuppos,SmallestGeneratorPerm);
+      zuppos:=AsSSortedList(zuppos);
+      zuperms:=List(GeneratorsOfGroup(G),
+		i->Permutation(i,zuppos,function(x,a)
+		                          return SmallestGeneratorPerm(x^a);
+					end));
+      if NrMovedPoints(zuperms)<200*NrMovedPoints(G) then
+	zuperms:=GroupHomomorphismByImagesNC(G,Group(zuperms),
+		  GeneratorsOfGroup(G),zuperms);
+	# force kernel, also enforces injective setting
+	Gimg:=Image(zuperms);
+	if Size(KernelOfMultiplicativeGeneralMapping(zuperms))=1 then
+	  SetSize(Gimg,Size(G));
+	fi;
+      else
+	zuperms:=fail;
+      fi;
+    else
+      zuppos:=AsSSortedList(zuppos);
+      zuperms:=fail;
+    fi;
 
     # compute the prime corresponding to each zuppo and the index of power
     zupposPrime:=[];
@@ -346,8 +381,11 @@ local   G,		   # group
 		# compute the zuppos blist of <I>
 		#Ielms:=AsSSortedListNonstored(I);
 		#Izups:=BlistList(zuppos,Ielms);
-		Izups:=ZupposSubgroup(I,true);
-
+		if zuperms=fail then
+		  Izups:=ZupposSubgroup(I,true);
+		else
+		  Izups:=ZupposSubgroup(I,false);
+		fi;
 
 		# compute the normalizer of <I>
 		N:=Normalizer(G,I);
@@ -373,18 +411,82 @@ local   G,		   # group
 
 		# compute the right transversal
 		# (but don't store it in the parent)
-		reps:=RightTransversalOp(G,N);
+		if expandmem and zuperms<>fail then
+		  if Index(G,N)>400 then
+		    ac:=AscendingChainOp(G,N); # do not store
+		    while Length(ac)>2 and Index(ac[3],ac[1])<100 do
+		      ac:=Concatenation([ac[1]],ac{[3..Length(ac)]});
+		    od;
+		    if Length(ac)>2 and
+		      Maximum(List([3..Length(ac)],x->Index(ac[x],ac[x-1])))<500
+		     then
+
+		      # mapped factorized transversal
+		      Info(InfoLattice,3,"factorized transversal ",
+		             List([2..Length(ac)],x->Index(ac[x],ac[x-1])));
+		      transv:=[];
+		      ac[Length(ac)]:=Gimg;
+		      for ri in [Length(ac)-1,Length(ac)-2..1] do
+			ac[ri]:=Image(zuperms,ac[ri]);
+			if ri=1 then
+			  transv[ri]:=List(RightTransversalOp(ac[ri+1],ac[ri]),
+			                   i->Permuted(Izups,i));
+			else
+			  transv[ri]:=AsList(RightTransversalOp(ac[ri+1],ac[ri]));
+			fi;
+		      od;
+		      mapped:=true;
+		      factored:=true;
+		      reps:=Cartesian(transv);
+		      Unbind(ac);
+		      Unbind(transv);
+		    else
+		      reps:=RightTransversalOp(Gimg,Image(zuperms,N));
+		      mapped:=true;
+		      factored:=false;
+		    fi;
+		  else
+		    reps:=RightTransversalOp(G,N);
+		    mapped:=false;
+		    factored:=false;
+		  fi;
+		else
+		  reps:=RightTransversalOp(G,N);
+		  mapped:=false;
+		  factored:=false;
+		fi;
 
 		# loop over the conjugates of <I>
-		for r  in reps  do
+		for ri in [1..Length(reps)] do
+		  CompletionBar(InfoLattice,3,"Coset loop: ",ri/Length(reps));
+		  r:=reps[ri];
 
 		  # compute the zuppos blist of the conjugate
-		  if r = One(G)  then
+		  if zuperms<>fail then
+		    # we know the permutation of zuppos by the group
+		    if mapped then
+		      if factored then
+			Jzups:=r[1];
+			for rl in [2..Length(r)] do
+			  Jzups:=Permuted(Jzups,r[rl]);
+			od;
+		      else
+			Jzups:=Permuted(Izups,r);
+		      fi;
+		    else
+		      if factored then
+			Error("factored");
+		      else
+			Jzups:=Image(zuperms,r);
+			Jzups:=Permuted(Izups,Jzups);
+		      fi;
+		    fi;
+		  elif r = One(G)  then
 		    Jzups:=Izups;
 		  elif Ielms<>fail then
 		    Jzups:=BlistList(zuppos,OnTuples(Ielms,r));
 		  else
-		    Jzups:=ZupposSubgroup(I^r);
+		    Jzups:=ZupposSubgroup(I^r,false);
 		  fi;
 
 		  # loop over the already found classes
@@ -400,6 +502,7 @@ local   G,		   # group
 		  od;
 
 		od;
+		CompletionBar(InfoLattice,3,"Coset loop: ",false);
 
 		# now we are done with the new class
 		Unbind(Ielms);
@@ -431,8 +534,11 @@ local   G,		   # group
 	    # compute the zuppos blist of <I>
 	    #Ielms:=AsSSortedListNonstored(I);
 	    #Izups:=BlistList(zuppos,Ielms);
-	    Izups:=ZupposSubgroup(I,true);
-
+	    if zuperms=fail then
+	      Izups:=ZupposSubgroup(I,true);
+	    else
+	      Izups:=ZupposSubgroup(I,false);
+	    fi;
 
 	    # compute the normalizer of <I>
 	    N:=Normalizer(G,I);
@@ -464,12 +570,16 @@ local   G,		   # group
 	    for r  in reps  do
 
 	      # compute the zuppos blist of the conjugate
-	      if r = One(G)  then
+	      if zuperms<>fail then
+		# we know the permutation of zuppos by the group
+		Jzups:=Image(zuperms,r);
+		Jzups:=Permuted(Izups,Jzups);
+	      elif r = One(G)  then
 		Jzups:=Izups;
 	      elif Ielms<>fail then
 		Jzups:=BlistList(zuppos,OnTuples(Ielms,r));
 	      else
-		Jzups:=ZupposSubgroup(I^r);
+		Jzups:=ZupposSubgroup(I^r,false);
 	      fi;
 
 	      # loop over the perfect classes
@@ -1026,10 +1136,12 @@ end);
 
 #############################################################################
 ##
-#F  NormalSubgroupsCalc(<G>) compute normal subgroups for pc or perm groups
+#F  NormalSubgroupsCalc(<G>[,<onlysimple>]) normal subs for pc or perm groups
 ##
-NormalSubgroupsCalc := function (G)
-local nt,nnt,	# normal subgroups
+NormalSubgroupsCalc := function (arg)
+local G,	# group
+      onlysimple,  # determine only subgroups with simple composition factors
+      nt,nnt,	# normal subgroups
       cs,	# comp. series
       M,N,	# nt . in series
       mpcgs,	# modulo pcgs
@@ -1043,6 +1155,11 @@ local nt,nnt,	# normal subgroups
       T,S,C,A,ji,orb,orbi,cllen,r,o,c,inv,cnt,
       i,j,k;	# loop
 
+  G:=arg[1];
+  onlysimple:=false;
+  if Length(arg)>1 and arg[2]=true then
+    onlysimple:=true;
+  fi;
   nt:=[G];
   cs:=ChiefSeries(G);
 
@@ -1053,7 +1170,11 @@ local nt,nnt,	# normal subgroups
     N:=cs[i];
 
     # the normal subgroups already known
-    nnt:=ShallowCopy(nt);
+    if (not onlysimple) or (not HasAbelianFactorGroup(M,N)) then
+      nnt:=ShallowCopy(nt);
+    else
+      nnt:=[];
+    fi;
 
     Info(InfoLattice,1,i,":",Index(M,N));
     if HasAbelianFactorGroup(M,N) then
@@ -1069,8 +1190,10 @@ local nt,nnt,	# normal subgroups
 
 	  Info(InfoLattice,2,"factorsize=",Index(j,N),"/",Index(M,N));
 
-	  if HasAbelianFactorGroup(j,N) and
-	    p^(Length(mpcgs)*LogInt(Index(j,M),p))>100 then
+	  # reasons not to go complements
+	  if (HasAbelianFactorGroup(j,N) and
+	    p^(Length(mpcgs)*LogInt(Index(j,M),p))>100)
+	    then
 	    l:=fail;  # we will compute the subgroups later
 	  else
 
@@ -1112,28 +1235,33 @@ local nt,nnt,	# normal subgroups
           fi;
 
           if l=fail then
-	    Info(InfoLattice,1,"using invariant subgroups");
-	    # the factor is abelian, we therefore find this homomorphism
-	    # quick.
-	    hom:=NaturalHomomorphismByNormalSubgroup(j,N);
-	    r:=Image(hom,j);
-	    jg:=List(GeneratorsOfGroup(j),i->Image(hom,i));
-	    # construct the automorphisms
-	    auts:=List(GeneratorsOfGroup(G),
-	      i->GroupHomomorphismByImagesNC(r,r,jg,
-	        List(GeneratorsOfGroup(j),k->Image(hom,k^i))));
-	    l:=SubgroupsSolvableGroup(r,rec(
-	         actions:=auts,
-		 funcnorm:=r,
-	         consider:=ExactSizeConsiderFunction(Index(j,M)),
-		 normal:=true));
-	    Info(InfoLattice,2,"found ",Length(l)," invariant subgroups");
-	    C:=Image(hom,M);
-	    l:=Filtered(l,i->Size(i)=Index(j,M) and Size(Intersection(i,C))=1);
-	    l:=List(l,i->PreImage(hom,i));
-	    l:=Filtered(l,i->IsNormal(G,i));
-	    Info(InfoLattice,1,Length(l)," of these normal");
-	    nnt:=Concatenation(nnt,l);
+	    if onlysimple then
+	      # all groups obtained will have a solvable factor
+	      l:=[];
+	    else
+	      Info(InfoLattice,1,"using invariant subgroups");
+	      # the factor is abelian, we therefore find this homomorphism
+	      # quick.
+	      hom:=NaturalHomomorphismByNormalSubgroup(j,N);
+	      r:=Image(hom,j);
+	      jg:=List(GeneratorsOfGroup(j),i->Image(hom,i));
+	      # construct the automorphisms
+	      auts:=List(GeneratorsOfGroup(G),
+		i->GroupHomomorphismByImagesNC(r,r,jg,
+		  List(GeneratorsOfGroup(j),k->Image(hom,k^i))));
+	      l:=SubgroupsSolvableGroup(r,rec(
+		  actions:=auts,
+		  funcnorm:=r,
+		  consider:=ExactSizeConsiderFunction(Index(j,M)),
+		  normal:=true));
+	      Info(InfoLattice,2,"found ",Length(l)," invariant subgroups");
+	      C:=Image(hom,M);
+	      l:=Filtered(l,i->Size(i)=Index(j,M) and Size(Intersection(i,C))=1);
+	      l:=List(l,i->PreImage(hom,i));
+	      l:=Filtered(l,i->IsNormal(G,i));
+	      Info(InfoLattice,1,Length(l)," of these normal");
+	      nnt:=Concatenation(nnt,l);
+	    fi;
           fi;
 
         fi;
@@ -1251,6 +1379,11 @@ local nt,nnt,	# normal subgroups
 
     # the kernel itself
     Add(nnt,N);
+    if onlysimple then
+      c:=Length(nnt);
+      nnt:=Filtered(nnt,j->Size(ClosureGroup(N,DerivedSubgroup(j)))=Size(j) );
+      Info(InfoLattice,2,"removed ",c-Length(nnt)," nonperfect groups");
+    fi;
 
     Info(InfoLattice,1,Length(nnt)-Length(nt),
           " new normal subgroups (",Length(nnt)," total)");
@@ -1272,12 +1405,36 @@ InstallMethod(NormalSubgroups,"homomorphism principle perm groups",true,
 
 #############################################################################
 ##
+#M  Socle(<G>)
+##
+InstallMethod(Socle,"from normal subgroups",true,[IsGroup],0,
+function(G)
+local n,i,s;
+  # this could be a bit shorter, but the groups in question have few normal
+  # subgroups
+  n:=NormalSubgroups(G);
+  n:=Filtered(n,i->2=Number(n,j->IsSubset(i,j)));
+  s:=n[1];
+  for i in [2..Length(n)] do
+    s:=ClosureGroup(s,n[i]);
+  od;
+  return s;
+end);
+
+#############################################################################
+##
 #M  IntermediateSubgroups(<G>,<U>)
 ##
 InstallMethod(IntermediateSubgroups,"blocks for coset operation",
   IsIdenticalObj, [IsGroup,IsGroup],0,
 function(G,U)
 local rt,op,a,l,i,j,u,max,subs;
+  if Length(GeneratorsOfGroup(G))>2 then
+    a:=SmallGeneratingSet(G);
+    if Length(a)<Length(GeneratorsOfGroup(G)) then
+      G:=Subgroup(Parent(G),a);
+    fi;
+  fi;
   rt:=RightTransversal(G,U);
   op:=Action(G,rt,OnRight); # use the special trick for right transversals
   a:=ShallowCopy(AllBlocks(op));

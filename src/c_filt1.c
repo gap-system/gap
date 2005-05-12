@@ -111,7 +111,7 @@ static Obj  HdlrFunc2 (
  CHECK_BOUND( t_8, "WITH_HIDDEN_IMPS_FLAGS_CACHE" )
  t_6 = CALL_1ARGS( t_7, t_8 );
  CHECK_FUNC_RESULT( t_6 )
- C_DIFF_FIA( t_5, t_6, INTOBJ_INT(1) )
+ C_DIFF( t_5, t_6, INTOBJ_INT(1) )
  t_4 = Range3Check( INTOBJ_INT(1), INTOBJ_INT(3), t_5 );
  if ( IS_SMALL_LIST(t_4) ) {
   t_3 = (Obj)(UInt)1;
@@ -146,7 +146,7 @@ static Obj  HdlrFunc2 (
    t_7 = GF_IS__SUBSET__FLAGS;
    t_9 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE;
    CHECK_BOUND( t_9, "WITH_HIDDEN_IMPS_FLAGS_CACHE" )
-   C_SUM_FIA( t_10, l_i, INTOBJ_INT(1) )
+   C_SUM( t_10, l_i, INTOBJ_INT(1) )
    CHECK_INT_POS( t_10 )
    C_ELM_LIST_FPL( t_8, t_9, t_10 )
    t_6 = CALL_2ARGS( t_7, t_8, l_flags );
@@ -163,7 +163,7 @@ static Obj  HdlrFunc2 (
     /* Unbind( WITH_HIDDEN_IMPS_FLAGS_CACHE[i + 1] ); */
     t_5 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE;
     CHECK_BOUND( t_5, "WITH_HIDDEN_IMPS_FLAGS_CACHE" )
-    C_SUM_FIA( t_6, l_i, INTOBJ_INT(1) )
+    C_SUM( t_6, l_i, INTOBJ_INT(1) )
     CHECK_INT_POS( t_6 )
     C_UNB_LIST( t_5, t_6 );
     
@@ -220,8 +220,8 @@ static Obj  HdlrFunc3 (
  t_4 = CALL_1ARGS( t_5, a_flags );
  CHECK_FUNC_RESULT( t_4 )
  t_3 = MOD( t_4, INTOBJ_INT(1009) );
- C_PROD_FIA( t_2, INTOBJ_INT(2), t_3 )
- C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
+ C_PROD( t_2, INTOBJ_INT(2), t_3 )
+ C_SUM( t_1, t_2, INTOBJ_INT(1) )
  l_hash = t_1;
  
  /* if IsBound( WITH_HIDDEN_IMPS_FLAGS_CACHE[hash]) then */
@@ -246,13 +246,13 @@ static Obj  HdlrFunc3 (
    /* WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT := WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT + 1; */
    t_2 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE__HIT;
    CHECK_BOUND( t_2, "WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT" )
-   C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
+   C_SUM( t_1, t_2, INTOBJ_INT(1) )
    AssGVar( G_WITH__HIDDEN__IMPS__FLAGS__CACHE__HIT, t_1 );
    
    /* return WITH_HIDDEN_IMPS_FLAGS_CACHE[hash + 1]; */
    t_2 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE;
    CHECK_BOUND( t_2, "WITH_HIDDEN_IMPS_FLAGS_CACHE" )
-   C_SUM_FIA( t_3, l_hash, INTOBJ_INT(1) )
+   C_SUM( t_3, l_hash, INTOBJ_INT(1) )
    CHECK_INT_POS( t_3 )
    C_ELM_LIST_FPL( t_1, t_2, t_3 )
    RES_BRK_CURR_STAT();
@@ -268,7 +268,7 @@ static Obj  HdlrFunc3 (
  /* WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS + 1; */
  t_2 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE__MISS;
  CHECK_BOUND( t_2, "WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS" )
- C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
+ C_SUM( t_1, t_2, INTOBJ_INT(1) )
  AssGVar( G_WITH__HIDDEN__IMPS__FLAGS__CACHE__MISS, t_1 );
  
  /* with := flags; */
@@ -359,7 +359,7 @@ static Obj  HdlrFunc3 (
  /* WITH_HIDDEN_IMPS_FLAGS_CACHE[hash + 1] := with; */
  t_1 = GC_WITH__HIDDEN__IMPS__FLAGS__CACHE;
  CHECK_BOUND( t_1, "WITH_HIDDEN_IMPS_FLAGS_CACHE" )
- C_SUM_FIA( t_2, l_hash, INTOBJ_INT(1) )
+ C_SUM( t_2, l_hash, INTOBJ_INT(1) )
  CHECK_INT_POS( t_2 )
  C_ASS_LIST_FPL( t_1, t_2, l_with )
  
@@ -448,10 +448,10 @@ static Obj  HdlrFunc5 (
   
   /* hash2 := 2 * ((hash + 31 * i) mod 11001) + 1; */
   C_PROD_INTOBJS( t_6, INTOBJ_INT(31), l_i )
-  C_SUM_FIA( t_5, l_hash, t_6 )
+  C_SUM( t_5, l_hash, t_6 )
   t_4 = MOD( t_5, INTOBJ_INT(11001) );
-  C_PROD_FIA( t_3, INTOBJ_INT(2), t_4 )
-  C_SUM_FIA( t_2, t_3, INTOBJ_INT(1) )
+  C_PROD( t_3, INTOBJ_INT(2), t_4 )
+  C_SUM( t_2, t_3, INTOBJ_INT(1) )
   l_hash2 = t_2;
   
   /* if IsBound( WITH_IMPS_FLAGS_CACHE[hash2]) then */
@@ -476,13 +476,13 @@ static Obj  HdlrFunc5 (
     /* WITH_IMPS_FLAGS_CACHE_HIT := WITH_IMPS_FLAGS_CACHE_HIT + 1; */
     t_3 = GC_WITH__IMPS__FLAGS__CACHE__HIT;
     CHECK_BOUND( t_3, "WITH_IMPS_FLAGS_CACHE_HIT" )
-    C_SUM_FIA( t_2, t_3, INTOBJ_INT(1) )
+    C_SUM( t_2, t_3, INTOBJ_INT(1) )
     AssGVar( G_WITH__IMPS__FLAGS__CACHE__HIT, t_2 );
     
     /* return WITH_IMPS_FLAGS_CACHE[hash2 + 1]; */
     t_3 = GC_WITH__IMPS__FLAGS__CACHE;
     CHECK_BOUND( t_3, "WITH_IMPS_FLAGS_CACHE" )
-    C_SUM_FIA( t_4, l_hash2, INTOBJ_INT(1) )
+    C_SUM( t_4, l_hash2, INTOBJ_INT(1) )
     CHECK_INT_POS( t_4 )
     C_ELM_LIST_FPL( t_2, t_3, t_4 )
     RES_BRK_CURR_STAT();
@@ -513,7 +513,7 @@ static Obj  HdlrFunc5 (
   /* WITH_IMPS_FLAGS_COUNT := (WITH_IMPS_FLAGS_COUNT + 1) mod 4; */
   t_3 = GC_WITH__IMPS__FLAGS__COUNT;
   CHECK_BOUND( t_3, "WITH_IMPS_FLAGS_COUNT" )
-  C_SUM_FIA( t_2, t_3, INTOBJ_INT(1) )
+  C_SUM( t_2, t_3, INTOBJ_INT(1) )
   t_1 = MOD( t_2, INTOBJ_INT(4) );
   AssGVar( G_WITH__IMPS__FLAGS__COUNT, t_1 );
   
@@ -523,11 +523,11 @@ static Obj  HdlrFunc5 (
   l_i = t_1;
   
   /* hash2 := 2 * ((hash + 31 * i) mod 11001) + 1; */
-  C_PROD_FIA( t_5, INTOBJ_INT(31), l_i )
-  C_SUM_FIA( t_4, l_hash, t_5 )
+  C_PROD( t_5, INTOBJ_INT(31), l_i )
+  C_SUM( t_4, l_hash, t_5 )
   t_3 = MOD( t_4, INTOBJ_INT(11001) );
-  C_PROD_FIA( t_2, INTOBJ_INT(2), t_3 )
-  C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
+  C_PROD( t_2, INTOBJ_INT(2), t_3 )
+  C_SUM( t_1, t_2, INTOBJ_INT(1) )
   l_hash2 = t_1;
   
  }
@@ -536,7 +536,7 @@ static Obj  HdlrFunc5 (
  /* WITH_IMPS_FLAGS_CACHE_MISS := WITH_IMPS_FLAGS_CACHE_MISS + 1; */
  t_2 = GC_WITH__IMPS__FLAGS__CACHE__MISS;
  CHECK_BOUND( t_2, "WITH_IMPS_FLAGS_CACHE_MISS" )
- C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
+ C_SUM( t_1, t_2, INTOBJ_INT(1) )
  AssGVar( G_WITH__IMPS__FLAGS__CACHE__MISS, t_1 );
  
  /* with := flags; */
@@ -628,7 +628,7 @@ static Obj  HdlrFunc5 (
  /* WITH_IMPS_FLAGS_CACHE[hash2 + 1] := with; */
  t_1 = GC_WITH__IMPS__FLAGS__CACHE;
  CHECK_BOUND( t_1, "WITH_IMPS_FLAGS_CACHE" )
- C_SUM_FIA( t_2, l_hash2, INTOBJ_INT(1) )
+ C_SUM( t_2, l_hash2, INTOBJ_INT(1) )
  CHECK_INT_POS( t_2 )
  C_ASS_LIST_FPL( t_1, t_2, l_with )
  
@@ -734,7 +734,7 @@ static Obj  HdlrFunc6 (
    t_7 = GC_RANK__FILTERS;
    CHECK_BOUND( t_7, "RANK_FILTERS" )
    C_ELM_LIST_FPL( t_6, t_7, l_i )
-   C_SUM_FIA( t_5, l_rank, t_6 )
+   C_SUM( t_5, l_rank, t_6 )
    l_rank = t_5;
    
   }
@@ -743,7 +743,7 @@ static Obj  HdlrFunc6 (
   else {
    
    /* rank := rank + 1; */
-   C_SUM_FIA( t_5, l_rank, INTOBJ_INT(1) )
+   C_SUM( t_5, l_rank, INTOBJ_INT(1) )
    l_rank = t_5;
    
   }
@@ -913,7 +913,7 @@ static Obj  HdlrFunc8 (
  /* RANK_FILTER_COUNT := RANK_FILTER_COUNT + 2; */
  t_2 = GC_RANK__FILTER__COUNT;
  CHECK_BOUND( t_2, "RANK_FILTER_COUNT" )
- C_SUM_FIA( t_1, t_2, INTOBJ_INT(2) )
+ C_SUM( t_1, t_2, INTOBJ_INT(2) )
  AssGVar( G_RANK__FILTER__COUNT, t_1 );
  
  /* return RANK_FILTER_LIST[RANK_FILTER_COUNT - 1]; */
@@ -921,7 +921,7 @@ static Obj  HdlrFunc8 (
  CHECK_BOUND( t_2, "RANK_FILTER_LIST" )
  t_4 = GC_RANK__FILTER__COUNT;
  CHECK_BOUND( t_4, "RANK_FILTER_COUNT" )
- C_DIFF_FIA( t_3, t_4, INTOBJ_INT(1) )
+ C_DIFF( t_3, t_4, INTOBJ_INT(1) )
  CHECK_INT_POS( t_3 )
  C_ELM_LIST_FPL( t_1, t_2, t_3 )
  RES_BRK_CURR_STAT();
@@ -1251,23 +1251,23 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "RANK_FILTER_COUNT", &GC_RANK__FILTER__COUNT );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/filter1.g:DefaultName(-123512854)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1(-123512854)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1](-123512854)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/filter1.g:HdlrFunc2(-123512854)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/filter1.g:NameFunc[2](-123512854)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/filter1.g:HdlrFunc3(-123512854)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/filter1.g:NameFunc[3](-123512854)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/filter1.g:HdlrFunc4(-123512854)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/filter1.g:NameFunc[4](-123512854)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/filter1.g:HdlrFunc5(-123512854)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/filter1.g:NameFunc[5](-123512854)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/filter1.g:HdlrFunc6(-123512854)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/filter1.g:NameFunc[6](-123512854)" );
- InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/filter1.g:HdlrFunc7(-123512854)" );
- InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/filter1.g:NameFunc[7](-123512854)" );
- InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/filter1.g:HdlrFunc8(-123512854)" );
- InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/filter1.g:NameFunc[8](-123512854)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/filter1.g:DefaultName(16960121)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/filter1.g:HdlrFunc1(16960121)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/filter1.g:NameFunc[1](16960121)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/filter1.g:HdlrFunc2(16960121)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/filter1.g:NameFunc[2](16960121)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/filter1.g:HdlrFunc3(16960121)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/filter1.g:NameFunc[3](16960121)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/filter1.g:HdlrFunc4(16960121)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/filter1.g:NameFunc[4](16960121)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/filter1.g:HdlrFunc5(16960121)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/filter1.g:NameFunc[5](16960121)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/filter1.g:HdlrFunc6(16960121)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/filter1.g:NameFunc[6](16960121)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/filter1.g:HdlrFunc7(16960121)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/filter1.g:NameFunc[7](16960121)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/filter1.g:HdlrFunc8(16960121)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/filter1.g:NameFunc[8](16960121)" );
  
  /* return success */
  return 0;
@@ -1441,7 +1441,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ -123512854,
+ /* crc         = */ 16960121,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

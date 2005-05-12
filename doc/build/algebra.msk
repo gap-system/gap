@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Algebras}
 
@@ -958,7 +959,7 @@ Finally we construct the homomorphism and the corresponding right module.
 \beginexample
 gap> f:= AlgebraHomomorphismByImages( A, B, Basis(A), [ m1, m2, m3 ] );;
 gap> RightModuleByHomomorphismToMatAlg( A, f );
-<2-dimensional right-module over <algebra of dimension 3 over Rationals>>
+<right-module over <algebra of dimension 3 over Rationals>>
 \endexample
 
 \Declaration{AdjointModule}
@@ -996,7 +997,7 @@ gap> A:= AlgebraByStructureConstants( Rationals, T );
 
 \beginexample
 gap> V:= FaithfulModule( A );
-<3-dimensional left-module over <algebra of dimension 2 over Rationals>>
+<left-module over <algebra of dimension 2 over Rationals>>
 gap> vv:= BasisVectors( Basis( V ) );
 [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ]
 gap> xx:= BasisVectors( Basis( A ) );
@@ -1014,7 +1015,7 @@ gap> V:= LeftAlgebraModuleByGenerators( A, \*, [ [ 1, 0, 0 ] ] );;
 gap> B:= Subalgebra( A, [ Basis(A)[1] ] );
 <algebra over Rationals, with 1 generators>
 gap> W:= ModuleByRestriction( V, B );
-<3-dimensional left-module over <algebra over Rationals, with 1 generators>>
+<left-module over <algebra over Rationals, with 1 generators>>
 \endexample
 
 
@@ -1059,3 +1060,29 @@ gap> BasisVectors( Basis( W ) );
   ( [ 0, 0, 1 ] )(+)( [ 0, 0, 0 ] ), ( [ 0, 0, 0 ] )(+)( [ 1, 0, 0 ] ), 
   ( [ 0, 0, 0 ] )(+)( [ 0, 1, 0 ] ), ( [ 0, 0, 0 ] )(+)( [ 0, 0, 1 ] ) ]
 \endexample
+
+
+\Declaration{TranslatorSubalgebra}
+
+\beginexample
+gap> A:= FullMatrixAlgebra( Rationals, 3 );
+( Rationals^[ 3, 3 ] )
+gap> V:= Rationals^[3,2];
+( Rationals^[ 3, 2 ] )
+gap> M:= LeftAlgebraModule( A, \*, V );
+<left-module over ( Rationals^[ 3, 3 ] )>
+gap> bm:= Basis(M);;
+gap> U:= SubAlgebraModule( M, [ bm[1] ] );   
+<left-module over ( Rationals^[ 3, 3 ] )>
+gap> TranslatorSubalgebra( M, U, M );
+<algebra of dimension 9 over Rationals>
+gap> W:= SubAlgebraModule( M, [ bm[4] ] );
+<left-module over ( Rationals^[ 3, 3 ] )>
+gap> T:=TranslatorSubalgebra( M, U, W );
+<algebra of dimension 0 over Rationals>
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

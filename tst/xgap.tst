@@ -6,6 +6,8 @@
 ##
 #Y  Copyright 1999,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -64,10 +66,10 @@ gap> g:=f/[f.1^2,f.2^3];;
 gap> g.1^5=g.1;
 true
 
-gap> STOP_TEST( "xgap.tst", 310142500 );
+gap> STOP_TEST( "xgap.tst", 533900000 );
+
 
 #############################################################################
 ##
-#E  xgap.tst  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
 

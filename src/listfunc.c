@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions for generic lists.
 */
@@ -194,7 +195,7 @@ Obj             FuncAPPEND_LIST_INTR (
     if ( TNUM_OBJ( list2 ) != T_PLIST ) {
         while ( ! IS_SMALL_LIST( list2 ) ) {
             list2 = ErrorReturnObj(
-                "AppendList: <list2> must be a list (not a %s)",
+                "AppendList: <list2> must be a small list (not a %s)",
                 (Int)TNAM_OBJ(list2), 0L,
                 "you can replace <list2> via 'return <list2>;'"  );
         }
@@ -497,7 +498,9 @@ void SORT_LIST (
         }
         h = h / 3;
     }
-    RESET_FILT_LIST(list, FN_IS_NSORT);
+    if (FIRST_PLIST_TNUM <= TNUM_OBJ(list) &&
+	TNUM_OBJ(list) <= LAST_PLIST_TNUM)
+      RESET_FILT_LIST(list, FN_IS_NSORT);
 }
 
 void SortDensePlist (
@@ -1304,6 +1307,182 @@ Obj             FuncOnLeftInverse (
 
 /****************************************************************************
 **
+*F  FuncCOPY_LIST_ENTRIES( <self>, <args> ) . . mass move of list entries
+**
+*/
+
+static inline Int GetIntObj( Obj list, UInt pos)
+{
+  Obj entry;
+  entry = ELM_PLIST(list, pos);
+  if (!entry)
+    {
+      Pr("panic: internal inconsistency", 0L, 0L);
+      SyExit(1);
+    }
+  while (!IS_INTOBJ(entry))
+    {
+      entry = ErrorReturnObj("COPY_LIST_ENTRIES: argument %d  must be a small integer, not a %s",
+			     (Int)pos, (Int)InfoBags[TNUM_OBJ(entry)].name,
+			     "you can return a small integer to continue");
+    }
+  return INT_INTOBJ(entry);
+}
+
+Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
+{  
+  Obj srclist;
+  UInt srcstart;
+  Int srcinc;
+  Obj dstlist;
+  UInt dststart;
+  Int dstinc;
+  UInt number;
+  UInt srcmax;
+  UInt dstmax;
+  Obj *sptr, *dptr;
+  UInt ct;
+
+  if (!IS_PLIST(args))
+    {
+      Pr("panic: internal inconsistency",0L,0L);
+      SyExit(1);
+    }
+  if (LEN_PLIST(args) != 7)
+    {
+      ErrorMayQuit("COPY_LIST_ENTRIES: number of arguments must be 7, not %d",
+		   (Int)LEN_PLIST(args), 0L);
+    }
+  srclist = ELM_PLIST(args,1);
+  if (!srclist)
+    {
+      Pr("panic: internal inconsistency", 0L, 0L);
+      SyExit(1);
+    }
+  while (!IS_PLIST(srclist))
+    {
+      srclist = ErrorReturnObj("COPY_LIST_ENTRIES: source must be a plain list not a %s",
+			       (Int)InfoBags[TNUM_OBJ(srclist)].name, 0L,
+			       "you can return a plain list to continue");
+    }
+
+  srcstart = (UInt)GetIntObj(args,2);
+  srcinc = GetIntObj(args,3);
+  dstlist = ELM_PLIST(args,4);
+  if (!dstlist)
+    {
+      Pr("panic: internal inconsistency", 0L, 0L);
+      SyExit(1);
+    }
+  while (!IS_PLIST(dstlist) || !IS_MUTABLE_OBJ(dstlist))
+    {
+      dstlist = ErrorReturnObj("COPY_LIST_ENTRIES: destination must be a mutable plain list not a %s",
+			       (Int)InfoBags[TNUM_OBJ(dstlist)].name, 0L,
+			       "you can return a plain list to continue");
+    }
+  dststart = (UInt)GetIntObj(args,5);
+  dstinc = GetIntObj(args,6);
+  number = GetIntObj(args,7);
+  
+  if (number == 0)
+    return (Obj) 0;
+  
+  srcmax = (srcinc > 0) ? srcstart + (number-1)*srcinc : srcstart;
+  dstmax = (dstinc > 0) ? dststart + (number-1)*dstinc : dststart;
+  
+  GROW_PLIST(dstlist, dstmax);
+  GROW_PLIST(srclist, srcmax);
+  if (srcinc == 1 && dstinc == 1)
+    {
+      memcpy((void *) (ADDR_OBJ(dstlist) + dststart),
+	     (void *) (ADDR_OBJ(srclist) + srcstart),
+	     (size_t) number*sizeof(Obj));
+    }
+  else if (srclist != dstlist)
+    {
+      sptr = ADDR_OBJ(srclist) + srcstart;
+      dptr = ADDR_OBJ(dstlist) + dststart;
+      for (ct = 0; ct < number ; ct++)
+	{
+	  *dptr = *sptr;
+	  sptr += srcinc;
+	  dptr += dstinc;
+	}
+    }
+  else if (srcinc == dstinc)
+    {
+      if (srcstart == dststart)
+	return (Obj)0;
+      else
+	{
+	  if ((srcstart > dststart) == (srcinc > 0))
+	    {
+	      sptr = ADDR_OBJ(srclist) + srcstart;
+	      dptr = ADDR_OBJ(srclist) + dststart;
+	      for (ct = 0; ct < number ; ct++)
+		{
+		  *dptr = *sptr;
+		  sptr += srcinc;
+		  dptr += srcinc;
+		}
+	    }
+	  else
+	    {
+	      sptr = ADDR_OBJ(srclist) + srcstart + number*srcinc;
+	      dptr = ADDR_OBJ(srclist) + dststart + number*srcinc;
+	      for (ct = 0; ct < number; ct++)
+		{
+		  sptr -= srcinc;
+		  dptr -= srcinc;
+		  *dptr = *sptr;
+		}
+	      
+	    }
+	}
+	      
+    }
+  else
+    {
+      Obj tmplist = NEW_PLIST(T_PLIST,number);
+      Obj *tptr = ADDR_OBJ(tmplist)+1;
+      sptr = ADDR_OBJ(srclist)+srcstart;
+      for (ct = 0; ct < number; ct++)
+	{
+	  *tptr = *sptr;
+	  tptr++;
+	  sptr += srcinc;
+	}
+      tptr = ADDR_OBJ(tmplist)+1;
+      dptr = ADDR_OBJ(srclist)+dststart;
+      for (ct = 0; ct < number; ct++)
+	{
+	  *dptr = *tptr;
+	  tptr++;
+	  dptr += dstinc;
+	}
+    }
+
+  if (dstmax > LEN_PLIST(dstlist))
+    {
+      dptr = ADDR_OBJ(dstlist)+dstmax;
+      ct = dstmax;
+      while (!*dptr)
+	{
+	  ct--;
+	  dptr--;
+	}
+      SET_LEN_PLIST(dstlist, ct);
+    }
+  if (LEN_PLIST(dstlist) > 0)
+    RetypeBag(dstlist, T_PLIST);
+  else
+    RetypeBag(dstlist, T_PLIST_EMPTY);
+  return (Obj) 0;
+
+}
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
@@ -1374,6 +1553,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "OnLeftInverse", 2, "pnt, elm",
       FuncOnLeftInverse, "src/listfunc.c:OnLeftInverse" },
+
+    { "COPY_LIST_ENTRIES", -1, "srclist,srcstart,srcinc,dstlist,dststart,dstinc,number",
+      FuncCOPY_LIST_ENTRIES, "src/listfunc.c:COPY_LIST_ENTRIES" },
 
     { 0 }
 

@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the implementation for transformations
 ##
@@ -277,7 +278,7 @@ InstallMethod(AsTransformation, "for a permutation", true,
 InstallOtherMethod(AsTransformation, "for a permutation and degree", true,
         [IsPerm, IsPosInt], 0,
     function(perm, n)
-        if perm = () then
+        if IsOne( perm ) then
             return TransformationNC([1..n]);
         fi;
         if n < LargestMovedPoint(perm) then

@@ -1,0 +1,32 @@
+#!/bin/sh
+#############################################################################
+##
+##  $Id$
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+line='cd '${DISTROOT}'/'${DISTNAME}'/doc'
+echo $line
+$line 
+
+# build the documentation
+line='./make_doc > ../../make_doc.log 2> ../../make_doc.error'
+echo $line
+rm -f ../../make_doc.log ../../make_doc.error
+./make_doc > ../../make_doc.log 2> ../../make_doc.error
+echo 'See the files '${DISTROOT}'/make_doc.log and '${DISTROOT}'/make_doc.error for possible problems.'
+
+# this is the mozilla version. Build IE version
+cp -r htm htmmoz
+(cd htm;make clean;make ieversion)
+mv htm htmie
+mv htmmoz htm
+
+# fetch the `INSTALL' files from the manual
+grep -v "^%" ref/README.tex > ../../README
+
+exit 0
+

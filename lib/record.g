@@ -7,12 +7,13 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for records.
 ##  Compared to {\GAP}~3, where records were used to represent domains and
 ##  all kinds of external arithmetic objects, in {\GAP}~4 there is no
 ##  important role for records.
-##  So the standard library provided only methods for `PrintObj', `String',
+##  So the standard library provides only methods for `PrintObj', `String',
 ##  `\=', and `\<', and the latter two are not installed to compare records
 ##  with objects in other families.
 ##
@@ -27,9 +28,9 @@ Revision.record_g :=
 
 #############################################################################
 ##
-#C  IsRecord(<obj>)
-#C  IsRecordCollection(<obj>)
-#C  IsRecordCollColl(<obj>)
+#C  IsRecord( <obj> )
+#C  IsRecordCollection( <obj> )
+#C  IsRecordCollColl( <obj> )
 ##
 DeclareCategoryKernel( "IsRecord", IsObject, IS_REC );
 DeclareCategoryCollections( "IsRecord" );
@@ -40,7 +41,7 @@ DeclareCategoryCollections( "IsRecordCollection" );
 ##
 #V  RecordsFamily . . . . . . . . . . . . . . . . . . . . . family of records
 ##
-BIND_GLOBAL( "RecordsFamily", NewFamily(  "RecordsFamily", IS_REC ) );
+BIND_GLOBAL( "RecordsFamily", NewFamily( "RecordsFamily", IS_REC ) );
 
 
 #############################################################################
@@ -96,6 +97,7 @@ DeclareOperationKernel( "Unbind.", [ IsObject, IsObject ], UNB_REC );
 ##
 DeclareAttribute( "RecNames", IsRecord );
 
+
 #############################################################################
 ##
 #F  RecFields( <record> )
@@ -109,8 +111,7 @@ BIND_GLOBAL( "RecFields", RecNames );
 ##
 InstallMethod( RecNames,
     "for a record in internal representation",
-    true,
-    [ IsRecord and IsInternalRep ], 0,
+    [ IsRecord and IsInternalRep ],
     REC_NAMES );
 
 
@@ -142,9 +143,7 @@ BIND_GLOBAL( "NamesOfComponents", function( obj )
 ##
 InstallMethod( PrintObj,
     "record",
-    true,
     [ IsRecord ],
-    0,
     function( record ) PRINT_PREC_DEFAULT( record ); end );
 
 
@@ -154,9 +153,7 @@ InstallMethod( PrintObj,
 ##
 InstallMethod( String,
     "record",
-    true,
     [ IsRecord ],
-    0,
     function( record )
     local   str,  nam,  com;
 
@@ -170,7 +167,15 @@ InstallMethod( String,
       fi;
       Append( str, nam );
       Append( str, " := " );
-      Append( str, String( record.(nam) ) );
+      if IsStringRep( record.( nam ) )
+         or ( IsString( record.( nam ) )
+              and not IsEmpty( record.( nam ) ) ) then
+        Append( str, "\"" );
+        Append( str, String( record.(nam) ) );
+        Append( str, "\"" );
+      else
+        Append( str, String( record.(nam) ) );
+      fi;
     od;
     Append( str, " )" );
     ConvertToStringRep( str );
@@ -180,13 +185,12 @@ end );
 
 #############################################################################
 ##
-#m  ViewObj( <record> ) . . . . . . . . . . . . . . .for a record (default)
+#m  ViewObj( <record> ) . . . . . . . . . . . . . . .  for a record (default)
 ##
 ##
 InstallMethod( ViewObj,
     "record",
-    true,
-    [ IsRecord ], 0,
+    [ IsRecord ],
     function( record )
     local nam, com, i;
     Print("\>\>rec( \>\>");
@@ -215,7 +219,6 @@ InstallMethod( \=,
     "record = record",
     IsIdenticalObj,
     [ IsRecord, IsRecord ],
-    0,
     EQ_PREC );
 
 
@@ -227,7 +230,6 @@ InstallMethod( \<,
     "record < record",
     IsIdenticalObj,
     [ IsRecord, IsRecord ],
-    0,
     LT_PREC );
 
 

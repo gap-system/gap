@@ -231,7 +231,6 @@ gap> Print(s,"\n");
   73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ][ 2, 3, 5, 7, 11, 13, 17, 19, 2\
 3, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 1\
 07, 109, 113 ]
-gap> 
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -252,38 +251,32 @@ information about the error.
 
 *Example*
 
-\begintt
-# use a temporary directory
+\beginexample
+gap> # use a temporary directory
 gap> name := Filename( DirectoryTemporary(), "test" );;
-
-# create an output stream, append output, and close again
+gap> # create an output stream, append output, and close again
 gap> output := OutputTextFile( name, true );;
 gap> AppendTo( output, "Hallo\n", "You\n" );
 gap> CloseStream(output);
-
-# create an input, print complete contents of file, and close
+gap> # create an input, print complete contents of file, and close
 gap> input := InputTextFile(name);;
 gap> Print( ReadAll(input) );
 Hallo
 You
 gap> CloseStream(input);
-
-# append a single line
+gap> # append a single line
 gap> output := OutputTextFile( name, true );;
 gap> AppendTo( output, "AppendLine\n" );
-
-# close output stream to flush the output
+gap> # close output stream to flush the output
 gap> CloseStream(output);
-
-
-# create an input, print complete contents of file, and close
+gap> # create an input, print complete contents of file, and close
 gap> input := InputTextFile(name);;
 gap> Print( ReadAll(input) );
 Hallo
 You
 AppendLine
 gap> CloseStream(input);
-\endtt
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{User Streams}
@@ -313,15 +306,14 @@ functions can be used to create such streams.
 
 *Example*
 
-\begintt
-# read input from a string
+\beginexample
+gap> # read input from a string
 gap> input := InputTextString( "Hallo\nYou\n" );;
 gap> ReadLine(input);
 "Hallo\n"
 gap> ReadLine(input);
 "You\n"
-
-# print to a string
+gap> # print to a string
 gap> str := "";;
 gap> out := OutputTextString( str, true );;
 gap> PrintTo( out, 1, "\n", (1,2,3,4)(5,6), "\n" );
@@ -329,7 +321,7 @@ gap> CloseStream(out);
 gap> Print( str );
 1
 (1,2,3,4)(5,6)
-\endtt
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Input-Output Streams}

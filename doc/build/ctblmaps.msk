@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Maps Concerning Character Tables}
 
@@ -12,6 +13,15 @@
 \index{parametrized maps}
 
 \FileHeader[1]{ctblmaps}
+
+Several examples in this chapter require the {\GAP} Character Table Library
+to be available.
+If it is not yet loaded then we load it now.
+
+\beginexample
+gap> LoadPackage( "ctbllib" );
+true
+\endexample
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -169,7 +179,11 @@ gap> GetFusionMap( tbls4, tbls5 );
 \Declaration{NamesOfFusionSources}
 \beginexample
 gap> NamesOfFusionSources( tbls5 );
-[ "2.A5.2", "A5", "S3x2", "3^1+4:2^1+4.s5", "s4", "5:4", "CT1" ]
+[ "2.A5.2", "Isoclinic(2.A5.2)", "A5", "S3x2", "(A5x3):2", "2^4:s5", 
+  "2.M22M5", "4.M22M5", "M22.2M4", "2.M12M8", "2.2.2^4+6:S5", "2.2^4+6:S5", 
+  "4.2^4.S5", "2.HSM10", "3^1+4:2^1+4.s5", "2^(1+4).S5", "(2^2xA5):2", 
+  "2^10:(2^5:s5)", "3^4:S5", "M24C2B", "gl25", "mo62", "s2wrs5", "s4", 
+  "twd5a", "w(d5)", "5:4", "CT1" ]
 \endexample
 
 \Declaration{PossibleClassFusions}
@@ -200,6 +214,8 @@ gap> rep:= RepresentativesFusions( AutomorphismsOfTable( subtbl ), orb,
 >              AutomorphismsOfTable( tbl ) );
 [ [ 1, 2, 4, 4, 5, 5, 6, 10, 12, 13, 14, 14, 21, 21 ] ]
 \endexample
+
+\Declaration{ConsiderStructureConstants}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

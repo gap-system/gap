@@ -556,35 +556,39 @@ InstallMethod( MatrixAutomorphisms,
 ##
 #M  TableAutomorphisms( <tbl>, <characters> )
 #M  TableAutomorphisms( <tbl>, <characters>, \"closed\" )
+#M  TableAutomorphisms( <tbl>, <characters>, <subgroup> )
 ##
 InstallMethod( TableAutomorphisms,
     "for a character table and a list of characters",
     [ IsCharacterTable, IsList ],
     function( tbl, characters )
-    return TableAutomorphisms( tbl, characters, "" );
+    return TableAutomorphisms( tbl, characters, Group( () ) );
     end );
-
 
 InstallMethod( TableAutomorphisms,
     "for a character table, a list of characters, and a string",
     [ IsCharacterTable, IsList, IsString ],
     function( tbl, characters, closed )
-    local subgroup,     # known subgroup,
-                        # is trivial in the case of two arguments,
-                        # otherwise is the group of Galois automorphisms
-          maut,         # matrix automorphisms of `characters'
+
+    if closed = "closed" then
+      return TableAutomorphisms( tbl, characters,
+                 GroupByGenerators( GaloisMat( TransposedMat( characters )
+                     ).generators, () ) );
+    else
+      return TableAutomorphisms( tbl, characters, Group( () ) );
+    fi;
+    end );
+
+InstallMethod( TableAutomorphisms,
+    "for a character table, a list of characters, and a perm. group",
+    [ IsCharacterTable, IsList, IsPermGroup ],
+    function( tbl, characters, subgroup )
+    local maut,         # matrix automorphisms of `characters'
                         # that respect element orders and centralizer orders
           gens,         # generators of `maut'
           nccl,         # no. of conjugacy classes of `tbl'
           powermap,     # list of relevant power maps
           admissible;   # generators that commute with all power maps
-
-    if closed = "closed" then
-      subgroup:= GroupByGenerators(
-          GaloisMat( TransposedMat( characters ) ).generators, () );
-    else
-      subgroup:= GroupByGenerators( [], () );
-    fi;
 
     # Compute the matrix automorphisms.
     maut:= MatrixAutomorphisms( characters, 
@@ -794,6 +798,7 @@ InstallMethod( TransformingPermutations,
     # according to the length of the family, so the bijection must
     # be the identity.
     
+#T check invariants first (matrix dimensions!)
     fam1:= FamiliesOfRows( mat1, [] );
     fam2:= FamiliesOfRows( mat2, [] );
     if fam1.famreps <> fam2.famreps then
@@ -1010,6 +1015,8 @@ InstallMethod( TransformingPermutationsCharacterTables,
 
     # Compute the transformations between the matrices of irreducibles.
     trans:= TransformingPermutations( irr1, irr2 );
+#T improve this: use element orders already here!
+#T e.g. check sorted lists of el. orders as an invariant
     if trans = fail then
       return fail;
     fi;

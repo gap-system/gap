@@ -15,8 +15,22 @@ Revision.demo_g :=
 ##
 #F  Demonstration( <file> ) . . . . . . . . . . run a demonstration from file
 ##
+if not IsBound(last) then
+    last := fail;
+fi;
+if not IsBound(last2) then
+    last2 := fail;
+fi;
+if not IsBound(last3) then
+    last3 := fail;
+fi;
+if not IsBound(time) then
+    time := fail;
+fi;
+
+
 BindGlobal( "Demonstration", function( file )
-    local   input,  keyboard,  result;
+    local   input,  keyboard,  result, storedtime;
 
     input := InputTextFile( file );
     while input = fail do
@@ -29,8 +43,13 @@ BindGlobal( "Demonstration", function( file )
     keyboard := InputTextUser();
     Print( "demo> \c" );
     while CHAR_INT( ReadByte( keyboard ) ) <> 'q' do
-        result := READ_COMMAND( input, true );      # Executing the command.
+        storedtime := Runtime();
+        result:=READ_COMMAND( input, true ); # Executing the command.
+        time := Runtime()-storedtime;
         if result <> SuPeRfail then
+            last3 := last2;
+            last2 := last;
+            last := result;
             View( result);
             Print("\n" );
         fi;
@@ -63,19 +82,27 @@ local   input,command,exec,result,blank,semic,hash,process,l,view,estream;
     hash:='#';
     exec:="";
     process:=function()
-	       view:=true;
-	       if exec[Length(exec)-1]=semic then
-	         view:=false;
-	       fi;
-	       estream:=InputTextString( exec );
-	       result:=READ_COMMAND( estream, true ); # Executing the command.
-	       CloseStream(estream);
-	       if view and result<>SuPeRfail then
-		 View(result);
-		 Print("\n");
-	       fi;
-	       exec:="";
-             end;
+        local storedtime;
+        view:=true;
+        if exec[Length(exec)-1]=semic then
+            view:=false;
+        fi;
+        estream:=InputTextString( exec );
+        storedtime := Runtime();
+        result:=READ_COMMAND( estream, true ); # Executing the command.
+        time := Runtime()-storedtime;
+        CloseStream(estream);
+        if result<>SuPeRfail then
+            last3 := last2;
+            last2 := last;
+            last := result;
+            if view then
+               View(result);
+                Print("\n");
+            fi;
+        fi;
+        exec:="";
+    end;
     command := ReadLine( input );      # Executing the command.
     while not IsEndOfStream(input) do
       if Length(exec)=0 then

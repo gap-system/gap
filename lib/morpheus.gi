@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file  contains declarations for Morpheus
 ##
@@ -56,6 +57,14 @@ local s;
   fi;
   return false;
 end);
+
+#############################################################################
+##
+#M  IsGroupOfAutomorphismsFiniteGroup(<G>)
+##
+InstallMethod( IsGroupOfAutomorphismsFiniteGroup,"default",true,
+  [IsGroup],0,
+  G->IsGroupOfAutomorphisms(G) and IsFinite(AutomorphismDomain(G)));
 
 #############################################################################
 ##
@@ -366,7 +375,8 @@ end);
 ##
 #F  SomeVerbalSubgroups
 ##  
-SomeVerbalSubgroups:=function(g,h)
+## correspond simultaneously some verbal subgroups in g and h
+BindGlobal("SomeVerbalSubgroups",function(g,h)
 local l,m,i,j,cg,ch,pg;
   l:=[g];
   m:=[h];
@@ -393,7 +403,7 @@ local l,m,i,j,cg,ch,pg;
     i:=i+1;
   od;
   return [l,m];
-end;
+end);
 
 #############################################################################
 ##
@@ -419,6 +429,62 @@ end;
 ##  4     surjective
 ##  8     find all (in contrast to one)
 ##
+MorClassOrbs:=function(G,C,R,D)
+local i,cl,cls,rep,x,xp,p,b,g;
+  i:=Index(G,C);
+  if i>20000 or i<Size(D) then
+    return List(DoubleCosetRepsAndSizes(G,C,D),j->j[1]);
+  else
+    if not IsBound(C!.conjclass) then
+      cl:=[R];
+      cls:=[R];
+      rep:=[One(G)];
+      i:=1;
+      while i<=Length(cl) do
+	for g in GeneratorsOfGroup(G) do
+	  x:=cl[i]^g;
+	  if not x in cls then
+	    Add(cl,x);
+	    AddSet(cls,x);
+	    Add(rep,rep[i]*g);
+	  fi;
+	od;
+	i:=i+1;
+      od;
+      SortParallel(cl,rep);
+      C!.conjclass:=cl;
+      C!.conjreps:=rep;
+    fi;
+    cl:=C!.conjclass;
+    rep:=[];
+    b:=BlistList([1..Length(cl)],[]);
+    p:=1;
+    repeat
+      while p<=Length(cl) and b[p] do
+	p:=p+1;
+      od;
+      if p<=Length(cl) then
+	b[p]:=true;
+	Add(rep,p);
+	cls:=[cl[p]];
+	for i in cls do
+	  for g in GeneratorsOfGroup(D) do
+	    x:=i^g;
+	    xp:=PositionSorted(cl,x);
+	    if not b[xp] then
+	      Add(cls,x);
+	      b[xp]:=true;
+	    fi;
+	  od;
+	od;
+      fi;
+      p:=p+1;
+    until p>Length(cl);
+
+    return C!.conjreps{rep};
+  fi;
+end;
+
 InstallGlobalFunction(MorClassLoop,function(range,clali,params,action)
 local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
       mp,cen,i,j,imgs,ok,size,l,hom,cenis,reps,repspows,sortrels,genums,wert,p,
@@ -509,13 +575,16 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     for i in [1..len] do
       Sort(sortrels[i],function(x,y) return x[3]<y[3];end);
     od;
-    offset:=1-Minimum(List(pows,i->i[1])); # smallest occuring index
+    offset:=1-Minimum(List(Filtered(pows,i->Length(i)>0),
+                           i->i[1])); # smallest occuring index
 
     # test the relators at level tlev and set imgs
     TestRels:=function(tlev)
     local rel,k,j,p,start,gn,ex;
 
       if Length(sortrels[tlev])=0 then
+	imgs:=List([tlev..len-1],i->reps[i]^(m[i][mp[i]]));
+	imgs[Length(imgs)+1]:=reps[len];
         return true;
       fi;
 
@@ -548,6 +617,7 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
 
       imgs:=List([tlev..len-1],i->reps[i]^(m[i][mp[i]]));
       imgs[Length(imgs)+1]:=reps[len];
+
       if tinj then
 	return ForAll(sortrels[tlev],i->i[2]=Order(MappedWord(i[5],
 	                              free{[tlev..len]}, imgs)));
@@ -582,7 +652,18 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
       od;
     fi;
 
-    cenis:=List(cla,i->Intersection(range,Centralizer(i)));
+    #cenis:=List(cla,i->Intersection(range,Centralizer(i)));
+    # make sure we get new groups (we potentially add entries)
+    cenis:=[];
+    for i in cla do
+      cen:=Intersection(range,Centralizer(i));
+      if IsIdenticalObj(cen,Centralizer(i)) then
+	m:=Size(cen);
+	cen:=SubgroupNC(range,GeneratorsOfGroup(cen));
+	SetSize(cen,m);
+      fi;
+      Add(cenis,cen);
+    od;
 
     # test, whether a gen.sys. can be taken from the classes in <cla>
     # candidates.  This is another backtrack
@@ -600,7 +681,8 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
 
     # set up the lists
     while i>0 do
-      m[i]:=List(DoubleCosetRepsAndSizes(range,cenis[i],cen[i+1]),j->j[1]);
+      #m[i]:=List(DoubleCosetRepsAndSizes(range,cenis[i],cen[i+1]),j->j[1]);
+      m[i]:=MorClassOrbs(range,cenis[i],reps[i],cen[i+1]);
       mp[i]:=1;
 
       pop:=true;
@@ -723,8 +805,8 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
 	               # also pop us out of both `while' loops.
 	  cen[i]:=Centralizer(cen[i+1],reps[i]^(m[i][mp[i]]));
 	  i:=i-1;
-	  m[i]:=List(DoubleCosetRepsAndSizes(range,cenis[i],cen[i+1]),
-		      j->j[1]);
+	  #m[i]:=List(DoubleCosetRepsAndSizes(range,cenis[i],cen[i+1]),j->j[1]);
+	  m[i]:=MorClassOrbs(range,cenis[i],reps[i],cen[i+1]);
 	  mp[i]:=1;
 
 	else
@@ -789,7 +871,7 @@ end);
 #############################################################################
 ##
 #F  Morphium(<G>,<H>,<DoAuto>) . . . . . . . .Find isomorphisms between G and H
-##       modulo inner automorphisms. DoAuto indicates whetehra all
+##       modulo inner automorphisms. DoAuto indicates whether all
 ## 	 automorphism are to be found
 ##       This function thus does the main combinatoric work for creating 
 ##       Iso- and Automorphisms.
@@ -1068,12 +1150,14 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
   od;
 
   au:= GroupByGenerators( au, IdentityMapping( G ) );
-  SetIsAutomorphismGroup( au, true );
+  SetIsAutomorphismGroup(au,true);
+  SetIsFinite(au,true);
 
   SetInnerAutomorphismsAutomorphismGroup(au,TrivialSubgroup(au));
 
   if IsFinite(G) then
     SetIsFinite(au,true);
+    SetIsGroupOfAutomorphismsFiniteGroup(au,true);
   fi;
 
   return au;
@@ -1160,7 +1244,8 @@ local a,b,c,p;
       Info(InfoMorph,2,"test automorphism domain ",p);
       c:=GroupByGenerators(GeneratorsOfGroup(a.aut),One(a.aut));
       AssignNiceMonomorphismAutomorphismGroup(c,G); 
-      if LargestMovedPoint(Range(NiceMonomorphism(c)))<p then
+      if IsPermGroup(Range(NiceMonomorphism(c))) and
+	LargestMovedPoint(Range(NiceMonomorphism(c)))<p then
         Info(InfoMorph,1,"improved domain ",
 	     LargestMovedPoint(Range(NiceMonomorphism(c))));
 	a.aut:=c;
@@ -1172,6 +1257,7 @@ local a,b,c,p;
   SetIsAutomorphismGroup( a.aut, true );
   if HasIsFinite(G) and IsFinite(G) then
     SetIsFinite(a.aut,true);
+    SetIsGroupOfAutomorphismsFiniteGroup(a.aut,true);
   fi;
   return a.aut;
 end);
@@ -1196,9 +1282,13 @@ AutomorphismGroupAbelianGroup);
 #M NiceMonomorphism 
 ##
 InstallMethod(NiceMonomorphism,"for automorphism groups",true,
-              [IsGroupOfAutomorphisms and IsFinite],0,
+              [IsGroupOfAutomorphismsFiniteGroup],0,
 function( A )
 local G;
+
+    if not IsGroupOfAutomorphismsFiniteGroup(A) then
+      TryNextMethod();
+    fi;
 
     G  := Source( Identity(A) );
 
@@ -1310,6 +1400,7 @@ local Fgens,	# generators of F
   # if a verbal subgroup is trivial in the image, it must be in the kernel
   vsu:=SomeVerbalSubgroups(F,G);
   vsu:=vsu[1]{Filtered([1..Length(vsu[2])],j->IsTrivial(vsu[2][j]))};
+  vsu:=Filtered(vsu,i->not IsTrivial(i));
   if Length(vsu)>1 then
     fak:=vsu[1];
     for i in [2..Length(vsu)] do
@@ -1402,7 +1493,7 @@ local Fgens,	# generators of F
     # only one
     h:=MorClassLoop(G,best[2],rec(gens:=best[1],to:=G,from:=F),5);
     # get the same syntax for the object returned
-    if Length(h)=0 then
+    if IsList(h) and Length(h)=0 then
       return h;
     else
       return [h];
@@ -1445,8 +1536,8 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
     fi;
     if IsCyclic(G) then
       if IsCyclic(H) then
-        return GroupHomomorphismByImagesNC(H,G,[GeneratorOfCyclicGroup(H)],
-	  [GeneratorOfCyclicGroup(G)^(Size(G)/Size(H))]);
+        return [GroupHomomorphismByImagesNC(H,G,[GeneratorOfCyclicGroup(H)],
+	  [GeneratorOfCyclicGroup(G)^(Size(G)/Size(H))])];
       else
         return [];
       fi;
@@ -1552,9 +1643,13 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
   # find all embeddings
   if ValueOption("findall")=false then
     # only one
-    emb:=[MorClassLoop(G,bi,params,
+    emb:=MorClassLoop(G,bi,params,
       # one injective homs = 1+2
-      3)]; 
+      3); 
+      if IsList(emb) and Length(emb)=0 then
+	return emb;
+      fi;
+    emb:=[emb];
   else
     emb:=MorClassLoop(G,bi,params,
       # all injective homs = 1+2+8

@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the categories,  attributes, properties and operations
 ##  for algebraic extensions of fields and their elements
@@ -19,6 +20,8 @@ Revision.algfld_gd:=
 ##  is the category for elements of an algebraic extension.
 DeclareCategory( "IsAlgebraicElement", IsScalar);
 DeclareCategoryCollections( "IsAlgebraicElement");
+DeclareCategoryCollections( "IsAlgebraicElementCollection");
+DeclareCategoryCollections( "IsAlgebraicElementCollColl");
 
 #############################################################################
 ##
@@ -69,6 +72,21 @@ DeclareOperation( "AlgebraicExtension",
 ##  coefficient in the representation of algebraic elm. <a>
 ##
 DeclareOperation("MaxNumeratorCoeffAlgElm",[IsScalar]);
+
+#############################################################################
+##
+#F  DefectApproximation( <K> ) . . . . . . . approximation for defect K, i.e.
+##                                      denominators of integer elements in K
+##
+DeclareAttribute("DefectApproximation",IsAlgebraicExtension);
+
+#############################################################################
+##
+#F  AlgExtEmbeddedPol(<ext>,<pol>)
+##
+DeclareGlobalFunction("AlgExtEmbeddedPol");
+
+DeclareGlobalFunction("AlgExtSquareHensel");
 
 #############################################################################
 ##

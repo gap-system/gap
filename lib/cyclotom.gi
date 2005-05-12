@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file is being maintained by Thomas Breuer.
 ##  Please do not make any changes without consulting him.
@@ -1385,10 +1386,8 @@ InstallMethod( GaloisMat,
                   conj[l]:= image[ fusion[l] ];
                 fi;
               od;
-              l:= i+1;
-              while l <= ncha and mat[l] <> conj do l:= l+1; od;
-#T use Position!
-              if l <= ncha then
+              l:= Position( mat, conj, i );
+              if l <> fail then
 
                 galoisfams[l]:= 0;
                 Add( family, l );
@@ -1470,9 +1469,9 @@ InstallMethod( GaloisMat,
 
     # Convert the `generators' component to a set of generating permutations.
     generators:= Set( List( generators, PermList ) );
-    RemoveSet( generators, () );
+    RemoveSet( generators, () );  # `generators' arose from `PermList'
     if IsEmpty( generators ) then
-      generators:= [ () ];
+      generators:= [ () ];  # `generators' arose from `PermList'
     fi;
 
     # Return the result.

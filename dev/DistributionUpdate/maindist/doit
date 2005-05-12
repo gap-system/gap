@@ -1,0 +1,16 @@
+#!/bin/csh
+#############################################################################
+##
+##  $Id$
+
+
+./setvar
+./checkout
+./fixpermissions
+./makedoc
+./completionfiles
+./zooandtag
+./winbin
+./zooandtagdata
+
+

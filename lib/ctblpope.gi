@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the methods for those functions that are needed to
 ##  compute and test possible permutation characters.
@@ -396,30 +397,21 @@ end );
 
 #############################################################################
 ##
-#F  Inequalities( <tbl>, <chars>[, <option>] ) . . .
-#F                                            projected system of inequalites
+#M  Inequalities( <tbl>, <chars>[, <option>] )
+#M                                           projected system of inequalities
 ##
-InstallGlobalFunction( Inequalities, function( arg )
+InstallMethod( Inequalities,
+    [ IsOrdinaryTable, IsList ],
+    function( tbl, chars )
+    return Inequalities( tbl, chars, "" );
+    end );
 
-   local tbl,      # character table, first argument
-         chars,    # list of characters, second argument
-         option,   # optional third argument, `"small"' is supported
-         i, j, h, o, dim, nccl, ncha, c, X, dir, root, ineq, tuete,
+InstallMethod( Inequalities,
+    [ IsOrdinaryTable, IsList, IsObject ],
+    function( tbl, chars, option )
+   local i, j, h, o, dim, nccl, ncha, c, X, dir, root, ineq, tuete,
          Conditor, Kombinat, other, mini, con, conO, conU, pos,
          proform, project;
-
-   # scan arg
-   if   Length( arg ) = 2 and IsOrdinaryTable( arg[1] ) then
-      tbl:= arg[1];
-      chars:= arg[2];
-      option:= "";
-   elif Length( arg ) = 3 and IsOrdinaryTable( arg[1] ) then
-      tbl:= arg[1];
-      chars:= arg[2];
-      option:= arg[3];
-   else
-     Error( "usage: Inequalities( <tbl>, <chars>[, <option>] )" );
-   fi;
 
    # local functions
    proform:= function(tuete, s, dir)
@@ -612,8 +604,7 @@ InstallGlobalFunction( Inequalities, function( arg )
    od;
 
    return rec(obj:= X, Conditor:= Conditor);
-
-end );
+    end );
 
 
 #############################################################################

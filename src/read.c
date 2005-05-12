@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This module contains the functions to read expressions and statements.
 */
@@ -123,9 +124,37 @@ void            ReadFuncExpr1 (
     TypSymbolSet        follow );
 
 
+static UInt CurrentGlobalForLoopVariables[100];
+static UInt CurrentGlobalForLoopDepth = 0;
+
+void PushGlobalForLoopVariable( UInt var)
+{
+  if (CurrentGlobalForLoopDepth < 100)
+    CurrentGlobalForLoopVariables[CurrentGlobalForLoopDepth] = var;
+  CurrentGlobalForLoopDepth++;
+}
+
+void PopGlobalForLoopVariable( void )
+{
+  assert(CurrentGlobalForLoopDepth);
+  CurrentGlobalForLoopDepth--;
+}
+
+UInt GlobalComesFromEnclosingForLoop (UInt var)
+{
+  UInt i;
+  for (i = 0; i < CurrentGlobalForLoopDepth; i++)
+    {
+      if (i==100)
+	return 0;
+      if (CurrentGlobalForLoopVariables[i] == var)
+	return 1;
+    }
+  return 0;
+}
+
 /****************************************************************************
 **
-
 *F * * * * * * * * * * read symbols and call interpreter  * * * * * * * * * *
 */
 
@@ -207,7 +236,10 @@ void ReadFuncCallOptions( TypSymbolSet follow )
       ReadFuncCallOption( follow );
       nr++;
     }
-  IntrFuncCallOptionsEnd( nr );
+  if (!READ_ERROR()) {
+    IntrFuncCallOptionsEnd( nr );
+  }
+
   return;
 }
 
@@ -335,6 +367,7 @@ void ReadCallVarAss (
       && ELM_PLIST(ExprGVars,var) == 0
       && CompNowFuncs == 0
       && ! IntrIgnoring
+	 && ! GlobalComesFromEnclosingForLoop(var)
       && ! SyCompilePlease )
     {
         SyntaxError("warning: unbound global variable");
@@ -813,60 +846,37 @@ void ReadRecExpr (
     nr = 0;
 
     /* [ <Ident> | '(' <Expr> ')' ':=' <Expr>                              */
-    if ( Symbol != S_RPAREN ) {
+    do {
+      if (nr || Symbol == S_COMMA) {
+	Match(S_COMMA, ",", follow);
+      }
+      if ( Symbol != S_RPAREN ) {
         if ( Symbol == S_INT ) {
-            rnam = RNamName( Value );
-            Match( S_INT, "integer", follow );
-            if ( ! READ_ERROR() ) { IntrRecExprBeginElmName( rnam ); }
+	  rnam = RNamName( Value );
+	  Match( S_INT, "integer", follow );
+	  if ( ! READ_ERROR() ) { IntrRecExprBeginElmName( rnam ); }
         }
         else if ( Symbol == S_IDENT ) {
-            rnam = RNamName( Value );
-            Match( S_IDENT, "identifier", follow );
-            if ( ! READ_ERROR() ) { IntrRecExprBeginElmName( rnam ); }
+	  rnam = RNamName( Value );
+	  Match( S_IDENT, "identifier", follow );
+	  if ( ! READ_ERROR() ) { IntrRecExprBeginElmName( rnam ); }
         }
         else if ( Symbol == S_LPAREN ) {
-            Match( S_LPAREN, "(", follow );
-            ReadExpr( follow, 'r' );
-            Match( S_RPAREN, ")", follow );
-            if ( ! READ_ERROR() ) { IntrRecExprBeginElmExpr(); }
+	  Match( S_LPAREN, "(", follow );
+	  ReadExpr( follow, 'r' );
+	  Match( S_RPAREN, ")", follow );
+	  if ( ! READ_ERROR() ) { IntrRecExprBeginElmExpr(); }
         }
         else {
-            SyntaxError("identifier expected");
+	  SyntaxError("identifier expected");
         }
         Match( S_ASSIGN, ":=", follow );
         ReadExpr( S_RPAREN|follow, 'r' );
         if ( ! READ_ERROR() ) { IntrRecExprEndElm(); }
         nr++;
-    }
-
-
-    /* {',' <Ident> ':=' <Expr> } ]                                        */
-    while ( Symbol == S_COMMA ) {
-        Match( S_COMMA, "", 0UL );
-        if ( Symbol == S_INT ) {
-            rnam = RNamName( Value );
-            Match( S_INT, "integer", follow );
-            if ( ! READ_ERROR() ) { IntrRecExprBeginElmName( rnam ); }
-        }
-        else if ( Symbol == S_IDENT ) {
-            rnam = RNamName( Value );
-            Match( S_IDENT, "identifier", follow );
-            if ( ! READ_ERROR() ) { IntrRecExprBeginElmName( rnam ); }
-        }
-        else if ( Symbol == S_LPAREN ) {
-            Match( S_LPAREN, "(", follow );
-            ReadExpr( follow, 'r' );
-            Match( S_RPAREN, ")", follow );
-            if ( ! READ_ERROR() ) { IntrRecExprBeginElmExpr(); }
-        }
-        else {
-            SyntaxError("identifier expected");
-        }
-        Match( S_ASSIGN, ":=", follow );
-        ReadExpr( S_RPAREN|follow, 'r' );
-        if ( ! READ_ERROR() ) { IntrRecExprEndElm(); }
-        nr++;
-    }
+      }
+      
+    }  while ( Symbol == S_COMMA );
 
     /* ')'                                                                 */
     Match( S_RPAREN, ")", follow );
@@ -1633,8 +1643,8 @@ void ReadFor (
     Match( S_FOR, "for", follow );
 
     /* <Var>                                                               */
-    ReadCallVarAss( follow, 'r' );
-
+    ReadCallVarAss( follow, 'r' );    
+    
     /* 'in' <Expr>                                                         */
     Match( S_IN, "in", S_DO|S_OD|follow );
     if ( ! READ_ERROR() ) { IntrForIn(); }
@@ -1929,7 +1939,7 @@ void            ReadQUIT (
 UInt ReadStats (
     TypSymbolSet        follow )
 {
-    short               nr;            /* number of statements            */
+    UInt               nr;            /* number of statements            */
 
     /* read the statements                                                 */
     nr = 0;

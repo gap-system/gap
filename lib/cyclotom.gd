@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file is being maintained by Thomas Breuer.
 ##  Please do not make any changes without consulting him.
@@ -51,7 +52,7 @@ DeclareAttribute( "AbsoluteValue" ,  IsCyclotomic  );
 ##  cyclotomic <cyc> in the sense that the $i$-th coefficient in the external
 ##  representation (see~"CoeffsCyc") of $z$ is `Int( c+1/2 )' where `c' is
 ##  the $i$-th coefficient in the external representation of <cyc>.
-##  Expressed in terms of the Zumbroich basis (see~"Integral Bases for
+##  Expressed in terms of the Zumbroich basis (see~"Integral Bases of
 ##  Abelian Number Fields"), the coefficients of <cyc> w.r.t.~this basis are
 ##  rounded.
 ##
@@ -74,7 +75,7 @@ DeclareOperation( "RoundCycDown" , [ IsCyclotomic ] );
 ##  <cyc> cannot be expressed in terms of <N>-th roots of unity.
 ##  Otherwise `CoeffsCyc' returns a list of length <N> with entry at position
 ##  $j$ equal to the coefficient of $e^{2 \pi i (j-1)/<N>}$ if this root
-##  belongs to the <N>-th Zumbroich basis (see~"Integral Bases for Abelian
+##  belongs to the <N>-th Zumbroich basis (see~"Integral Bases of Abelian
 ##  Number Fields"),
 ##  and equal to zero otherwise.
 ##  So we have                                        
@@ -87,8 +88,9 @@ DeclareGlobalFunction( "CoeffsCyc" );
 ##
 #F  IsGaussInt( <x> ) . . . . . . . . test if an object is a Gaussian integer
 ##
-##  `IsGaussInt' returns `true' if the  object <x> is  a Gaussian integer and
-##  `false' otherwise.  Gaussian integers are of the form  `<a> + <b>\*E(4)',
+##  `IsGaussInt' returns `true' if the object <x> is a Gaussian integer
+##  (see~"GaussianIntegers") and `false' otherwise.
+##  Gaussian integers are of the form `<a> + <b>\*E(4)',
 ##  where <a> and <b> are integers.
 ##
 DeclareGlobalFunction( "IsGaussInt" );
@@ -98,8 +100,9 @@ DeclareGlobalFunction( "IsGaussInt" );
 ##
 #F  IsGaussRat( <x> ) . . . . . . .  test if an object is a Gaussian rational
 ##
-##  `IsGaussRat' returns `true' if the  object <x> is a Gaussian rational and
-##  `false' otherwise.  Gaussian rationals are of the form `<a> + <b>\*E(4)',
+##  `IsGaussRat' returns `true' if the object <x> is a Gaussian rational
+##  (see~"GaussianRationals") and `false' otherwise.
+##  Gaussian rationals are of the form `<a> + <b>\*E(4)',
 ##  where <a> and <b> are rationals.
 ##
 DeclareGlobalFunction( "IsGaussRat" );

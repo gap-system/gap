@@ -7,6 +7,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions for permutations (small and large).
 **
@@ -109,6 +110,14 @@ const char * Revision_permutat_c =
 */
 #define IMAGE(i,pt,dg)  (((i) < (dg)) ? (pt)[(i)] : (i))
 
+/****************************************************************************
+**
+*F  IMAGETWO(<i>,<pt>,<dg>)  . . . . . .  image of <i> under <pt> of degree <dg>
+**
+**  as IMAGE but for a 2-byte permutation: If we map, we have to cast in UInt2.
+*/
+#define IMAGETWO(i,pt,dg)  (((i) < (dg)) ? (pt)[(UInt2)(i)] : (i))
+
 
 /****************************************************************************
 **
@@ -169,7 +178,6 @@ Obj             TypePerm4 (
 **  printing a cycle twice each is printed with the smallest  element  first.
 **  This may in the worst case, for (1,2,..,n), take n^2/2 steps, but is fast
 **  enough to keep a terminal at 9600 baud busy for all but the extrem cases.
-**  This is done, because it is forbidden to create new bags during printing.
 */
 void            PrintPermP (
     Obj                 perm )
@@ -202,9 +210,12 @@ void            PrintPermP (
         if ( p == q && ptPerm[p] != p ) {
             isId = 0;
             Pr(fmt1,(Int)(p+1),0L);
-            for ( q = ptPerm[p]; q != p; q = ptPerm[q] )
+            for ( q = ADDR_PERM2(perm)[p]; q != p; q = ADDR_PERM2(perm)[q] ) {
                 Pr(fmt2,(Int)(q+1),0L);
+            }
             Pr("%<)",0L,0L);
+            /* restore pointer, in case Pr caused a garbage collection */
+            ptPerm = ADDR_PERM2(perm);  
         }
 
     }
@@ -244,9 +255,11 @@ void            PrintPermQ (
         if ( p == q && ptPerm[p] != p ) {
             isId = 0;
             Pr(fmt1,(Int)(p+1),0L);
-            for ( q = ptPerm[p]; q != p; q = ptPerm[q] )
+            for ( q = ADDR_PERM4(perm)[p]; q != p; q = ADDR_PERM4(perm)[q] )
                 Pr(fmt2,(Int)(q+1),0L);
             Pr("%<)",0L,0L);
+            /* restore pointer, in case Pr caused a garbage collection */
+            ptPerm = ADDR_PERM4(perm);
         }
 
     }
@@ -2365,38 +2378,42 @@ Obj             FuncPermList (
             /* get the <i>th entry of the list                             */
             if ( ptList[i] == 0 ) {
                 for ( i = 1; i <= degPerm; i++ )  ptTmp2[i-1] = 0;
-                list = ErrorReturnObj(
+                /* list = ErrorReturnObj(
                     "PermList: <list>[%d] must have an assigned value",
                     (Int)i, 0L,
                     "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list );
+                return FuncPermList( 0, list ); */
+		return Fail;
             }
             if ( TNUM_OBJ(ptList[i]) != T_INT ) {
                 for ( i = 1; i <= degPerm; i++ )  ptTmp2[i-1] = 0;
-                list = ErrorReturnObj(
-                    "PermList: <list>[%d] must be an integer",
+                /* list = ErrorReturnObj(
+                    "PermList: <list>[%d] must be a integer",
                     (Int)i, 0L,
                     "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list );
+                return FuncPermList( 0, list ); */
+		return Fail;
             }
             k = INT_INTOBJ(ptList[i]);
             if ( k <= 0 || degPerm < k ) {
                 for ( i = 1; i <= degPerm; i++ )  ptTmp2[i-1] = 0;
-                list = ErrorReturnObj(
+                /* list = ErrorReturnObj(
                     "PermList: <list>[%d] must lie in [1..%d]",
                     (Int)i, (Int)degPerm,
                     "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list );
+                return FuncPermList( 0, list ); */
+		return Fail;
             }
 
             /* make sure we haven't seen this entry yet                     */
             if ( ptTmp2[k-1] != 0 ) {
                 for ( i = 1; i <= degPerm; i++ )  ptTmp2[i-1] = 0;
-                list = ErrorReturnObj(
+		/* list = ErrorReturnObj(
                     "PermList: the point %d must occur only once",
                     (Int)k, 0L,
                     "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list );
+                return FuncPermList( 0, list ); */
+		return Fail;
             }
             ptTmp2[k-1] = 1;
 
@@ -2432,38 +2449,42 @@ Obj             FuncPermList (
             /* get the <i>th entry of the list                             */
             if ( ptList[i] == 0 ) {
                 for ( i = 1; i <= degPerm; i++ )  ptTmp4[i-1] = 0;
-                list = ErrorReturnObj(
+                /* list = ErrorReturnObj(
                     "PermList: <list>[%d] must have an assigned value",
                     (Int)i, 0L,
                     "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list );
+                return FuncPermList( 0, list ); */
+		return Fail;
             }
             if ( TNUM_OBJ(ptList[i]) != T_INT ) {
                 for ( i = 1; i <= degPerm; i++ )  ptTmp4[i-1] = 0;
-                list = ErrorReturnObj(
-                    "PermList: <list>[%d] must be an integer",
+                /* list = ErrorReturnObj(
+                    "PermList: <list>[%d] must be a integer",
                     (Int)i, 0L,
                     "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list );
+                return FuncPermList( 0, list ); */
+		return Fail;
             }
             k = INT_INTOBJ(ptList[i]);
             if ( k <= 0 || degPerm < k ) {
                 for ( i = 1; i <= degPerm; i++ )  ptTmp4[i-1] = 0;
-                list = ErrorReturnObj(
+                /* list = ErrorReturnObj(
                     "PermList: <list>[%d] must lie in [1..%d]",
                     (Int)i, (Int)degPerm,
                     "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list );
+                return FuncPermList( 0, list ); */
+		return Fail;
             }
 
             /* make sure we haven't seen this entry yet                     */
             if ( ptTmp4[k-1] != 0 ) {
                 for ( i = 1; i <= degPerm; i++ )  ptTmp4[i-1] = 0;
-                list = ErrorReturnObj(
+                /* list = ErrorReturnObj(
                     "PermList: the point %d must occur only once",
                     (Int)k, 0L,
                     "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list );
+                return FuncPermList( 0, list ); */
+		return Fail;
             }
             ptTmp4[k-1] = 1;
 
@@ -3212,6 +3233,102 @@ Obj             FuncTRIM_PERM (
   return (Obj)0;
 }
 
+/****************************************************************************
+**
+*F  FunSPLIT_PARTITION( <Ppoints>, <Qnum>,<j>,<g>,<l>)
+**  <l> is a list [<a>,<b>,<max>] -- needed because of large parameter number
+**
+**  This function is used in the partition backtrack to split a partition.
+**  The points <i> in the list Ppoints between a (start) and b (end) such
+**  that Qnum[i^g]=j will be moved at the end.
+**  At most <max> points will be moved.
+**  The function returns the start point of the new partition (or -1 if too
+**  many are moved).
+**  Ppoints and Qnum must be plain lists of small integers.
+*/
+Obj FunSPLIT_PARTITION(
+    Obj self,
+    Obj Ppoints,
+    Obj Qnum,
+    Obj jval,
+    Obj g,
+    Obj lst)
+{
+  Int a;
+  Int b;
+  Int cnt;
+  Int max;
+  Int blim;
+  UInt deg;
+  UInt2 * gpt; /* perm pointer for 2 and 4 bytes */
+  UInt4 * gpf;
+  Obj tmp;
+
+
+  a=INT_INTOBJ(ELM_PLIST(lst,1))-1;
+  b=INT_INTOBJ(ELM_PLIST(lst,2))+1;
+  max=INT_INTOBJ(ELM_PLIST(lst,3));
+  cnt=0;
+  blim=b-max-1;
+
+  if (TNUM_OBJ(g)==T_PERM2) {
+    deg=DEG_PERM2(g);
+    gpt=ADDR_PERM2(g);
+    while ( (a<b)) {
+      do {
+	b--;
+	if (b<blim) {
+	  /* too many points got moved out */
+	  return INTOBJ_INT(-1);
+	}
+      } while (ELM_PLIST(Qnum,
+	      IMAGETWO(INT_INTOBJ(ELM_PLIST(Ppoints,b))-1,gpt,deg)+1)==jval);
+      do {
+	a++;
+      } while ((a<b)
+	      &&(!(ELM_PLIST(Qnum,
+	      IMAGETWO(INT_INTOBJ(ELM_PLIST(Ppoints,a))-1,gpt,deg)+1)==jval)));
+      /* swap */
+      if (a<b) {
+	tmp=ELM_PLIST(Ppoints,a);
+	SET_ELM_PLIST(Ppoints,a,ELM_PLIST(Ppoints,b));
+	SET_ELM_PLIST(Ppoints,b,tmp);
+	cnt++;
+      }
+    }
+  }
+  else {
+    deg=DEG_PERM4(g);
+    gpf=ADDR_PERM4(g);
+    while ( (a<b)) {
+      do {
+	b--;
+	if (b<blim) {
+	  /* too many points got moved out */
+	  return INTOBJ_INT(-1);
+	}
+      } while (ELM_PLIST(Qnum,
+		  IMAGE(INT_INTOBJ(ELM_PLIST(Ppoints,b))-1,gpf,deg)+1)==jval);
+      do {
+	a++;
+      } while ((a<b)
+	      &&(!(ELM_PLIST(Qnum,
+		  IMAGE(INT_INTOBJ(ELM_PLIST(Ppoints,a))-1,gpf,deg)+1)==jval)));
+      /* swap */
+      if (a<b) {
+	tmp=ELM_PLIST(Ppoints,a);
+	SET_ELM_PLIST(Ppoints,a,ELM_PLIST(Ppoints,b));
+	SET_ELM_PLIST(Ppoints,b,tmp);
+	cnt++;
+      }
+    }
+  }
+  /* list is not necc. sorted wrt. \< (any longer) */
+  RESET_FILT_LIST(Ppoints, FN_IS_SSORT);
+  RESET_FILT_LIST(Ppoints, FN_IS_NSORT);
+
+  return INTOBJ_INT(b+1);
+}
 
 /****************************************************************************
 **
@@ -3742,14 +3859,17 @@ static StructGVarFunc GVarFuncs [] = {
     { "OrderPerm", 1, "perm",
       FuncOrderPerm, "src/permutat.c:OrderPerm" },
 
-    { "SignPerm", 1, "perm",
+    { "SIGN_PERM", 1, "perm",
       FuncSignPerm, "src/permutat.c:SignPerm" },
 
-    { "SmallestGeneratorPerm", 1, "perm",
+    { "SMALLEST_GENERATOR_PERM", 1, "perm",
       FuncSmallestGeneratorPerm, "src/permutat.c:SmallestGeneratorPerm" },
 
     { "TRIM_PERM", 2, "perm, degree",
       FuncTRIM_PERM, "src/permutat.c:TRIM_PERM" },
+
+    { "SPLIT_PARTITION", 5, "Ppoints, Qn,j,g,a,b,max",
+      FunSPLIT_PARTITION, "src/permutat.c:SPLIT_PARTITION" },
 
     { "SMALLEST_IMG_TUP_PERM", 2, "tuple, perm",
       FunSmallestImgTuplePerm, "src/permutat.c:SMALLEST_IMG_TUP_PERM" },

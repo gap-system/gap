@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains  the basic methods for  creating and doing  arithmetic
 ##  with GF2 vectors and matrices.
@@ -831,6 +832,9 @@ InstallMethod( InverseSameMutability,
         function(m)
     local inv,i;
     inv := INV_PLIST_GF2VECS_DESTRUCTIVE(List(m, ShallowCopy));
+    if inv = TRY_NEXT_METHOD then
+        TryNextMethod();
+    fi;
     if IsMutable(m) then
         if not IsMutable(m[1]) then
             for i in [1..Length(m)] do
@@ -953,9 +957,9 @@ function( mat )
 
     new := [ Length(mat) ];
     if 0 < new[1]   then
-        zero := ZeroOp(mat[1]);
-        SetFilterObj(zero, IsLockedRepresentationVector);
         for i in [ 1 .. new[1] ]  do
+	        zero := ZeroOp(mat[1]);
+        	SetFilterObj(zero, IsLockedRepresentationVector);
             Add( new, zero );
         od;
     fi;
@@ -1136,12 +1140,52 @@ InstallMethod( \*,
 
 #############################################################################
 ##
+#M  \*( <gf2elm>, <gf2mat> )  . . .  product of a GF2 element and a GF2 matrix
+##
+InstallMethod( \*,
+    "for GF2 element and GF2 matrix",
+    IsElmsCollColls,
+    [ IsFFE,
+      IsMatrix and IsListDefault and IsGF2MatrixRep ],
+    0,
+        function(s,m)
+    if s = Z(2) then
+        return AdditiveInverseSameMutability(m);
+    elif IsZero(s) then
+        return ZeroSameMutability(m);
+    else
+        TryNextMethod();
+    fi;
+end);
+
+#############################################################################
+##
+#M  \*( <gf2mat>, <gf2elm> )  . . .  product of a GF2 matrix  and a GF2 element
+##
+InstallMethod( \*,
+    "for GF2 matrix and GF2 element",
+    IsCollCollsElms,
+        [       IsMatrix and IsListDefault and IsGF2MatrixRep,
+                IsFFE ],
+    0,
+        function(m,s)
+    if s = Z(2) then
+        return AdditiveInverseSameMutability(m);
+    elif IsZero(s) then
+        return ZeroSameMutability(m);
+    else
+        TryNextMethod();
+    fi;
+end);
+
+#############################################################################
+##
 #F  ConvertToVectorRep(<v>)
 ##
 
 LOCAL_COPY_GF2 := GF(2);
 
-InstallGlobalFunction(ConvertToVectorRep,function( arg )
+InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
     local x, gf2, gfq, char,deg,q,p,mindeg, v, field ;
     if Length(arg) < 1 then
         Error("ConvertToVectorRep: one or two arguments required");
@@ -1312,13 +1356,12 @@ end);
 ##
 #F  ImmutableMatrix( <field>, <matrix> [,<change>] ) 
 ##
-InstallGlobalFunction( ImmutableMatrix, function(arg)
-local field,matrix,nochange,sf, rep, ind, ind2, row, i,big,l;
-  field:=arg[1];
-  matrix:=arg[2];
-  nochange:=Length(arg)<3 or arg[3]<>true;
-  if IsEmpty(matrix) then
-    return matrix;
+DoImmutableMatrix:=function(field,matrix,change)
+local sf, rep, ind, ind2, row, i,big,l;
+  if not (IsPlistRep(matrix) or IsGF2MatrixRep(matrix) or
+    Is8BitMatrixRep(matrix)) then
+    # if empty of not list based, simply return `Immutable'.
+    return Immutable(matrix);
   fi;
   if IsInt(field) then
     sf:=field;
@@ -1347,20 +1390,20 @@ local field,matrix,nochange,sf, rep, ind, ind2, row, i,big,l;
   for i in [1..Length(matrix)] do
     if not rep(matrix[i]) then
       if big or IsLockedRepresentationVector(matrix[i]) 
-	or (nochange and IsMutable(matrix[i])) then
+	or (IsMutable(matrix[i]) and not change) then
         Add(ind2,i);
       else
 	# wrong rep, but can be converted
 	Add(ind,i);
       fi;
-    elif (nochange and IsMutable(matrix[i])) then
+    elif (IsMutable(matrix[i]) and not change) then
       # right rep but wrong mutability
       Add(ind2,i);
     fi;
   od;
 
   # do we need to rebuild outer matrix layer?
-  if (nochange and IsMutable(matrix)) # matrix was mutable
+  if (IsMutable(matrix) and not change) # matrix was mutable
     or (Length(ind2)>0 and   # we want to change rows
       not IsMutable(matrix)) #but cannot change entries
     or (Is8BitMatrixRep(matrix) # matrix is be compact rep
@@ -1381,14 +1424,14 @@ local field,matrix,nochange,sf, rep, ind, ind2, row, i,big,l;
   else
     for i in ind2 do
       row := ShallowCopy(matrix[i]);
-      ConvertToVectorRep(row, sf);
+      ConvertToVectorRepNC(row, sf);
       matrix[i] := row;
     od;
   fi;
 
   # this can only happen if not big
   for i in ind do
-    ConvertToVectorRep(matrix[i],sf);
+    ConvertToVectorRepNC(matrix[i],sf);
   od;
 
   MakeImmutable(matrix);
@@ -1398,7 +1441,60 @@ local field,matrix,nochange,sf, rep, ind, ind2, row, i,big,l;
     CONV_MAT8BIT(matrix,sf);
   fi;
   return matrix;
-end );
+end;
+
+InstallMethod( ImmutableMatrix,"general,2",[IsObject,IsMatrix],0,
+function(f,m)
+  return DoImmutableMatrix(f,m,false);
+end);
+
+InstallOtherMethod( ImmutableMatrix,"general,3",[IsObject,IsMatrix,IsBool],0,
+  DoImmutableMatrix);
+
+InstallOtherMethod( ImmutableMatrix,"field,8bit",[IsField,Is8BitMatrixRep],0,
+function(f,m)
+  if Q_VEC8BIT(m[1])<>Size(f) then
+    TryNextMethod();
+  fi;
+  return Immutable(m);
+end);
+
+InstallOtherMethod( ImmutableMatrix,"field,gf2",[IsField,IsGF2MatrixRep],0,
+function(f,m)
+  if 2<>Size(f) then
+    TryNextMethod();
+  fi;
+  return Immutable(m);
+end);
+
+InstallOtherMethod( ImmutableMatrix,"fieldsize,8bit",[IsPosInt,Is8BitMatrixRep],0,
+function(f,m)
+  if Q_VEC8BIT(m[1])<>f then
+    TryNextMethod();
+  fi;
+  return Immutable(m);
+end);
+
+InstallOtherMethod( ImmutableMatrix,"fieldsize,gf2",[IsPosInt,IsGF2MatrixRep],0,
+function(f,m)
+  if 2<>f then
+    TryNextMethod();
+  fi;
+  return Immutable(m);
+end);
+
+InstallOtherMethod( ImmutableMatrix,"empty",[IsObject,IsEmpty],0,
+function(f,m)
+  return Immutable(m);
+end);
+
+InstallOtherMethod( ImmutableMatrix,"transposed empty",[IsObject,IsList],0,
+function(f,m)
+  if not ForAll(m,i->IsList(i) and Length(i)=0) then
+    TryNextMethod();
+  fi;
+  return Immutable(m);
+end);
 
 #############################################################################
 ##
@@ -1525,11 +1621,11 @@ end);
 ##
 #M  NumberFFVector(<<vec>,<sz>)
 ##
-InstallMethod(NumberFFVector,"uncompressed vecffe",true,
-  [IsRowVector and IsFFECollection,IsPosInt],0,
+InstallMethod(NumberFFVector,"uncompressed vecffe",
+  [IsRowVector and IsFFECollection,IsPosInt],
         function(v,n)
     local qels, sy, p, x;
-    qels := AsSSortedList(GF(n));
+    qels:= EnumeratorSorted( GF(n) );
     sy := 0;
     for x in v do
         p := Position(qels, x);
@@ -1676,6 +1772,11 @@ InstallMethod( PowerModCoeffs, "for gf2vectors", IsFamXYFamZ,
         function( v, lv, exp, w, lw)
     
     local pow, lpow, bits, i;
+    if exp = 1 then
+        pow := ShallowCopy(v);
+        ReduceCoeffs(pow,lv,w,lw);
+        return pow;
+    fi;
     pow := v;
     lpow := lv;
     bits := [];
@@ -1766,7 +1867,7 @@ InstallMethod(SemiEchelonMat, "shortcut method for GF2 matrices",
         function(mat)
     local res;
     res :=  SemiEchelonMatDestructive( List(mat, ShallowCopy) ) ;
-    ConvertToMatrixRep(res.vectors,2);
+    ConvertToMatrixRepNC(res.vectors,2);
     return res;
     end );
 
@@ -1778,9 +1879,9 @@ InstallMethod(SemiEchelonMatTransformation,
         function(mat)
     local res;
     res := SemiEchelonMatTransformationDestructive( List( mat, ShallowCopy) );
-    ConvertToMatrixRep(res.vectors,2);
-    ConvertToMatrixRep(res.coeffs,2);
-    ConvertToMatrixRep(res.relations,2);
+    ConvertToMatrixRepNC(res.vectors,2);
+    ConvertToMatrixRepNC(res.coeffs,2);
+    ConvertToMatrixRepNC(res.relations,2);
     return res;
     end );
 
@@ -1887,6 +1988,14 @@ InstallMethod(NestingDepthM, [IsGF2MatrixRep], m->2);
 InstallMethod(NestingDepthA, [IsGF2MatrixRep], m->2);
 InstallMethod(NestingDepthM, [IsGF2VectorRep], m->1);
 InstallMethod(NestingDepthA, [IsGF2VectorRep], m->1);
+
+InstallMethod(PostMakeImmutable, [IsGF2MatrixRep], 
+        function(m)
+    local i;
+    for i in [2..m![1]] do
+        MakeImmutable(m![i]);
+    od;
+end);
 
 #############################################################################
 ##

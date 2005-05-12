@@ -1,0 +1,15 @@
+#!/bin/sh
+#############################################################################
+##
+#W  getparch						     Alexander Hulpke
+##
+##  this shell gets the package archive and extracts everything.
+##
+
+cd ${DISTROOT}
+
+wget -N "${PKGLOC}/${PKGARCH}"
+cd ${DISTROOT}/${DISTNAME}/pkg
+tar zxf ../../${PKGARCH}
+
+exit 0

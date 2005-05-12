@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the coder package.
 **
@@ -49,6 +50,7 @@ const char * Revision_code_c =
 #include        "vars.h"                /* variables                       */
 
 #include        "saveload.h"            /* saving and loading              */
+#include        "read.h"                /* to access stack of for loop globals */
 
 
 /****************************************************************************
@@ -865,6 +867,12 @@ void CodeForBegin ( void )
 
 void CodeForIn ( void )
 {
+  Expr var = PopExpr();
+  if (TNUM_EXPR(var) == T_REF_GVAR)
+    {
+      PushGlobalForLoopVariable((UInt)ADDR_EXPR(var)[0]);
+    }
+  PushExpr(var);
 }
 
 void CodeForBeginBody ( void )
@@ -899,6 +907,9 @@ void CodeForEndBody (
     /* get the variable reference                                          */
     var = PopExpr();
 
+    if (TNUM_EXPR(var) == T_REF_GVAR)
+      PopGlobalForLoopVariable();
+    
     /* select the type of the for-statement                                */
     if ( TNUM_EXPR(list) == T_RANGE_EXPR && SIZE_EXPR(list) == 2*sizeof(Expr)
       && TNUM_EXPR(var)  == T_REFLVAR ) {

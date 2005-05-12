@@ -8,6 +8,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file defines operations and such. Some functions have moved
 ##  to oper1.g so as to be compiled in the default kernel
@@ -281,13 +282,24 @@ end );
 BIND_GLOBAL( "InstallImmediateMethod", function( arg )
     local name;
 
-    if LEN_LIST(arg) = 4  then
+    if     LEN_LIST( arg ) = 4
+       and IS_OPERATION( arg[1] )
+       and IsFilter( arg[2] )
+       and IS_RAT( arg[3] )
+       and IS_FUNCTION( arg[4] ) then
         name := NAME_FUNC(arg[1]);
         INSTALL_IMMEDIATE_METHOD( arg[1], name, arg[2], arg[3], arg[4] );
         INSTALL_METHOD( [ arg[1], [ arg[2] ], arg[4] ], false );
-    elif LEN_LIST(arg) = 5  then
+    elif   LEN_LIST( arg ) = 5
+       and IS_OPERATION( arg[1] )
+       and IS_STRING( arg[2] )
+       and IsFilter( arg[3] )
+       and IS_RAT( arg[4] )
+       and IS_FUNCTION( arg[5] ) then
         INSTALL_IMMEDIATE_METHOD( arg[1], arg[2], arg[3], arg[4], arg[5] );
         INSTALL_METHOD( [ arg[1], [ arg[3] ], arg[5] ], false );
+    else
+      Error("usage: InstallImmediateMethod(<opr>,<filter>,<rank>,<method>)");
     fi;
 end );
 
@@ -1014,13 +1026,11 @@ end );
 ##  more than <len> lines.
 ##  The default is 3.
 ##
-VIEWLEN := 3;
-
 BIND_GLOBAL( "ViewLength", function(arg)
   if LEN_LIST( arg ) = 0 then
-    return VIEWLEN;
+    return GAPInfo.ViewLength;
   else
-    VIEWLEN:= arg[1];
+    GAPInfo.ViewLength:= arg[1];
   fi;
 end );
 
@@ -1155,6 +1165,16 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
     INSTALL_METHOD_ARGS( oper, func );
 end );
 
+
+BIND_GLOBAL( "FLUSH_ALL_METHOD_CACHES", function()
+    local i,j;
+    for i in [1,3..LEN_LIST(OPERATIONS)-1] do
+        for j in [1..6] do
+            CHANGED_METHODS_OPERATION(OPERATIONS[i],j);
+        od;
+    od;
+end);
+        
 
 #############################################################################
 ##

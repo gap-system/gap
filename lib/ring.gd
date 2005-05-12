@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for rings.
 ##
@@ -389,6 +390,27 @@ InstallSubsetMaintenance( IsZeroSquaredRing,
 
 InstallFactorMaintenance( IsZeroSquaredRing,
     IsRing and IsZeroSquaredRing, IsObject, IsRing );
+
+
+#############################################################################
+##
+#P  IsZeroMultiplicationRing( <R> )
+##
+##  is `true' if $a * b$ is the zero element of the ring <R>
+##  for all $a, b$ in <R>, and `false' otherwise.
+##
+DeclareProperty( "IsZeroMultiplicationRing", IsRing );
+
+InstallTrueMethod( IsZeroSquaredRing, IsRing and IsZeroMultiplicationRing );
+InstallTrueMethod( IsAssociative, IsRing and IsZeroMultiplicationRing );
+InstallTrueMethod( IsCommutative, IsRing and IsZeroMultiplicationRing );
+# The implication to `IsAnticommutative' follows from `IsZeroSquaredRing'.
+
+InstallSubsetMaintenance( IsZeroMultiplicationRing,
+    IsRing and IsZeroMultiplicationRing, IsRing );
+
+InstallFactorMaintenance( IsZeroMultiplicationRing,
+    IsRing and IsZeroMultiplicationRing, IsObject, IsRing );
 
 
 #############################################################################

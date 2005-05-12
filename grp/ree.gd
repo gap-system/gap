@@ -21,7 +21,7 @@ DeclareConstructor( "ReeGroupCons", [ IsGroup, IsInt ] );
 #F  Ree( [<filt>, ] <q> )
 ##
 ##  Constructs a group isomorphic to the Ree group $2G2(q)$ where
-##  $q=3^{1+2m}$ for $m>0$.
+##  $q=3^{1+2m}$ for $m$ a non-negative integer.
 ##
 ##  If <filt> is not given it defaults to `IsMatrixGroup' and
 ##  the generating matrices are based on~\cite{KLM01}.

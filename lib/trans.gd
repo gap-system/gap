@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for transformations
 ##
@@ -154,7 +155,7 @@ DeclareOperation("RestrictedTransformation",
 #O  AsTransformationNC( <O>, <n> )
 ##
 ##  returns the object <O> as a transformation. Supported objects are
-##  permuations and binary relations on points. In the
+##  permutations and binary relations on points. In the
 ##  second form, the operation  returns a 
 ##  transformation of degree <n>, signalling
 ##  an error if such a representation is not possible.  `AsTransformationNC'

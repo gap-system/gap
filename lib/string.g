@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file deals with strings and characters.
 ##
@@ -162,7 +163,13 @@ BIND_GLOBAL( "IsEmptyString",
 InstallMethod( String,
     "for a string (do nothing)",
     [ IsString ],
-    IdFunc );
+    function(s)
+      if Length(s) = 0 and not IsStringRep(s) then
+        return "[ ]";
+      else
+        return s;
+      fi;
+    end);
 
 
 ############################################################################

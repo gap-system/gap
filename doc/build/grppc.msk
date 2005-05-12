@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Pc Groups}
 
@@ -239,12 +240,15 @@ Then the right hand sides of the pc presentation have to be declared.
 Let $f_1, \ldots, f_n$ be the generators of the underlying free group
 <fgrp>.
 
+A combinatorial collector can only be set up for a finite $p$-group.
+Here, the relative orders <relorders> must all be equal and a prime.
+
 \> SetConjugate( <coll>, <i>, <j>, <w> )
 
 set the conjugate $f_j^{f_i}$ to equal <w> where <w> is a word
 in $f_{i+1}, \ldots, f_n$ and $i\<j$.
 
-\> SetCommutator( <coll>, <i>, <j>, <w> )
+\> SetCommutator( <coll>, <j>, <i>, <w> )
 
 set the commutator of $f_j$ and $f_i$ to equal <w> where <w> is a word
 in $f_{i+1}, \ldots, f_n$ and $i\<j$.
@@ -397,11 +401,12 @@ Pc groups are particularly suited for such applications, since the
 moreover, extensions of pc groups by elementary abelian groups can
 be represented as pc groups again.
 
-To define the elementary abelian group $M$ together with an action
-of $G$ on $M$ we consider $M$ as a meataxe module for $G$ over a finite
-field. For further information on meataxe modules see Chapter "The MeatAxe".
-Note that the matrices defining the module must correspond to the
-pcgs of the group <G>.
+To define the elementary abelian group $M$ together with an action of $G$ on
+$M$ we consider $M$ as a meataxe module for $G$ over a finite field
+(section~"IrreducibleModules" describes functions that can be used to obtain
+certain modules). For further information on meataxe modules see Chapter
+"The MeatAxe".  Note that the matrices defining the module must correspond
+to the pcgs of the group <G>.
 
 \Declaration{TwoCoboundaries}
 \Declaration{TwoCocycles}

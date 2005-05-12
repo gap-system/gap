@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -38,10 +40,10 @@ gap> img:= Image( rembrm, Z(3) );
 gap> PreImagesRepresentative( rembrm, img );
 Z(3)
 
-gap> STOP_TEST( "mgmring.tst", 21697500 );
+gap> STOP_TEST( "mgmring.tst", 15000000 );
+
 
 #############################################################################
 ##
 #E
-##
 

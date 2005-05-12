@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Semigroups}
 
@@ -74,6 +75,8 @@ about semigroups:
 \Declaration{IsZeroSimpleSemigroup}
 \Declaration{IsZeroGroup}
 \Declaration{IsReesCongruenceSemigroup}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Making transformation semigroups}
 
@@ -85,7 +88,8 @@ semigroups.
 \Declaration{IsTransformationSemigroup}
 \Declaration{DegreeOfTransformationSemigroup}
 \Declaration{IsomorphismTransformationSemigroup}
-
+\Declaration{IsFullTransformationSemigroup}
+\Declaration{FullTransformationSemigroup}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -98,7 +102,7 @@ For documentation on ideals for magmas, see `Magma' ("Magma").
 \Declaration{SemigroupIdealByGenerators}
 \Declaration{ReesCongruenceOfSemigroupIdeal}
 \Declaration{IsLeftSemigroupIdeal}
-\Declaration{IsRightSemigroupIdealEnumerator}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Congruences for semigroups}
@@ -113,6 +117,7 @@ see `Magma' ("Magma").
 \Declaration{IsSemigroupCongruence}
 \Declaration{IsReesCongruence}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Quotients}
 
@@ -120,12 +125,11 @@ Given a semigroup and a congruence on the semigroup, one
 can construct a new semigroup: the quotient semigroup.
 The following functions deal with quotient semigroups in {\GAP}.
 
-
-
 \Declaration{IsQuotientSemigroup}
 \FileHeader{semiquo}[1]
 \Declaration{HomomorphismQuotientSemigroup}
 \Declaration{QuotientSemigroupPreimage}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Green's Relations}
@@ -137,7 +141,7 @@ The following functions deal with quotient semigroups in {\GAP}.
 \Declaration{IsGreensClass}
 \Declaration{IsGreensLessThanOrEqual}
 \Declaration{RClassOfHClass}
-\Declaration{IsGreensRClassEnumerator}
+%Declaration{IsGreensRClassEnumerator}
 \Declaration{EggBoxOfDClass}
 \Declaration{DisplayEggBoxOfDClass}
 \Declaration{GreensRClassOfElement}
@@ -145,6 +149,7 @@ The following functions deal with quotient semigroups in {\GAP}.
 \Declaration{GroupHClassOfGreensDClass}
 \Declaration{IsGroupHClass}
 \Declaration{IsRegularDClass}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Rees Matrix Semigroups}
@@ -165,5 +170,6 @@ The following functions deal with quotient semigroups in {\GAP}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
 %E
-%
+

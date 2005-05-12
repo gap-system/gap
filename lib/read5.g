@@ -4,6 +4,7 @@
 ##
 
 ReadLib( "rvecempt.gi" );
+ReadLib( "ratfun1.gi"  );
 ReadLib( "matrix.gi"   );
 ReadLib( "matint.gi"   );
 ReadLib( "matblock.gi" );
@@ -59,9 +60,10 @@ ReadLib( "algrep.gi"   );
 ReadLib( "lierep.gi"   );
 
 ReadLib( "numtheor.gi" );
+ReadLib( "contfrac.gi" );
+
 ReadLib( "string.gi"   );
 
-ReadLib( "ratfun1.gi"  );
 ReadLib( "ratfun.gi"   );
 ReadLib( "ratfunul.gi" );
 ReadLib( "ringpoly.gi" );
@@ -72,6 +74,7 @@ ReadLib( "polyrat.gi"  );
 ReadLib( "polyconw.gi" );
 ReadLib( "listcoef.gi" );
 ReadLib( "algfld.gi"   );
+ReadLib( "groebner.gi" );
 
 ReadLib( "unknown.gi"  );
 
@@ -163,6 +166,8 @@ ReadLib( "grpreps.gi" );
 ReadLib( "grppcrep.gi" );
 ReadLib( "grpprmcs.gi" );
 
+ReadLib( "grpnames.gi" );
+
 ReadLib( "onecohom.gi" );
 ReadLib( "grppccom.gi" );
 ReadLib( "grpcompl.gi" );
@@ -225,6 +230,8 @@ ReadLib( "proto.gi");
 ReadLib( "orders.gi");
 
 ReadLib( "other.gi");
+
+ReadLib( "gasman.gi");
 
 #############################################################################
 ##

@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.ctblmoli_gd :=
     "@(#)$Id$";
@@ -27,8 +28,8 @@ Revision.ctblmoli_gd :=
 ##  character of the symmetric group $S_d$ (see~"SymmetricParts").
 ##
 ##  `MolienSeries' returns the Molien series of <psi>, relative to <chi>,
-##  where <psi> and <chi> must be characters of the same character table,
-##  which must be entered as <tbl> if <chi> and <psi> are only lists of
+##  where <psi> and <chi> must be characters of the same character table;
+##  this table must be entered as <tbl> if <chi> and <psi> are only lists of
 ##  character values.
 ##  The default for <chi> is the trivial character of <tbl>.
 ##

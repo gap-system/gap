@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1994,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This  file contains  the  functions for  a random Schreier-Sims algorithm
 ##  with verification.
@@ -15,7 +16,7 @@ Revision.stbcrand_gi :=
 
 #############################################################################
 ##
-#F  StabChainRandomPermGroup(<G>,<options>) . . . . . .  random Schreier-Sims
+#F  StabChainRandomPermGroup( <gens>, <id>, <opts> )  .  random Schreier-Sims
 ##
 ##  The  method  consists of  2  phases:  a  heuristic construction  and  
 ##  either a deterministic or two random checking phases. 
@@ -41,8 +42,9 @@ Revision.stbcrand_gi :=
 ##  After the  stabilizer chain  is  ready,  the  extra records are  deleted.
 ##  Transversals are rebuilt using the generators in the .generators records.
 ##
-InstallGlobalFunction( StabChainRandomPermGroup, function(S,options)
-    local degree,   # degree of S
+InstallGlobalFunction( StabChainRandomPermGroup, function( gens, id, options)
+    local S,        # stabilizer chain
+          degree,   # degree of S
           givenbase,# list of points from which first base points should come
           correct,  # boolean; true if a correct base is given
           size,     # size of <G> as constructed
@@ -67,17 +69,23 @@ InstallGlobalFunction( StabChainRandomPermGroup, function(S,options)
                     # constructed base
           T;        # a stabilizer chain containing the usual records
 
-    S:=rec( generators := ShallowCopy(S), identity := () );
+    S:= rec( generators := ShallowCopy( gens ), identity := id );
     if options.random = 1000 then
        #case of deterministic computation with known size
        k := 1;
     else 
        k:=First([1..14],x->(3/5)^x<1-options.random/1000);
     fi;
-    if IsBound( options.knownBase )  then
+
+    degree := LargestMovedPoint( S.generators );
+
+    if IsBound( options.knownBase) and
+      Length(options.knownBase)<4+LogInt(degree,10)  then
         param:=[k,4,0,0,0,0];
     else
         param:=[QuoInt(k,2),4,QuoInt(k+1,2),4,50,5];
+	options:=ShallowCopy(options);
+	Unbind(options.knownBase);
     fi;
     if options.random <= 200 then 
        param[2] := 2;
@@ -97,7 +105,6 @@ InstallGlobalFunction( StabChainRandomPermGroup, function(S,options)
     #param[6] = minimum number of random points from orbit to plug in to check
     #           whether given word is identity on orbit
 
-    degree := LargestMovedPoint( S.generators );
 
     # prepare input of construction
     if IsBound(options.base)  then
@@ -184,7 +191,7 @@ InstallGlobalFunction( StabChainRandomPermGroup, function(S,options)
         elif size < order then
             # we have an incorrect stabilizer chain
             # repeat checking until a new element is discovered
-            result := ();
+            result := id;
             if options.random = 1000 then 
                 if correct then 
                    result := SCRStrongGenTest(S,[1,10/S.diam,0,0,0,0],orbits,
@@ -192,11 +199,11 @@ InstallGlobalFunction( StabChainRandomPermGroup, function(S,options)
                 else 
                    result := SCRStrongGenTest2(S,[0,0,1,10/S.diam,0,0]); 
                 fi; 
-                if result = () then 
+                if result = id then 
                    T := SCRRestoredRecord(S);
                    result := VerifySGS(T,missing,correct); 
                 fi;
-                if result = () then
+                if result = id then
                    Print("Warning, computed and given size differ","\n");
                    ready := true;
                    S := T;
@@ -204,7 +211,7 @@ InstallGlobalFunction( StabChainRandomPermGroup, function(S,options)
                    if not IsPerm(result) then 
                       repeat 
                          result := SCRStrongGenTest2(S,[0,0,1,10/S.diam,0,0]);
-                      until result <> ();
+                      until result <> id;
                    fi;
                    new := [result]; 
                 fi; 
@@ -214,7 +221,7 @@ InstallGlobalFunction( StabChainRandomPermGroup, function(S,options)
                  # if correct base was provided, it is enough to check
                  # images of base points to check whether a word is trivial
                  # no need for second checking phase
-                 while result = () do
+                 while result = id do
                     warning := warning + 1;
                     if warning > 5 then
                        Print("Warning, computed and given size differ","\n");
@@ -223,14 +230,14 @@ InstallGlobalFunction( StabChainRandomPermGroup, function(S,options)
                                       basesize,base,correct,missing);
                  od;
                else
-                 while result = () do
+                 while result = id do
                     warning := warning + 1;
                     if warning > 5 then
                        Print("Warning, computed and given size differ","\n");
                     fi;
                     result:=SCRStrongGenTest(S,param,orbits,
                                     basesize,base,correct,missing);
-                    if result = () then
+                    if result = id then
                         # Print("entering SGT2","\n");
                         result:=SCRStrongGenTest2(S,param);
                     fi;
@@ -247,18 +254,18 @@ InstallGlobalFunction( StabChainRandomPermGroup, function(S,options)
                else 
                    result := SCRStrongGenTest2(S,[0,0,1,10/S.diam,0,0]); 
                fi;
-               if result = () then 
+               if result = id then 
                   T := SCRRestoredRecord(S);
                   result := VerifySGS(T,missing,correct); 
                fi; 
-               if result = () then 
+               if result = id then 
                   S := T; 
                   ready := true;
                else 
                   if not IsPerm(result) then 
                      repeat 
                         result := SCRStrongGenTest2(S,[0,0,1,10/S.diam,0,0]);
-                     until result <> ();
+                     until result <> id;
                   fi;
                   new := [result]; 
                fi;
@@ -266,7 +273,7 @@ InstallGlobalFunction( StabChainRandomPermGroup, function(S,options)
                # Print("entering SGT", "\n");
                result:=SCRStrongGenTest(S,param,orbits,basesize,
                                   base,correct,missing);
-               if result <> () then
+               if result <> id then
                   new:=[result];
                elif correct then
                   # no need for second checking phase
@@ -274,7 +281,7 @@ InstallGlobalFunction( StabChainRandomPermGroup, function(S,options)
                else
                    # Print("entering SGT2","\n");
                    result:=SCRStrongGenTest2(S,param);
-                   if result = () then
+                   if result = id then
                       ready:=true;
                    else
                       new:=[result];
@@ -372,7 +379,7 @@ InstallGlobalFunction( SCRMakeStabStrong,
         while new <> [] do
             g := SCRSift( S, new[Length(new)] );
             Unbind( new[Length(new)] );
-            if g <> () then
+            if g <> S.identity then
                 SCRMakeStabStrong(S.stabilizer,[g],param,orbits,
                                   where,basesize,base,correct,missing,false);
                 S.diam:=S.treedepth+S.stabilizer.diam;
@@ -383,15 +390,15 @@ InstallGlobalFunction( SCRMakeStabStrong,
     fi;
 
     #check random Schreier generators
-    gen := Concatenation(S.treegen,S.treegeninv,[()]);
-    inv := Concatenation(S.treegeninv,S.treegen,[()]);
+    gen := Concatenation(S.treegen,S.treegeninv,[S.identity]);
+    inv := Concatenation(S.treegeninv,S.treegen,[S.identity]);
     len := Length(S.aux);
     #in case of more than one generator for S, form a random subproduct
     #otherwise, use the generator
     if len > 1 then
         ran1 := SCRRandomPerm(len);
         string := SCRRandomString(len);
-        w := ();
+        w := S.identity;
         for x in [1..len] do
             w := w*(S.aux[x^ran1]^string[x]);
         od;
@@ -407,7 +414,7 @@ InstallGlobalFunction( SCRMakeStabStrong,
         ran := Random([1..Length(S.orbit)]);
         coset := CosetRepAsWord(S.orbit[1],S.orbit[ran],S.transversal);
         coset := InverseAsWord(coset,gen,inv);
-        if w <> () then
+        if w <> S.identity then
             # form Schreier generator and factorize
             Add(coset,w);
             residue := SiftAsWord(S,coset);
@@ -548,11 +555,11 @@ InstallGlobalFunction( SCRStrongGenTest,
             # w[1] in a random ordering of all generators
             # w[2] in a random ordering of a random subset of them
             w:=[];
-            w[1] := ();
+            w[1] := S.identity;
             for x in [1 .. len] do
                 w[1] := w[1]*(S.aux[x^ran1]^string[x]);
             od;
-            w[2] := ();
+            w[2] := S.identity;
             for x in [1 .. len2] do
                 w[2] := w[2]*(S.aux[x^ran2]^string[x+len]);
             od;
@@ -564,7 +571,7 @@ InstallGlobalFunction( SCRStrongGenTest,
             if len > 2*k-1 then
                 w[2] := S.aux[2*k];
             else
-                w[2] := ();
+                w[2] := S.identity;
             fi;
         fi;
 
@@ -577,7 +584,7 @@ InstallGlobalFunction( SCRStrongGenTest,
             i := 0;
             while i < 2 do
                 i := i+1;
-                if w[i] <> () then
+                if w[i] <> S.identity then
                     Append(ranword,[w[i]]);
                     residue := SiftAsWord(S,ranword);
                     if residue[2]>0 then
@@ -645,7 +652,7 @@ InstallGlobalFunction( SCRStrongGenTest,
         fi;
     od; #k loop
 
-    return ();
+    return S.identity;
 end );
 
 
@@ -713,11 +720,11 @@ InstallGlobalFunction( SCRStrongGenTest2, function ( S, param )
             # w[1] in a random ordering of all generators
             # w[2] in a random ordering of a random subset of them
             w:=[];
-            w[1] := ();
+            w[1] := S.identity;
             for x in [1 .. len] do
                 w[1] := w[1]*(S.aux[x^ran1]^string[x]);
             od;
-            w[2] := ();
+            w[2] := S.identity;
             for x in [1 .. len2] do
                 w[2] := w[2]*(S.aux[x^ran2]^string[x+len]);
             od;
@@ -729,7 +736,7 @@ InstallGlobalFunction( SCRStrongGenTest2, function ( S, param )
             if len > 2*k-1 then
                 w[2] := S.aux[2*k];
             else
-                w[2] := ();
+                w[2] := S.identity;
             fi;
         fi;
 
@@ -752,11 +759,11 @@ InstallGlobalFunction( SCRStrongGenTest2, function ( S, param )
             i := 0;
             while i < 2 do
                 i := i+1;
-                if w[i] <> () then
+                if w[i] <> S.identity then
                     # test whether product of ranelement and w[i] in S
                     ranelement := ranelement*w[i];
                     residue := SCRSift(S,ranelement);
-                    if residue <> () then
+                    if residue <> S.identity then
                         return residue;
                     fi;
                 fi;
@@ -768,7 +775,7 @@ InstallGlobalFunction( SCRStrongGenTest2, function ( S, param )
         fi;
     od; #k loop
 
-    return ();
+    return S.identity;
 end );
 
 
@@ -886,7 +893,7 @@ InstallGlobalFunction( SCRSchTree, function ( S, new )
         #recompute Schreier tree to new depth
         S.orbit := [S.orbit[1]];
         S.transversal := [];
-        S.transversal[S.orbit[1]] := ();
+        S.transversal[S.orbit[1]] := S.identity;
         S.treedepth := 0;
         list := [S.orbit,S.transversal,S.treegen,S.treegeninv,0];
         flag := false;
@@ -985,17 +992,17 @@ InstallGlobalFunction( SCRRandomString, function ( n )
     return string;
 end );
 
-###############################################################################
+#############################################################################
 ##
-#F  SCRRandomSubproduct(list) . . . random subproduct of permutations in list
+#F  SCRRandomSubproduct( <list>, <id> ) .  random subproduct of perms in list
 ##
-InstallGlobalFunction( SCRRandomSubproduct, function (list)
+InstallGlobalFunction( SCRRandomSubproduct, function( list, id )
     local string,  # 0-1 string containing the exponents of elements of list
           random,  # the random subproduct 
           i;       # loop variable
 
     string := SCRRandomString(Length(list));
-    random := ();
+    random := id;
     for i in [1 .. Length(list)] do
         if string[i] = 1 then 
             random := random*list[i];
@@ -1141,7 +1148,7 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
     pt1 := S.orbit[1]; 
     zinv := z^(-1); 
     pt2 := pt1^zinv; 
-    result := ();
+    result := S.identity;
     stab := S.stabilizer; 
     if pt2^zinv = pt1 then 
        flag := true; 
@@ -1156,7 +1163,7 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
     leaders := [pt2];
     orbit1count := 1; 
     transversal := []; 
-    transversal[pt2] := ();
+    transversal[pt2] := S.identity;
     where1[pt2] := 1;
     orb := [pt2]; 
     j := 1;
@@ -1177,7 +1184,7 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
            Add(leaders, i); 
            orb := [i]; 
            where1[i] := orbit1count;
-           transversal[i] := ();
+           transversal[i] := S.identity;
            j := 1;
            while j <= Length( orb )  do
              for gen  in stab.generators  do
@@ -1196,7 +1203,7 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
    # check that conjugates of point stabilizers of stab are subgroups of stab
    chain:=StructuralCopy(stab); 
    for j in [1..Length(leaders)] do
-       if result = () then 
+       if result = S.identity then 
            i := leaders[Length(leaders)+1-j]; 
            ChangeStabChain( chain, [i], false );
            if i = pt2 then 
@@ -1208,14 +1215,14 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
               w1inv := w1^(-1); 
            fi;
            for g in chain.stabilizer.generators do 
-               if result = () then       
+               if result = S.identity then       
                   if correct then 
                      residue := SiftAsWord(stab, [w1inv,g,w1]);
                      if residue[2] <> 0 then 
                         result := Product(residue[1]);
                      else 
                         l := 0; 
-                        while ( l < Length(missing) ) and ( result = () ) do 
+                        while ( l < Length(missing) ) and ( result = S.identity ) do 
                            l:=l+1;
                               if ImageInWord(missing[l],residue[1])
                                   <> missing[l]  then
@@ -1232,12 +1239,12 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
        fi;
    od;
 
- if result = () then  
+ if result = S.identity then  
     stabpt2 := chain.stabilizer;
     # process orbits of stabpt2 
     where2:= BlistList( [1..Length(where1)],[] ) ; 
     for i in S.orbit do 
-        if result = () and (not where2[i]) then 
+        if result = S.identity and (not where2[i]) then 
            orb := [i]; 
            where2[i] := true; 
            for pnt  in orb  do
@@ -1292,7 +1299,7 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
                  result := Product(residue[1]); 
               else
                   l := 0; 
-                  while ( l < Length(missing) ) and ( result = () ) do 
+                  while ( l < Length(missing) ) and ( result = S.identity ) do 
                      l:=l+1;
                      if ImageInWord(missing[l],residue[1])
                                <> missing[l]  then
@@ -1304,7 +1311,7 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
            else
               result := SCRSift(stab, schgen); 
            fi; 
-        fi;  # result = () and not where2[i]
+        fi;  # result = S.identity and not where2[i]
      od;
  fi; 
 
@@ -1344,17 +1351,17 @@ InstallGlobalFunction( VerifySGS, function(S,missing,correct)
  n := LargestMovedPoint(S.generators);
  list := ListStabChain(S); 
  len := Length(list); 
- result := ();
+ result := S.identity;
  
  # verify the subgroup chain from bottom up
  i := 1;
- while i < len  and  result = ()  do
+ while i < len  and  result = S.identity  do
      temp := ShallowCopy(list[len - i + 1]);
      InsertTrivialStabilizer(temp, list[len -i].orbit[1]);
      gencount := 0; 
  
      # add one generator a time
-     while (gencount < Length(list[len - i].generators)) and (result= () ) do
+     while (gencount < Length(list[len - i].generators)) and (result= S.identity ) do
          gencount := gencount + 1;
          gen := list[len - i].generators[gencount];
          set := Set( temp.orbit );
@@ -1367,7 +1374,7 @@ InstallGlobalFunction( VerifySGS, function(S,missing,correct)
                   result := Product(residue[1]);
                else 
                   l := 0; 
-                  while ( l < Length(missing) ) and ( result = () ) do 
+                  while ( l < Length(missing) ) and ( result = S.identity ) do 
                      l:=l+1;
                      if ImageInWord(missing[l],residue[1])
                                <> missing[l]  then
@@ -1405,7 +1412,7 @@ InstallGlobalFunction( VerifySGS, function(S,missing,correct)
             if i=1 and Length(set) =1 then 
                 result := newgen^(CycleLengthOp(newgen,temp2.orbit[1]));
                 AddGeneratorsExtendSchreierTree(temp2, [newgen]); 
-            elif result = () then
+            elif result = S.identity then
                 AddGeneratorsExtendSchreierTree( temp2, [ newgen ] );
                 blks := Blocks( GroupByGenerators(temp2.generators), 
                                 temp2.orbit); 
@@ -1432,7 +1439,7 @@ InstallGlobalFunction( VerifySGS, function(S,missing,correct)
                       AddGeneratorsExtendSchreierTree(temp,[gen]); 
                    fi; 
                 fi; 
-                if result <> () and temp2.orbit[1] > n then
+                if result <> S.identity and temp2.orbit[1] > n then
                      result := RestrictedPerm(result, [1..n]);
                 fi; 
                                 
@@ -1473,7 +1480,7 @@ InstallGlobalFunction( ExtensionOnBlocks, function( S, n, blks, elms )
       end;
 
       T := EmptyStabChain( [  ], S.identity );
-      ConjugateStabChain( S, T, hom, () );
+      ConjugateStabChain( S, T, hom, S.identity );
       
       # construct extensions of permutations in elms
       newelms := List( elms, hom );
@@ -1483,7 +1490,6 @@ end );
   
 #############################################################################
 ##
-
 #F  ClosureRandomPermGroup( <G>, <genlist>, <options> ) make closure randomly
 ##
 InstallGlobalFunction( ClosureRandomPermGroup,
@@ -1514,10 +1520,10 @@ InstallGlobalFunction( ClosureRandomPermGroup,
 
 # warning:  options.base should be compatible with BaseOfGroup(G)
 
-    gens := Filtered( genlist, gen -> SCRSift(G,gen) <> () );
+    gens := Filtered( genlist, gen -> not(IsOne(SCRSift(G,gen))) );
     if Length(gens) > 0  then
         
-        G.identity := () ;
+        G.identity := One(gens[1]) ;
         if options.random = 1000 then
             #case of deterministic computation with known size
             k := 1;
@@ -1626,7 +1632,7 @@ InstallGlobalFunction( ClosureRandomPermGroup,
         #calling SCRMakeStabStrong gives a nasty error if first base
         #point changes
         for g in gens do
-            if SCRSift(G,g) <> () then 
+            if not(IsOne(SCRSift(G,g))) then 
                 SCRMakeStabStrong (G,[g],param,orbits,
                         where,basesize,base,correct,missing,false);
             fi;
@@ -1647,7 +1653,7 @@ InstallGlobalFunction( ClosureRandomPermGroup,
               else 
                   result := SCRStrongGenTest2(G,[0,0,1,10/G.diam,0,0]); 
               fi;
-              if result <> () then
+              if not(IsPerm(result) and IsOne(result)) then
                   new := [result];
                   ready := false; 
               elif options.random = 1000 then 
@@ -1657,11 +1663,11 @@ InstallGlobalFunction( ClosureRandomPermGroup,
                   result := SCRStrongGenTest
                           (G,param,orbits,basesize,base,correct,missing);
               fi;
-              if result <> () then
+              if not(IsPerm(result) and IsOne(result)) then
                   if not IsPerm(result) then
                      repeat
                          result := SCRStrongGenTest2(G,[0,0,1,10/G.diam,0,0]);
-                     until result <> ();
+                     until not(IsPerm(result) and IsOne(result));
                   fi;
                   new := [result];
                   ready := false;
@@ -1669,7 +1675,7 @@ InstallGlobalFunction( ClosureRandomPermGroup,
                   ready := true;
               else 
                   result := SCRStrongGenTest2(G,param);
-                  if result = () then
+                  if IsPerm(result) and IsOne(result) then
                       ready := true;
                   else 
                       new := [result];
@@ -1677,6 +1683,7 @@ InstallGlobalFunction( ClosureRandomPermGroup,
                   fi;
               fi; 
               if not ready then 
+		Unbind(G.restored); 
                 SCRMakeStabStrong (G,new,param,orbits,
                         where,basesize,base,correct,missing,true);
               fi;

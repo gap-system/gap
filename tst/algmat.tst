@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -327,7 +329,7 @@ true
 
 #############################################################################
 
-gap> STOP_TEST( "algmat.tst", 880820000 );
+gap> STOP_TEST( "algmat.tst", 1355800000 );
 
 
 #############################################################################

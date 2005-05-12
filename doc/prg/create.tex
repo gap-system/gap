@@ -502,6 +502,9 @@ The following example shows the implementation of an iterator
 (see~"ref:Iterators" in the Reference Manual) for the domain of integers,
 which is represented as component object.
 See~"Positional Objects" for an implementation using positional objects.
+(In practice, such an iterator can be implemented more elegantly using
+`IteratorByFunctions', see~"Example -- Constructing Iterators"
+and~"ref:IteratorByFunctions" in the {\GAP} Reference Manual.)
 
 The used succession of integers is $0, 1, -1, 2, -2, 3, -3, \ldots$,
 that is, $a_n = n/2$ if $n$ is even,
@@ -675,6 +678,7 @@ This section gives some hints for the quite usual situation that one wants
 to implement new objects that are lists.
 More precisely, one either wants to deal with lists that have additional
 features, or one wants that some objects also behave as lists.
+An example can be found in~"Example -- Constructing Enumerators".
 
 A *list* in {\GAP} is an object in the category `IsList'.
 Basic operations for lists are `Length', `\\[\\]', and `IsBound\\[\\]'
@@ -736,6 +740,211 @@ Note that the product of two Lie matrices shall be defined but not the
 product of an ordinary matrix and a Lie matrix.
 So it is possible to have two lists that have the same entries but that
 are not equal w.r.t. ```=''' because they lie in different families.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Example -- Constructing Enumerators}
+
+When dealing with countable sets, a usual task is to define enumerations,
+i.e., bijections to the positive integers.
+In {\GAP}, this can be implemented via *enumerators*
+(see~"ref:Enumerators" in the {\GAP} Reference Manual).
+These are lists containing the elements in a specified ordering,
+and the operations `Position' and list access via `\\[\\]' define the
+desired bijection.
+For implementing such an enumerator, one mainly needs to install the
+appropriate functions for these operations.
+
+A general setup for creating such lists is given by `EnumeratorByFunctions'
+(see~"ref:EnumeratorByFunctions" in the {\GAP} Reference Manual).
+
+If the set in question is a domain <D> for which a `Size' method is
+available then all one has to do is to write down the functions for
+computing the $n$-th element of the list and for computing the position
+of a given {\GAP} object in the list, to put them into the components
+`ElementNumber' and `NumberElement' of a record, and to call
+`EnumeratorByFunctions' with the domain <D> and this record as arguments.
+For example, the following lines of code install an `Enumerator' method
+for the case that <D> is the domain of rational integers.
+(Note that `IsIntegers' is a filter that describes exactly the domain of
+rational integers.)
+
+\begintt
+InstallMethod( Enumerator,
+    "for integers",
+    [ IsIntegers ],
+    Integers -> EnumeratorByFunctions( Integers, rec(
+                    ElementNumber := function( e, n ) ... end,
+                    NumberElement := function( e, x ) ... end ) ) );
+\endtt
+
+The bodies of the functions have been omitted above;
+here is the code that is actually used in {\GAP}.
+(The ordering coincides with that for the iterators for the domain of
+rational integers that have been discussed in~"Component Objects"
+and~"Positional Objects".)
+
+\beginexample
+gap> enum:= Enumerator( Integers );
+<enumerator of Integers>
+gap> Print( enum!.NumberElement, "\n" );
+function ( e, x )
+    local  pos;
+    if not IsInt( x )  then
+        return fail;
+    elif 0 < x  then
+        pos := 2 * x;
+    else
+        pos := -2 * x + 1;
+    fi;
+    return pos;
+end
+gap> Print( enum!.ElementNumber, "\n" );
+function ( e, n )
+    if n mod 2 = 0  then
+        return n / 2;
+    else
+        return (1 - n) / 2;
+    fi;
+    return;
+end
+\endexample
+
+The situation becomes slightly more complicated if the set $S$ in question
+is not a domain.
+This is because one must provide also at least a method for computing the
+length of the list, and because one has to determine the family in which
+it lies (see~"Creating Objects").
+The latter should usually not be a problem since either $S$ is nonempty and
+all its elements lie in the same family --in this case one takes the
+collections family of any element in $S$-- or the family of the enumerator
+must be `ListsFamily'.
+
+An example in the {\GAP} library is an enumerator for the set of $k$-tuples
+over a finite set; the function is called `EnumeratorOfTuples'.
+% The functions `ExtendedVectors' and `OneDimSubspacesTransversal' are
+% also examples but are currently also undocumented ...
+
+\beginexample
+gap> Print( EnumeratorOfTuples, "\n" );
+function ( set, k )
+    local  enum;
+    if IsEmpty( set )  then
+        return Immutable( [  ] );
+    elif k = 0  then
+        return Immutable( [ [  ] ] );
+    fi;
+    enum := EnumeratorByFunctions( CollectionsFamily( FamilyObj( set ) ), rec(
+          ElementNumber := function ( enum, n )
+                local  nn, t, i;
+                nn := n - 1;
+                t := [  ];
+                for i  in [ 1 .. enum!.k ]  do
+                    t[i] := RemInt( nn, Length( enum!.set ) ) + 1;
+                    nn := QuoInt( nn, Length( enum!.set ) );
+                od;
+                if nn <> 0  then
+                    Error( "<enum>[", n, "] must have an assigned value" );
+                fi;
+                nn := enum!.set{Reversed( t )};
+                MakeImmutable( nn );
+                return nn;
+            end,
+          NumberElement := function ( enum, elm )
+                local  n, i;
+                if not IsList( elm )  then
+                    return fail;
+                fi;
+                elm := List( elm, function ( x )
+                        return Position( enum!.set, x );
+                    end );
+                if fail in elm or Length( elm ) <> enum!.k  then
+                    return fail;
+                fi;
+                n := 0;
+                for i  in [ 1 .. enum!.k ]  do
+                    n := Length( enum!.set ) * n + elm[i] - 1;
+                od;
+                return n + 1;
+            end,
+          Length := function ( enum )
+                return Length( enum!.set ) ^ enum!.k;
+            end,
+          PrintObj := function ( enum )
+                Print( "EnumeratorOfTuples( ", enum!.set, ", ", enum!.k, " )" 
+                 );
+                return;
+            end,
+          set := Set( set ),
+          k := k ) );
+    SetIsSSortedList( enum, true );
+    return enum;
+end
+\endexample
+
+We see that the enumerator is a homogeneous list that stores individual
+functions `ElementNumber', `NumberElement', `Length', and `PrintObj';
+besides that, the data components $S$ and $k$ are contained.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Example -- Constructing Iterators}
+
+Iterators are a kind of objects that is implemented for several collections
+in the {\GAP} library and which might be interesting also in other cases,
+see~"ref:Iterators" in the {\GAP} Reference Manual.
+A general setup for implementing new iterators is provided by
+`IteratorByFunctions'.
+
+All one has to do is to write down the functions for `NextIterator',
+`IsDoneIterator', and `ShallowCopy', and to call
+`IteratorByFunctions' with this record as argument.
+For example, the following lines of code install an `Iterator' method
+for the case that the argument is the domain of rational integers.
+
+(Note that `IsIntegers' is a filter that describes exactly the domain of
+rational integers.)
+
+\begintt
+InstallMethod( Iterator,
+    "for integers",
+    [ IsIntegers ],
+    Integers -> IteratorByFunctions( rec(
+                    NextIterator:= function( iter ) ... end,
+                    IsDoneIterator := ReturnFalse,
+                    ShallowCopy := function( iter ) ... end ) ) );
+\endtt
+
+The bodies of two of the functions have been omitted above;
+here is the code that is actually used in {\GAP}.
+(The ordering coincides with that for the iterators for the domain of
+rational integers that have been discussed in~"Component Objects"
+and~"Positional Objects".)
+
+\beginexample
+gap> iter:= Iterator( Integers );
+<iterator>
+gap> Print( iter!.NextIterator, "\n" );
+function ( iter )
+    iter!.counter := iter!.counter + 1;
+    if iter!.counter mod 2 = 0  then
+        return iter!.counter / 2;
+    else
+        return (1 - iter!.counter) / 2;
+    fi;
+    return;
+end
+gap> Print( iter!.ShallowCopy, "\n" );   
+function ( iter )
+    return rec(
+        counter := iter!.counter );
+end
+\endexample
+
+Note that the `ShallowCopy' component of the record must be a function
+that does not return an iterator but a record that can be used as the
+argument of `IteratorByFunctions' in order to create the desired
+shallow copy.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -936,11 +1145,6 @@ gap> l := [1,2,4];
 gap> MakeImmutable(l);
 gap> l[3] := 5;
 Lists Assignment: <list> must be a mutable list
-not in any function
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you can 'return;' and ignore the assignment to continue
-brk> 
 \endexample
 
 For external Objects, the situation is different. An external Object which
@@ -975,7 +1179,7 @@ gap> g!.silly;
 \endexample
 
 On the other hand, if we form an immutable externally represented list, we
-find that there is no Method for changing it using list assignment
+find that {\GAP} will not let us change the object.
 
 \beginexample
 gap> e := Enumerator(g);
@@ -985,11 +1189,9 @@ false
 gap> IsList(e);
 true
 gap> e[3];
-(1,4)(2,3)
+(1,2,4)
 gap> e[3] := false;
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `ASS_LIST' on 3 arguments called from
-... lines omitted here ...
+Error, The list you are trying to assign to is immutable
 \endexample
 
 When we consider copying Objects, another filter `IsCopyable', enters
@@ -1018,9 +1220,9 @@ gap> e1 := StructuralCopy(e);
 gap> IsMutable(e1);
 false
 gap> e2 := ShallowCopy(e);
-[ (), (1,2)(3,4), (1,4)(2,3), (1,3)(2,4), (2,3,4), (1,2,4), (1,4,3), (1,3,2), 
-  (2,4,3), (1,2,3), (1,4,2), (1,3,4), (3,4), (1,2), (1,4,2,3), (1,3,2,4), 
-  (2,3), (1,2,4,3), (1,4), (1,3,4,2), (2,4), (1,2,3,4), (1,4,3,2), (1,3) ]
+[ (), (1,4), (1,2,4), (1,3,4), (2,4), (1,4,2), (1,2), (1,3,4,2), (2,3,4), 
+  (1,4,2,3), (1,2,3), (1,3)(2,4), (3,4), (1,4,3), (1,2,4,3), (1,3), (2,4,3), 
+  (1,4,3,2), (1,2)(3,4), (1,3,2), (2,3), (1,4)(2,3), (1,2,3,4), (1,3,2,4) ]
 gap> 
 \endexample
 

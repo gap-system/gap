@@ -7,6 +7,8 @@
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  Exclude from testall.g: why?
+##
 
 gap> START_TEST("$Id$");
 
@@ -589,10 +591,10 @@ gap> GetHashEntry( hash, r );
 #gap> GetHashEntry( hash, Zero(V) );
 #fail
 
-gap> STOP_TEST( "hash2.tst", 19260000 );
+gap> STOP_TEST( "hash2.tst", 23100000 );
 
 
 #############################################################################
 ##
 #E  
-##
+

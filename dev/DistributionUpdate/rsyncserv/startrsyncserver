@@ -1,0 +1,6 @@
+#!/bin/sh
+
+##  $Id$     Frank Lübeck
+
+exec rsync --port 8731 --daemon --config rsyncd.conf 
+

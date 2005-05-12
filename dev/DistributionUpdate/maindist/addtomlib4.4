@@ -1,0 +1,55 @@
+#!/bin/sh
+#############################################################################
+##
+## $Id$
+
+if [ ${DISTROOT}X==X ]; then
+  echo 'Loading environment settings'
+  source ./setvar
+fi
+
+line='cd '${DISTROOT}
+echo $line
+$line 
+
+if [ \! -f tomlib1r1.zoo ];  then
+  echo "Creating tomlib1r1.zoo and tomlibxt1r1.zoo from CVS repository."
+  cd ${DISTNAME}/pkg/tomlib 
+  make dist
+  mv tomlib1r1.zoo tomlibxt1r1.zoo ${DISTROOT}
+  cd ${DISTROOT}
+else
+  echo "Found tomlib1r1.zoo and tomlibxt1r1.zoo archives."
+fi
+
+if [ \! -f tomlib1r1.zoo ];  then
+  echo "No files tomlib1r1.zoo and tomlibxt1r1.zoo in "${DISTROOT}
+  exit 1
+fi
+
+echo "Merging file "${DISTROOT}"/tomlib1r1.zoo into "
+echo "main archive."
+cd ${DISTNAME}/pkg
+rm -rf tomlib
+unzoo -x ${DISTROOT}/tomlib1r1.zoo
+cd ${DISTROOT}
+# they are all textfiles
+zooarchive=gap${RBVERSION}.zoo
+find \
+   ${DISTNAME}/pkg/tomlib \
+       -type f -exec sh -c \
+       '(echo "!TEXT!"; echo "/end") |  zoo ahc '${zooarchive}' '{} ";"
+             
+echo "Repacking tomlibxt1r1.zoo to xtom1r1.zoo by prepending paths."
+cd ${DISTNAME}/pkg
+rm -rf tomlib
+unzoo -x ${DISTROOT}/tomlibxt1r1.zoo
+cd ${DISTROOT}
+find \
+   ${DISTNAME}/pkg/tomlib \
+       -type f -exec sh -c \
+       '(echo "!TEXT!"; echo "/end") |  zoo ahc xtom1r1.zoo '{} ";"
+
+
+exit 0
+

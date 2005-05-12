@@ -1,0 +1,188 @@
+# lines starting with a hash are comment lines. Please do only edit lines
+# pertaining to your package.
+# version numbers are not yet used anywhere
+# STATUS line indicates whether the package is accepted/deposited/core/supplemental
+# URL line must be last
+# the blanks after the colon are required
+# if no README is given, it will be taken from the zoo archive.
+
+PKG: ace
+STATUS: A
+VERSION: 3.003
+README: ftp://ftp.gap-system.org/pub/gap/gap4/share/README.ace
+URL: ftp://ftp.gap-system.org/pub/gap/gap4/share/ace-3.003.zoo
+
+PKG: aclib
+STATUS: A
+VERSION: 1.0
+README: http://www.tu-bs.de/~beick/soft/README.aclib
+URL: http://www.tu-bs.de/~beick/soft/aclib.zoo
+
+PKG: anupq
+STATUS: A
+VERSION: 1.1
+README: http://www.math.rwth-aachen.de/~Greg.Gamble/README.anupq
+URL: http://www.math.rwth-aachen.de/~Greg.Gamble/anupq-1.1.zoo
+
+PKG: atlasrep
+STATUS: A
+VERSION: 1
+README: http://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep/README.atlasrep
+URL: http://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep/atlasrep.zoo
+
+PKG: autpgrp
+STATUS: A
+VERSION: 1.0
+URL: http://www.tu-bs.de/~beick/soft/autpgrp.zoo
+
+PKG: carat
+STATUS: A
+VERSION: 1.1
+README: http://www.itap.physik.uni-stuttgart.de/~gaehler/gap/README.carat
+URL: http://www.itap.physik.uni-stuttgart.de/~gaehler/gap/carat.zoo
+
+PKG: cohomolo
+STATUS: A
+VERSION: 1.0
+URL: ftp://ftp.gap-system.org/pub/gap/gap4/share/cohomolo1r0.zoo
+
+PKG: ctbllib
+STATUS: C
+VERSION: 1
+README: http://www.math.rwth-aachen.de/~Thomas.Breuer/ctbllib/README.ctbllib
+URL: http://www.math.rwth-aachen.de/~Thomas.Breuer/ctbllib/ctbllib.zoo
+
+PKG: crisp
+STATUS: A
+VERSION: 1.1
+README: http://www.tu-bs.de/~bhoeflin/crisp/README.crisp-1r1
+URL: http://www.tu-bs.de/~bhoeflin/crisp/crisp-1r1.zoo
+
+PKG: cryst
+STATUS: A
+VERSION: 4.1
+README: http://www.itap.physik.uni-stuttgart.de/~gaehler/gap/README.cryst
+URL: http://www.itap.physik.uni-stuttgart.de/~gaehler/gap/cryst.zoo
+
+PKG: crystcat
+STATUS: A
+VERSION: 1.1
+README: http://www.itap.physik.uni-stuttgart.de/~gaehler/gap/README.crystcat
+URL: http://www.itap.physik.uni-stuttgart.de/~gaehler/gap/crystcat.zoo
+
+#PKG: example
+#STATUS: C
+#VERSION: 1.2
+#README: ftp://ftp.gap-system.org/pub/gap/gap4/share/README.example
+#URL: ftp://ftp.gap-system.org/pub/gap/gap4/share/example-1.2.zoo
+
+PKG: edim
+STATUS: A
+VERSION: 1.1 of 2002
+README: http://www.math.rwth-aachen.de/~Frank.Luebeck/edim/README.edim
+URL: http://www.math.rwth-aachen.de/~Frank.Luebeck/edim/edim-1p1.zoo
+
+PKG: factint
+STATUS: A
+VERSION: 1.1
+README: http://www.cip.mathematik.uni-stuttgart.de/~kohlsn/factint/README.factint
+URL: http://www.cip.mathematik.uni-stuttgart.de/~kohlsn/factint/factint.zoo
+
+PKG: fplsa
+STATUS: A
+VERSION: 3.003
+README: ftp://ftp.gap-system.org/pub/gap/gap4/share/README.fplsa
+URL: http://www.math.colostate.edu/~hulpke/fplsa.zoo
+
+PKG: format
+STATUS: A
+VERSION: 1
+README: http://www.uoregon.edu/~wright/RESEARCH/README.format
+URL: http://www.uoregon.edu/~wright/RESEARCH/format.zoo
+
+PKG: gapdoc
+STATUS: D
+VERSION: 0.99
+README: http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/README.gapdoc
+URL: http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/gapdoc-0.99.zoo
+
+PKG: grape
+STATUS: A
+VERSION: 4.1
+URL: http://www.math.colostate.edu/~hulpke/grape4r1.zoo
+
+PKG: grpconst
+STATUS: A
+VERSION: 2.0
+README: http://www.tu-bs.de/~beick/soft/README.grpconst
+URL: http://www.tu-bs.de/~beick/soft/grpconst.zoo
+
+PKG: guava
+STATUS: D
+VERSION: 1.6
+URL: http://www.math.colostate.edu/~hulpke/guava16.zoo
+
+PKG: itc
+STATUS: A
+VERSION: 1.1
+README: ftp://ftp.gap-system.org/pub/gap/gap4/share/README.itc
+URL: http://www.math.colostate.edu/~hulpke/itc1r1.zoo
+
+PKG: kbmag
+STATUS: D
+VERSION: 2.0
+README: 
+URL:  http://www-gap.dcs.st-and.ac.uk/~sal/kbmag.zoo
+
+PKG: lag
+STATUS: A
+VERSION: 2.0
+README: ftp://ftp.gap-system.org/pub/gap/gap4/share/README.lag
+URL: ftp://ftp.gap-system.org/pub/gap/gap4/share/lag-2.zoo
+
+PKG: openmath
+STATUS: D
+VERSION: 1
+README: ftp://ftp.gap-system.org/pub/gap/gap4/deposit/psh/README.openmath
+URL: ftp://ftp.gap-system.org/pub/gap/gap4/deposit/psh/openmath.zoo
+
+PKG: polycyclic
+STATUS: D
+VERSION: 1
+README: ftp://ftp.gap-system.org/pub/gap/gap4/deposit/psh/README.polycyclic
+URL: ftp://ftp.gap-system.org/pub/gap/gap4/deposit/psh/polycyclic.zoo 
+
+PKG: pargap
+STATUS: A
+VERSION: 1.1.1
+README: ftp://ftp.gap-system.org/pub/gap/gap4/share/README.pargap
+URL: ftp://ftp.gap-system.org/pub/gap/gap4/share/pargap-1.1.1.zoo
+
+PKG: tomlib
+STATUS: C
+VERSION: 1
+URL: http://www.math.rwth-aachen.de/~Thomas.Breuer/tomlib/tomlib.zoo
+
+PKG: unipot
+STATUS: D
+VERSION: 1
+README: ftp://ftp.gap-system.org/pub/gap/gap4/deposit/psh/README.unipot
+URL: ftp://ftp.gap-system.org/pub/gap/gap4/deposit/psh/unipot1r1.zoo
+
+# supplemental data: extra tables is considered as a package in its own
+PKG: tomlibxt
+STATUS: S
+VERSION: 1.0
+URL: http://www.math.rwth-aachen.de/~Thomas.Breuer/tomlib/tomlibxt1r0.zoo
+
+PKG: xgap
+STATUS: A
+VERSION: 4.14
+README: http://www.math.rwth-aachen.de/~Max.Neunhoeffer/xgap4/README.xgap
+URL: http://www.math.rwth-aachen.de/~Max.Neunhoeffer/xgap4/xgap4r14.zoo
+
+PKG: xmod
+STATUS: A
+VERSION: 2.001
+README: http://www.informatics.bangor.ac.uk/public/math/research/hdda/ftp/README.xmod
+URL: http://www.informatics.bangor.ac.uk/public/math/research/hdda/ftp/xmod.zoo

@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains methods for modules over Lie algebras.
 ##
@@ -401,6 +402,7 @@ InstallHandlingByNiceBasis( "IsCochainsSpace", rec(
       for k in [1..Length(l)] do
         for i in [1..Length(l[k])] do
           p:= Position( tt, l[k][i][1] );
+          if p = fail then return fail; fi;
           v[(k-1)*Length(tt)+p]:= l[k][i][2];
         od;
       od;
@@ -818,11 +820,10 @@ InstallMethod( ConjugateDominantWeightWithWord,
           return [ ww, word ];
 end);
 
+
 #############################################################################
 ##
-#R  IsWeylOrbitIteratorRep( <it> )
-##
-##  Is the representation of the iterator of an orbit of a Weyl group.
+#M  WeylOrbitIterator( <w>, <wt> )
 ##
 ##  stack is a stack of weights, i.e., a list of elts of the form [ w, ind ]
 ##  the last elt of this list [w1,i1] is such that the i1-th refl app to
@@ -839,65 +840,13 @@ end);
 ##  permuteMidLen is true if we have to map the weights of length
 ##  midLen with the longest Weyl element...
 ##
-DeclareRepresentation( "IsWeylOrbitIteratorRep", IsComponentObjectRep,
-              [ "root", "currentWeight", "stack", "RMat",
-                "perm", "status", "permuteMidLen", "midLen",
-                "curLen", "noPosR", "isDone" ] );
 
-##############################################################################
+############################################################################
 ##
-#M
+#M  IsDoneIterator( <it> ) . . . . . . . . . . . . for Weyl orbit iterator
 ##
-##
-InstallMethod( WeylOrbitIterator,
-        "for weights of a W-orbit",
-        true,
-        [ IsWeylGroup, IsList ], 0,
+BindGlobal( "IsDoneIterator_WeylOrbit", it -> it!.isDone );
 
-        function( W, wt )
-
-    local   mu,  perm,  nu,  len,  i;
-
-    # The iterator starts at the dominant weight of the orbit.
-
-    mu:= ConjugateDominantWeight( W, wt );
-
-    # We calculate the maximum length occurring in an orbit (the length of
-    # an element of the orbit being defined as the minimum number of
-    # simple reflections that have to be applied in order to get from the
-    # dominant weight to the particular orbit element). This will determine
-    # whether we also have to apply the longest Weyl element to the elements
-    # of "middle" length.
-
-    perm:= LongestWeylWordPerm(W);
-    nu:= -Permuted( mu, perm );
-    len:= 0;
-    while nu <> mu do
-        i:= PositionProperty( nu, x -> x < 0 );
-        ApplySimpleReflection( SparseCartanMatrix(W), i, nu );
-        len:= len+1;
-    od;
-
-
-    return Objectify( NewType( IteratorsFamily,
-                   IsIterator
-                   and IsMutable
-                   and IsWeylOrbitIteratorRep ),
-                   rec( root:= mu,
-                        currentWeight:= mu,
-                        stack:= [ ],
-                        RMat:= SparseCartanMatrix(W),
-                        perm:= perm,
-                        status:= 1,
-                        permuteMidLen:=  IsOddInt( len ),
-                        midLen:=  EuclideanQuotient( len, 2 ),
-                        curLen:= 0,
-                        maxlen:= len,
-                        noPosR:= Length( PositiveRoots(
-                                RootSystem(W) ) ),
-                        isDone:= false ) );
-
-end );
 
 ############################################################################
 ##
@@ -906,11 +855,7 @@ end );
 ##  The algorithm is due to D. M. Snow (`Weyl group orbits',
 ##  ACM Trans. Math. Software, 16, 1990, 94--108).
 ##
-InstallMethod( NextIterator,
-        "for iterator of a Weyl orbit",
-        true, [ IsIterator and IsMutable and IsWeylOrbitIteratorRep ], 0,
-        function( it )
-
+BindGlobal( "NextIterator_WeylOrbit", function( it )
     local   output,  mu,  rank,  len,  stack,  bound,  foundsucc,
             pos,  i,  nu,  a;
 
@@ -990,20 +935,66 @@ InstallMethod( NextIterator,
 
 end );
 
-############################################################################
-##
-#M  IsDoneIterator( <it> ) . . . . . . . . . . . . for Weyl orbit iterator
-##
-##
-InstallMethod( IsDoneIterator,
-        "for iterator of a Weyl orbit",
-        true, [ IsIterator and IsMutable and IsWeylOrbitIteratorRep ], 0,
-        function( it )
+InstallMethod( WeylOrbitIterator,
+        "for weights of a W-orbit",
+        [ IsWeylGroup, IsList ],
 
-    return it!.isDone;
+        function( W, wt )
 
+    local   mu,  perm,  nu,  len,  i;
+
+    # The iterator starts at the dominant weight of the orbit.
+
+    mu:= ConjugateDominantWeight( W, wt );
+
+    # We calculate the maximum length occurring in an orbit (the length of
+    # an element of the orbit being defined as the minimum number of
+    # simple reflections that have to be applied in order to get from the
+    # dominant weight to the particular orbit element). This will determine
+    # whether we also have to apply the longest Weyl element to the elements
+    # of "middle" length.
+
+    perm:= LongestWeylWordPerm(W);
+    nu:= -Permuted( mu, perm );
+    len:= 0;
+    while nu <> mu do
+        i:= PositionProperty( nu, x -> x < 0 );
+        ApplySimpleReflection( SparseCartanMatrix(W), i, nu );
+        len:= len+1;
+    od;
+
+    return IteratorByFunctions( rec(
+               IsDoneIterator := IsDoneIterator_WeylOrbit,
+               NextIterator   := NextIterator_WeylOrbit,
+#T no `ShallowCopy'!
+               ShallowCopy:= function( iter ) 
+                      return rec( root:= ShallowCopy( iter!.root ),
+                        currentWeight:= ShallowCopy( iter!.currentWeight ),
+                        stack:= ShallowCopy( iter!.stack ),
+                        RMat:= iter!.RMat,
+                        perm:= iter!.perm,
+                        status:= iter!.status,
+                        permuteMidLen:=  iter!.permuteMidLen,
+                        midLen:=  iter!.midLen,
+                        curLen:= iter!.curLen,
+                        maxlen:= iter!.maxlen,
+                        noPosR:= iter!.noPosR,
+                        isDone:= iter!.isDone );
+                     end,
+                        root:= mu,
+                        currentWeight:= mu,
+                        stack:= [ ],
+                        RMat:= SparseCartanMatrix(W),
+                        perm:= perm,
+                        status:= 1,
+                        permuteMidLen:=  IsOddInt( len ),
+                        midLen:=  EuclideanQuotient( len, 2 ),
+                        curLen:= 0,
+                        maxlen:= len,
+                        noPosR:= Length( PositiveRoots(
+                                RootSystem(W) ) ),
+                        isDone:= false ) );
 end );
-
 
 
 #############################################################################
@@ -1492,34 +1483,9 @@ InstallMethod( \+,
                 IsUEALatticeElement and IsPackedElementDefaultRep], 0,
         function( x, y )
 
-    local   ex,  ey,  mons,  cfs,  i,  lst, len;
-
-    ex:= x![1]; ey:= y![1];
-    mons:= [ ]; cfs:= [ ];
-    for i in [1,3..Length(ex)-1] do
-        Add( mons, ex[i] ); Add( cfs, ex[i+1] );
-    od;
-
-    for i in [1,3..Length(ey)-1] do
-        Add( mons, ey[i] ); Add( cfs, ey[i+1] );
-    od;
-    SortParallel( mons, cfs );
-    lst:= [ ];
-    for i in [1..Length( mons )] do
-        len:= Length(lst);
-        if len > 0 and lst[len-1] = mons[i] then
-            lst[len]:= lst[len]+cfs[i];
-            if lst[len] = 0*lst[len] then
-                Unbind( lst[len-1] ); Unbind( lst[len] );
-                lst:= Filtered( lst, x -> IsBound(x) );
-            fi;
-
-        else
-            Add( lst, mons[i] ); Add( lst, cfs[i] );
-        fi;
-    od;
-    return ObjByExtRep( FamilyObj(x), lst );
+    return ObjByExtRep( FamilyObj(x), ZippedSum( x![1], y![1], 0, [\<,\+] ) );
 end );
+
 
 
 InstallMethod( AdditiveInverseOp,

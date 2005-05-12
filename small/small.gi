@@ -95,7 +95,7 @@ InstallGlobalFunction( SmallGroup, function( arg )
 
     if Length( arg ) = 1 then
         if not IsList( arg[1] ) or Length( arg[1] ) <> 2 then 
-            Error( "usage: SmallGroups( order, number )" ); 
+            Error( "usage: SmallGroup( order, number )" ); 
         fi;
         size := arg[ 1 ][ 1 ];
         i    := arg[ 1 ][ 2 ];
@@ -103,10 +103,10 @@ InstallGlobalFunction( SmallGroup, function( arg )
         size := arg[ 1 ];
         i    := arg[ 2 ];
     else 
-        Error( "usage: SmallGroups( order, number )" ); 
+        Error( "usage: SmallGroup( order, number )" ); 
     fi;
     if not IsPosInt( size ) or not IsPosInt( i ) then 
-        Error( "usage: SmallGroups( order, number )" ); 
+        Error( "usage: SmallGroup( order, number )" ); 
     fi;
     inforec := SMALL_AVAILABLE( size );
     if inforec = fail then
@@ -149,14 +149,19 @@ end );
 #F  SelectSmallGroups( argl, all, id )
 ##
 InstallGlobalFunction( SelectSmallGroups, function( argl, all, id )
-    local sizes, size, i, funcs, vals, gs, inforec, result, hasSizes, pos;
+    local sizes, size, i, funcs, vals, gs, inforec, result, hasSizes, pos,
+          idList;
 
     sizes := [ ];
     hasSizes := false;
+    idList := fail;
 
     for i in [ 1 .. Length( argl ) ] do
         if i = 1 and argl[ i ] = Size then
             ;
+        elif ( not hasSizes ) and IsList( argl[ i ] )
+                              and Length( sizes ) = 1 then
+            idList := argl[ i ];
         elif ( not hasSizes ) and IsList( argl[ i ] ) then
             Append( sizes, argl[ i ] );
         elif ( not hasSizes ) and IsInt( argl[ i ] ) then
@@ -167,7 +172,7 @@ InstallGlobalFunction( SelectSmallGroups, function( argl, all, id )
             vals         := [ [ ] ];
             pos          := 1;
         elif not hasSizes then 
-            Error( "usage: AllGroups / OneGroup(\n",
+            Error( "usage: AllSmallGroups / OneGroup(\n",
                    "             Size, [ sizes ],\n",
                    "             function1, [ values1 ],\n",
                    "             function2, [ values2 ], ... )" );
@@ -204,11 +209,11 @@ InstallGlobalFunction( SelectSmallGroups, function( argl, all, id )
     for size in sizes do
         inforec := SMALL_AVAILABLE( size );
         if inforec = fail then
-            Error( "AllGroups / OneGroup: groups of order ", size,
+            Error( "AllSmallGroups / OneGroup: groups of order ", size,
                    " not available" );
         fi;
         gs := SELECT_SMALL_GROUPS_FUNCS[ inforec.func ]
-                                     ( size, funcs, vals, inforec, all, id );
+                             ( size, funcs, vals, inforec, all, id, idList );
         if all then
             Append( result, gs );
         elif gs <> fail then
@@ -268,9 +273,11 @@ function( G )
     local inforec, size;
 
     size := Size( G );
+    if size = 1 then return [ 1, 1 ]; fi;
+
     inforec := ID_AVAILABLE( size );
     if inforec = fail then
-        Error( "the group identification for of groups of size ", size,
+        Error( "the group identification for groups of size ", size,
                " is not available" );
     fi;
 
@@ -300,7 +307,7 @@ end );
 #V  ID_GROUP_TREE
 ##
 ##  Variable containing information for group identification
-ID_GROUP_TREE := rec( fp := [ 1 .. 10000 ], next := [ ] );
+ID_GROUP_TREE := rec( fp := [ 1 .. 50000 ], next := [ ] );
 
 #############################################################################
 ##
@@ -414,7 +421,7 @@ InstallGlobalFunction( UnloadSmallGroupsData, function( )
     SMALL_GROUP_LIB := [ ];
     PROPERTIES_SMALL_GROUPS := [ ];
     GAP3_CATALOGUE_ID_GROUP := fail;
-    ID_GROUP_TREE := rec( fp := [ 1 .. 10000 ], next := [ ] );
+    ID_GROUP_TREE := rec( fp := [ 1 .. 50000 ], next := [ ] );
 end );
 
 #############################################################################

@@ -6,6 +6,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the objects package.
 */
@@ -710,6 +711,8 @@ Obj MutableCopyObjHandler (
 **
 */
 
+Obj PostMakeImmutableOp = 0;
+
 void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1])( Obj );
 
 
@@ -739,7 +742,7 @@ void MakeImmutableComObj( Obj obj)
     }
   */
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
-  
+  CALL_1ARGS( PostMakeImmutableOp, obj);
 }
 
 void MakeImmutablePosObj( Obj obj)
@@ -752,6 +755,7 @@ void MakeImmutablePosObj( Obj obj)
     }
   */
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
+  CALL_1ARGS( PostMakeImmutableOp, obj);
   
 }
 
@@ -782,9 +786,10 @@ Int PrintObjFull;
 
 Int PrintObjDepth;
 
-Obj PrintObjThiss [1024];
+#define MAXPRINTDEPTH 1024L
+Obj PrintObjThiss [MAXPRINTDEPTH];
 
-Int PrintObjIndices [1024];
+Int PrintObjIndices [MAXPRINTDEPTH];
 
 /****************************************************************************
 **
@@ -874,8 +879,14 @@ void            PrintObj (
       }
 
     /* dispatch to the appropriate printing function                       */
-    if ( ! IS_MARKED( PrintObjThis ) ) {
+    if ( (! IS_MARKED( PrintObjThis )) ) {
+      if (PrintObjDepth < MAXPRINTDEPTH) {
         (*PrintObjFuncs[ TNUM_OBJ(PrintObjThis) ])( PrintObjThis );
+      }
+      else {
+        /* don't recurse if depth too high */
+        Pr("\nprinting stopped, too many recursion levels!\n", 0L, 0L);
+      }
     }
 
     /* or print the path                                                   */
@@ -988,7 +999,13 @@ void            ViewObj (
     /* dispatch to the appropriate viewing function                       */
 
     if ( ! IS_MARKED( PrintObjThis ) ) {
-      DoOperation1Args( ViewObjOper, obj );
+      if (PrintObjDepth < MAXPRINTDEPTH) {
+        DoOperation1Args( ViewObjOper, obj );
+      }
+      else {
+        /* don't recurse any more */
+        Pr("\nviewing stopped, too many recursion levels!\n", 0L, 0L);
+      }
     }
 
     /* or view the path                                                   */
@@ -1584,6 +1601,7 @@ static Int InitKernel (
 
     /* functions for 'to-be-defined' objects                               */
     ImportFuncFromLibrary( "IsToBeDefinedObj", &IsToBeDefinedObj );
+    ImportFuncFromLibrary( "PostMakeImmutable", &PostMakeImmutableOp );
     ImportGVarFromLibrary( "REREADING", &REREADING );
 
     /* init filters and functions                                          */

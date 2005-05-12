@@ -6,6 +6,8 @@
 ##
 #Y  Copyright 1997,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -99,7 +101,7 @@ gap> vectors:= [ [ theta, z ], [ (i+e)*w, w ], [ w, (i-e)*w ] ];;
 gap> gens:= List( vectors, x -> ReflectionMat( x, w ) );;
 gap> g:= GroupByGenerators( gens );;
 gap> orb:= Orbit( g, vectors[1] );;
-gap> permgrp:= Operation( g, orb, OnRight );;
+gap> permgrp:= Action( g, orb, OnRight );;
 gap> Size( permgrp );
 720
 
@@ -731,11 +733,11 @@ true
 
 
 #############################################################################
-gap> STOP_TEST( "algsc.tst", 408385000 );
+gap> STOP_TEST( "algsc.tst", 265600000 );
 
 
 #############################################################################
 ##
-#E  algsc.tst . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+
 

@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -182,7 +184,7 @@ gap> ImagesSource( map5 );
 gap> PreImagesRange( map5 );
 GF(3)
 gap> CoKernelOfAdditiveGeneralMapping( map5 );
-<algebra of dimension 0 over GF(3)>
+<algebra over GF(3)>
 gap> KernelOfAdditiveGeneralMapping( map5 );
 <vector space over GF(3), with 0 generators>
 gap> IsSingleValued( map5 );
@@ -240,7 +242,7 @@ gap> ImagesSource( map7 );
 gap> PreImagesRange( map7 );
 ( GF(3)^2 )
 gap> CoKernelOfAdditiveGeneralMapping( map7 );
-<algebra of dimension 0 over GF(3)>
+<algebra over GF(3)>
 gap> KernelOfAdditiveGeneralMapping( map7 );
 <vector space over GF(3), with 1 generators>
 gap> IsSingleValued( map7 );
@@ -497,11 +499,11 @@ gap> BasisVectors( b );
   <linear mapping by matrix, GF(3^3) -> GF(3^3)>, 
   <linear mapping by matrix, GF(3^3) -> GF(3^3)> ]
 gap> Coefficients( b, id );
-[ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ]
+[ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ]
 gap> map:= LeftModuleHomomorphismByMatrix( bv, 2 * IdentityMat( 3, f ), bv );
 <linear mapping by matrix, GF(3^3) -> GF(3^3)>
 gap> Coefficients( b, map );
-[ Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ]
+[ Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3) ]
 
 
 gap> endoendo:= End( f, endo );
@@ -509,7 +511,7 @@ End( GF(3), End( GF(3), GF(3^3) ) )
 gap> Dimension( endoendo );
 81
 
-gap> STOP_TEST( "vspchom.tst", 42737500 );
+gap> STOP_TEST( "vspchom.tst", 55100000 );
 
 
 #############################################################################

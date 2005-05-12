@@ -10,7 +10,7 @@ Revision.small_gd :=
 ##
 ## tell GAP about the component
 ##
-DeclareComponent("small","2.0");
+DeclareComponent("small","2.1");
 
 InfoIdgroup := NewInfoClass( "InfoIdgroup" );
 
@@ -58,6 +58,8 @@ UnbindGlobal( "AllGroups" );
 ## $n$. However, the function can also take several arguments which then
 ## must be organized in pairs `function' and `value'. In this case the first
 ## function must be `Size' and the first value an order or a range of orders.
+## If value is a list then it is considered a list of possible function
+## values to include. 
 ## The function returns those groups of the specified orders having those
 ## properties specified by the remaining functions and their values.
 ## 

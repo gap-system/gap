@@ -27,7 +27,8 @@ computations (see "Runtime", "Profiling").
 When the method selection fails because there is no applicable method, an
 error as in the following example occurs and a break loop is entered:
 
-\begintt
+%notest
+\beginexample
 gap> IsNormal(2,2);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `IsNormal' on 2 arguments called from
@@ -36,7 +37,7 @@ Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> 
-\endtt
+\endexample
 
 This only says, that the method selection tried to find a method for 
 `IsNormal' on two arguments and failed. In this situation it is
@@ -85,6 +86,7 @@ gap> UntraceMethods( [ Size ] );
 gap> TraceImmediateMethods( true );
 gap> g:= Group( (1,2,3), (1,2) );;
 #I  immediate: Size
+#I  immediate: IsCyclic
 #I  immediate: IsCommutative
 #I  immediate: IsTrivial
 #I  immediate: IsStabChainViaChainSubgroup
@@ -95,6 +97,7 @@ gap> Size( g );
 #I  immediate: IsStabChainViaChainSubgroup
 #I  immediate: IsChainTypeGroup
 #I  immediate: IsNonTrivial
+#I  immediate: GeneralizedPcgs
 #I  immediate: IsPerfectGroup
 #I  immediate: IsEmpty
 6
@@ -239,11 +242,58 @@ Thus turning assertions on can slow code execution significantly.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Timing}
 
+\>Runtimes() F
+
+`Runtimes' returns a record with components bound to integers or `fail'. 
+Each integer
+is the cpu time (processor time) in milliseconds spent by {\GAP} in a
+certain status:
+
+\beginlist
+\item{}`user\_time'\ \  cpu time spent with {\GAP} functions (without child 
+processes).
+\item{}`system\_time'\ \  cpu time spent in system calls, e.g., file access 
+(`fail' if not available).
+\item{}`user\_time\_children'\ \  cpu time spent in child processes (`fail' if not available).
+\item{}`system\_time\_children'\ \  cpu time spent in system calls by child
+processes (`fail' if not available).
+\endlist
+
+Note that this function is not fully supported on all systems. Only the
+`user\_time' component is (and may on some systems include the system
+time). 
+
+The following example demonstrates tasks which contribute to the different
+time components:
+
+\begintt
+gap> Runtimes(); # after startup
+rec( user_time := 3980, system_time := 60, user_time_children := 0, 
+  system_time_children := 0 )
+gap> Exec("cat /usr/bin/*||wc"); # child process with a lot of file access
+ 893799 7551659 200928302
+gap> Runtimes();
+rec( user_time := 3990, system_time := 60, user_time_children := 1590, 
+  system_time_children := 600 )
+gap> a:=0;;for i in [1..100000000] do a:=a+1; od; # GAP user time
+gap> Runtimes();  
+rec( user_time := 12980, system_time := 70, user_time_children := 1590, 
+  system_time_children := 600 )
+gap> ?blabla  # first call of help, a lot of file access
+Help: no matching entry found
+gap> Runtimes();
+rec( user_time := 13500, system_time := 440, user_time_children := 1590, 
+  system_time_children := 600 )
+\endtt
+
 \>Runtime() F
 
 `Runtime' returns the time spent by {\GAP} in milliseconds as an integer.
-This is usually the cpu time, i.e., not the wall clock time.
-Also time spent by subprocesses of {\GAP} (see "Process") is not counted.
+It is the same as the value of the `user\_time' component given by `Runtimes',
+as explained above.
+
+See `StringTime' ("StringTime") for a translation from milliseconds into
+hour/minute format.
 
 \>`time;'{time}@{`time'}
 
@@ -268,7 +318,8 @@ much time has been spent during runtime.
 
 \Declaration{ClearProfile}
 
-\begintt
+%notest
+\beginexample
 gap> ProfileOperationsAndMethods(true);
 gap> ConjugacyClasses(PrimitiveGroup(24,1));;
 gap> ProfileOperationsAndMethods(false);
@@ -310,7 +361,7 @@ gap> DisplayProfile(StabChainOp,DerivedSubgroup); # only two functions
      29        0      810  StabChainOp                                        
             6920           OTHER                                              
             6920           TOTAL                                              
-\endtt
+\endexample
 
 Note that profiling (even the command `ProfileOperationsAndMethods(true)')
 can take substantial time and {\GAP} will perform much more slowly
@@ -369,7 +420,8 @@ a multiple of 5000, {\GAP} enters a break loop ("break loops") allowing
 you to terminate the calculation, or enter `return;' to continue it. 
 
 
-\begintt
+%notest
+\beginexample
 gap> dive:= function(depth) if depth>1 then dive(depth-1); fi; return; end;
 function( depth ) ... end
 gap> dive(100);
@@ -408,7 +460,7 @@ you can 'quit;' to quit to outer loop, or
 you may 'return;' to continue
 brk> return;
 gap> 
-\endtt
+\endexample
 
 This behaviour can be controlled using the procedure
 
@@ -420,7 +472,8 @@ altogether. In this case excessive recursion may cause {\GAP} to crash.
 
 
 
-\begintt
+%notest
+\beginexample
 gap> dive:= function(depth) if depth>1 then dive(depth-1); fi; return; end;
 function( depth ) ... end
 gap> SetRecursionTrapInterval(1000);
@@ -463,8 +516,25 @@ brk> return 0;
 gap> dive(20000);
 gap> dive(2000000);
 Segmentation fault
-\endtt
+\endexample
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Global Memory Information}
+
+The {\GAP} environment provides automatic memory management, so that
+the programmer does not need to concern themselves with allocating
+space for objects, or recovering space when objects are no longer
+needed. The component of the kernel which provides this is called
+`GASMAN' ({\GAP} Storage MANager).  Messages reporting garbage
+collections performed by GASMAN can be switched on by the `-g' command
+line option (see section "command line options").  There are also some
+facilities to access information from GASMAN from {\GAP} programs.
+
+\Declaration{GasmanStatistics}
+
+\Declaration{GasmanMessageStatus}
+
+\Declaration{GasmanLimits}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

@@ -49,7 +49,7 @@ an appropriate `manual.six' file.
 
 This command tells {\GAP} that in directory <dir> (given as either a  string
 describing   the   path   relative   to   the    {\GAP}    root    directory
-`GAP_ROOT_PATHS[1]' or as directory object) contains the  basic  information
+`GAPInfo.RootPaths[1]' or as directory object) contains the basic information
 about a help book. The string <short> is used as  an  identifying  name  for
 that book  by  the  online  help.  The  string  <long>  should  be  a  short
 explanation of the content of the book. Both strings together should  easily
@@ -100,9 +100,9 @@ An implementation example  of  such  a  set  of  handler  functions  is  the
 `default' format, which is the  format  name  used  for  the  `gapmacro.tex'
 documentation format, and this is contained in the file `lib/helpdef.gi'.
 
-The share package  \package{GapDoc}  (see  Chapter~"gapdoc:Introduction  and
-Example") also defines a format (as it should) which is called:  `GapDocGAP'
-(the case *is* significant).
+The package \package{GapDoc} (see Chapter~"gapdoc:Introduction and Example")
+also defines a format (as it should) which is called: `GapDocGAP' (the  case
+*is* significant).
 
 As you can see by the above two examples, the name for a document format can
 be anything, but it should be in some way meaningful.
@@ -129,9 +129,9 @@ be anything, but it should be in some way meaningful.
   typically generated using `InputTextFile' (see~"ref:InputTextFile"), e.g.
 
 \beginexample
-gap> dirs := DirectoriesPackageLibrary("gapdoc", "doc");;
-gap> file := Filename(dirs, "manual.six");;
-gap> stream := InputTextFile(file);;
+gap> dirs := DirectoriesLibrary( "doc/ref" );;
+gap> file := Filename( dirs, "manual.six" );;
+gap> stream := InputTextFile( file );;
 \endexample
 
 `ShowChapters( <info> )' &

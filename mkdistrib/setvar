@@ -7,8 +7,8 @@
 ##
 
 # where does the CVS directory live
-CVSROOT="/gap/CVS"
-# :pserver:gap@cvs-gap.dcs.st-and.ac.uk:/gap/CVS
+#CVSROOT="/gap/CVS"
+CVSROOT=":pserver:gap@cvs-gap.dcs.st-and.ac.uk:/gap/CVS"
 
 #-----------------------------------------------------------------------------
 # everything below should be system independent.
@@ -16,7 +16,7 @@ CVSROOT="/gap/CVS"
 # binary directory
 BINDIR=`pwd`
 
-PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/home/fac/a/hulpke/bin
 
 
 # where to put the version
@@ -30,20 +30,10 @@ fi
 DATE=`date +"%d-%b-%Y"`
 
 
-# what is the next version
-#if [ \! -f ${DISTROOT}/VERSION ];  then
-#    echo "PANIC: cannot find the version file '${DISTROOT}/VERSION'"
-#    exit 1
-#fi
-#OLD_VERSION=`cat ${DISTROOT}/VERSION`
-#if [ -z ${OLD_VERSION} ];  then
-#    echo "PANIC: version file '${DISTROOT}/VERSION' is corrupted'"
-#    exit 1
-#fi
-#VERSION=`expr ${OLD_VERSION} + 1`
 VERSION="${1}"
+FULLVERSION="${1}.${2}"
 
-echo "Creating Version $VERSION"
+echo "Creating Version $FULLVERSION"
 
 # where does the directory live
 RBVERSION="4r$VERSION"
@@ -53,8 +43,13 @@ GAPEXEC=${DISTROOT}/${DISTNAME}/${LINUXPATH}/gap
 
 # the tar directory
 TARDIR=/scratch
+umask 022
+
+PKGLOC=http://www.math.rwth-aachen.de:8001/~Frank.Luebeck/tmp/Packages/
+PKGARCH=mergepkg-2003_10_02-15_26_UTC.tar.gz
+
 
 # export these variables
-export CVSROOT CVSBRANCH DISTROOT VERSION BINDIR DATE LINUXPATH GAPEXEC TARDIR DISTNAME RBVERSION
+export CVSROOT CVSBRANCH DISTROOT VERSION FULLVERSION BINDIR DATE LINUXPATH GAPEXEC TARDIR DISTNAME RBVERSION PKGLOC PKGARCH
 
 

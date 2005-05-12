@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Integers}
 
@@ -88,7 +89,9 @@ gap> SignInt( 0 );
 \Declaration{LogInt}
 \beginexample
 gap> LogInt( 1030, 2 );
-10        # 2^10 = 1024
+10
+gap> 2^10;
+1024
 gap> LogInt( 1, 10 );
 0
 \endexample
@@ -101,7 +104,9 @@ gap> RootInt( 361 );
 gap> RootInt( 2 * 10^12 );
 1414213
 gap> RootInt( 17000, 5 );
-7        # 7^5 = 16807
+7
+gap> 7^5;
+16807
 \endexample
 
 \Declaration{SmallestRootInt}
@@ -110,7 +115,12 @@ gap> RootInt( 17000, 5 );
 gap> SmallestRootInt( 2^30 );
 2
 gap> SmallestRootInt( -(2^30) );
--4        # note that $(-2)^{30} = +(2^{30})$
+-4
+\endexample
+
+Note that $(-2)^{30} = +(2^{30})$.
+
+\beginexample
 gap> SmallestRootInt( 279936 );
 6
 gap> LogInt( 279936, 6 );
@@ -169,7 +179,11 @@ gap> GcdInt( 123, 66 );
 \beginexample
 gap> Gcdex( 123, 66 );
 rec( gcd := 3, coeff1 := 7, coeff2 := -13, coeff3 := -22, coeff4 := 41 )
-  # 3 = 7*123 - 13*66, 0 = -22*123 + 41*66
+\endexample
+
+This means $3 = 7 * 123 - 13 * 66$, $0 = -22 * 123 + 41 * 66$.
+
+\beginexample
 gap> Gcdex( 0, -3 );
 rec( gcd := 3, coeff1 := 0, coeff2 := -1, coeff3 := 1, coeff4 := 0 )
 gap> Gcdex( 0, 0 );
@@ -193,11 +207,16 @@ gap> ChineseRem( [ 2, 3, 5, 7 ], [ 1, 2, 3, 4 ] );
 gap> ChineseRem( [ 6, 10, 14 ], [ 1, 3, 5 ] );
 103
 \endexample
-\begintt
+%notest
+\beginexample
 gap> ChineseRem( [ 6, 10, 14 ], [ 1, 2, 3 ] );
 Error, the residues must be equal modulo 2 called from
-... lines omitted here ...
-\endtt
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop ...
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> gap> 
+\endexample
 
 \Declaration{PowerModInt}
 
@@ -225,8 +244,8 @@ false
 \beginexample
 gap> IsPrimePowerInt( 31^5 );
 true
-gap> IsPrimePowerInt( 2^31-1 );
-true        # $2^{31}-1$ is actually a prime
+gap> IsPrimePowerInt( 2^31-1 );  # 2^31-1 is actually a prime
+true
 gap> IsPrimePowerInt( 2^63-1 );
 false
 gap> Filtered( [-10..10], IsPrimePowerInt );
@@ -256,7 +275,7 @@ gap> Set( FactorsInt( Factorial(13)/11 ) );
 gap> FactorsInt( 2^63 - 1 );
 [ 7, 7, 73, 127, 337, 92737, 649657 ]
 gap> FactorsInt( 10^42 + 1 );
-#I  beyond the guaranteed bound of the probabilistic primality test
+#I  IsPrimeInt: probably prime, but not proven: 4458192223320340849
 [ 29, 101, 281, 9901, 226549, 121499449, 4458192223320340849 ]
 \endexample
 

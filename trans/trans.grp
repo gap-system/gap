@@ -86,8 +86,8 @@ TRANSGRP := [[[(),"1 = C(1)"]],
 ##      <sign>:         Sign
 ##      <shapes>:       List of all occurring shapes (except ()), sorted
 ##                      according to the ordering of the Partitions command
-##      <2Seq>:         Orbits on 2-Sequences
 ##      <2Set>:         Orbits on 2-Sets
+##      <2Seq>:         Orbits on 2-Sequences
 ##      <3Set>:         Orbits on 3-Sets
 ##      <special>:      following entries mark special properties, which
 ##       ...            are coded as [type,description1,description2,...] .
@@ -103,13 +103,13 @@ TRANSGRP := [[[(),"1 = C(1)"]],
 ##      8               Blocks
 ##      9               2Seq
 ##
-##           20+b       derived Subgroup on b
+##           20+b       alternating Subgroup on b
 ##
 ##        100*a+b       factor group by operation on the b cosets of a
 ##                      type a stabilizer; description field gives the
 ##                      number of this factor group as TransitiveGroup
 ##       1000*a+10*b+c  factor group by operation on the b cosets of
-##                      an type a stabilizer operates on c:
+##                      a type a stabilizer operates on c:
 ##                      description fields are a list for each of the
 ##                      possible stabilizers
 ##      10000*a+10*b+c  type a stabilizer of index b operation on c:
@@ -219,7 +219,7 @@ TRANSSIZES  :=[];
 TRANSPARTNUM:=[];
 InstallFlushableValue(TRANSSHAPEFREQS,[]);
 
-if not IsBound(TRANSDEGREES) then
+if not IsBound(TRANSDEGREES) or TRANSDEGREES=0 then
   TRANSDEGREES :=7;
   HideGlobalVariables("dir","fnam");
   dir:= DirectoriesLibrary( "trans" );
@@ -676,7 +676,7 @@ local i,j,a,b,l,p,deg,gut,g,grp,nr,f;
   if not IsInt(l) then
     Error("wrong arguments");
   fi;
-  deg:=[1..TRANSDEGREES];
+  deg:=[2..TRANSDEGREES];
   p:=Position(arglis,NrMovedPoints);
   if p<>fail then
     p:=arglis[p+1];
@@ -766,7 +766,7 @@ local i,j,a,b,l,p,deg,gut,g,grp,nr,f;
   od;
 
   if f then
-    Print("#W  AllTransitiveGroups: Degree restricted to [1..",
+    Print("#W  AllTransitiveGroups: Degree restricted to [2..",
           TRANSDEGREES,"]\n");
   fi;
 

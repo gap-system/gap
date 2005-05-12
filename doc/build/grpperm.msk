@@ -7,6 +7,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Permutation Groups}
 
@@ -91,7 +92,7 @@ gap> image:= Image( iso );;  NrMovedPoints( image );
 24
 gap> small:= SmallerDegreePermutationRepresentation( image );;
 gap> Image( small );
-Group([ (1,4)(2,3), (1,3)(2,4), (2,3), (2,3,4) ])
+Group([ (2,3), (2,4,3), (1,3)(2,4), (1,2)(3,4) ])
 \endexample
 
 % gap> p:=Group((1,2,3,4,5,6),(1,2));;p:=Action(p,AsList(p),OnRight);;
@@ -335,13 +336,14 @@ We created a permutation group on 400 points.
 First we compute a guaranteed correct stabilizer chain.
 (The `StabChain' command is described in~"StabChain".)
 
-\begintt
+%notest
+\beginexample
 gap> h:= Group( GeneratorsOfGroup( op ) );;
 gap> StabChain( h );;  time;
 1120
 gap> Size( h );
 2317591180800
-\endtt
+\endexample
 
 Now randomized verification will be used.
 We require that the result is guaranteed correct with probability $90\%$.
@@ -355,13 +357,14 @@ but we cannot promise that this will really happen.
 
 First the group is created anew.
 
-\begintt
+%notest
+\beginexample
 gap> h:= Group( GeneratorsOfGroup( op ) );;
 gap> StabChain( h, rec( random:= 900 ) );;  time;
 1410
 gap> Size( h );
 2317591180800
-\endtt
+\endexample
 
 The result is still correct, and the running time is actually somewhat
 slower.
@@ -369,12 +372,13 @@ If you give the algorithm additional information so that it can check
 its results,
 things become faster and the result is guaranteed to be correct.
 
-\begintt
+%notest
+\beginexample
 gap> h:=Group( GeneratorsOfGroup( op ) );;
 gap> SetSize( h, 2317591180800 );
 gap> StabChain( h );;  time;
 170
-\endtt
+\endexample
 
 The second example gives a typical group when the verification
 with `random' $=1000$ is slow. The problem is that the group
@@ -382,7 +386,8 @@ has a stabilizer subgroup $G^{(i)}$ such that the fundamental
 orbit $O^{(i)}$ is split into a lot of orbits when we stabilize
 $b_i$ and one additional point of $O^{(i)}$.
 
-\begintt
+%notest
+\beginexample
 gap> p1:=PermList(Concatenation([401],[1..400]));;
 gap> p2:=PermList(List([1..400],i->(i*20 mod 401)));;
 gap> d:=DirectProduct(Group(p1,p2),SymmetricGroup(5));;
@@ -394,7 +399,7 @@ gap> h:=Group(GeneratorsOfGroup(d));;
 gap> StabChain(h,rec(random:=900));;time;Size(h);
 570
 192480
-\endtt
+\endexample
 
 When stabilizer chains of a group $G$ are created
 with `random' $\<1000$, this is noted in the group $G$,
@@ -446,8 +451,7 @@ Note: Since the structure is recursive, *never print a stabilizer chain!*
         of  the current stabilizer,  i.e., it contains
         elements for the factorized
         inverse transversal.  The  first entry  is this list  is
-        always the  `identity',    for  reasons explained   below   under
-        `translabels'.
+        always the  `identity'.
         Note that {\GAP} tries to arrange things so that the `labels'
         components are identical (i.e., the same {\GAP} object)
         in every stabilizer of the chain;
@@ -469,39 +473,20 @@ Note: Since the structure is recursive, *never print a stabilizer chain!*
 `orbit' &
         the vertices of  the Schreier tree,  which  form the basic  orbit
         $b_i^{G^{(i)}}$, ordered in such a way that the  base point $b_i$ is
-        first in the list.
-
-`translabels' &
-        the factorized inverse   transversal  that was  found during  the
-        orbit  algorithm  carried out   with the   inverses of  `labels\{
-        genlabels \}', starting from the base point.
-        The directed edge from the point $i$ to the point $j = i ^g$
-        in the Schreier tree is represented by
-        `labels[ translabels[<j>] ] = <g>' in  the stabilizer chain
-        (note that <i> can be reconstructed as $j^{g^{-1}}$
-        from this information).
-        The entries in the `translabels' component are thus just integers
-        giving the positions of the appropriate labels in the `labels'
-        component.
-        The base point itself (i.e., the root of the Schreier tree)
-        corresponds to the entry `1' in `translabels'.
-        This makes it possible to assign
-        `transversal\{ orbit \} := labels\{ translabels\{ orbit \} \}'
-        (see~"ref:sublist!assignment" in the Reference Manual
-        and `transversal' below).
-        The `translabels' component pays off handsomely in the stabilizer
-        chain conjugation (see~"ext:Generalized Conjugation Technique"
-        in ``Extending {\GAP}'').
 
 `transversal' &
-        is another  representation of the factorized inverse transversal:
-        as a list   with `transversal[<j>] =  labels[ translabels[<j>] ]'
-        (the base point  itself has entry `()').  To look up  an entry in
-        this list is faster than to evaluate  the expression on the right
-        hand side,  and   since this operation   appears  most  often  in
-        permutation   group     code    (e.g.,    in      the    function
-        `InverseRepresentative' below), the speed-up is really worth this
-        extra record component.
+	The factorized inverse transversal found during the orbit algorithm.
+	The element <g> stored at `transversal[<i>]' will map <i> to another
+	point <j> that in the Schreier tree is closer to the base point. By
+	iterated application (`transversal[<j>]' and so on) eventually the
+	base point is reached and an element that maps <i> to the base
+	point foiund as product.
+
+`translabels' &
+	An index list such that 
+	`transversal[<j>] =  labels[ translabels[<j>] ]'.
+	This list takes up comparatively little memory and is used to speed
+	up base changes.
 
 `stabilizer' &
         If  the  current stabilizer is  not   yet the trivial  group, the
@@ -650,7 +635,7 @@ one can compute a stabilizer chain in about 200 MB of memory.
 % *ages* to run and *lots* of memory!
 % besides the input data is not given ...
 \begintt
-gap> Read("largeperms"); # read generators in from file
+gap> Read("largeperms"); # read generators from file
 gap> gens:=StraightLineProgGens(permutationlist);;
 gap> g:=Group(gens);
 <permutation group with 5 generators>

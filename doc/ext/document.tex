@@ -32,6 +32,7 @@ approach.  For  example  some  packages   have   started   to   use   the
 Chapter~"GAPDoc:Introduction and Example" in the \package{GAPDoc}  manual
 or type
 
+%notest
 \beginexample
 gap> ?GAPDoc:chapters
 \endexample
@@ -1011,10 +1012,13 @@ gap> 1+2;
 \endexample
 
 \indextt{\\beginexample!indicating unstable output}
-Examples whose output may vary should use the macro `|unstableoutput', e.g.
+Examples whose output may vary should be introduced with `\%'`notest',
+% The strange format is chosen in order not to mix up `doc/test/mktest.sh'.
+e.g.
 
 \begintt
-\beginexample||unstableoutput
+%notest
+\beginexample
 gap> Exec("date");
 Sun Oct  7 16:23:45 CEST 2001
 \endexample
@@ -1022,14 +1026,13 @@ Sun Oct  7 16:23:45 CEST 2001
 
 typesets in all manual versions in the same way:
 
-\beginexample|unstableoutput
+%notest
+\beginexample
 gap> Exec("date");
 Sun Oct  7 16:23:45 CEST 2001
 \endexample
 
-but the `testexample' routine knows to treat the example differently
-(namely, it ensures there is output but does not insist on it being
-the same).
+but the automatic manual checker knows to treat the example differently.
 
 Non-{\GAP} examples are typeset in typewriter style
 using the `\\begintt', `\\endtt' environment.
@@ -1377,7 +1380,7 @@ on a Unix system the following calls will then produce a file `manual.dvi'
 as well as a file `manual.six' which is used by the {\GAP} help functions.
 If you are missing some of the needed files and don't have `CVS' access to
 {\GAP}, just send an email request for them to 
-\Mailto{gap-trouble@dcs.st-and.ac.uk}.
+\Mailto{support@gap-system.org}.
 
 Go to the directory holding the manual. Call
 \begintt
@@ -1449,7 +1452,7 @@ translates  any  `\{\{<variable>\}\}'  patterns  defined  by   the   file
 \enditems
 
 If you don't have `CVS' access and want to use `buildman.pe', just  email
-\Mailto{gap-trouble@dcs.st-and.ac.uk} and ask for it.  Please  note  that
+\Mailto{support@gap-system.org} and ask for it.  Please  note  that
 there is no obligation for package authors to `buildman.pe'; nor does  it
 attract the same level of support as the rest of {\GAP}; in general, bugs
 can be expected to be fixed (eventually), but no  new  features  will  be
@@ -1780,4 +1783,5 @@ currency.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %E
+
 

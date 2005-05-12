@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.quogphom_gi :=
     "@(#)$Id$";
@@ -266,39 +267,9 @@ InstallMethod( Range, "for quotient groups", true,
 InstallMethod( ImagesSource, "for quotient groups", true,
     [ IsHomQuotientGroup ], 0, Q -> Image( Homomorphism( One( Q ) ) ) );
 
-#############################################################################
-##
-#M  One( <Q> ) for quotient groups
-##
-##  Add extra flags -- to compete with "One: system getter"?
-##
-InstallOtherMethod( One, "for quotient groups", true,
-    [ IsHomQuotientGroup ], 2*SUM_FLAGS,
-    function(Q)
-    	if Length( GeneratorsOfGroup(Q) ) > 0 then 
-	    return One( Q.1 );
-
-	elif HasOne(Q) then 
-	    return Q!.One;
-
-        # Some G had:  GeneratorsOfMagmaWithInverses (length 0),
-        # GeneratorsOfMagma (length 1), and GeneratorsOfMagmaWithOne (length 1).
-        # I don't know why.  I added this for safety.
-    	elif HasGeneratorsOfMagmaWithOne(Q) and
-             Length(GeneratorsOfMagmaWithOne(Q)) > 0 then
-            return One(GeneratorsOfMagmaWithOne(Q)[1]);
-
-    	# This also occured:
-    	#    [ "GeneratorsOfMagmaWithInverses", "ParentAttr", "Transversal" ]
-        elif HasParentAttr(Q) and not IsIdenticalObj(Q,ParentAttr(Q)) then
-            return One(ParentAttr(Q));
-
-        else 
-	    Error("Can't find One");
-        fi;
-end );
 InstallOtherMethod( ONE, "for quotient groups", true,
     [ IsHomQuotientGroup ], 2*SUM_FLAGS, Q -> ONE( Q.1 ) );
+#T good idea/necessary?
 
 #############################################################################
 ##

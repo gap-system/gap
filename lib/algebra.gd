@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file declares the operations for `FLMLOR's and algebras.
 ##
@@ -863,7 +864,8 @@ DeclareGlobalFunction( "LieAlgebraByStructureConstants" );
 ##  `IsQuaternion' is the category of elements in an algebra constructed by 
 ##  `QuaternionAlgebra'. A collection of quaternions lies in the category
 ##  `IsQuaternionCollection'. Finally, a collection of quaternion collections
-##  (e.g., a matrix) lies in the category `IsQuaternionCollColl'.
+##  (e.g., a matrix of quaternions) lies in the category
+##  `IsQuaternionCollColl'.
 ##
 DeclareCategory( "IsQuaternion", IsScalar and IsAssociative );
 DeclareCategoryCollections( "IsQuaternion" );
@@ -961,7 +963,7 @@ DeclareSynonym( "MatAlgebra", FullMatrixFLMLOR );
 #F  MatrixLieAlgebra( <R>, <n> )
 #F  MatLieAlgebra( <R>, <n> )
 ##
-##  is the full matrix Lie algebra $<R>^{<n>\times <n>}$, for a ring <R> and a 
+##  is the full matrix Lie algebra $<R>^{<n> \times <n>}$, for a ring <R> and a 
 ##  nonnegative integer <n>.
 ##
 
@@ -1048,8 +1050,8 @@ DeclareSynonym( "IsLieNilpotentElement", IsNilpotentElement);
 #A  Grading( <A> )
 ##
 ##  Let $G$ be an Abelian group and $A$ an algebra. Then $A$ is said to 
-##  be graded over $G$ if for every $g\in G$ there is a subspace $A_g$
-##  of $A$ such that $A_g \cdot A_h\subset A_{g+h}$ for $g,h \in G$. 
+##  be graded over $G$ if for every $g \in G$ there is a subspace $A_g$
+##  of $A$ such that $A_g \cdot A_h \subset A_{g+h}$ for $g, h \in G$. 
 ##  In \GAP~4 a *grading* of an algebra is a record containing the following
 ##  components: 
 ##  \beginitems
@@ -1070,6 +1072,22 @@ DeclareSynonym( "IsLieNilpotentElement", IsNilpotentElement);
 ##  they are constructed (see "ref:JenningsLieAlgebra", 
 ##  "ref:NilpotentQuotientOfFpLieAlgebra").
 ##
+##  We note also that these components may be not enough to handle 
+##  the grading efficiently, and another record component may be needed.
+##  For instance in a Lie algebra $L$ constructed by 
+##  `JenningsLieAlgebra', the length of the of the range
+##  `[ Grading(L)!.min_degree .. Grading(L)!.max_degree ]' may be 
+##  non-polynomial in the dimension of $L$.
+##  To handle efficiently this situation, an optional component can be 
+##  used:
+##  \beginitems
+##  `non_zero_hom_components'&
+##    the subset of `source' for which `hom_components' returns a nonzero
+##    subspace.
+##  \enditems
+##
+
+
 DeclareAttribute( "Grading", IsAlgebra );
 
 

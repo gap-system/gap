@@ -7,6 +7,7 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+*Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the  various read-eval-print loops and streams related
 **  stuff.  The system depend part is in "sysfiles.c".
@@ -16,6 +17,7 @@
 #include        <unistd.h>              /* fstat, write, read              */
 #ifndef SYS_IS_MAC_MWC
 # include        <sys/types.h>
+#include         <dirent.h>             /* for reading a directory         */
 # include        <sys/stat.h>
 #endif
 #ifdef SYS_IS_MAC_MWC
@@ -1321,6 +1323,138 @@ Obj FuncIsDirectoryPath (
 
 /****************************************************************************
 **
+*F  FuncSTRING_LIST_DIR( <self>, <dirname> ) . . . read names of files in dir
+**
+**  This function returns a GAP string which contains the names of all files
+**  contained in a directory <dirname>. The file names are separated by zero 
+**  characters (which are not allowed in file names). 
+**
+**  If <dirname> could not be opened as a directory 'fail' is returned. The
+**  reason for the error can be found with 'LastSystemError();' in GAP.
+**
+*/
+#ifndef SYS_IS_MAC_MWC
+Obj FuncSTRING_LIST_DIR (
+    Obj         self,
+    Obj         dirname  )
+{
+    DIR *dir;
+    struct dirent *entry;
+    Obj res;
+    Int len, sl;
+
+    /* check the argument                                                  */
+    while ( ! IsStringConv( dirname ) ) {
+        dirname = ErrorReturnObj(
+            "<dirname> must be a string (not a %s)",
+            (Int)TNAM_OBJ(dirname), 0L,
+            "you can replace <dirname> via 'return <dirname>;'" );
+    }
+    
+    SyClearErrorNo();
+    dir = opendir(CSTR_STRING(dirname));
+    if (dir == NULL) {
+      SySetErrorNo();
+      return Fail;
+    }
+    res = NEW_STRING(256);
+    len = 0;
+    entry = readdir(dir);
+    while (entry != NULL) {
+      sl = strlen(entry->d_name);
+      len = len;
+      GROW_STRING(res, len + sl + 1);
+      memcpy(CHARS_STRING(res) + len, entry->d_name, sl + 1);
+      len = len + sl + 1;
+      entry = readdir(dir);
+    }
+    closedir(dir);
+    /* tell the result string its length and terminate by 0 char */
+    SET_LEN_STRING(res, len);
+    *(CHARS_STRING(res) + len) = 0;
+    return res;
+}
+#endif
+
+#ifdef SYS_IS_MAC_MWC
+Obj FuncSTRING_LIST_DIR (
+    Obj         self,
+    Obj         dirname  )
+{
+	short k, index;
+	OSErr dirErr;
+	CInfoPBRec dirCPB;
+	FSSpec dirFSSpec;
+	Char pathname [262], *q, *p;
+	Str31 dirstr;
+    Obj res;
+	long len;
+	
+    /* check the argument                                                  */
+    while ( ! IsStringConv( dirname ) ) {
+        dirname = ErrorReturnObj(
+            "<dirname> must be a string (not a %s)",
+            (Int)TNAM_OBJ(dirname), 0L,
+            "you can replace <dirname> via 'return <dirname>;'" );
+    }
+
+    SyClearErrorNo();
+	q = CSTR_STRING(dirname);
+	
+    /* to create a valid FSSpec, we need a file name in the directory ---
+       the file need not exist, though. */
+
+	p = pathname;
+	while (*q)
+		*p++ = *q++;
+	if (p > pathname && p[-1] != '/')
+		*p++ = '/';
+	q = "dummy";
+	while (*q)
+		*p++ = *q++;
+	*p = '\0';
+	
+	SyLastMacErrorCode = PathToFSSpec (pathname, &dirFSSpec, true, false);
+	if (SyLastMacErrorCode == fnfErr)
+		SyLastMacErrorCode = noErr; /* we don't care whether file `dummy' exists or not */
+		
+	if (SyLastMacErrorCode != noErr) {
+	    SySetErrorNo();
+      	return Fail;
+    }
+    res = NEW_STRING(256);
+    len = 0;
+	index = 1;
+	while (1) {
+		dirCPB.dirInfo.ioVRefNum = dirFSSpec.vRefNum;
+		dirCPB.dirInfo.ioDrDirID = dirFSSpec.parID;
+		dirCPB.dirInfo.ioNamePtr = dirstr;
+		dirCPB.dirInfo.ioACUser = 0;
+		dirCPB.dirInfo.ioFDirIndex = index;
+		SyLastMacErrorCode = PBGetCatInfo(&dirCPB, false);  /* get n-th dir entry */
+		if (SyLastMacErrorCode != noErr) {
+	    	break;
+      	}
+		GROW_STRING(res, len + dirstr[0] + 1);
+		p = (char*)CHARS_STRING(res);
+		BlockMove (dirstr + 1, p + len, dirstr[0]);
+		*(p + len + dirstr[0]) = '\0';
+		len += dirstr[0] + 1;
+		index++;
+	}
+	if (SyLastMacErrorCode == fnfErr) {
+    	SET_LEN_STRING(res, len);
+    	*(CHARS_STRING(res) + len) = 0;
+    	return res;
+	} else {
+	    SySetErrorNo();
+      	return Fail;
+    }
+}
+#endif
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * * * * text stream functions  * * * * * * * * * * * * * *
 */
@@ -1655,7 +1789,7 @@ Obj FuncREAD_ALL_FILE (
 	SET_LEN_STRING(str, len);
 	syBuffers[bufno].bufstart += lstr;
       }
-#ifdef CYGWIN
+#if SYS_IS_CYGWIN32
  getmore:
 #endif
     while (ilim == -1 || len < ilim ) {
@@ -1696,7 +1830,7 @@ Obj FuncREAD_ALL_FILE (
 
     /* fix the length of <str>                                             */
     len = GET_LEN_STRING(str);
-#ifdef CYGWIN
+#if SYS_IS_CYGWIN32
     /* line end hackery */
     {
       UInt i = 0,j = 0;
@@ -1940,7 +2074,7 @@ Obj FuncREAD_STRING_FILE (
             "you can replace <fid> via 'return <fid>;'" );
     }
 
-#ifndef CYGWIN
+#if ! SYS_IS_CYGWIN32
     /* fstat seems completely broken under CYGWIN */
 #if HAVE_STAT
     /* first try to get the whole file as one chunk, this avoids garbage
@@ -2381,6 +2515,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "IsDirectoryPath", 1L, "filename",
       FuncIsDirectoryPath, "src/streams.c:IsDirectoryPath" },
+
+    { "STRING_LIST_DIR", 1L, "dirname",
+      FuncSTRING_LIST_DIR, "src/streams.c:STRING_LIST_DIR"},
 
     { "CLOSE_FILE", 1L, "fid",
       FuncCLOSE_FILE, "src/streams.c:CLOSE_FILE" },

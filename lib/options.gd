@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 #1
 ##  {\GAP} Supports a global Options system. This is intended as a
@@ -91,7 +92,7 @@ DeclareGlobalFunction( "ResetOptionsStack");
 
 #############################################################################
 ##
-#F  OnQuit( )                                   currently removes all options
+##  OnQuit( )                                   currently removes all options
 ##
 ##  called when a user elects to `quit;' a break loop entered  via  execution
 ##  of `Error'. As {\GAP} starts up, `OnQuit' is defined to  do  nothing,  in
@@ -108,7 +109,7 @@ DeclareGlobalFunction( "ResetOptionsStack");
 
 #############################################################################
 ##
-#F  ValueOption( <opt> )                                       access options
+#F  ValueOption( <opt> )
 ##
 ##  This function is the main method of accessing the Options Stack;
 ##  <opt> should be the name of an option, i.e.~a string. A 
@@ -116,7 +117,6 @@ DeclareGlobalFunction( "ResetOptionsStack");
 ##  examine the result of `ValueOption( <opt> )'. If <opt> has never
 ##  been set then `fail' is returned.
 ##
-
 DeclareGlobalFunction( "ValueOption");
 
 #############################################################################
@@ -127,7 +127,6 @@ DeclareGlobalFunction( "ValueOption");
 ##  options stack.
 ##  
 ##
-
 DeclareGlobalFunction( "DisplayOptionsStack");
 
 #############################################################################
@@ -137,7 +136,6 @@ DeclareGlobalFunction( "DisplayOptionsStack");
 ##  This info class can be used to enable messages about options being 
 ##  changed (level 1) or accessed (level 2).
 ##
-
 DeclareInfoClass("InfoOptions");
 
 #############################################################################

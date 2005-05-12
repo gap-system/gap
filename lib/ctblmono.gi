@@ -7,6 +7,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the functions dealing with monomiality questions for
 ##  solvable groups.
@@ -1282,35 +1283,22 @@ InstallOtherMethod( TestMonomialQuick,
 ##  (If <chi> is quasiprimitive then it is nonmonomial.)
 ##
 BindGlobal( "TestMonomialFromLattice", function( chi )
-    local G, chars, reps, psi, H, source;
+    local G, H, source;
 
-    # Distinguish whether the argument is a character or a group.
-    if IsClassFunction( chi ) then
-      G:= UnderlyingGroup( chi );
-      chars:= [ chi ];
-    else
-      G:= chi;
-      chars:= Irr( G );
-    fi;
+    G:= UnderlyingGroup( chi );
 
-    # Compute representatives of the conjugacy classes of subgroups.
-    reps:= List( ConjugacyClassesSubgroups( G ), Representative );
-
-    # Loop over the characters in question.
-    for psi in chars do
-      for H in reps do
-        if Index( G, H ) = psi[1] then
-          source:= First( LinearCharacters( H ),
-                          lambda -> lambda^G = psi );
-          if source = fail then
-            return fail;
-          fi;
+    # Loop over representatives of the conjugacy classes of subgroups.
+    for H in List( ConjugacyClassesSubgroups( G ), Representative ) do
+      if Index( G, H ) = chi[1] then
+        source:= First( LinearCharacters( H ), lambda -> lambda^G = chi );
+        if source <> fail then
+          return source;
         fi;
-      od;
+      fi;
     od;
 
-    # Return the positive result.
-    return source;
+    # Return the negative result.
+    return fail;
 end );
 
 InstallMethod( TestMonomial,
@@ -1322,7 +1310,6 @@ InstallMethod( TestMonomial,
     "for a character, and a Boolean",
     [ IsClassFunction, IsBool ],
     function( chi, uselattice )
-
     local G,         # group of `chi'
           test,      # result record
           t,         # character table of `G'

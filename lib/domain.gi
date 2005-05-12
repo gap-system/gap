@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the generic methods for domains.
 ##
@@ -22,7 +23,7 @@ Revision.domain_gi :=
 InstallMethod( \=,
     "for a list and a domain",
     IsIdenticalObj,
-    [ IsCollection and IsList, IsDomain ], 0,
+    [ IsCollection and IsList, IsDomain ],
     function( C, D )
     return IsSSortedList( C ) and AsSSortedList( D ) = C;
     end );
@@ -37,7 +38,7 @@ InstallMethod( \=,
 InstallMethod( \=,
     "for a domain and a list",
     IsIdenticalObj,
-    [ IsDomain, IsCollection and IsList ], 0,
+    [ IsDomain, IsCollection and IsList ],
     function( D, C )
     return IsSSortedList( C ) and AsSSortedList( D ) = C;
     end );
@@ -52,7 +53,7 @@ InstallMethod( \=,
 InstallMethod( \=,
     "for two domains",
     IsIdenticalObj,
-    [ IsDomain, IsDomain ], 0,
+    [ IsDomain, IsDomain ],
     function( D1, D2 )
     return AsSSortedList( D1 ) = AsSSortedList( D2 );
     end );
@@ -65,7 +66,7 @@ InstallMethod( \=,
 InstallMethod( \<,
     "for a list and a domain",
     IsIdenticalObj,
-    [ IsCollection and IsList, IsDomain ], 0,
+    [ IsCollection and IsList, IsDomain ],
     function( C, D )
     return C < AsSSortedList( D );
     end );
@@ -78,7 +79,7 @@ InstallMethod( \<,
 InstallMethod( \<,
     "for a domain and a list",
     IsIdenticalObj,
-    [ IsDomain, IsCollection and IsList ], 0,
+    [ IsDomain, IsCollection and IsList ],
     function( D, C )
     return AsSSortedList( D ) < C;
     end );
@@ -91,7 +92,7 @@ InstallMethod( \<,
 InstallMethod( SetParent,
     "method that calls 'UseSubsetRelation'",
     IsIdenticalObj,
-    [ IsDomain, IsDomain ], 0,
+    [ IsDomain, IsDomain ],
     function( D, P )
     UseSubsetRelation( P, D );
     TryNextMethod();
@@ -124,8 +125,7 @@ InstallGlobalFunction( Domain, function( arg )
 ##
 InstallMethod( DomainByGenerators,
     "for family and empty list",
-    true,
-    [ IsFamily, IsList and IsEmpty ], 0,
+    [ IsFamily, IsList and IsEmpty ],
     function ( F, generators )
     local   D;
     D := Objectify( NewType( CollectionsFamily( F ),
@@ -142,8 +142,7 @@ InstallMethod( DomainByGenerators,
 ##
 InstallMethod( DomainByGenerators,
     "for family and list & collection",
-    true,
-    [ IsFamily, IsCollection and IsList ], 0,
+    [ IsFamily, IsCollection and IsList ],
     function ( F, generators )
     local   D;
     if IsNotIdenticalObj( CollectionsFamily(F), FamilyObj(generators) ) then
@@ -163,8 +162,7 @@ InstallMethod( DomainByGenerators,
 ##
 InstallOtherMethod( DomainByGenerators,
     "for a collection",
-    true,
-    [ IsCollection ], 0,
+    [ IsCollection ],
     function ( generators )
     local   D;
     D := Objectify( NewType( FamilyObj( generators ),
@@ -187,8 +185,7 @@ InstallImmediateMethod( GeneratorsOfDomain,
 
 InstallMethod( GeneratorsOfDomain,
     "for a domain (delegate to `AsList')",
-    true,
-    [ IsDomain ], 0,
+    [ IsDomain ],
     AsList );
 
 
@@ -218,14 +215,12 @@ InstallImmediateMethod( Enumerator,
 
 InstallMethod( AsList,
     "for a domain with stored domain generators",
-    true,
-    [ IsDomain and HasGeneratorsOfDomain ], 0,
+    [ IsDomain and HasGeneratorsOfDomain ],
     D -> DuplicateFreeList( GeneratorsOfDomain( D ) ) );
 
 InstallMethod( Enumerator,
     "for a domain with stored domain generators",
-    true,
-    [ IsDomain and HasGeneratorsOfDomain ], 0,
+    [ IsDomain and HasGeneratorsOfDomain ],
     D -> DuplicateFreeList( GeneratorsOfDomain( D ) ) );
 
 
@@ -235,8 +230,7 @@ InstallMethod( Enumerator,
 ##
 InstallMethod( EnumeratorSorted,
     "for a domain",
-    true,
-    [ IsDomain ], 0,
+    [ IsDomain ],
     D -> EnumeratorSorted( Enumerator( D )  ));
 
 
@@ -251,7 +245,7 @@ InstallMethod( EnumeratorSorted,
 InstallMethod( \in,
     "for a domain, and an element",
     IsElmsColls,
-    [ IsObject, IsDomain ], 0,
+    [ IsObject, IsDomain ],
     function( elm, D )
     return elm in Enumerator( D );
     end );
@@ -263,14 +257,12 @@ InstallMethod( \in,
 ##
 InstallMethod( Representative,
     "for a domain with known elements list",
-    true,
-    [ IsDomain and HasAsList ], 0,
+    [ IsDomain and HasAsList ],
     RepresentativeFromGenerators( AsList ) );
 
 InstallMethod( Representative,
     "for a domain with known domain generators",
-    true,
-    [ IsDomain and HasGeneratorsOfDomain ], 0,
+    [ IsDomain and HasGeneratorsOfDomain ],
     RepresentativeFromGenerators( GeneratorsOfDomain ) );
 
 
@@ -280,66 +272,8 @@ InstallMethod( Representative,
 ##
 InstallMethod( Size,
     "for a trivial domain",
-    true,
-    [ IsDomain and IsTrivial ], 0,
+    [ IsDomain and IsTrivial ],
     D -> 1 );
-
-
-#############################################################################
-##
-#M  ViewObj( <enum> ) . . . . . . . . . . . . . . .  view a domain enumerator
-##
-InstallMethod( ViewObj,
-    "for a domain enumerator with underlying collection",
-    true,
-    [ IsDomainEnumerator and HasUnderlyingCollection ], 20,
-    # override, e.g., the method for finite lists
-    # in the case of an enumerator of GF(q)^n
-    function( enum )
-    Print( "<enumerator of " );
-    View( UnderlyingCollection( enum ) );
-    Print( ">" );
-    end );
-
-InstallMethod( ViewObj,
-    "for a domain enumerator",
-    true,
-    [ IsDomainEnumerator ], 0,
-    function( enum )
-    Print( "<enumerator of a domain>" );
-    end );
-
-
-#############################################################################
-##
-#M  PrintObj( <enum> )  . . . . . . . . . . . . . . print a domain enumerator
-##
-InstallMethod( PrintObj,
-    "for a domain enumerator with underlying collection",
-    true,
-    [ IsDomainEnumerator and HasUnderlyingCollection ], 0,
-    function( enum )
-    Print( "<enumerator of ", UnderlyingCollection( enum ), ">" );
-    end );
-
-InstallMethod( PrintObj,
-    "for a domain enumerator",
-    true,
-    [ IsDomainEnumerator ], 0,
-    function( enum ) Print( "<enumerator of a domain>" );
-    end );
-#T this is not nice!
-
-
-#############################################################################
-##
-#M  Length( <enum> )  . . . . . . . . . . . . . length of a domain enumerator
-##
-InstallMethod( Length,
-    "for a domain enumerator with underlying collection",
-    true,
-    [ IsDomainEnumerator and HasUnderlyingCollection ], 0,
-    enum -> Size( UnderlyingCollection( enum ) ) );
 
 
 #############################################################################
@@ -360,8 +294,7 @@ InstallMethod( IsSubset,
 
 InstallMethod( CanComputeIsSubset,
     "default for domains: no unless identical",
-    true,
-    [ IsDomain, IsDomain ], 0,
+    [ IsDomain, IsDomain ],
     function( a, b )
     return IsIdenticalObj( a, b )
            or ( HasParent( b ) and CanComputeIsSubset( a, Parent( b ) ) );
@@ -391,6 +324,50 @@ InstallMethod( Intersection2,
     SUM_FLAGS, # this is better than everything else
     function( D1, D2 )
     return D1;
+    end );
+
+
+#############################################################################
+##
+#F  InstallAccessToGenerators( <required>, <infotext>, <generators> )
+##
+InstallGlobalFunction( InstallAccessToGenerators,
+    function( required, infotext, generators )
+
+    InstallMethod( \.,
+        Concatenation( "generators of a ", infotext ),
+        true,
+        [ required and Tester( generators ), IsPosInt ], 0,
+        function( D, n )
+
+        local gens, nr, names;
+
+        # Get the appropriate generators and the component name string.
+        gens:= generators( D );
+        n:= NameRNam( n );
+
+        # If the component name stands for an integer,
+        # return the generator at this position.
+        nr:= Int( n );
+        if IsPosInt( nr ) and nr <= Length( gens ) then
+          return gens[ nr ];
+        fi;
+
+        # I the component name is the name itself,
+        # return the corresponding generator.
+        names:= ElementsFamily( FamilyObj( D ) );
+        if IsBound( names!.names ) then
+          names:= names!.names;
+          nr:= Position( names, n );
+          if nr <> fail then
+            return gens[ nr ];
+          fi;
+        fi;
+
+        # Give up.
+        TryNextMethod();
+        end );
+
     end );
 
 

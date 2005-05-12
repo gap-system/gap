@@ -9,6 +9,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains generic methods for groups.
 ##
@@ -21,7 +22,7 @@ Revision.grp_gi :=
 #M  IsFinitelyGeneratedGroup( <G> ) . . test if a group is finitely generated
 ##
 InstallImmediateMethod( IsFinitelyGeneratedGroup,
-    IsGroup and HasGeneratorsOfGroup,
+    IsGroup and HasGeneratorsOfGroup, 0,
     G -> IsFinite( GeneratorsOfGroup( G ) ) );
 
 
@@ -29,7 +30,7 @@ InstallImmediateMethod( IsFinitelyGeneratedGroup,
 ##
 #M  IsCyclic( <G> ) . . . . . . . . . . . . . . . . test if a group is cyclic
 ##
-InstallImmediateMethod( IsCyclic, IsGroup and HasGeneratorsOfGroup,
+InstallImmediateMethod( IsCyclic, IsGroup and HasGeneratorsOfGroup, 0,
     function( G )
     if Length( GeneratorsOfGroup( G ) ) = 1 then
       return true;
@@ -303,6 +304,18 @@ InstallMethod( IsPerfectGroup, "generic method for groups",
 
 #############################################################################
 ##
+#M  IsSporadicSimpleGroup( <G> )
+##
+InstallMethod( IsSporadicSimpleGroup,
+    "for a group",
+    [ IsGroup ],
+    G ->     IsFinite( G )
+         and IsSimpleGroup( G )
+         and IsomorphismTypeInfoFiniteSimpleGroup( G ).series = "Spor" );
+
+
+#############################################################################
+##
 #M  IsSimpleGroup( <G> )  . . . . . . . . . . . . . test if a group is simple
 ##
 InstallMethod( IsSimpleGroup,
@@ -311,6 +324,10 @@ InstallMethod( IsSimpleGroup,
     function ( G )
     local   C,          # one conjugacy class of <G>
             g;          # representative of <C>
+
+    if IsTrivial( G ) then
+      return false;
+    fi;
 
     # loop over the conjugacy classes
     for C  in ConjugacyClasses( G )  do
@@ -369,18 +386,30 @@ InstallMethod( IsSolvableGroup,
 ##
 #M  IsSupersolvableGroup( <G> ) . . . . . .  test if a group is supersolvable
 ##
+##  Note that this method automatically sets `SupersolvableResiduum'.
+##  Analogously, methods for `SupersolvableResiduum' should set
+##  `IsSupersolvableGroup'.
+##
 InstallMethod( IsSupersolvableGroup,
     "generic method for groups",
     [ IsGroup ],
-    G -> IsTrivial( SupersolvableResiduum( G ) ) );
+    function( G )
+    if IsNilpotentGroup( G ) then
+#T currently the nilpotency test is much cheaper than the test below,
+#T so we force it!
+      return true;
+    fi;
+    return IsTrivial( SupersolvableResiduum( G ) );
+    end );
 
 
 #############################################################################
 ##
 #M  IsTrivial( <G> )  . . . . . . . . . . . . . .  test if a group is trivial
 ##
-InstallMethod( IsTrivial, [ IsGroup ],
-        G -> ForAll( GeneratorsOfGroup( G ), gen -> gen = One( G ) ) );
+InstallMethod( IsTrivial,
+    [ IsGroup ],
+    G -> ForAll( GeneratorsOfGroup( G ), gen -> gen = One( G ) ) );
 
 
 #############################################################################
@@ -600,7 +629,8 @@ InstallMethod( DerivedSeriesOfGroup,
             D;          # derived subgroups
 
     # print out a warning for infinite groups
-    if not IsFinite( G )  then
+    if not (HasIsFinite(G) and IsFinite( G )) 
+      and not (HasIsPolycyclicGroup(G) and IsPolycyclicGroup( G )) then
       Info( InfoWarning, 1,
             "DerivedSeriesOfGroup: may not stop for infinite group <G>" );
     fi;
@@ -735,8 +765,7 @@ InstallMethod( ElementaryAbelianSeries,
     f := IsomorphismPcGroup( G );
 
     # convert back into <G>
-    return List( ElementaryAbelianSeries( Image( f ),
-                   x -> PreImage( f, x ) ) );
+    return List( ElementaryAbelianSeries( Image( f )), x -> PreImage( f, x ) );
     end );
 
 #############################################################################
@@ -846,8 +875,8 @@ InstallMethod( JenningsSeries,
     L := [ G ];
     n := 2;
     while not IsTrivial(L[n-1]) do
-        L[n] := NormalClosure(G,ClosureGroup(CommutatorSubgroup(G,L[n-1]),
-            List(GeneratorsOfGroup(L[QuoInt(n+p-1,p)]),x->x^p)));
+        L[n] := ClosureGroup(CommutatorSubgroup(G,L[n-1]),
+            List(GeneratorsOfGroup(L[QuoInt(n+p-1,p)]),x->x^p));
         n := n+1;
     od;
     return L;
@@ -1146,7 +1175,6 @@ end);
 ##  through `ds' from <G> down to the residuum is a chief series.
 ##
 InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
-
     local ssr,         # supersolvable residuum
           ds,          # component `ds' of the result
           gens,        # generators of `G'
@@ -1160,7 +1188,6 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
           df,          # range of `dh'
           fs,          # list of factors of the size of `df'
           gen,         # generators for the next candidate
-          np,          # `p'-prime part of the size of `df'
           pp,          # `p'-part of the size of `df'
           pu,          # Sylow `p' subgroup of `df'
           tmp,         # agemo generators
@@ -1169,26 +1196,38 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
           ffsize,      # size of `ff'
           pcgs,        # PCGS of `ff'
           dim,         # dimension of the vector space `ff'
+          field,       # prime field in char. `p'
+          one,         # identity in `field'
           idm,         # identity matrix
           mg,          # matrices of `G' action on `ff'
-          field,       # prime field in char. `p'
           vsl,         # list of simult. eigenspaces
           nextvsl,     # for next iteration
-          matrix,      # loopvariable
+          matrix,      # loop variable
+          mat,         #
           eigenvalue,  # loop variable
           nullspace,   # generators of the eigenspace
           space,       # loop variable
           inter,       # intersection
           tmp2,        #
-          v,           #
-          ve;          #
+          v;           #
 
+    ds  := [ G ];
     ssr := DerivedSubgroup( G );
-    ds  := [ G, ssr ];
+    if Size( ssr ) < Size( G ) then
+      ds[2]:= ssr;
+    fi;
 
     if not IsTrivial( ssr ) then
 
       # Find a small generating system `gs' of `G'.
+      # (We do *NOT* want to call `SmallGeneratingSet' here since
+      # `MinimalGeneratingSet' is installed as a method for pc groups,
+      # and for groups such as the Sylow 3 normalizer in F3+,
+      # this needs more time than `SupersolvableResiduumDefault'.
+      # Also the other method for `SmallGeneratingSet', which takes those
+      # generators that cannot be omitted, is too slow.
+      # The ``greedy'' type code below need not process all generators,
+      # and it will be not too bad for pc groups.)
       gens := GeneratorsOfGroup( G );
       gs   := [ gens[1] ];
       p    := 2;
@@ -1209,135 +1248,154 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
         # Remember the last candidate as `oldssr'.
         oldssr := ssr;
         ssr    := DerivedSubgroup( oldssr );
-        dh     := NaturalHomomorphismByNormalSubgroup( oldssr, ssr );
 
-        # `df' is the commutator factor group `oldssr / ssr'.
-        df := Range( dh );
-        fs := FactorsInt( Size( df ) );
+        if Size( ssr ) < Size( oldssr ) then
 
-        # `gen' collects the generators for the next candidate
-        gen := ShallowCopy( GeneratorsOfGroup( df ) );
+          dh:= NaturalHomomorphismByNormalSubgroup( oldssr, ssr );
 
-        for p in Set( fs ) do
+          # `df' is the commutator factor group `oldssr / ssr'.
+          df:= Range( dh );
+          SetIsAbelian( df, true );
+          fs:= FactorsInt( Size( df ) );
 
-          np:= Product( Filtered( fs, x -> x <> p ) );
-          pp:= Product( Filtered( fs, x -> x  = p ) );
+          # `gen' collects the generators for the next candidate
+          gen := ShallowCopy( GeneratorsOfGroup( df ) );
 
-          # `pu' is the Sylow `p' subgroup of `df'.
-          pu:= SubgroupNC( df, List( GeneratorsOfGroup(df), x -> x^np ) );
+          for p in Set( fs ) do
 
-          # Remove the `p'-part from the generators list `gen'.
-          gen:= List( gen, x -> x^pp );
+            pp:= Product( Filtered( fs, x -> x  = p ) );
 
-          # Add the agemo_1 of the Sylow subgroup to the generators list.
-          tmp:= List( GeneratorsOfGroup( pu ), x -> x^p );
-          Append( gen, tmp );
-          ph:= NaturalHomomorphismByNormalSubgroup( pu,
-                                                SubgroupNC( df, tmp ) );
+            # `pu' is the Sylow `p' subgroup of `df'.
+            pu:= SylowSubgroup( df, p );
 
-          # `ff' is the Frattini factor group.
-          ff := Range( ph );
-          ffsize:= Size( ff );
-          if p < ffsize then
+            # Remove the `p'-part from the generators list `gen'.
+            gen:= List( gen, x -> x^pp );
 
-            pcgs := Pcgs( ff );
-            dim  := Length( pcgs );
-            idm  := IdentityMat( dim, GF(p) );
+            # Add the agemo_1 of the Sylow subgroup to the generators list.
+            tmp:= List( GeneratorsOfGroup( pu ), x -> x^p );
+            Append( gen, tmp );
+            ph:= NaturalHomomorphismByNormalSubgroup( pu,
+                                                  SubgroupNC( df, tmp ) );
 
-            # `mg' is the list of matrices of the action of `G' on the
-            # dual space of the module, w.r.t. a pcgs of `ff'.
-            mg:= List( gs, x -> TransposedMat( List( pcgs,
-                     y -> Z(p)^0 * ExponentsOfPcElement( pcgs, Image( ph,
+            # `ff' is the `p'-part of the Frattini factor group of `pu'.
+            ff := Range( ph );
+            ffsize:= Size( ff );
+            if p < ffsize then
+
+              # noncyclic case
+              pcgs := Pcgs( ff );
+              dim  := Length( pcgs );
+              field:= GF(p);
+              one  := One( field );
+              idm  := IdentityMat( dim, field );
+
+              # `mg' is the list of matrices of the action of `G' on the
+              # dual space of the module, w.r.t. `pcgs'.
+              mg:= List( gs, x -> TransposedMat( List( pcgs,
+                     y -> one * ExponentsOfPcElement( pcgs, Image( ph,
                           Image( dh, PreImagesRepresentative(
-                            dh, PreImagesRepresentative(ph,y) )^x ) ) )))^-1);
-            mg:= Filtered( mg, x -> not IsOne( x ) );
+                           dh, PreImagesRepresentative(ph,y) )^x ) ) )))^-1);
+#T inverting is not necessary, or?
+              mg:= Filtered( mg, x -> x <> idm );
 
-            # `vsl' is a list of generators of all the simultaneous
-            # eigenspaces.
-            field:= GF(p);
-            vsl:= [ IdentityMat( dim, field ) ];
-            for matrix in mg do
+              # `vsl' is a list of generators of all the simultaneous
+              # eigenspaces.
+              vsl:= [ idm ];
+              for matrix in mg do
 
-              nextvsl:= [];
+                nextvsl:= [];
 
-              # All eigenvalues of `matrix' will be used.
-              for eigenvalue in List( Filtered( Factors(
-                    CharacteristicPolynomial( field, matrix ) ),
-                       x -> DegreeOfLaurentPolynomial( x ) = 1 ),
-                       y -> - CoefficientsOfUnivariatePolynomial( y )[1] ) do
-
-                nullspace:= NullspaceMat( matrix - eigenvalue*idm );
-                if not IsEmpty( nullspace ) then
-                  for space in vsl do
-                    inter:= SumIntersectionMat( space, nullspace )[2];
-                    if not IsEmpty( inter ) then
-                      Add( nextvsl, inter );
-                    fi;
-                  od;
-                fi;
-
-              od;
-
-              vsl:= nextvsl;
-
-            od;
-
-            # Now calculate the dual spaces of the eigenspaces.
-            if IsEmpty( vsl ) then
-              Append( gen, GeneratorsOfGroup( pu ) );
-            else
-
-              # `tmp' collects the eigenspaces.
-              tmp:= [];
-              for matrix in vsl do
-
-                # `tmp2' will be the base of the dual space.
-                tmp2:= [];
-                Append( tmp, matrix );
-
-                for v in NullspaceMat( TransposedMat( tmp ) ) do
-
-                  # Construct a group element corresponding to
-                  # the basis element of the submodule.
-                  ve:= PcElementByExponentsNC( pcgs, v );
-                  Add( tmp2, PreImagesRepresentative( ph, ve ) );
+                # All eigenvalues of `matrix' will be used.
+                # (We expect `p' to be small, so looping over the nonzero
+                # elements of the field is much faster than constructing and
+                # factoring the characteristic polynomial of `matrix').
+                mat:= matrix;
+                for eigenvalue in [ 2 .. p ] do
+                  mat:= mat - idm;
+                  nullspace:= NullspaceMat( mat );
+                  if not IsEmpty( nullspace ) then
+                    for space in vsl do
+                      inter:= SumIntersectionMat( space, nullspace )[2];
+                      if not IsEmpty( inter ) then
+                        Add( nextvsl, inter );
+                      fi;
+                    od;
+                  fi;
 
                 od;
-                Add( ds, PreImagesSet( dh,
-                          SubgroupNC( df, Concatenation( tmp2, gen ) ) ) );
-              od;
-              Append( gen, tmp2 );
-            fi;
-          else
-            Add( ds, PreImagesSet( dh,
-                         SubgroupNC( df, AsSSortedList( gen ) ) ) );
-          fi;
-        od;
 
-        # Generate the new candidate.
-        ssr:= PreImagesSet( dh, SubgroupNC( df, AsSSortedList( gen ) ) );
+                vsl:= nextvsl;
+
+              od;
+
+              # Now calculate the dual spaces of the eigenspaces.
+              if IsEmpty( vsl ) then
+                Append( gen, GeneratorsOfGroup( pu ) );
+              else
+
+                # `tmp' collects the eigenspaces.
+                tmp:= [];
+                for matrix in vsl do
+
+                  # `tmp2' will be the base of the dual space.
+                  tmp2:= [];
+                  Append( tmp, matrix );
+                  for v in NullspaceMat( TransposedMat( tmp ) ) do
+
+                    # Construct a group element corresponding to
+                    # the basis element of the submodule.
+                    Add( tmp2, PreImagesRepresentative( ph,
+                                   PcElementByExponentsNC( pcgs, v ) ) );
+
+                  od;
+                  Add( ds, PreImagesSet( dh,
+                            SubgroupNC( df, Concatenation( tmp2, gen ) ) ) );
+                od;
+                Append( gen, tmp2 );
+              fi;
+
+            else
+
+              # cyclic case
+              Add( ds, PreImagesSet( dh,
+                           SubgroupNC( df, AsSSortedList( gen ) ) ) );
+
+            fi;
+          od;
+
+          # Generate the new candidate.
+          ssr:= PreImagesSet( dh, SubgroupNC( df, AsSSortedList( gen ) ) );
+
+        fi;
 
       until IsTrivial( ssr ) or oldssr = ssr;
-
-      ssr:= SubgroupNC( G, GeneratorsOfGroup( ssr ) );
 
     fi;
 
     # Return the result.
-    return rec(
-      ssr:=SubgroupNC(G,Filtered(GeneratorsOfGroup(ssr),i->Order(i)>1)),
-      ds:= ds );
-end );
+    return rec( ssr := SubgroupNC( G, Filtered( GeneratorsOfGroup( ssr ),
+                                                i -> Order( i ) > 1 ) ),
+                ds  := ds );
+    end );
 
 
 #############################################################################
 ##
 #M  SupersolvableResiduum( <G> )
 ##
+##  Note that this method sets `IsSupersolvableGroup'.
+##  Analogously, methods for `IsSupersolvableGroup' should set
+##  `SupersolvableResiduum'.
+##
 InstallMethod( SupersolvableResiduum,
     "method for finite groups (call `SupersolvableResiduumDefault')",
     [ IsGroup and IsFinite ],
-    G -> SupersolvableResiduumDefault( G ).ssr );
+    function( G )
+    local ssr;
+    ssr:= SupersolvableResiduumDefault( G ).ssr;
+    SetIsSupersolvableGroup( G, IsTrivial( ssr ) );
+    return ssr;
+    end );
 
 
 #############################################################################
@@ -1434,7 +1492,7 @@ InstallMethod( UpperCentralSeriesOfGroup,
             hom;        # homomorphisms of <G> to `<G>/<C>'
 
     # print out a warning for infinite groups
-    if not IsFinite( G )  then
+    if not IsFinite( G ) and not IsPolycyclicGroup( G ) then
       Info( InfoWarning, 1,
           "UpperCentralSeriesOfGroup: may not stop for infinite group <G>");
     fi;
@@ -2262,7 +2320,7 @@ InstallMethod( PCentralSeriesOp,
         S := N;
         C := CommutatorSubgroup( G, S );
         P := SubgroupNC( G, List( GeneratorsOfGroup( S ), x -> x ^ p ) );
-        N := ClosureSubgroup( C, P );
+        N := ClosureGroup( C, P );
     until N = S;
     return L;
     end );
@@ -2465,8 +2523,9 @@ InstallMethod( \=,
       if IsFinite( H )  then
         return GeneratorsOfGroup( G ) = GeneratorsOfGroup( H )
                or IsEqualSet( GeneratorsOfGroup( G ), GeneratorsOfGroup( H ) )
-               or (    Size( G ) = Size( H )
-                   and ForAll( GeneratorsOfGroup( G ), gen -> gen in H ));
+               or (Size( G ) = Size( H )
+		and ((Size(G)>1 and ForAll(GeneratorsOfGroup(G),gen->gen in H))
+		  or (Size(G)=1 and One(G) in H)) );
       else
         return false;
       fi;
@@ -3489,6 +3548,65 @@ end );
 
 #############################################################################
 ##
+#F  SubgroupByProperty ( <G>, <prop> )
+##
+InstallGlobalFunction( SubgroupByProperty, function( G, prop )
+local K, S;
+
+  K:= NewType( FamilyObj(G), IsMagmaWithInverses
+		  and IsAttributeStoringRep 
+		  and HasElementTestFunction);
+  S:=rec();
+  ObjectifyWithAttributes(S, K, ElementTestFunction, prop );
+  SetParent( S, G );
+  return S;
+end );
+
+InstallMethod( PrintObj, "subgroup by property",
+    [ IsGroup and HasElementTestFunction ],0,
+function( G )
+  Print( "SubgroupByProperty( ", Parent( G ), ",",
+	  ElementTestFunction(G)," )" );
+end );
+
+InstallMethod( ViewObj, "subgroup by property",
+    [ IsGroup and HasElementTestFunction ],0,
+function( G )
+  Print( "<subgrp of ");
+  View(Parent(G));
+  Print(" by property>");
+end );
+
+InstallMethod( \in, "subgroup by property",
+    [ IsObject, IsGroup and HasElementTestFunction ],0,
+function( e,G )
+  return e in Parent(G) and ElementTestFunction(G)(e);
+end );
+
+InstallMethod(GeneratorsOfGroup, "Schreier generators",
+    [ IsGroup and HasElementTestFunction ],0,
+function(G )
+  return GeneratorsOfGroup(Stabilizer(Parent(G),RightCoset(G,One(G)),OnRight));
+end );
+
+#############################################################################
+##
+#F  SubgroupShell ( <G> )
+##
+InstallGlobalFunction( SubgroupShell, function( G )
+local K, S;
+
+  K:= NewType( FamilyObj(G), IsMagmaWithInverses
+		  and IsAttributeStoringRep);
+  S:=rec();
+  Objectify(K,S);
+  SetParent( S, G );
+  return S;
+end );
+
+
+#############################################################################
+##
 #M  PrimePowerComponents( <g> )
 ##
 InstallMethod( PrimePowerComponents,
@@ -3623,7 +3741,7 @@ end);
 InstallMethod( MaximalNormalSubgroups,
     "generic search",
     [ IsGroup ],
-function(G)
+	function(G)
     local
           maximal, # list of maximal normal subgroups,result
           normal,  # list of normal subgroups
@@ -3649,22 +3767,113 @@ function(G)
 
 end);
 
+##############################################################################
+##
+#F  MinimalNormalSubgroups(<G>)
+##
+InstallMethod( MinimalNormalSubgroups,
+    "generic search in NormalSubgroups",
+    [ IsGroup and IsFinite and HasNormalSubgroups],
+    function (G)
 
+		local grps, sizes, n, min, i, j, k, size;
+		
+		grps := ShallowCopy (NormalSubgroups (G));
+		sizes := List (grps, Size);
+		n := Length (grps);
+		if n = 0 then
+			return [];
+		fi;
+		SortParallel (sizes, grps);
+		
+		# if a group is not minimal, we set the corresponding size to 1,
+				
+		min := [];
+	
+		for i in [1..n] do
+			if sizes[i] > 1 then
+				G := grps[i];
+				Add (min, G);
+				size := sizes[i];
+				j := i + 1;
+				while j <= n and sizes[j] <= size do
+					j := j + 1;
+				od;
+				for k in [j..n] do
+					if sizes[k] mod size = 0 and IsSubgroup (grps[k], G) then
+						sizes[k] := 1; # mark grps[k] as deleted
+					fi;
+				od;
+			fi;
+		od;
+		return min;
+	end);
+
+
+##############################################################################
+##
+#F  MinimalNormalSubgroups( <G> )
+##
+InstallMethod( MinimalNormalSubgroups,
+    "compute from conjugacy classes",
+    [ IsGroup and IsFinite ],
+    function( G )
+    local nt, c, r, U;
+
+    nt:= [];
+    for c in ConjugacyClasses( G ) do
+      r:= Representative( c );
+      if IsPrimeInt( Order( r ) ) then
+        U:= NormalClosure( G, SubgroupNC( G, [ r ] ) );
+        if ForAll( nt, N -> not IsSubset( U, N ) ) then
+          nt:= Filtered( nt, N -> not IsSubset( N, U ) );
+          Add( nt, U );
+        fi;
+      fi;
+    od;
+    return nt;
+    end );
+
+
+#############################################################################
+##
+#M  MinimalNormalSubgroups (<G>) 
+##
+InstallMethod (MinimalNormalSubgroups,
+   "handled by nice monomorphism",
+   true,
+   [IsGroup and IsHandledByNiceMonomorphism and IsFinite],
+   0,
+   function( grp )
+      local hom;
+      hom := NiceMonomorphism (grp);
+      return List (MinimalNormalSubgroups (NiceObject (grp)), 
+      	N -> PreImagesSet (hom, N));
+   end);
+   
+   
 #############################################################################
 ##
 #M  SmallGeneratingSet(<G>)
 ##
-InstallMethod(SmallGeneratingSet,"generators subset",true,[IsGroup],
+InstallMethod(SmallGeneratingSet,"generators subset",
+  [IsGroup and HasGeneratorsOfGroup],
 function (G)
-local  i, U, gens;
+local  i, U, gens,test;
   gens := Set(GeneratorsOfGroup(G));
   i := 1;
   while i < Length(gens)  do
-    U:=Subgroup(G,gens{Difference([1..Length(gens)],[i])});
-    if Size(U)<Size(G) then
-      i:=i+1;
+    U:= SubgroupNC( G, gens{ Difference( [ 1 .. Length( gens ) ], [ i ] ) } );
+    if HasIsFinite(G) and IsFinite(G) and CanComputeSizeAnySubgroup(G) then
+      test:=Size(U)=Size(G);
     else
+      test:=IsSubset(U,G);
+    fi;
+    if test then
       gens:=GeneratorsOfGroup(U);
+      # this throws out i, so i is the new i+1;
+    else
+      i:=i+1;
     fi;
   od;
   return gens;
@@ -3992,12 +4201,37 @@ InstallSubsetMaintenance( CanComputeSizeAnySubgroup,
 #F  Factorization( <G>, <elm> )
 ##
 InstallGlobalFunction(Factorization,function(G,elm)
-local F;
+local F, ggens, fgens, map, sel, elms, imgs, d, i, new, j;
   if not IsBound(G!.factFreeMap) then
     F:=FreeGroup(List([1..Length(GeneratorsOfGroup(G))],
                  i->Concatenation("x",String(i))));
-    G!.factFreeMap:=GroupGeneralMappingByImages(G,F,GeneratorsOfGroup(G),
-						    GeneratorsOfGroup(F));
+    ggens:=GeneratorsOfGroup(G);
+    fgens:=GeneratorsOfGroup(F);
+    map:=GroupGeneralMappingByImages(G,F,ggens,fgens);
+    sel:=Filtered([1..Length(ggens)],i->Order(ggens[i])>2);
+    ggens:=Concatenation(ggens,List(ggens{sel},i->i^-1));
+    fgens:=Concatenation(fgens,List(fgens{sel},i->i^-1));
+    elms:=[One(G)];
+    imgs:=[One(F)];
+    d:=NewDictionary(G,false);
+    AddDictionary(d,One(G));
+    i:=1;
+    while Length(elms)<Size(G) do
+      for j in [1..Length(ggens)] do
+	new:=elms[i]*ggens[j];
+	if not KnowsDictionary(d,new) then
+	  Add(elms,new);
+	  Add(imgs,imgs[i]*fgens[j]);
+	  AddDictionary(d,new);
+	fi;
+      od;
+      i:=i+1;
+    od;
+
+    map!.elements:=elms;
+    map!.images:=imgs;
+    G!.factFreeMap:=map;
+
   fi;
   return ImagesRepresentativeGMBIByElementsList(G!.factFreeMap,elm);
 end);

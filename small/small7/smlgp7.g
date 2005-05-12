@@ -165,10 +165,7 @@ end;
 ##                          
 #F SELECT_SMALL_GROUPS_FUNCS[ 18 ]( funcs, vals, inforec, all, id )
 ##                  
-SELECT_SMALL_GROUPS_FUNCS[ 18 ] := function( arg )
-
-   Error( "nothing implemented for selection of groups of size 512" );
-end;
+SELECT_SMALL_GROUPS_FUNCS[ 18 ] := SELECT_SMALL_GROUPS_FUNCS[ 11 ];
 
 #############################################################################
 ##

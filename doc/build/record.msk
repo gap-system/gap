@@ -6,6 +6,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Records}
 
@@ -316,16 +317,17 @@ each component of <rec1> with name `<name1> \< <name2>' <rec2> has a
 component with this name and `<rec1>.<name1> = <rec2>.<name1>'.
 
 \beginexample
-gap> rec( a := 1, b := 2 ) < rec( b := 2, a := 1 );
-false # they are equal
-gap> rec( a := 1, b := 2 ) < rec( a := 2, b := 0 );
-true # the `a' elements are compared first and 1 is less than 2
-gap> rec( a := 1 ) < rec( a := 1, b := 2 );
-true # unbound is less than 2
-gap> rec( a := 1 ) < rec( a := 0, b := 2 );
-false # the `a' elements are compared first and 0 is less than 1
-gap> rec( b := 1 ) < rec( b := 0, a := 2 );
-true # the `a'-s are compared first and unbound is less than 2
+gap> rec( a := 1, b := 2 ) < rec( b := 2, a := 1 ); # they are equal
+false
+gap> rec( a := 1 ) < rec( a := 1, b := 2 ); # unbound is less than 2
+true
+gap> # note in the following examples that the `a' elements are compared first
+gap> rec( a := 1, b := 2 ) < rec( a := 2, b := 0 ); # 1 is less than 2
+true
+gap> rec( a := 1 ) < rec( a := 0, b := 2 ); # 0 is less than 1
+false
+gap> rec( b := 1 ) < rec( b := 0, a := 2 ); # unbound is less than 2
+true
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -393,14 +395,15 @@ returns a number (the RNam) corresponding to the string <str>. It is also
 possible to pass a positive integer <int> in which case the decimal expansion of
 <int> is used as a string.
 
-\begintt
+%notest
+\beginexample
 gap> NameRNam(798);
 "BravaisSupergroups"
 gap> RNamObj("blubberflutsch");
 2075
 gap> NameRNam(last);
 "blubberflutsch"
-\endtt
+\endexample
 
 The correspondence between Strings and RNams is not predetermined ab initio,
 but RNams are assigned to component names dynamically on a

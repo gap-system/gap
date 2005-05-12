@@ -5,6 +5,7 @@
 %A  @(#)$Id$
 %%
 %Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%Y  Copyright (C) 2002 The GAP Group
 %%
 \Chapter{Rational Numbers}
 
@@ -30,12 +31,12 @@ whose numerators and denominators have thousands of digits.
 \beginexample
 gap> 2/3;
 2/3
-gap> 66/123;
-22/41    # numerator and denominator are made relatively prime
-gap> 17/-13;
--17/13    # the numerator carries the sign
-gap> 121/11;
-11    # rationals with denominator 1 (after cancelling) are integers
+gap> 66/123;  # numerator and denominator are made relatively prime
+22/41
+gap> 17/-13;  # the numerator carries the sign;
+-17/13
+gap> 121/11;  # rationals with denominator 1 (after cancelling) are integers
+11
 \endexample
 
 \Declaration{Rationals}
@@ -44,16 +45,6 @@ gap> Size( Rationals ); 2/3 in Rationals;
 infinity
 true
 \endexample
-
-\Declaration{IsRationals}
-
-`Rationals' is a subset of `Cyclotomics',
-so see chapter~"Cyclotomic Numbers" for arithmetic operations and comparison of
-rationals.
-Functions for the field `Rationals' can be found in
-chapters~"fields and
-division rings"
-and~"Abelian Number Fields".
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -68,8 +59,8 @@ gap> IsRat( 17/-13 );
 true
 gap> IsRat( 11 );
 true
-gap> IsRat( IsRat );
-false    # `IsRat' is a function, not a rational
+gap> IsRat( IsRat );  # `IsRat' is a function, not a rational
+false
 \endexample
 
 \Declaration{IsPosRat}
@@ -80,12 +71,12 @@ false    # `IsRat' is a function, not a rational
 \beginexample
 gap> NumeratorRat( 2/3 );
 2
-gap> NumeratorRat( 66/123 );
-22    # numerator and denominator are made relatively prime
-gap> NumeratorRat( 17/-13 );
--17    # the numerator holds the sign of the rational
-gap> NumeratorRat( 11 );
-11    # integers are rationals with denominator 1
+gap> NumeratorRat( 66/123 );  # numerator and denominator are made relatively prime
+22
+gap> NumeratorRat( 17/-13 );  # the numerator holds the sign of the rational
+-17
+gap> NumeratorRat( 11 );      # integers are rationals with denominator 1
+11
 \endexample
 
 
@@ -94,12 +85,12 @@ gap> NumeratorRat( 11 );
 \beginexample
 gap> DenominatorRat( 2/3 );
 3
-gap> DenominatorRat( 66/123 );
-41    # numerator and denominator are made relatively prime
-gap> DenominatorRat( 17/-13 );
-13    # the denominator holds the sign of the rational
-gap> DenominatorRat( 11 );
-1    # integers are rationals with denominator 1
+gap> DenominatorRat( 66/123 );  # numerator and denominator are made relatively prime
+41
+gap> DenominatorRat( 17/-13 );  # the denominator holds the sign of the rational
+13
+gap> DenominatorRat( 11 );      # integers are rationals with denominator 1
+1
 \endexample
 
 \Declaration{Rat}

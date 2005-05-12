@@ -1,8 +1,10 @@
-@msfiles = ("install","run","gappkg","refcover","tutcover","prgcover","extcover","ficover","copyrigh");
-@gdfiles = ("package.g","files.gd","system.g");
+@msfiles = ("install","run","gappkg","refcover","tutcover","prgcover","extcover","ficover","newcover","copyrigh","README");
+@gdfiles = ("../tst/testall.g","package.g","files.gd","system.g","process.gd","colorprompt.g");
 $DIR = "../ref";
 $LIB = "../../lib"; 
-versionnumber=4.3pre2
-versionsuffix=4r3pre2
-gapdirname=gap4r3pre2
-ucgapdirname=GAP4R3PRE2
+versionnumber=4.4.5
+versionsuffix=4r4p5
+gapdirname=gap4r4
+ucgapdirname=GAP4R4
+releaseday=13 May 2005
+

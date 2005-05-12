@@ -6,6 +6,7 @@
 ##  
 #Y  Copyright  (C) 2001, Lehrstuhl  D  fuer  Mathematik, RWTH  Aachen, Germany 
 #Y (C) 2001 School Math and  Comp. Sci., University of St. Andrews, Scotland
+#Y Copyright (C) 2002 The GAP Group
 ##  
 ##  The  files  pager.g{d,i}  contain  the `Pager'  utility.  A  rudimentary
 ##  version of this  was integrated in first versions of  GAP's help system.

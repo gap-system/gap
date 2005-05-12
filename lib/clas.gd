@@ -6,6 +6,7 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+#Y  Copyright (C) 2002 The GAP Group
 ##
 Revision.clas_gd :=
     "@(#)$Id$";
@@ -19,13 +20,6 @@ DeclareInfoClass( "InfoClasses" );
 DeclareRepresentation( "IsExternalOrbitByStabilizerRep",
     IsExternalOrbit, [  ] );
 
-#############################################################################
-##
-#R  IsExternalOrbitByStabilizerEnumerator . . . . . . . . enumerator for such
-##
-DeclareRepresentation ( "IsExternalOrbitByStabilizerEnumerator",
-      IsDomainEnumerator and IsAttributeStoringRep,
-      [ "rightTransversal" ] );
 
 #############################################################################
 ##
@@ -43,7 +37,7 @@ DeclareRepresentation( "IsConjugacyClassPermGroupRep",
 
 #############################################################################
 ##
-#C  ConjugacyClass( <G>, <g> )  . . . . . . . . . conjugacy class constructor
+#O  ConjugacyClass( <G>, <g> )  . . . . . . . . . conjugacy class constructor
 ##
 ##  creates the conjugacy class in $G$ with representative $g$.
 ##  This class is an external set, so functions such as
@@ -59,6 +53,7 @@ DeclareRepresentation( "IsConjugacyClassPermGroupRep",
 ##  same result as `StabilizerOfExternalSet'). (This is a slight abuse of
 ##  notation: This is *not* the centralizer of the class as a *set* which
 ##  would be the standard behaviour of `Centralizer'.)
+##
 DeclareOperation( "ConjugacyClass", [ IsGroup, IsObject ] );
 
 
@@ -90,7 +85,7 @@ InstallTrueMethod( IsFinite, IsRationalClassGroupRep and IsDomain );
 
 #############################################################################
 ##
-#C  RationalClass( <G>, <g> ) . . . . . . . . . .  rational class constructor
+#O  RationalClass( <G>, <g> ) . . . . . . . . . .  rational class constructor
 ##
 ##  creates the rational class in $G$ with representative $g$.
 ##  A rational class consists of all elements that are conjugate to
@@ -101,6 +96,7 @@ InstallTrueMethod( IsFinite, IsRationalClassGroupRep and IsDomain );
 ##  external orbit.
 ##
 DeclareOperation( "RationalClass", [ IsGroup, IsObject ] );
+
 
 #############################################################################
 ##
@@ -116,6 +112,7 @@ DeclareOperation( "RationalClass", [ IsGroup, IsObject ] );
 ##  class ring. The Galois group of a rational class <rcl> is stored in the
 ##  attribute `GaloisGroup(<rcl>)' as a subgroup of this group.
 DeclareAttribute( "GaloisGroup", IsRationalClassGroupRep );
+
 
 #############################################################################
 ##
@@ -180,12 +177,13 @@ DeclareGlobalFunction( "GeneralStepClEANS" );
 ##  affect the algorithms behaviour:
 ##  
 ##  \beginitems
-##  `pcgs'&is a pcgs that will be used for the calculation. In the case of
-##  the calculation of rational classes, it must be a pcgs refining a
-##  central series. The attribute `NormalSeriesByPcgs' must return an
+##  `pcgs'&is a pcgs that will be used for the calculation.
+##  The attribute `EANormalSeriesByPcgs' must return an
 ##  appropriate series of normal subgroups with elementary abelian factors
-##  among them. The algorithm will step down this series. By default an
-##  `ElementaryAbelianSeries' is used.
+##  among them. The algorithm will step down this series.
+##  In the case of
+##  the calculation of rational classes, it must be a pcgs refining a
+##  central series.
 ##
 ##  `candidates'&is a list of elements for which canonical representatives
 ##  are to be computed or for which a conjugacy test is performed. They must
@@ -228,11 +226,9 @@ DeclareGlobalFunction( "ClassesSolvableGroup" );
 ##  \beginitems
 ##  `pcgs'&is a pcgs that will be used for the calculation. In the case of
 ##  the calculation of rational classes, it must be a pcgs refining a
-##  central series. The attribute `NormalSeriesByPcgs' must return an
+##  central series. The attribute `CentralNormalSeriesByPcgs' must return an
 ##  appropriate series of normal subgroups with elementary abelian factors
-##  among them. The algorithm will step down this series. By default an
-##  `ElementaryAbelianSeries' is used for modes 0 and 4 and a
-##  `CentralSeries' for mode 1.
+##  among them. The algorithm will step down this series.
 ##
 ##  `candidates'&is a list of elements for which canonical representatives
 ##  are to be computed or for which a conjugacy test is performed. They must
@@ -275,4 +271,5 @@ DeclareGlobalFunction( "RationalClassesPermGroup" );
 
 #############################################################################
 ##
-#E  clas.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
+

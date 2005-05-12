@@ -8,6 +8,8 @@
 ##
 ##  This  file  tests  the functions that  mainly  deal  with  combinatorics.
 ##
+##  To be listed in testall.g
+##
 
 gap> START_TEST("$Id$");
 
@@ -456,10 +458,10 @@ gap> Bernoulli( 80 );
 -4603784299479457646935574969019046849794257872751288919656867/230010
 
 # thats it for the combinatorical package  ##################################
-gap> STOP_TEST( "combinat.tst", 30050000 );
+gap> STOP_TEST( "combinat.tst", 24000000 );
 
 
 #############################################################################
 ##
-#E  combinat.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
+#E
+

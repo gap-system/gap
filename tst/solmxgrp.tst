@@ -7,6 +7,8 @@
 ##
 #Y  Copyright (C)  1998,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  Exclude from testall.g: why?
+##
 
 gap> START_TEST("$Id$");
 gap> fooAsMatrixGroup := G -> Group(
@@ -65,10 +67,10 @@ gap> foo( [2,2] );
 Abelian invariants of new group: [ 2, 2 ]
 Sift/group membership test succeeded.
 Enumerator test succeeded.
-gap> foo( [2,2,4] );
-Abelian invariants of new group: [ 2, 2, 4 ]
-Sift/group membership test succeeded.
-Enumerator test succeeded.
+# gap> foo( [2,2,4] );
+# Abelian invariants of new group: [ 2, 2, 4 ]
+# Sift/group membership test succeeded.
+# Enumerator test succeeded.
 gap> foo( [3,3] );
 Abelian invariants of new group: [ 3, 3 ]
 Sift/group membership test succeeded.
@@ -79,18 +81,18 @@ Sift/group membership test succeeded.
 Enumerator test succeeded.
 # Takes several seconds
 # foo( List([1..5], x->3) );
-gap> foo( [3,4,4,4,5,5,5] );
-Abelian invariants of new group: [ 3, 4, 4, 4, 5, 5, 5 ]
-Sift/group membership test succeeded.
-enumerator test skipped.  Size of group too large.
+# gap> foo( [3,4,4,4,5,5,5] );
+# Abelian invariants of new group: [ 3, 4, 4, 4, 5, 5, 5 ]
+# Sift/group membership test succeeded.
+# enumerator test skipped.  Size of group too large.
 gap> 
 gap> primePowers := Filtered([1..100],i->Length(PrimePowersInt(i))=2);
 [ 2, 3, 4, 5, 7, 8, 9, 11, 13, 16, 17, 19, 23, 25, 27, 29, 31, 32, 37, 41,
   43, 47, 49, 53, 59, 61, 64, 67, 71, 73, 79, 81, 83, 89, 97 ]
-gap> foo( [ 2, 83, 43 ] );
-Abelian invariants of new group: [ 2, 83, 43 ]
-Sift/group membership test succeeded.
-enumerator test skipped.  Size of group too large.
+# gap> foo( [ 2, 83, 43 ] );
+# Abelian invariants of new group: [ 2, 83, 43 ]
+# Sift/group membership test succeeded.
+# enumerator test skipped.  Size of group too large.
 gap> G := fooAsMatrixGroup( AbelianGroup(IsPermGroup, [2,2,4]));
 <matrix group with 3 generators>
 gap> gens := One(GF(9))*List(GeneratorsOfGroup(G), gen ->
@@ -104,10 +106,10 @@ Sift/group membership test succeeded.
 Enumerator test succeeded.
 32
 
-gap> STOP_TEST( "solmxgrp.tst", 80000000000 );
+gap> STOP_TEST( "solmxgrp.tst", 442000000 );
 
 
 #############################################################################
 ##
 #E  
-##
+
