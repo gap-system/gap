@@ -1855,7 +1855,7 @@ gap> CompositionSeries( h );
   <permutation group of size 60 with 2 generators>, Group(()) ]
 
 
-gap> STOP_TEST( "grpprmcs.tst", 12747200000 );
+gap> STOP_TEST( "grpprmcs.tst", 14208100000 );
 
 
 #############################################################################

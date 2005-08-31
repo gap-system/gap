@@ -591,7 +591,7 @@ gap> GetHashEntry( hash, r );
 #gap> GetHashEntry( hash, Zero(V) );
 #fail
 
-gap> STOP_TEST( "hash2.tst", 23100000 );
+gap> STOP_TEST( "hash2.tst", 20800000 );
 
 
 #############################################################################

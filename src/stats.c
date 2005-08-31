@@ -1438,6 +1438,7 @@ UInt ExecAssert2Args (
           "you may 'return true;' or 'return false;'");
         }
         if ( decision == False ) {
+            SET_BRK_CURR_STAT( stat );
             ErrorReturnVoid( "Assertion failure", 0L, 0L, "you may 'return;'");
         }
 

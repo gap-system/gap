@@ -28,6 +28,16 @@ Revision.ffe_gi :=
 
 #############################################################################
 ##
+#V  GALOIS_FIELDS
+##
+##  global list of finite fields `GF( <p>^<d> )',
+##  the field of size $p^d$ is stored in `GALOIS_FIELDS[<p>][<d>]'.
+##
+InstallFlushableValue( GALOIS_FIELDS, [] );
+
+
+#############################################################################
+##
 #M  \+( <ffe>, <rat> )
 #M  \+( <rat>, <ffe> )
 #M  \*( <ffe>, <rat> )

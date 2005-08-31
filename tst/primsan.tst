@@ -34,7 +34,7 @@ gap> for n in [2..999] do
 >     checkdegree(n);
 > od;
 
-gap> STOP_TEST( "primsan.tst", 411290800000 );
+gap> STOP_TEST( "primsan.tst", 456577700000 );
 
 
 #############################################################################

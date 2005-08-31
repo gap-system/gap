@@ -78,7 +78,7 @@ end);
 InstallMethod(SchurCover,"of fp group",true,[IsSubgroupFpGroup],0,
   SchurCoverFP);
 
-InstallMethod(EpimorphismSchurCover,"generic, via fp group",true,[IsGroup],0,
+InstallMethod(EpimorphismSchurCover,"generic, via fp group",true,[IsGroup],1,
 function(G)
 local iso,hom,F,D,p,gens,Fgens,Dgens;
   iso:=IsomorphismFpGroup(G);
@@ -251,10 +251,14 @@ local s,pcgs,n,iso,H,l,cov,der,pco,ng,gens,imgs,ran,zer,i,j,e,a,
 
 end);
 
+InstallMethod(AbelianInvariantsMultiplier,"naive",true,
+  [IsGroup],1, G->AbelianInvariants(KernelOfMultiplicativeGeneralMapping(EpimorphismSchurCover(G))));
+
 InstallMethod(AbelianInvariantsMultiplier,"via Sylow Subgroups",true,
   [IsGroup],0,
 function(G)
 local a,f,i;
+  Info(InfoWarning,1,"Warning: AbelianInvariantsMultiplier via Sylow subgroups is under construction");
   a:=[];
   f:=Filtered(Collected(Factors(Size(G))),i->i[2]>1);
   for i in f do
@@ -303,7 +307,7 @@ end);
 
 InstallGlobalFunction(CorestEval,function(FG,s)
 # This has plenty of space for optimization.
-local G,H,D,T,i,j,k,l,a,h,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp;
+local G,H,D,T,i,j,k,l,a,h,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp,pos;
 
   G:=Image(FG);
   H:=Image(s);
@@ -318,6 +322,13 @@ local G,H,D,T,i,j,k,l,a,h,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp;
   # this will guarantee we always take the same preimages
   el:=AsSSortedListNonstored(H);
   elp:=List(el,i->PreImagesRepresentative(s,i));
+  #ensure the preimage of identity is one
+  if IsOne(el[1]) then
+    pos:=1;
+  else
+    pos:=Position(el,One(H));
+  fi;
+  elp[pos]:=One(elp[pos]);
 
   # deal with inverses
   invlist:=[];
@@ -511,6 +522,7 @@ local hom,	#isomorphism fp
     return IdentityMapping(G);
   fi;
 
+  #F:=FreeGroup(List([1..ngl[Length(ngl)]],x->Concatenation("@",String(x))));
   F:=FreeGroup(ngl[Length(ngl)]);
 
   rels:=[];
@@ -566,8 +578,10 @@ local hom,	#isomorphism fp
   else
     SetSize(q,Size(G)*ms);
   fi;
-  qhom:=GroupHomomorphismByImages(q,G,GeneratorsOfGroup(q){[1..ng]},
-          List(GeneratorsOfGroup(Source(hom)),i->Image(hom,i)));
+  qhom:=GroupHomomorphismByImages(q,G,GeneratorsOfGroup(q),
+          Concatenation(List(GeneratorsOfGroup(Source(hom)),i->Image(hom,i)),
+	    List([ng+1..Length(GeneratorsOfGroup(q))],
+	         i->One(G)) ));
   SetIsSurjective(qhom,true);
   SetSize(Source(qhom),Size(G)*ms);
 
@@ -584,6 +598,7 @@ local G,pl;
   elif IsPGroup(G) then
     TryNextMethod(); # we recursively call the algorithm for the p-sylow
   fi;
+  Info(InfoWarning,1,"Warning: EpimorphismSchurCover via Holt's algorithm is under construction");
   if Length(arg)>1 then
     pl:=arg[2];
   else

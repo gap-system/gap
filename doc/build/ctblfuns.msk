@@ -142,7 +142,7 @@ gap> phi:= ClassFunction( g, [ 1, -1, 0, 2, -2 ] );
 ClassFunction( D8, [ 1, -1, 0, 2, -2 ] )
 gap> psi:= ClassFunction( tbl,
 >              List( Irr( g ), chi -> ScalarProduct( chi, phi ) ) );
-ClassFunction( D8, [ -3/8, 1/8, 9/8, 5/8, -1/4 ] )
+ClassFunction( D8, [ -3/8, 9/8, 5/8, 1/8, -1/4 ] )
 gap> chi:= VirtualCharacter( g, [ 0, 0, 8, 0, 0 ] );
 VirtualCharacter( D8, [ 0, 0, 8, 0, 0 ] )
 gap> reg:= Character( tbl, [ 8, 0, 0, 0, 0 ] );
@@ -272,7 +272,7 @@ gap> ConstituentsOfCharacter( nat );
 \beginexample
 gap> List( Irr( S4 ), KernelOfCharacter );
 [ Group([ (), (1,2)(3,4), (1,2,3) ]), Group(()), 
-  Group([ (1,2)(3,4), (1,4)(2,3) ]), Group(()), 
+  Group([ (1,2)(3,4), (1,3)(2,4) ]), Group(()), 
   Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]) ]
 gap> List( Irr( S4 ), ClassPositionsOfKernel );
 [ [ 1, 3, 4 ], [ 1 ], [ 1, 3 ], [ 1 ], [ 1, 2, 3, 4, 5 ] ]
@@ -283,7 +283,7 @@ gap> List( Irr( S4 ), ClassPositionsOfKernel );
 \beginexample
 gap> List( Irr( S4 ), CentreOfCharacter );
 [ Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]), Group(()), 
-  Group([ (1,2)(3,4), (1,4)(2,3) ]), Group(()), 
+  Group([ (1,2)(3,4), (1,3)(2,4) ]), Group(()), 
   Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]) ]
 gap> List( Irr( S4 ), ClassPositionsOfCentre );
 [ [ 1, 2, 3, 4, 5 ], [ 1 ], [ 1, 3 ], [ 1 ], [ 1, 2, 3, 4, 5 ] ]

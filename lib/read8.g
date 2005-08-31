@@ -10,8 +10,3 @@ ReadLib( "overload.g"  );
 ##
 ReadLib( "compiler.g"  );
 
-#############################################################################
-##
-#X  further utilities
-##
-ReadLib( "colorprompt.g"  );

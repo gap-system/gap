@@ -258,15 +258,33 @@
 %AH
 \def\folio{\ifnum\pageno<0 \romannumeral-\pageno \else
   \number\pageno\fi}
-\def\doindex#1#2#3{\protectedwrite\indexout{\noexpand\indexentry{#1#2#3}%
-  {\ifnum\pageno<0\romannumeral-\pageno\else%
-   \number\pageno\fi}}%
-  \ifvmode\nobreak\else\unskip\fi}
+  
+%\def\doindex#1#2#3{\protectedwrite\indexout{\noexpand\indexentry{#1#2#3}%
+%  {\ifnum\pageno<0\romannumeral-\pageno\else%
+%   \number\pageno\fi}}%
+%  \ifvmode\nobreak\else\unskip\fi}
+{\catcode`@=11 
+\catcode`<=\active \catcode`_=\active \catcode`!=\active \catcode`*=\active 
+\catcode``=\active 
+
+\global\let\n@exp\noexpand
+
+\gdef\doindex#1#2#3{\begingroup
+  %\let_\underscore\let`\lq\let<\<\let!\excl
+  \def\noexpand{}% this kills noexpands from some index entries
+  \def\protect{\n@exp\n@exp\n@exp}%
+  \def_{\protect_}\def*{\protect*}\def`{\protect `}\def<{\protect <}\def!{\protect!}%
+  \edef\tmp{\n@exp\n@exp\n@exp\indexentry{#1#2#3}}%
+  \expandafter\write\expandafter\indexout\expandafter{\tmp{\folio}}%
+  %{\scrollmode\errorcontextlines 1\show\tmp\errorstopmode}%
+  \ifvmode\nobreak\else\unskip\fi\endgroup}%
+}
 
 % Additional active characters and their default meanings.
 \mathcode`.="2201 \mathchardef\.="702E
 \def\undoquotes{\catcode`'=12 \catcode``=12 \def\"##1{{\accent127 ##1}}}
 \def\excl{!} \chardef\lqq=`\\ \let\underscore=\_
+\chardef\<=`<
 \catcode`!=\active \let!=\excl
 \catcode`^=\active \def^{\ifmmode\sp\else{\char`\^}\fi}
 \catcode`_=\active \def\activeusc{\ifmmode\sb\else\_\fi}
@@ -274,7 +292,7 @@
 \catcode`*=\active \def*{\ifmmode\let\next=\*\else\let\next=\bold\fi\next}
                    \def\bold#1*{{\bf #1\/}}             \chardef\*=`*
 \catcode`<=\active \def<#1>{{\chardef*=`*\let_=\_\it#1\/}}
-                                                        \chardef\<=`<
+                                                       
 \catcode`"=\active \def"{\begingroup\undoquotes\doref}  \chardef\"=`"
                                                         \chardef\\=`\\
 

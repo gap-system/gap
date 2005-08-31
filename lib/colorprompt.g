@@ -12,7 +12,14 @@ Revision.colorprompt_g :=
     "$Id$";
 
 # see comment below
-BindGlobal("STDOut", OutputTextUser());
+if not IsBound(STDOut) then
+  BindGlobal("STDOut", OutputTextUser());
+else
+  Info(InfoWarning, 1, "You probably have an 'ReadLib(\"colorprompt.g\");'",
+                        " in your .gaprc file.");
+  Info(InfoWarning, 1, "Its functionality is now in the GAP library.");
+  Info(InfoWarning, 1, "Substitute that line by 'ColorPrompt(true);'.");
+fi;
 
 # same behaviour as with unbound functions
 PrintPromptHook := CPROMPT;

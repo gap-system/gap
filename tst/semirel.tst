@@ -118,7 +118,7 @@ gap> ForAll(GreensHClasses(t4),
 > ));
 true
 
-gap> STOP_TEST( "semirel.tst", 337100000 );
+gap> STOP_TEST( "semirel.tst", 120100000 );
 
 
 #############################################################################

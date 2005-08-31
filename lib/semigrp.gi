@@ -303,17 +303,13 @@ InstallMethod( Enumerator, "for a generic semigroup",
     function( s )
      
     if ValueOption( "Side" ) = "left" then
-      return EnumeratorOfSemigroupIdeal(
-                 LeftMagmaIdealByGenerators(s,GeneratorsOfMagma(s)), 
-                 LeftActingDomain,
+      return EnumeratorOfSemigroupIdeal( s, s,
                  IsBound_LeftSemigroupIdealEnumerator,
-                 GeneratorsOfSemigroup );
+                 GeneratorsOfSemigroup( s ) );
     else
-      return EnumeratorOfSemigroupIdeal( 
-                 RightMagmaIdealByGenerators(s,GeneratorsOfMagma(s)), 
-                 RightActingDomain,
+      return EnumeratorOfSemigroupIdeal( s, s,
                  IsBound_RightSemigroupIdealEnumerator,
-                 GeneratorsOfSemigroup );
+                 GeneratorsOfSemigroup( s ) );
     fi;
     end );
 

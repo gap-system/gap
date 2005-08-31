@@ -26,9 +26,9 @@ DeclareCategoryKernel( "IsList", IsListOrCollection, IS_LIST );
 
 #############################################################################
 ##
-#V  ListsFamily
+#V  ListsFamily . . . . . . . . . . . . . . . . . . . . . . . family of lists
 ##
-DeclareGlobalVariable( "ListsFamily" );
+BIND_GLOBAL( "ListsFamily", NewFamily( "ListsFamily", IsList ) );
 
 
 #############################################################################
@@ -489,6 +489,16 @@ DeclareOperation( "PositionSublist", [ IsList,IsList,IS_INT ] );
 
 #############################################################################
 ##
+#O  PositionFirstComponent(<list>,<obj>)
+##
+##  returns the index <i> in <list> such that $<list>[<i>][1]=<obj>$ or the 
+##  place where such an entry should be added (cf PositionSorted).
+## 
+DeclareOperation("PositionFirstComponent",[IsList,IsObject]);
+
+
+#############################################################################
+##
 #O  IsMatchingSublist( <list>, <sub> )
 #O  IsMatchingSublist( <list>, <sub>, <at> )
 ##
@@ -518,16 +528,45 @@ DeclareFilter( "IsQuickPositionList" );
 #############################################################################
 ##
 #O  Add( <list>, <obj> )  . . . . . . . . add an element to the end of a list
+#O  Add( <list>, <obj>, <pos> ) . . . . . . add an element anywhere in a list
 ##
-##  adds the element <obj> to the end of the mutable list <list>,
+##  adds the element <obj> to the mutable list <list>. The two argument version 
+##  adds <obj> at the end of <list>,
 ##  i.e., it is equivalent to the assignment
 ##  `<list>[ Length(<list>) + 1 ] := <obj>', see~"list element!assignment".
+##  
+##  The three argument version adds <obj> in position <pos>, moving all later
+##  elements of the list (if any) up by one position. Any holes at or after
+##  position <pos> are also moved up by one position, and new holes are created
+##  before <pos> if they are needed.
+## 
 ##  Nothing is returned by `Add', the function is only called for its side
 ##  effect.
 
 #DeclareOperation( "Add", [ IsList, IsObject ] );
-DeclareOperationKernel( "Add", [ IsList, IsObject ], ADD_LIST );
+DeclareOperationKernel( "Add", [ IsList and IsMutable, IsObject ], ADD_LIST );
+DeclareOperation( "Add", [ IsList and IsMutable, IsObject,  IS_INT ]);
 
+#############################################################################
+##
+#O  Remove( <list> ) . . . . . . . . remove an element from the end of a list
+#O  Remove( <list>, <pos> ) . remove an element from position <pos> of a list
+##
+##  removes an element from <list>. The one argument form removes the last 
+##  element. The two argument form removes the element in position <pos>,
+##  moving all subsequent elements down one position. Any holes  after
+##  position <pos> are also moved down by one position.
+##
+##  Remove( <list> ) always returns the removed element. In this case <list>
+##  must be non-empty. Remove( <list>, <pos> )
+##  returns the old value of <list>[<pos>] if it was bound, and nothing if it
+##  was not. Note that accessing or assigning the return value of this form of
+##  the Remove operation is only safe when you *know* that there will be a 
+##  value, otherwise it will cause an error.
+##
+
+DeclareOperation( "Remove", [IsList and IsMutable]);
+DeclareOperation( "Remove", [IsList and IsMutable, IS_INT]);
 
 #############################################################################
 ##

@@ -306,6 +306,10 @@ function( G, p )
     od;
     gens := InducedPcgsByPcSequenceNC( spec, gens );
     S := SubgroupByPcgs( G, gens );
+    if Size(S) > 1 then
+        SetIsPGroup( S, true );
+        SetPrimePGroup( S, p );
+    fi;
     return S;
 end );
 

@@ -838,5 +838,13 @@ DeclareOperation( "LcmOp",
 
 #############################################################################
 ##
-#E
+#O  PadicValuation( <r>, <p> )
+##
+##  `PadicValuation' is the operation to compute the <p>-adic valuation of
+##  a ring element <r>.
+##
+DeclareOperation( "PadicValuation", [ IsRingElement, IsPosInt ] );
 
+#############################################################################
+##
+#E

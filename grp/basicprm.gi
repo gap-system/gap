@@ -139,7 +139,6 @@ function( filter, dom )
             SetIsSimpleGroup(  alt, true );
             SetIsPerfectGroup( alt, true );
         elif 2 < Length(dom)  then
-            SetIsSimpleGroup(  alt, false );
             SetIsPerfectGroup( alt, false );
         fi;
         SetIsPrimitiveAffine( alt, Length( dom ) < 5 );

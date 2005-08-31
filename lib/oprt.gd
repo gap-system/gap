@@ -1044,7 +1044,8 @@ DeclareOperation( "PermutationOp", [ IsObject, IsList, IsFunction ] );
 
 #############################################################################
 ##
-#O  PermutationCycle( <g>, <Omega>, <pnt> [,<act>] )
+#F  PermutationCycle( <g>, <Omega>, <pnt> [,<act>] )
+#O  PermutationCycleOp( <g>, <Omega>, <pnt>, <act> )
 ##
 ##  computes the permutation that represents the cycle of <pnt> under the
 ##  action of the element <g>.

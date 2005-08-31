@@ -99,7 +99,7 @@ extern int    fputs ( const char *, FILE * );
 **
 *V  SyKernelVersion  . . . . . . . . . . . . . . . .  name of the architecture
 */
-const Char * SyKernelVersion = "4.4.5";
+const Char * SyKernelVersion = "4.4.6";
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
@@ -2013,7 +2013,7 @@ struct optInfo options[] = {
   { 'f',  forceLineEditing, (void *)2, 0 },
   { 'g',  rotateGasManVerbosity, 0, 0 },
   { 'h',  returnVal, (void *) -2, 0},
-  { 'i',  storeString, &SySystemInitFile, 1},
+  { 'i',  storeString, SySystemInitFile, 1},
   { 'l',  setGapRootPath, 0, 1},
   { 'm',  storeMemory2, &SyStorMin, 1 },
   { 'n',  forceLineEditing, 0, 0},
@@ -2023,9 +2023,9 @@ struct optInfo options[] = {
   { 'r',  toggle, &gaprc, 0 },
   { 'x',  setScreenWidth, 0, 1 },
   { 'y',  setScreenDepth, 0, 1 },
- #if SYS_MSDOS_DJGPP || SYS_TOS_GCC2 || SYS_MAC_MPW || SYS_MAC_MWC
+#if SYS_MSDOS_DJGPP || SYS_TOS_GCC2 || SYS_MAC_MPW || SYS_MAC_MWC
   { 'z',  storeInteger, &syIsIntrFreq, 0},
-  #endif
+#endif
   { '\0',0,0}};
 
 

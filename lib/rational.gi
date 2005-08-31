@@ -23,8 +23,6 @@ InstallValue( Rationals, Objectify( NewType(
     IsRationals and IsAttributeStoringRep ), rec() ) );
 SetName( Rationals, "Rationals" );
 SetLeftActingDomain( Rationals, Rationals );
-SetIsPrimeField( Rationals, true );
-SetIsCyclotomicField( Rationals, true );
 SetSize( Rationals, infinity );
 SetConductor( Rationals, 1 );
 SetDimension( Rationals, 1 );
@@ -58,8 +56,8 @@ SetIsWholeFamily( GaussianRationals, false );
 #M  \in( <x>, <Rationals> ) . . . . . . . . . . membership test for rationals
 ##
 InstallMethod( \in,
-    "for Rationals and an object",
-    [ IsObject, IsRationals ],
+    "for cyclotomic and Rationals",
+    [ IsCyclotomic, IsRationals ],
     function( x, Rationals ) return IsRat( x ); end );
 
 
@@ -416,6 +414,39 @@ InstallMethod( RoundCycDown,
         return Int( r + 1 / 2 );
     fi;
 end );
+
+
+#############################################################################
+##
+#M  PadicValuation( <rat>, <p> ) . . . . . . . . . . . . . . .  for rationals
+##
+InstallMethod( PadicValuation,
+               "for rationals", ReturnTrue, [ IsRat, IsPosInt ], 0,
+
+  function( rat, p )
+
+    local  a, i;
+
+    if not IsPrimeInt(p) then TryNextMethod(); fi;
+    if rat = 0 then return infinity; fi;
+    a := NumeratorRat(rat)/p;
+    i := 0;
+    while IsInt(a) do
+      i := i+1;
+      a := a/p;
+    od;
+    if i > 0 or IsInt(rat) then
+      return i;
+    fi;
+    a := DenominatorRat(rat)/p;
+    i := 0;
+    while IsInt(a) do
+      i := i+1;
+      a := a/p;
+    od;
+    return -i;
+  end );
+
 
 #############################################################################
 ##

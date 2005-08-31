@@ -276,7 +276,7 @@ gap> ForAll( [ 1 .. len ], i -> i = Position( enum, enum[i], 0 ) );
 true
 
 
-gap> STOP_TEST( "zmodnz.tst", 16300000 );
+gap> STOP_TEST( "zmodnz.tst", 11200000 );
 
 
 #############################################################################

@@ -280,7 +280,8 @@ DeclareCategory( "IsCharacterTableInProgress", IsNearlyCharacterTable );
 ##
 ##  Every character table like object lies in this family (see~"Families").
 ##
-DeclareGlobalVariable( "NearlyCharacterTablesFamily" );
+BindGlobal( "NearlyCharacterTablesFamily",
+    NewFamily( "NearlyCharacterTablesFamily", IsNearlyCharacterTable ) );
 
 
 #############################################################################
@@ -657,10 +658,6 @@ InstallIsomorphismMaintenance( CharacterDegrees,
 ##  For a group <G>, `Irr' may delegate to its character table only if the
 ##  irreducibles are already stored there.
 ##
-##  If a group has both ordinary irreducible characters in `Irr' and
-##  irreducible representations in `IrreducibleRepresentations' these are
-##  *not* guaranteed to be ordered in the same way.
-##
 ##  (If <G> is <p>-solvable (see~"IsPSolvable") then the <p>-modular
 ##  irreducible characters can be computed by the Fong-Swan Theorem;
 ##  in all other cases, there may be no method.)
@@ -676,6 +673,10 @@ InstallIsomorphismMaintenance( CharacterDegrees,
 ##  so the irreducibles of such a table will in general not coincide with
 ##  the irreducibles stored as `Irr( <G> )' although also the sorted table
 ##  stores the group <G>.
+##
+##  The ordering of the entries in the attribute `Irr' of a group need *not*
+##  coincide with the ordering of its `IrreducibleRepresentations'
+##  (see~"IrreducibleRepresentations") value.
 ##
 DeclareAttribute( "Irr", IsGroup );
 DeclareOperation( "Irr", [ IsGroup, IsInt ] );
@@ -755,6 +756,8 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  `IsAbelian'&
 ##  \indextt{IsCyclic!for character tables}
 ##  `IsCyclic'&
+##  \indextt{IsElementaryAbelian!for character tables}
+##  `IsElementaryAbelian'&
 ##  \indextt{IsFinite!for character tables}
 ##  `IsFinite'&
 ##  \indextt{IsMonomial!for character tables}
@@ -788,6 +791,7 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 #A  Exponent( <tbl> )
 #P  IsAbelian( <tbl> )
 #P  IsCyclic( <tbl> )
+#P  IsElementaryAbelian( <tbl> )
 #P  IsFinite( <tbl> )
 #A  NrConjugacyClasses( <tbl> )
 #A  Size( <tbl> )
@@ -797,6 +801,7 @@ DeclareAttributeSuppCT( "CommutatorLength", IsNearlyCharacterTable, [] );
 DeclareAttributeSuppCT( "Exponent", IsNearlyCharacterTable, [] );
 DeclarePropertySuppCT( "IsAbelian", IsNearlyCharacterTable );
 DeclarePropertySuppCT( "IsCyclic", IsNearlyCharacterTable );
+DeclarePropertySuppCT( "IsElementaryAbelian", IsNearlyCharacterTable );
 DeclarePropertySuppCT( "IsFinite", IsNearlyCharacterTable );
 DeclareAttributeSuppCT( "NrConjugacyClasses", IsNearlyCharacterTable, [] );
 DeclareAttributeSuppCT( "Size", IsNearlyCharacterTable, [] );
@@ -828,6 +833,7 @@ DeclarePropertySuppCT( "IsSupersolvableCharacterTable",
 
 
 InstallTrueMethod( IsAbelian, IsOrdinaryTable and IsCyclic );
+InstallTrueMethod( IsAbelian, IsOrdinaryTable and IsElementaryAbelian );
 InstallTrueMethod( IsMonomialCharacterTable,
     IsOrdinaryTable and IsSupersolvableCharacterTable and IsFinite );
 InstallTrueMethod( IsNilpotentCharacterTable,
@@ -980,6 +986,9 @@ DeclareAttributeSuppCT( "UnderlyingCharacteristic",
 ##  When `ClassNames' is called with two arguments, the second being the
 ##  string `\"ATLAS\"', the class names returned obey the convention used in
 ##  Chapter~7, Section~5 of the {\ATLAS} of Finite Groups~\cite{CCN85}.
+##  If one is interested in ``relative'' class names of almost simple
+##  {\ATLAS} groups, one can use the function `AtlasClassNames' of the {\GAP}
+##  package AtlasRep.
 ##
 DeclareAttributeSuppCT( "ClassNames", IsNearlyCharacterTable,
     [ "class" ] );
@@ -1166,10 +1175,13 @@ DeclareAttribute( "ClassRoots", IsCharacterTable );
 ##
 #A  ClassPositionsOfNormalSubgroups( <ordtbl> )
 #A  ClassPositionsOfMaximalNormalSubgroups( <ordtbl> )
+#A  ClassPositionsOfMinimalNormalSubgroups( <ordtbl> )
 ##
-##  correspond to `NormalSubgroups' and `MaximalNormalSubgroups'
+##  correspond to `NormalSubgroups', `MaximalNormalSubgroups', and
+##  `MinimalNormalSubgroups'
 ##  for the group of the ordinary character table <ordtbl>
-##  (see~"NormalSubgroups", "MaximalNormalSubgroups").
+##  (see~"NormalSubgroups", "MaximalNormalSubgroups",
+##  "MinimalNormalSubgroups").
 ##
 ##  The entries of the result lists are sorted according to increasing
 ##  length.
@@ -1179,6 +1191,9 @@ DeclareAttribute( "ClassRoots", IsCharacterTable );
 DeclareAttribute( "ClassPositionsOfNormalSubgroups", IsOrdinaryTable );
 
 DeclareAttribute( "ClassPositionsOfMaximalNormalSubgroups",
+    IsOrdinaryTable );
+
+DeclareAttribute( "ClassPositionsOfMinimalNormalSubgroups",
     IsOrdinaryTable );
 
 
@@ -1422,8 +1437,7 @@ DeclareAttributeSuppCT( "ComputedPrimeBlockss", IsOrdinaryTable, "mutable",
 ##  Let <p> be a prime integer, <omega1> and <omega2> be two central
 ##  characters (or their values lists) of a character table,
 ##  and <relevant> be a list of positions as is stored in the component
-##  `relevantclasses' of a record returned by `PrimeBlocks'
-##  (see~"PrimeBlocks").
+##  `relevant' of a record returned by `PrimeBlocks' (see~"PrimeBlocks").
 ##
 ##  `SameBlock' returns `true' if <omega1> and <omega2> are equal modulo any
 ##  maximal ideal in the ring of complex algebraic integers containing the
@@ -2120,6 +2134,7 @@ DeclareGlobalFunction( "CharacterTableDisplayPrintLegendDefault" );
 #############################################################################
 ##
 #F  PrintCharacterTable( <tbl>, <varname> )
+#F  CharacterTableString( <tbl>, <varname> )
 ##
 ##  Let <tbl> be a nearly character table, and <varname> a string.
 ##  `PrintCharacterTable' prints those values of the supported attributes
@@ -2135,6 +2150,9 @@ DeclareGlobalFunction( "CharacterTableDisplayPrintLegendDefault" );
 ##  This is used mainly for saving character tables to files.
 ##  A more human readable form is produced by `Display'.
 ##
+##  `CharacterTableString' returns a string that consists of the output of
+##  `PrintCharacterTable'.
+##
 #T note that a table with group can be read back only if the group elements
 #T can be read back;
 #T so this works for permutation groups but not for PC groups!
@@ -2145,6 +2163,7 @@ DeclareGlobalFunction( "CharacterTableDisplayPrintLegendDefault" );
 #T are automatically constructed? (This should be safe.)
 ##
 DeclareGlobalFunction( "PrintCharacterTable" );
+DeclareGlobalFunction( "CharacterTableString" );
 
 
 #############################################################################
@@ -2222,7 +2241,8 @@ DeclareOperation( "CharacterTableDirectProduct",
 ##  Note that there is no default method for *computing* the value of
 ##  `FactorsOfDirectProduct'.
 ##
-DeclareAttribute( "FactorsOfDirectProduct", IsNearlyCharacterTable );
+DeclareAttributeSuppCT( "FactorsOfDirectProduct", IsNearlyCharacterTable,
+    [] );
 
 
 #############################################################################
@@ -2255,28 +2275,45 @@ DeclareOperation( "CharacterTableFactorGroup",
 
 #############################################################################
 ##
-#O  CharacterTableIsoclinic( <tbl> )
+#A  CharacterTableIsoclinic( <tbl> )
 #O  CharacterTableIsoclinic( <tbl>, <classes> )
 #O  CharacterTableIsoclinic( <tbl>, <classes>, <centre> )
 ##
-##  If <tbl> is the character table of a group with structure $2\.G\.2$
-##  with a central subgroup $Z$ of order $2$ and a normal subgroup $N$ of
-##  index $2$ that contains $Z$ then `CharacterTableIsoclinic' returns
-##  the character table of the isoclinic group in the sense of the {\ATLAS}
-##  of Finite Groups~\cite{CCN85}, Chapter~6, Section~7.
+##  If <tbl> is the (ordinary or modular) character table of a group with the
+##  structure $2\.G\.2$ with a central subgroup $Z$ of order $2$ and a normal
+##  subgroup $N$ of index $2$ that contains $Z$
+##  then `CharacterTableIsoclinic' returns the table of the isoclinic group
+##  in the sense of the {\ATLAS} of Finite Groups~\cite{CCN85}, Chapter~6,
+##  Section~7.
 ##  If $N$ is not uniquely determined then the positions of the classes
 ##  forming $N$ must be entered as list <classes>.
 ##  If $Z$ is not unique in $N$ then the position of the class consisting
 ##  of the involution in $Z$ must be entered as <centre>.
 ##
-#T table arises  from mult. char. values in the outer corner with `E(4)';
-#T generalized in order to admit 4.HS.2 (< HN.2) --> works?
+##  Note that also if <tbl> is a Brauer table then <classes> and <centre>
+##  denote class numbers w.r.t.~the *ordinary* character table.
 ##
-DeclareOperation( "CharacterTableIsoclinic", [ IsNearlyCharacterTable ] );
+DeclareAttribute( "CharacterTableIsoclinic", IsNearlyCharacterTable );
 DeclareOperation( "CharacterTableIsoclinic",
     [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection ] );
 DeclareOperation( "CharacterTableIsoclinic",
     [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection, IsPosInt ]);
+
+
+#############################################################################
+##
+#A  SourceOfIsoclinicTable( <tbl> )
+##
+##  For an ordinary character table that has been constructed via
+##  `CharacterTableIsoclinic' (see~"CharacterTableIsoclinic"),
+##  the value of `SourceOfIsoclinicTable' is the list of three arguments in
+##  the `CharacterTableIsoclinic' call.
+##
+##  Note that there is no default method for *computing* the value of
+##  `SourceOfIsoclinicTable'.
+##
+DeclareAttributeSuppCT( "SourceOfIsoclinicTable", IsNearlyCharacterTable,
+    [ "class" ] );
 
 
 #############################################################################
@@ -2626,7 +2663,7 @@ DeclareGlobalFunction( "FactorGroupNormalSubgroupClasses" );
 #V  SupportedLibraryTableComponents
 #R  IsLibraryCharacterTableRep( <tbl> )
 ##
-##  Ordinary library tables may have some components that are meaningless for
+##  Modular library tables may have some components that are meaningless for
 ##  character tables that know their underlying group.
 ##  These components do not justify the introduction of operations to fetch
 ##  them.
@@ -2637,9 +2674,6 @@ DeclareGlobalFunction( "FactorGroupNormalSubgroupClasses" );
 ##  tables with underlying groups or a factor table of a character table with
 ##  underlying group may be in `IsLibraryCharacterTableRep'.
 ##
-##  (The unorthodox ordering of the component names below is due to the
-##  ordering used in the data files.)
-##
 BindGlobal( "SupportedLibraryTableComponents", [
       # These are used only for Brauer tables, they are set only by `MBT'.
      "basicset",
@@ -2648,10 +2682,6 @@ BindGlobal( "SupportedLibraryTableComponents", [
      "defect",
      "factorblocks",
      "indicator",
-     # These are used only for ordinary tables.
-     "projectives",
-     "isSimple",
-     "extInfo",
     ] );
 
 DeclareRepresentation( "IsLibraryCharacterTableRep", IsAttributeStoringRep,

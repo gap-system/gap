@@ -367,6 +367,7 @@ gap> KroneckerProduct([[1,2]],[[5,7],[9,2]]);
 
 \Declaration{MutableNullMat}
 
+\Declaration{MutableCopyMat}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Random Matrices}

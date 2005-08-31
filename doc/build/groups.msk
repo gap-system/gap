@@ -224,17 +224,17 @@ express group elements as words in given generators: Create a free group
 (see~"FreeGroup") on the correct number of generators and create a
 homomorphism from this free group onto the group <G> in whose generators you
 want to factorize. Then the preimage of an element of <G> is a word in the
-free generators, that will map on this element again. The following example
-shows how to decompose elements of $S_4$ in the generators `(1,2,3,4)' and
-`(1,2)':
+free generators, that will map on this element again.
+
+\Declaration{EpimorphismFromFreeGroup}
+
+The following example shows how to decompose elements of $S_4$ in the
+generators `(1,2,3,4)' and `(1,2)':
 
 \beginexample
 gap> g:=Group((1,2,3,4),(1,2));
 Group([ (1,2,3,4), (1,2) ])
-gap> f:=FreeGroup("x","y");
-<free group on the generators [ x, y ]>
-gap> hom:=GroupHomomorphismByImagesNC(f,g,GeneratorsOfGroup(f),
-> GeneratorsOfGroup(g));
+gap> hom:=EpimorphismFromFreeGroup(g:names:=["x","y"]);
 [ x, y ] -> [ (1,2,3,4), (1,2) ]
 gap> PreImagesRepresentative(hom,(1,4));
 y^-1*x^-2*y^-1*x^-1*y^-1*x
@@ -248,13 +248,11 @@ of the symmetric group $S_{16}$.
 \beginexample
 gap> perms := [ (1,2,3,7,11,10,9,5), (2,3,4,8,12,11,10,6),
 >   (5,6,7,11,15,14,13,9), (6,7,8,12,16,15,14,10) ];;
-gap> puzzle := Group( perms );;
-gap> Size( puzzle );
+gap> puzzle := Group( perms );;Size( puzzle );
 20922789888000
-gap> F := FreeGroup( "a", "b", "c", "d" );;
-gap> gens := GeneratorsOfGroup( F );;
-gap> hom := GroupHomomorphismByImages( F, puzzle, gens, perms );;
-gap> word := PreImagesRepresentative( hom, (1,2) );;
+gap> hom:=EpimorphismFromFreeGroup(puzzle:names:=["a", "b", "c", "d"]);;
+gap> word := PreImagesRepresentative( hom, (1,2) );
+a^-1*c*b*c^-1*a*b^-1*a^-2*c^-1*a*b^-1*c*b
 gap> Length( word );
 13
 \endexample
@@ -273,8 +271,8 @@ gap> Factorization( H, (1,2,3) );
 x2*x1*x2*x1*x2^-2
 gap> s*r*s*r*s^-2;
 (1,2,3)
-gap> MappingGeneratorsImages(H!.factFreeMap);
-[ [ (3,4), (1,2,3,4,5,6) ], [ x1, x2 ] ]
+gap> MappingGeneratorsImages(EpimorphismFromFreeGroup(H));
+[ [ x1, x2 ], [ (3,4), (1,2,3,4,5,6) ] ]
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -519,7 +517,7 @@ Group([ (1,4)(2,3), (1,3)(2,4) ])
 \Declaration{NormalClosure}
 \beginexample
 gap> NormalClosure(g,Subgroup(g,[(1,2,3)]));
-Group([ (1,2,3), (2,3,4) ])
+Group([ (1,2,3), (1,3,4) ])
 \endexample
 
 \Declaration{NormalIntersection}
@@ -835,7 +833,7 @@ gap> ChiefSeries(g);
 \Declaration{SubnormalSeries}
 \beginexample
 gap> s:=SubnormalSeries(g,Group((1,2)(3,4)));
-[ Group([ (1,2,3,4), (1,2) ]), Group([ (1,2)(3,4), (1,3)(2,4) ]), 
+[ Group([ (1,2,3,4), (1,2) ]), Group([ (1,2)(3,4), (1,4)(2,3) ]), 
   Group([ (1,2)(3,4) ]) ]
 \endexample
 
@@ -1093,11 +1091,11 @@ true
 gap> m11:=TransitiveGroup(11,6);
 M(11)
 gap> r:=RepresentativesPerfectSubgroups(m11);
-[ Group([ (3,4,10)(5,11,6)(7,9,8), (1,9)(2,7)(3,10)(4,6) ]), 
-  Group([ (2,3,5)(4,10,9)(6,7,11), (1,9)(2,7)(3,10)(4,6) ]), 
-  Group([ (3,6)(4,11)(5,10)(8,9), (1,6,5,9)(2,11,3,10) ]), 
-  Group([ (3,5,8)(4,11,7)(6,9,10), (1,9)(2,7)(3,10)(4,6) ]), M(11), Group(())
- ]
+[ Group([ (3,5,8)(4,11,7)(6,9,10), (1,10)(2,9)(3,7)(4,11) ]), 
+  Group([ (2,3,5)(4,10,9)(6,7,11), (1,10)(2,9)(3,7)(4,11) ]), 
+  Group([ (3,4,8,9)(6,7,11,10), (1,10)(2,9)(3,7)(4,11) ]), 
+  Group([ (3,4,10)(5,11,6)(7,9,8), (1,10)(2,9)(3,7)(4,11) ]), M(11), 
+  Group(()) ]
 gap> List(r,Size);
 [ 60, 60, 360, 660, 7920, 1 ]
 \endexample
@@ -1105,10 +1103,10 @@ gap> List(r,Size);
 \Declaration{ConjugacyClassesPerfectSubgroups}
 \beginexample
 gap> ConjugacyClassesPerfectSubgroups(m11);
-[ Group( [ ( 3, 4,10)( 5,11, 6)( 7, 9, 8), ( 1, 9)( 2, 7)( 3,10)( 4, 6) ] )^G,
-  Group( [ ( 2, 3, 5)( 4,10, 9)( 6, 7,11), ( 1, 9)( 2, 7)( 3,10)( 4, 6) ] )^G,
-  Group( [ ( 3, 6)( 4,11)( 5,10)( 8, 9), ( 1, 6, 5, 9)( 2,11, 3,10) ] )^G, 
-  Group( [ ( 3, 5, 8)( 4,11, 7)( 6, 9,10), ( 1, 9)( 2, 7)( 3,10)( 4, 6) ] )^G,
+[ Group( [ ( 3, 5, 8)( 4,11, 7)( 6, 9,10), ( 1,10)( 2, 9)( 3, 7)( 4,11) ] )^G, 
+  Group( [ ( 2, 3, 5)( 4,10, 9)( 6, 7,11), ( 1,10)( 2, 9)( 3, 7)( 4,11) ] )^G, 
+  Group( [ ( 3, 4, 8, 9)( 6, 7,11,10), ( 1,10)( 2, 9)( 3, 7)( 4,11) ] )^G, 
+  Group( [ ( 3, 4,10)( 5,11, 6)( 7, 9, 8), ( 1,10)( 2, 9)( 3, 7)( 4,11) ] )^G, 
   M(11)^G, Group( () )^G ]
 \endexample
 
@@ -1378,16 +1376,21 @@ If the group becomes bigger, Schur Cover calculations might become
 unfeasible.
 
 There is another operation
-which only returns the structure of the Multiplier, and which should work
-for larger groups as well.
+which only returns the structure of the Multiplier.
+% , and which should work
+% for larger groups as well.
 
 \Declaration{AbelianInvariantsMultiplier}
 \beginexample
 gap> AbelianInvariantsMultiplier(g);
 [ 2 ]
-gap> AbelianInvariantsMultiplier(MathieuGroup(22));
-[ 4, 3 ]
 \endexample
+%beginexample
+% gap> AbelianInvariantsMultiplier(g);
+% [ 2 ]
+% gap> AbelianInvariantsMultiplier(MathieuGroup(22));
+% [ 4, 3 ]
+%endexample
 
 Note that the following example will take some time.
 

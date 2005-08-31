@@ -37,8 +37,8 @@ Revision.ctblauto_gd :=
 ##       to that representative,
 ##
 ##  `families' &
-##       the list that contains at position <i> the list of positions
-##       of members of the family of representative `famreps[<i>]';
+##       the list that contains at position `i' the list of positions
+##       of members of the family of representative `famreps[i]';
 ##       (for the element `<maps>[i]' the only member of the family
 ##       will get the number `Length( <mat> ) + i').
 ##  \enditems
@@ -79,7 +79,7 @@ DeclareOperation( "MatrixAutomorphisms", [ IsMatrix, IsList, IsPermGroup ] );
 ##  automorphisms (see~"MatrixAutomorphisms") of the list <characters>
 ##  that leave the element orders (see~"OrdersClassRepresentatives")
 ##  and all stored power maps (see~"ComputedPowerMaps") of the character
-##  table <tbl>.
+##  table <tbl> invariant.
 ##
 ##  If <characters> is closed under Galois conjugacy --this is always
 ##  fulfilled for ordinary character tables--
@@ -97,6 +97,9 @@ DeclareOperation( "TableAutomorphisms",
     [ IsNearlyCharacterTable, IsList, IsString ] );
 DeclareOperation( "TableAutomorphisms",
     [ IsNearlyCharacterTable, IsList, IsPermGroup ] );
+#T use `AutomorphismsOfTable' for that
+#T (the distinction stems from the times where attributes were not allowed
+#T to have non-unary methods!)
 
 
 #############################################################################

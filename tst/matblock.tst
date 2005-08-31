@@ -114,7 +114,7 @@ gap> o2:= One( z );
 gap> o1 = o2;
 true
 
-gap> STOP_TEST( "matblock.tst", 2300000 );
+gap> STOP_TEST( "matblock.tst", 3000000 );
 
 
 #############################################################################

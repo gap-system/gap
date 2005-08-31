@@ -374,10 +374,14 @@ DeclareAttribute( "MultiplicativeNeutralElement", IsMagma );
 #A  Center( <M> ) . . . . . . . . . . . . . . . . . . . . . centre of a magma
 ##
 ##  `Centre' returns the *centre* of the magma <M>, i.e., the domain
-##  of those elements `<m> $\in$ <M>' that commute with all elements of <M>.
+##  of those elements `<m> $\in$ <M>' that commute and associate with all
+##  elements of <M>. That is, the set $\{m\in M;\forall a,b\in M: ma=am,
+##  (ma)b=m(ab), (am)b=a(mb), (ab)m=a(bm)\}$.
+##
 ##  `Center' is just a synonym for `Centre'.
 ##
-##  We have `Centre( <M> ) = Centralizer( <M>, <M> )', see~"Centralizer".
+##  For associative magmas we have that 
+##  `Centre( <M> ) = Centralizer( <M>, <M> )', see~"Centralizer".
 ##
 ##  The centre of a magma is always commutative (see~"IsCommutative").
 ##  (When one installs a new method for `Centre', one should set the

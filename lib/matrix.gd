@@ -709,11 +709,14 @@ DeclareGlobalFunction( "IdentityMat" );
 
 #############################################################################
 ##
-#F  MutableCopyMat( <mat> ) . . . . . . . . . .  Copies  a matrix
+#O  MutableCopyMat( <mat> ) . . . . . . . . . .  Copies  a matrix
 ##
 ##  `MutableCopyMat'  returns a fully mutable copy  of  the  matrix <mat>.
 ##
-DeclareGlobalFunction( "MutableCopyMat" );
+##  The default method does `List(<mat>,ShallowCopy)' and thus may also
+##  be called for the empty list, returning a new empty list.
+##
+DeclareOperation( "MutableCopyMat", [IsList] );
 
 
 #############################################################################

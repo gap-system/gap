@@ -653,13 +653,13 @@ InstallMethod( PrintObj,
 #F  FreeMagmaRing( <R>, <M> )
 ##
 InstallGlobalFunction( FreeMagmaRing, function( R, M )
-
-    local F,     # family of magma ring elements
-          one,   # identity of `R'
-          zero,  # zero of `R'
-          m,     # one element of `M'
-          RM,    # free magma ring, result
-          gens;  # generators of the magma ring
+    local filter,  # implied filter of all elements in the new domain
+          F,       # family of magma ring elements
+          one,     # identity of `R'
+          zero,    # zero of `R'
+          m,       # one element of `M'
+          RM,      # free magma ring, result
+          gens;    # generators of the magma ring
 
     # Check the arguments.
     if not IsRing( R ) or One( R ) = fail then
@@ -668,18 +668,20 @@ InstallGlobalFunction( FreeMagmaRing, function( R, M )
 
     # Construct the family of elements of our ring.
     if   IsMultiplicativeElementWithInverseCollection( M ) then
-      F:= NewFamily( "FreeMagmaRingObjFamily",
-                     IsElementOfFreeMagmaRing,
-                     IsMultiplicativeElementWithInverse );
+      filter:= IsMultiplicativeElementWithInverse;
     elif IsMultiplicativeElementWithOneCollection( M ) then
-      F:= NewFamily( "FreeMagmaRingObjFamily",
-                     IsElementOfFreeMagmaRing,
-                     IsMultiplicativeElementWithOne );
+      filter:= IsMultiplicativeElementWithOne;
     else
-      F:= NewFamily( "FreeMagmaRingObjFamily",
-                     IsElementOfFreeMagmaRing,
-                     IsMultiplicativeElement );
+      filter:= IsMultiplicativeElement;
     fi;
+    if IsAssociativeElementCollection( M ) and
+       IsAssociativeElementCollection( R ) then
+      filter:= filter and IsAssociativeElement;
+    fi;
+
+    F:= NewFamily( "FreeMagmaRingObjFamily",
+                   IsElementOfFreeMagmaRing,
+                   filter );
 
     one:= One( R );
     zero:= Zero( R );

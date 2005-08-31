@@ -4799,9 +4799,12 @@ local ReductionModuloTable,   #
          if w = 1 then
            if comp_grad then
              pos:= Position( e[1], r1[1][1][1] );
-             RemoveElmList( wts[1], pos );
-           fi;
-           RemoveSet( e[1], r1[1][1][1] );
+             Remove( wts[1], pos );
+             Remove( e[1], pos);
+         else
+             RemoveSet( e[1], r1[1][1][1] );
+         fi;
+
            Add( defs, r1 );
            if e[1] = [ ] then 
              K:= LieAlgebraByStructureConstants( LeftActingDomain( FL ),
@@ -4831,9 +4834,12 @@ local ReductionModuloTable,   #
          else
            if comp_grad then
              pos:= Position( e[w], r1[1][1][1] );
-             RemoveElmList( wts[w], pos );
-           fi;
-           RemoveSet( e[w], r1[1][1][1]);
+             Remove( wts[w], pos );
+             Remove( e[w], pos);
+         else
+             RemoveSet( e[w], r1[1][1][1]);
+         fi;
+
            u:= SubsVarInRels( v[w-1], r1 );
            SubstituteVariable( R[w], r1 );
          fi;
@@ -4957,7 +4963,7 @@ local ReductionModuloTable,   #
                      Add( Rw1, k[i][1] );
                      k[i][1]:= [ d ];
                    else
-                     RemoveElmList( k, i );
+                     Remove( k, i );
                    fi;  
                  fi;
                  i:= i+1;
@@ -4984,7 +4990,7 @@ local ReductionModuloTable,   #
 
                    if comp_grad then
                      pos:= Position( e[w+1], k11[1] );
-                     RemoveElmList( wts[w+1], pos );
+                     Remove( wts[w+1], pos );
                    fi;
                    RemoveSet( e[w+1], k11[1] );
                    RemoveEntry( k11[1] );
@@ -5024,13 +5030,13 @@ local ReductionModuloTable,   #
                    if ww = w+1 then
                      if comp_grad then 
                        pos:= Position( e[w+1],rr[i][1][1][1] );
-                       RemoveElmList( wts[w+1], pos );
+                       Remove( wts[w+1], pos );
                      fi;
                      RemoveSet(e[w+1],rr[i][1][1][1]);
                      RemoveEntry(rr[i][1][1][1]);
                      SubstituteVariable( Rw1, rr[i] );
                      temp:= rr[i];
-                     RemoveElmList( rr, i );
+                     Remove( rr, i );
                      rr:= SubsVarInRels( rr, temp );
                    elif ww > 0 then 
                      _T:=S;
@@ -5079,7 +5085,7 @@ local ReductionModuloTable,   #
                            Add(Rw1,rr[i][s][1]);
                            rr[i][s][1]:= [ d ];
                          else
-                           RemoveElmList( rr[i], s );
+                           Remove( rr[i], s );
                          fi; 
                        fi;
                        s:= s+1;
@@ -5119,7 +5125,7 @@ local ReductionModuloTable,   #
      
            if comp_grad then
              pos:= Position( e[1], r1[2][1][1][1] );
-             RemoveElmList( wts[1], pos );
+             Remove( wts[1], pos );
            fi;
            RemoveSet( e[1], r1[2][1][1][1] );
            Add( defs, r1[2] );
@@ -5163,7 +5169,7 @@ local ReductionModuloTable,   #
 
            if comp_grad then
              pos:= Position( e[w], r1[2][1][1][1] );
-             RemoveElmList( wts[w], pos );
+             Remove( wts[w], pos );
            fi;
            RemoveSet(e[w], r1[2][1][1][1]);
            u:= SubsVarInRels( v[w-1], r1[2]);

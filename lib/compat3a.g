@@ -636,8 +636,11 @@ InstallMethod( MinPol,
 #F  Mod( <R>, <r>, <s> )
 ##
 ##  (was already obsolete in {\GAP}~3)
+##  This variable is also defined in the `resclasses' package.
 ##
-DeclareSynonym( "Mod", EuclideanRemainder );
+if not IsBound( Mod ) then
+  DeclareSynonym( "Mod", EuclideanRemainder );
+fi;
 
 
 #############################################################################

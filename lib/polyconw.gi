@@ -70,7 +70,10 @@ which was not the Conway polynomial; the current one in GAP is correct\n",
  JB := "computed by John Bray using similar algorithm as in GAP (~2005)\n",
  conwdat1 := false,
  conwdat2 := false,
- conwdat3 := false
+ conwdat3 := false,
+ # cache for p > 110000 
+ cache := rec()
+            
 ) );
 
 ############################################################################
@@ -161,7 +164,7 @@ end);
 ##  # for 97^97-1
 ##  AddSet(Primes2, 549180361199324724418373466271912931710271534073773);
 ##  AddSet(Primes2,  85411410016592864938535742262164288660754818699519364051241927961077872028620787589587608357877); 
-##  for p in [2,109,1009] do IsCheapConwayPolynomial(p,1); od;
+##  for p in [2,113,1009] do IsCheapConwayPolynomial(p,1); od;
 ##  cp:=CONWAYPOLDATA;;
 ##  test := [];
 ##  for i in [1..Length(cp)] do 
@@ -234,17 +237,37 @@ InstallGlobalFunction( ConwayPol, function( p, n )
           i,          # loop over `ppmin'
           xpownmodf,  # power of `x', modulo `cpol'
           c,          # loop over `cpol'
-          e, linfac;          # 1 or -1, used to compute the next candidate
+          e,          # 1 or -1, used to compute the next candidate
+          linfac,     # for a quick precheck
+          cachelist,  # list of known Conway pols for given p
+          StoreConwayPol;  # maybe move out?
 
     # Check the arguments.
     if not ( IsPrimeInt( p ) and IsInt( n ) and n > 0 ) then
       Error( "<p> must be a prime, <n> a positive integer" );
     fi;
 
-    if not IsBound( CONWAYPOLDATA[p] ) then
-      CONWAYPOLDATA[p]:= [];
+    # read data files if necessary
+    if 1 < p and p <= 109 and CONWAYPOLYNOMIALSINFO.conwdat1 = false then
+      ReadLib("conwdat1.g");
+    elif 109 < p and p < 1000 and CONWAYPOLYNOMIALSINFO.conwdat2 = false then
+      ReadLib("conwdat2.g");
+    elif 1000 < p and p < 110000 and CONWAYPOLYNOMIALSINFO.conwdat3 = false then
+      ReadLib("conwdat3.g");
     fi;
-    if not IsBound( CONWAYPOLDATA[p][n] ) then
+
+    if p < 110000 then
+      if not IsBound( CONWAYPOLDATA[p] ) then
+        CONWAYPOLDATA[p] := [];
+      fi;
+      cachelist := CONWAYPOLDATA[p];
+    else
+      if not IsBound( CONWAYPOLYNOMIALSINFO.cache.(p) ) then
+        CONWAYPOLYNOMIALSINFO.cache.(p) := [];
+      fi;
+      cachelist := CONWAYPOLYNOMIALSINFO.cache.(p);
+    fi;
+    if not IsBound( cachelist[n] ) then
 
       Info( InfoWarning, 1,
             "computing Conway polynomial for p = ", p, " and n = ", n );
@@ -381,21 +404,29 @@ InstallGlobalFunction( ConwayPol, function( p, n )
 
       fi;
 
-      cpol:= List( cpol, IntFFE );
+      StoreConwayPol := function(cpol, cachelist)
+        local found, p, n;
+        if IsUnivariatePolynomial(cpol) then
+          cpol := CoefficientsOfUnivariatePolynomial(cpol);
+        fi;
+        p := Characteristic(cpol[1]);
+        n := Length(cpol)-1;
+        cpol:= List( cpol, IntFFE );
 
-      # Subtract `x^n', strip leading zeroes,
-      # and store this polynomial in the global list.
-      found:= ShallowCopy( cpol );
-      Unbind( found[ n+1 ] );
-      ShrinkCoeffs( found );
-      CONWAYPOLDATA[p][n]:= [List([0..Length(found)-1], k-> p^k) * found, 
-                            "GAP"];
-
+        # Subtract `x^n', strip leading zeroes,
+        # and store this polynomial in the global list.
+        found:= ShallowCopy( cpol );
+        Unbind( found[ n+1 ] );
+        ShrinkCoeffs( found );
+        cachelist[n]:= [List([0..Length(found)-1], k-> p^k) * found, 
+                              "GAP"];
+      end;
+      StoreConwayPol(cpol, cachelist);
     else
 
       # Decode the polynomial stored in the list (see description of
       # CONWAYPOLDATA above).
-      c := CONWAYPOLDATA[p][n][1];
+      c := cachelist[n][1];
       cpol:= [];
       while c <> 0 do
         Add(cpol, c mod p);
@@ -420,14 +451,6 @@ end );
 InstallGlobalFunction( ConwayPolynomial, function( p, n )
     local F, res;
     if IsPrimeInt( p ) and IsPosInt( n ) then
-      # read data files if necessary
-      if 1 < p and p <= 109 and CONWAYPOLYNOMIALSINFO.conwdat1 = false then
-        ReadLib("conwdat1.g");
-      elif 109 < p and p < 1000 and CONWAYPOLYNOMIALSINFO.conwdat2 = false then
-        ReadLib("conwdat2.g");
-      elif 1000<p and p<40000 and CONWAYPOLYNOMIALSINFO.conwdat3 = false then
-        ReadLib("conwdat3.g");
-      fi;
       F:= GF(p);
       res := UnivariatePolynomial( F, One( F ) * ConwayPol( p, n ) );
       Setter(InfoText)(res, CONWAYPOLYNOMIALSINFO.(
@@ -445,7 +468,7 @@ InstallGlobalFunction( IsCheapConwayPolynomial, function( p, n )
       ReadLib("conwdat1.g");
     elif 109 < p and p < 1000 and CONWAYPOLYNOMIALSINFO.conwdat2 = false then
       ReadLib("conwdat2.g");
-    elif 1000<p and p<40000 and CONWAYPOLYNOMIALSINFO.conwdat3 = false then
+    elif 1000 < p and p < 110000 and CONWAYPOLYNOMIALSINFO.conwdat3 = false then
       ReadLib("conwdat3.g");
     fi;
     if IsBound(CONWAYPOLDATA[p]) and IsBound(CONWAYPOLDATA[p][n]) then
@@ -464,7 +487,7 @@ InstallGlobalFunction( IsCheapConwayPolynomial, function( p, n )
       if n < 14 and IsPrimeInt(n) then
         return true;
       fi;
-    elif p< 40000 then
+    elif p < 65536 then
       if n in [1,2,3,5,7] then
         return true;
       fi;

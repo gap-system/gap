@@ -3133,7 +3133,8 @@ local cf,u,i,j,f,cl,min,neu,sq,sb,fb,k,nmin,F;
 	                  List(k,i->LinearCombinationVecs(fb,i)));
 	TriangulizeMat(sq);
 	sq:=ImmutableMatrix(F,sq);
-	Assert(2,SMTX.InducedAction(m,sq)<>fail);
+#T      Assert(2,SMTX.InducedAction(m,sq)<>fail);
+#T InducedAction runs into an error if the assertion is executed!
 	if not sq in neu then
           Info(InfoMeatAxe,2,"submodule dimension ",Length(sq));
 	  Add(neu,sq);

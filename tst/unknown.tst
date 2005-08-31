@@ -83,7 +83,7 @@ Unknown(1)
 gap> u ^ 2;
 Unknown(18)
 
-gap> STOP_TEST( "unknown.tst", 100000 );
+gap> STOP_TEST( "unknown.tst", 200000 );
 
 #############################################################################
 ##

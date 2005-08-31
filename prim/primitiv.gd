@@ -2,6 +2,7 @@
 ##
 #W  primitiv.gd              GAP group library               Heiko Theissen
 #W                                                           Alexander Hulpke
+#W                                                          Colva Roney-Dougal
 ##
 ##
 #H  @(#)$Id$
@@ -16,42 +17,30 @@ Revision.primitiv_gd :=
 ##  the following permutation groups up to permutation isomorphism (i.e., up
 ##  to conjugacy  in the corresponding symmetric group)
 ##  \beginlist%unordered
-##    \item{$\bullet$} the  non-affine primitive permutation groups of degree
-##      $\le999$,   described    in  \cite{DixonMortimer88},  with generators
-##      calculated in \cite{Theissen97},
-##    \item{$\bullet$} all  primitive  permutation groups of  degree $\<256$,
+##    \item{$\bullet$} all  primitive  permutation groups of  degree $\<2500$,
+##      calculated in \cite{RoneyDougal05}
 ##      in particular,
 ##      \itemitem{$\circ$}%unordered
 ##        the primitive permutation groups up to degree~50,
 ##        calculated by C.~Sims,
+##      \itemitem{$\circ$} the primitive groups with insoluble socles of 
+##        degree $\<1000$ as calculated in \cite{DixonMortimer88},
 ##      \itemitem{$\circ$} the solvable (hence affine) primitive permutation
 ##        groups of degree $\<256$ as calculated by M.~Short \cite{Sho92},
 ##      \itemitem{$\circ$} some insolvable affine primitive permutation groups
 ##        of degree $\<256$ as calculated in \cite{Theissen97}.
 ##      \itemitem{$\circ$} The solvable primitive groups of degree up to
 ##        $999$ as calculated in  \cite{EickHoefling02}.
+##      \itemitem{$\circ$} The primitive groups of affine type of degree up 
+##        to $999$ as calculated in \cite{RoneyDougal02}.
 ##  \endlist
-##  Note that the nonsolvable affine primitive permutation groups of 
-##  degrees 256,512,625 and 729 are not included.
 ##
-##  For degree up to 50, the names used are as given by Buekenhout and
-##  Leemans \cite{BuekenhoutLeemans96}.
+##  Not all groups are named, those which do have names use
+##  ATLAS notation. Not all names are necessary unique!
 ##
-##  The names for the groups of higher degree are as chosen by
-##  \cite{Theissen97} and reflect the cohort structure in
-##  \cite{DixonMortimer88}. They do *not* conform to the usual naming for
-##  extensions. That is `l3,4.3' is the third (in some arbitrary ordering)
-##  group in a cohort for socle l3,4, but the socle factor is *not
-##  necessarily* of order 3. Names of groups of affine type are not
-##  necessarily unique!
-##
-##  The work in \cite{Theissen97} is known to have ommissions. Because of this
-##  we do not guarantee completeness of the lists beyond degree 50, though
-##  we have corrected errors as far as we know of them.
-##  When preparing the library it also has been
-##  ensured that the groups in it are all primitive and not conjugate.
-##  Also as far as included, the groups agree with the list prepared
-##  independently in \cite{RoneyDougal02}
+##  The list given in \cite{RoneyDougal05} is believed to be complete,
+##  correcting various omissions in \cite{DixonMortimer88}, \cite{Sho92}
+##  and \cite{Theissen97}.
 ##
 ##  In detail, we guarantee the following properties for this and further
 ##  versions (but *not* versions which came before {\GAP}~4.2) of the library:
@@ -113,7 +102,7 @@ DeclareGlobalFunction( "NrPrimitiveGroups" );
 ##  `NrMovedPoints', `Size', `Transitivity', `ONanScottType',
 ##  `IsSimpleGroup', `IsSolvableGroup', and `SocleTypePrimitiveGroup'.
 ##
-##  (Note, that for groups of degree up to 999, O'Nan-Scott types 4a, 4b and
+##  (Note, that for groups of degree up to 2499, O'Nan-Scott types 4a, 4b and
 ##  5 cannot occur.)
 
 #############################################################################

@@ -1999,7 +1999,7 @@ end);
 InstallMethod(ExponentSyllable,"for a straight line program word",true,
   [IsAssocWord and IsStraightLineProgElm,IsPosInt],0,
 function(slp,pos)
-  return GeneratorSyllable(EvalStraightLineProgElm(slp),pos);
+  return ExponentSyllable(EvalStraightLineProgElm(slp),pos);
 end);
 
 #############################################################################

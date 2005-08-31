@@ -39,6 +39,7 @@ const char * Revision_intrprtr_c =
 #include        "lists.h"               /* generic lists                   */
 
 #include        "bool.h"                /* booleans                        */
+#include        "integer.h"             /* integers                        */
 
 #include        "permutat.h"            /* permutations                    */
 
@@ -2208,8 +2209,8 @@ void            IntrListExprEnd (
         val = ELM_LIST( list, 1 );
         if ( ! IS_INTOBJ(val) ) {
             ErrorQuit(
-                "Range: <first> must be an integer less than 2^28 (not a %s)",
-                (Int)TNAM_OBJ(val), 0L );
+                "Range: <first> must be an integer less than 2^%d (not a %s)",
+                NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val) );
         }
         low = INT_INTOBJ( val );
 
@@ -2218,8 +2219,8 @@ void            IntrListExprEnd (
             val = ELM_LIST( list, 2 );
             if ( ! IS_INTOBJ(val) ) {
                 ErrorQuit(
-                    "Range: <second> must be an integer less than 2^28 (not a %s)",
-                    (Int)TNAM_OBJ(val), 0L );
+                    "Range: <second> must be an integer less than 2^%d (not a %s)",
+                    NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val) );
             }
             if ( INT_INTOBJ(val) == low ) {
                 ErrorQuit(
@@ -2236,8 +2237,8 @@ void            IntrListExprEnd (
         val = ELM_LIST( list, LEN_LIST(list) );
         if ( ! IS_INTOBJ(val) ) {
             ErrorQuit(
-                "Range: <last> must be an integer less than 2^28 (not a %s)",
-                (Int)TNAM_OBJ(val), 0L );
+                "Range: <last> must be an integer less than 2^%d (not a %s)",
+                NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val) );
         }
         if ( (INT_INTOBJ(val) - low) % inc != 0 ) {
             ErrorQuit(
@@ -2261,6 +2262,12 @@ void            IntrListExprEnd (
 
         /* else make the range                                             */
         else {
+            /* length must be a small integer as well */
+            if ((high-low) / inc + 1 >= (1L<<NR_SMALL_INT_BITS)) {
+                ErrorQuit("Range: the length of a range must be less than 2^%d",
+                           NR_SMALL_INT_BITS, 0L);
+            }
+            
             if ( 0 < inc )
                 list = NEW_RANGE_SSORT();
             else

@@ -348,10 +348,8 @@ BindGlobal( "Membership_SemigroupIdealEnumerator", function( obj, enum )
 ##
 InstallGlobalFunction( EnumeratorOfSemigroupIdeal,
     function( I, actdom, isbound, gens )
-    local s;
 
-    s:= actdom( I );
-    if not HasGeneratorsOfSemigroup( s ) then
+    if not HasGeneratorsOfSemigroup( actdom ) then
       TryNextMethod();
     fi;
 
@@ -362,32 +360,32 @@ InstallGlobalFunction( EnumeratorOfSemigroupIdeal,
         Length        := Length_SemigroupIdealEnumerator,
         Membership    := Membership_SemigroupIdealEnumerator,
 
-        currentlist   := ShallowCopy( AsSet( gens(I) ) ),
-        gens          := AsSet(GeneratorsOfSemigroup(s)),
+        currentlist   := ShallowCopy( AsSet( gens ) ),
+        gens          := AsSet( GeneratorsOfSemigroup( actdom ) ),
         nextelm       := 1,
-        orderedlist   := ShallowCopy( AsSet( gens(I) ) ) ) );
+        orderedlist   := ShallowCopy( AsSet( gens ) ) ) );
     end );
 
 InstallMethod( Enumerator,
     "for a right semigroup ideal",
     [ IsRightSemigroupIdeal and HasGeneratorsOfRightMagmaIdeal ],
-    I -> EnumeratorOfSemigroupIdeal( I, RightActingDomain,
+    I -> EnumeratorOfSemigroupIdeal( I, RightActingDomain( I ),
              IsBound_RightSemigroupIdealEnumerator,
-             GeneratorsOfRightMagmaIdeal ) );
+             GeneratorsOfRightMagmaIdeal( I ) ) );
 
 InstallMethod( Enumerator,
     "for a left semigroup ideal",
     [ IsLeftSemigroupIdeal and HasGeneratorsOfLeftMagmaIdeal ],
-    I -> EnumeratorOfSemigroupIdeal( I, LeftActingDomain,
+    I -> EnumeratorOfSemigroupIdeal( I, LeftActingDomain( I ),
              IsBound_LeftSemigroupIdealEnumerator,
-             GeneratorsOfLeftMagmaIdeal ) );
+             GeneratorsOfLeftMagmaIdeal( I ) ) );
 
 InstallMethod( Enumerator,
     "for a semigroup ideal",
     [ IsSemigroupIdeal and HasGeneratorsOfMagmaIdeal ],
-    I -> EnumeratorOfSemigroupIdeal( I, ActingDomain,
+    I -> EnumeratorOfSemigroupIdeal( I, ActingDomain( I ),
              IsBound_SemigroupIdealEnumerator,
-             GeneratorsOfMagmaIdeal ) );
+             GeneratorsOfMagmaIdeal( I ) ) );
 
 
 #############################################################################

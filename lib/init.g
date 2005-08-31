@@ -515,6 +515,8 @@ ReadLib( "helpview.gi"  );
 
 #T  1996/09/01 M.Schoenert this helps performance
 IMPLICATIONS:=IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
+# allow type determination of IMPLICATIONS without using it
+TypeObj(IMPLICATIONS[1]);
 HIDDEN_IMPS:=HIDDEN_IMPS{[Length(HIDDEN_IMPS),Length(HIDDEN_IMPS)-1..1]};
 
 # we cannot complete the following command because printing may mess up the
@@ -543,6 +545,7 @@ ReadOrComplete( "lib/read7.g" );
 
 # overloaded operations and compiler interface
 ReadOrComplete( "lib/read8.g" );
+ReadLib( "colorprompt.g"  );
 
 
 #############################################################################

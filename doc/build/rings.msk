@@ -290,6 +290,7 @@ gap> Factors( PolynomialRing( GF(4) ), pol );
 [ x+Z(2^2), x+Z(2^2)^2 ]
 \endexample
 
+\Declaration{PadicValuation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Euclidean Rings}

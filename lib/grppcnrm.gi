@@ -877,7 +877,8 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
             fi;
 
             # check the stabilizer
-            Assert( 2, Stabilizer( GroupOfPcgs(st), GroupOfPcgs(ui_1) )
+            Assert( 3, Stabilizer( GroupOfPcgs(st), GroupOfPcgs(ui_1),
+	               function(U,g) return U^g;end)
                      = GroupOfPcgs(s) );
 
             # now <ui_1> must be stabilized by <s>
@@ -954,7 +955,8 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
                 fi;
 
                 # check the stabilizer
-                Assert( 2, Stabilizer( GroupOfPcgs(st), GroupOfPcgs(uj) )
+                Assert( 3, Stabilizer( GroupOfPcgs(st), GroupOfPcgs(uj),
+			 function(U,g) return U^g;end)
                          = GroupOfPcgs(s) );
 
                 # now <uj> must be stabilized by <s>

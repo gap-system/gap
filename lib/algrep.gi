@@ -1547,12 +1547,10 @@ TriangulizeMonomialElementList:= function( tt, zero, LM, LC )
                         # subtract `cf' times the k-th entry of basechange.
                         for b in basechange[k] do
                             b1:= [ b[1], -cf*b[2] ];
-                            pos:= PositionSorted( basechange[i], b1,
-                                          function( x, y ) return x[1] < y[1];
-                                      end );
+                            pos := PositionFirstComponent( basechange[i], b[1]);
                             if pos > Length( basechange[i] ) or
-                                      basechange[i][pos][1] <> b1[1] then
-                               InsertElmList(basechange[i],pos,b1 );
+                               basechange[i][pos][1] <> b1[1] then
+                                Add(basechange[i],b1,pos);
                             else
                                basechange[i][pos][2]:= basechange[i][pos][2]+
                                                                   b1[2];
@@ -3011,12 +3009,10 @@ BindGlobal( "BasisOfSparseRowSpace",
                         # subtract `cf' times the k-th entry of basechange.
                         for b in basechange[k] do
                             b1:= [ b[1], -cf*b[2] ];
-                            pos:= PositionSorted( basechange[i], b1,
-                                          function( x, y ) return x[1] < y[1];
-                                      end );
+                            pos := PositionFirstComponent( basechange[i], b[1]);
                             if pos > Length( basechange[i] ) or
-                                      basechange[i][pos][1] <> b1[1] then
-                               InsertElmList(basechange[i],pos,b1 );
+                               basechange[i][pos][1] <> b1[1] then
+                                Add(basechange[i],b1,pos);
                             else
                                basechange[i][pos][2]:= basechange[i][pos][2]+
                                                                   b1[2];

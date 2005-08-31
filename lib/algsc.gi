@@ -457,7 +457,6 @@ InstallMethod( \in,
 ##  and `<sctable>[i][j][2][i_k] = k'.
 ##
 BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
-
     local T,      # structure constants table
           n,      # dimensions of structure matrices
           R,      # coefficients ring
@@ -503,7 +502,7 @@ BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
       MakeImmutable( names );
     elif Length( arglist ) = 3 and IsString( arglist[3] ) then
       names:= List( [ 1 .. n ],
-                    x -> Concatenation( "v.", arglist[3] ) );
+                    x -> Concatenation( arglist[3], String(x) ) );
       MakeImmutable( names );
     elif Length( arglist ) = 3 and IsHomogeneousList( arglist[3] )
                                and Length( arglist[3] ) = n
@@ -580,6 +579,15 @@ InstallGlobalFunction( LieAlgebraByStructureConstants, function( arg )
     SetIsLieAlgebra( A, true );
     return A;
 end );
+
+
+#############################################################################
+##
+#M  \.( <A>, <n> )  . . . . . . . access to generators of a full s.c. algebra
+##
+InstallAccessToGenerators( IsSCAlgebraObjCollection and IsFullSCAlgebra,
+    "s.c. algebra containing the whole family",
+    GeneratorsOfAlgebra );
 
 
 #############################################################################

@@ -1050,7 +1050,7 @@ InstallMethod(GroebnerBasis,"ideal with stored GB",true,
   [IsPolynomialRingIdeal and HasStoredGroebnerBasis,IsMonomialOrdering],0,
 function(I,order)
   # do some tests
-  if not StoredGroebnerBasis(I)[2]=order then
+  if not IsIdenticalObj(StoredGroebnerBasis(I)[2],order) then
     TryNextMethod();
   fi;
   return StoredGroebnerBasis(I)[1];
@@ -1093,7 +1093,8 @@ InstallMethod(ReducedGroebnerBasis,"ideal",true,
 function(I,order)
 local bas;
   # do some tests
-  if HasStoredGroebnerBasis(I) and StoredGroebnerBasis(I)[2]=order then
+  if HasStoredGroebnerBasis(I) 
+    and IsIdenticalObj(StoredGroebnerBasis(I)[2],order) then
     bas:=StoredGroebnerBasis(I)[1];
   else
     bas:=GeneratorsOfIdeal(I);
@@ -1103,6 +1104,7 @@ local bas;
   if not HasStoredGroebnerBasis(I) then
     SetStoredGroebnerBasis(I,[bas,order]);
   fi;
+  return bas;
 end);
 
 InstallMethod(\in,"polynomial ideal",true,

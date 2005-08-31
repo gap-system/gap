@@ -118,6 +118,18 @@ DeclareGlobalFunction("KuKGenerators");
 ##
 DeclareAttribute("IsomorphismSimplifiedFpGroup",IsSubgroupFpGroup);
 
+#############################################################################
+##
+#A  EpimorphismFromFreeGroup( <G> )
+##
+##  For a  group <G> with a known generating set, this attribute returns a
+##  homomorphism from a free group that maps the free generators to the
+##  groups generators.
+##
+##  The option ``names'' can be used to prescribe a (print) name
+##  for the free generators.
+##
+DeclareAttribute("EpimorphismFromFreeGroup",IsGroup);
 
 #############################################################################
 ##

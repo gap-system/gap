@@ -11,7 +11,7 @@
 ##  This file contains the functions for the special handling of those global
 ##  variables in {\GAP} library files that are *not* functions;
 ##  they are declared with `DeclareGlobalVariable' and initialized with
-##  `InstallGlobal' resp.~`InstallFlushableGlobal'.
+##  `InstallValue' resp.~`InstallFlushableValue'.
 ##
 ##  For the global functions in the {\GAP} libraray, see `oper.g'.
 ##
@@ -47,10 +47,8 @@ BIND_GLOBAL( "ToBeDefinedObjType", NewType(
 ##
 #F  NewToBeDefinedObj() . . . . . . . . . create a new "to be defined" object
 ##
-BIND_GLOBAL( "NewToBeDefinedObj", function(name)
-    return Objectify( ToBeDefinedObjType, [name] );
-end );
-
+BIND_GLOBAL( "NewToBeDefinedObj",
+    name -> Objectify( ToBeDefinedObjType, [ name ] ) );
 
 
 #############################################################################
@@ -59,10 +57,7 @@ end );
 ##
 InstallMethod( PrintObj,
     "for 'to be defined' objects",
-    true,
     [ IsToBeDefinedObj ],
-    0,
-
 function(obj)
     Print( "<< ",obj![1]," to be defined>>" );
 end );
@@ -85,7 +80,7 @@ end );
 DeclareOperation( "FlushCaches", [] );
 # This method is just that one method is callable. It is installed first, so
 # it will be last in line.
-InstallMethod(FlushCaches,"return method",true,[],0,function()end);
+InstallMethod( FlushCaches, "return method", [], function() end );
 
 
 #############################################################################
@@ -116,7 +111,8 @@ end );
 ##
 ##  `InstallValue' does *not* work if <value> is an ``immediate object''
 ##  (i.e., an internally represented small integer or finite field element).
-##  Furthermore, `InstallFlushableValue' works only if <value> is a list.
+##  Furthermore, `InstallFlushableValue' works only if <value> is a list
+##  or a record.
 ##
 ##  Using `DeclareGlobalVariable' and `InstallFlushableValue' has several
 ##  advantages, compared to simple assignments.
@@ -138,46 +134,35 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
     if (not IsBound(REREADING) or REREADING = false) and not
        IsToBeDefinedObj( gvar ) then
         Error("InstallValue: a value has been installed already");
-    else
-        CLONE_OBJ (gvar, value);
     fi;
+#   if IsFamily( value ) then
+#     INFO_INSTALL( 1,
+#         "please use `BindGlobal' for the family object ",
+#         value!.NAME, ", not `InstallValue'" );
+#   fi;
+    CLONE_OBJ (gvar, value);
 end);
 
 BIND_GLOBAL( "InstallFlushableValue", function( gvar, value )
     local initval;
 
-    if not IS_LIST( value ) then
-      Error( "<value> must be a list" );
+    if not ( IS_LIST( value ) or IS_REC( value ) ) then
+      Error( "<value> must be a list or a record" );
     fi;
 
     # Make a structural copy of the initial value.
     initval:= DEEP_COPY_OBJ( value );
-    
-    
+
     # Initialize the variable.
-    if (not IsBound(REREADING) or REREADING = false) and not
-       IsToBeDefinedObj( gvar ) then
-        Error("InstallFlushableValue: a value has been installed already");
-    else
-        CLONE_OBJ (gvar, value);
-    fi;
+    InstallValue( gvar, value );
 
     # Install the method to flush the cache.
     InstallMethod( FlushCaches,
-        true,
-        [], 0,
-        function()
-            local i;
-            for i in [ 1 .. LEN_LIST( gvar ) ] do
-              Unbind( gvar[i] );
-            od;
-            for i in [ 1 .. LEN_LIST( initval ) ] do
-              if IsBound( initval[i] ) then
-                gvar[i]:= DEEP_COPY_OBJ( initval[i] );
-              fi;
-            od;
-            TryNextMethod();
-        end );
+      [],
+      function()
+          CLONE_OBJ( gvar, DEEP_COPY_OBJ( initval ) );
+          TryNextMethod();
+      end );
 end );
 
 ##  Bind some keywords as global variables such that <Tab> completion works

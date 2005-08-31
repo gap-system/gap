@@ -392,10 +392,34 @@ For any list, the default method is to loop over the entries in the list
 
 
 \Declaration{Add}
+\Declaration{Remove}
 \beginexample
 gap> l := [ 2, 3, 5 ];; Add( l, 7 ); l;
 [ 2, 3, 5, 7 ]
+gap> Add(l,4,2); l;
+[ 2, 4, 3, 5, 7]
+gap> Remove(l,2); l;
+4
+[ 2, 3, 5, 7]
+gap> Remove(l); l;
+7
+[ 2, 3, 5]
+gap> Remove(l,5); l;
+[ 2, 3, 5]
 \endexample
+
+These two operations are implemented with the aid of a 
+more general kernel function
+
+\>COPY_LIST_ENTRIES( <from-list>, <from-index>, <from-step>, <to-list>, <to-index>, <to-step>, <number> ) F
+
+This function copies <number> elements from <from-list>,
+starting at position <from-index> and incrementing the position by
+<from-step> each time, into <to-list> starting at position <to-index>
+and incrementing the position by <to-step> each time. <from-list> and
+<to-list> must be plain lists.  <from-step> and/or <to-step> can be
+negative. Unbound positions of <from-list> are simply copied to
+<to-list>.
 
 \Declaration{Append}
 \beginexample
@@ -1404,6 +1428,7 @@ gap> PositionNonZero( l );  PositionNonZero( [ 2, 3, 4, 5 ] * Z(2) );
 
 \Declaration{PositionSublist}
 
+\Declaration{PositionFirstComponent}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Properties and Attributes for Lists}
@@ -1968,6 +1993,10 @@ empty list. If `<first>  =  <last>',  `[<first>,<second>..<last>]'  is  a
 singleton list, which is a range, too. Note that `<last> - <first>'  must
 be divisible by the increment `<second> - <first>', otherwise an error is
 signalled.
+
+Currently, the integers <first>, <second> and <last> and the length of a
+range must be small integers, that is at least $-2^d$ and at most $2^d-1$ 
+with $d=28$ on 32-bit architectures and $d=60$ on 64-bit architectures.
 
 Note also that a range is just a special case of a list.
 Thus you can access elements in a range (see "List Elements"), test for

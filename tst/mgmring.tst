@@ -40,7 +40,7 @@ gap> img:= Image( rembrm, Z(3) );
 gap> PreImagesRepresentative( rembrm, img );
 Z(3)
 
-gap> STOP_TEST( "mgmring.tst", 15000000 );
+gap> STOP_TEST( "mgmring.tst", 17400000 );
 
 
 #############################################################################

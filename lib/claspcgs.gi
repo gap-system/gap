@@ -839,8 +839,8 @@ Error("This case disabled -- code not yet corrected");
             i:=PositionSorted(cl.candidates, c);
             if  i > Length(cl.candidates)
                or cl.candidates[i]<>c then
-              AddSet(cl.candidates, c);
-              InsertElmList(team, i, [q]);
+              Add(cl.candidates, c,i);
+              Add(team, [q], i);
             else
               Add(team[i], q);
             fi;
@@ -1234,9 +1234,9 @@ local  G,  home,  # the group and the home pcgs
             fi;
             i:=PositionSorted(cl.candidates, c);
             if  i > Length(cl.candidates)
-               or cl.candidates[i]<>c then
-              AddSet(cl.candidates, c);
-              InsertElmList(team, i, [q]);
+                or cl.candidates[i]<>c then
+                Add( cl.candidates,c,i);
+                Add(team, [q], i);
             else
               Add(team[i], q);
             fi;

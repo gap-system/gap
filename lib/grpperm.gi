@@ -741,7 +741,6 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
     options := ShallowCopy( StabChainOptions( U ) );
     if IsBound( options.random )  then  random := options.random;
                                   else  random := 1000;            fi;
-    options.random := 0;
     options.temp   := true;
 
     # make list of conjugates to be added to N
@@ -893,15 +892,18 @@ InstallMethod( CommutatorSubgroup, "permgroups", IsIdenticalObj,
                fi;
            od;
            if Length(list) > 0 then
-               C := ClosureGroup( C, list, rec( random := 0,
+              C := ClosureGroup( C, list, rec( random := 0,
                                                   temp := true ) );
-               if not doneCUV then
-                   CUV := ClosureGroup( U, V );
-                   doneCUV := true;
-               fi;
-               C := DoNormalClosurePermGroup( CUV, C );
+              if not doneCUV then
+                  CUV := ClosureGroup( U, V );
+                  doneCUV := true;
+              fi;
+              # force closure test
+	      StabChainOptions(C).random:=DefaultStabChainOptions.random;
+              C := DoNormalClosurePermGroup( CUV, C );
            fi;
         until IsEmpty( list );
+        if doneCUV then C := Subgroup(CUV, GeneratorsOfGroup(C)); fi;
     fi;
 
     # do the deterministic method; it will also check correctness 
@@ -915,12 +917,13 @@ InstallMethod( CommutatorSubgroup, "permgroups", IsIdenticalObj,
         od;
     od;
     if not IsEmpty( list )  then
-        C := ClosureGroup( C, list, rec( random := 0,
-                                           temp := true ) );
+        C := ClosureGroup( C, list );
         if not doneCUV then
            CUV := ClosureGroup( U, V );
            doneCUV := true;
         fi;
+	# force closure test
+	StabChainOptions(C).random:=DefaultStabChainOptions.random;
         C := DoNormalClosurePermGroup( CUV, C );
     fi;
 
@@ -955,11 +958,18 @@ InstallMethod( DerivedSubgroup,"permgrps",true, [ IsPermGroup ], 0,
                 fi;
             od;
             if Length(list) > 0 then 
-               D := ClosureGroup(D,list,rec( random := 0,
+              D := ClosureGroup(D,list,rec( random := 0,
                                                temp := true ) );
+              # force closure test
+	      if IsBound(StabChainOptions(G).random) then
+		StabChainOptions(D).random:=StabChainOptions(G).random;
+	      else
+		StabChainOptions(D).random:=DefaultStabChainOptions.random;
+	      fi;
                D := DoNormalClosurePermGroup( G, D );
             fi;
         until list = [];
+        D := Subgroup(G,GeneratorsOfGroup(D));
     fi;
 
     # do the deterministic method; it will also check random result
@@ -974,8 +984,7 @@ InstallMethod( DerivedSubgroup,"permgrps",true, [ IsPermGroup ], 0,
          od;
     od;
     if not IsEmpty( list )  then
-        D := ClosureGroup(D,list,rec( random := 0,
-                                        temp := true ) );
+        D := ClosureGroup(D,list);
 	# give D a proper randomness
 	if IsBound(StabChainOptions(G).random) then
 	  StabChainOptions(D).random:=StabChainOptions(G).random;
@@ -1321,6 +1330,10 @@ local   S;
   S := SylowSubgroupPermGroup( G, p );
   S := GroupStabChain( G, StabChainMutable( S ) );
   SetIsNilpotentGroup( S, true );
+  if Size(S) > 1 then
+    SetIsPGroup( S, true );
+    SetPrimePGroup( S, p );
+  fi;
   return S;
 end );
 

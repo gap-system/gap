@@ -66,7 +66,7 @@ gap> Length(Complementclasses( G, S ));
 1
 
 # that's all, folks
-gap> STOP_TEST( "grppc.tst", 99500000 );
+gap> STOP_TEST( "grppc.tst", 206100000 );
 
 
 #############################################################################

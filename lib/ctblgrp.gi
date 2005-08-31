@@ -13,7 +13,6 @@
 Revision.ctblgrp_gi :=
     "@(#)$Id$";
 
-
 #############################################################################
 ##
 #V  USECTPGROUP . . . . . . . . . . indicates,whether CharTablePGroup should
@@ -1950,10 +1949,9 @@ local G,     # group
 
   # estimate the irrationality of the table
   exp:=Exponent(G);
-  prime:=exp+1;
+  prime:=10*exp+1;
 
-  while prime<Maximum(100,5*k) 
-    or ForAny([prime-1,prime,prime+1],x->IsInt(Size(G)/x)) do
+  while prime<Maximum(100,5*k) do
     prime:=prime+exp;
   od;
 
@@ -1968,9 +1966,10 @@ local G,     # group
   while prime<z do
     prime:=prime+exp;
   od;
-  while not IsPrime(prime) do
+  while not IsPrimeInt(prime) do
     prime:=prime+exp;
   od;
+  
   f:=GF(prime);
   Info(InfoCharacterTable,1,"choosing prime ",prime);
 

@@ -691,6 +691,116 @@ end);
 
 #############################################################################
 ##
+#M  PartialFactorization( <n>, <effort> ) . . . . . . . . . .  generic method
+##
+InstallMethod( PartialFactorization,
+               "generic method", true, [ IsInt, IsInt ], 0,
+
+  function ( n, effort )
+
+    local  N, sign, factors, p, k, root, rootfactors, rhotrials,
+           tmp, CheckAndSortFactors;
+
+    CheckAndSortFactors := function ( )
+      factors    := SortedList(factors);
+      factors[1] := sign*factors[1];
+      if   Product(factors) <> N
+      then Error("PartialFactorization: Internal error, wrong result!"); fi;
+    end;
+
+    N := n;
+    if effort < 0 then effort := 5; fi;
+
+    # make $n$ positive and handle trivial cases
+    sign := 1;
+    if n < 0  then sign := -sign;  n := -n;  fi;
+    if n < 4  then return [ sign * n ];  fi;
+    factors := [];
+
+    # least effort: do trial divisions by the primes less than 100
+    if effort = 0 then
+      for p in Primes{[1..25]} do
+        while n mod p = 0 do Add( factors, p ); n := n / p; od;
+        if n < (p+1)^2 and 1 < n then Add(factors,n); n := 1; fi;
+        if n = 1 then CheckAndSortFactors(); return factors; fi;
+      od;
+      Add(factors,n); CheckAndSortFactors(); return factors;
+    fi;
+
+    # do trial divisions by the primes less than 1000
+    # faster than anything fancier because $n$ mod <small int> is very fast
+    for p in Primes do
+      while n mod p = 0 do Add( factors, p ); n := n / p; od;
+      if n < (p+1)^2 and 1 < n then Add(factors,n);  n := 1; fi;
+      if n = 1 then CheckAndSortFactors(); return factors; fi;
+    od;
+
+    if effort <= 1 then
+      Add(factors,n); CheckAndSortFactors();
+      return factors;
+    fi;
+
+    # do trial divisions by known primes
+    for p in Primes2 do
+      while n mod p = 0 do Add( factors, p ); n := n / p; od;
+      if n = 1 then CheckAndSortFactors(); return factors; fi;
+    od;
+
+    # do trial divisions by known probable primes
+    tmp := [];
+    for p in ProbablePrimes2 do
+      while n mod p = 0 do 
+        AddSet(tmp, p); 
+        Add( factors, p );  
+        n := n / p;  
+      od;
+      if n = 1 then break; fi;
+    od;
+
+    if n = 1 then CheckAndSortFactors(); return factors; fi;
+          
+    # handle perfect powers
+    root := SmallestRootInt( n );
+    if root < n then
+      rootfactors := PartialFactorization(root,effort);
+      k           := LogInt(n,root);
+      rootfactors := Concatenation(List([1..k],i->rootfactors));
+      factors     := SortedList(Concatenation(factors,rootfactors));
+      CheckAndSortFactors();
+      return factors;
+    fi;
+
+    if effort = 2 or IsProbablyPrimeInt(n) then
+      Add(factors,n); CheckAndSortFactors(); return factors;
+    fi;
+
+    # if effort >= 3, use `FactorsRho'
+    if ValueOption("RhoTrials") <> fail then
+      tmp := FactorsRho(n,1,16,ValueOption("RhoTrials"):
+                        UseProbabilisticPrimalityTest);
+    else
+      if   effort  = 3 then rhotrials := 256;
+      elif effort  = 4 then rhotrials := 2048;
+      elif effort >= 5 then rhotrials := 8192; fi;
+      tmp := FactorsRho(n,1,16,rhotrials:UseProbabilisticPrimalityTest);
+    fi;
+    factors := SortedList(Concatenation(factors,tmp[1],tmp[2]));
+    CheckAndSortFactors();
+    return factors;
+  end );
+
+
+#############################################################################
+##
+#M  PartialFactorization( <n> ) . . . . . partial factorization of an integer
+##
+InstallOtherMethod( PartialFactorization,
+                    "for integers", true, [ IsInt ], 0,
+                    n -> PartialFactorization(n,5) );
+
+
+#############################################################################
+##
 #F  Gcdex( <m>, <n> ) . . . . . . . . . . greatest common divisor of integers
 ##
 InstallGlobalFunction(Gcdex,function ( m, n )
@@ -765,20 +875,32 @@ InstallGlobalFunction( IsOddInt, n -> n mod 2 = 1 );
 ##  R. Baillie, S. Wagstaff, Lucas Pseudoprimes, MathComp 35 1980,  1391-1417
 ##  R. Pinch, Some Primality Testing Algorithms, Notic. AMS 9 1993, 1203-1210
 ##
-TraceModQF := function ( p, k, n )
-    local  trc;
-    if k = 1  then
-        trc := [ p, 2 ];
-    elif k mod 2 = 0  then
-        trc := TraceModQF( p, k/2, n );
-        trc := [ (trc[1]^2 - 2) mod n, (trc[1]*trc[2] - p) mod n ];
+# a non-recursive version,  nowadays the algorithm can be applied to
+# numbers with many thousand digits
+BindGlobal("TraceModQF", function ( p, k, n )
+  local kb, trc, i;
+  kb := [];
+  while k <> 1 do
+    if k mod 2 = 0 then
+      k := k/2;
+      Add(kb, 0);
     else
-        trc := TraceModQF( p, (k+1)/2, n );
-        trc := [ (trc[1]*trc[2] - p) mod n, (trc[2]^2 - 2) mod n ];
+      k := (k+1)/2;
+      Add(kb, 1);
     fi;
-    return trc;
-end;
-MakeReadOnlyGlobal( "TraceModQF" );
+  od;
+  trc := [p, 2];
+  i := Length(kb);
+  while i >= 1 do
+    if kb[i] = 0 then
+      trc := [ (trc[1]^2 - 2) mod n, (trc[1]*trc[2] - p) mod n ];
+    else
+      trc := [ (trc[1]*trc[2] - p) mod n, (trc[2]^2 - 2) mod n ];
+    fi;
+    i := i-1;
+  od;
+  return trc;
+end);
 
 ##  returns `false' for proven composite, `true' for proven prime and
 ##  `fail' for probable prime.

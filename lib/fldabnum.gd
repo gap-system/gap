@@ -172,6 +172,8 @@ DeclareGlobalVariable( "Rationals", "field of rationals" );
 DeclareSynonym( "IsRationals",
     IsCyclotomicCollection and IsField and IsPrimeField );
 
+InstallTrueMethod( IsCyclotomicField, IsRationals );
+
 
 #############################################################################
 ##

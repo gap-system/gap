@@ -283,19 +283,37 @@ InstallOtherMethod( CentralizerOp,
 #M  Centre( <M> ) . . . . . . . . . . . . . . . . . . . . . centre of a magma
 ##
 InstallMethod( Centre,
-    "for a magma",
+    "generic method for a magma",
     [ IsMagma ],
     function( M )
-    M:= Centralizer( M, M );
-    Assert( 1, IsAbelian( M ) );
-    SetIsAbelian( M, true );
+    local T;
+    T:= Tuples( M, 2 );
+    M:= Filtered( M, x -> ForAll( M, y -> x * y = y * x ) and
+                          ForAll( T, p -> (p[1]*p[2])*x = p[1]*(p[2]*x) and
+                                          (p[1]*x)*p[2] = p[1]*(x*p[2]) and
+                                          (x*p[1])*p[2] = x*(p[1]*p[2]) ) );
+    if IsDomain( M ) then
+      Assert( 1, IsAbelian( M ) );
+      SetIsAbelian( M, true );
+    fi;
     return M;
     end );
 
 InstallMethod( Centre,
-    "for a commutative magma",
-    true,
-    [ IsMagma and IsCommutative ],
+    "for an associative magma",
+    [ IsMagma and IsAssociative ],
+    function( M )
+    M:= Centralizer( M, M );
+    if IsDomain( M ) then
+      Assert( 1, IsAbelian( M ) );
+      SetIsAbelian( M, true );
+    fi;
+    return M;
+    end );
+
+InstallMethod( Centre,
+    "for an associative and commutative magma",
+    [ IsMagma and IsAssociative and IsCommutative ],
     SUM_FLAGS, # for commutative magmas this is best possible
     IdFunc );
 

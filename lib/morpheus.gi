@@ -747,6 +747,10 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
 	  Info(InfoMorph,3,"testing");
 	  imgs:=GroupGeneralMappingByImages(params.from,range,gens,imgs);
 	  SetIsTotal(imgs,true);
+	  if tsur then
+	    SetIsSurjective(imgs,true);
+	  fi;
+
 	  ok:=IsSingleValued(imgs);
 	  if ok and tinj then
 	    ok:=IsInjective(imgs);

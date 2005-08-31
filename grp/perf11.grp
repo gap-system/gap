@@ -1422,7 +1422,7 @@ Revision.perf11_grp :=
   [[1,"abtuvwxyz",
   function(a,b,t,u,v,w,x,y,z)
   return
-  [[a^4,b^3,(a*b)^7,(a^-1*b^-1*a*b)^4*a^2,a^2*b
+  [[a^4,b^3/(t*u*v*z^-1),(a*b)^7,(a^-1*b^-1*a*b)^4*a^2,a^2*b
   *a^2*b^-1,t^3,u^3,v^3,w^3,x^3,y^3,z^3,
   t^-1*u^-1*t*u,t^-1*v^-1*t*v,
   t^-1*w^-1*t*w,t^-1*x^-1*t*x,

@@ -1045,7 +1045,7 @@ InstallMethod( BaseMat,
     "generic method for matrices",
     [ IsMatrix ],
     function ( mat )
-    return BaseMatDestructive( List( mat, ShallowCopy ) );
+    return BaseMatDestructive( MutableCopyMat( mat ) );
     end );
 
 
@@ -1121,7 +1121,7 @@ end);
 InstallOtherMethod( SumIntersectionMat,
     [ IsEmpty, IsMatrix ],
 function(a,b)
-  b:=List(b,ShallowCopy);
+  b:=MutableCopyMat(b);
   TriangulizeMat(b);
   b:=Filtered(b,i->not IsZero(i));
   return [b,a];
@@ -1130,7 +1130,7 @@ end);
 InstallOtherMethod( SumIntersectionMat,
     [ IsMatrix, IsEmpty ],
 function(a,b)
-  a:=List(a,ShallowCopy);
+  a:=MutableCopyMat(a);
   TriangulizeMat(a);
   a:=Filtered(a,i->not IsZero(i));
   return [a,b];
@@ -1308,7 +1308,7 @@ InstallMethod( DeterminantMat,
     "for matrices",
     [ IsMatrix ],
     function( mat )
-    return DeterminantMatDestructive( List( mat, ShallowCopy ) );
+    return DeterminantMatDestructive( MutableCopyMat( mat ) );
     end );
 
 
@@ -1639,7 +1639,7 @@ InstallMethod( ElementaryDivisorsMat,
     [ IsEuclideanRing,IsMatrix ],
 function ( ring,mat )
   # make a copy to avoid changing the original argument
-  mat := List( mat, ShallowCopy );
+  mat := MutableCopyMat( mat );
   return ElementaryDivisorsMatDestructive(ring,mat);
 end);
 
@@ -1651,9 +1651,10 @@ InstallOtherMethod( ElementaryDivisorsMat,
 
 #############################################################################
 ##
-#F  MutableCopyMat( <mat> )
+#M  MutableCopyMat( <mat> )
 ##
-InstallGlobalFunction( MutableCopyMat, mat -> List( mat, ShallowCopy ) );
+InstallMethod( MutableCopyMat, "generic method", [IsList],
+  mat -> List( mat, ShallowCopy ) );
 
 
 #############################################################################
@@ -1984,7 +1985,7 @@ InstallMethod( RankMatDestructive,
 InstallMethod( RankMat,
     "generic method for matrices",
     [ IsMatrix ],
-    mat -> RankMatDestructive( List( mat, ShallowCopy ) ) );
+    mat -> RankMatDestructive( MutableCopyMat( mat ) ) );
 
 
 #############################################################################
@@ -2240,7 +2241,7 @@ InstallMethod( SemiEchelonMats,
         "for list of matrices",
         [ IsList ],
         function( mats )
-    return SemiEchelonMatsNoCo( List( mats, x -> List( x, ShallowCopy ) ) );
+    return SemiEchelonMatsNoCo( List( mats, x -> MutableCopyMat(x) ) );
 end );
 
 InstallMethod( SemiEchelonMatsDestructive,
@@ -2767,10 +2768,10 @@ local z,l,b,i,j,k,stop,v,dim,h,zv;
   z:=Zero(bas[1][1]);
   zv:=Zero(bas[1]);
   if Length(mat)>0 then
-    mat:=List(mat,ShallowCopy);
+    mat:=MutableCopyMat(mat);
     TriangulizeMat(mat);
   fi;
-  bas:=List(bas,ShallowCopy);
+  bas:=MutableCopyMat(bas);
   dim:=Length(bas[1]);
   l:=Length(bas)-Length(mat); # missing dimension
   b:=[];
@@ -3610,7 +3611,7 @@ InstallGlobalFunction(OnSubspacesByCanonicalBasis,function( mat, obj )
     local row;
     mat:=mat*obj;
     if not IsMutable(mat) then
-        mat := List(mat, ShallowCopy);
+        mat := MutableCopyMat(mat);
     else
         for row in [1..Length(mat)] do
             if not IsMutable(mat[row]) then

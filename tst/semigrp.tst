@@ -286,7 +286,7 @@ gap> CategoryCollections(IsMultiplicativeElementWithZero)(m);
 true
 gap> 
 gap> 
-gap> STOP_TEST( "semigrp.tst", 102900000 );
+gap> STOP_TEST( "semigrp.tst", 86300000 );
 
 
 #############################################################################

@@ -1725,7 +1725,7 @@ InstallMethod( PermutationCycleOp,"of object in list", true,
     function( g, D, pnt, act )
     local   list,  old,  new,  fst;
     
-    list := [  ];
+    list := [ 1 .. Size(D) ];
     fst := PositionCanonical( D, pnt );
     if fst = fail  then
         return ();

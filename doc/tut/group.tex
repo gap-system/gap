@@ -1129,10 +1129,10 @@ automorphism group.
 gap> p:=Group((1,7,6,8)(2,5,3,4), (1,2,6,3)(4,8,5,7));;
 gap> aut := AutomorphismGroup( p );; NiceMonomorphism(aut);;
 gap> niceaut := NiceObject( aut );
-Group([ (1,2)(3,4), (3,4)(5,6), (1,6,3)(2,5,4), (1,6)(2,5)(3,4) ])
+Group([ (1,2)(3,4), (3,4)(5,6), (1,3)(2,4)(5,6), (1,6)(2,5)(3,4) ])
 gap> IsomorphismGroups( niceaut, SymmetricGroup( 4 ) );
-[ (1,2)(3,4), (3,4)(5,6), (1,6,3)(2,5,4), (1,6)(2,5)(3,4) ] -> 
-[ (1,4)(2,3), (1,2)(3,4), (1,2,3), (2,4) ]
+[ (1,2)(3,4), (3,4)(5,6), (1,3)(2,4)(5,6), (1,6)(2,5)(3,4) ] -> 
+[ (1,4)(2,3), (1,2)(3,4), (2,3), (2,4) ]
 \endexample
 
 %\exercise The nice monomorphism associated with the automorphism group of
@@ -1164,7 +1164,7 @@ gap> aut2 := GroupByGenerators( GeneratorsOfGroup( aut ) );;
 gap> SetIsHandledByNiceMonomorphism( aut2, true );
 gap> SetNiceMonomorphism( aut2, nicer );
 gap> NiceObject( aut2 );  # a pc group
-Group([ f4, f3, f2, f1*f2 ])
+Group([ f4, f3, f1*f2^2*f3, f1*f2*f3*f4 ])
 \endexample
 
 The star `*' denotes composition of mappings  from the left to the right,

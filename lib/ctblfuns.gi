@@ -2538,7 +2538,8 @@ InstallMethod( RestrictedClassFunctions,
     if fus = fail then
       Error( "no fusion from <subtbl> to <tbl>" );
     fi;
-    return List( chars, chi -> ClassFunction( subtbl, chi{ fus } ) );
+    return List( chars, chi -> ClassFunctionSameType( subtbl, chi,
+                                   ValuesOfClassFunction( chi ){ fus } ) );
     end );
 
 InstallMethod( RestrictedClassFunctions,
@@ -2555,7 +2556,8 @@ InstallMethod( RestrictedClassFunctions,
     if fus = fail then
       Error( "class fusion not available" );
     fi;
-    return List( chars, chi -> ClassFunction( subtbl, chi{ fus } ) );
+    return List( chars, chi -> ClassFunctionSameType( subtbl, chi,
+                                   ValuesOfClassFunction( chi ){ fus } ) );
     end );
 
 InstallMethod( RestrictedClassFunctions,
@@ -2568,7 +2570,8 @@ InstallMethod( RestrictedClassFunctions,
     if fus = fail then
       Error( "class fusion not available" );
     fi;
-    return List( chars, chi -> ClassFunction( subtbl, chi{ fus } ) );
+    return List( chars, chi -> ClassFunctionSameType( subtbl, chi,
+                                   ValuesOfClassFunction( chi ){ fus } ) );
     end );
 
 

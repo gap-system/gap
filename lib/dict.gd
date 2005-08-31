@@ -46,11 +46,11 @@ DeclareInfoClass( "InfoHash" );
 
 #############################################################################
 ##
-#O  PositionFirstComponent(<list>,<obj>)
+#O  PositionFirstComponentDict(<list>,<obj>)
 ##
 ##  returns the index <i> in <list> such that $<list>[<i>][1]=<obj>$ and
 ##  `fail' if no such entry exists.
-DeclareOperation("PositionFirstComponent",[IsList,IsObject]);
+DeclareOperation("PositionFirstComponentDict",[IsList,IsObject]);
 
 #############################################################################
 ##

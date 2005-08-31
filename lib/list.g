@@ -66,13 +66,6 @@ InstallTrueMethod( IsTable, IsRectangularTable );
 
 #############################################################################
 ##
-#v  ListsFamily	. . . . . . . . . . . . . . . . . . . . . . . family of lists
-##
-InstallValue( ListsFamily, NewFamily( "ListsFamily", IsList ) );
-
-
-#############################################################################
-##
 #V  TYPE_LIST_NDENSE_MUTABLE  . . . . . . . . type of non-dense, mutable list
 ##
 BIND_GLOBAL( "TYPE_LIST_NDENSE_MUTABLE", NewType( ListsFamily,

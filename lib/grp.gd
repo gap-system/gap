@@ -265,6 +265,7 @@ InstallFactorMaintenance( IsPGroup,
     IsGroup and IsPGroup, IsObject, IsGroup );
 
 InstallTrueMethod( IsPGroup, IsGroup and IsTrivial );
+InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
 
 
 #############################################################################
@@ -277,12 +278,6 @@ InstallTrueMethod( IsPGroup, IsGroup and IsTrivial );
 ##  Otherwise an error is issued.
 ##
 DeclareAttribute( "PrimePGroup", IsPGroup );
-
-InstallSubsetMaintenance( PrimePGroup,
-    IsGroup and HasPrimePGroup, IsGroup );
-
-InstallFactorMaintenance( PrimePGroup,
-    IsGroup and HasPrimePGroup, IsObject, IsGroup );
 
 
 #############################################################################

@@ -762,8 +762,8 @@ gap> irr1:= IrrDixonSchneider( g );
   Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ] ), 
   Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ] ), 
   Character( CharacterTable( SL(2,3) ), [ 2, -2, 1, 1, -1, -1, 0 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 2, -2, E(3), E(3)^2, -E(3)^2, -E(3), 0 ] ),
   Character( CharacterTable( SL(2,3) ), [ 2, -2, E(3)^2, E(3), -E(3), -E(3)^2, 0 ] ),
+  Character( CharacterTable( SL(2,3) ), [ 2, -2, E(3), E(3)^2, -E(3)^2, -E(3), 0 ] ),
   Character( CharacterTable( SL(2,3) ), [ 3, 3, 0, 0, 0, 0, -1 ] ) ]
 gap> irr2:= IrrConlon( g );
 [ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
@@ -916,19 +916,19 @@ gap> Size(g);
 6065280
 gap> d:= DixonInit( g );;
 #I  29 classes
-#I  choosing prime 28081
+#I  choosing prime 51481
 gap> c:= d.characterTable;;
 \endexample
 After the initialisation, one structure matrix is evaluated,
 yielding smaller spaces and several irreducible characters.
 \beginexample
 gap> DixonSplit( d );
-#I  Matrix 4,Representative of Order 3,Centralizer: 5832
-#I  Dimensions: [ 1, 12, 2, 2, 4, 2, 1, 1, 1, 1, 1 ]
+#I  Matrix 7,Representative of Order 3,Centralizer: 5832
+#I  Dimensions: [ 1, 1, 2, 12, 1, 4, 1, 2, 1, 2, 1 ]
 #I  Two-dim space split
 #I  Two-dim space split
 #I  Two-dim space split
-4
+7
 \endexample
 In this case spaces of the listed dimensions are a result of the
 splitting process.
@@ -964,14 +964,14 @@ gap> List( ro.remainders, i -> ScalarProduct( c, i, i) );
   38942, 44950, 78778 ]
 gap> t:= SplitCharacters( d, ro.remainders );;
 gap> List( t, i -> ScalarProduct( c, i, i ) );
-[ 2, 2, 4, 2, 2, 4, 4, 6, 3, 5, 5, 9, 9, 4, 12, 13, 18, 18, 18, 26, 32, 32, 
-  16, 42, 36, 84, 84, 90, 88, 159, 169, 169, 172, 172, 266, 271, 271, 268, 
-  274, 274, 280, 328, 373, 373, 456, 532, 576, 679, 683, 683, 754, 768, 768, 
-  890, 912, 962, 1453, 1453, 1601, 1601, 1728, 1739, 1739, 1802, 2058, 2379, 
-  2414, 2543, 2744, 2744, 2920, 3078, 3078, 4275, 4275, 4494, 4760, 5112, 
-  5115, 5115, 5414, 6080, 6318, 7100, 7369, 7369, 7798, 8644, 10392, 12373, 
-  12922, 14122, 14122, 18948, 21886, 24641, 24641, 25056, 38942, 44950, 78778 
- ]
+[ 2, 2, 4, 2, 2, 4, 4, 6, 3, 5, 5, 9, 9, 4, 12, 13, 18, 18, 20, 18, 20, 26, 
+  24, 32, 32, 16, 42, 59, 69, 69, 72, 72, 36, 72, 122, 127, 127, 64, 100, 
+  144, 196, 274, 274, 280, 328, 373, 373, 456, 532, 576, 679, 683, 683, 754, 
+  768, 768, 890, 912, 962, 1453, 1453, 1601, 1601, 1728, 1739, 1739, 1802, 
+  2058, 2379, 2414, 2543, 2744, 2744, 2920, 3078, 3078, 4275, 4275, 4494, 
+  4760, 5112, 5115, 5115, 5414, 6080, 6318, 7100, 7369, 7369, 7798, 8644, 
+  10392, 12373, 12922, 14122, 14122, 18948, 21886, 24641, 24641, 25056, 
+  38942, 44950, 78778 ]
 \endexample
 Finally we calculate the characters induced from all cyclic subgroups and
 obtain the missing irreducibles by applying the LLL-algorithm to them.
@@ -990,10 +990,9 @@ So we convert them to a list of values
 before feeding them in the machinery of the Dixon-algorithm.
 \beginexample
 gap> l.irreducibles[1];
-Character( CharacterTable( PSL(4,3) ),
-[ 640, 0, 0, -8, 0, 0, E(13)^7+E(13)^8+E(13)^11, E(13)+E(13)^3+E(13)^9, 
-  E(13)^2+E(13)^5+E(13)^6, E(13)^4+E(13)^10+E(13)^12, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, -8, -8, 0, 0, 0, 0, 0, 1, 1, 1 ] )
+Character( CharacterTable( PSL(4, 3) ), [ 640, 0, 0, 0, 0, -8, -8, 0, 0, 0, 
+  0, -8, 0, 0, 0, 0, 0, 0, E(13)^7+E(13)^8+E(13)^11, E(13)+E(13)^3+E(13)^9, 
+  E(13)^2+E(13)^5+E(13)^6, E(13)^4+E(13)^10+E(13)^12, 0, 0, 0, 1, 0, 1, 1 ] )
 gap> l:=List(l.irreducibles,ValuesOfClassFunction);;
 gap> DxIncludeIrreducibles( d, l );
 gap> Length( d.irreducibles );
@@ -1007,7 +1006,7 @@ group.
 This makes them available also to the character table.
 \beginexample
 gap> irrs:= DixontinI( d );;
-#I  Total:1 matrices,[ 4 ]
+#I  Total:1 matrices,[ 7 ]
 gap> SetIrr(g,irrs);
 gap> Length(Irr(c));
 29
@@ -1071,7 +1070,8 @@ X.3     1  1  1
 gap> d8:= CharacterTable( "Dihedral", 8 );;
 gap> nsg:= ClassPositionsOfNormalSubgroups( d8 );
 [ [ 1 ], [ 1, 3 ], [ 1 .. 3 ], [ 1, 3, 4 ], [ 1, 3 .. 5 ], [ 1 .. 5 ] ]
-gap> Display( CharacterTableIsoclinic( d8, nsg[3] ) );
+gap> q8:= CharacterTableIsoclinic( d8, nsg[3] );;
+gap> Display( q8 );
 Isoclinic(Dihedral(8))
 
      2  3  2  3  2  2
@@ -1084,6 +1084,12 @@ X.2     1  1  1 -1 -1
 X.3     1 -1  1  1 -1
 X.4     1 -1  1 -1  1
 X.5     2  . -2  .  .
+\endexample
+
+\Declaration{SourceOfIsoclinicTable}
+\beginexample
+gap> SourceOfIsoclinicTable( q8 );
+[ CharacterTable( "Dihedral(8)" ), [ 1, 2, 3 ], 3 ]
 \endexample
 
 %Declaration{CharacterTableOfNormalSubgroup}
@@ -1258,18 +1264,18 @@ gap> irr:= Irr( g );
   Character( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] ), 
   Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] ) ]
 gap> kernel:= KernelOfCharacter( irr[3] );
-Group([ (1,2)(3,4), (1,3)(2,4) ])
+Group([ (1,2)(3,4), (1,4)(2,3) ])
 gap> HasNormalSubgroupClassesInfo( tbl );
 true
 gap> NormalSubgroupClassesInfo( tbl );
-rec( nsg := [ Group([ (1,2)(3,4), (1,3)(2,4) ]) ], nsgclasses := [ [ 1, 3 ] ],
+rec( nsg := [ Group([ (1,2)(3,4), (1,4)(2,3) ]) ], nsgclasses := [ [ 1, 3 ] ],
   nsgfactors := [  ] )
 gap> ClassPositionsOfNormalSubgroup( tbl, kernel );
 [ 1, 3 ]
 gap> FactorGroupNormalSubgroupClasses( tbl, [ 1, 3 ] );
 Group([ f1, f2 ])
 gap> NormalSubgroupClassesInfo( tbl );
-rec( nsg := [ Group([ (1,2)(3,4), (1,3)(2,4) ]) ], nsgclasses := [ [ 1, 3 ] ],
+rec( nsg := [ Group([ (1,2)(3,4), (1,4)(2,3) ]) ], nsgclasses := [ [ 1, 3 ] ],
   nsgfactors := [ Group([ f1, f2 ]) ] )
 \endexample
 

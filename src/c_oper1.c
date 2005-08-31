@@ -27,8 +27,8 @@ static GVar G_IS__LIST;
 static Obj  GF_IS__LIST;
 static GVar G_ADD__LIST;
 static Obj  GF_ADD__LIST;
-static GVar G_IS__STRING;
-static Obj  GF_IS__STRING;
+static GVar G_IS__STRING__REP;
+static Obj  GF_IS__STRING__REP;
 static GVar G_TYPE__OBJ;
 static Obj  GF_TYPE__OBJ;
 static GVar G_IMMUTABLE__COPY__OBJ;
@@ -104,6 +104,10 @@ static GVar G_CHECK__INSTALL__METHOD;
 static Obj  GC_CHECK__INSTALL__METHOD;
 static GVar G_INSTALL__METHOD;
 static Obj  GF_INSTALL__METHOD;
+static GVar G_DeclareGlobalFunction;
+static Obj  GF_DeclareGlobalFunction;
+static GVar G_EvalString;
+static Obj  GF_EvalString;
 static GVar G_WRAPPER__OPERATIONS;
 static Obj  GC_WRAPPER__OPERATIONS;
 static GVar G_INFO__INSTALL;
@@ -1123,6 +1127,11 @@ static Obj  HdlrFunc4 (
  t_3 = ElmsListCheck( a_arg, t_4 );
  CALL_2ARGS( t_1, t_2, t_3 );
  
+ /* Print( "\n" ); */
+ t_1 = GF_Print;
+ C_NEW_STRING( t_2, 1, "\n" )
+ CALL_1ARGS( t_1, t_2 );
+ 
  /* return; */
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -1208,6 +1217,8 @@ static Obj  HdlrFunc7 (
  Obj l_pos = 0;
  Obj l_rel = 0;
  Obj l_filters = 0;
+ Obj l_info1 = 0;
+ Obj l_isstr = 0;
  Obj l_flags = 0;
  Obj l_i = 0;
  Obj l_rank = 0;
@@ -1277,8 +1288,8 @@ static Obj  HdlrFunc7 (
  }
  /* fi */
  
- /* if IS_STRING( arglist[2] ) then */
- t_3 = GF_IS__STRING;
+ /* if IS_STRING_REP( arglist[2] ) then */
+ t_3 = GF_IS__STRING__REP;
  C_ELM_LIST_FPL( t_4, a_arglist, INTOBJ_INT(2) )
  t_2 = CALL_1ARGS( t_3, t_4 );
  CHECK_FUNC_RESULT( t_2 )
@@ -1374,6 +1385,129 @@ static Obj  HdlrFunc7 (
  /* filters := arglist[pos]; */
  C_ELM_LIST_FPL( t_1, a_arglist, l_pos )
  l_filters = t_1;
+ 
+ /* if 0 < LEN_LIST( filters ) then */
+ t_3 = GF_LEN__LIST;
+ t_2 = CALL_1ARGS( t_3, l_filters );
+ CHECK_FUNC_RESULT( t_2 )
+ t_1 = (Obj)(UInt)(LT( INTOBJ_INT(0), t_2 ));
+ if ( t_1 ) {
+  
+  /* info1 := "[ "; */
+  C_NEW_STRING( t_1, 2, "[ " )
+  l_info1 = t_1;
+  
+  /* isstr := true; */
+  t_1 = True;
+  l_isstr = t_1;
+  
+  /* for i in [ 1 .. LEN_LIST( filters ) ] do */
+  t_3 = GF_LEN__LIST;
+  t_2 = CALL_1ARGS( t_3, l_filters );
+  CHECK_FUNC_RESULT( t_2 )
+  CHECK_INT_SMALL( t_2 )
+  for ( t_1 = INTOBJ_INT(1);
+        ((Int)t_1) <= ((Int)t_2);
+        t_1 = (Obj)(((UInt)t_1)+4) ) {
+   l_i = t_1;
+   
+   /* if IS_STRING_REP( filters[i] ) then */
+   t_5 = GF_IS__STRING__REP;
+   C_ELM_LIST_FPL( t_6, l_filters, l_i )
+   t_4 = CALL_1ARGS( t_5, t_6 );
+   CHECK_FUNC_RESULT( t_4 )
+   CHECK_BOOL( t_4 )
+   t_3 = (Obj)(UInt)(t_4 != False);
+   if ( t_3 ) {
+    
+    /* APPEND_LIST_INTR( info1, filters[i] ); */
+    t_3 = GF_APPEND__LIST__INTR;
+    C_ELM_LIST_FPL( t_4, l_filters, l_i )
+    CALL_2ARGS( t_3, l_info1, t_4 );
+    
+    /* APPEND_LIST_INTR( info1, ", " ); */
+    t_3 = GF_APPEND__LIST__INTR;
+    C_NEW_STRING( t_4, 2, ", " )
+    CALL_2ARGS( t_3, l_info1, t_4 );
+    
+    /* filters[i] := EvalString( filters[i] ); */
+    t_4 = GF_EvalString;
+    C_ELM_LIST_FPL( t_5, l_filters, l_i )
+    t_3 = CALL_1ARGS( t_4, t_5 );
+    CHECK_FUNC_RESULT( t_3 )
+    C_ASS_LIST_FPL( l_filters, l_i, t_3 )
+    
+    /* if not IS_FUNCTION( filters[i] ) then */
+    t_6 = GF_IS__FUNCTION;
+    C_ELM_LIST_FPL( t_7, l_filters, l_i )
+    t_5 = CALL_1ARGS( t_6, t_7 );
+    CHECK_FUNC_RESULT( t_5 )
+    CHECK_BOOL( t_5 )
+    t_4 = (Obj)(UInt)(t_5 != False);
+    t_3 = (Obj)(UInt)( ! ((Int)t_4) );
+    if ( t_3 ) {
+     
+     /* Error( "string does not evaluate to a function" ); */
+     t_3 = GF_Error;
+     C_NEW_STRING( t_4, 38, "string does not evaluate to a function" )
+     CALL_1ARGS( t_3, t_4 );
+     
+    }
+    /* fi */
+    
+   }
+   
+   /* else */
+   else {
+    
+    /* isstr := false; */
+    t_3 = False;
+    l_isstr = t_3;
+    
+    /* break; */
+    break;
+    
+   }
+   /* fi */
+   
+  }
+  /* od */
+  
+  /* if isstr and info = false then */
+  t_2 = (Obj)(UInt)(l_isstr != False);
+  t_1 = t_2;
+  if ( t_1 ) {
+   t_4 = False;
+   t_3 = (Obj)(UInt)(EQ( l_info, t_4 ));
+   t_1 = t_3;
+  }
+  if ( t_1 ) {
+   
+   /* info1[LEN_LIST( info1 ) - 1] := ' '; */
+   t_3 = GF_LEN__LIST;
+   t_2 = CALL_1ARGS( t_3, l_info1 );
+   CHECK_FUNC_RESULT( t_2 )
+   C_DIFF( t_1, t_2, INTOBJ_INT(1) )
+   CHECK_INT_POS( t_1 )
+   t_2 = ObjsChar[32];
+   C_ASS_LIST_FPL( l_info1, t_1, t_2 )
+   
+   /* info1[LEN_LIST( info1 )] := ']'; */
+   t_2 = GF_LEN__LIST;
+   t_1 = CALL_1ARGS( t_2, l_info1 );
+   CHECK_FUNC_RESULT( t_1 )
+   CHECK_INT_POS( t_1 )
+   t_2 = ObjsChar[93];
+   C_ASS_LIST_FPL( l_info1, t_1, t_2 )
+   
+   /* info := info1; */
+   l_info = l_info1;
+   
+  }
+  /* fi */
+  
+ }
+ /* fi */
  
  /* pos := pos + 1; */
  C_SUM( t_1, l_pos, INTOBJ_INT(1) )
@@ -3053,7 +3187,7 @@ static Obj  HdlrFunc1 (
  /* Revision.oper1_g := "@(#)$Id$"; */
  t_1 = GC_Revision;
  CHECK_BOUND( t_1, "Revision" )
- C_NEW_STRING( t_2, 53, "@(#)$Id$" )
+ C_NEW_STRING( t_2, 57, "@(#)$Id$" )
  ASS_REC( t_1, R_oper1__g, t_2 );
  
  /* RUN_IMMEDIATE_METHODS_CHECKS := 0; */
@@ -3210,6 +3344,7 @@ static Obj  HdlrFunc1 (
  
  /* BIND_GLOBAL( "INFO_INSTALL", function ( arg )
       CALL_FUNC_LIST( Print, arg{[ 2 .. LEN_LIST( arg ) ]} );
+      Print( "\n" );
       return;
   end ); */
  t_1 = GF_BIND__GLOBAL;
@@ -3247,11 +3382,16 @@ static Obj  HdlrFunc1 (
  CHANGED_BAG( CurrLVars );
  CALL_2ARGS( t_1, t_2, t_3 );
  
+ /* DeclareGlobalFunction( "EvalString" ); */
+ t_1 = GF_DeclareGlobalFunction;
+ C_NEW_STRING( t_2, 10, "EvalString" )
+ CALL_1ARGS( t_1, t_2 );
+ 
  /* Unbind( INSTALL_METHOD ); */
  AssGVar( G_INSTALL__METHOD, 0 );
  
  /* BIND_GLOBAL( "INSTALL_METHOD", function ( arglist, check )
-      local  len, opr, info, pos, rel, filters, flags, i, rank, method, req, reqs, match, j, k, imp, notmatch;
+      local  len, opr, info, pos, rel, filters, info1, isstr, flags, i, rank, method, req, reqs, match, j, k, imp, notmatch;
       len := LEN_LIST( arglist );
       if len < 3  then
           Error( "too few arguments given in <arglist>" );
@@ -3260,7 +3400,7 @@ static Obj  HdlrFunc1 (
       if not IS_OPERATION( opr )  then
           Error( "<opr> is not an operation" );
       fi;
-      if IS_STRING( arglist[2] )  then
+      if IS_STRING_REP( arglist[2] )  then
           info := arglist[2];
           pos := 3;
       else
@@ -3277,6 +3417,28 @@ static Obj  HdlrFunc1 (
           Error( "<arglist>[", pos, "] must be a list of filters" );
       fi;
       filters := arglist[pos];
+      if 0 < LEN_LIST( filters )  then
+          info1 := "[ ";
+          isstr := true;
+          for i  in [ 1 .. LEN_LIST( filters ) ]  do
+              if IS_STRING_REP( filters[i] )  then
+                  APPEND_LIST_INTR( info1, filters[i] );
+                  APPEND_LIST_INTR( info1, ", " );
+                  filters[i] := EvalString( filters[i] );
+                  if not IS_FUNCTION( filters[i] )  then
+                      Error( "string does not evaluate to a function" );
+                  fi;
+              else
+                  isstr := false;
+                  break;
+              fi;
+          od;
+          if isstr and info = false  then
+              info1[LEN_LIST( info1 ) - 1] := ' ';
+              info1[LEN_LIST( info1 )] := ']';
+              info := info1;
+          fi;
+      fi;
       pos := pos + 1;
       flags := [  ];
       for i  in filters  do
@@ -3568,7 +3730,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "IS_INT", &GF_IS__INT );
  InitFopyGVar( "IS_LIST", &GF_IS__LIST );
  InitFopyGVar( "ADD_LIST", &GF_ADD__LIST );
- InitFopyGVar( "IS_STRING", &GF_IS__STRING );
+ InitFopyGVar( "IS_STRING_REP", &GF_IS__STRING__REP );
  InitFopyGVar( "TYPE_OBJ", &GF_TYPE__OBJ );
  InitFopyGVar( "IMMUTABLE_COPY_OBJ", &GF_IMMUTABLE__COPY__OBJ );
  InitFopyGVar( "IS_IDENTICAL_OBJ", &GF_IS__IDENTICAL__OBJ );
@@ -3607,6 +3769,8 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "RankFilter", &GF_RankFilter );
  InitCopyGVar( "CHECK_INSTALL_METHOD", &GC_CHECK__INSTALL__METHOD );
  InitFopyGVar( "INSTALL_METHOD", &GF_INSTALL__METHOD );
+ InitFopyGVar( "DeclareGlobalFunction", &GF_DeclareGlobalFunction );
+ InitFopyGVar( "EvalString", &GF_EvalString );
  InitCopyGVar( "WRAPPER_OPERATIONS", &GC_WRAPPER__OPERATIONS );
  InitFopyGVar( "INFO_INSTALL", &GF_INFO__INSTALL );
  InitCopyGVar( "OPERATIONS", &GC_OPERATIONS );
@@ -3629,39 +3793,39 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "CallFuncList", &GF_CallFuncList );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(-28744363)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(-28744363)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](-28744363)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(-28744363)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](-28744363)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(-28744363)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](-28744363)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(-28744363)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](-28744363)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(-28744363)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](-28744363)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(-28744363)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](-28744363)" );
- InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(-28744363)" );
- InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](-28744363)" );
- InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(-28744363)" );
- InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](-28744363)" );
- InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(-28744363)" );
- InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](-28744363)" );
- InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(-28744363)" );
- InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](-28744363)" );
- InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(-28744363)" );
- InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](-28744363)" );
- InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(-28744363)" );
- InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](-28744363)" );
- InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(-28744363)" );
- InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](-28744363)" );
- InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(-28744363)" );
- InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](-28744363)" );
- InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(-28744363)" );
- InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](-28744363)" );
- InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/oper1.g:HdlrFunc16(-28744363)" );
- InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/oper1.g:NameFunc[16](-28744363)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(-93145418)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(-93145418)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](-93145418)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(-93145418)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](-93145418)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(-93145418)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](-93145418)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(-93145418)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](-93145418)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(-93145418)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](-93145418)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(-93145418)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](-93145418)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(-93145418)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](-93145418)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(-93145418)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](-93145418)" );
+ InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(-93145418)" );
+ InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](-93145418)" );
+ InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(-93145418)" );
+ InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](-93145418)" );
+ InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(-93145418)" );
+ InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](-93145418)" );
+ InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(-93145418)" );
+ InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](-93145418)" );
+ InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(-93145418)" );
+ InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](-93145418)" );
+ InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(-93145418)" );
+ InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](-93145418)" );
+ InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(-93145418)" );
+ InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](-93145418)" );
+ InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/oper1.g:HdlrFunc16(-93145418)" );
+ InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/oper1.g:NameFunc[16](-93145418)" );
  
  /* return success */
  return 0;
@@ -3690,7 +3854,7 @@ static Int InitLibrary ( StructInitInfo * module )
  G_IS__INT = GVarName( "IS_INT" );
  G_IS__LIST = GVarName( "IS_LIST" );
  G_ADD__LIST = GVarName( "ADD_LIST" );
- G_IS__STRING = GVarName( "IS_STRING" );
+ G_IS__STRING__REP = GVarName( "IS_STRING_REP" );
  G_TYPE__OBJ = GVarName( "TYPE_OBJ" );
  G_IMMUTABLE__COPY__OBJ = GVarName( "IMMUTABLE_COPY_OBJ" );
  G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
@@ -3728,6 +3892,8 @@ static Int InitLibrary ( StructInitInfo * module )
  G_RankFilter = GVarName( "RankFilter" );
  G_CHECK__INSTALL__METHOD = GVarName( "CHECK_INSTALL_METHOD" );
  G_INSTALL__METHOD = GVarName( "INSTALL_METHOD" );
+ G_DeclareGlobalFunction = GVarName( "DeclareGlobalFunction" );
+ G_EvalString = GVarName( "EvalString" );
  G_WRAPPER__OPERATIONS = GVarName( "WRAPPER_OPERATIONS" );
  G_INFO__INSTALL = GVarName( "INFO_INSTALL" );
  G_OPERATIONS = GVarName( "OPERATIONS" );
@@ -3834,7 +4000,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_IS__INT = GVarName( "IS_INT" );
  G_IS__LIST = GVarName( "IS_LIST" );
  G_ADD__LIST = GVarName( "ADD_LIST" );
- G_IS__STRING = GVarName( "IS_STRING" );
+ G_IS__STRING__REP = GVarName( "IS_STRING_REP" );
  G_TYPE__OBJ = GVarName( "TYPE_OBJ" );
  G_IMMUTABLE__COPY__OBJ = GVarName( "IMMUTABLE_COPY_OBJ" );
  G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
@@ -3872,6 +4038,8 @@ static Int PostRestore ( StructInitInfo * module )
  G_RankFilter = GVarName( "RankFilter" );
  G_CHECK__INSTALL__METHOD = GVarName( "CHECK_INSTALL_METHOD" );
  G_INSTALL__METHOD = GVarName( "INSTALL_METHOD" );
+ G_DeclareGlobalFunction = GVarName( "DeclareGlobalFunction" );
+ G_EvalString = GVarName( "EvalString" );
  G_WRAPPER__OPERATIONS = GVarName( "WRAPPER_OPERATIONS" );
  G_INFO__INSTALL = GVarName( "INFO_INSTALL" );
  G_OPERATIONS = GVarName( "OPERATIONS" );
@@ -3954,12 +4122,12 @@ static Int PostRestore ( StructInitInfo * module )
 
 /* <name> returns the description of this module */
 static StructInitInfo module = {
- /* type        = */ 2,
+ /* type        = */ 3,
  /* name        = */ "GAPROOT/lib/oper1.g",
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ -28744363,
+ /* crc         = */ -93145418,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

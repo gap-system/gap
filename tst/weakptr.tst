@@ -62,4 +62,4 @@ false
 gap> Unbind(w[2]);
 gap> Print(w,"\n");
 WeakPointerObj( [ 1, , E(5), 311, , fail ] )
-gap> STOP_TEST( "weakptr.tst", 45400000 );
+gap> STOP_TEST( "weakptr.tst", 40800000 );

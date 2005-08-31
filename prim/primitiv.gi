@@ -55,8 +55,8 @@ local s,fname,ind,new;
 
     ind:=PRIMINDX[deg];
     new:=Filtered([1..Length(PRIMINDX)],i->PRIMINDX[i]=ind);
-    fname:=Concatenation("prim",String(ind));
-    ReadGapRoot( Concatenation( "prim/grps/", fname, ".grp" ) );
+    fname:=Concatenation("gps",String(ind));
+    ReadGapRoot( Concatenation( "prim/grps/", fname, ".g" ) );
 
     # store the degree
     PRIMLOAD:=Filtered(PRIMLOAD,i->not i in new);
@@ -79,16 +79,37 @@ InstallGlobalFunction(NrPrimitiveGroups, function(deg)
 end);
 
 InstallGlobalFunction( PrimitiveGroup, function(deg,num)
-local l,g;
+local l,g,fac,mats,perms,v,t;
   l:=PRIMGrp(deg,num);
 
   # special case: Symmetric and Alternating Group
-  if l[7]="A_n" then
+  if l[9]="Alt" then
     g:=AlternatingGroup(deg);
     SetName(g,Concatenation("A(",String(deg),")"));
-  elif l[7]="S_n" then
+  elif l[9]="Sym" then
     g:=SymmetricGroup(deg);
     SetName(g,Concatenation("S(",String(deg),")"));
+  elif l[9] = "psl" then
+    g:= PSL(2, deg-1);
+    SetName(g, Concatenation("PSL(2,", String(deg-1),")"));
+  elif l[9] = "pgl" then
+    g:= PGL(2, deg-1);
+    SetName(g, Concatenation("PGL(2,", String(deg-1), ")"));
+  elif l[4] = "1" then
+    if Length(l[9]) > 0 then
+      fac:= Factors(deg);
+      mats:=List(l[9],i->ImmutableMatrix(GF(fac[1]),i));
+      v:=Elements(GF(fac[1])^Length(fac));
+      perms:=List(mats,i->Permutation(i,v,OnRight));
+      t:=First(v,i->not IsZero(i)); # one nonzero translation 
+                                    #suffices as matrix
+                                    # action is irreducible
+      Add(perms,Permutation(t,v,function(i,j) return i+j;end));
+      g:= Group(perms);
+    else
+      g:= Image(IsomorphismPermGroup(CyclicGroup(deg)));
+    fi; 
+    SetName(g, l[7]);
   else
     g:= GroupByGenerators( l[9], () );
     if IsString(l[7]) and l[7]<>"" then
@@ -115,7 +136,7 @@ PGICS:=[];
 
 InstallMethod(PrimitiveIdentification,"generic",true,[IsPermGroup],0,
 function(grp)
-local dom,deg,PD,s,cand,a,p,b,i,ag,bg,q,gl,hom;
+local dom,deg,PD,s,cand,a,p,s_quot,b,cs,n,beta,alpha,i,ag,bg,q,gl,hom;
   dom:=MovedPoints(grp);
   if not (IsTransitive(grp,dom) and IsPrimitive(grp,dom)) then
     Error("Group must operate primitively");
@@ -123,6 +144,12 @@ local dom,deg,PD,s,cand,a,p,b,i,ag,bg,q,gl,hom;
   deg:=Length(dom);
   PrimGrpLoad(deg);
   PD:=PRIMGRP[deg];
+
+  if IsNaturalAlternatingGroup(grp) then
+    SetSize(grp, Factorial(deg)/2);
+  elif IsNaturalSymmetricGroup(grp) then
+    SetSize(grp, Factorial(deg));
+  fi;
 
   s:=Size(grp);
 
@@ -139,7 +166,7 @@ local dom,deg,PD,s,cand,a,p,b,i,ag,bg,q,gl,hom;
   if Length(cand)>1 and Length(Set(PD{cand},i->i[5]))>1 then
     a:=Collected(List(Orbits(Stabilizer(grp,dom[1]),dom{[2..Length(dom)]}),
                       Length));
-    cand:=Filtered(cand,i->PD[i][5]=a);
+    cand:=Filtered(cand,i->Set(PD[i][5])=Set(a));
   fi;
 
   # Transitivity
@@ -152,6 +179,24 @@ local dom,deg,PD,s,cand,a,p,b,i,ag,bg,q,gl,hom;
     # now we need to create the groups
     p:=List(cand,i->PrimitiveGroup(deg,i));
 
+    # in product action case, some tests on the socle quotient.
+    if ONanScottType(grp) = "4c" then
+     #first we just identify its isomorphism type 
+      s:= Socle(grp);
+      s_quot:= FactorGroup(grp, s);
+      a:= IdGroup(s_quot);
+      b:= [];
+      for i in [1..Length(cand)] do
+        b[i]:= IdGroup(FactorGroup(p[i], Socle(p[i])));
+      od;
+      s:= Filtered([1..Length(cand)], i->b[i] =a);
+      cand:= cand{s};
+      p:= p{s};
+    fi;
+  fi;
+
+
+  if Length(cand) > 1 then
     # Some tests for the sylow subgroups
     for q in Set(Factors(Size(grp)/Size(Socle(grp)))) do
       if q=1 then 
@@ -199,8 +244,35 @@ local dom,deg,PD,s,cand,a,p,b,i,ag,bg,q,gl,hom;
     od;
   fi;
 
-  if Length(cand)>1 then
+  #back for a closer look at the product action groups.
+  if Length(cand) > 1 and ONanScottType(grp) = "4c" then
+    #just here out of curiosity during testing.
+    #Print("cand =", cand, "\n");
+    #now we construct the action of the socle quotient as a
+    #(necessarily transitive) action on the socle factors.
+    s:= Socle(grp);
+    cs:= CompositionSeries(s);
+    cs:= cs[Length(cs)-1];
+    n:= Normalizer(grp, cs);
+    beta:= FactorCosetAction(grp, n);
+    alpha:= FactorCosetAction(n, ClosureGroup(Centralizer(n, cs), s));
+    a:= TransitiveIdentification(Group(KuKGenerators(grp, beta, alpha)));
+    b:= [];
+    for i in [1..Length(cand)] do
+      s:= Socle(p[i]);
+      cs:= CompositionSeries(s);
+      cs:= cs[Length(cs)-1];
+      n:= Normalizer(p[i], cs);
+      beta:= FactorCosetAction(p[i], n);
+      alpha:= FactorCosetAction(n, ClosureGroup(Centralizer(n, cs), s));
+      b[i]:= TransitiveIdentification(Group(KuKGenerators(p[i], beta, alpha)));
+    od;
+    s:= Filtered([1..Length(cand)], i->b[i]=a);
+    cand:= cand{s};
+    p:= p{s};
+  fi;
 
+  if Length(cand)>1 then
     # Klassen
     a:=Collected(List(ConjugacyClasses(grp),
                       i->[CycleStructurePerm(Representative(i)),Size(i)]));
@@ -406,7 +478,8 @@ local arglis,i,j,a,b,l,p,deg,gut,g,grp,nr,f,RFL,ind,it;
   od;
 
   if f then
-    Print("#W  AllPrimitiveGroups: Degree restricted to ",PRIMRANGE,"\n");
+    Print( "#W  AllPrimitiveGroups: Degree restricted to [ 1 .. ",
+           PRIMRANGE[ Length( PRIMRANGE ) ], " ]\n" );
   fi;
 
   # the rest is hard.
@@ -488,10 +561,8 @@ end);
 
 BindGlobal("NrAffinePrimitiveGroups",
 function(x)
-  if x<=2 then 
+  if x=1 then 
     return 1;
-  elif x=3 or x=4 then
-    return 2;
   else
    return Length(AllPrimitiveGroups(NrMovedPoints,x,ONanScottType,"1"));
   fi;
@@ -509,17 +580,106 @@ end);
 
 # maximal subgroups routine.
 # precomputed data up to degree 50 (so it will be quick is most cases).
-# (As there is no independed check for the primitive groups of degree >50,
+# (As there is no independent check for the primitive groups of degree >50,
 # we rather do not refer to them, but only use them in a calculation.)
-BindGlobal("SNMAXPRIMS",[[],[],[],[],[],[2],[],[5],[],[7],[],[4],[],[2],[],
-  [],[],[2],[],[2],[1,3,7],[2],[],[3],[],[5],[],[12],[],[2],[],
-  [5],[],[],[],[12],[],[2],[],[4,6],[],[2],[],[2],[5],[],[],
-  [2],[],[7]]);
+BindGlobal("SNMAXPRIMS",[[],[],[],[],[],[2],[],[5],[],[7],[],[4],
+[],[2],[],[],[],[2],[],[2],[1,3,7],[2],[],[3],[],[5],[],[12],[],[2],[],[5],[],
+[],[],[12],[],[2],[],[4,6],[],[2],[],[2],[5],[],[],[2],[],[7],[],[],[],[2],[6],
+[7,5],[],[],[],[7],[],[2],[2],[],[2],[],[],[3,5],[],[],[],[2],[],[2],[],[],[],
+[2,4],[],[2],[],[8],[],[2,4],[4],[],[],[],[],[2],[8],[],[],[],[],[],[],[2],[],
+[4,2],[],[3],[],[2],[7,9],[],[],[2],[],[2],[],[],[],[2],[],[],[],[],[],[10],[],
+[5],[],[],[],[2,17,11],[],[5],[],[5],[],[2],[],[],[],[12],[],[2],[],[2],[],[],
+[],[],[],[],[],[],[],[2],[],[2],[],[],[],[7],[],[2],[],[],[],[5],[],[2],[2],
+[],[],[7],[],[5],[4,2],[],[],[2],[2],[],[],[],[],[2],[],[2],[],[],[],[],[],[],
+[],[],[],[2],[],[2],[],[],[],[2],[],[2],[],[],[],[],[],[],[],[],[],[4],[],[2],
+[],[],[],[],[],[],[],[3],[],[],[],[2],[],[],[],[2],[],[2],[],[],[],[4],[],[],
+[],[],[],[2],[],[2],[],[4],[],[],[],[],[],[],[],[2],[7,2],[],[],[],[],[2],[],
+[],[],[],[],[2],[],[],[],[],[],[2],[],[2],[],[],[],[],[],[2],[],[2,20,22],[],
+[2],[],[2],[],[2],[],[],[],[5],[],[],[],[2],[],[],[2],[],[],[9,5,7],[],[],[],[],
+[],[],[],[2],[],[],[],[2],[],[2],[3],[],[],[2],[],[],[],[],[],[],[5],[],[],[],
+[],[],[],[2],[],[],[],[],[],[2],[],[],[2],[],[],[6],[],[],[],[2],[],[2],
+[9,4,6],[],[],[2],[],[],[5],[],[],[18],[],[5],[],[9,4],[],[],[],[2],[3],[],[],
+[],[],[2],[],[],[],[],[],[2],[],[],[],[2],[],[],[],[],[],[2],[],[],[],[],[],
+[],[],[2],[],[6],[],[2],[],[],[],[4,2],[],[],[],[2],[],[],[],[],[],[],[],[],
+[],[2],[],[2],[],[],[1],[],[],[],[],[],[],[2],[],[2],[],[],[],[],[],[2],[],[],
+[],[2],[],[],[],[],[],[2],[],[],[],[],[],[],[],[2],[],[],[],[6],[],[2],[5,2,3],
+[],[],[2],[],[],[],[],[],[],[],[],[],[],[],[2],[],[],[],[],[],[],[],[2],[],
+[],[],[2],[],[],[],[],[],[],[],[2],[],[],[],[6],[],[],[],[],[],[2],[],[],[],
+[],[],[],[],[],[],[7],[],[2],[],[2],[6],[],[],[7],[],[5],[],[],[],[],[],[],[],
+[],[],[8],[],[2],[],[],[],[],[],[2],[],[],[],[],[],[],[],[],[],[2],[],[4],[],
+[],[],[2],[],[],[],[],[],[2],[],[2],[],[],[],[],[],[2],[],[],[],[],[],[],[],
+[],[],[2],[],[],[],[],[],[2],[2],[],[],[],[],[2],[],[2],[],[],[],[],[],[2],[],
+[],[],[],[],[2],[],[],[],[2],[],[3],[],[],[],[],[],[8],[],[],[],[],[],[2],[],
+[],[],[],[],[],[],[],[],[2],[],[2],[],[],[],[2],[],[],[],[],[],[2],[],[],[],
+[],[],[7],[],[2],[],[],[],[4,2],[],[],[],[],[],[],[],[2],[],[],[],[2],[],[2],
+[],[],[],[2],[],[],[],[],[],[],[],[2],[4],[],[],[],[],[],[],[],[],[2],[],[],
+[],[],[],[],[],[2],[],[],[],[],[2],[],[],[],[],[2],[],[],[],[],[],[],[],[2],
+[],[13,3],[],[],[],[2],[],[],[],[],[],[2],[2],[],[],[2],[],[],[],[],[],[1],[],
+[2],[],[],[],[],[],[2],[],[],[],[2],[],[],[2],[],[],[],[],[2],[],[],[],[2],[1],
+[],[],[],[],[],[],[],[],[],[],[],[],[2],[],[],[],[],[],[],[],[],[],[2],[],
+[],[],[],[],[],[],[8],[],[],[],[2],[],[2],[],[],[],[],[],[],[4],[11,2,19],[],
+[2],[],[2],[],[],[],[2],[],[2],[],[],[],[],[],[],[],[],[],[6],[],[5],[],[],[],
+[],[],[],[],[],[],[],[],[2],[],[],[],[2],[],[2],[],[],[],[2],[],[],[],[],[],
+[],[],[],[],[],[],[],[],[2],[],[],[],[2],[],[2],[],[],[],[2],[],[],[],[],[],
+[],[],[],[],[],[],[],[],[],[4,2],[],[],[],[],[2],[],[3],[],[2],[],[],[],[],[],
+[],[],[2],[],[],[],[],[],[],[],[],[],[2],[],[],[],[],[],[],[],[2],[],[],[],
+[2],[],[],[],[],[],[2],[],[],[],[],[],[2],[],[],[],[],[],[],[],[5],[],[],[],
+[],[],[2],[],[],[],[2],[],[],[],[],[],[2],[],[],[],[],[],[2],[],[],[],[],[],
+[2],[],[2],[],[],[],[],[],[2],[]]);
 
-BindGlobal("ANMAXPRIMS",[[],[],[],[],[],[1],[5],[],[9],[6],[6],[2],[7],[1],
-  [4],[],[8],[1],[],[1],[2,6],[1],[5],[1],[],[3],[13],[6,11],[],
-  [1],[9,10],[4],[2],[],[2],[10,11],[],[1],[],[3,5],[],[1],[],
-  [1],[4,7],[],[],[1],[],[2,6]]);
+BindGlobal("ANMAXPRIMS", [[],[],[],[],[],[1],[5],[],[9],[6],[6],
+[2],[7],[1],[4],[],[8],[1],[],[1],[2,6],[1],[5],[1],[],[3],[13],[6,11],[],[1],
+[9,10],[4],[2],[],[2],[10,11],[],[1],[],[3,5],[],[1],[],[1],[4,7],[],[],[1],[],
+[2,6],[],[1],[],[1],[5],[4,6],[1,3],[],[],
+[6],[],[1],[1,4,6],[],[1,5,7,11],[5],[],
+[2,4],[],[],[],[1],[14],[1],[],[],[2],[1,3],[],[1],[],[7],[],[1,3],[3],[],[],
+[],[],[1],[6,7],[],[],[],[],[],[],[1],[],[1,3],[],[1,2],[],[1],[6,8],[],[],[1],
+[],[1],[],[8],[],[1],[],[],[1,3],[],[2],
+[5,9,14,15,17,21],[49],[4],[],[],[],[1,6,8,16],
+[13],[4],[2],[3],[],[1],[1],[],[3],[6,11],
+[],[1],[],[1],[],[],[],[2,4,5],[],[],[],[],[],[1],[],[1],[4],[],[1],[6],[],[1],
+[],[],[],[2],[],[1],[1,5],[],[],[6],[],
+[3],[1,3],[],[],[1],[1,4],[2,4],[],[],[],[1],[],[1],[2],[],[],[1],[],[],[],[4],
+[],[1],[],[1],[],[],[],[1],[],[1],[],[],[1],[],[],[],[],[3],[],[2,3],[],[1],[],
+[],[],[],[],[],[],[2],[],[],[],[1],[],[],[],[1],[],[1],[4],[],[],[2,3],[],[],
+[],[],[],[1],[],[1],[],[3],[],[],[],[1],[],[],[],[1],[1,3,6],[],[2],[],[4],[1],
+[],[],[],[],[],[1],[],[1],[],[],[],[1],[],[1],[6],[],[2],[3,6],[],[1],[],
+[1,17,21],[],[1],[],[1],[1],[1],[],[],[],
+[3],[],[],[],[1],[],[],[1],[],[],[2,6,8],
+[],[],[],[],[],[],[1],[1],[],[],[],[1],[],[1],[1,2],[],[],[1],[],[],[],[],[],
+[],[2,4,12],[],[],[],[],[2,4],[],[1],[],
+[],[],[6,7],[],[1],[],[],[1],[],[],[2,5],
+[],[],[],[1],[],[1],[3,5,8],[],[],[1],[],
+[],[4],[],[],[17],[],[4],[],[3,7,8],[],
+[],[],[1],[2],[],[],[],[],[1],[],[],[],[6,9],[],[1],[2],[],[],[1],[],[],[],[],
+[],[1],[],[],[],[],[],[2],[],[1],[],[5],
+[],[1],[],[],[],[1,3],[],[],[],[1],[],[],[],[],[],[4],[],[],[],[1],[],[1],[],
+[],[],[],[],[],[],[],[],[1],[],[1],[4],
+[],[],[],[],[1],[],[],[],[1],[],[],[],[],[],[1],[],[],[],[],[2],[2],[],[1],[],
+[],[],[2,5],[],[1],[1,4],[],[],[1],[],[],[],[],[],[],[],[],[],[],[],[1],[],[],
+[],[],[],[],[],[1],[],[],[],[1],[],[],[2],[3,7,10],[],[],[],[1],[],[],[],[5],
+[],[1],[],[],[],[1],[1],[],[9,12],[],[],
+[],[],[],[],[4,5],[],[1],[],[1],[4,5],[],[2],[3,6],[],[4],[],[],[],[],[],[],[],
+[],[],[7],[],[1],[],[],[],[],[],[1],[],[],[],[],[1],[],[],[],[],[1],[],[2,3],
+[2],[],[],[1],[],[],[5],[],[],[1],[],[1],[],[],[],[],[],[1],[],[],[],[],[],
+[],[4],[],[],[1],[],[],[],[],[],[1],[1],[],[],[],[],[1],[],[1],[],[],[],[],[],
+[1],[],[],[],[],[],[1],[],[2],[],[1],[],[1,2],[],[],[],[],[],[6],[],[],[],[2],
+[],[1],[],[],[],[],[],[],[],[],[],[1],[],[1],[],[],[],[1],[],[],[1,5],[],[],
+[1],[],[],[2],[],[],[6],[],[1],[],[],[],[1,3],[],[],[],[],[2],[4],[],[1],[],[],
+[],[1],[],[1],[],[],[],[1],[],[],[],[],[],[],[],[1],[3],[],[],[],[],[],[],[],
+[],[1],[4],[],[],[],[],[],[],[1],[],[],[],[],[1],[],[],[],[],[1],[],[],[],[],
+[],[],[],[1],[],[2,12],[],[],[],[1],[],[],[],[],[],[1],[1],[],[],[1],[],[],[],
+[],[],[],[],[1],[],[],[],[5],[2],[1],[1],[],[],[1],[],[],[1],[],[],[],[],[1],
+[],[],[],[1],[],[],[],[],[],[2],[1],[],[],[],[],[],[],[1],[],[],[],[2],[],[],
+[],[],[],[1],[],[],[],[],[],[],[],[2],[],[],[],[1],[],[1],[],[],[],[2],[],[],
+[3,6],[1,10,16],[],[1],[],[1],[],[],[],[1],[],[1],[],[],[],[],[],[],[],[],[],
+[2,4,5],[],[3],[],[],[],[],[],[],[],[],[],[],[],[1],[],[],[],[1],[],[1],[4],[],
+[],[1],[],[],[],[],[],[],[1],[],[],[],[],[],[],[1],[],[1],[],[1],[],[1],[],[],
+[],[1],[],[],[4],[],[],[],[],[],[],[],[],[],[],[],[1,3],[],[],[],[],[1],[],
+[1],[],[1],[],[],[],[],[],[],[],[1],[],[],[],[],[],[],[],[],[],[1],[],[],[],
+[],[],[],[],[1],[],[],[],[1],[],[],[2],[4],[],[1],[],[],[],[],[],[1],[],[],[],
+[],[],[5,8],[],[4],[],[],[],[],[],[1],[2],[],[],[1],[],[],[],[],[],[1],[],[2],
+[],[],[],[1],[],[],[],[],[],[1],[],[1],[2],[],[],[],[],[1],[]]);
 
 InstallGlobalFunction(MaximalSubgroupsSymmAlt,function(arg)
 local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
@@ -702,7 +862,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
   od;
 
   # type (f): Almost simple
-  if n>999 then
+  if n>2499 then
     Error("tables missing");
   elif n>50 then
     # all type 2 nonalt groups of right parity

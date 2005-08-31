@@ -42,13 +42,6 @@ Revision.ctbl_gi :=
 ##  2. Character Table Categories
 ##
 
-#############################################################################
-##
-#V  NearlyCharacterTablesFamily
-##
-InstallValue( NearlyCharacterTablesFamily,
-    NewFamily( "NearlyCharacterTablesFamily", IsNearlyCharacterTable ) );
-
 
 #############################################################################
 ##
@@ -667,6 +660,15 @@ InstallMethod( CharacterDegrees,
     "for a group, and zero",
     [ IsGroup, IsZeroCyc ],
     function( G, zero )
+
+    # Force a check whether the group is solvable.
+    if not HasIsSolvableGroup( G ) and IsSolvableGroup( G ) then
+
+      # There is a better method which is now applicable.
+      return CharacterDegrees( G, 0 );
+    fi;
+
+    # For nonsolvable groups, there is just the brute force method.
     return Collected( List( Irr( G ), DegreeOfCharacter ) );
     end );
 
@@ -949,7 +951,7 @@ InstallMethod( LinearCharacters,
     "for a group, and zero",
     [ IsGroup, IsZeroCyc ],
     function( G, zero )
-    local pi, img, tbl, fus;
+    local pi, img;
 
     if IsAbelian( G ) then
       return Irr( G, 0 );
@@ -957,10 +959,10 @@ InstallMethod( LinearCharacters,
 
     pi:= NaturalHomomorphismByNormalSubgroup( G, DerivedSubgroup( G ) );
     img:= ImagesSource( pi );
-    tbl:= CharacterTable( G );
-    fus:= FusionConjugacyClasses( pi, tbl, CharacterTable( img ) );
-    return RestrictedClassFunctions( Irr( img, 0 ), pi );
-#T better utilize `DxLinearCharacters'?
+    SetIsAbelian( img, true );
+    return RestrictedClassFunctions( CharacterTable( img ),
+               Irr( img, 0 ), pi );
+#T related to `DxLinearCharacters'?
     end );
 
 
@@ -1175,6 +1177,17 @@ InstallMethod( IsCyclic,
     "for an ordinary character table",
     [ IsOrdinaryTable ],
     tbl -> Size( tbl ) in OrdersClassRepresentatives( tbl ) );
+
+
+#############################################################################
+##
+#M  IsElementaryAbelian( <tbl> )  . . . . . . for an ordinary character table
+##
+InstallMethod( IsElementaryAbelian,
+    "for an ordinary character table",
+    [ IsOrdinaryTable ],
+    tbl -> Size( tbl ) = 1 or
+           ( IsAbelian( tbl ) and IsPrimeInt( Exponent( tbl ) ) ) );
 
 
 #############################################################################
@@ -1789,6 +1802,44 @@ InstallMethod( ClassPositionsOfMaximalNormalSubgroups,
 
 #############################################################################
 ##
+#M  ClassPositionsOfMinimalNormalSubgroups( <tbl> )
+##
+##  *Note* that the minimal normal subgroups of a group <G> can be computed
+##  easily if the character table of <G> is known.  So if you need the table
+##  anyhow, you should compute it before computing the minimal normal
+##  subgroups of the group.
+##
+InstallMethod( ClassPositionsOfMinimalNormalSubgroups,
+    "for an ordinary character table",
+    [ IsOrdinaryTable ],
+    function( tbl )
+    local normal,    # list of all kernels
+          minimal,   # list of minimal kernels
+          k;         # one kernel
+
+    # Every normal subgroup is an intersection of kernels of characters,
+    # so maximal normal subgroups are kernels of irreducible characters.
+    normal:= Set( ClassPositionsOfNormalSubgroups( tbl ) );
+
+    # Remove non-minimal kernels
+    RemoveSet( normal, [ 1 ] );
+    Sort( normal, function(x,y) return Length(x) < Length(y); end );
+    minimal:= [];
+    for k in normal do
+      if ForAll( minimal, x -> not IsSubsetSet( k, x ) ) then
+
+        # new minimal element found
+        Add( minimal, k );
+
+      fi;
+    od;
+
+    return minimal;
+    end );
+
+
+#############################################################################
+##
 #M  ClassPositionsOfAgemo( <tbl>, <p> )
 ##
 InstallMethod( ClassPositionsOfAgemo,
@@ -1877,20 +1928,21 @@ InstallMethod( ClassPositionsOfDirectProductDecompositions,
 ##
 #M  ClassPositionsOfDerivedSubgroup( <tbl> )
 ##
+##  The derived subgroup is the intersection of the kernels of all linear
+##  characters.
+##
 InstallMethod( ClassPositionsOfDerivedSubgroup,
     "for an ordinary table",
     [ IsOrdinaryTable ],
     function( tbl )
     local der,   # derived subgroup, result
-          chi;   # one irreducible character
+          chi;   # one linear character
 
     der:= [ 1 .. NrConjugacyClasses( tbl ) ];
-    for chi in Irr( tbl ) do
-#T support `Lin' ?
-      if DegreeOfCharacter( chi ) = 1 then
-        IntersectSet( der, ClassPositionsOfKernel( chi ) );
-      fi;
+    for chi in LinearCharacters( tbl ) do
+      IntersectSet( der, ClassPositionsOfKernel( chi ) );
     od;
+    ConvertToRangeRep( der );
     return der;
     end );
 
@@ -1909,6 +1961,11 @@ InstallMethod( ClassPositionsOfElementaryAbelianSeries,
           classes,      # conjugacy class lengths
           next,         # next smaller normal subgroup
           nextsize;     # size of next smaller normal subgroup
+
+    # The trivial group has too few normal subgroups.
+    if Size( tbl ) = 1 then
+      return [ [ 1 ] ];
+    fi;
 
     # Sort normal subgroups according to decreasing number of classes.
     nsg:= ShallowCopy( ClassPositionsOfNormalSubgroups( tbl ) );
@@ -2348,7 +2405,7 @@ InstallMethod( RealClasses,
     [ IsCharacterTable ],
     function( tbl )
     local inv;
-    inv:= PowerMap( tbl, -1 );
+    inv:= InverseClasses( tbl );
     return Filtered( [ 1 .. NrConjugacyClasses( tbl ) ], i -> inv[i] = i );
     end );
 
@@ -3855,7 +3912,9 @@ InstallMethod( BrauerTableOp,
     "for ordinary character table, and positive integer",
     [ IsOrdinaryTable, IsPosInt ],
     function( tbl, p )
-    local modtbls, result;
+    local result, modtbls, id, fusions, pos, source;
+
+    result:= fail;
 
     if IsPSolvableCharacterTable( tbl, p ) then
       return CharacterTableRegular( tbl, p );
@@ -3864,13 +3923,33 @@ InstallMethod( BrauerTableOp,
                       t -> BrauerTable( t, p ) );
       if not fail in modtbls then
         result:= CallFuncList( CharacterTableDirectProduct, modtbls );
-        ResetFilterObj( result, OrdinaryCharacterTable );
+        id:= Identifier( OrdinaryCharacterTable( result ) );
+        ResetFilterObj( result, HasOrdinaryCharacterTable );
         SetOrdinaryCharacterTable( result, tbl );
-        return result;
+        fusions:= ComputedClassFusions( result );
+        pos:= PositionProperty( fusions, x -> x.name = id );
+        fusions[ pos ]:= ShallowCopy( fusions[ pos ] );
+        fusions[ pos ].name:= Identifier( tbl );
+        MakeImmutable( fusions[ pos ] );
+
+        # Adjust the identifier.
+        ResetFilterObj( result, HasIdentifier );
+        SetIdentifier( result,
+            Concatenation( Identifier( tbl ), "mod", String( p ) ) );
+      fi;
+    elif HasSourceOfIsoclinicTable( tbl ) then
+      # Compute the isoclinic table of the Brauer table of the source table,
+      # i.e., use the alternative path in the commutative diagram that is
+      # given by forming the Brauer table and the isoclinic table.
+      source:= SourceOfIsoclinicTable( tbl );
+#T sort w.r.t. class permutation!
+      modtbls:= BrauerTable( source[1], p );
+      if modtbls <> fail then
+        return CharacterTableIsoclinic( modtbls, source[2], source[3], tbl );
       fi;
     fi;
 
-    return fail;
+    return result;
     end );
 
 
@@ -4021,10 +4100,6 @@ end );
 #F  ConvertToLibraryCharacterTableNC( <record> )
 ##
 InstallGlobalFunction( ConvertToLibraryCharacterTableNC, function( record )
-    local names,    # list of component names
-          i;        # loop over `SupportedCharacterTableInfo'
-
-    names:= RecNames( record );
 
     # Make the object.
     if IsBound( record.isGenericTable ) and record.isGenericTable then
@@ -5267,6 +5342,7 @@ InstallMethod( CharacterTableIsoclinic,
         SizesCentralizers          := centralizers,
         SizesConjugacyClasses      := classes,
         OrdersClassRepresentatives := orders,
+        ComputedClassFusions       := [],
         ComputedPowerMaps          := []             );
 
     # classes outside the normal subgroup
@@ -5282,9 +5358,7 @@ InstallMethod( CharacterTableIsoclinic,
         Add( nonfaith, values );
       else
         values:= ShallowCopy( values );
-        for class in outer do
-          values[ class ]:= i * values[ class ];
-        od;
+        values{ outer }:= i * values{ outer };
       fi;
       Add( irreds, values );
     od;
@@ -5298,7 +5372,7 @@ InstallMethod( CharacterTableIsoclinic,
 
       map:= PowerMap( tbl, p );
 
-      # For p mod 4 in $\{ 0, 1 \}$, the map remains unchanged,
+      # For $`p' \bmod 4 = 1$, the map remains unchanged,
       # since $g^p = h$ and $(gi)^p = hi^p = hi$ then.
       if p mod 4 = 2 then
 
@@ -5308,6 +5382,7 @@ InstallMethod( CharacterTableIsoclinic,
         map:= ShallowCopy( map );
         for class in outer do
           images:= Filtered( Difference( nsg, [ map[class] ] ),
+#T does this difference make sense?
               x -> factorfusion[x] = factorfusion[ map[ class ] ] );
           if Length( images ) = 1 then
             map[ class ]:= images[1];
@@ -5324,6 +5399,7 @@ InstallMethod( CharacterTableIsoclinic,
         map:= ShallowCopy( map );
         for class in outer do
           images:= Filtered( Difference( outer, [ map[ class ] ] ),
+#T does this difference make sense?
               x -> factorfusion[x] = factorfusion[ map[ class ] ] );
           if Length( images ) = 1 then
             map[ class ]:= images[1];
@@ -5336,8 +5412,17 @@ InstallMethod( CharacterTableIsoclinic,
 
     od;
 
+    # Transfer those factor fusions that have `center' inside the kernel.
+    for j in ComputedClassFusions( tbl ) do
+      if j.map[ center ] = 1 then
+        Add( isoclinic.ComputedClassFusions, j );
+      fi;
+    od;
+
     # Convert the record into a library table.
     ConvertToLibraryCharacterTableNC( isoclinic );
+    SetSourceOfIsoclinicTable( isoclinic, [ tbl, nsg, center ] );
+#T sorting w.r.t. class permutation!
 
     # Return the result.
     return isoclinic;
@@ -5347,8 +5432,9 @@ InstallMethod( CharacterTableIsoclinic,
 #############################################################################
 ##
 #M  CharacterTableIsoclinic( <modtbl> ) . . . . . . . . .  for a Brauer table
+#M  CharacterTableIsoclinic( <modtbl>, <nsg>, <centre> ) . for a Brauer table
 ##
-##  For the isoclinic table of a Brauer table,
+##  For the isoclinic table of a Brauer table of the structure $2.G.2$,
 ##  we transfer the normal subgroup information to the regular classes,
 ##  and adjust the irreducibles.
 ##
@@ -5356,35 +5442,60 @@ InstallMethod( CharacterTableIsoclinic,
     "for a Brauer table",
     [ IsBrauerTable ],
     function( tbl )
+    local isoclinic, source;
 
-    local isoclinic,
+    # The normal subgroup and the central involution are uniquely determined.
+    isoclinic:= CharacterTableIsoclinic( OrdinaryCharacterTable( tbl ) );
+    source:= SourceOfIsoclinicTable( isoclinic );
+    return CharacterTableIsoclinic( tbl, source[2], source[3] );
+    end );
+
+InstallMethod( CharacterTableIsoclinic,
+    "for a Brauer table, a list of classes, and a class pos.",
+    [ IsBrauerTable, IsList and IsCyclotomicCollection, IsPosInt ],
+    function( tbl, nsg, centre )
+    return CharacterTableIsoclinic( tbl, nsg, centre,
+               CharacterTableIsoclinic( OrdinaryCharacterTable( tbl ),
+                   nsg, centre ) );
+    end );
+
+
+#############################################################################
+##
+#M  CharacterTableIsoclinic( <modtbl>, <nsg>, <centre>, <ordiso> )
+##
+##  In some cases, we have already the ordinary isoclinic table,
+##  and do not want to create it anew.
+##
+InstallOtherMethod( CharacterTableIsoclinic,
+    "for a Brauer table, a list of classes, a class pos., an ord. table",
+    [ IsBrauerTable, IsList and IsCyclotomicCollection, IsPosInt,
+      IsOrdinaryTable ],
+    function( modtbl, nsg, centre, ordiso )
+    local p,
           reg,
           factorfusion,
-          center,
           outer,
           irreducibles,
           i,
           chi,
-          values,
-          class;
+          values;
 
-    isoclinic:= CharacterTableIsoclinic( OrdinaryCharacterTable( tbl ) );
-    reg:= CharacterTableRegular( isoclinic, Characteristic( tbl ) );
-    factorfusion:= GetFusionMap( reg, isoclinic );
-    center:= Position( factorfusion, center );
-    outer:= Filtered( [ 1 .. NrConjugacyClasses( reg ) ],
-                      x -> factorfusion[x] in outer );
+    p:= UnderlyingCharacteristic( modtbl );
+    reg:= CharacterTableRegular( ordiso, p );
+    factorfusion:= GetFusionMap( reg, ordiso );
+    nsg:= List( nsg, i -> Position( factorfusion, i ) );
+    centre:= Position( factorfusion, centre );
+    outer:= Difference( [ 1 .. NrConjugacyClasses( reg ) ], nsg );
 
     # Compute the irreducibles as for the ordinary isoclinic table.
     irreducibles:= [];
     i:= E(4);
-    for chi in Irr( tbl ) do
+    for chi in Irr( modtbl ) do
       values:= ValuesOfClassFunction( chi );
-      if values[ center ] <> values[1] then
+      if p <> 2 and values[ centre ] <> values[1] then
         values:= ShallowCopy( values );
-        for class in outer do
-          values[ class ]:= i * values[ class ];
-        od;
+        values{ outer }:= i * values{ outer };
       fi;
       Add( irreducibles, values );
     od;
@@ -5401,7 +5512,6 @@ InstallMethod( CharacterTableIsoclinic,
 ##
 InstallGlobalFunction( CharacterTableOfNormalSubgroup,
     function( tbl, classes )
-
     local sizesclasses,   # class lengths of the result
           size,           # size of the result
           nccl,           # no. of classes
@@ -5571,12 +5681,12 @@ InstallGlobalFunction( PermutationToSortCharacters,
     if degree and norm then
       for i in [ 1 .. Length( chars ) ] do
         listtosort[i]:= [ ScalarProduct( tbl, chars[i], chars[i] ),
-                          DegreeOfCharacter( chars[i] ),
+                          chars[i][1],
                           galoisfams[i], i ];
       od;
     elif degree then
       for i in [ 1 .. Length( chars ) ] do
-        listtosort[i]:= [ DegreeOfCharacter( chars[i] ),
+        listtosort[i]:= [ chars[i][1],
                           galoisfams[i], i ];
       od;
     elif norm then
@@ -5877,9 +5987,8 @@ InstallMethod( CharacterTableWithSortedClasses,
 #F  SortedCharacterTable( <tbl>, <facttbl>, <kernel> )
 ##
 InstallGlobalFunction( SortedCharacterTable, function( arg )
-
     local i, j, tbl, kernels, list, columns, rows, chi, F, facttbl, kernel,
-          trans, ker, fus, new;
+          fus, nrfus, trans, ker, new;
 
     # Check the arguments.
     if not ( Length( arg ) in [ 2, 3 ] and IsOrdinaryTable( arg[1] ) and
@@ -5952,6 +6061,8 @@ InstallGlobalFunction( SortedCharacterTable, function( arg )
       # Sort w.r.t. the table of a factor group.
       facttbl:= arg[2];
       kernel:= arg[3];
+      fus:= ComputedClassFusions( tbl );
+      nrfus:= Length( fus );
       F:= CharacterTableFactorGroup( tbl, kernel );
       trans:= TransformingPermutationsCharacterTables( F, facttbl );
       if trans = fail then
@@ -5986,10 +6097,10 @@ InstallGlobalFunction( SortedCharacterTable, function( arg )
         rows:= ();
       fi;
 
-      # Delete the fusion to `F' on `tbl'.
-      fus:= ComputedClassFusions( tbl );
-      Unbind( fus[ Length( fus ) ] );
-#T better ?
+      if nrfus < Length( fus ) then
+        # Delete the fusion to `F' on `tbl'.
+        Unbind( fus[ Length( fus ) ] );
+      fi;
 
     fi;
 

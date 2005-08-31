@@ -388,7 +388,10 @@ InstallGlobalFunction( "TestPackageAvailability", function( arg )
     else
       intest:= arg[3];
     fi;
-    equal:= 0 < Length( version ) and version[1] = '=';
+    equal:= "";
+    if 0 < Length( version ) and version[1] = '=' then
+      equal:= "equal";
+    fi;
 
     # Initialize if this was not yet done.
     InitializePackagesInfoRecords( false );

@@ -377,12 +377,7 @@ end );
 ##      $(S/K,zK,q)$.
 ##  \endlist
 ##
-InstallMethod( CharacterDegrees,
-    "for a solvable group and an integer (Conlon's algorithm)",
-    [ IsGroup and IsSolvableGroup, IsInt ],
-    RankFilter(IsZeroCyc), # There is a method for groups for
-                           # the integer zero which is worse
-    function( G, q )
+BindGlobal( "CharacterDegreesConlon", function( G, q )
     local r,      # list of degrees, result
           N,      # elementary abelian normal subgroup of `G'
           p,      # prime divisor of the order of `N'
@@ -395,7 +390,7 @@ InstallMethod( CharacterDegrees,
           orbs,   # orbits of the action
           orb,    # loop over `orbs'
           rep,    # canonical representative of `orb'
-          stab,   # stabilkizer of `rep'
+          stab,   # stabilizer of `rep'
           h,      # nat. hom. by the kernel of a character
           img,    # image of `h'
           c,
@@ -485,6 +480,20 @@ InstallMethod( CharacterDegrees,
     Info( InfoCharacterTable, 1,
           "CharacterDegrees: returns ", r );
     return r;
+    end );
+
+InstallMethod( CharacterDegrees,
+    "for a solvable group and an integer (Conlon's algorithm)",
+    [ IsGroup and IsSolvableGroup, IsInt ],
+    RankFilter(IsZeroCyc), # There is a method for groups for
+                           # the integer zero which is worse
+    function( G, q )
+    if HasIrr( G ) then
+      # Use the known irreducibles.
+      TryNextMethod();
+    else
+      return CharacterDegreesConlon( G, q );
+    fi;
     end );
 
 

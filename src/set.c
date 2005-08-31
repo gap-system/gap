@@ -769,6 +769,69 @@ Obj FuncUNITE_SET (
 **  all elements from <set1> that are not  in  <set2>.  <set2> may be a  list
 **  that is not a proper set, in which case 'Set' is silently applied to it.
 */
+
+static UInt InterSetInner1( Obj set1, Obj set2, UInt len1, UInt len2) 
+{
+  UInt lenr, i1,i2;
+  Obj e1,e2;
+  lenr = 0;
+  i1 = 1;
+  i2 = 1;
+
+  /* now merge the two sets into the intersection                        */
+  while ( i1 <= len1 && i2 <= len2 ) {
+    e1 = ELM_PLIST( set1, i1 );
+    e2 = ELM_PLIST( set2, i2 );
+    if ( EQ( e1, e2 ) ) {
+      lenr++;
+      SET_ELM_PLIST( set1, lenr, e1 );
+      i1++;  i2++;
+    }
+    else if ( LT( e1, e2 ) ) {
+      i1++;
+    }
+    else {
+      i2++;
+    }
+  }
+  return lenr;
+}
+
+/* set1 should be the smaller set. setr should be the one
+   in which to put the results; */
+static UInt InterSetInner2( Obj set1, Obj set2, Obj setr, UInt len1, UInt len2) 
+{
+  UInt i1,i2=1,bottom,top,middle,lenr=0,found;
+  Obj e1,e2;
+  for( i1 = 1; i1 <= len1; i1++)
+    {
+      e1 = ELM_PLIST( set1, i1 );
+      bottom = i2;
+      top = len2;
+      found = 0;
+      while (bottom <= top)
+	{
+	  middle = (bottom + top)/2;
+	  e2 = ELM_PLIST(set2,middle);
+	  if (LT(e1,e2))
+	    top = middle-1;
+	  else if (EQ(e1,e2)) {
+	    lenr++;
+	    SET_ELM_PLIST(setr,lenr,e1);
+	    i2 = middle+1;
+	    found = 1;
+	    break;
+	  }
+	  else
+	    bottom = middle+1;
+	}
+      if (!found)
+	i2 = bottom;
+    }
+  return lenr;
+}
+
+
 Obj FuncINTER_SET (
     Obj                 self,
     Obj                 set1,
@@ -777,10 +840,6 @@ Obj FuncINTER_SET (
     UInt                len1;           /* length  of left  set            */
     UInt                len2;           /* length  of right set            */
     UInt                lenr;           /* length  of result set           */
-    UInt                i1;             /* index into left  set            */
-    UInt                i2;             /* index into right set            */
-    Obj                 e1;             /* element of left  set            */
-    Obj                 e2;             /* element of right set            */
 
     /* check the arguments                                                 */
     while ( ! IsSet(set1) || ! IS_MUTABLE_OBJ(set1) ) {
@@ -800,26 +859,36 @@ Obj FuncINTER_SET (
     /* get the logical lengths and the pointer                             */
     len1 = LEN_PLIST( set1 );
     len2 = LEN_PLIST( set2 );
-    lenr = 0;
-    i1 = 1;
-    i2 = 1;
 
-    /* now merge the two sets into the intersection                        */
-    while ( i1 <= len1 && i2 <= len2 ) {
-        e1 = ELM_PLIST( set1, i1 );
-        e2 = ELM_PLIST( set2, i2 );
-        if ( EQ( e1, e2 ) ) {
-            lenr++;
-            SET_ELM_PLIST( set1, lenr, e1 );
-            i1++;  i2++;
-        }
-        else if ( LT( e1, e2 ) ) {
-            i1++;
-        }
-        else {
-            i2++;
-        }
-    }
+    /* decide how to do the calculation and do it */
+    if (len1 < len2) 
+      {
+	UInt x = len2;
+	UInt ll = 0;
+	while (x > 0)
+	  {
+	    ll++;
+	    x >>= 1;
+	  }
+	if (len1*ll < len2)
+	  lenr = InterSetInner2(set1,set2,set1,len1,len2);
+	else
+	  lenr = InterSetInner1(set1,set2,len1,len2);
+      }
+    else
+      {
+	UInt x = len1;
+	UInt ll = 0;
+	while (x > 0)
+	  {
+	    ll++;
+	    x >>= 1;
+	  }
+	if (len2*ll < len1)
+	  lenr = InterSetInner2(set2,set1,set1,len2,len1);
+	else
+	  lenr = InterSetInner1(set1,set2,len1,len2);
+      }
 
     /* resize the result or clear the rest of the bag                      */
     SET_LEN_PLIST( set1, lenr );
@@ -855,6 +924,7 @@ Obj FuncINTER_SET (
 }
 
 
+
 /****************************************************************************
 **
 *F  FuncSUBTR_SET( <self>, <set1>, <set2> ) . . subtract one set from another
@@ -869,6 +939,76 @@ Obj FuncINTER_SET (
 **  all elements from <set1> that are in <set2>.   <set2> may  be a list that
 **  is not a proper set, in which case 'Set' is silently applied to it.
 */
+
+static UInt SubtrSetInner1( Obj set1, Obj set2, UInt len1, UInt len2) 
+{
+  UInt lenr, i1,i2;
+  Obj e1,e2;
+  lenr = 0;
+  i1 = 1;
+  i2 = 1;
+
+  /* now run through the two sets to find the difference  */
+  while ( i1 <= len1 && i2 <= len2 ) {
+    e1 = ELM_PLIST( set1, i1 );
+    e2 = ELM_PLIST( set2, i2 );
+    if ( EQ( e1, e2 ) ) {
+      i1++;  i2++;
+    }
+    else if ( LT( e1, e2 ) ) {
+      lenr++;
+      SET_ELM_PLIST( set1, lenr, e1 );
+      i1++;
+    }
+    else {
+      i2++;
+    }
+  }
+  while (i1 <= len1)
+    {
+      e1 = ELM_PLIST( set1, i1 );
+      lenr++;
+      SET_ELM_PLIST( set1, lenr, e1 );
+      i1++;
+    }
+  return lenr;
+}
+
+/* set1 should be smaller. */
+static UInt SubtrSetInner2( Obj set1, Obj set2, UInt len1, UInt len2) 
+{
+  UInt i1,i2=1,bottom,top,middle,lenr=0, found;
+  Obj e1,e2;
+  for( i1 = 1; i1 <= len1; i1++)
+    {
+      e1 = ELM_PLIST( set1, i1 );
+      bottom = i2;
+      top = len2;
+      found = 0;
+      while (bottom <= top)
+	{
+	  middle = (bottom + top)/2;
+	  e2 = ELM_PLIST(set2,middle);
+	  if (LT(e1,e2))
+	    top = middle-1;
+	  else if (EQ(e1,e2)) {
+	    found = 1;
+	    i2 = middle+1;
+	    break;
+	  }
+	  else
+	    bottom = middle+1;
+	}
+      if (!found)
+	{
+	  lenr++;
+	  SET_ELM_PLIST(set1,lenr,e1);
+	  i2 = bottom;
+	}
+    }
+  return lenr;
+}
+
 Obj FuncSUBTR_SET (
     Obj                 self,
     Obj                 set1,
@@ -877,10 +1017,8 @@ Obj FuncSUBTR_SET (
     UInt                len1;           /* length  of left  set            */
     UInt                len2;           /* length  of right set            */
     UInt                lenr;           /* length  of result set           */
-    UInt                i1;             /* index into left  set            */
-    UInt                i2;             /* index into right set            */
-    Obj                 e1;             /* element of left  set            */
-    Obj                 e2;             /* element of right set            */
+    UInt                x;            
+    UInt                ll;           
 
     /* check the arguments                                                 */
     while ( ! IsSet(set1) || ! IS_MUTABLE_OBJ(set1) ) {
@@ -900,32 +1038,18 @@ Obj FuncSUBTR_SET (
     /* get the logical lengths and the pointer                             */
     len1 = LEN_PLIST( set1 );
     len2 = LEN_PLIST( set2 );
-    lenr = 0;
-    i1 = 1;
-    i2 = 1;
-
-    /* now merge the two sets into the difference                          */
-    while ( i1 <= len1 && i2 <= len2 ) {
-        e1 = ELM_PLIST( set1, i1 );
-        e2 = ELM_PLIST( set2, i2 );
-        if ( EQ( e1, e2 ) ) {
-            i1++;  i2++;
-        }
-        else if ( LT( e1, e2 ) ) {
-            lenr++;
-            SET_ELM_PLIST( set1, lenr, e1 );
-            i1++;
-        }
-        else {
-            i2++;
-        }
-    }
-    while ( i1 <= len1 ) {
-        e1 = ELM_PLIST( set1, i1 );
-        lenr++;
-        SET_ELM_PLIST( set1, lenr, e1 );
-        i1++;
-    }
+    /* decide how to do the calculation and do it */
+    x = len2;
+    ll = 0;
+    while (x > 0)
+      {
+	ll++;
+	x >>= 1;
+      }
+    if (len1*ll < len2)
+      lenr = SubtrSetInner2(set1,set2,len1,len2);
+    else
+      lenr = SubtrSetInner1(set1,set2,len1,len2);
 
     /* resize the result or clear the rest of the bag                      */
     SET_LEN_PLIST( set1, lenr );

@@ -3334,7 +3334,8 @@ Obj FuncAPPEND_VEC8BIT (
 		byter = *++ptrr;
 	      }
 	  }
-	*ptrl = bytel;
+	/* Write last byte only if not already written: */
+	if (posl % elts != 0) *ptrl = bytel;
       }
     SET_LEN_VEC8BIT(vecl, lenl + lenr);
     return (Obj) 0;

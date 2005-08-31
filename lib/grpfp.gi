@@ -1479,6 +1479,13 @@ local T,i;
     return i;
 end );
 
+
+InstallMethod(IndexInWholeGroup,"subgroup fp by quotient",true,
+  [IsSubgroupFpGroup and IsSubgroupOfWholeGroupByQuotientRep],0,
+function(U)
+  return Index(U!.quot,U!.sub);
+end);
+
 InstallMethod( IndexInWholeGroup, "for full fp group",
     [ IsSubgroupFpGroup and IsWholeFamily ], a->1);
 

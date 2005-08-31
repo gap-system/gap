@@ -177,7 +177,7 @@ DeclareAttribute( "TransitiveIdentification", IsPermGroup );
 ##  the library of primitive permutation groups (see~"Primitive Permutation
 ##  Groups"), this attribute returns the index position. That is <G> is
 ##  conjugate to
-##  `PrimitiveGroup(NrMovedPoints(<G>),PrimitiveIdentification(<G>)'.
+##  `PrimitiveGroup(NrMovedPoints(<G>),PrimitiveIdentification(<G>))'.
 ##
 ##  Methods only exist if the primitive groups library is installed.
 ##

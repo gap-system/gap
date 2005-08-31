@@ -2482,6 +2482,10 @@ InstallMethod( SylowSubgroupOp,
     od;
 
     # return the Sylow <p> subgroup
+    if Size(S) > 1 then
+        SetIsPGroup( S, true );
+        SetPrimePGroup( S, p );
+    fi;
     return S;
     end );
 
@@ -2494,7 +2498,7 @@ InstallMethod( SylowSubgroupOp,
     "method for a nilpotent group, and a prime",
     [ IsGroup and IsNilpotentGroup, IsPosInt ],
     function( G, p )
-    local gens, g, ord;
+    local gens, g, ord, S;
 
     gens:= [];
     for g in GeneratorsOfGroup( G ) do
@@ -2507,7 +2511,12 @@ InstallMethod( SylowSubgroupOp,
       fi;
     od;
 
-    return SubgroupNC( G, gens );
+    S := SubgroupNC( G, gens );
+    if Size(S) > 1 then
+        SetIsPGroup( S, true );
+        SetPrimePGroup( S, p );
+    fi;
+    return S;
     end );
 
 

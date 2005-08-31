@@ -2423,6 +2423,20 @@ InstallGlobalFunction( IsomorphismPermGroups, function( arg )
       return fail;
     fi;
 
+    # The test uses special condition if primitive, thus rule out different
+    # transitivity/primitivity first.
+    if not IsIdenticalObj(E,F) then
+      if IsTransitive(E,Omega) then
+	if not IsTransitive(F,Omega) then
+	  return fail;
+	elif IsPrimitive(E,Omega) then
+	  if not IsPrimitive(F,Omega) then
+	    return fail;
+	  fi;
+	fi;
+      fi;
+    fi;
+
     Pr := gen -> ForAll( GeneratorsOfGroup( E ), g -> g ^ gen in F );
     if Length( arg ) > 3  then
         L := arg[ Length( arg ) - 1 ];

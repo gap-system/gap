@@ -1583,6 +1583,81 @@ InstallMethod( Add,
     [ IsList and IsMutable, IsObject ],
     ADD_LIST_DEFAULT );
 
+InstallMethod( Add, "three arguments fast version",
+        [ IsPlistRep and IsList and IsMutable, IsObject, IsPosInt],
+        function(l, o, p)
+    local len;
+    len := Length(l);
+    if p <= len then
+        COPY_LIST_ENTRIES(l,p,1,l,p+1,1,len-p+1);
+    fi;
+    l[p] := o;
+    return;
+end);
+
+InstallMethod( Add, "three arguments general version",
+        [IsList and IsMutable, IsObject, IsPosInt],
+        function(l, o, p)
+    local len;
+    len := Length(l);
+    if p <= len then
+        l{[len+1,len..p+1]} := l{[len,len-1..p]};
+    fi;
+    l[p] := o;
+    return;
+end);
+          
+#############################################################################
+##
+#M  Remove(<list>[,<pos>])
+##
+
+InstallMethod(Remove, "one argument", [IsList and IsMutable],
+        function(l)
+    local x,len;
+    len := Length(l);
+    x := l[len];
+    Unbind(l[len]);
+    return x;
+end);
+
+InstallMethod(Remove, "two arguments, fast", [IsList and IsPlistRep and IsMutable, IsPosInt],
+        function(l,p)
+    local ret,x,len;
+    len := Length(l);
+    ret := IsBound(l[p]);
+    if ret then
+        x := l[p];
+    fi;
+    if p <= len then
+        COPY_LIST_ENTRIES(l,p+1,1,l,p,1,len-p);
+        Unbind(l[len]);
+    fi;
+    if ret then
+        return x;
+    fi;
+end);
+
+InstallMethod(Remove, "two arguments, general", [IsList and IsMutable, IsPosInt],
+        function(l,p)
+    local ret,x,len;
+    len := Length(l);
+    len := Length(l);
+    ret := IsBound(l[p]);
+    if ret then
+        x := l[p];
+    fi;
+    if p <= len then
+        l{[p..len-1]} := l{[p+1..len]};
+        Unbind(l[len]);
+    fi;
+    if ret then
+        return x;
+    fi;
+end);
+
+
+
 
 #############################################################################
 ##
@@ -3279,8 +3354,64 @@ InstallMethod( PositionNot, "default method ", [IsList, IsObject, IsInt ],
 
 InstallOtherMethod( PositionNot, "default value of third argument ",
         [IsList, IsObject],
-        function(l,x) return PositionNot(l,x,0); end);
+        function(l,x) return PositionNot(l,x,0); 
+    end);
+        
+#############################################################################
+##
+#M  PositionFirstComponent( <list>, <obj>  ) . . . . . . various
+##
+##  kernel method will TRY_NEXT if any of the sublists are not 
+##  plain lists. 
+##    
+##  Note that we use PositionSorted rather than Position semantics
+##    
+    
+InstallMethod( PositionFirstComponent,"for dense plain list", true,
+    [ IsDenseList and IsPlistRep, IsObject ], 0,
+    POSITION_FIRST_COMPONENT_SORTED);
 
+
+InstallMethod( PositionFirstComponent,"for dense list", true,
+    [ IsDenseList, IsObject ], 0,
+function ( list, obj )
+local i;
+  i:=1;
+  while i<=Length(list) do
+    if list[i][1]=obj then
+      return i;
+    fi;
+    i:=i+1;
+  od;
+  return i;
+end);
+
+InstallMethod( PositionFirstComponent,"for sorted list", true,
+    [ IsSSortedList, IsObject ], 0,
+function ( list, obj )
+local lo,up,s;
+  # simple binary search. The entry is in the range [lo..up]
+  lo:=1;
+  up:=Length(list);
+  while lo<up do
+      s := QuoInt(up+lo,2);
+      #s:=Int((up+lo)/2);# middle entry
+    if list[s][1]<obj then
+      lo:=s+1; # it's not in [lo..s], so take the upper part.
+    else
+      up:=s; # So obj<=list[s][1], so the new range is [1..s].
+    fi;
+  od;
+  # now lo=up
+  return lo;
+#  if list[lo][1]=obj then
+#    return lo;
+#  else
+#    return fail;
+#  fi;
+end );
+        
+        
 #############################################################################
 ##
 #M  CanEasilyCompareElements( <obj> )

@@ -298,7 +298,8 @@ MakeReadOnlyGlobal("ReplacedString"); # function defined in `init.g'.
 ##  (see~"InputTextString")  and  `ReadAsFunction'   (see~"ReadAsFunction!for
 ##  streams") together; see "Operations for Input Streams" for an example.
 ##
-DeclareGlobalFunction( "EvalString" );
+
+# DeclareGlobalFunction("EvalString");
 
 #############################################################################
 ##

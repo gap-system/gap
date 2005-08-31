@@ -1390,11 +1390,11 @@ Obj             InvFFE (
     /* get the operand                                                     */
     v = VAL_FFE( op );
     if ( v == 0 ) {
-        op = ErrorReturnObj(
+      /*        op = ErrorReturnObj(
             "FFE operations: <divisor> must not be zero",
             0L, 0L,
-            "you can replace <divisor> via 'return <divisor>;'" );
-        return INV( op );
+            "you can replace <divisor> via 'return <divisor>;'" ); */
+        return Fail;
     }
 
     /* compute and return the result                                       */

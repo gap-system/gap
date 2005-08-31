@@ -19,7 +19,7 @@ Revision.dict_gi :=
 ## List and Sort dictionaries
 ##
 
-InstallMethod( PositionFirstComponent,"for dense list", true,
+InstallMethod( PositionFirstComponentDict,"for dense list", true,
     [ IsDenseList, IsObject ], 0,
 function ( list, obj )
 local i;
@@ -33,7 +33,7 @@ local i;
   return fail;
 end);
 
-InstallMethod( PositionFirstComponent,"for sorted list", true,
+InstallMethod( PositionFirstComponentDict,"for sorted list", true,
     [ IsSSortedList, IsObject ], 0,
 function ( list, obj )
 local lo,up,s;
@@ -130,7 +130,7 @@ InstallMethod(KnowsDictionary,"for list lookup dictionaries",true,
   [IsListLookupDictionary,IsObject],0,
 function(d,x)
 local p;
-  p:=PositionFirstComponent(d!.entries,x);
+  p:=PositionFirstComponentDict(d!.entries,x);
   return p<>fail;
 end);
 
@@ -149,7 +149,7 @@ InstallMethod(LookupDictionary,"for list dictionaries",true,
   [IsListLookupDictionary,IsObject],0,
 function(d,x)
 local p;
-  p:=PositionFirstComponent(d!.entries,x);
+  p:=PositionFirstComponentDict(d!.entries,x);
   if p=fail then
     return p;
   else

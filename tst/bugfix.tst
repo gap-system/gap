@@ -423,7 +423,7 @@ false
 gap> AbelianInvariantsMultiplier(SL(3,2));            
 [ 2 ]
 gap> AllPrimitiveGroups(Size,60);
-#W  AllPrimitiveGroups: Degree restricted to [ 1 .. 999 ]
+#W  AllPrimitiveGroups: Degree restricted to [ 1 .. 2499 ]
 [ A(5), PSL(2,5), A(5) ]
 gap> ix18:=X(GF(5),1);;f:=ix18^5-1;;
 gap> Discriminant(f);
@@ -691,7 +691,8 @@ gap> NextPrimeInt(23482648263482364926498249);
 
 # 2005/05/09 (Colva, FL (for 4R4))
 gap> L:=AllPrimitiveGroups(NrMovedPoints,26,Size,[1..2^28-1]);
-[ PSL(2,25), PGL(2,25), PZL(2,25), PSL(2,25).2, PYL(2,25) ]
+[ PSL(2, 25), PGL(2, 25), PSigmaL(2, 25), PSL(2, 25).2, PGammaL(2, 25) ]
+
 # For new features:
 
 
@@ -782,7 +783,322 @@ true
 gap> IsBound( HasMultiplicationTable );
 true
 
-gap> STOP_TEST( "bugfix.tst", 5416900000 );
+
+#############################################################################
+##
+##  for changes 4.4.5 -> 4.4.6  (extracted from corresponding dev/Update)
+
+# For fixes:
+
+
+# 2005/05/17 (AH)
+gap> IsConjugate(TransitiveGroup(9,19),Group([ (2,8,9,3)(4,6,7,5),
+> (2,9)(3,8)(4,7)(5 ,6), (1,2,9)(3,4,5)(6,7,8), (1,4,7)(2,5,8)(3,6,9) ]),
+> Group([ (3,7)(4,8)(5,6), (2,9)(3,8)(4,7)(5,6),(1,7,4)(2,8,5)(3,9,6),
+> (1,6,5)(2,7,3)(4,9,8) ]));;
+
+
+# 2005/05/18 (TB)
+gap> t:= Runtime();;
+gap> CayleyGraphSemigroup( Monoid( Transformation([2,3,4,5,6,1,7]),
+>      Transformation([6,5,4,3,2,1,7]), Transformation([1,2,3,4,6,7,7]) ) );;
+gap> if Runtime() - t > 5000 then 
+>      Print( "#E  efficiency problem with enumerators of semigroups!\n" );
+> fi;
+
+
+# 2005/06/06 (AH)
+gap> Irr(SmallGroup(516,11));;
+
+
+# 2005/06/13 (AH)
+gap> IsSimple(AlternatingGroup(3));
+true
+
+
+# 2005/06/17 (SL)
+gap> l := [1,2,3,4];
+[ 1, 2, 3, 4 ]
+gap> COPY_LIST_ENTRIES(l,2,1,l,3,1,3);
+gap> l;
+[ 1, 2, 2, 3, 4 ]
+
+
+# 2005/06/23 (AH)
+gap> LoadPackage("Crisp");;
+gap> h:=Source(EpimorphismSchurCover(SmallGroup(64,150)));;
+gap> NormalSubgroups( Centre( h ) );;
+
+
+# 2005/07/09 (AH)
+gap> CompositionSeries(PerfectGroup(IsPermGroup,262440,1));;
+
+
+# 2005/07/13 (JS)
+gap> PerfectGroup(7800,1);; # load perf2.grp
+gap> PerfectGroup(7680,1);; # should load perf1.grp, gives error in 4.4.5
+
+
+# 2005/07/13 (JS)
+gap> NrPerfectLibraryGroups(1);
+0
+
+
+# 2005/07/18 (FL)
+gap> TypeObj(IMPLICATIONS);;
+
+
+# 2005/07/20 (TB)
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [ 1/2, 1, 2/3, 2 ] );
+gap> A:= AlgebraByStructureConstants( Rationals, T, "A." );;
+gap> GeneratorsOfAlgebra( A );
+[ A.1, A.2 ]
+
+
+# 2005/07/20 (TB)
+gap> F:= FreeAssociativeAlgebra( Rationals, 2 );;
+gap> IsAssociativeElement( F.1 );
+true
+gap> F:= FreeAlgebra( Rationals, 2 );;
+gap> IsAssociativeElement( F.1 );
+false
+
+
+# 2005/07/21 (JS)
+gap> G:=PerfectGroup(IsPermGroup,734832,1);;
+gap> H:=PerfectGroup(IsPermGroup,734832,2);;
+gap> K:=PerfectGroup(IsPermGroup,734832,3);;
+gap> Assert(0,H<>K); # Fails in 4.4.5
+gap> Assert(0,Size(G)=734832 and IsPerfectGroup(G)); # Sanity check
+gap> Assert(0,Size(H)=734832 and IsPerfectGroup(H)); # Sanity check
+gap> Assert(0,Size(K)=734832 and IsPerfectGroup(K)); # Sanity check
+gap> Assert(0,Size(Complementclasses(G,SylowSubgroup(FittingSubgroup(G),3)))=1); # Iso check
+gap> Assert(0,Size(Complementclasses(H,SylowSubgroup(FittingSubgroup(H),3)))=3); # Iso check
+gap> Assert(0,Size(Complementclasses(K,SylowSubgroup(FittingSubgroup(K),3)))=0); # Iso check
+
+
+# 2005/08/10 (TB)
+gap> ApplicableMethod( \in, [ 1, Rationals ] );   
+function( x, Rationals ) ... end
+
+
+# 2005/08/11 (JS)
+gap> List([1,2,3],k->IdGroup(SylowSubgroup(PerfectGroup(IsPermGroup,864000,k),2)));
+[ [ 256, 55700 ], [ 256, 55970 ], [ 256, 56028 ] ]
+
+
+# 2005/08/11 (TB)
+# gap> fam:= NewFamily( "fam" );;
+# gap> DeclareGlobalVariable( "TestFam" );
+# gap> InstallValue( TestFam, CollectionsFamily( fam ) );
+# #I  please use `BindGlobal' for the family object CollectionsFamily(...), not \
+# `InstallValue'
+# gap> IsIdenticalObj( TestFam, CollectionsFamily( fam ) );
+# false
+# gap> MakeReadWriteGlobal( "TestFam" );  UnbindGlobal( "TestFam" );
+
+
+# 2005/08/15 (AH)
+gap> Centre( MagmaByMultiplicationTable( [ [ 2, 2 ], [ 2, 1 ] ] ) );
+[  ]
+
+
+# 2005/08/17 (Max)
+# Test code is not possible to provide because the error condition
+# cannot be tested in a platform independent way.
+
+
+# 2005/08/19 (JS)
+gap> PermutationCycle((1,2,3,4,5,6)^2,[1..6],1); # returns fail in 4.4.5
+(1,3,5)
+
+
+# 2005/08/19 (JS)
+gap> f:=function() Assert(0,false); end;; g:=function() f(); end;;
+gap> ##  The following should just trigger a normal error, but in 4.4.5 
+gap> ##  it will send a few hundred lines before crashing:
+gap> # g(); 
+
+
+# 2005/08/19 (JS)
+gap> g:= SmallGroup( 48, 30 );;
+gap> AbelianInvariantsMultiplier( g ); # returned [ 2, 2 ] in 4.4.5
+[ 2 ]
+
+
+# 2005/08/19 (SL)
+gap> Inverse(0*Z(3));
+fail
+
+
+# 2005/08/22 (JS+AH)
+gap> ##  The mailing lists contain more specific test code that is longer.
+gap> ##  The following should never terminate, but does in 4.4.5
+gap> # repeat G:=PerfectGroup(IsPermGroup,79200,3); P:=SylowSubgroup(G,11);
+gap> # N:=Normalizer(G,P); Q:=N/P; until Size(DerivedSubgroup(Q)) <> 120;
+
+
+# 2005/08/23 (TB)
+gap> g:= SymmetricGroup( 4 );; IsSolvable( g );; Irr( g );;
+gap> meth:= ApplicableMethod( CharacterDegrees, [ g, 0 ] );;
+gap> meth( g, 0 ); 
+"TRY_NEXT_METHOD"
+
+
+# 2005/08/23 (TB)
+gap> RereadLib( "debug.g" );
+gap> Debug( Size );
+Usage: Debug( <func>[, <name>] );
+       where <func> is a function but not an operation,
+       and   <name> is a string.
+
+
+# 2005/08/23 (FL)
+gap> a := 2^(8*GAPInfo.BytesPerVariable-4)-1;;
+gap> Unbind( x );
+gap> x := [-a..a];;
+Range: the length of a range must be less than 2^28
+gap> IsBound(x);
+false
+
+
+# 2005/08/23 (TB)
+gap> tbl:= CharacterTable( ElementaryAbelianGroup( 4 ) );;
+gap> IsElementaryAbelian( tbl );                         
+true
+gap> ClassPositionsOfMinimalNormalSubgroups( tbl );
+[ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ] ]
+gap> if LoadPackage ("ctbllib") <> fail then
+>      tbl:= CharacterTableIsoclinic( CharacterTable( "2.A5.2" ) );
+>      if tbl mod 3 = fail then
+>        Error( CharacterTable( "Isoclinic(2.A5.2)" ), " mod 3" );
+>      fi;
+>      SourceOfIsoclinicTable( tbl );
+>    fi;
+gap> tbl:= CharacterTable( Group( () ) );;
+gap> ClassPositionsOfElementaryAbelianSeries( tbl );;
+
+
+# 2005/08/25 (JS)
+gap> G := Group((1,2));; PrimePGroup(G);
+2
+gap> PrimePGroup(Subgroup(G,[])); # returns 2 in 4.4.5
+fail
+
+
+# 2005/08/25 (JS)
+gap> HasIsPGroup( SylowSubgroup( SymmetricGroup( 5 ), 5 ) ); # false in 4.4.5
+true
+
+
+# 2005/08/26 (Max)
+gap> IsOperation(MutableCopyMat);
+true
+
+
+# 2005/08/29 (TB)
+gap> LoadPackage( "ctbllib", "=0.0" );
+fail
+
+
+# For new features:
+
+
+# 2005/06/08 (SL)
+gap> gamma := [[2,5],[3],[4,5],[1],[]];
+[ [ 2, 5 ], [ 3 ], [ 4, 5 ], [ 1 ], [  ] ]
+gap> STRONGLY_CONNECTED_COMPONENTS_DIGRAPH(gamma);
+[ [ 5 ], [ 1, 2, 3, 4 ] ]
+
+
+# 2005/07/18 (FL)
+# takes too long in repeatedly running  tests
+# IsProbablyPrimeInt(2^9689-1);
+
+
+# 2005/07/20 (SK)
+gap> Float(355/113);
+3.14159
+gap> Rat(last);
+355/113
+gap> 1/4*last2;
+0.785398
+
+
+# 2005/07/20 (SK)
+gap> PadicValuation(288/17,2);
+5
+
+
+# 2005/07/20 (TB)
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [ 1/2, 1, 2/3, 2 ] );
+gap> A:= AlgebraByStructureConstants( Rationals, T );;  A.1;
+v.1
+
+
+# 2005/07/21 (FL)
+gap> IsCheapConwayPolynomial(5, 55);
+true
+gap> IsCheapConwayPolynomial(2, 108);
+true
+
+
+# 2005/07/22 (SK)
+gap> EpimorphismFromFreeGroup(SymmetricGroup(4));
+[ x1, x2 ] -> [ (1,2,3,4), (1,2) ]
+
+
+# 2005/07/22 (SK)
+gap> ForAll([Lambda,Phi,Sigma,Tau],IsOperation);
+true
+
+
+# 2005/08/08 (CMRD)
+gap> AllPrimitiveGroups( Size, 60 );;
+#W  AllPrimitiveGroups: Degree restricted to [ 1 .. 2499 ]
+
+
+# 2005/08/11 (TB)
+gap> DeclareGlobalVariable( "TestVariable" );
+gap> InstallFlushableValue( TestVariable, rec() );
+gap> MakeReadWriteGlobal( "TestVariable" );  UnbindGlobal( "TestVariable" );
+
+
+# 2005/08/11 (TB)
+gap> DeclareOperation( "TestOperation", [ IsGroup, IsGroup ] );
+gap> InstallMethod( TestOperation, [ "IsGroup and IsAbelian", "IsGroup" ],
+>        function( G, H ) return true; end );
+gap> MakeReadWriteGlobal( "TestOperation" );  UnbindGlobal( "TestOperation" );
+
+
+# 2005/08/15 (SK)
+gap> List([0..5],i->PartialFactorization(7^64-1,i));
+[ [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17,
+      1868505648951954197516197706132003401892793036353 ],
+  [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353,
+      5293217135841230021292344776577913319809612001 ],
+  [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353, 134818753, 47072139617,
+      531968664833, 1567903802863297 ],
+  [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353, 1201, 169553, 7699649,
+      134818753, 47072139617, 531968664833 ],
+  [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353, 1201, 169553, 7699649,
+      134818753, 47072139617, 531968664833 ],
+  [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 17, 353, 1201, 169553, 7699649,
+      134818753, 47072139617, 531968664833 ] ]
+
+
+# 2005/08/24 (SL, FL)
+gap> l:=[1,2];;
+gap> Remove(l,1); l;
+1
+[ 2 ]
+gap> Add(l, 100, 1); l;
+[ 100, 2 ]
+
+
+gap> STOP_TEST( "bugfix.tst", 7621100000 );
 
 
 #############################################################################

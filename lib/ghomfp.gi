@@ -203,48 +203,6 @@ local u,aug,hgu,mapi;
   return aug;
 end);
 
-
-#############################################################################
-##
-#M  ImagesRepresentative( <hom>, <elm> )
-##
-InstallMethod( ImagesRepresentative, "map from (sub)fp group, rewrite",
-  FamSourceEqFamElm, 
-  [ IsFromFpGroupGeneralMappingByImages and IsGroupGeneralMappingByImages,
-    IsMultiplicativeElementWithInverse ], 0,
-function( hom, elm )
-local aug,si,r,i,wor;
-  # get a coset table
-  aug:=CosetTableFpHom(hom);
-  r:=One(Range(hom));
-  wor:=RewriteWord(aug,UnderlyingElement(elm));
-  if wor=fail then
-    Error("<elm> is not contained in the source group");
-  fi;
-
-  # now wor is a tietze-kind representation of the word in the (secondary)
-  # subgroup generators.
-  if IsBound(aug.secondaryImages) then
-    si:=aug.secondaryImages;
-  elif IsBound(aug.primaryImages) then
-    si:=aug.primaryImages;
-  else
-    Error("no decoding possible");
-  fi;
-
-  for i in [1..Length(wor)] do
-    if wor[i]>0 then
-      r:=r*DecodedTreeEntry(aug.tree,si,wor[i]);
-    else
-      r:=r/DecodedTreeEntry(aug.tree,si,-wor[i]);
-    fi;
-  od;
-
-  return r;
-
-end);
-
-
 #############################################################################
 ##
 #M  ImagesRepresentative( <hom>, <elm> )
@@ -892,7 +850,8 @@ function(G,N)
 local T;
 
   # try to use rewriting if the index is not too big.
-  if IndexInWholeGroup(G)<=1000 and HasGeneratorsOfGroup(N) and not
+  if IndexInWholeGroup(G)>1 and IndexInWholeGroup(G)<=1000 
+    and HasGeneratorsOfGroup(N) and not
     HasCosetTableInWholeGroup(N) then
     T:=IsomorphismFpGroup(G);
     return T*NaturalHomomorphismByNormalSubgroup(Image(T,G),Image(T,N));
@@ -1077,6 +1036,24 @@ InstallMethod(ExponentsOfPcElement,"fp",IsCollsElms,
   [IsModuloPcgsFpGroupRep,IsMultiplicativeElementWithInverse],0,
 function(p,e)
   return ExponentsOfPcElement(p!.impcgs,ImagesRepresentative(p!.hom,e));
+end);
+
+InstallMethod(EpimorphismFromFreeGroup,"general",true,
+  [IsGroup and HasGeneratorsOfGroup],0,
+function(G)
+local F,str;
+  str:=ValueOption("names");
+  if IsList(str) and ForAll(str,IsString) and
+    Length(str)=Length(GeneratorsOfGroup(G)) then
+    F:=FreeGroup(str);
+  else
+    if not IsString(str) then
+      str:="x";
+    fi;
+    F:=FreeGroup(Length(GeneratorsOfGroup(G)),str);
+  fi;
+  return 
+    GroupHomomorphismByImagesNC(F,G,GeneratorsOfGroup(F),GeneratorsOfGroup(G));
 end);
 
 #############################################################################

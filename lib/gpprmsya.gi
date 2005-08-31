@@ -250,6 +250,11 @@ function ( G, p )
     # add the stabilizer chain
     #MakeStabChainStrongGenerators( S, Reversed([1..G.degree]), sgs );
 
+    if GcdInt( deg, p ) > 1 then
+        SetIsPGroup( S, true );
+        SetPrimePGroup( S, p );
+    fi;
+
     # return the Sylow subgroup
     return S;
 end);
@@ -551,15 +556,28 @@ local schreiertree, cosetrepresentative, flag, schtree, stab, k, p, j,
   fi;
 end;
 
-BindGlobal("DoSnAnGiantTest",function(g,n)
-local bound, i, p, cycles, l;
-  bound:=5*LogInt(n,2);
+# see Akos Seress, Permutation group algorithms. Cambridge Tracts in
+# Mathematics, 152. Section 10.2 for the background of this function.
+BindGlobal("DoSnAnGiantTest",function(g,dom,kind)
+local bound, n, i, p, cycles, l, pnt;
+  pnt := dom[1];
+  n:=Length(dom);
+  # From the above reference we see that with these bounds this function
+  # will fail on a symmetric group with probability < 10^-10.
+  if kind=1 then
+    bound:=10*LogInt(n,2);
+  else
+    bound:=50*LogInt(n,2);
+  fi;
   i:=0;
+  # We are looking for an element with a cycle of prime length > n/2
+  # and < n-2. Instead of computing the complete cycle structure we just
+  # look at the cycle length of one moved point (if there is a cycle as
+  # desired, it will contain this point with probability > 1/2).
   repeat
     i:=i+1;
     p:=PseudoRandom(g);
-    cycles:=Set(CycleLengths(p,[1..n]));
-    l:=cycles[Length(cycles)];
+    l:=CycleLengthPermInt(p,pnt);
   until (i>bound) or (l> n/2 and l<n-2 and IsPrime(l));
   if i>bound then
     return fail;
@@ -577,7 +595,7 @@ local dom, n, mine, root, d, k, b, m, l,lh;
     return false;
   fi;
 
-  if DoSnAnGiantTest(g,n)=true then
+  if DoSnAnGiantTest(g,dom,1)=true then
     # we've found elements that prove the group must contain A_n.
     return true;
   fi;
@@ -622,6 +640,11 @@ local dom, n, mine, root, d, k, b, m, l,lh;
 	od;
       fi;
     od;
+  fi;
+
+  if DoSnAnGiantTest(g,dom,2)=true then
+    # we've found elements that prove the group must contain A_n.
+    return true;
   fi;
 
   # now the socle is not a power of A_l or n is small. So the group is small
@@ -1197,6 +1220,11 @@ local   S,          # <p>-Sylow subgroup of <G>, result
 
     # make the Sylow subgroup
     S := Subgroup(  G , sgs );
+
+    if GcdInt( deg, p ) > 1 then
+        SetIsPGroup( S, true );
+        SetPrimePGroup( S, p );
+    fi;
 
     # return the Sylow subgroup
     return S;

@@ -164,19 +164,19 @@ DeclareGlobalFunction( "CharacterString" );
 ##  gap> irrS4:= Irr( S4 );;
 ##  gap> irrD8:= Irr( D8 );;
 ##  gap> chi:= irrD8[4];
-##  Character( CharacterTable( D8 ), [ 1, 1, 1, -1, -1 ] )
+##  Character( CharacterTable( D8 ), [ 1, -1, 1, -1, 1 ] )
 ##  gap> chi * chi;
 ##  Character( CharacterTable( D8 ), [ 1, 1, 1, 1, 1 ] )
 ##  gap> ind:= chi ^ S4;
-##  Character( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] )
+##  Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] )
 ##  gap> List( irrS4, x -> ScalarProduct( x, ind ) );
-##  [ 0, 0, 0, 1, 0 ]
+##  [ 0, 1, 0, 0, 0 ]
 ##  gap> det:= Determinant( ind );
-##  Character( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] )
+##  Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] )
 ##  gap> cent:= CentralCharacter( ind );
-##  ClassFunction( CharacterTable( S4 ), [ 1, 2, -1, 0, -2 ] )
+##  ClassFunction( CharacterTable( S4 ), [ 1, -2, -1, 0, 2 ] )
 ##  gap> rest:= Restricted( cent, D8 );
-##  ClassFunction( CharacterTable( D8 ), [ 1, 2, -1, -1, -2 ] )
+##  ClassFunction( CharacterTable( D8 ), [ 1, -2, -1, -1, 2 ] )
 ##  \endexample
 ##
 ##  Now we repeat these calculations with plain lists of character values.
@@ -186,19 +186,19 @@ DeclareGlobalFunction( "CharacterString" );
 ##  gap> tS4:= CharacterTable( S4 );;
 ##  gap> tD8:= CharacterTable( D8 );;
 ##  gap> chi:= ValuesOfClassFunction( irrD8[4] );
-##  [ 1, 1, 1, -1, -1 ]
+##  [ 1, -1, 1, -1, 1 ]
 ##  gap> Tensored( [ chi ], [ chi ] )[1];
 ##  [ 1, 1, 1, 1, 1 ]
 ##  gap> ind:= InducedClassFunction( tD8, chi, tS4 );
-##  ClassFunction( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] )
+##  ClassFunction( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] )
 ##  gap> List( Irr( tS4 ), x -> ScalarProduct( tS4, x, ind ) );
-##  [ 0, 0, 0, 1, 0 ]
+##  [ 0, 1, 0, 0, 0 ]
 ##  gap> det:= DeterminantOfCharacter( tS4, ind );
-##  ClassFunction( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] )
+##  ClassFunction( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] )
 ##  gap> cent:= CentralCharacter( tS4, ind );
-##  ClassFunction( CharacterTable( S4 ), [ 1, 2, -1, 0, -2 ] )
+##  ClassFunction( CharacterTable( S4 ), [ 1, -2, -1, 0, 2 ] )
 ##  gap> rest:= Restricted( tS4, cent, tD8 );
-##  ClassFunction( CharacterTable( D8 ), [ 1, 2, -1, -1, -2 ] )
+##  ClassFunction( CharacterTable( D8 ), [ 1, -2, -1, -1, 2 ] )
 ##  \endexample
 ##
 ##  If one deals with character tables from the {\GAP} table library then

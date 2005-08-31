@@ -1133,17 +1133,20 @@ Obj SemiEchelonListGF2Vecs( Obj mat, UInt TransformationsNeeded )
       if (j <= ncols)
 	{
 	  SET_ELM_PLIST(vectors, ++nvecs, row);
+          CHANGED_BAG(vectors);    /* Could be an old bag by now. Max. */
 	  SET_LEN_PLIST(vectors, nvecs);
 	  SET_ELM_PLIST( heads, j, INTOBJ_INT(nvecs));
 	  if (TransformationsNeeded)
 	    {
 	      SET_ELM_PLIST(coeffs, nvecs, coeffrow);
+              CHANGED_BAG(coeffs);    /* Could be an old bag by now. Max. */
 	      SET_LEN_PLIST(coeffs, nvecs);
 	    }
 	}
       else if (TransformationsNeeded)
 	{
 	  SET_ELM_PLIST(relns, ++nrels, coeffrow);
+          CHANGED_BAG(relns);    /* Could be an old bag by now. Max. */
 	  SET_LEN_PLIST(relns, nrels);
 	}
     }

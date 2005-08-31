@@ -440,6 +440,36 @@ Obj             FuncPOSITION_SORTED_COMP (
 }
 
 
+Obj             FuncPOSITION_FIRST_COMPONENT_SORTED (
+    Obj                 self,
+    Obj                 list,
+    Obj                 obj)
+{
+  UInt top, bottom,middle;
+  Obj x;
+  Obj l;
+  bottom = 1;
+  top = LEN_PLIST(list);
+  while (bottom <= top) {
+    middle = (top + bottom)/2;
+    l = ELM_PLIST(list,middle);
+    if (!IS_PLIST(l))
+      return TRY_NEXT_METHOD;
+    x = ELM_PLIST(l,1);
+    if (LT(x,obj)) {
+      bottom = middle+1;
+    } else if (LT(obj,x)) {
+      top = middle -1;
+    } else {
+      return INTOBJ_INT(middle);
+    }
+  }
+  return INTOBJ_INT(bottom);
+}
+      
+
+
+
 /****************************************************************************
 **
 *F  SORT_LIST( <list> )  . . . . . . . . . . . . . . . . . . . .  sort a list
@@ -1304,6 +1334,128 @@ Obj             FuncOnLeftInverse (
     return PROD( elm, point );
 }
 
+/****************************************************************************
+**
+*F  FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH
+**
+**  `digraph' should be a list whose entries and the lists of out-neighbours
+** of the vertices. So [[2,3],[1],[2]] represents the graph whose edges are
+** 1->2, 1->3, 2->1 and 3->2.
+**
+**  returns a newly constructed list whose elements are lists representing the
+** strongly connected components of the directed graph. Neither the components,
+** nor their elements are in any particular order.
+**
+** The algorithm is that of Tarjan, based on the implementation in Sedgwick,
+** with a bug fixed, and made non-recursive to avoid problems with stack limits
+** under (for instance) Linux. This version is a bit slower than the recursive
+** version, but much faster than any of the GAP implementations.
+**
+** A possible change is to allocate the internal arrays rather smaller, and
+** grow them if needed. This might allow some computations to complete that would
+** otherwise run out of memory, but would slow things down a bit.
+*/
+
+
+static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
+{
+  UInt i,level,k,l,x,t,m;
+  UInt now = 0,n;
+  Obj val, stack, comps,comp;
+  Obj frames, adj;
+  UInt *fptr;
+
+  n = LEN_LIST(digraph);
+  if (n == 0)
+    {
+      return NEW_PLIST(T_PLIST_EMPTY,0);
+    }
+  val = NewBag(T_DATOBJ, (n+1)*sizeof(UInt));
+  stack = NEW_PLIST(T_PLIST_CYC, n);
+  SET_LEN_PLIST(stack, 0);
+  comps = NEW_PLIST(T_PLIST_TAB, n);
+  SET_LEN_PLIST(comps, 0);
+  frames = NewBag(T_DATOBJ, (4*n+1)*sizeof(UInt));  
+  for (k = 1; k <= n; k++)
+    {
+      if (((UInt *)ADDR_OBJ(val))[k] == 0)
+	{
+	  level = 1;
+	  adj = ELM_LIST(digraph, k);
+	  PLAIN_LIST(adj);
+	  fptr = (UInt *)ADDR_OBJ(frames);
+	  fptr[0] = k;
+	  now++;
+	  ((UInt *)ADDR_OBJ(val))[k] = now;
+	  fptr[1] = now;
+	  l = LEN_PLIST(stack);
+	  SET_ELM_PLIST(stack, l+1, INTOBJ_INT(k));
+	  SET_LEN_PLIST(stack, l+1);
+	  fptr[2] = 1;
+	  fptr[3] = (UInt)adj;
+	  while (level > 0 ) {
+	    if (fptr[2] > LEN_PLIST(fptr[3]))
+	      {
+		if (fptr[1] == ((UInt *)ADDR_OBJ(val))[fptr[0]])
+		  {
+		    l = LEN_PLIST(stack);
+		    i = l;
+		    do {
+		      x = INT_INTOBJ(ELM_PLIST(stack, i));
+		      SET_ELM_PLIST(val, x, INTOBJ_INT(n+1));
+		      i--;
+		    } while (x != fptr[0]);
+		    comp = NEW_PLIST(T_PLIST_CYC, l-i);
+		    SET_LEN_PLIST(comp, l-i);
+		    memcpy( (void *)((char *)(ADDR_OBJ(comp)) + sizeof(Obj)), 
+			    (void *)((char *)(ADDR_OBJ(stack)) + (i+1)*sizeof(Obj)), 
+			    (size_t)((l - i )*sizeof(Obj)));
+		    SET_LEN_PLIST(stack, i);
+		    l = LEN_PLIST(comps);
+		    SET_ELM_PLIST(comps, l+1, comp);
+		    SET_LEN_PLIST(comps, l+1);
+		    CHANGED_BAG(comps);
+		    fptr = (UInt *)ADDR_OBJ(frames)+(level-1)*4;
+		  }
+		level--;
+		fptr -= 4;
+		if (level > 0 && fptr[5]  < fptr[1])
+		  fptr[1] = fptr[5];
+	      }
+	    else
+	      {
+		adj = (Obj)fptr[3];
+		t = INT_INTOBJ(ELM_PLIST(adj, (fptr[2])++));
+		if (0 ==(m =  ((UInt *)ADDR_OBJ(val))[t]))
+		  {
+		    level++;
+		    adj = ELM_LIST(digraph, t);
+		    PLAIN_LIST(adj);
+		    fptr = (UInt *)ADDR_OBJ(frames)+(level-1)*4;
+		    fptr[0] = t;
+		    now++;
+		    ((UInt *)ADDR_OBJ(val))[t] = now;
+		    fptr[1] = now;
+		    l = LEN_PLIST(stack);
+		    SET_ELM_PLIST(stack, l+1, INTOBJ_INT(t));
+		    SET_LEN_PLIST(stack, l+1);
+		    fptr[2] = 1;
+		    fptr[3] = (UInt)adj;
+		  }
+		else
+		  {
+		    if (m < fptr[1])
+		      fptr[1] = m;
+		  }
+	      }
+	  }
+	}
+      
+    }
+  SHRINK_PLIST(comps, LEN_PLIST(comps));
+  return comps;
+}
+
 
 /****************************************************************************
 **
@@ -1394,9 +1546,9 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
   GROW_PLIST(srclist, srcmax);
   if (srcinc == 1 && dstinc == 1)
     {
-      memcpy((void *) (ADDR_OBJ(dstlist) + dststart),
-	     (void *) (ADDR_OBJ(srclist) + srcstart),
-	     (size_t) number*sizeof(Obj));
+      memmove((void *) (ADDR_OBJ(dstlist) + dststart),
+	      (void *) (ADDR_OBJ(srclist) + srcstart),
+	      (size_t) number*sizeof(Obj));
     }
   else if (srclist != dstlist)
     {
@@ -1521,6 +1673,9 @@ static StructGVarFunc GVarFuncs [] = {
     { "POSITION_SORTED_LIST_COMP", 3, "list, obj, func", 
       FuncPOSITION_SORTED_COMP, "src/listfunc.c:POSITION_SORTED_LIST_COMP" },
 
+    { "POSITION_FIRST_COMPONENT_SORTED", 2, "list, obj", 
+      FuncPOSITION_FIRST_COMPONENT_SORTED, "src/listfunc.c:POSITION_FIRST_COMPONENT_SORTED" },
+
     { "SORT_LIST", 1, "list",
       FuncSORT_LIST, "src/listfunc.c:SORT_LIST" },
 
@@ -1556,6 +1711,10 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "COPY_LIST_ENTRIES", -1, "srclist,srcstart,srcinc,dstlist,dststart,dstinc,number",
       FuncCOPY_LIST_ENTRIES, "src/listfunc.c:COPY_LIST_ENTRIES" },
+
+    { "STRONGLY_CONNECTED_COMPONENTS_DIGRAPH", 1, "digraph",
+      FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH, "src/listfunc.c:sTRONGLY_CONNECTED_COMPONENTS_DIGRAPH" },
+
 
     { 0 }
 
