@@ -229,7 +229,7 @@ InstallGlobalFunction( RelatorsPermGroupHom, function ( hom, gensG )
     chunk:=ValueOption("chunk");
     # get the involved groups
     G := PreImage( hom );
-    F := Image( hom );
+    F := Range( hom );
     gensF := GeneratorsOfGroup( F );
     ngens := Length( gensG );
     one:= One( G );
@@ -938,7 +938,7 @@ local   S,img,img2;
       if IsInternalRep( img ) then
 	TRIM_PERM( img, LargestMovedPoint( Range( hom ) ) );
       else
-	img:=RestrictedPerm(img,[1..LargestMovedPoint(Range(hom))]);
+	img:=RestrictedPermNC(img,[1..LargestMovedPoint(Range(hom))]);
       fi;
     elif IsAssocWord(img) or IsElementOfFpGroup(img) then
       # try the inverse as well -- it might be better
@@ -1146,10 +1146,10 @@ InstallGlobalFunction( StabChainPermGroupToPermGroupGeneralMappingByImages,
       a:=mapi[1][i];
       b:=mapi[2][i];
       if not IsInternalRep(a) then
-	a:=RestrictedPerm(a,[1..n]);
+	a:=RestrictedPermNC(a,[1..n]);
       fi;
       if not IsInternalRep(b) then
-	b:=RestrictedPerm(b,[1..k]);
+	b:=RestrictedPermNC(b,[1..k]);
       fi;
       longgens[i] := a * (b ^ conperm); 
     od;
@@ -1198,7 +1198,7 @@ InstallGlobalFunction( MakeStabChainLong,
             Add( S.labels, rec( labels := [  ], labelimages := [  ] ) );
             len := len + 1;
             for i  in [ 1 .. len - 1 ]  do
-                rest := RestrictedPerm( S.labels[ i ], ran );
+                rest := RestrictedPermNC( S.labels[ i ], ran );
 #T !!
                 Add( S.labels[ len ].labels, rest ^ c1 );
                 Add( S.labels[ len ].labelimages,

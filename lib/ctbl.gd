@@ -2006,8 +2006,13 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  except that the group is is `Print'-ed instead of `View'-ed.
 ##
 ##  \indextt{Display!for character tables}
-##  The default `Display' (see~"Display") method for a character table <tbl>
-##  prepares the data contained in <tbl> for a pretty columnwise output.
+##  There are various ways to customize the `Display' (see~"Display") output
+##  for character tables.
+##  First we describe the default behaviour,
+##  alternatives are then described below.
+##
+##  The default `Display' method prepares the data in <tbl> for a columnwise
+##  output.
 ##  The number of columns printed at one time depends on the actual
 ##  line length, which can be accessed and changed by the function
 ##  `SizeScreen' (see~"SizeScreen").
@@ -2015,7 +2020,7 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  `Display' shows certain characters (by default all irreducible
 ##  characters) of <tbl>, together with the orders of the centralizers in
 ##  factorized form and the available power maps (see~"ComputedPowerMaps").
-##  Each displayed character is given a name `X.<n>'.
+##  The <n>-th displayed character is given the name `X.<n>'.
 ##
 ##  The first lines of the output describe the order of the centralizer
 ##  of an element of the class factorized into its prime divisors.
@@ -2044,14 +2049,35 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  The printed character table is then followed by a legend,
 ##  a list identifying the occurring symbols with their actual values.
 ##  Occasionally this identification is supplemented by a quadratic
-##  representation of the irrationality together with the corresponding
-##  {\ATLAS}-notation (see~\cite{CCN85}).
+##  representation of the irrationality (see~"Quadratic") together with
+##  the corresponding {\ATLAS} notation (see~\cite{CCN85}).
 ##
-##  The optional second argument <arec> of `Display' can be used to change
-##  the default style (mentioned above) for displaying a character.
-##  <arec> must be a record, its relevant components are the following.
+##  This default style can be changed by prescribing a record <arec> of
+##  options, which can be given
+##  \beginlist%unordered
+##  \item{--}
+##      as an optional argument in the call to `Display',
+##  \item{--}
+##      as the value of the attribute `DisplayOptions' (see~"DisplayOptions")
+##      if this value is stored in the table,
+##  \item{--}
+##      as the value of the global variable
+##      `CharacterTableDisplayDefaults.User', or
+##  \item{--}
+##      as the value of the global variable
+##      `CharacterTableDisplayDefaults.Global'
+##  \endlist
+##  (in this order of precedence).
+##
+##  The following components of <arec> are supported.
 ##
 ##  \beginitems
+##  `centralizers' &
+##      `false' to suppress the printing of the orders of the centralizers,
+##      or the string `\"ATLAS\"' to force the printing of non-factorized
+##      centralizer orders in a style similar to that used in the
+##      {\ATLAS} of Finite Groups~\cite{CCN85},
+##
 ##  `chars' &
 ##      an integer or a list of integers to select a sublist of the
 ##      irreducible characters of <tbl>,
@@ -2062,50 +2088,48 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##      an integer or a list of integers to select a sublist of the
 ##      classes of <tbl>,
 ##
-##  `centralizers' &
-##      suppresses the printing of the orders of the centralizers
-##      if `false',
-##
-##  `powermap' &
-##      an integer or a list of integers to select a subset of the
-##      available power maps, or `false' to suppress the printing of
-##      power maps,
-##
-##  `letter' &
-##      a single capital letter (e.~g.~`\"P\"' for permutation characters)
-##      to replace `\"X\"',
-##
 ##  `indicator' &
 ##      `true' enables the printing of the second Frobenius Schur indicator,
 ##      a list of integers enables the printing of the corresponding
 ##      indicators (see~"Indicator"),
+##
+##  `letter' &
+##      a single capital letter (e.~g.~`\"P\"' for permutation characters)
+##      to replace the default `\"X\"' in character names,
+##
+##  `powermap' &
+##      an integer or a list of integers to select a subset of the
+##      available power maps,
+##      `false' to suppress the printing of power maps,
+##      or the string `\"ATLAS\"' to force a printing of class names and
+##      power maps in a style similar to that used in the
+##      {\ATLAS} of Finite Groups~\cite{CCN85},
+##
+##  `Display' &
+##      the function that is actually called in order to display the table;
+##      the arguments are the table and the optional record, whose components
+##      can be used inside the `Display' function,
 ##
 ##  `StringEntry' &
 ##      a function that takes either a character value or a character value
 ##      and the return value of `StringEntryData' (see below),
 ##      and returns the string that is actually displayed;
 ##      it is called for all character values to be displayed,
-##      and also for the displayed indicator values (see above);
-##      the default `StringEntry' function is 
-##      `CharacterTableDisplayStringEntryDefault',
+##      and also for the displayed indicator values (see above),
 ##
 ##  `StringEntryData' &
 ##      a unary function that is called once with argument <tbl> before the
 ##      character values are displayed;
 ##      it returns an object that is used as second argument of the function
-##      `StringEntry';
-##      the default `StringEntryData' function is
-##      `CharacterTableDisplayStringEntryDataDefault',
+##      `StringEntry',
 ##
-##  `PrintLegend' &
-##      a function that is called with the result of the `StringEntryData'
-##      call after the character table has been displayed;
-##      the default `PrintLegend' function is
-##      `CharacterTableDisplayPrintLegendDefault'.
+##  `Legend' &
+##      a function that takes the result of the `StringEntryData' call as its
+##      only argument, after the character table has been displayed;
+##      the return value is a string that describes the symbols used in the
+##      displayed table in a formatted way,
+##      it is printed below the displayed table.
 ##  \enditems
-##  If the value of `DisplayOptions' (see~"DisplayOptions") is stored on
-##  <tbl>, it is used as default value for <arec> in the one argument call of
-##  `Display'.
 ##
 
 
@@ -2122,19 +2146,22 @@ DeclareAttribute( "DisplayOptions", IsNearlyCharacterTable );
 
 #############################################################################
 ##
-#F  CharacterTableDisplayStringEntryDefault( <entry>, <data> )
-#F  CharacterTableDisplayStringEntryDataDefault( <tbl> )
-#F  CharacterTableDisplayPrintLegendDefault( <data> )
+#V  CharacterTableDisplayDefaults
 ##
-DeclareGlobalFunction( "CharacterTableDisplayStringEntryDefault" );
-DeclareGlobalFunction( "CharacterTableDisplayStringEntryDataDefault" );
-DeclareGlobalFunction( "CharacterTableDisplayPrintLegendDefault" );
+##  This is a record with at least the component `Global', which is used as
+##  the default value for the second argument of `Display' for character
+##  tables.
+##
+##  If also the component `User' is bound then this value is taken instead.
+##  So one can customize the default behaviour of `Display' by adding this
+##  component, and return to the previous behaviour by unbinding it.
+##
+DeclareGlobalVariable( "CharacterTableDisplayDefaults" );
 
 
 #############################################################################
 ##
 #F  PrintCharacterTable( <tbl>, <varname> )
-#F  CharacterTableString( <tbl>, <varname> )
 ##
 ##  Let <tbl> be a nearly character table, and <varname> a string.
 ##  `PrintCharacterTable' prints those values of the supported attributes
@@ -2150,20 +2177,7 @@ DeclareGlobalFunction( "CharacterTableDisplayPrintLegendDefault" );
 ##  This is used mainly for saving character tables to files.
 ##  A more human readable form is produced by `Display'.
 ##
-##  `CharacterTableString' returns a string that consists of the output of
-##  `PrintCharacterTable'.
-##
-#T note that a table with group can be read back only if the group elements
-#T can be read back;
-#T so this works for permutation groups but not for PC groups!
-#T (what about the efficiency?)
-##
-#T Is there a problem of consistency,
-#T if the group is stored but classes are not, and later the classes
-#T are automatically constructed? (This should be safe.)
-##
 DeclareGlobalFunction( "PrintCharacterTable" );
-DeclareGlobalFunction( "CharacterTableString" );
 
 
 #############################################################################

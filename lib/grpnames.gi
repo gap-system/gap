@@ -35,8 +35,7 @@ InstallMethod( DirectFactorsOfGroup,
     local  N, facts;
 
     if not IsFinite(G) then TryNextMethod(); fi;
-    N := NormalSubgroups(G);
-    N := N{[2..Length(N)-1]};
+    N := Difference(NormalSubgroups(G),[TrivialSubgroup(G),G]);
     facts := First(Combinations(N,2),
                    norms -> Product(List(norms,Size)) = Size(G)
                             and IsTrivial(Intersection(norms)));

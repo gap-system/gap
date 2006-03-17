@@ -948,6 +948,16 @@ Obj ErrorMode (
     if (ErrorCount >= ((UInt)1)<<NR_SMALL_INT_BITS)
       ErrorCount = 0;
     
+    /* open the standard error output file                                 */
+    OpenOutput( "*errout*" );
+    ErrorLevel += 1;
+    errorLVars0 = ErrorLVars0;
+    ErrorLVars0 = CurrLVars;
+    errorLVars  = ErrorLVars;
+    ErrorLVars  = CurrLVars;
+    errorLLevel = ErrorLLevel;
+    ErrorLLevel = 0;
+
     /* ignore all errors when testing or quitting                          */
     if ( ( TestInput != 0 && TestOutput == Output ) || ! BreakOnError ) {
         if ( msg != (Char*)0 ) {
@@ -958,6 +968,13 @@ Obj ErrorMode (
             FuncPrint( (Obj)0, args );
         }
         Pr( "\n", 0L, 0L );
+
+	ErrorLevel -= 1;
+	ErrorLVars0 = errorLVars0;
+	ErrorLVars = errorLVars;
+	ErrorLLevel = errorLLevel;
+	ClearError();
+	CloseOutput();
         ReadEvalError();
     }
 
@@ -1046,16 +1063,6 @@ Obj ErrorMode (
 	  }
 	ReadEvalError();
       }
-
-    /* open the standard error output file                                 */
-    OpenOutput( "*errout*" );
-    ErrorLevel += 1;
-    errorLVars0 = ErrorLVars0;
-    ErrorLVars0 = CurrLVars;
-    errorLVars  = ErrorLVars;
-    ErrorLVars  = CurrLVars;
-    errorLLevel = ErrorLLevel;
-    ErrorLLevel = 0;
 
     /* print the error message                                             */
     if ( msg != (Char*)0 ) {
@@ -3880,7 +3887,8 @@ void InitializeGap (
             if ( ! SyQuiet ) {
                 Pr( "gap: hmm, I cannot find '%s' maybe",
                     (Int)SySystemInitFile, 0L );
-                Pr( " use option '-l <gaproot>'?\n", 0L, 0L );
+                Pr( " use option '-l <gaproot>'?\n If you ran the GAP\
+ binary directly, try running the 'gap.sh' or 'gap.bat' script instead.", 0L, 0L );
             }
         }
     }

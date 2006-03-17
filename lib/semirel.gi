@@ -1,6 +1,5 @@
 #############################################################################
-##
-#W  semirel.gi                  GAP library                   Robert F. Morse 
+#W  semirel.gi                  GAP library                James D. Mitchell
 ##
 #H  @(#)$Id$
 ##
@@ -8,523 +7,219 @@
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
 ##
-##  This file contains the declarations for Green's equivalence relations on
-##  semigroups. 
+##  This file contains the declarations for equivalence relations on 
+##  semigroups. Of particular interest are Green's relations, 
+##  congruences, and Rees congruences.
 ##
 Revision.semirel_gi :=
     "@(#)$Id$";
 
-
-#############################################################################
-#############################################################################
-##                                                                         ##
-##                        Green's Relations                                ##
-##                                                                         ##
-#############################################################################
-#############################################################################
-
-#############################################################################
+#######################
+#######################
 ##
-##  Being a Green's Relation is a property of an equivalence relation. We do
-##  not make them categories of equivalence relations -- hence we use
-##  the construction methods for equivalence relations.
+#M GreensRRelation(<semigroup>)
+#M GreensLRelation(<semigroup>)
+#M GreensHRelation(<semigroup>)
+#M GreensDRelation(<semigroup>)
+#M GreensJRelation(<semigroup>)
 ##
-##  Property testers
-##
-#P  IsGreensRelation( <equiv> )     Common property to all Green's relations 
-#P  IsGreensRRelation( <equiv> )    Property of being a Green's R relation
-#P  IsGreensLRelation( <equiv> )    Property of being a Green's L relation
-#P  IsGreensJRelation( <equiv> )    Property of being a Green's J relation
-#P  IsGreensDRelation( <equiv> )    Property of being a Green's D relation
-#P  IsGreensHRelation( <equiv> )    Property of being a Green's H relation
-##
-InstallMethod(IsGreensRelation, "for equivalence relations", true,
-        [IsEquivalenceRelation], 0,
-    er -> HasIsGreensRelation(er) );
+## returns the appropriate equivalence relation which is stored as an attribute.
+## The relation knows nothing about itself except its source, range, and what 
+## type of congruence it is.
 
-InstallMethod(IsGreensRRelation, "for a Green's equivalence class", true,
-        [IsEquivalenceRelation], 0,
-    er -> HasIsGreensRRelation(er) and IsGreensRRelation(er) );
+## JDM *no* new MONOID method
 
-InstallMethod(IsGreensLRelation, "for a Green's equivalence class", true,
-        [IsEquivalenceRelation], 0,
-    er -> HasIsGreensLRelation(er) and IsGreensLRelation(er) );
+InstallMethod(GreensRRelation, "for a semigroup", true, [IsSemigroup], 0,
+function(X)
+   local fam, rel, sc;
 
-InstallMethod(IsGreensJRelation, "for a Green's equivalence class", true,
-        [IsEquivalenceRelation], 0,
-    er -> HasIsGreensJRelation(er) and IsGreensJRelation(er) );
+   fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)), 
+	    ElementsFamily(FamilyObj(X)) );
 
-InstallMethod(IsGreensDRelation, "for a Green's equivalence class", true,
-        [IsEquivalenceRelation], 0,
-    er -> HasIsGreensDRelation(er) and IsGreensDRelation(er) );
+   # Create the default type for the elements.
+   rel :=  Objectify(NewType(fam, 
+	      IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
+              and IsGreensRRelation), rec());
 
-InstallMethod(IsGreensHRelation, "for a Green's equivalence class", true,
-        [IsEquivalenceRelation], 0,
-    er -> HasIsGreensHRelation(er) and IsGreensHRelation(er) );
+   SetSource(rel, X);
+   SetRange(rel, X);
+   SetIsLeftSemigroupCongruence(rel,true);
+   if HasIsFinite(X) and IsFinite(X) then 
+      SetIsFiniteSemigroupGreensRelation(rel, true);
+   fi;
 
-#############################################################################
-##
-##           Green's Relations for generic finite semigroups
-##
-#############################################################################
+   if HasIsCommutative(X) and IsCommutative(X) then 
+      SetGreensLRelation(X, rel);
+      SetGreensDRelation(X, rel);
+      SetGreensHRelation(X, rel);
+      SetGreensJRelation(X, rel);
+   fi;
 
-#############################################################################
-##
-#P  IsFiniteSemigroupGreensRelation
-##
-DeclareProperty("IsFiniteSemigroupGreensRelation",IsEquivalenceRelation);
+   return rel;
 
+end);
 
-#############################################################################
-##
-#A  GreensRRelation( <s> ) 
-#A  GreensLRelation( <s> ) 
-#A  GreensJRelation( <s> ) 
-#A  GreensDRelation( <s> ) 
-#A  GreensHRelation( <s> ) 
-##
-##  Computes the Green's R Relation for a finite semigroups whose elements
-##  we can enumerate. We find the Cayley Graph (and its dual)
-##  and find its strongly connected components.
-##
-##  Sets the other Green's relations if the semigroup is commutative.
-##
-##  Representation: The Green's relations are represented as 
-##                  Binary relations on points. Each point refers to 
-##                  an element in the semigroup in sorted order.
-##     
-##                  As a Green's relation is from the user point of
-##                  view a relation over the semigroup. We have
-##                  overloaded all calls to produce semigroup elements
-##                  even though the internal representation is on points.
-##
-##
-InstallMethod(GreensRRelation, "for generic finite semigroups", true,
-        [IsSemigroup and HasIsFinite and IsFinite],0,
-    function(s)
-        local cg, sc;
+InstallMethod(GreensLRelation, "for a semigroup", true, [IsSemigroup], 0,
+function(X)
 
-        ## Compute nothing if the semigroup is commutative and
-        ##     the GreensLRelation attribute has been set in this
-        ##     case the GreensRRelation equal to the GreensLRelation
-        ##
-        if HasIsCommutative(s) and IsCommutative(s) and 
-               HasGreensLRelation(s) then
-   
-            sc := GreensLRelation(s);
+	local fam, rel;
 
-            SetIsGreensRRelation(sc,true);
-            SetIsGreensJRelation(sc,true);
-            SetIsGreensHRelation(sc,true);
-            SetIsGreensDRelation(sc,true);
-            SetIsSemigroupCongruence(sc,true);
+	fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)), 
+		ElementsFamily(FamilyObj(X)) );
 
-            SetGreensRRelation(s,sc);
-            SetGreensJRelation(s,sc);
-            SetGreensHRelation(s,sc);
-            SetGreensDRelation(s,sc);
+	# Create the default type for the elements.
+        rel :=  Objectify(NewType(fam, 
+		IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
+                and IsGreensLRelation), rec());
 
-            return sc;
-        fi;          
-
-        ## The no check version of BinaryRelationOnPoints 
-        ##     insures each image is an ordered set 
-        ##
-        cg := BinaryRelationOnPointsNC(CayleyGraphSemigroup(s));
-        
-        ## The Green's R equivalence classes are just the
-        ##    Strongly connected components of the Cayley graph.
-        ##
-        sc := StronglyConnectedComponents(cg);
-
-        SetIsGreensRelation(sc,true);
-        SetIsFiniteSemigroupGreensRelation(sc,true);
-        SetIsGreensRRelation(sc,true);
-        SetAssociatedSemigroup(sc,s);
-
-        SetIsLeftSemigroupCongruence(sc,true);
-
-        ## If the semigroup is commutative set the other attributes
-        ##    Green's relations
-        ##
-        if HasIsCommutative(s) and IsCommutative(s) then 
-
-            SetIsGreensLRelation(sc,true);
-            SetIsGreensJRelation(sc,true);
-            SetIsGreensHRelation(sc,true);
-            SetIsGreensDRelation(sc,true);
-
-            SetIsSemigroupCongruence(sc,true);
-
-            SetGreensLRelation(s,sc);
-            SetGreensJRelation(s,sc);
-            SetGreensHRelation(s,sc);
-            SetGreensDRelation(s,sc);
+	SetSource(rel, X);
+	SetRange(rel, X);
+	SetIsRightSemigroupCongruence(rel,true);
+	if HasIsFinite(X) and IsFinite(X) then 
+          SetIsFiniteSemigroupGreensRelation(rel, true);
         fi;
 
-        return sc;
+   if HasIsCommutative(X) and IsCommutative(X) then 
+      SetGreensRRelation(X, rel);
+      SetGreensDRelation(X, rel);
+      SetGreensHRelation(X, rel);
+      SetGreensJRelation(X, rel);
+   fi;
+	return rel;
     end);
 
-InstallMethod(GreensLRelation, "for generic finite semigroups", true,
-        [IsSemigroup and HasIsFinite and IsFinite],0,
-    function(s)
-        local cg, sc;
+InstallMethod(GreensJRelation, "for a semigroup", true, [IsSemigroup], 0,
+function(X)
 
-        ## Compute nothing if the semigroup is commutative and
-        ##     the GreensLRelation attribute has been set in this
-        ##     case the GreensRRelation equal to the GreensLRelation
-        ##
-        if HasIsCommutative(s) and IsCommutative(s) and 
-               HasGreensRRelation(s) then
-   
-            sc := GreensRRelation(s);
+	local fam, rel;
 
-            SetIsGreensLRelation(sc,true);
-            SetIsGreensJRelation(sc,true);
-            SetIsGreensHRelation(sc,true);
-            SetIsGreensDRelation(sc,true);
-            SetIsSemigroupCongruence(sc,true);
+	fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)), 
+		ElementsFamily(FamilyObj(X)) );
 
-            SetGreensLRelation(s,sc);
-            SetGreensJRelation(s,sc);
-            SetGreensHRelation(s,sc);
-            SetGreensDRelation(s,sc);
+	# Create the default type for the elements.
+        rel :=  Objectify(NewType(fam, 
+		IsEquivalenceRelation and IsEquivalenceRelationDefaultRep 
+                and IsGreensJRelation), rec());
 
-            return sc;
-        fi;          
-
-        ## The no check version of BinaryRelationOnPoints 
-        ##     insures each image is an ordered set 
-        ##
-        cg := BinaryRelationOnPointsNC(CayleyGraphDualSemigroup(s));
-
-        sc := StronglyConnectedComponents(cg);
-        SetIsGreensRelation(sc,true);
-        SetIsFiniteSemigroupGreensRelation(sc,true);
-        SetIsGreensLRelation(sc,true);
-        SetAssociatedSemigroup(sc,s);
-
-        SetIsRightSemigroupCongruence(sc,true);
-
-        ## If the semigroup is commutative set the other attributes
-        ##    Green's relaitons
-        ##
-        if HasIsCommutative(s) and IsCommutative(s) then
-
-            SetIsGreensLRelation(sc,true);
-            SetIsGreensJRelation(sc,true);
-            SetIsGreensHRelation(sc,true);
-            SetIsGreensDRelation(sc,true);
-
-            SetIsSemigroupCongruence(sc,true);
-
-            SetGreensLRelation(s,sc);
-            SetGreensJRelation(s,sc);
-            SetGreensHRelation(s,sc);
-            SetGreensDRelation(s,sc);
-        fi;          
-
-        return sc;
-    end);
-
-InstallMethod(GreensJRelation, "for generic finite semigroups", true,
-        [IsSemigroup and HasIsFinite and IsFinite],0,
-    function(s)
-        local j;
-
-        ## Since we are in the finite case compute the Green's D relation
-        ##    and set the GreensJRelation property to the returned
-        ##    equivalence
-        ##
-        j := GreensDRelation(s); 
-        SetIsGreensJRelation(j,true);
-        return j;
-    end);
-
-InstallMethod(GreensHRelation, "for generic finite semigroups", true,
-        [IsSemigroup and IsFinite],0,
-    function(s)
-        local m;
-
-        ## Compute nothing if the semigroup is commutative
-        ##     Only compute the Greens R relation
-        ##     which sets the GreensHRelation attribute
-        ##
-        if HasIsCommutative(s) and IsCommutative(s) then 
-            GreensRRelation(s);
-            return GreensHRelation(s);
-        fi;
-      
-        ## Otherwise compute the meet of the GreensR and
-        ##    GreensL relations
-        ##
-        m := MeetEquivalenceRelations(
-                 GreensRRelation(s),GreensLRelation(s));
-
-        SetIsGreensRelation(m,true);
-        SetIsFiniteSemigroupGreensRelation(m,true);
-        SetIsGreensHRelation(m,true);
-        SetAssociatedSemigroup(m,s);
-
-        return m;
-    end);
-
-InstallMethod(GreensDRelation, "for generic finite semigroups", true,
-        [IsSemigroup and IsFinite],0,
-    function(s)
-        local j;
-
-        ## Compute nothing if the semigroup is commutative
-        ##     Only compute the Greens R relation
-        ##     which sets the GreensHRelation attribute
-        ##
-        if HasIsCommutative(s) and IsCommutative(s) then 
-            GreensRRelation(s);
-            return GreensDRelation(s);
+	SetSource(rel, X);
+	SetRange(rel, X);
+	if HasIsFinite(X) and IsFinite(X) then 
+          SetIsFiniteSemigroupGreensRelation(rel, true);
         fi;
 
-        ## Otherwise compute the join of the GreensR and
-        ##    GreensL relations
-        ##
-        j := JoinEquivalenceRelations(
-                 GreensRRelation(s),GreensLRelation(s));
-
-        SetIsGreensRelation(j,true);
-        SetIsFiniteSemigroupGreensRelation(j,true);
-        SetIsGreensJRelation(j,true);
-        SetAssociatedSemigroup(j,s);
-
-        return j;
+   if HasIsCommutative(X) and IsCommutative(X) then 
+      SetGreensLRelation(X, rel);
+      SetGreensRRelation(X, rel);
+      SetGreensDRelation(X, rel);
+      SetGreensHRelation(X, rel);
+   fi;
+	return rel;
     end);
 
+InstallMethod(GreensDRelation, "for a semigroup", true, [IsSemigroup], 0,
+function(X)
 
-#############################################################################
-##
-##  Being a Green's equivalence class is a property of IsEquivalenceClass.
-##
-##  Property testers
-##
-#P  IsGreensClass( <equiv-class> )   
-#P  IsGreensRClass( <equiv-class> )   
-#P  IsGreensLClass( <equiv-class> )   
-#P  IsGreensJClass( <equiv-class> )   
-#P  IsGreensDClass( <equiv-class> )   
-#P  IsGreensHClass( <equiv-class> )   
-##
-InstallMethod(IsGreensClass, "for equivalence classes", true,
-        [IsEquivalenceClass], 0,
-    er -> HasIsGreensClass(er) );
+	local fam, rel;
 
-InstallMethod(IsGreensLClass, "for a Green's equivalence class", true,
-        [IsEquivalenceClass], 0,
-    c -> HasIsGreensLClass(c) and IsGreensLClass(c) );
+	fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)), 
+		ElementsFamily(FamilyObj(X)) );
 
-InstallMethod(IsGreensRClass, "for a Green's equivalence class", true,
-        [IsEquivalenceClass], 0,
-    c -> HasIsGreensRClass(c) and IsGreensRClass(c) );
+	# Create the default type for the elements.
+        rel :=  Objectify(NewType(fam, 
+		IsEquivalenceRelation and IsEquivalenceRelationDefaultRep 
+                and IsGreensDRelation), rec());
 
-InstallMethod(IsGreensJClass, "for a Green's equivalence class", true,
-        [IsEquivalenceClass], 0,
-    c -> HasIsGreensJClass(c) and IsGreensJClass(c) );
+	SetSource(rel, X);
+	SetRange(rel, X);
 
-InstallMethod(IsGreensHClass, "for a Green's equivalence class", true,
-        [IsEquivalenceClass], 0,
-    c -> HasIsGreensHClass(c) and IsGreensHClass(c) );
+	if HasIsFinite(X) and IsFinite(X) then 
+          SetIsFiniteSemigroupGreensRelation(rel, true);
+        fi;
 
-InstallMethod(IsGreensDClass, "for a Green's equivalence class", true,
-        [IsEquivalenceClass], 0,
-    c -> HasIsGreensDClass(c) and IsGreensDClass(c) );
-
-
-#############################################################################
-##
-##  The Green's classes for a given Green's relation are just the images
-##  of the Green's relation. 
-##
-#O  GreensRClasses(<semigroup>)
-#O  GreensLClasses(<semigroup>)
-#O  GreensJClasses(<semigroup>)
-#O  GreensDClasses(<semigroup>)
-#O  GreensHClasses(<semigroup>)
-##
-InstallMethod(GreensRClasses, "for generic finite semigroups", true, 
-        [IsSemigroup and HasIsFinite and IsFinite],0,
-    function(s)
-        local classes,     # list of distinct equivalence classes 
-              cl,          # single equivalence class
-              i,           # index variable
-              reps,        # list of all representative for classes
-              singletons;  # list of singletons to be folded into reps
-
-        ## Find all the distinct representatives. These include
-        ##    a representative from each partition and the 
-        ##    singletons.
-        ##
-        singletons := Difference(AsSet(Source(GreensRRelation(s))), 
-             Flat(EquivalenceRelationPartition(GreensRRelation(s))));
-        reps := List(EquivalenceRelationPartition(GreensRRelation(s)),
-                    x-> x[1]);
-     
-        Append(reps, singletons);
-
-        classes :=[];
-
-        ## Create the equivalence class of each representative
-        ##   
-        for i in reps do 
-            cl := GreensRClassOfElement(s,EnumeratorSorted(s)[i] );
-            Add(classes,cl);
-        od;
-
-        return classes; 
+   if HasIsCommutative(X) and IsCommutative(X) then 
+      SetGreensLRelation(X, rel);
+      SetGreensRRelation(X, rel);
+      SetGreensHRelation(X, rel);
+      SetGreensJRelation(X, rel);
+   fi;
+	return rel;
     end);
 
-InstallMethod(GreensLClasses, "for generic finite semigroups", 
-        true, [IsSemigroup and HasIsFinite and IsFinite],0,
-    function(s)
-        local classes,     # list of distinct equivalence classes 
-              cl,          # single equivalence class
-              i,           # index variable
-              reps,        # list of all representative for classes
-              singletons;  # list of singletons to be folded into reps
+InstallMethod(GreensHRelation, "for a semigroup", true, [IsSemigroup], 0,
+function(X)
 
-        ## Find all the distinct representative. These include
-        ##    a representative from each partition and the 
-        ##    singletons.
-        ##
-        singletons := Difference(AsSet(Source(GreensLRelation(s))), 
-             Flat(EquivalenceRelationPartition(GreensLRelation(s))));
-        reps := List(EquivalenceRelationPartition(GreensLRelation(s)),
-                    x-> x[1]);
-     
-        Append(reps, singletons);
+	local fam, rel;
 
-        classes :=[];
+	fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)), 
+		ElementsFamily(FamilyObj(X)) );
 
-        ## Find the equivalence classes of each representative
-        ##
-        for i in reps do 
-            cl := GreensLClassOfElement(s,EnumeratorSorted(s)[i] );
-            Add(classes,cl);
-        od;
+	# Create the default type for the elements.
+        rel :=  Objectify(NewType(fam, 
+		IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
+                and IsGreensHRelation), rec());
 
-        return classes; 
+	SetSource(rel, X);
+	SetRange(rel, X);
+
+	if HasIsFinite(X) and IsFinite(X) then 
+          SetIsFiniteSemigroupGreensRelation(rel, true);
+        fi;
+
+   if HasIsCommutative(X) and IsCommutative(X) then 
+      SetGreensLRelation(X, rel);
+      SetGreensRRelation(X, rel);
+      SetGreensDRelation(X, rel);
+      SetGreensJRelation(X, rel);
+   fi;
+	return rel;
     end);
 
-InstallMethod(GreensDClasses, "for generic finite semigroups", true, 
-    [IsSemigroup and HasIsFinite and IsFinite],0,
-    function(s)
-        local classes,     # list of distinct equivalence classes 
-              cl,          # single equivalence class
-              i,           # index variable
-              reps,        # list of all representative for classes
-              singletons;  # list of singletons to be folded into reps
+InstallMethod( ViewObj, "for GreensJRelation", [IsGreensJRelation],
+    function( obj )
+    Print( "< Green's J-relation on ");
+    ViewObj(Source(obj)); 
+    Print(" >");
+end );
 
-        ## Find all the distinct representative. These include
-        ##    a representative from each partition and the 
-        ##    singletons.
-        ##
-        singletons := Difference(AsSet(Source(GreensDRelation(s))), 
-             Flat(EquivalenceRelationPartition(GreensDRelation(s))));
-        reps := List(EquivalenceRelationPartition(GreensDRelation(s)),
-                    x-> x[1]);
-     
-        Append(reps, singletons);
+InstallMethod( ViewObj, "for GreensDRelation", [IsGreensDRelation],
+    function( obj )
+    Print( "< Green's D-relation on ");
+    ViewObj(Source(obj)); 
+    Print(" >");
+end );
 
-        classes :=[];
+InstallMethod( ViewObj, "for GreensHRelation", [IsGreensHRelation],
+    function( obj )
+    Print( "< Green's H-relation on ");
+    ViewObj(Source(obj)); 
+    Print(" >");
+end );
 
-        ## Find the equivalence classes of each representative
-        ##
-        for i in reps do 
-            cl := GreensDClassOfElement(s,EnumeratorSorted(s)[i] );
-            Add(classes,cl);
-        od;
-
-        return classes; 
-    end);
-
-InstallMethod(GreensHClasses, "for generic finite semigroups", true, 
-    [IsSemigroup and HasIsFinite and IsFinite],0,
-    function(s)
-        local classes,     # list of distinct equivalence classes 
-              cl,          # single equivalence class
-              i,           # index variable
-              reps,        # list of all representative for classes
-              singletons;  # list of singletons to be folded into reps
-
-        ## Find all the distinct representative. These include
-        ##    a representative from each partition and the 
-        ##    singletons.
-        ##
-        singletons := Difference(AsSet(Source(GreensHRelation(s))), 
-             Flat(EquivalenceRelationPartition(GreensHRelation(s))));
-        reps := List(EquivalenceRelationPartition(GreensHRelation(s)),
-                    x-> x[1]);
-     
-        Append(reps, singletons);
-
-        classes :=[];
-
-        ## Find the equivalence classes of each representative
-        ##
-        for i in reps do 
-            cl := GreensHClassOfElement(s,EnumeratorSorted(s)[i] );
-            Add(classes,cl);
-        od;
-
-        return classes; 
-    end);
-
-InstallMethod(GreensJClasses, "for generic finite semigroups", true, 
-    [IsSemigroup and HasIsFinite and IsFinite],0,
-    function(s)
-        local classes,     # list of distinct equivalence classes 
-              cl,          # single equivalence class
-              i,           # index variable
-              reps,        # list of all representative for classes
-              singletons;  # list of singletons to be folded into reps
-
-        ## Find all the distinct representative. These include
-        ##    a representative from each partition and the 
-        ##    singletons.
-        ##
-        singletons := Difference(AsSet(Source(GreensJRelation(s))), 
-             Flat(EquivalenceRelationPartition(GreensJRelation(s))));
-        reps := List(EquivalenceRelationPartition(GreensJRelation(s)),
-                    x-> x[1]);
-     
-        Append(reps, singletons);
-
-        classes :=[];
-
-        ## Find the equivalence classes of each representative
-        ##
-        for i in reps do 
-            cl := GreensJClassOfElement(s,EnumeratorSorted(s)[i] );
-            Add(classes,cl);
-        od;
-
-        return classes; 
-    end);
-
-InstallMethod(GreensHClasses, "for an Green's Class", true,
-    [IsGreensClass],0,
-    function(gc)
-        local e,class;
-
-        class :=[];
-        for e in Elements(gc) do
-            AddSet(class,GreensHClassOfElement(AssociatedSemigroup(gc),e));
-        od;
-        return class;
-    end);
+InstallMethod(\=, "for GreensRelation", [IsGreensRelation, IsGreensRelation], 
+	function(rel1, rel2)
+        if not Source(rel1)=Source(rel2) then 
+          Error("Green's relations do not belong to the same semigroup");
+        elif IsGreensRRelation(rel1) and not IsGreensRRelation(rel2) then 
+          return false;
+        elif IsGreensLRelation(rel1) and not IsGreensLRelation(rel2) then
+          return false;
+	elif IsGreensHRelation(rel1) and not IsGreensHRelation(rel2) then
+          return false;
+	elif IsGreensDRelation(rel1) and not IsGreensDRelation(rel2) then
+          return false;
+	elif IsGreensJRelation(rel1) and not IsGreensJRelation(rel2) then
+          return false;
+        else
+          return true;
+        fi;
+end);
 
 #############################################################################
 ##
 ##  The following operations are constructors for Green's class with
 ##  a given element as a representative. The call is for semigroups
-##  and an element in the semigroup. But the underlying object is
-##  and equivalence class on points.
+##  and an element in the semigroup. This function doesn't check that
+##  the element is actually a member of the semigroup.
 ##
 #O  GreensRClassOfElement(<semigroup>, <representative>)
 #O  GreensLClassOfElement(<semigroup>, <representative>)
@@ -532,372 +227,563 @@ InstallMethod(GreensHClasses, "for an Green's Class", true,
 #O  GreensDClassOfElement(<semigroup>, <representative>)
 #O  GreensHClassOfElement(<semigroup>, <representative>)
 ##
-InstallMethod(GreensRClassOfElement, "for a Green's equivalence class", 
-        true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
+
+#JDM *no* new MONOID method
+
+InstallMethod(GreensRClassOfElement, "for a semigroup", true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
     function(s,e)
         local ec;
 
-        if not e in s then
-            Error("<e> must be an element of the semigroup <s>");
-        fi;
-
-        ## Construct the equivalence class using generic methods
-        ##    i.e. not Green's class calls BUT the underlying
-        ##    set is on points but the representative is the
-        ##    element in the semigroup. Hence the NoCheck version
-        ##    must be used and its behavior must be that the 
-        ##    representative given is not checked to see if it in
-        ##    the underlying collection. This allows for all
-        ##    calls to "generic" equivalence class methods to be
-        ##    used.
-        ##
-        ec := EquivalenceClassOfElementNC(
-                  EquivalenceRelationByPartition(Source(GreensRRelation(s)),
-                      EquivalenceRelationPartition(GreensRRelation(s))),
-                  e );
-
-        ## Set attributes and properties for class to be a 
-        ##     Green's class 
-        ## NOTE: The internal representative is for methods on Greens
-        ##       classes. 
-        ##
-        SetAssociatedSemigroup(ec,s);
-        SetInternalRepresentative(ec,Position(EnumeratorSorted(s),e));
+        ec := EquivalenceClassOfElementNC( GreensRRelation(s), e );
         SetIsGreensClass(ec,true);
         SetIsGreensRClass(ec,true);
         return ec;       
-    end);
+end);
 
-InstallMethod(GreensLClassOfElement, "for a Green's equivalence class", 
-        true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
+InstallMethod(GreensLClassOfElement, "for a semigroup", true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
     function(s,e)
         local ec;
 
-        if not e in s then
-            Error("<e> must be an element of the semigroup <s>");
-        fi;
-
-        ## Construct the equivalence class using generic methods
-        ##    i.e. not Green's class calls BUT the underlying
-        ##    set is on points but the representative is the
-        ##    element in the semigroup. Hence the NoCheck version
-        ##    must be used and its behavior must be that the 
-        ##    representative given is not checked to see if it in
-        ##    the underlying collection. This allows for all
-        ##    calls to "generic" equivalence class methods to be
-        ##    used.
-        ##
-        ec := EquivalenceClassOfElementNC(
-                  EquivalenceRelationByPartition(Source(GreensLRelation(s)),
-                      EquivalenceRelationPartition(GreensLRelation(s))),
-                  e );
-
-        ## Set attributes and properties for class to be a 
-        ##     Green's class 
-        ## NOTE: The internal representative is for methods on Greens
-        ##       classes. 
-        ##
-        SetAssociatedSemigroup(ec,s);
-        SetInternalRepresentative(ec,Position(EnumeratorSorted(s),e));
+        ec := EquivalenceClassOfElementNC( GreensLRelation(s), e );
         SetIsGreensClass(ec,true);
         SetIsGreensLClass(ec,true);
         return ec;       
-    end);
+end);
 
-InstallMethod(GreensJClassOfElement, "for a Green's equivalence class", 
-        true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
+InstallMethod(GreensHClassOfElement, "for a semigroup", true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
     function(s,e)
         local ec;
 
-        if not e in s then
-            Error("<e> must be an element of the semigroup <s>");
-        fi;
+        ec := EquivalenceClassOfElementNC( GreensHRelation(s), e );
+        SetIsGreensClass(ec,true);
+        SetIsGreensHClass(ec,true);
+        return ec;       
+end);
 
-        ## Construct the equivalence class using generic methods
-        ##    i.e. not Green's class calls BUT the underlying
-        ##    set is on points but the representative is the
-        ##    element in the semigroup. Hence the NoCheck version
-        ##    must be used and its behavior must be that the 
-        ##    representative given is not checked to see if it in
-        ##    the underlying collection. This allows for all
-        ##    calls to "generic" equivalence class methods to be
-        ##    used.
-        ##
-        ec := EquivalenceClassOfElementNC(
-                  EquivalenceRelationByPartition(Source(GreensJRelation(s)),
-                      EquivalenceRelationPartition(GreensJRelation(s))),
-                  e );
+InstallMethod(GreensDClassOfElement, "for a semigroup", true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
+    function(s,e)
+        local ec;
 
-        ## Set attributes and properties for class to be a 
-        ##     Green's class 
-        ## NOTE: The internal representative is for methods on Greens
-        ##       classes. 
-        ##
-        SetAssociatedSemigroup(ec,s);
-        SetInternalRepresentative(ec,Position(EnumeratorSorted(s),e));
+        ec := EquivalenceClassOfElementNC( GreensDRelation(s), e );
+        SetIsGreensClass(ec,true);
+        SetIsGreensDClass(ec,true);
+        return ec;       
+end);
+
+InstallMethod(GreensJClassOfElement, "for a semigroup", true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
+    function(s,e)
+        local ec;
+
+        ec := EquivalenceClassOfElementNC( GreensJRelation(s), e );
         SetIsGreensClass(ec,true);
         SetIsGreensJClass(ec,true);
         return ec;       
-    end);
+end);
 
-InstallMethod(GreensHClassOfElement, "for a Green's equivalence class", 
-        true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
-    function(s,e)
-        local ec;
+InstallMethod(CanonicalGreensClass, "for a Green's class", true, [IsGreensClass], 0, 
+function(class)
+local x, canon;
 
-        if not e in s then
-            Error("<e> must be an element of the semigroup <s>");
-        fi;
+if HasIsGreensRClass(class) and IsGreensRClass(class) then 
+  x:=GreensRClasses(ParentAttr(class));
+  canon:=First(x, y-> Representative(class) in y);
+  SetCanonicalGreensClass(class, canon);
+elif HasIsGreensLClass(class) and IsGreensLClass(class) then 
+   x:=GreensLClasses(ParentAttr(class));
+  canon:=First(x, y-> Representative(class) in y);
+  SetCanonicalGreensClass(class, canon);
+elif HasIsGreensHClass(class) and IsGreensHClass(class) then 
+   x:=GreensHClasses(ParentAttr(class));
+  canon:=First(x, y-> Representative(class) in y);
+  SetCanonicalGreensClass(class, canon);
+elif HasIsGreensDClass(class) and IsGreensDClass(class) then 
+   x:=GreensDClasses(ParentAttr(class));
+  canon:=First(x, y-> Representative(class) in y);
+  SetCanonicalGreensClass(class, canon);
+elif HasIsGreensJClass(class) and IsGreensJClass(class) then 
+   x:=GreensJClasses(ParentAttr(class));
+  canon:=First(x, y-> Representative(class) in y);
+  SetCanonicalGreensClass(class, canon);
+fi;
 
-        ## Construct the equivalence class using generic methods
-        ##    i.e. not Green's class calls BUT the underlying
-        ##    set is on points but the representative is the
-        ##    element in the semigroup. Hence the NoCheck version
-        ##    must be used and its behavior must be that the 
-        ##    representative given is not checked to see if it in
-        ##    the underlying collection. This allows for all
-        ##    calls to "generic" equivalence class methods to be
-        ##    used.
-        ##
-        ec := EquivalenceClassOfElementNC(
-                  EquivalenceRelationByPartition(Source(GreensHRelation(s)),
-                      EquivalenceRelationPartition(GreensHRelation(s))),
-                  e );
+return canon;
+end);
 
-        ## Set attributes and properties for class to be a 
-        ##     Green's class 
-        ## NOTE: The internal representative is for methods on Greens
-        ##       classes. 
-        ##
-        SetAssociatedSemigroup(ec,s);
-        SetInternalRepresentative(ec,Position(EnumeratorSorted(s),e));
-        SetIsGreensClass(ec,true);
-        SetIsGreensHClass(ec,true);
-
-        return ec;       
-    end);
-
-InstallMethod(GreensDClassOfElement, "for a Green's equivalence class", 
-        true, [IsSemigroup and HasIsFinite and IsFinite, IsObject], 0,
-    function(s,e)
-        local ec;
-
-        if not e in s then
-            Error("<e> must be an element of the semigroup <s>");
-        fi;
-
-        ## Construct the equivalence class using generic methods
-        ##    i.e. not Green's class calls BUT the underlying
-        ##    set is on points but the representative is the
-        ##    element in the semigroup. Hence the NoCheck version
-        ##    must be used and its behavior must be that the 
-        ##    representative given is not checked to see if it in
-        ##    the underlying collection. This allows for all
-        ##    calls to "generic" equivalence class methods to be
-        ##    used.
-        ##
-        ec := EquivalenceClassOfElementNC(
-                  EquivalenceRelationByPartition(Source(GreensDRelation(s)),
-                      EquivalenceRelationPartition(GreensDRelation(s))),
-                  e );
-
-        ## Set attributes and properties for class to be a 
-        ##     Green's class 
-        ## NOTE: The internal representative is for methods on Greens
-        ##       classes. 
-        ##
-        SetAssociatedSemigroup(ec,s);
-        SetInternalRepresentative(ec,Position(EnumeratorSorted(s),e));
-        SetIsGreensClass(ec,true);
-        SetIsGreensDClass(ec,true);
-
-        return ec;       
-    end);
-
-#############################################################################
+#################
+#################
 ##
-##  These are specialized versions of these operations for equivalence
-##  relations which are also Green's relations. The actual relations
-##  are relations on n points whose elements must be "translated" into
-##  elements of the semigroup.     
+#M ImagesElm(<grelation>, <elm>)
+## 
+## method to find the images under a GreensRelation of an 
+## element of a semigroup.
 ##
-##  This provides a consistent user interface working with Equivalence
-##  relations that are Green's relations and their classes
-##
-#O  EquivalenceClassOfElement 
-#O  EquivalenceClassOfElementNC 
-#O  EquivalenceClasses
-##
-InstallMethod(EquivalenceClassOfElementNC, "for a Green's relation",
-        true, 
-        [IsGreensRelation and IsFiniteSemigroupGreensRelation, IsObject],1,
 
-    function(gr,e) 
-    
-       if HasIsGreensRRelation(gr) then
-            return GreensRClassOfElement(AssociatedSemigroup(gr),e);
-       elif HasIsGreensLRelation(gr) then
-            return GreensLClassOfElement(AssociatedSemigroup(gr),e);
-       elif HasIsGreensJRelation(gr) then 
-            return GreensJClassOfElement(AssociatedSemigroup(gr),e);
-       elif HasIsGreensHRelation(gr) then 
-            return GreensHClassOfElement(AssociatedSemigroup(gr),e);
-       elif HasIsGreensDRelation(gr) then 
-            return GreensDClassOfElement(AssociatedSemigroup(gr),e);
-       else
-            Error("Equivalence class for greens relation -- shouldn't get here");
-       fi;
-    end);
+#JDM *no* new MONOID method
 
-InstallMethod(EquivalenceClassOfElement, "for a Green's relation",
-        true, [IsGreensRelation, IsObject], 1,
-    function(gr,e)
-       
-       if not e in AssociatedSemigroup(gr) then
-           Error("element is not in the source");
-       fi;
-
-       return EquivalenceClassOfElementNC(gr,e);
-    end);
-
-
-InstallMethod(EquivalenceClasses, "for a Green's relation", true,
-        [IsGreensRelation and IsFiniteSemigroupGreensRelation], 0,
-    function(gr)
-        local d, classes, p;
-
-        ## If we should already have a partition then return the equivalence
-        ##     class with first element as represenative 
-        ##
-        classes := [];
-        if HasEquivalenceRelationPartition(gr) then
-            for p in EquivalenceRelationPartition(gr) do
-                Add(classes, EquivalenceClassOfElementNC(gr,
-                        EnumeratorSorted(AssociatedSemigroup(gr))[p[1]] ));
-            od;
-
-            ## Get the singletons
-            ##
-            if Sum(List(EquivalenceRelationPartition(gr),i->Length(i)))<>
-                   Size(Source(gr)) then
-                d := Difference(AsSet(Source(gr)), 
-                         Flat(EquivalenceRelationPartition(gr)));
-                for p in d do
-                    Add(classes, EquivalenceClassOfElementNC(gr,
-                            EnumeratorSorted(AssociatedSemigroup(gr))[p] ));
-                 od;
-            fi;
-            return classes;
-        else
-            TryNextMethod();
-        fi;
-    end);
-
-InstallMethod(\=, "for Green's equivalence classes", true, 
-        [IsGreensClass, IsGreensClass], 0,
-    function(gcL,gcR)
-        if HasInternalRepresentative(gcL) and HasInternalRepresentative(gcR)
-                then
-            
-            return 
-                Set(ImagesElm(
-                EquivalenceClassRelation(gcL),InternalRepresentative(gcL))) =
-                Set(ImagesElm(
-                EquivalenceClassRelation(gcR),InternalRepresentative(gcR)));
-
-        fi;
-        TryNextMethod();
-                
-    end);
-
-InstallMethod(\in, "for Green's equivalence classes", true,
-        [IsObject, IsGreensClass], 0,
-    function(e, gc)
-        if e = Representative(gc) then 
-            return true; 
-        fi;
-        return e in AsList(gc);
-    end);
-
-InstallMethod(\in, "for Green's relation", true,
-        [IsList, IsGreensRelation and IsFiniteSemigroupGreensRelation],0,
-    function(l, gr)
-        if not Length(l)=2 then
-            Error("error: first parameter must be a list of length 2");
-        fi;
+InstallMethod(ImagesElm, "for a Green's equivalence", true, [IsGreensRelation, IsObject], 0,
+        function(rel, elm)
+	local exp, semi;
         
-        if not l[1] in AssociatedSemigroup(gr) or 
-           not l[2] in AssociatedSemigroup(gr) then
-            Error("error: elements in list must be in semigroup");
+	semi:=Source(rel);
+
+        if IsGreensRRelation(rel) then 
+              	exp:=GreensRClassOfElement(semi, elm);
+	elif IsGreensLRelation(rel) then 
+		exp:=GreensLClassOfElement(semi, elm);
+	elif IsGreensHRelation(rel) then 
+		exp:=GreensHClassOfElement(semi, elm);
+	elif IsGreensDRelation(rel) then 
+		exp:=GreensDClassOfElement(semi, elm);
+	elif IsGreensJRelation(rel) then 
+		exp:=GreensJClassOfElement(semi, elm);
+	fi;
+
+	return AsSSortedList(exp);
+ end);
+
+#################
+#################
+##
+#M Successors(<grelation>) 
+## 
+## returns ImagesElm for one element in each class of <grelation>
+##
+
+#JDM *no* new MONOID method
+
+InstallMethod(Successors, "for a Green's equivalence", true, [IsGreensRelation], 0,
+        function( rel )
+	return List(EquivalenceClasses(rel), AsSSortedList);
+end);
+
+#################
+#################
+##
+#M AsSSortedList(<gclass>)
+## 
+## returns the elements of the Greens class <gclass>
+##
+
+#JDM new MONOID method
+
+InstallMethod(AsSSortedList, "for a Green's class", true, [IsGreensClass], 0,
+	x-> AsSSortedList(CanonicalGreensClass(x)));
+        
+#################
+#################
+##
+#M \= (<class1>,<class2>)
+## 
+
+#JDM *no* new MONOID method
+
+InstallMethod(\=, "for Green's classes",
+        true, [IsGreensClass, IsGreensClass], 0,
+	function(class1,class2)
+        if not ParentAttr(class1)=ParentAttr(class2) then 
+ 	  Error("Green's classes do not belong to the same semigroup");
+        elif not EquivalenceClassRelation(class1)=EquivalenceClassRelation(class2) then
+          Error("Green's classes are not of the same type");        
+        else 
+          return Representative(class1) in class2;   
         fi;
+end);
 
-        return l[1] in EquivalenceClassOfElement(gr,l[2]);
-
-    end);
-
-#############################################################################
+#################
+#################
 ##
-#M  Enumerator(<greens class>)
+#M Size(<gclass>)
+## 
+## size of a Greens class
 ##
-##  Enumerator of a Green's class which returns elements of the semigroup
-##  rather than the elements of the class which are sets of points.
-##
-InstallMethod(Enumerator, "for a Green's equivalence class", true,
-        [IsGreensClass], 0,
-    function(gc)
-        return EnumeratorSorted(AssociatedSemigroup(gc))
-            {ImagesElm(EquivalenceClassRelation(gc), 
-                InternalRepresentative(gc))};
-    end);
 
+#JDM *no* new MONOID method
+
+InstallMethod(Size, "for Green's classes", true, [IsGreensClass], 0,
+function(class)
+   return Size(Elements(class));
+end);
+
+#################
+#################
+##
+#M <elm> in <gclass>
+##
+## membership test for a Greens class
+##
+
+# JDM new MONOID method
+
+InstallMethod(\in, "membership test of Green's class", true, [IsObject, IsGreensClass], 0, 
+           function(elm, class)
+
+	if elm=Representative(class) then
+	   return true;
+        fi;
+	return elm in Elements(class);
+ end);
+
+#################
+#################
+##
+#M EquivalenceRelationPartition(<grelation>)
+## 
+## 
+
+#JDM *no* new MONOID method
+
+InstallMethod(EquivalenceRelationPartition, "for a Green's equivalence", true, [IsEquivalenceRelation and IsGreensRelation], 0, 
+function(rel)
+
+	return Filtered(Successors(rel), x-> not Length(x)=1);
+
+end);
+
+#################
+#################
+##
+#M EquivalenceClassOfElementNC(<grelation>, <elt>)
+## 
+## new methods required so that what is returned by this function 
+## is the appropriate type of Green's classs
+
+InstallOtherMethod(EquivalenceClassOfElementNC, "no check", true,
+        [IsEquivalenceRelation and IsGreensRelation, IsObject], 0,
+   function(rel, rep)
+
+       local new;
+       
+       new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)),
+                 IsEquivalenceClass and IsEquivalenceClassDefaultRep), rec());
+
+       SetEquivalenceClassRelation(new, rel);
+       SetRepresentative(new, rep);
+       SetParent(new, UnderlyingDomainOfBinaryRelation(rel));
+       if IsGreensRRelation(rel) then 
+         SetIsGreensRClass(new, true);
+       elif IsGreensLRelation(rel) then 
+         SetIsGreensLClass(new, true);
+       elif IsGreensHRelation(rel) then 
+         SetIsGreensHClass(new, true);       
+       elif IsGreensDRelation(rel) then 
+         SetIsGreensDClass(new, true);
+       elif IsGreensJRelation(rel) then 
+         SetIsGreensJClass(new, true);
+       fi;
+
+return new;
+ end);
+
+#################
+#################
+##
+#M EquivalenceClasses(<grelation>)
+## 
+## 
+
+#JDM *no* new MONOID method
+
+InstallMethod(EquivalenceClasses, "for a Green's R-relation", true, [IsEquivalenceRelation and IsGreensRRelation], 0, 
+x->GreensRClasses(Source(x)));
+
+InstallMethod(EquivalenceClasses, "for a Green's L-relation", true, [IsEquivalenceRelation and IsGreensLRelation], 0, 
+x->GreensLClasses(Source(x)));
+
+InstallMethod(EquivalenceClasses, "for a Green's H-relation", true, [IsEquivalenceRelation and IsGreensHRelation], 0, 
+x->GreensHClasses(Source(x)));
+
+InstallMethod(EquivalenceClasses, "for a Green's D-relation", true, [IsEquivalenceRelation and IsGreensDRelation], 0, 
+x->GreensDClasses(Source(x)));
+
+InstallMethod(EquivalenceClasses, "for a Green's J-relation", true, [IsEquivalenceRelation and IsGreensJRelation], 0, 
+x->GreensJClasses(Source(x)));
+
+#################
+#################
+##
+#M  RClassOfHClass(<hclass>)
+#M  LClassOfHClass(<hclass>)
+#M  DClassOfHClass(<hclass>)
+#M  DClassOfLClass(<lclass>)
+#M  DClassOfRClass(<rclass>)
+##
+##  returns the XClass containing <hclass>, <lclass>, or <rclass> 
+
+InstallMethod(RClassOfHClass, "for a Green's H-class", true, [IsGreensHClass], 0,
+    function(hc)
+    local x; 
+    x:=GreensRClasses(ParentAttr(hc));
+    return First(x, y-> Representative(hc) in y);
+end);
+
+InstallMethod(LClassOfHClass, "for a Green's H-class", true, [IsGreensHClass], 0,
+  function(hc)
+       local x; 
+    x:=GreensLClasses(ParentAttr(hc));
+    return First(x, y-> Representative(hc) in y);
+end);
+
+InstallMethod(DClassOfHClass, "for a Green's H-class", true, [IsGreensHClass], 0,
+ x-> DClassOfHClass(CanonicalGreensClass(x)));
+
+InstallMethod(DClassOfLClass, "for a Green's L-class", true, [IsGreensLClass], 0,
+ x-> DClassOfLClass(CanonicalGreensClass(x)));
+
+InstallMethod(DClassOfRClass, "for a Green's R-class", true, [IsGreensRClass], 0,
+ x-> DClassOfRClass(CanonicalGreensClass(x)));
+
+#################
+#################
+##
+#M  GreensRClasses(<semigroup>)
+#M  GreensLClasses(<semigroup>)
+#M  GreensJClasses(<semigroup>)
+#M  GreensDClasses(<semigroup>)
+#M  GreensHClasses(<semigroup>)
+##
+##  find all the classes of a particular type
+
+# JDM new MONOID method
+
+InstallMethod(GreensRClasses, "for a semigroup", true, [IsSemigroup], 0,
+function( semi )
+local rrel, sc, i, classes, x, rc;	
+
+  rrel:=GreensRRelation(semi);
+   
+   if not HasRightCayleyGraphSemigroup(semi) then           
+     FroidurePinExtendedAlg(semi);
+   fi;
+
+   sc:=STRONGLY_CONNECTED_COMPONENTS_DIGRAPH(RightCayleyGraphSemigroup(semi));
+   
+   #for faster calculation of Green's D-, J- and H-rels
+   SetInternalRepGreensRelation(rrel, sc); classes:=[];  
+
+   for i in [1..Length(sc)] do
+     rc:=GreensRClassOfElement(semi, Elements(semi)[sc[i][1]]);
+     Add(classes, rc);
+     SetAsSSortedList(classes[i], Elements(semi){sc[i]});
+     SetSize(classes[i], Size(sc[i]));
+   od;
+         
+   SetGreensRClasses(semi,classes);
+
+   return classes;
+
+end);
+
+InstallOtherMethod(GreensRClasses, "for a Green's D-class", true, [IsGreensDClass], 0,
+x-> GreensRClasses(CanonicalGreensClass(x)));
+
+InstallOtherMethod(GreensLClasses, "for a semigroup", true, [IsSemigroup], 0,
+   function( semi )
+   local lrel, sc, i, classes, x, lc;	
+   
+   lrel:=GreensLRelation(semi);
+   
+   if not HasLeftCayleyGraphSemigroup(semi) then           
+     FroidurePinExtendedAlg(semi);
+   fi;
+
+   sc:=STRONGLY_CONNECTED_COMPONENTS_DIGRAPH(LeftCayleyGraphSemigroup(semi));
+          
+   #for faster calculation of Green's D-,J- and H-rels
+   SetInternalRepGreensRelation(lrel, sc); classes:=[];
+
+   for i in [1..Length(sc)] do
+     lc:=GreensLClassOfElement(semi,Elements(semi)[sc[i][1]]);
+     Add(classes, lc);
+     SetAsSSortedList(lc, Elements(semi){sc[i]});
+     SetSize(lc, Size(sc[i]));
+   od;
+   
+   SetGreensLClasses(semi,classes);
+   
+   return classes;
+
+end);
+
+InstallOtherMethod(GreensLClasses, "for a Green's D-class", true, [IsGreensDClass], 0,
+x-> GreensLClasses(CanonicalGreensClass(x)));
+
+InstallOtherMethod(GreensJClasses, "for a semigroup", true, [IsSemigroup and IsFinite], 0,
+    function(semi)
+
+    ## Since we are in the finite case compute the Green's D relation
+    ## and set the GreensJRelation property to the returned equivalence
+
+    return GreensDClasses(semi);
+end);
+
+InstallMethod(GreensDClasses, "for a semigroup", true, [IsSemigroup], 0,
+    function(semi)
+    local lrel, rrel, INT_L, INT_R, elts, INT_Rclasses, INT_Lclasses, INT_Dclasses,
+          index, pos, INT_rc, INT_hc, INT_lc, new, newINT, Dclasses, Lclasses, Rclasses, 
+          Hclasses, LHclasses, RHclasses, i, j, positions, R, L;
+
+     ## compute the join of the R- and L-relations
+
+     L:=GreensLClasses(semi); R:=GreensRClasses(semi);
+     lrel:=GreensLRelation(semi); rrel:=GreensRRelation(semi);
+     INT_L:=InternalRepGreensRelation(lrel); 
+     INT_R:=InternalRepGreensRelation(rrel); 
+     elts:=Elements(semi);
+
+     #these are to collect the R and L-classes that comprise the D-class
+     INT_Rclasses:=[]; INT_Lclasses:=[]; INT_Dclasses:=[];
+     Dclasses:=[]; Lclasses:=[]; Rclasses:=[]; Hclasses:=[];
+     RHclasses:=List(INT_R, x-> []); LHclasses:=List(INT_L, x->[]); positions:=[];
+
+     index:=0;
+
+     for i in [1..Length(INT_L)] do
+       INT_lc:=INT_L[i];
+       pos:=PositionProperty(INT_Dclasses, x->IsSubset(x, INT_lc));
+
+       if pos=fail then  
+
+          index:=index+1; Add(Rclasses, []); Add(Hclasses, []); Add(positions, []);
+          Add(INT_Rclasses, []);
+
+          for j in [1..Length(INT_R)] do 
+            INT_rc:=INT_R[j]; 
+            INT_hc:=Intersection(INT_rc, INT_lc);
+            if INT_hc<>[] then 
+	      new:=GreensHClassOfElement(semi, elts[INT_hc[1]]);	  
+              SetAsSSortedList(new, elts{INT_hc});
+       	      SetSize(new, Length(INT_hc));
+              Add(Hclasses[index], new);
+              Add(RHclasses[j], new); Add(LHclasses[i], new);
+
+	      Add(INT_Rclasses[index], INT_rc);
+   
+              new:=R[j];	  
+              Add(Rclasses[index], new);
+              Add(positions[index], j);
+              
+  	    fi;
+          od;
+	
+	  newINT:=Concatenation(INT_Rclasses[index]);
+ 	  Add(INT_Dclasses, newINT);
+
+	  new:=GreensDClassOfElement(semi, elts[newINT[1]]);	  
+          SetAsSSortedList(new, elts{newINT});
+	  SetSize(new, Length(newINT));
+          SetGreensRClasses(new, Rclasses[index]); 
+          Add(Dclasses, new);	  
+
+	  Add(INT_Lclasses, [INT_lc]);
+          
+          SetDClassOfLClass(L[i], Dclasses[index]);
+          Add(Lclasses, [L[i]]);
+
+       else
+         Add(INT_Lclasses[pos], INT_lc);
+
+         SetDClassOfLClass(L[i], Dclasses[pos]);
+         Add(Lclasses[pos], L[i]);
+       
+ 	 for j in [1..Length(INT_Rclasses[pos])] do 
+           INT_rc:=INT_Rclasses[pos][j];
+           INT_hc:=Intersection(INT_rc, INT_lc);
+
+           new:=GreensHClassOfElement(semi, elts[INT_hc[1]]);
+	   SetAsSSortedList(new, elts{INT_hc});
+       	   SetSize(new, Length(INT_hc));
+           Add(Hclasses[pos], new);     
+           SetLClassOfHClass(new, GreensLClasses(semi)[i]);
+           Add(LHclasses[i], new);
+           SetRClassOfHClass(new, GreensRClasses(semi)[positions[pos][j]]);
+           Add(RHclasses[positions[pos][j]], new);      
+         od;
+       fi;
+     od; 
+     
+     SetGreensDClasses(semi, Dclasses);
+     SetGreensHClasses(semi, Concatenation(Hclasses)); 
+     
+     for i in [1..index] do 
+       for j in [1..Length(Rclasses[i])] do 
+         SetDClassOfRClass(Rclasses[i][j], Dclasses[i]);
+       od;
+       for j in [1..Length(Hclasses[i])] do
+         SetDClassOfHClass(Hclasses[i][j], Dclasses[i]);
+       od;
+       SetGreensLClasses(Dclasses[i], Lclasses[i]);
+       SetGreensHClasses(Dclasses[i], Hclasses[i]);
+     od;
+
+     for i in [1..Length(INT_R)] do 
+       SetGreensHClasses(GreensRClasses(semi)[i],  RHclasses[i]);
+     od;
+     for i in [1..Length(INT_L)] do 
+       SetGreensHClasses(GreensLClasses(semi)[i],  LHclasses[i]);
+     od;          
+     
+      return Dclasses;
+
+end);
+
+InstallMethod(GreensHClasses, "for a semigroup", true, [IsSemigroup], 0,
+function(semi)
+
+GreensDClasses(semi);
+return GreensHClasses(semi);
+
+end);
+    
+InstallOtherMethod(GreensHClasses, "for a Green's Class", true, [IsGreensDClass], 0,
+x-> GreensHClasses(CanonicalGreensClass(x)));
+
+InstallOtherMethod(GreensHClasses, "for a Green's Class", true, [IsGreensRClass], 0,
+x-> GreensHClasses(CanonicalGreensClass(x)));
+
+InstallOtherMethod(GreensHClasses, "for a Green's Class", true, [IsGreensLClass], 0,
+x-> GreensHClasses(CanonicalGreensClass(x)));
 
 #############################################################################
 ##
 #O  IsRegularDClass(<greens class>)
 ##
-##  Returns true if the class contains an idempotent
-##
+##  returns true if the class contains an idempotent
+##  
+
 InstallMethod(IsRegularDClass, "for a Green's D class", true,
         [IsGreensDClass],0,
-    gc ->ForAny(gc, i->IsIdempotent(i)) );
-
-
-
-InstallMethod(IsGreensLessThanOrEqual, "for two Green's equivalence classes",
-        true, [IsGreensClass, IsGreensClass],0,
+        x-> ForAny(GreensRClassOfElement(ParentAttr(x), Representative(x)), 
+		    IsIdempotent));
+    
+InstallMethod(IsGreensLessThanOrEqual, "for two Green's  classes",
+        true, [IsGreensClass, IsGreensClass], 0,
     function(gcL,gcR)
         local a,b;
 
         a := Representative(gcL);
         b := Representative(gcR);
 
-        if IsGreensRClass(gcL) and IsGreensRClass(gcR) then
-            return a in 
-                RightMagmaIdealByGenerators(AssociatedSemigroup(gcR),[b]); 
+        if HasIsGreensRClass(gcL) and IsGreensRClass(gcL) 
+         and HasIsGreensRClass(gcR) and IsGreensRClass(gcR) then
+           return a in 
+                RightMagmaIdealByGenerators(ParentAttr(gcR),[b]); 
         fi;
-        if IsGreensLClass(gcL) and IsGreensLClass(gcR) then
+        if HasIsGreensLClass(gcL) and IsGreensLClass(gcL) 
+         and HasIsGreensLClass(gcL) and IsGreensLClass(gcR) then
             return a in 
-                LeftMagmaIdealByGenerators(AssociatedSemigroup(gcR),[b]); 
+                LeftMagmaIdealByGenerators(ParentAttr(gcR),[b]); 
         fi;
-        if (IsGreensJClass(gcL) and IsGreensJClass(gcR)) or 
-           (IsGreensDClass(gcL) and IsGreensDClass(gcR) and 
-              IsFinite(AssociatedSemigroup(gcL))) then
+        if (HasIsGreensJClass(gcL) and IsGreensJClass(gcL) 
+         and HasIsGreensJClass(gcL) and IsGreensJClass(gcR)) or 
+           (HasIsGreensDClass(gcL) and IsGreensDClass(gcL) 
+         and HasIsGreensDClass(gcL) and IsGreensDClass(gcR) and 
+              IsFinite(ParentAttr(gcL))) then
             return a in 
-                MagmaIdealByGenerators(AssociatedSemigroup(gcR),[b]);
+                MagmaIdealByGenerators(ParentAttr(gcR),[b]);
         fi;
 
-            
-
-        Error("Green's classes are not of the same type or not L,R, or J classes");
+        Error("Green's classes are not of the same type or not L, R, or J classes");
     end);
-
-InstallMethod(RClassOfHClass, "for a Green's H class", true, [IsGreensHClass],0,
-    hc -> GreensRClassOfElement(AssociatedSemigroup(hc), Representative(hc))
-    );
-
-InstallMethod(LClassOfHClass, "for a Green's H class", true, [IsGreensHClass],0,
-    hc -> GreensLClassOfElement(AssociatedSemigroup(hc), Representative(hc))
-    );
 
 #############################################################################
 ##
@@ -906,9 +792,8 @@ InstallMethod(LClassOfHClass, "for a Green's H class", true, [IsGreensHClass],0,
 ##  returns true if the Greens H-class <H> is a group, which in turn is
 ##  true if and only if <H>^2 intersects <H>.
 ##
-InstallMethod(IsGroupHClass, "for generic H class", true,
-    [IsGreensHClass], 0, h->Representative(h)^2 in h);
-
+InstallMethod(IsGroupHClass, "for Green's H-class", true,
+    [IsGreensHClass], 0, h->ForAny(h, IsIdempotent));
 
 ############################################################################
 ##
@@ -918,62 +803,40 @@ InstallMethod(IsGroupHClass, "for generic H class", true,
 ##  returns a group H class of the D class, or `fail' if there is no
 ##  group H class.
 ##
-InstallMethod(GroupHClassOfGreensDClass, "for finite H classes", true,
-    [IsGreensDClass], 0, 
-    function(d)
-        local idm, hc;
-        if not IsRegularDClass(d) then return fail; fi;
+## (if d contains an idempotent, then it is regular, and so contains
+##  at least one idempotent in *each* R-class.) 
 
-        idm := First(d,IsIdempotent);
-        return GreensHClassOfElement(AssociatedSemigroup(d),idm);
-       
+InstallMethod(GroupHClassOfGreensDClass, "for a Green's H-class", true,
+    [IsGreensDClass], 0, 
+
+    function(d)
+        local idm, rcs;
+        
+        rcs:=GreensRClasses(d);
+
+        idm := First(rcs[1], IsIdempotent);
+        if idm=fail then 
+          return fail;
+        else
+          return GreensHClassOfElement(ParentAttr(d),idm);
+        fi;
     end);
 
 #############################################################################
 ##
 #A  EggBoxOfDClass( <D> )
 ##
+## this returns a matrix with the j-th entry in the i-th row
+## being the intersection of the i-th R-class and the j-th L-class 
+##Ê(by the construction of GreensHClasses)
+##
+
 InstallMethod(EggBoxOfDClass, "for a Green's D class", true, 
         [IsGreensDClass],0,
     function(d)
 
-        local hc,
-              rc,
-              lc,
-              intersect, ebmatrix, tmp,
-              i,j,k;
-
-        rc := []; lc := []; hc := [];
-
-        for i in d do
-            Add(rc, GreensRClassOfElement(AssociatedSemigroup(d),i));
-            Add(lc, GreensLClassOfElement(AssociatedSemigroup(d),i));
-            Add(hc, GreensHClassOfElement(AssociatedSemigroup(d),i));
-        od;
-
-        rc := DuplicateFreeList(rc);
-        lc := DuplicateFreeList(lc);
-        hc := DuplicateFreeList(hc);
-
-        ebmatrix := [];
-
-        for i in rc do
-           tmp := [];
-           for j in lc do
-               intersect := 
-                   Intersection(
-                       ImagesElm(EquivalenceClassRelation(i), 
-                           InternalRepresentative(i)), 
-                       ImagesElm(EquivalenceClassRelation(j), 
-                           InternalRepresentative(j)) ); 
-                Add(tmp,GreensHClassOfElement(AssociatedSemigroup(d),
-                    EnumeratorSorted(AssociatedSemigroup(d))[intersect[1]]) );
-           od;
-           Add(ebmatrix, tmp);
-        od;     
-
-        return ebmatrix;
-    end);
+    return List(GreensRClasses(d), x-> GreensHClasses(x));
+end);
 
 #############################################################################
 ##
@@ -982,6 +845,7 @@ InstallMethod(EggBoxOfDClass, "for a Green's D class", true,
 ##  A "picture" of the D class <D>, as an array of 1s and 0s.
 ##  A 1 represents a group H class.
 ##
+
 InstallGlobalFunction(DisplayEggBoxOfDClass, 
     function(d)
         if not IsGreensDClass(d) then
@@ -1000,463 +864,299 @@ InstallGlobalFunction(DisplayEggBoxOfDClass,
        );
     end);
  
-
 #############################################################################
 ##
-##        Transformation Semigroups
+#M  DisplayEggBoxesOfSemigroup( <S> )
 ##
-#############################################################################
 
-#############################################################################
-##
-#M  GreensRRelation(<semigroup>)
-#M  GreensLRelation(<semigroup>)
-#M  GreensJRelation(<semigroup>)
-#M  GreensDRelation(<semigroup>)
-#M  GreensHRelation(<semigroup>)
-##
-##  Green's relations for Transformation semigroups
-##
-##  Currently resort to the finite generic case
-##
-InstallMethod(GreensRRelation, "for transformation semigroups", true,
-        [IsSemigroup and IsTransformationSemigroup],0,
-    function(s)
-        TryNextMethod();
-    end);
+InstallMethod(DisplayEggBoxesOfSemigroup, "for finite semigroups",
+    [IsTransformationSemigroup],
+function(X)
+local dclasses, layer, class, len, i, D;
 
-InstallMethod(GreensLRelation, "for transformation semigroups", true,
-        [IsSemigroup and IsTransformationSemigroup],0,
-    function(s)
-        TryNextMethod();
-    end);
+   dclasses:=GreensDClasses(X);
+   layer:=List([1..DegreeOfTransformationSemigroup(X)], x-> []);
+  
+   for class in dclasses do 
+     Add(layer[RankOfTransformation(Representative(class))], [class,  	
+	Size(GreensHClasses(class)[1]), IsRegularDClass(class)]);
+   od;
 
-InstallMethod(GreensJRelation, "for transformation semigroups", true,
-        [IsSemigroup and IsTransformationSemigroup],0,
-    function(s)
-        TryNextMethod();
-    end);
+   len:= Length(layer);
+   for i in [len, len-1..1] do
+        if layer[i] <> [] then
+	    for D in layer[i] do
+	  	Print("Rank ", i, ", H-class size ", D[2]);
+		if D[3] then 
+                  Print(", regular \n");
+ 	        else
+ 		  Print(", non-regular \n");
+                fi; 
 
-InstallMethod(GreensDRelation, "for transformation semigroups", true,
-        [IsSemigroup and IsTransformationSemigroup],0,
-    function(s)
-        TryNextMethod();
-    end);
-
-InstallMethod(GreensHRelation, "for transformation semigroups", true,
-        [IsSemigroup and IsTransformationSemigroup],0,
-    function(s)
-        TryNextMethod();
-    end);
-
-
-#############################################################################
-##
-##        Full Transformation Semigroups
-##
-#############################################################################
-
-#############################################################################
-##
-#M  GreensRRelation(<semigroup>)
-#M  GreensLRelation(<semigroup>)
-#M  GreensJRelation(<semigroup>)
-#M  GreensDRelation(<semigroup>)
-#M  GreensHRelation(<semigroup>)
-##
-##  Green's relations for Full Transformation semigroups
-##
-##  Currently resort to the finite generic case
-##
-InstallMethod(GreensRRelation, "for full transformation semigroups", true,
-        [IsSemigroup and IsFullTransformationSemigroup],0,
-    function(s)
-        TryNextMethod();
-    end);
-
-InstallMethod(GreensLRelation, "for full transformation semigroups", true,
-        [IsSemigroup and IsFullTransformationSemigroup],0,
-    function(s)
-        TryNextMethod();
-    end);
-
-InstallMethod(GreensJRelation, "for full transformation semigroups", true,
-        [IsSemigroup and IsFullTransformationSemigroup],0,
-    function(s)
-        TryNextMethod();
-    end);
-
-InstallMethod(GreensDRelation, "for full transformation semigroups", true,
-        [IsSemigroup and IsFullTransformationSemigroup],0,
-    function(s)
-        TryNextMethod();
-    end);
-
-InstallMethod(GreensHRelation, "for full transformation semigroups", true,
-        [IsSemigroup and IsFullTransformationSemigroup],0,
-    function(s)
-        TryNextMethod();
-    end);
-
-#############################################################################
-##
-##        Generic Semigroups -- we do not know their form nor their
-##        cardinality.
-##
-#############################################################################
-
-#############################################################################
-##
-#M  GreensRRelation(<semigroup>)
-#M  GreensLRelation(<semigroup>)
-#M  GreensJRelation(<semigroup>)
-#M  GreensDRelation(<semigroup>)
-#M  GreensHRelation(<semigroup>)
-##
-##  Green's relations for generic semigroups
-##
-##
-InstallMethod(GreensRRelation, "for generic semigroups", true,
-        [IsSemigroup], 0,
-    function(s)
-        local sc;
-
-        sc := EquivalenceRelationByProperty(s,IsGreensRRelation);
-        
-        if HasIsCommutative(s) and IsCommutative(s) then
-            if HasIsGreensLRelation(s) then
-                SetIsSemigroupCongruence(IsGreensLRelation(s),true);
-                SetIsGreensRRelation(IsGreensLRelation(s),true);
-                return GreensLRelation(s);
-            elif HasIsGreensJRelation(s) then
-                SetIsSemigroupCongruence(IsGreensJRelation(s),true);
-                SetIsGreensRRelation(IsGreensJRelation(s),true);
-                return GreensJRelation(s);
-            elif HasIsGreensDRelation(s) then
-                SetIsSemigroupCongruence(IsGreensDRelation(s),true);
-                SetIsGreensRRelation(IsGreensDRelation(s),true);
-                return GreensDRelation(s);
-            elif HasIsGreensHRelation(s) then
-                SetIsSemigroupCongruence(IsGreensHRelation(s),true);
-                SetIsGreensRRelation(IsGreensHRelation(s),true);
-                return GreensHRelation(s);
-            else
-                SetIsGreensRelation(sc,true);
-                SetAssociatedSemigroup(sc,s);
-                SetIsSemigroupCongruence(sc,true);
-                return sc;
-            fi;    
+                DisplayEggBoxOfDClass(D[1]);	
+	    
+            od;
         fi;
-        
-        SetIsGreensRelation(sc,true);
-        SetIsGreensRRelation(sc,true);  
-        SetAssociatedSemigroup(sc,s);
-        SetIsLeftSemigroupCongruence(sc,true);
+   od;
+end ); 
 
-        return sc;
-    end);
-
-InstallMethod(GreensLRelation, "for generic semigroups", true,
-        [IsSemigroup], 0,
-    function(s)
-        local sc;
-        sc := EquivalenceRelationByProperty(s,IsGreensLRelation);
-        
-        if HasIsCommutative(s) and IsCommutative(s) then
-            if HasIsGreensRRelation(s) then
-                SetIsSemigroupCongruence(IsGreensRRelation(s),true);
-                SetIsGreensLRelation(IsGreensRRelation(s),true);
-                return GreensRRelation(s);
-            elif HasIsGreensJRelation(s) then
-                SetIsSemigroupCongruence(IsGreensJRelation(s),true);
-                SetIsGreensLRelation(IsGreensJRelation(s),true);
-                return GreensJRelation(s);
-            elif HasIsGreensDRelation(s) then
-                SetIsSemigroupCongruence(IsGreensDRelation(s),true);
-                SetIsGreensLRelation(IsGreensDRelation(s),true);
-                return GreensDRelation(s);
-            elif HasIsGreensHRelation(s) then
-                SetIsSemigroupCongruence(IsGreensHRelation(s),true);
-                SetIsGreensLRelation(IsGreensHRelation(s),true);
-                return GreensHRelation(s);
-            else
-                SetIsGreensRelation(sc,true);
-                SetAssociatedSemigroup(sc,s);
-                SetIsSemigroupCongruence(sc,true);
-                return sc;
-            fi;    
-        fi;
-        
-        SetIsGreensRelation(sc,true);
-        SetIsGreensLRelation(sc,true);  
-        SetAssociatedSemigroup(sc,s);
-        SetIsRightSemigroupCongruence(sc,true);
-        
-        return sc;
-    end);
-
-InstallMethod(GreensJRelation, "for generic semigroups", true,
-        [IsSemigroup], 0,
-    function(s)
-        local sc;
-        sc := EquivalenceRelationByProperty(s,IsGreensJRelation);
-        
-        if HasIsCommutative(s) and IsCommutative(s) then
-            if HasIsGreensRRelation(s) then
-                SetIsSemigroupCongruence(IsGreensRRelation(s),true);
-                SetIsGreensJRelation(IsGreensRRelation(s),true);
-                return GreensRRelation(s);
-            elif HasIsGreensLRelation(s) then
-                SetIsSemigroupCongruence(IsGreensLRelation(s),true);
-                SetIsGreensJRelation(IsGreensLRelation(s),true);
-                return GreensLRelation(s);
-            elif HasIsGreensDRelation(s) then
-                SetIsSemigroupCongruence(IsGreensDRelation(s),true);
-                SetIsGreensJRelation(IsGreensDRelation(s),true);
-                return GreensDRelation(s);
-            elif HasIsGreensHRelation(s) then
-                SetIsSemigroupCongruence(IsGreensHRelation(s),true);
-                SetIsGreensJRelation(IsGreensHRelation(s),true);
-                return GreensHRelation(s);
-            else
-                SetIsGreensRelation(sc,true);
-                SetAssociatedSemigroup(sc,s);
-                SetIsSemigroupCongruence(sc,true);
-                return sc;
-            fi;    
-        fi;
-        
-        SetIsGreensRelation(sc,true);
-        SetIsGreensJRelation(sc,true);  
-        SetAssociatedSemigroup(sc,s);
-
-        return sc;
-    end);
-
-InstallMethod(GreensDRelation, "for generic semigroups", true,
-        [IsSemigroup], 0,
-    function(s)
-        local sc;
-        sc := EquivalenceRelationByProperty(s,IsGreensDRelation);
-        
-        if HasIsCommutative(s) and IsCommutative(s) then
-            if HasIsGreensRRelation(s) then
-                SetIsSemigroupCongruence(IsGreensRRelation(s),true);
-                SetIsGreensDRelation(IsGreensRRelation(s),true);
-                return GreensRRelation(s);
-            elif HasIsGreensLRelation(s) then
-                SetIsSemigroupCongruence(IsGreensLRelation(s),true);
-                SetIsGreensDRelation(IsGreensLRelation(s),true);
-                return GreensLRelation(s);
-            elif HasIsGreensJRelation(s) then
-                SetIsSemigroupCongruence(IsGreensJRelation(s),true);
-                SetIsGreensDRelation(IsGreensJRelation(s),true);
-                return GreensJRelation(s);
-            elif HasIsGreensHRelation(s) then
-                SetIsSemigroupCongruence(IsGreensHRelation(s),true);
-                SetIsGreensDRelation(IsGreensHRelation(s),true);
-                return GreensHRelation(s);
-            else
-                SetIsGreensRelation(sc,true);
-                SetAssociatedSemigroup(sc,s);
-                SetIsSemigroupCongruence(sc,true);
-                return sc;
-            fi;    
-        fi;
-        
-        SetIsGreensRelation(sc,true);
-        SetIsGreensDRelation(sc,true);  
-        SetAssociatedSemigroup(sc,s);
-
-        return sc;
-    end);
-
-InstallMethod(GreensHRelation, "for generic semigroups", true,
-        [IsSemigroup], 0,
-    function(s)
-        local sc;
-        sc := EquivalenceRelationByProperty(s,IsGreensHRelation);
-        
-        if HasIsCommutative(s) and IsCommutative(s) then
-            if HasIsGreensRRelation(s) then
-                SetIsSemigroupCongruence(IsGreensRRelation(s),true);
-                SetIsGreensHRelation(IsGreensRRelation(s),true);
-                return GreensRRelation(s);
-            elif HasIsGreensLRelation(s) then
-                SetIsSemigroupCongruence(IsGreensLRelation(s),true);
-                SetIsGreensHRelation(IsGreensLRelation(s),true);
-                return GreensLRelation(s);
-            elif HasIsGreensJRelation(s) then
-                SetIsSemigroupCongruence(IsGreensJRelation(s),true);
-                SetIsGreensHRelation(IsGreensJRelation(s),true);
-                return GreensJRelation(s);
-            elif HasIsGreensDRelation(s) then
-                SetIsSemigroupCongruence(IsGreensDRelation(s),true);
-                SetIsGreensHRelation(IsGreensDRelation(s),true);
-                return GreensDRelation(s);
-            else
-                SetIsGreensRelation(sc,true);
-                SetAssociatedSemigroup(sc,s);
-                SetIsSemigroupCongruence(sc,true);
-                return sc;
-            fi;    
-        fi;
-        
-        
-        SetIsGreensRelation(sc,true);
-        SetIsGreensHRelation(sc,true);  
-        SetAssociatedSemigroup(sc,s);
-
-        return sc;
-    end);
-
-
+####################
+####################
 ##
+#M FroidurePinSimpleAlg(<semigroup>);
 ##
+## for details of the workings of this algorithm see:
+## 
+## V. Froidure, and J.-E. Pin, Algorithms for computing finite semigroups.     
+## Foundations of computational mathematics (Rio de Janeiro, 1997), 112-126,  
+## Springer, Berlin,  1997. 
+## 
+## this function returns [elements of <semigroup>, set of defining relations for 
+## <semigroup>, the fp semigroup isomorphic to <semigroup>]. This is only included
+## because it may give a quicker way of finding a presentation for <semigroup>
+## than the extended algorithm
 ##
-InstallMethod(GreensRClassOfElement, "for generic semigroups", true,
-        [IsSemigroup,IsObject], 0,
-    function(s,e)
-        local ec;
 
-        if not e in s then
-            Error("<e> must be an element of the semigroup <s>");
-        fi;
-        
-        ec := EquivalenceClassOfElement(GreensRRelation(s),e);
-        SetAssociatedSemigroup(ec,s);
-        SetIsGreensClass(ec,true);
-        SetIsGreensRClass(ec,true);
+InstallMethod(FroidurePinSimpleAlg, true, [IsMonoid and HasIsFinite and IsFinite], 0,
+ function(semi)
+ local  gens, concreteelts, free, freegens, fpelts, rules, Last, upos, u, i, newelt, newword, j, new;
 
-        return ec;
-    end);
+gens:=GeneratorsOfMonoid(semi);
+concreteelts:=[One(semi)];
 
-InstallMethod(GreensLClassOfElement, "for generic semigroups", true,
-        [IsSemigroup,IsObject], 0,
-    function(s,e)
-        local ec;
+free:=FreeMonoid(Size(gens));
+freegens:=GeneratorsOfMonoid(free);
+fpelts:=[One(free)];
+rules:=[];
 
-        if not e in s then
-            Error("<e> must be an element of the semigroup <s>");
-        fi;
-        
-        ec := EquivalenceClassOfElement(GreensLRelation(s),e);
-        SetAssociatedSemigroup(ec,s);
-        SetIsGreensClass(ec,true);
-        SetIsGreensLClass(ec,true);
+Last:=1;
+upos:=0;
 
-        return ec;
-    end);
+repeat
+  upos:=upos+1;
+  u:=concreteelts[upos];
 
-InstallMethod(GreensJClassOfElement, "for generic semigroups", true,
-        [IsSemigroup ,IsObject], 0,
-    function(s,e)
-        local ec;
-
-        if not e in s then
-            Error("<e> must be an element of the semigroup <s>");
-        fi;
-        
-        ec := EquivalenceClassOfElement(GreensJRelation(s),e);
-        SetAssociatedSemigroup(ec,s);
-        SetIsGreensClass(ec,true);
-        SetIsGreensJClass(ec,true);
-
-        return ec;
-    end);
-
-InstallMethod(GreensDClassOfElement, "for generic semigroups", true,
-        [IsSemigroup,IsObject], 0,
-    function(s,e)
-        local ec;
-
-        if not e in s then
-            Error("<e> must be an element of the semigroup <s>");
-        fi;
-        
-        ec := EquivalenceClassOfElement(GreensDRelation(s),e);
-        SetAssociatedSemigroup(ec,s);
-        SetIsGreensClass(ec,true);
-        SetIsGreensDClass(ec,true);
-
-        return ec;
-    end);
-
-InstallMethod(GreensHClassOfElement, "for generic semigroups", true,
-        [IsSemigroup,IsObject], 0,
-    function(s,e)
-        local ec;
-
-        if not e in s then
-            Error("<e> must be an element of the semigroup <s>");
-        fi;
-        
-        ec := EquivalenceClassOfElement(GreensHRelation(s),e);
-        SetAssociatedSemigroup(ec,s);
-        SetIsGreensClass(ec,true);
-        SetIsGreensHClass(ec,true);
-
-        return ec;
-    end);
-
-InstallMethod(\in, "for Greens classes and generic semigroups", 
-        true,[IsObject,IsGreensClass],0,
-    function(e,gc)
-
-        local C;
-
-        ## If the element is the representative of gc return true 
-        ##
-        if e=Representative(gc) then return true; fi;
-
-        ## If the Green's class elements is known essentially 
-        ##    use the list.
-        ##
-        if HasIsFinite(AssociatedSemigroup(gc)) then 
-            return e in Elements(gc);
-        fi;
-        
-        if HasIsGreensRClass(gc) then
-            C := GreensRClassOfElement(AssociatedSemigroup(gc),e);
-        elif HasIsGreensLClass(gc) then
-            C := GreensLClassOfElement(AssociatedSemigroup(gc),e);
-        elif HasIsGreensJClass(gc) then
-            C := GreensJClassOfElement(AssociatedSemigroup(gc),e);
-        elif HasIsGreensHClass(gc) then
-            return e in RClassOfHClass(gc) and e in LClassOfHClass(gc);
-        elif HasIsGreensDClass(gc) then
-            TryNextMethod();                        
-        fi;
-
-        return IsGreensLessThanOrEqual(gc, C) and 
-               IsGreensLessThanOrEqual(C, gc);
-    end);
-
-InstallMethod(\in, "for Greens relations and generic semigroups",
-        true,[IsList, IsGreensRelation],0,
-    function(l,gr)
-         if IsGreensRRelation(gr) then
-             return 
-                 l[1] in GreensRClassOfElement(AssociatedSemigroup(gr),l[2]);
-         elif IsGreensLRelation(gr) then
-             return 
-                 l[1] in GreensLClassOfElement(AssociatedSemigroup(gr),l[2]);
-         elif IsGreensJRelation(gr) then
-             return
-                 l[1] in GreensJClassOfElement(AssociatedSemigroup(gr),l[2]);
-         elif IsGreensDRelation(gr) then
-             return
-                 l[1] in GreensDClassOfElement(AssociatedSemigroup(gr),l[2]);
-         elif IsGreensHRelation(gr) then
-             return
-                 l[1] in GreensHClassOfElement(AssociatedSemigroup(gr),l[2]);
-         else
-             Error("error: Shouldn't get here -- must be a RLJDH relation");  
-         fi; 
-             
-    end);
+  for i in [1..Length(gens)] do
+    newelt:=u*gens[i];
+    newword:=fpelts[upos]*freegens[i];
+  
+    j:=0; 
+    new:=true;
     
+    repeat	  
+      j:=j+1;
+      if newelt=concreteelts[j] then  
+        Add(rules, [newword, fpelts[j]]);
+        new:=false;
+      fi;
+    until j=Last or not new;    
 
+    if new then 
+      Add(concreteelts, newelt);
+      Add(fpelts, newword);
+      Last:=Last+1;
+    fi;
+  od; 
+  
+until upos=Last;
+
+return [concreteelts, rules, free/rules];
+
+end);
+
+####################
+####################
+##
+#M  FroidurePinExtendedAlg(<semigroup>);
+##
+##  for details of the workings of this algorithm see:
+## 
+##  V. Froidure, and J.-E. Pin, Algorithms for computing finite semigroups.     
+##  Foundations of computational mathematics (Rio de Janeiro, 1997), 112-126,  
+##  Springer, Berlin,  1997. 
+## 
+##  this function returns nothing, but determines the elements, size,
+##  a presentation, and the left and right Cayley graphs of <semigroup>.
+##
+##  JDM shouldn't produce fp representation if input is fp semigroup!
+##
+
+InstallMethod(FroidurePinExtendedAlg, "for a semigroup", true, [IsSemigroup and HasIsFinite and IsFinite], 0,
+function(mono)
+
+local gens, k, free, freegens, actualelts, fpelts, rules, i, u, v, Last, currentlength, b, s, r, newelt, j, p, 
+new, length, newword, first, final, prefix, suffix, next, postmult, reducedflags, premult, fpsemi, old, 
+sortedelts, pos, semi, perm;
+
+if not IsMonoid(mono) then 
+    semi := MonoidByAdjoiningIdentity(mono);
+else
+   semi:=mono;
+fi;
+
+gens:=Set(GeneratorsOfMonoid(semi));
+k:=Length(gens);
+free:=FreeMonoid(k);
+freegens:=GeneratorsOfMonoid(free);
+actualelts:=Concatenation([One(semi)], gens);
+fpelts:=Concatenation([One(free)], freegens);
+sortedelts:=List(Concatenation([One(semi)], gens));
+
+#output
+
+Sort(sortedelts);
+rules:=[];
+pos:=List([1..k+1], x-> Position(actualelts, sortedelts[x]));
+
+# table containing all data
+# for a word <u>
+
+# position of first letter in <gens>
+   first:=Concatenation([fail], [1..k]); 	
+# position of last letter in <gens> 
+   final:=Concatenation([fail], [1..k]); 	   
+# position of prefix of length |u|-1 in <fpelts>
+   prefix:=Concatenation([fail], List([1..k], x->1));    
+# position of suffix of length |u|-1 in <fpelts>
+   suffix:=Concatenation([fail], List([1..k], x->1)); 
+# position of u*freegens[i] in <fpelts>
+   postmult:=Concatenation([[2..k+1]], List([1..k], x-> []));  
+# true if u*freegens[i] is the same word as fpelts[i] 
+   reducedflags:=Concatenation([List([1..k], x->  true)], List([1..k], x-> [])); 
+# position of freegens[i]*u in <fpelts>
+   premult:=Concatenation([[2..k+1]],  List([1..k], x-> [])); 	
+# length of <u>
+   length:=Concatenation([0], List([1..k], x->1));
+
+# initialize loop
+
+u:=2;  			# position of the first generator
+v:=u;  			# place holder
+Last:=k+1; 		# the current position of the last element in <fpelts>
+currentlength:=1;	# current length of words under consideration
+
+# loop
+
+repeat
+  
+  while u<=Last and length[u]=currentlength do
+  
+    b:=first[u];
+    s:=suffix[u];
+    
+    for i in [1..k] do  					#loop over generators
+     
+      newword:=fpelts[u]*freegens[i];  				# newword=u*a_i
+    
+      if not reducedflags[s][i] then   				# if s*a_i is not reduced
+        r:=postmult[s][i];             				# r=s*a_i
+        if fpelts[r]=One(free) then				# r=1    
+          postmult[u][i]:=b+1; reducedflags[u][i]:=true;	# u*a_i=b and it is reduced 
+        else 	
+          postmult[u][i]:=postmult[premult[prefix[r]][b]][final[r]];    	
+								#\rho(u*a_i)=\rho(\rho(b*r)*l(r)) 
+          reducedflags[u][i]:=(newword=fpelts[postmult[u][i]]); # if \rho(u*a_i)=u*a_i then true
+       fi;
+      
+      else
+        
+        newelt:=actualelts[u]*gens[i];		# newelt=nu(u*a_i)
+	old:=PositionSorted(sortedelts, newelt);
+	if old<=Last and newelt=sortedelts[old] then
+	  old:=pos[old];
+          Add(rules, [newword, fpelts[old]]); 
+          postmult[u][i]:=old; reducedflags[u][i]:=false;  # u*a_i represents the same elt as 
+							   # fpelts[j] and is (hence) not reduced
+        else 
+	  Add(fpelts, newword); Add(first, b); Add(final, i);	# add all its info to the table
+	  Add(prefix,u); Add(suffix, postmult[suffix[u]][i]); 	# u=b*suffix(u)*a_i
+	  Add(postmult, []); Add(reducedflags, []); Add(premult, []);
+	  Add(length, length[u]+1); Add(actualelts, newelt); 
+ 
+    	  Last:=Last+1;
+          postmult[u][i]:=Last; reducedflags[u][i]:=true;   # the word u*a_i is a new elt 
+							    # and is hence reduced
+          	  
+	  AddSet(sortedelts, newelt);
+	  
+          COPY_LIST_ENTRIES( pos, old, 1, pos, old+1, 1, Last-old );
+	  pos[old] := Last; 
+
+       fi;
+     fi; 
+   od; 
+    
+    u:=u+1; 
+    
+  od;
+  u:=v;  # go back to the first elt with length=currentlength
+  
+  while u<=Last and length[u]=currentlength do
+    p:=prefix[u];
+    for i in [1..k] do 
+      premult[u][i]:=postmult[premult[p][i]][final[u]];  		
+		# \rho(a_i*u)=\rho(\rho(a_i*p)*final(u))
+    od; 
+    u:=u+1; 
+  od;
+
+  v:=u;
+
+  currentlength:=currentlength+1;
+   
+until u=Last+1;
+
+if IsMonoid(mono) then 
+
+   fpsemi:=free/rules;
+   SetAsSSortedList(fpsemi, fpelts);
+   SetSize(fpsemi, Last);
+   SetLeftCayleyGraphSemigroup(fpsemi, premult);
+   SetRightCayleyGraphSemigroup(fpsemi, postmult);
+   SetAssociatedConcreteSemigroup(fpsemi, semi);
+
+#JDM if KnuthBendixRewritingSystem was an attribute and not an operation 
+#JDM it would be possible to set that it is confluent at this point
+
+   perm:=PermListList(pos, [1..Last]);
+   premult:=Permuted(OnTuplesTuples(premult, perm), perm);
+   postmult:=Permuted(OnTuplesTuples(postmult, perm), perm);
+
+   SetAsSSortedList(mono, sortedelts);  
+   SetSize(mono, Last);
+   SetLeftCayleyGraphSemigroup(mono, premult);
+   SetRightCayleyGraphSemigroup(mono, postmult);
+   SetAssociatedFpSemigroup(mono, fpsemi);
+else
+ 
+   fpsemi:=free/rules;
+   SetAsSSortedList(fpsemi, fpelts);
+   SetSize(fpsemi, Last);
+   SetLeftCayleyGraphSemigroup(fpsemi, premult);
+   SetRightCayleyGraphSemigroup(fpsemi, postmult);
+   SetAssociatedConcreteSemigroup(fpsemi, mono);
+
+   #get rid of the identity! JDM better to do this online?
+
+   premult:=premult{[2..Length(premult)]}-1;
+   postmult:=postmult{[2..Length(postmult)]}-1;
+   sortedelts:=sortedelts{[2..Last]}; 
+
+   actualelts:=actualelts{[2..Length(actualelts)]};
+   perm:=PermListList(pos{[2..Last]}-1, [1..Last-1]);
+   sortedelts := List(sortedelts, 
+                      UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt);
+   premult:=Permuted(OnTuplesTuples(premult, perm), perm);
+   postmult:=Permuted(OnTuplesTuples(postmult, perm), perm);
+
+   SetAsSSortedList(mono, sortedelts);
+   SetSize(mono, Last-1);
+   SetLeftCayleyGraphSemigroup(mono, premult);
+   SetRightCayleyGraphSemigroup(mono, postmult);
+   SetAssociatedFpSemigroup(mono, fpsemi);
+fi;
+
+end);
 
 #############################################################################
 ##
@@ -1515,28 +1215,4 @@ InstallMethod(GreensHRelation, "for free semigroups", true,
         return fail;
     end);
 
-#############################################################################
-##
-#M  GreensRRelation(<semigroup>)
-#M  GreensLRelation(<semigroup>)
-#M  GreensJRelation(<semigroup>)
-#M  GreensDRelation(<semigroup>)
-#M  GreensHRelation(<semigroup>)
-##
-##  If none of the methods are applicable then force the issue
-##  and try to enumerator the semigroup. If successful then
-##  use the generic finite case. 
-##
-##  This routine might not complete in the very large finite case or
-##  infinite case
-##
-##
-RedispatchOnCondition(GreensRRelation,true,[IsSemigroup],[IsFinite],0);
-RedispatchOnCondition(GreensLRelation,true,[IsSemigroup],[IsFinite],0);
-RedispatchOnCondition(GreensJRelation,true,[IsSemigroup],[IsFinite],0);
-RedispatchOnCondition(GreensDRelation,true,[IsSemigroup],[IsFinite],0);
-RedispatchOnCondition(GreensHRelation,true,[IsSemigroup],[IsFinite],0);
 
-#############################################################################
-##
-#E

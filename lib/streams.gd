@@ -342,7 +342,7 @@ DeclareOperation( "WriteAll", [ IsOutputStream, IsList ] );
 ##  <output-stream>.  The function  returns `true' if  the write succeeds and
 ##  `fail' otherwise.
 ## 
-##  `WriteByte' is the basic operation for input streams. If a `WriteByte'
+##  `WriteByte' is the basic operation for output streams. If a `WriteByte'
 ##  method is installed for a user-defined type of stream, then all the other
 ##  output stream operations will work (although possibly not at peak
 ##  efficiency).
@@ -487,8 +487,8 @@ DeclareGlobalFunction( "OutputTextUser" );
 ##  or (@as yet unimplemented@) remotely.
 ##
 ##  Such streams support the basic operations of both input and output 
-##  streams. They should provide some buffering, allowing output date to be 
-##  written to the stream, even when input data is waiting to be read, 
+##  streams. They should provide some buffering, allowing output data to be
+##  written to the stream, even when input data is waiting to be read,
 ##  but the amount of this buffering is operating system dependent,
 ##  and the user should take care not to get too far ahead in writing, or 
 ##  behind in reading, or deadlock may occur.
@@ -511,7 +511,7 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 #3  
 ##  At present the only type of Input-Output streams that are
 ##  implemented provide communication with a local child process,
-##  using a pseudo-tty. They are only available on UNIX systems.
+##  using a pseudo-tty.
 ##
 ##  Like other streams, write operations are blocking, read operations
 ##  will block to get the first character, but not thereafter. 
@@ -538,7 +538,7 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 ##  at a terminal on standard input. Bytes written to standard output
 ##  by the slave process can be read from the stream. 
 ##
-##  When the stream if closed, the signal SIGTERM is delivered to the child
+##  When the stream is closed, the signal SIGTERM is delivered to the child
 ##  process, which is expected to exit.
 ##
 DeclareGlobalFunction( "InputOutputLocalProcess" );
@@ -547,13 +547,14 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##
 #O  PrintFormattingStatus( <stream> ) . . . . . . . . is stream line-breaking
 ##
-##  returns  `true'  if  output  sent  to  the  output  stream  <stream>  via
-##  `PrintTo',  `AppendTo',  etc.  (but  not  `WriteByte',   `WriteLine'   or
-##  `WriteAll') will be formatted  with  line  breaks  and  indentation,  and
-##  `false' otherwise (see~"SetPrintFormattingStatus").
+##  returns `true' if output sent to the output text stream <stream> via
+##  `PrintTo', `AppendTo', etc.  (but not `WriteByte', `WriteLine' or
+##  `WriteAll') will be formatted with line breaks and indentation, and
+##  `false' otherwise (see~"SetPrintFormattingStatus"). For non-text
+##  streams, it returns `false'.
 ##
 
-DeclareOperation( "PrintFormattingStatus", [IsOutputTextStream] );
+DeclareOperation( "PrintFormattingStatus", [IsOutputStream] );
 
 #############################################################################
 ##
@@ -563,10 +564,11 @@ DeclareOperation( "PrintFormattingStatus", [IsOutputTextStream] );
 ##  `AppendTo', etc. (but not `WriteByte', `WriteLine' or `WriteAll') will be
 ##  formatted with line  breaks  and  indentation.  If  the  second  argument
 ##  <newstatus> is `true' then output will be so formatted,  and  if  `false'
-##  then it will not.
+##  then it will not. If the stream is not a text stream, only `false'
+##  is allowed.
 ##
 
-DeclareOperation( "SetPrintFormattingStatus", [IsOutputTextStream, IsBool] );
+DeclareOperation( "SetPrintFormattingStatus", [IsOutputStream, IsBool] );
 
 #############################################################################
 ##
@@ -587,8 +589,8 @@ BIND_GLOBAL( "AppendTo", function( arg )
     elif IsOutputStream(arg[1])  then
         # direct call to `WriteAll' if arg is one string and formatting
         # is switched off
-        if Length(arg) = 2 and PrintFormattingStatus(arg[1]) = false and 
-           IsStringRep(arg[2]) then
+        if Length(arg) = 2 and ( not IsOutputTextStream( arg[1] ) or
+           PrintFormattingStatus(arg[1]) = false ) and IsStringRep(arg[2]) then
            WriteAll(arg[1], arg[2]);
         else
           CallFuncList( APPEND_TO_STREAM, arg );
@@ -616,8 +618,8 @@ BIND_GLOBAL( "PrintTo", function( arg )
     elif IsOutputStream(arg[1])  then
         # direct call to `WriteAll' if arg is one string and formatting
         # is switched off
-        if Length(arg) = 2 and PrintFormattingStatus(arg[1]) = false and 
-           IsStringRep(arg[2]) then
+        if Length(arg) = 2 and ( not IsOutputTextStream( arg[1] ) or
+           PrintFormattingStatus(arg[1]) = false ) and IsStringRep(arg[2]) then
            WriteAll(arg[1], arg[2]);
         else
           CallFuncList( PRINT_TO_STREAM, arg );

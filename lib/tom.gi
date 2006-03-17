@@ -79,17 +79,15 @@ InstallMethod( TableOfMarks,
     classNames:=[];
 
     # Compute generators for each subgroup.
-    #gens:= GeneratorsOfGroup( G );
-    #if 1 < Length( gens ) then
-    #  gens:= MinimalGeneratingSet( G );
-    #fi;
-    #if Length(gens)>0 then
-    #  gen:= gens[1];
-    #else
-    #  gen:=One(G);
-    #fi;
-    gen:=GeneratorOfCyclicGroup(G);
-
+    gens:= GeneratorsOfGroup( G );
+    if 1 < Length( gens ) then
+      gens:= MinimalGeneratingSet( G );
+    fi;
+    if 0 < Length( gens ) then
+      gen:= gens[1];
+    else
+      gen:= One( G );
+    fi;
     gens:= [ List( divs, d -> gen^(n/d) ),
              List( [ 1 .. Length( divs ) ], i -> [ i ] ) ];
 

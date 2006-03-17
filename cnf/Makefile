@@ -28,7 +28,7 @@ float
 
 default: configure.out ../configure
 
-configure.out: configure.in aclocal.m4
+configure.out: configure.in aclocal.m4 config.hin
 	autoconf
 	sed -e 's%^srcdir=$$%srcdir=../../src%' < configure > configure.out
 	chmod 755 configure.out

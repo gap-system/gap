@@ -212,7 +212,7 @@ end);
 
 #############################################################################    
 AutomorphismRepresentingGroup := function(G,autos)
-local cnt,iso,Gi,ai,dom,s,u,a,red,degs,degs2,v;
+local cnt,iso,Gi,ai,dom,s,u,a,red,degs,degs2,v,w;
 # assumes G simple!
   cnt:=2;
   dom:=Set(Orbit(G,LargestMovedPoint(G)));
@@ -249,10 +249,15 @@ local cnt,iso,Gi,ai,dom,s,u,a,red,degs,degs2,v;
 
     if ForAll(ai,IsConjugatorAutomorphism) then
       # the representation extends
-      ai:= List( ai, ConjugatorOfConjugatorIsomorphism );
-      G:=ClosureGroup(Gi,ai);
+      v:= List( ai, ConjugatorOfConjugatorIsomorphism );
+      w:=ClosureGroup(Gi,v);
       Info(InfoHomClass,1,"all conjugator");
-      return [G,iso,ai];
+      if Size(Centralizer(w,Gi))=1 then
+	return [w,iso,v];
+      else
+	Info(InfoHomClass,2,"but centre");
+	u:=G;
+      fi;
     fi;
     Info(InfoHomClass,2,"failed, try larger degree");
     # otherwise we try to find another perm rep, hopefully not to bad. 
@@ -785,7 +790,7 @@ local clT,	# classes T
 
 	  repres:=PreImagesRepresentative(projections[i],clTR[p]);
 	  if i=1 or isdirprod
-	     or reps[j]*RestrictedPerm(repres,components[i]) 
+	     or reps[j]*RestrictedPermNC(repres,components[i]) 
 	            in Mproj[i] then
 	    stab:=Centralizer(localcent_r,clTR[p]);
 	    if Index(localcent_r,stab)<Length(clTR)/10 then
@@ -824,7 +829,7 @@ local clT,	# classes T
 	  # orbit algorithm on classes
 	  stab:=clTR[1][2];
 	  orb:=[clTR[1]];
-	  #repres:=RestrictedPerm(clTR[1][1],components[i]);
+	  #repres:=RestrictedPermNC(clTR[1][1],components[i]);
 	  repres:=clTR[1][1];
 	  trans:=[One(M)];
 	  select:=[2..Length(clTR)];
@@ -1132,7 +1137,7 @@ local clT,	# classes T
 	  if orpo<>1 then
 	    Info(InfoHomClass,3,"switching to orbit position ",orpo);
 	    repres:=opfun(repres,trans[orpo]);
-	    #repres:=RestrictedPerm(clTR[1][1],repres);
+	    #repres:=RestrictedPermNC(clTR[1][1],repres);
 	    stab:=stab^trans[orpo];
 	  fi;
 
@@ -1141,7 +1146,7 @@ local clT,	# classes T
                 j -> IsOne( Image(projections[i],opfun(repres,j)/repres) )));
 
 	  # correct stabilizer to element stabilizer
-	  Add(newreps,reps[j]*RestrictedPerm(repres,components[i]));
+	  Add(newreps,reps[j]*RestrictedPermNC(repres,components[i]));
 	  Add(newcent,stab);
 	  Add(newcent_r,orb[orpo][2]);
 	od;
@@ -1425,7 +1430,7 @@ local cs,	# chief series of G
 	    act:=reps[k]*j*(reps[k^img]^-1);
 	    # this must be multiplied *before* permuting
 	    gimg:=ImageElm(emb[k],ImageElm(Thom,act))*gimg;
-	    gimg:=RestrictedPerm(gimg,MovedPoints(w));
+	    gimg:=RestrictedPermNC(gimg,MovedPoints(w));
 	  od;
 	  Add(genimages,gimg);
 	od;
@@ -1444,14 +1449,14 @@ local cs,	# chief series of G
 	# 2) compute the classes for F
 
 	if n>1 then
-          if IsPermGroup(F) and NrMovedPoints(F)<18 then
-	    # the old Butler/Theissen approach is still the best
-	    clF:=[];
-	    for j in 
-	     Concatenation(List(RationalClasses(F),DecomposedRationalClass)) do
-	      Add(clF,[Representative(j),StabilizerOfExternalSet(j)]);
-	    od;
-	  else
+          #if IsPermGroup(F) and NrMovedPoints(F)<18 then
+	  #  # the old Butler/Theissen approach is still the best
+	  #  clF:=[];
+	  #  for j in 
+	  #   Concatenation(List(RationalClasses(F),DecomposedRationalClass)) do
+	  #    Add(clF,[Representative(j),StabilizerOfExternalSet(j)]);
+	  #  od;
+	  #else
 	    FM:=F;
 	    for j in components do
 	      FM:=Stabilizer(FM,j,OnSets);
@@ -1459,7 +1464,7 @@ local cs,	# chief series of G
 
 	    clF:=ConjugacyClassesSubwreath(F,FM,n,S1,
 		  Action(FM,components[1]),T1,components,emb,proj);
-	  fi;
+	  #fi;
 	else
 	  FM:=Image(Fhom,M);
 	  Info(InfoHomClass,1,

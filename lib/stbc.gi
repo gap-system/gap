@@ -359,8 +359,12 @@ local   base,sgs,one,S,  T,  pnt;
     sgs:=arg[2];
     if Length(arg)=3 then
       one:=arg[3];
+    elif Length(arg[2])>0 then
+      one:=One(arg[2][1]);
     else
-      one:= One(arg[2][1]);
+      # specific workaround for GRAPE in the 4.4 branch -- this will not be
+      # in 4.5
+      one:=();
     fi;
     S := EmptyStabChain( [  ], one );
     T := S;

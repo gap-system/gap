@@ -42,10 +42,8 @@ gap> RankOfTransformation(t);
 \endexample
 \Declaration{KernelOfTransformation}
 \beginexample
-gap> KernelOfTransformation(t);
-<equivalence relation on <object> >
-gap> EquivalenceRelationPartition(last);
-[ [ 1, 4 ], [ 3, 5 ] ]
+gap> KernelOfTransformation(t);         
+[ [ 1, 4 ], [ 2 ], [ 3, 5 ] ]
 \endexample
 \Declaration{PreimagesOfTransformation}
 \beginexample

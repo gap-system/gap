@@ -89,7 +89,7 @@ DeclareAttribute("OccuringVariableIndices",IsMonomialOrdering);
 ##  of the polynomial <pol>.
 ##
 DeclareOperation("LeadingMonomialOfPolynomial",
-  [IsRationalFunction,IsMonomialOrdering]);
+  [IsPolynomialFunction,IsMonomialOrdering]);
 
 #############################################################################
 ##
@@ -99,7 +99,7 @@ DeclareOperation("LeadingMonomialOfPolynomial",
 ##  monomial, see~"LeadingMonomialOfPolynomial") of the polynomial <pol>.
 ##
 DeclareOperation("LeadingCoefficientOfPolynomial",
-  [IsRationalFunction,IsMonomialOrdering]);
+  [IsPolynomialFunction,IsMonomialOrdering]);
 
 #############################################################################
 ##
@@ -110,7 +110,7 @@ DeclareOperation("LeadingCoefficientOfPolynomial",
 ##  leading monomial.
 ##
 DeclareOperation("LeadingTermOfPolynomial",
-  [IsRationalFunction,IsMonomialOrdering]);
+  [IsPolynomialFunction,IsMonomialOrdering]);
 
 
 #############################################################################

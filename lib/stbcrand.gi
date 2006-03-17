@@ -1427,7 +1427,7 @@ InstallGlobalFunction( VerifySGS, function(S,missing,correct)
                    AddGeneratorsExtendSchreierTree(temp2, [newgen]); 
                    result := VerifyStabilizer(temp2,newgen,missing,correct);
                    if leader > n then 
-                      AddGeneratorsExtendSchreierTree(temp,[RestrictedPerm
+                      AddGeneratorsExtendSchreierTree(temp,[RestrictedPermNC
                           (newgen, [1..n])]); 
                    else 
                       temp := temp2;
@@ -1440,7 +1440,7 @@ InstallGlobalFunction( VerifySGS, function(S,missing,correct)
                    fi; 
                 fi; 
                 if result <> S.identity and temp2.orbit[1] > n then
-                     result := RestrictedPerm(result, [1..n]);
+                     result := RestrictedPermNC(result, [1..n]);
                 fi; 
                                 
             fi; 

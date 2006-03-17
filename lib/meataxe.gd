@@ -67,7 +67,7 @@ DeclareGlobalFunction("WedgeGModule");
 
 ###############################################################################
 ##
-#F  DualGModule ( module ) . . . . . wedge product of a G-module
+#F  DualGModule ( module ) . . . . . dual of a G-module
 ##
 ## DualGModule calculates the dual of a G-module.
 ## The matrices of the module are inverted and transposed.

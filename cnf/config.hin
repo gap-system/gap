@@ -249,6 +249,12 @@
 /* define as 1 if you have `stat'                                          */
 #define HAVE_STAT		0
 
+/* define as 1 if you have `fstat'                                         */
+#define HAVE_FSTAT		0
+
+/* define as 1 if you have `lstat'                                         */
+#define HAVE_LSTAT		0
+
 /* define as 1 if the macros `S_ISDIR', `S_ISREG' do not work properly     */
 #define STAT_MACROS_BROKEN	0
 
@@ -258,11 +264,143 @@
 /* define as 1 if you have `unlink'                                        */
 #define HAVE_UNLINK             0
 
-/* define as 1 if you have `mkstemp'                                         */
-#define HAVE_MKSTEMP              0
+/* define as 1 if you have `mkstemp'                                       */
+#define HAVE_MKSTEMP            0
 
-/* define as 1 if you have `mkdtemp'                                        */
-#define HAVE_MKDTEMP             0
+/* define as 1 if you have `mkdtemp'                                       */
+#define HAVE_MKDTEMP            0
+
+/* define as 1 if you have `rmdir'                                         */
+#define HAVE_RMDIR              0
+
+/* define as 1 if you have `link'                                          */
+#define HAVE_LINK               0
+
+/* define as 1 if you have `rename'                                        */
+#define HAVE_RENAME             0
+
+/* define as 1 if you have `symlink'                                       */
+#define HAVE_SYMLINK            0
+
+/* define as 1 if you have `readlink'                                      */
+#define HAVE_READLINK           0
+
+/* define as 1 if you have `lstat'                                         */
+#define HAVE_LSTAT              0
+
+/* define as 1 if you have `chmod'                                         */
+#define HAVE_CHMOD              0
+
+/* define as 1 if you have `fchmod'                                        */
+#define HAVE_FCHMOD             0
+
+/* define as 1 if you have `chown'                                         */
+#define HAVE_CHOWN              0
+
+/* define as 1 if you have `fchown'                                        */
+#define HAVE_FCHOWN             0
+
+/* define as 1 if you have `lchown'                                        */
+#define HAVE_LCHOWN             0
+
+/* define as 1 if you have `dup'                                           */
+#define HAVE_DUP                0
+
+/* define as 1 if you have `dup2'                                          */
+#define HAVE_DUP2               0
+
+/* define as 1 if you have `mknod'                                         */
+#define HAVE_MKNOD              0
+
+/* define as 1 if you have `mkfifo'                                        */
+#define HAVE_MKFIFO             0
+
+
+/****************************************************************************
+**
+*D  define if and how directory access checks work
+*/
+
+/* define as 1 if you have the include file "dirent.h"                     */
+#define HAVE_DIRENT_H            0
+
+/* define as 1 if you have `opendir'                                       */
+#define HAVE_OPENDIR             0
+
+/* define as 1 if you have `closedir'                                      */
+#define HAVE_CLOSEDIR            0
+
+/* define as 1 if you have `dirfd'                                         */
+#define HAVE_DIRFD               0
+
+/* define as 1 if you have `readdir'                                       */
+#define HAVE_READDIR             0
+
+/* define as 1 if you have `rewinddir'                                     */
+#define HAVE_REWINDDIR           0
+
+/* define as 1 if you have `seekdir'                                       */
+#define HAVE_SEEKDIR             0
+
+/* define as 1 if you have `telldir'                                       */
+#define HAVE_TELLDIR             0
+
+/* define as 1 if you have `telldir'                                       */
+#define HAVE_TELLDIR             0
+
+/****************************************************************************
+**
+*D  sockets
+*/
+
+/* define as 1 if you have `socket'                                        */
+#define HAVE_SOCKET              0
+
+/* define as 1 if you have `listen'                                        */
+#define HAVE_LISTEN              0
+
+/* define as 1 if you have `accept'                                        */
+#define HAVE_ACCEPT              0
+
+/* define as 1 if you have `connect'                                       */
+#define HAVE_CONNECT             0
+
+/* define as 1 if you have `bind'                                          */
+#define HAVE_BIND                0
+
+/* define as 1 if you have `getsockname'                                   */
+#define HAVE_GETSOCKNAME         0
+
+/* define as 1 if you have `recv'                                          */
+#define HAVE_RECV                0
+
+/* define as 1 if you have `recvfrom'                                      */
+#define HAVE_RECVFROM            0
+
+/* define as 1 if you have `recvmsg'                                       */
+#define HAVE_RECVMSG             0
+
+/* define as 1 if you have `send'                                          */
+#define HAVE_SEND                0
+
+/* define as 1 if you have `sendto'                                        */
+#define HAVE_SENDTO              0
+
+/* define as 1 if you have `sendmsg'                                       */
+#define HAVE_SENDMSG             0
+
+/* define as 1 if you have `getsockopt'                                    */
+#define HAVE_GETSOCKOPT          0
+
+/* define as 1 if you have `setsockopt'                                    */
+#define HAVE_SETSOCKOPT          0
+
+/* define as 1 if you have `getprotobyname'                                */
+#define HAVE_GETPROTOBYNAME      0
+
+/* define as 1 if you have `gethostbyname'                                 */
+#define HAVE_GETHOSTBYNAME       0
+
 
 /****************************************************************************
 **

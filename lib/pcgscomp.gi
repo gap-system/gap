@@ -131,7 +131,7 @@ function( grp )
     SetPcSeries(       pcgs, series   );
     SetOneOfPcgs(      pcgs, One(grp) );
     SetRelativeOrders( pcgs, orders   );
-
+    SetGroupOfPcgs (pcgs, grp);
     return pcgs;
 end );
 

@@ -1,0 +1,168 @@
+   4.4 Update 7 (March 2006)
+
+  New or improved functionality
+
+    1. The Display functionality for character tables has been extended by
+       addition of an option to show power maps and centralizer orders in a
+       format similar to that used in the ATLAS. Furthermore the options
+       handling is now hierarchical, in order to admit more flexible
+       overloading.
+    2. For the function LowIndexSubgroupsFpGroup, there is now an iterator
+       variant LowIndexSubgroupsFpGroupIterator. [Suggested (and based on
+       code contributed) by Michael Hartley]
+    3. Semigroup functionality in GAP has been improved and extended. Green's
+       relations are now stored differently, making the system more amenable
+       to new methods for computing these relations in special cases. It is
+       now possible to calculate Green's classes etc. without computing the
+       entire semigroup or necessarily loading the package MONOID.
+       Furthermore, the Froidure-Pin algorithm has now been implemented in
+       GAP.
+    4. Functionality for creating free products of any list of groups for
+       which a finite presentation can be determined had been added. This
+       function returns a finitely presented group. This functionality
+       includes the Embedding operation. As an application of this new code a
+       specialized direct product operation has been added for finitely
+       presented groups which returns a finitely presented group. This
+       application includes Embedding and Projection functionality.
+    5. Some new Straight Line Program (SLP) functionality has been added. The
+       new functions take given SLPs and create new ones by restricting to a
+       subset of the results, or to an intermediate result or by calculating
+       the product of the results of two SLPs.
+    6. New code has been added to allow group elements with memory; that is,
+       they store automatically how they were derived from some given set of
+       generators. Note that there is not yet documentation for this
+       functionality, but some packages already use it.
+    7. New code has been added to handle matrices and vectors in such a way
+       that they do not change their representation in a generic manner.
+    8. The Irr method for p-solvable p-modular Brauer tables now keeps the
+       order of the irreducibles in the ordinary table.
+    9. GAP can now handle any finite field for which the Conway polynomial is
+       known or can be computed.
+   10. New Conway polynomials provided by John Bray and Kate Minola have been
+       added.
+   11. The ReadTest methods for strings (filenames) and streams now
+       automatically set the screen width (see SizeScreen) to 80 before the
+       tests, and reset it afterwards.
+   12. Now a few more checks are done during the configure phase of compiling
+       for future use of some I/O functions of the C-library in a package.
+       Also the path to the GAP binaries for the GAP compiler is now handled
+       via autoconf. Finally, now autoconf version 2.59 is used.
+
+  Fixed bugs which could produce wrong results
+
+    1. Some technical errors in the functions for compressed vectors and
+       matrices which could lead to corruption of internal data structures
+       and so to crashes or conceivably to wrong results. [Reported by Roman
+       Schmied]
+    2. A potential problem in the generic method for the undocumented
+       operation DirectFactorsOfGroup: It was silently assumed that
+       NormalSubgroups delivers the trivial subgroup as first and the whole
+       group as last entry of the resulting list.
+    3. The code for sublists of compressed vectors created by vec{range} may
+       write one byte beyond the space allocated for the new vector,
+       overwriting part of the next object in the workspace. Thanks to Jack
+       Schmidt for narrowing down the problem.
+    4. Given a class function object of value zero, an InverseOp method for a
+       class function erroneously did not return fail. [Reported by Jack
+       Schmidt]
+    5. The Order method for a class function erroneously returned a finite
+       number if one of the values was nonreal, not a cyclotomic integer, and
+       had norm 1.
+    6. Two missing perfect groups were added, and the permutation degree
+       lowered on the perfect groups with the largest degrees. [Reported by
+       Jack Schmidt]
+    7. When a character table was displayed with Display, the centralizer
+       order displayed for the first class shown was not correct if it did
+       not involve all prime divisors of the group. [Reported by Jack
+       Schmidt]
+    8. The first argument of the function VectorSpace must be a field. This
+       is checked from now on. [Reported by Laurent Bartholdi]
+    9. Up to now, it was possible to create a group object from a semigroup
+       of cyclotomics using AsGroup, although groups of cyclotomics are not
+       admissible. [Reported by Alexander Konovalov]
+   10. The documentation of CharacteristicPolynomial(F,mat) was ambiguous if
+       FieldOfMatrix(mat) =< F < DefaultFieldOfMatrix(mat). In particular,
+       the result was representation dependent. This was fixed by introducing
+       a second field which specifies the vector space which mat acts upon.
+       [Reported by Jack Schmidt]
+   11. AssociatedReesMatrixSemigroupOfDClass produced an incorrect sandwich
+       matrix for the semigroup created. This matrix is an attribute set when
+       creating the Rees matrix semigroup but is not used for creating the
+       semigroup. The incorrect result was returned when SandwichMatrix was
+       called. [Reported by Nelson Silva and Joao Araujo]
+   12. The literal "compiled" was given an incorrect length. The kernel was
+       then unable to find compiled library code as the search path was
+       incorrect. Also the documentation example had an error in the path
+       used to invoke the gac compiler.
+   13. The twisting group in a generic wreath product might have had
+       intransitive action. [Reported by Laurent Bartholdi]
+   14. There was an arithmetic bug in the polynomial reduction code.
+
+  Fixed bugs which could lead to crashes
+
+     * Bug 1 in the list of fixed bugs which could lead to wrong results
+       could also potentially lead to crashes.
+
+  Other fixed bugs
+
+    1. The matrices of invariant forms stored as values of the attributes
+       InvariantBilinearForm, InvariantQuadraticForm, and
+       InvariantSesquilinearForm, for matrix groups over finite fields, are
+       now in the (compressed) format returned by ImmutableMatrix.
+    2. String now returns an immutable string, by making a copy before
+       changing the argument.
+    3. Permutation ^0 and permutation ^1 were not handled with special code
+       in the kernel, hence were very slow for big permutations. [Reported by
+       Max Neunhoeffer]
+    4. Added code to cache the induced pcgs for an arbitrary parent pcgs.
+       (This code was formerly part of the CRISP package.)
+    5. This fix consists of numerous changes to improve support for direct
+       products, including: - new methods for PcgsElementaryAbelianSeries,
+       PcgsChiefSeries, ExponentsOfPcElement, DepthOfPcElement for direct
+       products - fixed EnumeratorOfPcgs to test for membership first - new
+       methods for membership test in groups which have an induced pcgs -
+       added GroupOfPcgs attribute to pcgs in various methods - fixed
+       declarations of PcgsElementaryAbelianSeries, PcgsChiefSeries (the
+       declared argument was a pcgs, not a group) [Reported by Roman Schmied]
+    6. Corrected a term ordering problem encountered by the basis
+       construction code for finite dimensional vector spaces of multivariate
+       rational functions. [Reported by Jan Draisma]
+    7. When the factor of a finite dimensional group ring by an ideal was
+       formed, a method intended for free algebras modulo relations was used,
+       and the returned factor algebra could be used for (almost) nothing.
+       [Reported by Heiko Dietrich]
+    8. Up to now, PowerMap ran into an error when one asked for the n-th
+       power map where n was not a small integer. This happened in some GAP
+       library functions if the exponent of the character table in question
+       was not a small integer.
+    9. Up to now, the test whether a finite field element was contained in a
+       group of finite field elements ran into an error if the element was
+       not in the field generated by the group elements. [Reported by Heiko
+       Dietrich]
+   10. Conjugacy classes of natural (special) linear groups are now always
+       returned with trivial class first.
+   11. Up to now, it could happen that CheckFixedPoints reduced an entry in
+       its second argument to a list containing only one integer but did not
+       replace the list by that integer; according to the conventions, this
+       replacement should be done.
+   12. The functions PrintTo and AppendTo did not work correctly for streams.
+       [Reported by Marco Costantini]
+   13. The function Basis did not return a value when it was called with the
+       argument Rationals. [Reported by Klaus Lux]
+   14. For certain matrix groups, the function StructureDescription raised an
+       error message. The reason for this was that a trivial method for
+       IsGeneralLinearGroup for matrix groups in lib/grpmat.gi which is
+       ranked higher than the nontrivial method for generic groups in
+       lib/grpnames.gi called the operation IsNaturalGL, for which there was
+       no nontrivial method available. [Reported by Nilo de Roock]
+   15. Action on sets of length 1 was not correctly handled. [Reported by
+       Mathieu Dutour]
+   16. Now WriteByte admits writing zero characters to all streams. [Reported
+       by Marco Costantini]
+   17. The conjugacy test for subgroups tests for elementary abelian regular
+       normal subgroup (EARNS) conjugacy. The fix will catch this in the case
+       that the second group has no EARNS. [Reported by Andrew Johnson]
+   18. So far, the UNIX installation didn't result in a correct gap.sh if the
+       installation path contained space characters. Now it should handle
+       this case correctly, as well as other unusual characters in path names
+       (except for double quotes).

@@ -761,9 +761,20 @@ gap> GroebnerBasis(l,MonomialGrlexOrdering());
 gap> ReducedGroebnerBasis(l,MonomialGrlexOrdering());
 [ x-y, z^2-2*y+1, y^2+y-1 ]
 gap> ReducedGroebnerBasis(l,MonomialLexOrdering());    
-[ z^4+4*z^2-1, -1/2*z^2+y-1/2, -1/4*z^2+x-1/4 ]
+[ z^4+4*z^2-1, -1/2*z^2+y-1/2, -1/2*z^2+x-1/2 ]
 gap> ReducedGroebnerBasis(l,MonomialLexOrdering([y,z,x]));
-[ 1, x^2+x-1, z^2-x+1/2, -x+y ]
+[ x^2+x-1, z^2-2*x+1, -x+y ]
+\endexample
+
+For performance reasons it can be advantageous to define monomial orderings
+once and then to reuse them:
+
+\beginexample
+gap> ord:=MonomialGrlexOrdering();;
+gap> GroebnerBasis(l,ord);
+[ x^2+y^2+z^2-1, x^2+z^2-y, x-y, -y^2-y+1, -z^2+2*y-1 ]
+gap> ReducedGroebnerBasis(l,ord);
+[ x-y, z^2-2*y+1, y^2+y-1 ]
 \endexample
 
 \Declaration{StoredGroebnerBasis}

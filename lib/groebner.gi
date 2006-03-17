@@ -445,7 +445,7 @@ InstallMonomialOrdering(MonomialGrevlexOrdering,
 InstallGlobalFunction(EliminationOrdering,function(arg)
 local elimvar, nam, ord1, othvar, ord2,ov,neword;
   elimvar:=arg[1];
-  nam:=String(elimvar);
+  nam:=ShallowCopy(String(elimvar));
   if not IsInt(elimvar[1]) then
     elimvar:=List(elimvar,IndeterminateNumberOfUnivariateRationalFunction);
   fi;
@@ -453,7 +453,7 @@ local elimvar, nam, ord1, othvar, ord2,ov,neword;
   ord1:=MonomialExtrepComparisonFun(MonomialLexOrdering(elimvar));
   if Length(arg)>1 then
     othvar:=arg[2];
-    Add(nam,",");
+    Add(nam,',');
     nam:=Concatenation(nam,String(othvar));
     if not IsInt(othvar[1]) then
       othvar:=List(othvar,IndeterminateNumberOfUnivariateRationalFunction);
@@ -518,7 +518,7 @@ local ov, l, i, j;
 end);
 
 InstallMethod(LeadingTermOfPolynomial,"with ordering",true,
-  [IsRationalFunction,IsMonomialOrdering],0,
+  [IsPolynomialFunction,IsMonomialOrdering],0,
 function(p,order)
 local e,fam,a;
   order:=MonomialExtrepComparisonFun(order);
@@ -529,7 +529,7 @@ local e,fam,a;
 end);
 
 InstallOtherMethod(LeadingMonomialOfPolynomial,"with ordering",true,
-  [IsRationalFunction,IsMonomialOrdering],0,
+  [IsPolynomialFunction,IsMonomialOrdering],0,
 function(p,order)
 local e,fam,a;
   if not IsPolynomial(p) then
@@ -543,7 +543,7 @@ local e,fam,a;
 end);
 
 InstallOtherMethod(LeadingCoefficientOfPolynomial,"with ordering",true,
-  [IsRationalFunction,IsMonomialOrdering],0,
+  [IsPolynomialFunction,IsMonomialOrdering],0,
 function(p,order)
 local e,fam,a;
   if not IsPolynomial(p) then
@@ -613,7 +613,7 @@ end);
 ##
 InstallGlobalFunction( PolynomialReduction, function(poly,plist,order)
 local fam,quot,elist,lmp,lmo,lmc,x,y,z,mon,mon2,qmon,noreduce,
-      ep,pos,di,opoly,rem;
+      ep,pos,di,opoly,rem,qmex;
   if IsMonomialOrdering(order) then
     order:=MonomialExtrepComparisonFun(order);
   fi;
@@ -672,7 +672,9 @@ local fam,quot,elist,lmp,lmo,lmc,x,y,z,mon,mon2,qmon,noreduce,
     if noreduce then
       mon:=PolynomialByExtRepNC(fam,[ep[x],ep[x+1]]);
       rem:=rem+mon;
+  #Print("noreduce:",PolynomialByExtRepNC(fam,ep)," ",mon," ",rem,"\n");
       ep:=ep{Difference([1..Length(ep)],[x,x+1])};
+  #Print(ep,"\n");
     else
       y:=y-1; # re-correct incremented numbers
 
@@ -682,10 +684,21 @@ local fam,quot,elist,lmp,lmo,lmc,x,y,z,mon,mon2,qmon,noreduce,
       fi;
 
       # reduce!
-      qmon:=PolynomialByExtRep(fam,[qmon,ep[x+1]/lmc[y]]); #quotient monomial
+      qmex:=[qmon,-ep[x+1]/lmc[y]];
+
+      qmon:=PolynomialByExtRepNC(fam,[qmon,ep[x+1]/lmc[y]]); #quotient monomial
       quot[y]:=quot[y]+qmon;
-      poly:=poly-qmon*plist[y]; # reduce
-      ep:=ExtRepPolynomialRatFun(poly);
+
+      qmex:=ZippedProduct(qmex,elist[y],
+	     fam!.zeroCoefficient,fam!.zippedProduct);
+      qmex:=ZippedSum(ep,qmex,fam!.zeroCoefficient,fam!.zippedSum);
+
+      #poly:=PolynomialByExtRep(fam,ep);
+      #poly:=poly-qmon*plist[y]; # reduce
+      #ep:=ExtRepPolynomialRatFun(poly);
+      #if ep<>qmex then Error("RED!"); fi;
+      ep:=qmex;
+
     fi;
   od;
   return [rem,quot];
@@ -700,7 +713,7 @@ end);
 ##
 InstallGlobalFunction(PolynomialReducedRemainder,function(poly,plist,order)
 local opoly, fam, elist, lmp, lmo, lmc, ep, rem, noreduce, x, mon, y, mon2,
-  z, pos, qmon, di;
+  z, pos, qmon, di,qmex;
   if IsMonomialOrdering(order) then
     order:=MonomialExtrepComparisonFun(order);
   fi;
@@ -768,9 +781,17 @@ local opoly, fam, elist, lmp, lmo, lmc, ep, rem, noreduce, x, mon, y, mon2,
       fi;
 
       # reduce!
-      qmon:=PolynomialByExtRep(fam,[qmon,ep[x+1]/lmc[y]]); #quotient monomial
-      poly:=poly-qmon*plist[y]; # reduce
-      ep:=ExtRepPolynomialRatFun(poly);
+      qmex:=[qmon,-ep[x+1]/lmc[y]];
+      qmex:=ZippedProduct(qmex,elist[y],
+	     fam!.zeroCoefficient,fam!.zippedProduct);
+      qmex:=ZippedSum(ep,qmex,fam!.zeroCoefficient,fam!.zippedSum);
+
+      #qmon:=PolynomialByExtRepNC(fam,[qmon,ep[x+1]/lmc[y]]); #quotient monomial
+      #poly:=PolynomialByExtRep(fam,ep);
+      #poly:=poly-qmon*plist[y]; # reduce
+      #ep:=ExtRepPolynomialRatFun(poly);
+      #if ep<>qmex then Error("RED0!"); fi;
+      ep:=qmex;
     fi;
   od;
   return rem;

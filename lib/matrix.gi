@@ -17,6 +17,7 @@
 Revision.matrix_gi :=
     "@(#)$Id$";
 
+
 #
 # Kernel method for computing
 #
@@ -585,18 +586,39 @@ end );
 InstallMethod( CharacteristicPolynomial,
     "supply field and indeterminate 1",
     [ IsMatrix ],
-    mat -> CharacteristicPolynomialMatrixNC( DefaultFieldOfMatrix( mat ), mat, 1 ) );
+    mat -> CharacteristicPolynomialMatrixNC(  
+            DefaultFieldOfMatrix( mat ), mat, 1 ) );
 
 
 #############################################################################
 ##
 #M  CharacteristicPolynomial( <F>, <mat> )
 ##
-InstallMethod( CharacteristicPolynomial,
-    "supply indeterminate 1",
+InstallOtherMethod( CharacteristicPolynomial,
+     "supply indeterminate 1",
     [ IsField, IsMatrix ],
     function( F, mat )
-    return CharacteristicPolynomial( F, mat, 1);
+        return CharacteristicPolynomial (F, mat, 1);
+    end );
+
+
+#############################################################################
+##
+#M  CharacteristicPolynomial( <F>, <E>, <mat> )
+##
+InstallMethod( CharacteristicPolynomial,
+    "supply indeterminate 1",
+    function (famF, famE, fammat)
+        local fam;
+        if HasElementsFamily (fammat) then
+            fam := ElementsFamily (fammat);
+            return IsIdenticalObj (famF, fam) and IsIdenticalObj (famE, fam);
+        fi;
+        return false;
+    end,
+    [ IsField, IsField, IsMatrix ],
+    function( F, E, mat )
+    return CharacteristicPolynomial( F, E, mat, 1);
     end );
 
 
@@ -608,8 +630,9 @@ InstallMethod( CharacteristicPolynomial,
     "supply field",
     [ IsMatrix, IsPosInt ],
     function( mat, indnum )
-    return CharacteristicPolynomial( DefaultFieldOfMatrix( mat ), mat,
-                                     indnum );
+        local F;
+        F := DefaultFieldOfMatrix( mat );
+        return CharacteristicPolynomial( F, F, mat, indnum );
     end );
 
 
@@ -617,28 +640,48 @@ InstallMethod( CharacteristicPolynomial,
 ##
 #M  CharacteristicPolynomial( <field>, <matrix>, <indnum> )
 ##
-InstallMethod( CharacteristicPolynomial, "spinning over field",
+InstallOtherMethod( CharacteristicPolynomial, 
+    "check default field, print error if ambiguous",
     IsElmsCollsX,
     [ IsField, IsOrdinaryMatrix, IsPosInt ],
-function( F, mat,inum )
-    local fld, B;
-
-    fld:= DefaultFieldOfMatrix( mat );
-
-    if fld <> fail and not IsSubset( F, fld ) then
-
-      # Replace the matrix by a matrix with the same char. polynomial
-      # but with entries in `F'.
-      if not IsSubset( fld, F ) then
-        fld:= ClosureField( fld, F );
-      fi;
-      B:= Basis( AsField( F, fld ) );
-      mat:= BlownUpMat( B, mat );
-
-    fi;
-
-    return CharacteristicPolynomialMatrixNC( F, mat,inum);
+function( F, mat, inum )
+        if IsSubset (F, DefaultFieldOfMatrix (mat)) then
+            return CharacteristicPolynomial (F, F, mat, inum);
+        else
+            Error ("ambiguous usage of `CharacteristicPolynomial' - please specify two fields instead");
+        fi;
 end );
+
+
+#############################################################################
+##
+#M  CharacteristicPolynomial( <subfield>, <field>, <matrix>, <indnum> )
+##
+InstallMethod( CharacteristicPolynomial, "spinning over field",
+    function (famF, famE, fammat, famid)
+        local fam;
+        if HasElementsFamily (fammat) then
+            fam := ElementsFamily (fammat);
+            return IsIdenticalObj (famF, fam) and IsIdenticalObj (famE, fam);
+        fi;
+        return false;
+    end,
+    [ IsField, IsField, IsOrdinaryMatrix, IsPosInt ],
+    function( F, E, mat, inum )
+        local fld, B;
+
+        if not IsSubset (E, F) then
+            Error ("<F> must be a subfield of <E>.");
+        elif F <> E then
+          # Replace the matrix by a matrix with the same char. polynomial
+          # but with entries in `F'.
+          B:= Basis( AsVectorSpace( F, E ) );
+          mat:= BlownUpMat( B, mat );
+        fi;
+
+        return CharacteristicPolynomialMatrixNC( F, mat, inum);
+    end );
+
 
 InstallMethod( CharacteristicPolynomialMatrixNC, "spinning over field",
     IsElmsCollsX,
@@ -3573,7 +3616,7 @@ function( mat )
 
 # First we determine a squarefree polynomial 'g' such that 'g^d(mat)=0'.
 
-  f:= CharacteristicPolynomial( F, mat );
+  f:= CharacteristicPolynomial( F, F, mat );
   if p = 0 or p > Length( mat ) then
     g:= f/Gcd( f, Derivative( f ) );
   else
@@ -3786,6 +3829,153 @@ InstallMethod( BaseOrthogonalSpaceMat,
     "for a matrix",
     [ IsMatrix ],
     mat -> NullspaceMat( TransposedMat( mat ) ) );
+
+
+#############################################################################
+##
+#M  MatrixNC( <vectorlist>, <vector> )
+##
+InstallMethod( MatrixNC, "for a vector list and a vector",
+  [IsList, IsVector and IsList],
+  function(vecs,v)
+    return vecs;
+  end );
+
+#############################################################################
+##
+#M  Matrix( <vectorlist>, <vector> )
+##
+InstallMethod( Matrix, "for a vector list and a vector",
+  [IsList, IsVector and IsList],
+  function(vecs,v)
+    if not ForAll(vecs,w->Length(w) = Length(v)) then
+        Error("not all vectors have same length");
+    fi;
+    return MatrixNC(vecs,v);
+  end );
+
+#############################################################################
+##
+#M  BaseField( <matrixorvector> )
+##
+
+InstallMethod( BaseField, "for a compressed gf2 matrix",
+  [IsGF2MatrixRep], function(m) return GF(2); end );
+InstallMethod( BaseField, "for a compressed 8bit matrix",
+  [Is8BitMatrixRep], function(m) return DefaultFieldOfMatrix(m); end );
+InstallMethod( BaseField, "for a compressed gf2 vector",
+  [IsGF2VectorRep], function(v) return GF(2); end );
+InstallMethod( BaseField, "for a compressed 8bit vector",
+  [Is8BitVectorRep], function(v) return GF(Q_VEC8BIT(v)); end );
+
+
+#############################################################################
+##
+#M  ZeroVector( <vector>, <len> )
+##
+InstallMethod( ZeroVector, "for a nonempty vector and a length",
+  [IsList, IsInt],
+  function(v,len)
+    if Length(v) > 0 then
+        return ListWithIdenticalEntries(len,Zero(v[1]));
+    else
+        Error("vector must not be empty");
+    fi;
+  end );
+InstallMethod( ZeroVector, "for a compressed gf2 vector and a length",
+  [IsGF2VectorRep, IsInt],
+  function(v, len)
+    v := ListWithIdenticalEntries(len,0*Z(2));
+    ConvertToVectorRep(v,2);
+    return v;
+  end );
+InstallMethod( ZeroVector, "for a compressed 8bit vector and a length",
+  [Is8BitVectorRep, IsInt],
+  function(v, len)
+    v := ListWithIdenticalEntries(len,0*v[1]);
+    ConvertToVectorRep(v);
+    return v;
+  end );
+    
+#############################################################################
+##
+#M  ZeroMatrix( <matrix>, <rows>, <cols> )
+##
+InstallMethod( ZeroMatrix, "for a compressed gf2 matrix",
+  [IsGF2MatrixRep, IsInt, IsInt],
+  function( m, rows, cols )
+    local l,i;
+    l := [];
+    for i in [1..rows] do
+        Add(l,ZeroVector(m[1],cols));
+    od;
+    ConvertToMatrixRep(l);
+    return l;
+  end );
+InstallMethod( ZeroMatrix, "for a compressed 8bit matrix",
+  [Is8BitMatrixRep, IsInt, IsInt],
+  function( m, rows, cols )
+    local l,i;
+    l := [];
+    for i in [1..rows] do
+        Add(l,ZeroVector(m[1],cols));
+    od;
+    ConvertToMatrixRep(l);
+    return l;
+  end );
+
+#############################################################################
+##
+#M  IdentityMatrix( <matrix>, <rows> )
+##
+InstallMethod( IdentityMatrix, "for a compressed gf2 matrix",
+  [IsGF2MatrixRep, IsInt],
+  function(m, rows)
+    local n;
+    n := IdentityMat(m,GF(2));
+    ConvertToMatrixRep(n,2);
+    return n;
+  end );
+InstallMethod( IdentityMatrix, "for a compressed 8bit matrix",
+  [Is8BitMatrixRep, IsInt],
+  function(m, rows)
+    local f,n;
+    f := BaseField(m);
+    n := IdentityMat(m,f);
+    ConvertToMatrixRep(n,Size(f));
+    return n;
+  end );
+
+#############################################################################
+##
+#M  CopySubVector( <src>, <dst>, <scols>, <dcols> )
+##
+InstallMethod( CopySubVector, "generic method",
+  [IsList, IsList, IsList, IsList],
+  function(src,dst,scols,dcols)
+    dst{dcols} := src{scols};
+  end );
+
+#############################################################################
+##
+#M  CopySubMatrix( <src>, <dst>, <srows>, <drows>, <scols>, <dcols> )
+##
+InstallMethod( CopySubMatrix, "generic method",
+  [IsList, IsList, IsList, IsList, IsList, IsList],
+  function(src,dst,srows,drows,scols,dcols)
+    dst{drows}{dcols} := src{srows}{scols};
+  end );
+
+
+#############################################################################
+##
+#M  ExtractSubMatrix( <matrix>, <rows>, <cols> )
+##
+InstallMethod( ExtractSubMatrix, "generic method",
+  [IsList, IsList, IsList],
+  function(m,rows,cols)
+    return m{rows}{cols};
+  end );
 
 
 #############################################################################

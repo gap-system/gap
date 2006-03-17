@@ -26,6 +26,10 @@ gap> error:= Print;;
 ##  Define auxiliary functions.
 ##
 
+gap> RandomSquareArray := function( dim, D )
+>   return List( [ 1 .. dim ], i -> List( [ 1 .. dim ], j -> Random( D ) ) );
+> end;;
+
 gap> NestingDepthATest := function( obj )
 >   if not IsGeneralizedRowVector( obj ) then
 >     return 0;
@@ -596,8 +600,8 @@ gap> TestOfAdditiveListArithmetic := function( R, dim )
 >     Unbind( vec1[ Random( [ 1 .. dim ] ) ] );
 >     RunTest( AdditionTest, vec1, vec2 );
 > 
->     mat1:= RandomMat( dim, dim, R );
->     mat2:= RandomMat( dim, dim, R );
+>     mat1:= RandomSquareArray( dim, R );
+>     mat2:= RandomSquareArray( dim, R );
 > 
 >     RunTest( ZeroTest, mat1 );
 >     RunTest( AdditiveInverseTest, mat1 );
@@ -702,8 +706,8 @@ gap> TestOfMultiplicativeListArithmetic := function( R, dim )
 >     Unbind( vec1[ Random( [ 1 .. dim ] ) ] );
 >     RunTest( MultiplicationTest, vec1, vec2 );
 > 
->     mat1:= RandomMat( dim, dim, R );
->     mat2:= RandomMat( dim, dim, R );
+>     mat1:= RandomSquareArray( dim, R );
+>     mat2:= RandomSquareArray( dim, R );
 > 
 >     RunTest( OneTest, mat1 );
 >     RunTest( InverseTest, mat1 );

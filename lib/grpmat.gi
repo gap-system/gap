@@ -600,7 +600,7 @@ end);
 ##
 InstallMethod(IsGeneralLinearGroup,"try natural",[IsMatrixGroup],
 function(G)
-  if IsNaturalGL(G) then
+  if HasIsNaturalGL(G) and IsNaturalGL(G) then
     return true;
   else
     TryNextMethod();

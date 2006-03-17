@@ -377,6 +377,14 @@ function( rws )
       SetGroupOfPcgs(defpcgs,grp);
       if HasIsFiniteOrdersPcgs(defpcgs) and IsFiniteOrdersPcgs(defpcgs) then
         SetSize(grp,Product(RelativeOrders(defpcgs)));
+	if HasRelativeOrders(rws) 
+	   and not ForAll(RelativeOrders(rws),IsPrimeInt) then
+	   Info(InfoWarning,1,
+	    "You are creating a Pc group with non-prime relative orders.");
+	   Info(InfoWarning,1,
+       	    "Many algorithms require prime relative orders.");
+           Info(InfoWarning,1,"Use `RefinedPcGroup' to convert.");
+	fi;
       fi;
 
       for i in [1..Length(pows)] do
@@ -410,9 +418,6 @@ function( rws )
 
 end );
 
-
 #############################################################################
 ##
-
 #E
-

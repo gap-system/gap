@@ -367,6 +367,12 @@ to form groups of automorphisms.
 \Declaration{AutomorphismDomain}
 
 \Declaration{AutomorphismGroup}
+
+Note that current methods for the calculation of the automorphism group of a
+group $G$ require $G$ to be a permutation group or a pc group to be
+efficient. For groups in other representations the calculation is likely
+very slow.
+
 \Declaration{IsAutomorphismGroup}
 
 \beginexample

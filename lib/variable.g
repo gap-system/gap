@@ -166,7 +166,7 @@ BIND_GLOBAL( "InstallFlushableValue", function( gvar, value )
 end );
 
 ##  Bind some keywords as global variables such that <Tab> completion works
-##  for them. These variables are not accecible.
+##  for them. These variables are not accessible.
 BIND_GLOBAL( "Unbind", 0 );
 BIND_GLOBAL( "true", 0 );
 BIND_GLOBAL( "false", 0 );

@@ -11,12 +11,16 @@
 ##  This file contains the implementation for transformations
 ##
 ##  Further Maintanence and development by:
-##  Andrew Solomon
-##  Robert F. Morse
+##  James D. Mitchell
 ##
 
 Revision.trans_gi :=
     "@(#)$Id$";
+
+## Functions altered JDM
+## 1) KernelOfTransformation
+## 2) PermLeftQuoTransformation
+## 3) RandomTransformation is an operation
 
 #############################################################################
 ##  
@@ -62,11 +66,9 @@ InstallGlobalFunction(IdentityTransformation,
         return Transformation([1..n]);
     end);
 
-InstallGlobalFunction(RandomTransformation,
+InstallMethod(RandomTransformation, "<trans>", true,
+        [IsPosInt], 0,
     function(n)
-        if not IsPosInt(n) then
-            Error("error -- <n> must be a positive integer");
-        fi;
         return Transformation(List([1..n], i-> Random([1..n])));
     end);
 
@@ -136,21 +138,30 @@ InstallMethod(RestrictedTransformation, "for transformation", true,
 #A  KernelOfTransformation(<trans>)
 ##  
 ##  Equivalence relation on [1 .. n] 
-##  
-InstallMethod(KernelOfTransformation, "<trans>", true,
-        [IsTransformation and IsTransformationRep], 0,
-    function(trans) 
+##  JDM
 
-        local range;  # n points
-        
-        range := [1..DegreeOfTransformation(trans)];
+InstallMethod(KernelOfTransformation, "to give a kernel of a transformation as a partition of its domain including singletons!!", true, [IsTransformation and IsTransformationRep], 0, 
+function(trans)
 
-        ## Return the equivalence relation induced by the 
-        ##     preimage of each point.
-        ##
-        return EquivalenceRelationByPartitionNC(Domain(range),
-            List(range, i->PreimagesOfTransformation(trans,i)));
-    end);
+local ker, imgs, i;
+
+# initialize.
+ker:= []; imgs:= ImageListOfTransformation(trans);
+   for i in imgs do 
+      ker[i]:= [];
+   od;
+
+   # compute preimages.
+   for i in [1..Length(imgs)] do
+      Add(ker[imgs[i]], i);
+   od;
+
+   # return kernel.
+   return Set(ker);
+
+end);
+
+
 
 #############################################################################
 ##  
@@ -160,28 +171,27 @@ InstallMethod(KernelOfTransformation, "<trans>", true,
 ##  we compute the permutation induced by <tr1>^-1*<tr2> on the set of 
 ##  images of <tr1>. If the kernels and images are not equal, an error 
 ##  is signaled.
-##
+##  JDM
+
 InstallMethod(PermLeftQuoTransformation, "for two transformations", true,
         [IsTransformation, IsTransformation], 0,
-    function(t1,t2)
-        local i,     # index variable 
-              pl,    # permutation list 
-              pr,    # product <tr1>^-1*<tr2>
-              tmp;   # temporary variable
+function(t1,t2)
+local pl, i, deg;
 
-        if KernelOfTransformation(t1)<>KernelOfTransformation(t2) and 
-           ImageSetOfTransformation(t1)<>ImageSetOfTransformation(t2) then
-            Error("error, transformations must have the same kernel and image set");
-        fi;
 
-        pl := [1..DegreeOfTransformation(t1)];
-        pr := t1^-1*t2;
-        for i in ImageSetOfTransformation(t1) do
-           tmp := i^pr; 
-           pl[i]:= tmp[1];
-        od;
-        return PermList(pl);
-    end);
+if KernelOfTransformation(t1)<>KernelOfTransformation(t2) and 
+  ImageSetOfTransformation(t1)<>ImageSetOfTransformation(t2) then
+  Error("error, transformations must have the same kernel and image set");
+fi;
+deg:=DegreeOfTransformation(t1);
+
+pl:=[1..deg];
+
+for i in [1..deg] do 
+  pl[i^t1]:=i^t2;
+od;
+  return PermList(pl);
+end);
 
 #############################################################################
 ##  

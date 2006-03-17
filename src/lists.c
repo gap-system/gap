@@ -1898,6 +1898,7 @@ void            ElmListLevel (
             CHANGED_BAG( lists );
 
         }
+	RetypeBag(lists, T_PLIST_DENSE);
 
     }
 

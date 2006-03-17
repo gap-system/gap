@@ -75,10 +75,10 @@ compile: config
 static: config
 	( cd bin/@target@-@BASECC@ ; $(MAKE) static CC='$(CC)' )
 	chmod +x bin/gap.sh
-	( cd bin/@target@-@BASECC@ ; strip gap)
+	( cd bin/@target@-@BASECC@ ; strip gap@EXEEXT@)
 
 strip: compile
-	( cd bin/@target@-@BASECC@ ; strip gap)
+	( cd bin/@target@-@BASECC@ ; strip gap@EXEEXT@)
        
 removewin: strip
 	( rm -f bin/*.exe bin/*.dll bin/*.bat bin/*.pif "bin/GAP 4 PPC")
@@ -144,6 +144,7 @@ testpackages:
 	( rm wsp.g )
 
 testmanuals:
+	( if ! test -d dev/log; then mkdir -p dev/log; fi )
 	( if ! test -d doc/test/tut; then mkdir -p doc/test/tut; fi )
 	( if ! test -d doc/test/prg; then mkdir -p doc/test/prg; fi )
 	( if ! test -d doc/test/ref; then mkdir -p doc/test/ref; fi )

@@ -75,12 +75,12 @@ we must describe how the methods are connected to their operations.
 \>InstallMethod( <opr>[,<info>][,<famp>],<args-filts>[,<val>],<method> ) F
 
 installs a function method <method> for the operation <opr>; 
-<args-filts> should be a list of requirements for the arguments;
+<args-filts> should be a list of requirements for the arguments,
+each entry being a filter;
 if supplied <info> should be a short but informative string that describes 
 for what situation the method is installed,
 <famp> should be a function to be applied to the families of the arguments,
-each entry being a filter,
-and <val> is an integer that measures the priority of the method.
+and <val> should be an integer that measures the priority of the method.
 
 The default values for <info>, <famp>, and <val> are the empty string,
 the function `ReturnTrue', and the integer zero, respectively.

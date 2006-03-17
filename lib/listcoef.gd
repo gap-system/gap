@@ -188,6 +188,17 @@ DeclareOperation(
 
 #############################################################################
 ##
+#O  QuotRemCoeffs( <list1>[, <len1>], <list2>[, <len2>])
+##
+##  returns a length 2 list containing the quotient and remainder from the 
+##  division of the polynomial represented by [the first <len1> entries of]
+##  <list1> by that represented by [the first <len2> entries of] <list2>
+##
+DeclareOperation( "QuotRemCoeffs", [IsList, IsInt, IsList, IsInt]);
+
+
+#############################################################################
+##
 #F  ProductPol( <coeffs_f>, <coeffs_g> )  . . . .  product of two polynomials
 ##
 ##  *@ OBSOLETE @*
@@ -284,6 +295,23 @@ DeclareOperation(
 DeclareOperation(
     "ShrinkRowVector",
     [ IsMutable and IsList ] );
+
+
+#############################################################################
+##
+#O  PadCoeffs( <list>, <len>[, <value>] )
+##
+##  extends <list> until its length is at least <len> by adding identical 
+##  entries <value> at the end
+##
+##  if <value> is omitted, Zero(<list>[1]) is used. In this case <list> 
+##  must not be empty.
+##
+
+DeclareOperation("PadCoeffs",[IsList and IsMutable, IsPosInt, IsObject]);
+DeclareOperation("PadCoeffs",[IsList and IsMutable and IsAdditiveElementWithZeroCollection, 
+        IsPosInt]);
+
 
 
 #4

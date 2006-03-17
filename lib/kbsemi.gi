@@ -386,7 +386,7 @@ local u,v,m,k,a,c,lsu,lsv,lu,eq,i,j;
 
       #we change rws, if necessary, so a=c is verified
       if a <> c then
-	# `AddRuleReduced' might affect the pairs. So firsth throw away the
+	# `AddRuleReduced' might affect the pairs. So first throw away the
 	# `old' pairs
 	kbrws!.pairs2check:=
 	  kbrws!.pairs2check{[p+1..Length(kbrws!.pairs2check)]};

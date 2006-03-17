@@ -355,6 +355,11 @@ gap> ResultOfStraightLineProgram( prg, gens );
 [ x^3*y^4, x^4*y^-1, x^3*y^4 ]
 \endexample
 
+\Declaration{RestrictOutputsOfSLP}
+\Declaration{IntermediateResultOfSLP}
+\Declaration{IntermediateResultOfSLPWithoutOverwrite}
+\Declaration{IntermediateResultsOfSLPWithoutOverwrite}
+\Declaration{ProductOfStraightLinePrograms}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Straight Line Program Elements}

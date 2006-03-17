@@ -104,7 +104,8 @@ InstallMethod( SymplecticGroupCons,
         c[i][d-i+1] := o;
         c[d/2+i][d/2-i+1] := -o;
     od;
-    SetInvariantBilinearForm(g,rec(matrix:=c));
+    SetInvariantBilinearForm( g,
+        rec( matrix:= ImmutableMatrix( f, c, true ) ) );
     SetIsFullSubgroupGLorSLRespectingBilinearForm(g,true);
     SetIsSubgroupSL(g,true);
 
@@ -203,7 +204,8 @@ InstallMethod( GeneralUnitaryGroupCons,
 
      # construct the form
      c := Reversed( One( g ) );
-     SetInvariantSesquilinearForm(g,rec(matrix:=c));
+     SetInvariantSesquilinearForm( g,
+         rec( matrix:= ImmutableMatrix( f, c, true ) ) );
      SetIsFullSubgroupGLorSLRespectingSesquilinearForm(g,true);
 
      # Return the group.
@@ -316,7 +318,8 @@ InstallMethod( SpecialUnitaryGroupCons,
 
      # construct the form
      c := Reversed( One( g ) );
-     SetInvariantSesquilinearForm(g,rec(matrix:=c));
+     SetInvariantSesquilinearForm( g,
+         rec( matrix:= ImmutableMatrix( f, c, true ) ) );
      SetIsFullSubgroupGLorSLRespectingSesquilinearForm(g,true);
      SetIsSubgroupSL(g,true);
 
@@ -398,12 +401,12 @@ BindGlobal( "Oplus45", function()
     SetSize( g, 28800 );
 
     # construct the form
-    SetInvariantBilinearForm(g,rec(matrix:=
-      [[0,1,0,0],[1,0,0,0],[0,0,2,0],[0,0,0,2]] * One( f )));
+    SetInvariantBilinearForm( g, rec( matrix:= ImmutableMatrix( f,
+        [[0,1,0,0],[1,0,0,0],[0,0,2,0],[0,0,0,2]] * One( f ), true ) ) );
 
     # and the quadratic form
-    SetInvariantQuadraticForm( g, rec( matrix:=
-      [[0,1,0,0],[0,0,0,0],[0,0,1,0],[0,0,0,1]] * One( f ) ) );
+    SetInvariantQuadraticForm( g, rec( matrix:= ImmutableMatrix( f,
+        [[0,1,0,0],[0,0,0,0],[0,0,1,0],[0,0,0,1]] * One( f ), true ) ) );
 
     # and return
     return g;
@@ -463,13 +466,15 @@ BindGlobal( "Opm3", function( s, d )
     delta := List( 2*id, ShallowCopy );
     delta{[1,2]}{[1,2]} := [[0,1],[1,0]]*One( f );
     delta[3][3] := 2*One( f )*2;
-    SetInvariantBilinearForm(g,rec(matrix:= delta));
+    SetInvariantBilinearForm( g,
+        rec( matrix:= ImmutableMatrix( f, delta, true ) ) );
 
     # construct quadratic form
     delta := List( id, ShallowCopy );
     delta{[1,2]}{[1,2]} := [[0,1],[0,0]]*One( f );
     delta[3][3] := One( f )*2;
-    SetInvariantQuadraticForm( g, rec( matrix:= delta ) );
+    SetInvariantQuadraticForm( g,
+        rec( matrix:= ImmutableMatrix( f, delta, true ) ) );
 
     # set the size
     delta  := 1;
@@ -538,13 +543,15 @@ BindGlobal( "OpmSmall", function( s, d, q )
     delta := List( 2*id, ShallowCopy );
     delta{[1,2]}{[1,2]} := [[0,1],[1,0]]*One( f );
     delta[3][3] := 2*One( f );
-    SetInvariantBilinearForm(g,rec(matrix:= delta));
+    SetInvariantBilinearForm( g,
+        rec( matrix:= ImmutableMatrix( f, delta, true ) ) );
 
     # construct quadratic form
     delta := List( id, ShallowCopy );
     delta{[1,2]}{[1,2]} := [[0,1],[0,0]]*One( f );
     delta[3][3] := One( f );
-    SetInvariantQuadraticForm( g, rec( matrix:= delta ) );
+    SetInvariantQuadraticForm( g,
+        rec( matrix:= ImmutableMatrix( f, delta, true ) ) );
 
     # set the size
     delta  := 1;
@@ -605,20 +612,20 @@ BindGlobal( "OpmOdd", function( s, d, q )
         g := GroupWithGenerators( [
                     [[1,0,0,0],[0,1,2,1],[2,0,2,0],[1,0,0,1]]*One( f ),
                     [[0,2,2,2],[0,1,1,2],[1,0,2,0],[1,2,2,0]]*One( f ) ] );
-	SetInvariantBilinearForm(g,rec(matrix:=
-          [[0,1,0,0],[1,0,0,0],[0,0,1,0],[0,0,0,2]]*One( f )));
-	SetInvariantQuadraticForm( g, rec( matrix:=
-          [[0,1,0,0],[0,0,0,0],[0,0,2,0],[0,0,0,1]]*One( f ) ) );
+	SetInvariantBilinearForm( g, rec( matrix:= ImmutableMatrix( f,
+          [[0,1,0,0],[1,0,0,0],[0,0,1,0],[0,0,0,2]]*One( f ), true ) ) );
+	SetInvariantQuadraticForm( g, rec( matrix:= ImmutableMatrix( f,
+          [[0,1,0,0],[0,0,0,0],[0,0,2,0],[0,0,0,1]]*One( f ), true ) ) );
         SetSize( g, 1152 );
         return g;
     elif q = 3 and d = 4 and s = -1  then
         g := GroupWithGenerators( [
                     [[0,2,0,0],[2,1,0,1],[0,2,0,1],[0,0,1,0]]*One( f ),
                     [[2,0,0,0],[1,2,0,2],[1,0,0,1],[0,0,1,0]]*One( f ) ] );
-	SetInvariantBilinearForm(g,rec(matrix:=
-          [[0,1,0,0],[1,0,0,0],[0,0,2,0],[0,0,0,2]]*One( f )));
-	SetInvariantQuadraticForm( g, rec( matrix:=
-          [[0,1,0,0],[0,0,0,0],[0,0,1,0],[0,0,0,1]]*One( f ) ) );
+	SetInvariantBilinearForm( g, rec( matrix:= ImmutableMatrix( f,
+          [[0,1,0,0],[1,0,0,0],[0,0,2,0],[0,0,0,2]]*One( f ), true ) ) );
+	SetInvariantQuadraticForm( g, rec( matrix:= ImmutableMatrix( f,
+          [[0,1,0,0],[0,0,0,0],[0,0,1,0],[0,0,0,1]]*One( f ), true ) ) );
         SetSize( g, 1440 );
         return g;
     elif q = 5 and d = 4 and s = +1  then
@@ -683,13 +690,15 @@ BindGlobal( "OpmOdd", function( s, d, q )
     delta := List( 2*id, ShallowCopy );
     delta{[1,2]}{[1,2]} := [[0,1],[1,0]]*One( f );
     delta[3][3] := 2*beta;
-    SetInvariantBilinearForm(g,rec(matrix:=delta));
+    SetInvariantBilinearForm( g,
+        rec( matrix:= ImmutableMatrix( f, delta, true ) ) );
 
     # construct quadratic form
     delta := List( id, ShallowCopy );
     delta{[1,2]}{[1,2]} := [[0,1],[0,0]]*One( f );
     delta[3][3] := beta;
-    SetInvariantQuadraticForm( g, rec( matrix:= delta ) );
+    SetInvariantQuadraticForm( g,
+        rec( matrix:= ImmutableMatrix( f, delta, true ) ) );
 
     # set the size
     delta := 1;
@@ -710,10 +719,11 @@ end );
 #F  Oplus2( <q> ) . . . . . . . . . . . . . . . . . . . . . . . . . O+_2(<q>)
 ##
 BindGlobal( "Oplus2", function( q )
-    local   z,  m1,  m2,  g;
+    local   z,  f,  m1,  m2,  g;
 
     # a field generator
     z := Z(q);
+    f := GF(q);
 
     # a matrix of order q-1
     m1 := [ [ z, 0*z ], [ 0*z, z^-1 ] ];
@@ -721,13 +731,15 @@ BindGlobal( "Oplus2", function( q )
     # a matrix of order 2
     m2 := [ [ 0, 1 ], [ 1, 0 ] ] * z^0;
 
-    m1:=ImmutableMatrix(GF(q),m1);
-    m2:=ImmutableMatrix(GF(q),m2);
+    m1:= ImmutableMatrix( f, m1, true );
+    m2:= ImmutableMatrix( f, m2, true );
+
     # construct the group, set the order, and return
     g := GroupWithGenerators( [ m1, m2 ] );
-    SetInvariantBilinearForm(g,rec(matrix:=m2));
-    SetInvariantQuadraticForm( g, rec( matrix:=
-      [ [ 0, 1 ], [ 0, 0 ] ] * z^0 ) );
+    SetInvariantBilinearForm(g,
+        rec( matrix:= ImmutableMatrix( f, m2, true ) ) );
+    SetInvariantQuadraticForm( g, rec( matrix:= ImmutableMatrix( f,
+        [ [ 0, 1 ], [ 0, 0 ] ] * z^0, true ) ) );
     SetSize( g, 2*(q-1) );
     return g;
 end );
@@ -776,12 +788,12 @@ BindGlobal( "Oplus4Even", function( q )
     SetSize( g, 2*q^2*(q^2-1)^2 );
 
     # construct the form
-    SetInvariantBilinearForm(g,rec(matrix:=
-      [[0,1,0,0],[1,0,0,0],[0,0,0,1],[0,0,1,0]] * One( f )));
+    SetInvariantBilinearForm( g, rec( matrix:= ImmutableMatrix( f,
+      [[0,1,0,0],[1,0,0,0],[0,0,0,1],[0,0,1,0]] * One( f ), true ) ) );
 
     # and the quadratic form
-    SetInvariantQuadraticForm( g, rec( matrix:=
-      [[0,1,0,0],[0,0,0,0],[0,0,0,1],[0,0,0,0]] * One( f ) ) );
+    SetInvariantQuadraticForm( g, rec( matrix:= ImmutableMatrix( f,
+      [[0,1,0,0],[0,0,0,0],[0,0,0,1],[0,0,0,0]] * One( f ), true ) ) );
 
     # and return
     return g;
@@ -895,14 +907,16 @@ BindGlobal( "OplusEven", function( d, q )
         delta[2*i-1][2*i] := One( f );
         delta[2*i][2*i-1] := One( f );
     od;
-    SetInvariantBilinearForm(g,rec(matrix:=delta));
+    SetInvariantBilinearForm( g,
+        rec( matrix:= ImmutableMatrix( f, delta, true ) ) );
 
     # construct quadratic form
     delta := List( 0*id, ShallowCopy );
     for i  in [ 1 .. d/2 ]  do
         delta[2*i-1][2*i] := One( f );
     od;
-    SetInvariantQuadraticForm( g, rec( matrix:= delta ) );
+    SetInvariantQuadraticForm( g,
+        rec( matrix:= ImmutableMatrix( f, delta, true ) ) );
 
     # set the size
     delta := 1;
@@ -953,10 +967,10 @@ BindGlobal( "Ominus2", function( q )
     m1:=ImmutableMatrix(GF(q),m1);
     m2:=ImmutableMatrix(GF(q),m2);
     g := GroupWithGenerators( [ m1, m2 ] );
-    SetInvariantBilinearForm(g,rec(matrix:=
-      [ [ 2, 1 ], [ 1, 2*t ] ] * z^0));
-    SetInvariantQuadraticForm( g, rec( matrix:=
-      [ [ 1, 1 ], [ 0, t ] ] * z^0 ) );
+    SetInvariantBilinearForm( g, rec( matrix:= ImmutableMatrix( f,
+      [ [ 2, 1 ], [ 1, 2*t ] ] * z^0, true ) ) );
+    SetInvariantQuadraticForm( g, rec( matrix:= ImmutableMatrix( f,
+      [ [ 1, 1 ], [ 0, t ] ] * z^0, true ) ) );
     SetSize( g, 2*(q+1) );
 
     return g;
@@ -1016,12 +1030,12 @@ BindGlobal( "Ominus4Even", function( q )
     SetSize( g, 2*q^2*(q^2+1)*(q^2-1) );
 
     # construct the form
-    SetInvariantBilinearForm(g,rec(matrix:=
-      [[0,1,0,0],[1,0,0,0],[0,0,0,1],[0,0,1,0]] * One( f )));
+    SetInvariantBilinearForm( g, rec( matrix:= ImmutableMatrix( f,
+      [[0,1,0,0],[1,0,0,0],[0,0,0,1],[0,0,1,0]] * One( f ), true ) ) );
 
     # and the quadratic form
-    SetInvariantQuadraticForm( g, rec( matrix:=
-      [[0,1,0,0],[0,0,0,0],[0,0,t,1],[0,0,0,t]] * One( f ) ) );
+    SetInvariantQuadraticForm( g, rec( matrix:= ImmutableMatrix( f,
+      [[0,1,0,0],[0,0,0,0],[0,0,t,1],[0,0,0,t]] * One( f ), true ) ) );
 
     # and return
     return g;
@@ -1143,7 +1157,8 @@ BindGlobal( "OminusEven", function( d, q )
         delta[2*i-1][2*i] := One( f );
         delta[2*i][2*i-1] := One( f );
     od;
-    SetInvariantBilinearForm(g,rec(matrix:=delta));
+    SetInvariantBilinearForm( g,
+        rec( matrix:= ImmutableMatrix( f, delta, true ) ) );
 
     # construct quadratic form
     delta := List( 0*id, ShallowCopy );
@@ -1152,7 +1167,8 @@ BindGlobal( "OminusEven", function( d, q )
     od;
     delta[3][3] := t;
     delta[4][4] := t;
-    SetInvariantQuadraticForm( g, rec( matrix:= delta ) );
+    SetInvariantQuadraticForm( g,
+        rec( matrix:= ImmutableMatrix( f, delta, true ) ) );
 
     # set the size
     delta := 1;
@@ -1233,12 +1249,14 @@ BindGlobal( "OzeroOdd", function( d, q, b )
     # construct the form
     s := List( 2*b*id, ShallowCopy );
     s{[1,2]}{[1,2]} := [[0,1],[1,0]]*One( f );
-    SetInvariantBilinearForm(g,rec(matrix:=s));
+    SetInvariantBilinearForm( g,
+        rec( matrix:= ImmutableMatrix( f, s, true ) ) );
 
     # and the quadratic form
     s := List( b*id, ShallowCopy );
     s{[1,2]}{[1,2]} := [[0,1],[0,0]]*One( f );
-    SetInvariantQuadraticForm( g, rec( matrix:= s ) );
+    SetInvariantQuadraticForm( g,
+        rec( matrix:= ImmutableMatrix( f, s, true ) ) );
 
     # and return
     return g;
@@ -1357,7 +1375,8 @@ BindGlobal( "OzeroEven", function( d, q )
       c[(d-1)/2+i][i] := o;
       c[i][(d-1)/2+i] := o;
     od;
-    SetInvariantBilinearForm( g, rec( matrix := c ) );
+    SetInvariantBilinearForm( g,
+        rec( matrix:= ImmutableMatrix( f, c, true ) ) );
     SetIsSubgroupSL( g, true );
 
     # and the quadratic form
@@ -1366,7 +1385,8 @@ BindGlobal( "OzeroEven", function( d, q )
     for i in [ 2 .. (d+1)/2 ] do
       s[(d-1)/2+i][i]:= o;
     od;
-    SetInvariantQuadraticForm( g, rec( matrix:= s ) );
+    SetInvariantQuadraticForm( g,
+        rec( matrix:= ImmutableMatrix( f, s, true ) ) );
 
     # and return
     return g;

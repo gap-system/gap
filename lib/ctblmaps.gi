@@ -42,7 +42,7 @@ InstallMethod( PowerMap,
     function( tbl, n )
     local known, erg;
 
-    if IsPosInt( n ) then
+    if IsPosInt( n ) and IsSmallIntRep( n ) then
       known:= ComputedPowerMaps( tbl );
 
       # compute the <n>-th power map
@@ -64,7 +64,7 @@ InstallMethod( PowerMap,
     function( tbl, n, class )
     local known, erg;
 
-    if IsPosInt( n ) then
+    if IsPosInt( n ) and IsSmallIntRep( n ) then
       known:= ComputedPowerMaps( tbl );
       if IsBound( known[n] ) then
         return known[n][ class ];
@@ -125,17 +125,20 @@ InstallMethod( PowerMapOp,
     powermap:= ComputedPowerMaps( tbl );
 
     for i in Factors( n ) do
-      if not IsBound( powermap[i] ) then
+      if IsSmallIntRep( i ) and IsBound( powermap[i] ) then
+        nth_powermap:= nth_powermap{ powermap[i] };
+      else
 
         # Compute the missing power map.
         pmap:= PossiblePowerMaps( tbl, i, rec( quick := true ) );
         if pmap = fail or 1 < Length( pmap ) then
           return fail;
         fi;
-        powermap[i]:= pmap[1];
-
+        if IsSmallIntRep( i ) then
+          powermap[i]:= pmap[1];
+        fi;
+        nth_powermap:= nth_powermap{ pmap[1] };
       fi;
-      nth_powermap:= nth_powermap{ powermap[i] };
     od;
 
     # Return the map;
@@ -156,7 +159,7 @@ InstallOtherMethod( PowerMapOp,
     powermap:= ComputedPowerMaps( tbl );
     if n = 1 then
       return class;
-    elif 0 < n and IsBound( powermap[n] ) then
+    elif 0 < n and IsSmallIntRep( n ) and IsBound( powermap[n] ) then
       return powermap[n][ class ];
     fi;
 
@@ -165,12 +168,13 @@ InstallOtherMethod( PowerMapOp,
       return 1;
     elif n = 1 then
       return class;
-    elif IsBound( powermap[n] ) then
+    elif IsSmallIntRep( n ) and IsBound( powermap[n] ) then
       return powermap[n][ class ];
     fi;
 
     image:= class;
     for i in FactorsInt( n ) do
+      # Here we assume that `n' is a small integer ...
       if not IsBound( powermap[i] ) then
 
         # Compute the missing power map.
@@ -2092,7 +2096,7 @@ end );
 ##
 InstallGlobalFunction( CheckFixedPoints,
     function( inside1, between, inside2 )
-    local i, j, improvements, errors, image;
+    local i, improvements, errors, image;
 
     improvements:= [];
     errors:= [];
@@ -2111,16 +2115,14 @@ InstallGlobalFunction( CheckFixedPoints,
             fi;
           fi;
         else
-          image:= [];
-          for j in between[i] do
-            if inside2[j] = j
-               or ( IsList( inside2[j] ) and j in inside2[j] ) then
-              Add( image, j );
-            fi;
-          od;
+          image:= Filtered( between[i], j -> inside2[j] = j
+                      or ( IsList( inside2[j] ) and j in inside2[j] ) );
           if IsEmpty( image ) then
             AddSet( errors, i );
           elif image <> between[i] then
+            if Length( image ) = 1 then
+              image:= image[1];
+            fi;
             between[i]:= image;
             AddSet( improvements, i );
           fi;

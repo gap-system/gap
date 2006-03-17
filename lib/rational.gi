@@ -114,6 +114,7 @@ InstallMethod( CanonicalBasis,
                    rec() );
     SetUnderlyingLeftModule( B, Rationals );
     SetBasisVectors( B, [ 1 ] );
+    return B;
     end );
 
 InstallMethod( Coefficients,

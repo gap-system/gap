@@ -191,7 +191,7 @@ DeclareProperty("IsPcgsCentralSeries", IsPcgs );
 ##  computes a pcgs for <G> that refines a central elementary abelian series.
 ##  `IndicesCentralNormalSteps' gives the indices in the Pcgs, at which the
 ##  normal subgroups of this series start.
-DeclareAttribute( "PcgsCentralSeries", IsPcgs);
+DeclareAttribute( "PcgsCentralSeries", IsGroup);
 
 #############################################################################
 ##
@@ -245,7 +245,7 @@ DeclareProperty("IsPcgsPCentralSeriesPGroup", IsPcgs );
 ##  computes a pcgs for the $p$-group <G> that refines a $p$-central
 ##  elementary abelian series.  `IndicesPCentralNormalStepsPGroup' gives the
 ##  indices in the Pcgs, at which the normal subgroups of this series start.
-DeclareAttribute( "PcgsPCentralSeriesPGroup", IsPcgs);
+DeclareAttribute( "PcgsPCentralSeriesPGroup", IsGroup);
 
 #############################################################################
 ##

@@ -71,11 +71,32 @@ DeclareGlobalFunction( "TryLayerSQ" );
 
 #############################################################################
 ##
-#F  SQ( <F>, <...> ) / SolvableQuotient( <F>, <...> )
-##  should this become a method?
+#F  SolvableQuotient(<F>,<size> )
+#F  SolvableQuotient(<F>,<primes> )
+#F  SolvableQuotient(<F>,<tuples> )
+#F  SQ(<F>,<...> )
+##
+##  This routine calls the solvable quotient algorithm for a finitely
+##  presented group <F>. The quotient to be found can be specified in the
+##  following ways: Specifying an integer <size> finds a quotient of size up
+##  to <size> (if such large quotients exist). Specifying a list of primes
+##  in <primes> finds the largest quotient involving the given primes.
+##  Finally <tuples> can be used to prescribe a chief series.
+##
+##  `SQ' can be used as a synonym for `SolvableQuotient'.
 ##
 DeclareGlobalFunction( "SolvableQuotient" );
 DeclareSynonym( "SQ", SolvableQuotient);
+
+#############################################################################
+##
+#F  EpimorphismSolvableQuotient(<F>,<param>)
+##
+##  computes an epimorphism from the finitely presented group <fpgrp> to the
+##  largest solvable quotient given by <param> (specified as in 
+##  `SolvableQuotient').
+##
+DeclareGlobalFunction("EpimorphismSolvableQuotient");
 
 #############################################################################
 ##

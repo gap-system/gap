@@ -1778,7 +1778,7 @@ InstallMethod( DirectSumDecomposition,
           cf:= List([ 1 .. Dimension( H ) ], x -> Random( set ) );
           x:= LinearCombination( BH, cf );
           M:= AdjointMatrix( BL, x );
-          f:= CharacteristicPolynomial( F, M );
+          f:= CharacteristicPolynomial( F, F, M );
           f:= f/Gcd( f, Derivative( f ) );
         until DegreeOfLaurentPolynomial( f )
                   = Dimension( L ) - Dimension( H ) + 1;
@@ -2401,7 +2401,7 @@ InstallMethod( SemiSimpleType,
 # Cartan subalgebra.
 
       mp:= List( BasisVectors( BK ){[1..rk]},
-                 x -> CharacteristicPolynomial( F, AdjointMatrix( BK, x ) ) );
+                 x -> CharacteristicPolynomial( F, F, AdjointMatrix( BK, x ) ) );
       mp:= List( mp, x -> x/Gcd( Derivative( x ), x ) );
       d:= d * Product( List( mp, p ->
                    CoefficientsOfLaurentPolynomial(p)[1][1] ) );
@@ -2433,7 +2433,7 @@ InstallMethod( SemiSimpleType,
         K:= LieAlgebraByStructureConstants( F, S1 );
         BK:= Basis( K );
         mp:= List( BasisVectors( BK ){[1..rk]},
-                 x -> CharacteristicPolynomial( F, AdjointMatrix( BK, x ) ) );
+                 x -> CharacteristicPolynomial( F, F, AdjointMatrix( BK, x ) ) );
         s:= Lcm( Flat( List( mp, p -> List( Factors( p ),
                            DegreeOfLaurentPolynomial ) )));
 
@@ -2458,7 +2458,7 @@ InstallMethod( SemiSimpleType,
       K:= LieAlgebraByStructureConstants( F, T );
       BK:= Basis( K );
       mp:= List( BasisVectors( BK ){[1..rk]},
-               x -> CharacteristicPolynomial( F, AdjointMatrix( BK, x ) ) );
+               x -> CharacteristicPolynomial( F, F, AdjointMatrix( BK, x ) ) );
       s:= Lcm( Flat( List( mp, p -> List( Factors( p ),
                          DegreeOfLaurentPolynomial ) )));
       s:= s*Dimension( LeftActingDomain( L ) );

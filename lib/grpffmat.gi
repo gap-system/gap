@@ -422,6 +422,13 @@ function( G, flag )
       Add(cl, new );
     fi;
   od;
+  # obey general rule in GAP to put class of identity first
+  i := First([1..Length(cl)], c-> Representative(cl[c]) = One(G));
+  if i <> 1 then
+    a := cl[i];
+    cl[i] := cl[1];
+    cl[1] := a;
+  fi;
   return cl;
 end );
 

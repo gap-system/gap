@@ -402,13 +402,21 @@ DeclareGlobalFunction("DefiningQuotientHomomorphism");
 ##  `AsSubgroupOfWholeGroupByQuotient'.
 DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 
+
 ############################################################################
 ##
-#O  LowIndexSubgroupsFpGroup(<G>,[<H>,]<index>[,<excluded>])
+#O  LowIndexSubgroupsFpGroupIterator( <G>[, <H>], <index>[, <excluded>] )
+#O  LowIndexSubgroupsFpGroup( <G>[, <H>], <index>[, <excluded>] )
 ##
-##  returns a list of representatives of the conjugacy classes of subgroups
-##  of the finitely presented group <G> that contain the subgroup <H> of <G>
-##  and that have index less than or equal to <index>.
+##  These functions compute representatives of the conjugacy classes of
+##  subgroups of the finitely presented group <G> that contain the subgroup
+##  <H> of <G> and that have index less than or equal to <index>.
+##
+##  `LowIndexSubgroupsFpGroupIterator' returns an iterator (see~"Iterators")
+##  that can be used to run over these subgroups,
+##  and `LowIndexSubgroupsFpGroup' returns the list of these subgroups.
+##  If one is interested only in one or a few subgroups up to a given index
+##  then preferably the iterator should be used.
 ##
 ##  If the optional argument <excluded> has been specified, then it is
 ##  expected to be a list of words in the free generators of the underlying
@@ -418,7 +426,7 @@ DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 ##
 ##  If not given, <H> defaults to the trivial subgroup.
 ##
-##  The function `LowIndexSubgroupsFpGroup' finds the requested subgroups
+##  The algorithm used finds the requested subgroups
 ##  by systematically running through a tree of all potential coset tables
 ##  of <G> of length at most <index> (where it skips all branches of that
 ##  tree for which it knows in advance that they cannot provide new classes
@@ -427,6 +435,16 @@ DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 ##  the value of <index>. So you should be careful with the choice of
 ##  <index>.
 ##
+DeclareOperation( "LowIndexSubgroupsFpGroupIterator",
+    [ IsSubgroupFpGroup, IsPosInt ] );
+DeclareOperation( "LowIndexSubgroupsFpGroupIterator",
+    [ IsSubgroupFpGroup, IsSubgroupFpGroup, IsPosInt ] );
+DeclareOperation( "LowIndexSubgroupsFpGroupIterator",
+    [ IsSubgroupFpGroup and IsWholeFamily, IsPosInt, IsList ] );
+DeclareOperation( "LowIndexSubgroupsFpGroupIterator",
+    [ IsSubgroupFpGroup and IsWholeFamily, IsSubgroupFpGroup, IsPosInt,
+      IsList ] );
+
 DeclareOperation("LowIndexSubgroupsFpGroup",
   [IsSubgroupFpGroup,IsSubgroupFpGroup,IsPosInt]);
 

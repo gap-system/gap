@@ -52,12 +52,10 @@ gap> aut:=AutomorphismGroup(g);;
 gap> ccu:=ConjugacyClasses(aut);;
 gap> aut2:=AutomorphismGroup(aut);;
 
-
 ## field conversion (6)
 gap> v := [];;
 gap> ConvertToVectorRep(v,3);;
 gap> ConvertToVectorRep(v,9);;
-
 
 ## EulerianFunction (10)
 gap> EulerianFunction( DihedralGroup(8), 2);
@@ -73,7 +71,7 @@ gap> ConjugacyClassesSubgroups(g);;
 gap> g:=Group([ (3,5), (1,3,5) ]);;
 gap> MaximalSubgroups(g);;
 
-##GQuotients
+## GQuotients
 gap> s := SymmetricGroup(4);;
 gap> g := SmallGroup(48,1);;
 gap> GQuotients(g,s);
@@ -99,7 +97,7 @@ gap> c := Transformation([2,3,4,5,1]);;
 gap> op5 := Semigroup(s,c);;
 gap> dcl := GreensDClasses(op5);;
 gap> IsGreensLessThanOrEqual(dcl[4],dcl[5]);
-false
+true
 
 ## Testing that GroupHClassOfGreensDClass is implemented
 gap> h := GroupHClassOfGreensDClass(dcl[4]);;
@@ -129,7 +127,6 @@ gap> g := Group( (1,2),(1,2,3) );;
 gap> i := TrivialSubgroup( g );;
 gap> CentralizerModulo( g, i, (1,2) );
 Group([ (1,2) ])
-
 gap> x:= Sum( GeneratorsOfAlgebra( QuaternionAlgebra( Rationals, -2, -2 ) ) );;
 gap> x * Inverse( x ) = One( x );
 true
@@ -257,8 +254,8 @@ gap> Difference( [ 1, 1 ], [] );
 gap> f := FreeGroup( 2 );;
 gap> g := f/[f.1^4,f.2^4,Comm(f.1,f.2)];;
 gap> Elements(g);
-[ <identity ...>, f1, f1^3, f2, f2^3, f1^2, f1*f2, f1*f2^3, f1^3*f2, 
-  f1^3*f2^3, f2^2, f1^2*f2, f1^2*f2^3, f1*f2^2, f1^3*f2^2, f1^2*f2^2 ]
+[ <identity ...>, f1, f2, f1^2, f2^2, f1*f2, f1^3, f1*f2^2, f1^2*f2, f2^3, 
+  f1^2*f2^2, f1^3*f2, f1*f2^3, f1^3*f2^2, f1^2*f2^3, f1^3*f2^3 ]
 
 gap> NrPrimitiveGroups(441);
 24
@@ -473,9 +470,10 @@ gap> x:= LeftModuleHomomorphismByImages( v, v, Basis( v ), Basis( v ) );;
 gap> x + 0*x;;
 
 
-# 2005/02/21 (TB)
-gap> a:= GroupRing( GF(2), Group( (1,2) ) );;
-gap> 1/3 * a.1;;  a.1 * (1/3);;
+# 2005/02/21 (TB) 
+# 2006/03/13 (JJM) - removed this duplicate of 'bug 7 for fix 5' test
+#gap> a:= GroupRing( GF(2), Group( (1,2) ) );;
+#gap> 1/3 * a.1;;  a.1 * (1/3);;
 
 
 # 2005/02/26 (AH)
@@ -928,6 +926,8 @@ gap> AbelianInvariantsMultiplier( g ); # returned [ 2, 2 ] in 4.4.5
 
 
 # 2005/08/19 (SL)
+gap> Inverse(0*Z(2));
+fail
 gap> Inverse(0*Z(3));
 fail
 
@@ -1098,10 +1098,296 @@ gap> Add(l, 100, 1); l;
 [ 100, 2 ]
 
 
+#############################################################################
+##
+##  for changes 4.4.6 -> 4.4.7  (extracted from corresponding dev/Update)
+
+# For fixes:
+
+
+# 2005/09/07 (TB)
+gap> Is8BitMatrixRep( InvariantQuadraticForm( SO( 7, 3 ) ).matrix );
+true
+gap> Is8BitMatrixRep( InvariantBilinearForm( Sp( 4, 4 ) ).matrix );
+true
+gap> Is8BitMatrixRep( InvariantSesquilinearForm( SU( 4, 2 ) ).matrix );
+true
+
+
+# 2005/09/13 (AH)
+gap> r:=PolynomialRing(Rationals,3);; eo:=EliminationOrdering([2],[3,1]);;
+
+
+# 2005/09/20 (SK)
+gap> # None as the library methods for `NormalSubgroups' apparently obey
+gap> # the `rule' that the trivial subgroup appears in the first and the
+gap> # whole group appears in the last position.
+
+
+# 2005/10/05 (SL and MN)
+gap> p := PermList(Concatenation([2..10000],[1]));;
+gap> for i in [1..10000] do a := p^0; od; time1 := time;;    
+gap> for i in [1..10000] do a := OneOp(p); od; time2 := time;;
+gap> if time1 <= 3 * time2 then Print("Fix worked\n"); fi;      
+Fix worked
+
+
+# 2005/10/14 (BH)
+gap> IsBoundGlobal ("ComputedInducedPcgses");
+true
+
+
+# 2005/10/14 (BH)
+## 2006/03/13 (JJM) - leave commented out until we know what should
+## be tested here
+gap> LoadPackage ("crisp", "1.2.1", false);
+true
+gap> G := DirectProduct( CyclicGroup(2) , CyclicGroup(3) ,  
+> SymmetricGroup(4) );;
+gap> AllInvariantSubgroupsWithQProperty (G, G, 
+> ReturnTrue, ReturnTrue, rec());;
+gap> (1, 5) in EnumeratorByPcgs ( Pcgs( SymmetricGroup (4) ) );
+false
+
+
+# 2005/10/26 (JS)
+gap> PolynomialByExtRep(FamilyObj(X(Rationals)),[[1,1],1,[2,1],1]); # x_2+x_1 in 4.4.6
+x_1+x_2
+
+
+# 2005/10/28 (TB)
+gap> fail in List( Irr( SymmetricGroup( 3 ) ), Inverse );
+true
+
+
+# 2005/10/28 (TB)
+gap> Order( ClassFunction( CyclicGroup( 1 ), [ (1-EI(5))/ER(6) ] ) );
+infinity
+
+
+# 2005/10/28 (TB)
+gap> rg:= GroupRing( GF(2), SymmetricGroup( 3 ) );;
+gap> i:= Ideal( rg, [ Sum( GeneratorsOfAlgebra( rg ){ [ 1, 2 ] } ) ] );;
+gap> Dimension( rg / i );;
+
+
+# 2005/10/29 (TB)
+gap> LoadPackage( "ctbllib" );
+true
+gap> t:= CharacterTable( "S12(2)" );;  p:= PrevPrimeInt( Exponent( t ) );;
+gap> IsSmallIntRep( p );
+false
+gap> PowerMap( t, p );;
+
+
+# 2005/11/22 (TB)
+gap> Z(4) in Group( Z(2) );;
+
+
+# 2005/11/25 (JS)
+gap> NrPerfectLibraryGroups(450000);
+3
+gap> NrPerfectLibraryGroups(962280);
+1
+gap> NrMovedPoints(PerfectGroup(IsPermGroup,129024,2));
+288
+gap> NrMovedPoints(PerfectGroup(IsPermGroup,258048,2));
+576
+gap> NrMovedPoints(PerfectGroup(IsPermGroup,516096,1));
+400
+
+
+# 2005/11/28 (FL)
+gap> ConjugacyClasses(SL(2,3))[1];
+[ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ]^G
+
+
+# 2005/11/28 (TB)
+gap> LoadPackage( "ctbllib" );
+true
+gap> Display( CharacterTable( "s4" ), rec( classes:= [ 3 ] ) );
+s4
+
+     2  .
+     3  1
+
+       3a
+    2P 3a
+    3P 1a
+
+X.1     1
+X.2     1
+X.3    -1
+X.4     .
+X.5     .
+
+
+# 2005/11/29 (TB)
+gap> l:= [ [ 1, 2 ] ];;  CheckFixedPoints( [ 1 ], l, [ 1, 1 ] );;  l;
+[ 1 ]
+
+
+# 2005/11/29 (TB)
+gap> IsIdenticalObj( VectorSpace, FreeLeftModule );
+false
+
+
+# 2005/11/29 (TB)
+gap> AsGroup( [ 1, -1 ] );
+#I  no groups of cyclotomics allowed because of incompatible ^
+fail
+
+
+# 2005/12/21 (BH)
+gap> ApplicableMethod (CharacteristicPolynomial, [GF(2), GF(4), [[Z(2)]], 1])=fail;
+false
+
+
+# 2005/12/22 (Robert F. Morse)
+gap> t:=Transformation([1,2,3,3]);;
+gap> s:=FullTransformationSemigroup(4);;
+gap> ld:=GreensDClassOfElement(FullTransformationSemigroup(4),
+> Transformation([1,2,3,3]));;
+gap> rs:=AssociatedReesMatrixSemigroupOfDClass(ld);;
+gap> SandwichMatrixOfReesZeroMatrixSemigroup(rs)[3][5]=(1,2)(3,4)(5,6);
+true
+
+
+# 2006/01/11 (MC)
+gap> d := DirectoryCurrent();;
+gap> f := Filename(DirectoriesSystemPrograms(), "rev");;
+gap> s := InputOutputLocalProcess(d,f,[]);;
+gap> PrintFormattingStatus(s);
+false
+gap> SetPrintFormattingStatus(s,false);
+gap> AppendTo(s,"The cat sat on the mat\n");
+gap> Print(ReadLine(s));
+tam eht no tas tac ehT
+gap> CloseStream(s);
+
+
+# 2006/01/18 (AH)
+gap> G:=WreathProduct(CyclicGroup(3),Group((1,2,3),(4,5,6)));;
+gap> Assert(0,Size(Group(GeneratorsOfGroup(G)))=6561);
+
+
+# 2006/01/25 (TB)
+gap> Basis( Rationals );;
+
+
+# 2006/02/14 (SK)
+gap> testG :=
+>    function ( a, b )
+>      local  M1;
+>       M1 := [ [ [      0, -E(a)^-1 ], [ -E(a),       0 ] ],
+>               [ [      0,       -1 ], [     1,       0 ] ],
+>               [ [ E(4*b),        0 ], [     0, -E(4*b) ] ],
+>               [ [     -1,        0 ], [     0,      -1 ] ]];
+>       return (Group(M1));
+>    end;;
+gap> StructureDescription(testG(8,2));
+"(C8 x C4) : C2"
+gap> StructureDescription(testG(8,3));
+"C3 x QD16"
+gap> StructureDescription(testG(8,4));
+"(C16 x C4) : C2"
+
+
+# 2006/02/27 (AH)
+gap> RepresentativeAction(Group(()), [1], [2], OnSets);;
+
+
+# 2006/03/02 (AH)
+gap> x:=X(Rationals,"x");;
+gap> y:=X(Rationals,"y");;
+gap> a:=X(Rationals,"a");;
+gap> c:=X(Rationals,"c");;
+gap> s:=X(Rationals,"s");;
+gap> L:=[(a+c)*s-x,(a+c)*c-y,s^2+c^2-1];;
+gap> ReducedGroebnerBasis(L,MonomialLexOrdering([x,y,a,c,s]));
+[ c^2+s^2-1, -a*c+s^2+y-1, -a*s-c*s+x ]
+gap> ReducedGroebnerBasis(L,MonomialLexOrdering([c,s,x,y,a]));
+[ x^4+2*x^2*y^2-x^2*a^2+y^4-y^2*a^2-2*x^2*y-2*y^3+y^2, 
+  -x^3-x*y^2+x*a^2+y*a*s+x*y, x^2*y+x*a*s+y^3-y*a^2-x^2-2*y^2+y, 
+  x^2*s+y^2*s-x*a-y*s, -x^2-y^2+a^2+s^2+2*y-1, -x^2-y^2+a^2+a*c+y, 
+  x*s+y*c-a-c, x*c-y*s, a*s+c*s-x, x^2+y^2-a^2+c^2-2*y ]
+
+
+# 2006/03/03 (FL)
+gap> s := "";; str := OutputTextString(s, false);;
+gap> for i in [0..255] do WriteByte(str, i); od;
+gap> CloseStream(str);
+gap> s = List([0..255], CHAR_INT);
+true
+
+
+# 2006/2/20 (AH)
+gap> group1 := Group([ (1,3)(2,5)(4,7)(6,8), (1,4)(2,6)(3,7)(5,8),
+> (1,5)(2,3)(4,8)(6,7), (2,3,4,5,7,8,6), (3,4,7)(5,6,8) ]);;
+gap> group2 := Group([ (1,3,4,7,2,6,8), (1,8,7,5,3,6,2) ]);;
+gap> group3 := SymmetricGroup([1..8]);;
+gap> RepresentativeAction(group3,group1,group2);
+fail
+
+# 2006/03/08 (SL)
+gap> Z(3,30);
+z
+
+
+# For new features:
+
+
+# 2005/12/08 (TB)
+gap> List( Filtered( Irr( CharacterTable( "Sz(8).3" ) mod 3 ),            
+>                    x -> x[1] = 14 ), ValuesOfClassFunction );        
+[ [ 14, -2, 2*E(4), -2*E(4), -1, 0, 1 ], 
+  [ 14, -2, -2*E(4), 2*E(4), -1, 0, 1 ] ]
+
+
+# 2005/12/08 (TB)
+gap> Display( CharacterTable( "A5" ),                                     
+>     rec( powermap:= "ATLAS", centralizers:= "ATLAS", chars:= false ) );   
+A5
+
+    60  4  3  5  5
+
+ p      A  A  A  A
+ p'     A  A  A  A
+    1A 2A 3A 5A B*
+
+
+
+# 2005/12/08 (TB, Michael Hartley (implementation of a prototype))
+gap> LowIndexSubgroupsFpGroupIterator;;
+
+
+# 2005/12/22 (Robert F. Morse)
+gap> g := Image(IsomorphismFpGroup(SmallGroup(8,3)));;
+gap> h := Image(IsomorphismFpGroup(SmallGroup(120,5)));;
+gap> fp := FreeProduct(g,h);;
+gap> IsFpGroup(fp);
+true
+gap> emb := Embedding(fp,1);;
+gap> IsMapping(emb);
+true
+gap> dp := DirectProduct(g,h);;
+gap> IsFpGroup(dp);
+true
+gap> IdGroup(dp);
+[ 960, 5746 ]
+gap> IdGroup(Image(Projection(dp,2)));
+[ 120, 5 ]
+gap> IdGroup(Image(Embedding(dp,1)));            
+[ 8, 3 ]
+
+
+# 2005/12/28 (FL)
+gap> IsCheapConwayPolynomial(2,114);
+true
+
 gap> STOP_TEST( "bugfix.tst", 7621100000 );
 
 
 #############################################################################
 ##
 #E
-

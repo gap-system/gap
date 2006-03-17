@@ -1540,8 +1540,8 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
     fi;
     if IsCyclic(G) then
       if IsCyclic(H) then
-        return [GroupHomomorphismByImagesNC(H,G,[GeneratorOfCyclicGroup(H)],
-	  [GeneratorOfCyclicGroup(G)^(Size(G)/Size(H))])];
+        return [GroupHomomorphismByImagesNC(H,G,[MinimalGeneratingSet(H)[1]],
+	  [MinimalGeneratingSet(G)[1]^(Size(G)/Size(H))])];
       else
         return [];
       fi;
@@ -1553,7 +1553,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
     cl:=List(RationalClasses(G),Representative);
     cl:=Filtered(cl,i->Order(i)=Size(H));
     return List(cl,i->GroupHomomorphismByImagesNC(H,G,
-                      [GeneratorOfCyclicGroup(H)],
+                      [MinimalGeneratingSet(H)[1]],
 		      [i]));
   fi;
   cl:=ConjugacyClasses(G);

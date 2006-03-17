@@ -516,6 +516,31 @@ InstallMethod( ShrinkCoeffs,
 
 #############################################################################
 ##
+#M  PadCoeffs( <gf2vec>, <len> )  . . . . . . . . . . . expand a GF2 vector
+##
+InstallMethod( PadCoeffs,
+    "for GF2 vector",
+    true,
+        [ IsMutable and IsRowVector and IsAdditiveElementWithZeroCollection and IsGF2VectorRep, 
+          IsPosInt ],
+        0,
+        function(v,len)
+    if len > LEN_GF2VEC(v) then
+        RESIZE_GF2VEC(v,len);
+    fi;
+end);
+    
+#############################################################################
+##
+#M  QuotRemCoeffs( <gf2vec>, <len>, <gf2vec>, <len> )
+##
+InstallMethod( QuotRemCoeffs, 
+        "GF2 vectors",
+        [ IsRowVector and IsGF2VectorRep, IsInt, IsRowVector and IsGF2VectorRep, IsInt],
+        QUOTREM_COEFFS_GF2VEC);
+    
+#############################################################################
+##
 #M  NormedRowVector( <v> )
 ##
 InstallMethod( NormedRowVector, "for GF(2) vector", true,
@@ -1186,7 +1211,7 @@ end);
 LOCAL_COPY_GF2 := GF(2);
 
 InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
-    local x, gf2, gfq, char,deg,q,p,mindeg, v, field ;
+    local   v,  q,  vc,  common,  field;
     if Length(arg) < 1 then
         Error("ConvertToVectorRep: one or two arguments required");
     fi;
@@ -1230,94 +1255,94 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
         return q;    
     fi;
     
-    # otherwise, if there is a field, we go to work
+    
+    #
+    # Ask the kernel to check the list for us.
+    # We have to do this, even in an NC version because the list might contain
+    # elements of large finite fields
+    #
+        
+    if not IS_VECFFE(v) then
+        if IsFFECollection(v) then
+            # now we might have some elements in a large field representation
+            # or possibly a totally bad list
+            vc := ShallowCopy(v);
+            common := FFECONWAY.WriteOverSmallestCommonField(vc);
+            if common = fail or common  > 256 then
+                #
+                # vector needs a field > 256, so can't be compressed
+                # or vector contains non-ffes or no common characteristic
+                #
+                return true;
+            fi;
+            CLONE_OBJ(v,vc); # horrible hack.
+        else
+            return true;
+        fi;
+    else
+        common := COMMON_FIELD_VECFFE(v);   
+    fi;
+    
+    #
+    # see if the user gave us q
     #
     if Length(arg) > 1 then
         field := arg[2];
-        if field=2 or (IsField(field) and Size(field)=2) then
-            Assert(2, ForAll(v, elm -> elm in GF(2)));
-            CONV_GF2VEC(v);
-            q := 2;
+        if IsInt(field) then
+            q := field;
+            Assert(2,IsPrimePowerInt(q));
+        elif IsField(field) then
+            q := Size(field); 
         else
-            if IsPosInt(field) then
-                q:=field;
-                Assert(2, ForAll(v, elm -> elm in GF(q)));
-            elif IsFFECollection(field) and IsField(field) then
-                q := Size(field);
-                Assert(2, ForAll(v, elm -> elm in field));
-            else
-                q := fail;      
-            fi;
-            
-            if q <> fail and q > 2 and q <= 256 then
-                CONV_VEC8BIT(v,q);
-            else
-                XTNUM_OBJ(v);
-                return true;
-            fi;
+            Error("q not a field or integer");
         fi;
-        return q;
-    fi;
-    
-    # Here we were not told what field we are over, so we work it out
-    
-    # we may already be in a packed rep. If so, do nothing  
-    if IsGF2VectorRep(v) then
-        return 2;
-    elif Is8BitVectorRep(v) then
-        return Q_VEC8BIT(v);
-    fi;
-    
-    # otherwisescan the vector to see if we can do anything
-    gf2 := true;
-    gfq := true;
-    p := 0;
-    for x in v do
-        if not IsFFE(x) then
-            return fail;
-        fi;
-        if gf2 or gfq then
-            char := Characteristic(x);
-            deg := DegreeFFE(x);
-            
-            # the tests for GF(2) are simple
-            if gf2 and (char <> 2 or deg <> 1) then
-                gf2 := false;
-            fi;
-            
-            if gfq then
-                if not IsInternalRep(x) then
-                    gfq := false;
-                elif p = 0 then
-                    p := char;
-                    mindeg := deg;
-                    if p^deg > 256 then
-                        gfq := false;
-                    fi;
-                elif p <> char then
-                    gfq := false;
-                elif mindeg mod deg <> 0 then
-                    mindeg := Lcm(mindeg,deg);
-                    if p^mindeg > 256 then
-                        gfq := false;
-                    fi;
-                fi;
-            fi;
-        fi;
-    od;
-    
-    if gf2 then
-        ConvertToGF2VectorRep(v);
-        return 2; # we need this in `ConvertToMatrixRep' to know whether we
-        # may create a GF-2 matrix.
-    elif gfq  then
-        CONV_VEC8BIT(v, p^mindeg);
-        return Q_VEC8BIT(v);
     else
-        # force the kernel to note that this is a FFE vector
-        TypeObj(v);
+        q := fail;
     fi;
-    return true;
+    
+    #
+    # if there is a field, we go to work
+    #
+    if q = fail then
+        if common = fail then
+            return true;
+        fi;
+        if not IsPrimeInt(common) then
+            common := SMALLEST_FIELD_VECFFE(v);
+        fi;
+        if common = 2 then
+            CONV_GF2VEC(v);
+            return 2;
+        elif common <= 256 then
+            CONV_VEC8BIT(v,common);
+            return common;
+        else
+            return true;
+        fi;
+    elif q = 2 then
+        Assert(2, ForAll(v, elm -> elm in GF(2)));
+        if common > 2 and common mod 2 = 0 then
+            common := SMALLEST_FIELD_VECFFE(v);
+        fi;
+        if common <> 2 then
+            Error("ConvertToVectorRepNC: Vector cannot be written over GF(2)");
+        fi;
+        CONV_GF2VEC(v);
+        return 2;
+    elif q <= 256 then
+        Assert(2, ForAll(v, elm -> elm in GF(q)));
+        if common > q and q^LogInt(common,q) = common then
+            common := SMALLEST_FIELD_VECFFE(v);
+        fi;
+        if common ^ LogInt(q, common) <> q then
+            Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
+        fi;
+        
+        CONV_VEC8BIT(v,q);
+        return q;
+    else    
+        return true;
+    fi;
 end);
 
 #############################################################################

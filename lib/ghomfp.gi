@@ -239,16 +239,42 @@ local aug,si,r,i,j,tt,ct,cft,c,f,g,ind,e;
 
   word:=UnderlyingElement(word);
   c:=1; # current coset
-  for i in [1..NrSyllables(word)] do
-    g:=GeneratorSyllable(word,i);
-    e:=ExponentSyllable(word,i);
-    if e<0 then
-      ind:=2*aug.transtab[g];
-      e:=-e;
-    else
-      ind:=2*aug.transtab[g]-1;
-    fi;
-    for j in [1..e] do
+
+  if not IsLetterAssocWordRep(word) then
+    # syllable version
+    for i in [1..NrSyllables(word)] do
+      g:=GeneratorSyllable(word,i);
+      e:=ExponentSyllable(word,i);
+      if e<0 then
+	ind:=2*aug.transtab[g];
+	e:=-e;
+      else
+	ind:=2*aug.transtab[g]-1;
+      fi;
+      for j in [1..e] do
+	# apply the generator, collect cofactor
+	f:=cft[ind][c]; # cofactor
+	if f>0 then
+	  r:=r*DecodedTreeEntry(aug.tree,si,f);
+	elif f<0 then
+	  r:=r/DecodedTreeEntry(aug.tree,si,-f);
+	fi;
+	c:=ct[ind][c]; # new coset number
+      od;
+    od;
+
+  else
+    # letter version
+    word:=LetterRepAssocWord(word);
+    for i in [1..Length(word)] do
+      g:=word[i];
+      if g<0 then
+	g:=-g;
+	ind:=2*aug.transtab[g];
+      else
+	ind:=2*aug.transtab[g]-1;
+      fi;
+
       # apply the generator, collect cofactor
       f:=cft[ind][c]; # cofactor
       if f>0 then
@@ -257,8 +283,9 @@ local aug,si,r,i,j,tt,ct,cft,c,f,g,ind,e;
 	r:=r/DecodedTreeEntry(aug.tree,si,-f);
       fi;
       c:=ct[ind][c]; # new coset number
+
     od;
-  od;
+  fi;
 
   # make sure we got back to start
   if c<>1 then 
@@ -662,6 +689,12 @@ local aug,w,p,pres,f,fam,opt;
   if HasIsWholeFamily(u) and IsWholeFamily(u) then
     return IdentityMapping(u);
   fi;
+
+  # catch trivial case of rank 0 group
+  if Length(GeneratorsOfGroup(FamilyObj(u)!.wholeGroup))=0 then
+    return IsomorphismFpGroup(FamilyObj(u)!.wholeGroup,str);
+  fi;
+
   # get an augmented coset table from the group. Since we don't care about
   # any particular generating set, we let the function chose.
   aug:=AugmentedCosetTableInWholeGroup(u);

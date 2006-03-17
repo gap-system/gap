@@ -689,6 +689,9 @@ Obj FuncAddRowVectorVecFFEsMult( Obj self, Obj vecL, Obj vecR, Obj mult )
   UInt xtype;
   UInt i;
 
+  if (TNUM_OBJ(mult) != T_FFE)
+    return TRY_NEXT_METHOD;
+
    if (VAL_FFE(mult) == 0)
      return (Obj) 0;
 
@@ -793,6 +796,9 @@ Obj FuncMultRowVectorVecFFEs( Obj self, Obj vec, Obj mult )
   UInt len;
   UInt xtype;
   UInt i;
+
+  if (TNUM_OBJ(mult) != T_FFE)
+    return TRY_NEXT_METHOD;
 
    if (VAL_FFE(mult) == 1)
      return (Obj) 0;
@@ -1069,7 +1075,55 @@ Obj ZeroVecFFE( Obj vec )
   return res;
 }
 
+UInt IsVecFFE(Obj vec)
+{
+  UInt tn;
+  tn = TNUM_OBJ(vec);
+  if (tn >= T_PLIST_FFE && tn <= T_PLIST_FFE+IMMUTABLE)
+    return 1;
+  if (!IS_PLIST(vec))  
+    return 0;
+  tn = KTNumPlist(vec, (Obj *)0);
+  return tn >= T_PLIST_FFE && tn <= T_PLIST_FFE+IMMUTABLE;
+}
 
+
+Obj FuncIS_VECFFE( Obj self, Obj vec)
+{
+  return IsVecFFE(vec) ? True : False;
+}
+
+Obj FuncCOMMON_FIELD_VECFFE( Obj self, Obj vec)
+{
+  Obj elm;
+  if (!IsVecFFE(vec))
+    return Fail;
+  elm = ELM_PLIST(vec,1);
+  return INTOBJ_INT(SIZE_FF(FLD_FFE(elm)));
+}
+
+Obj FuncSMALLEST_FIELD_VECFFE( Obj self, Obj vec)
+{
+  Obj elm;
+  UInt deg,deg1,deg2,i,len,p,q;
+  if (!IsVecFFE(vec))
+    return Fail;
+  elm = ELM_PLIST(vec,1);
+  deg = DegreeFFE(elm);
+  p = CharFFE(elm);
+  len  = LEN_PLIST(vec);
+  for (i = 2; i <= len; i++)
+    {
+      deg2 =  DegreeFFE(ELM_PLIST(vec,i));
+      deg1 = deg;
+      while (deg % deg2 != 0)
+	deg += deg1;
+    }
+  q = p;
+  for (i = 2; i <= deg; i++)
+    q *= p;
+  return INTOBJ_INT(q);
+}
 
 /****************************************************************************
 **
@@ -1090,6 +1144,15 @@ static StructGVarFunc GVarFuncs [] = {
 
   { "MULT_ROWVECTOR_VECFFES", 2, "vec, mult",
     FuncMultRowVectorVecFFEs, "src/vecffe.c: MULT_ROWVECTOR_VECFFES" },
+  
+  { "IS_VECFFE", 1, "vec",
+    FuncIS_VECFFE, "src/vecffe.c: IS_VECFFE" },
+
+  { "COMMON_FIELD_VECFFE", 1, "vec",
+    FuncCOMMON_FIELD_VECFFE, "src/vecffe.c: COMMON_FIELD_VECFFE" },
+
+  { "SMALLEST_FIELD_VECFFE", 1, "vec",
+    FuncSMALLEST_FIELD_VECFFE, "src/vecffe.c: SMALLEST_FIELD_VECFFE" },
   
     { 0 }
 

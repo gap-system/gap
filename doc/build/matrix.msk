@@ -556,12 +556,12 @@ x^2-2*x+1
 gap> mat := [[0,1],[E(4)-1,E(4)]];;
 gap> CharacteristicPolynomial( mat );
 x^2+-E(4)*x+1-E(4)
-gap> CharacteristicPolynomial( Rationals, mat );
+gap> CharacteristicPolynomial( Rationals, CF(4), mat );
 x^4+3*x^2+2*x+2
 gap> mat:= [ [ E(4), 1 ], [ 0, -E(4) ] ];;
 gap> CharacteristicPolynomial( mat );
 x^2+1
-gap> CharacteristicPolynomial( Rationals, mat );
+gap> CharacteristicPolynomial( Rationals, CF(4), mat );
 x^4+2*x^2+1
 \endexample
 
@@ -778,5 +778,3 @@ gap> Display(M);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %E
-
-

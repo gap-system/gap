@@ -63,11 +63,12 @@ conditions starting from 'smallest' polynomial\n",
  FL := "computed by a parallelized program by Frank Luebeck, computes\n\
 minimal polynomial of all compatible elements (~2001)\n",
  KM := "computed by Kate Minola, a parallelized program for p=2, considering\n\
-minimal polynomials of all compatible elements (~2004)\n",
+minimal polynomials of all compatible elements (~2004-2005)\n",
  RPn := "computed by Richard Parker (2004)\n",
  3\,21 := "for p=3, n=21 there appeared a polynomial in some lists/systems\n\
 which was not the Conway polynomial; the current one in GAP is correct\n",
- JB := "computed by John Bray using similar algorithm as in GAP (~2005)\n",
+ JB := "computed by John Bray using minimal polynomials of consistent \
+elements, respectively a similar algorithm as in GAP (~2005)\n",
  conwdat1 := false,
  conwdat2 := false,
  conwdat3 := false,
@@ -262,10 +263,10 @@ InstallGlobalFunction( ConwayPol, function( p, n )
       fi;
       cachelist := CONWAYPOLDATA[p];
     else
-      if not IsBound( CONWAYPOLYNOMIALSINFO.cache.(p) ) then
-        CONWAYPOLYNOMIALSINFO.cache.(p) := [];
+      if not IsBound( CONWAYPOLYNOMIALSINFO.cache.(String(p)) ) then
+        CONWAYPOLYNOMIALSINFO.cache.(String(p)) := [];
       fi;
-      cachelist := CONWAYPOLYNOMIALSINFO.cache.(p);
+      cachelist := CONWAYPOLYNOMIALSINFO.cache.(String(p));
     fi;
     if not IsBound( cachelist[n] ) then
 
@@ -453,8 +454,13 @@ InstallGlobalFunction( ConwayPolynomial, function( p, n )
     if IsPrimeInt( p ) and IsPosInt( n ) then
       F:= GF(p);
       res := UnivariatePolynomial( F, One( F ) * ConwayPol( p, n ) );
-      Setter(InfoText)(res, CONWAYPOLYNOMIALSINFO.(
-                            CONWAYPOLDATA[p][n][2]));
+      if p < 110000 then
+          Setter(InfoText)(res, CONWAYPOLYNOMIALSINFO.(
+                  CONWAYPOLDATA[p][n][2]));
+      else
+          Setter(InfoText)(res, CONWAYPOLYNOMIALSINFO.cache.(
+                  String(p))[n][2]);
+      fi;
       return res;
     else
       Error( "<p> must be a prime, <n> a positive integer" );
@@ -471,9 +477,13 @@ InstallGlobalFunction( IsCheapConwayPolynomial, function( p, n )
     elif 1000 < p and p < 110000 and CONWAYPOLYNOMIALSINFO.conwdat3 = false then
       ReadLib("conwdat3.g");
     fi;
-    if IsBound(CONWAYPOLDATA[p]) and IsBound(CONWAYPOLDATA[p][n]) then
+    if p < 110000 and IsBound(CONWAYPOLDATA[p]) and IsBound(CONWAYPOLDATA[p][n]) then
       return true;
-    fi;
+  fi;
+  if p >= 110000 and IsBound(CONWAYPOLYNOMIALSINFO.cache.(String(p))) 
+     and IsBound(CONWAYPOLYNOMIALSINFO.cache.(String(p))[n]) then
+      return true;
+  fi;
     # this is not very precise, hopefully good enough for the moment
     if p < 41 then 
       if n < 100 and IsPrimeInt(n) then
@@ -487,10 +497,24 @@ InstallGlobalFunction( IsCheapConwayPolynomial, function( p, n )
       if n < 14 and IsPrimeInt(n) then
         return true;
       fi;
-    elif p < 65536 then
+    elif p < 2^48 then
       if n in [1,2,3,5,7] then
         return true;
       fi;
+    elif p < 2^60 then
+        if n in [1,2,3,5] then
+            return true;
+        fi;    
+    elif p < 2^120 then
+        if n in [1,2,3] then
+            return true;
+        fi;    
+    elif p < 2^200 then
+        if n in [1,2] then
+            return true;
+        fi;    
+    elif n = 1 then
+        return false;
     fi;
   fi;
   return false;

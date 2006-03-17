@@ -122,7 +122,7 @@ InstallOtherMethod( AddRowVector,
         IsCollsCollsElms,
     [ IsGF2VectorRep and IsMutable,
       IsGF2VectorRep,
-      IS_FFE ],0,
+      IS_FFE and IsInternalRep ],0,
         ADDCOEFFS_GF2VEC_GF2VEC_MULT );
         
 InstallOtherMethod( AddRowVector,
@@ -130,7 +130,7 @@ InstallOtherMethod( AddRowVector,
         IsCollsCollsElmsXX,
     [ IsRowVector and IsMutable and IsPlistRep and IsFFECollection,
       IsRowVector and IsPlistRep and IsFFECollection,
-      IS_FFE, IsPosInt, IsPosInt ],0,
+      IS_FFE and IsInternalRep, IsPosInt, IsPosInt ],0,
         function( sum, vec, mult, from, to)
     AddRowVector(sum,vec,mult);
 end);
@@ -140,7 +140,7 @@ InstallOtherMethod( AddRowVector,
         IsCollsCollsElms,
     [ IsRowVector and IsMutable and IsPlistRep and IsFFECollection,
       IsRowVector and IsPlistRep and IsFFECollection,
-      IS_FFE ],0,
+      IS_FFE and IsInternalRep ],0,
         ADD_ROWVECTOR_VECFFES_3 );
         
 InstallOtherMethod( AddRowVector, "generic method 3 args",
@@ -403,6 +403,42 @@ end );
 InstallOtherMethod( ShrinkRowVector,"error if immutable",true,
     [ IsList],0,
     L1_IMMUTABLE_ERROR);
+
+#############################################################################
+##
+#M  PadCoeffs
+##
+
+InstallMethod(PadCoeffs, 
+        "pad with supplied value", 
+        IsCollsXElms,
+        [IsList and IsMutable, IsPosInt, IsObject],
+        function(l,n,x)
+    local   len,  i;
+    len := Length(l);
+    for i in [len+1..n] do
+        l[i] := x;
+    od;
+    return;
+end);
+
+InstallMethod(PadCoeffs, 
+        "pad with zero", 
+        [IsList and IsMutable and IsAdditiveElementWithZeroCollection, 
+         IsPosInt],
+        function(l,n)
+    local   len,  z,  i;
+    len := Length(l);
+    if len = 0 then
+        Error("Don't know what to pad with");
+    fi;
+    z := Zero(l[1]);
+    for i in [len+1..n] do
+        l[i] := z;
+    od;
+    return;
+end);
+
 
 
 #############################################################################
@@ -731,6 +767,66 @@ end );
 InstallOtherMethod( ReduceCoeffsMod,"error if immutable", true,
     [ IsList,IsInt],0,
     L1_IMMUTABLE_ERROR);
+
+#############################################################################
+##
+#M  QuotRemCoefs( <list>, <len>, <list>, <len> )
+##
+InstallMethod( QuotRemCoeffs,"generic",
+        [IsList, IsInt, IsList, IsInt],
+function( l1, n1, l2, n2 )
+    local   zero,  rem,  quot,  q,  l,  i;
+    
+    
+    # catch trivial cases
+    if 0 = n2  then
+        Error( "<l2> must be non-zero" );
+    elif 0 = n1  then
+        return [[],[]];
+    fi;
+    zero := Zero(l1[1]);
+    while 0 < n2 and l2[n2] = zero  do
+        n2 := n2 - 1;
+    od;
+    if 0 = n2  then
+        Error( "<l2> must be non-zero" );
+    fi;
+    while 0 < n1 and l1[n1] = zero  do
+        n1 := n1 - 1;
+    od;
+    
+    rem := l1{[1..n1]};
+    quot := ListWithIdenticalEntries(n1-n2+1,zero);
+    # reduce coeffs
+    while n1 >= n2  do
+        q := rem[n1]/l2[n2];
+        l := n1-n2;
+        quot[l+1] := q;
+        for i  in [ n1-n2+1 .. n1 ]  do 
+            rem[i] := rem[i]-q*l2[i-n1+n2];
+            if rem[i] <> zero  then
+                l := i;
+            fi;
+        od;
+        n1 := l;
+    od;
+    return [quot,rem];
+end );
+        
+        
+#############################################################################
+##
+#M  QuotRemCoeffs( <list1>, <list2> )
+##
+InstallOtherMethod( QuotRemCoeffs,"generic, use list lengths",
+    true,
+    [ IsDenseList,
+      IsDenseList ],
+    0,
+
+function( l1, l2 )
+    return QuotRemCoeffs( l1, Length(l1), l2, Length(l2) );
+end );
 
 
 #############################################################################

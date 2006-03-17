@@ -82,6 +82,7 @@ ReadLib( "field.gi"    );
 ReadLib( "fieldfin.gi" );
 ReadLib( "zmodnz.gi"   );
 ReadLib( "ffe.gi"      );
+ReadLib( "ffeconway.gi");
 ReadLib( "rational.gi" );
 ReadLib( "gaussian.gi" );
 ReadLib( "cyclotom.gi" );
@@ -218,6 +219,7 @@ ReadLib( "fpmon.gi");
 ReadLib( "rwssmg.gi");
 ReadLib( "kbsemi.gi");
 ReadLib( "tcsemi.gi");
+ReadLib( "adjoin.gi");
 ReadLib( "semirel.gi");
 ReadLib( "semitran.gi");
 ReadLib( "reesmat.gi");
@@ -237,11 +239,10 @@ ReadLib( "gasman.gi");
 ##
 #X  files dealing with subgroup chains
 ##
-ReadLib("utils.gi");
-ReadLib("quogphom.gi");
-ReadLib("gptransv.gi");
-ReadLib("grpchain.gi");
-ReadLib("rss.gi");
-ReadLib("basicim.gi");
-ReadLib("solmxgrp.gi");
-
+#ReadLib("utils.gi");
+#ReadLib("quogphom.gi");
+#ReadLib("gptransv.gi");
+#ReadLib("grpchain.gi");
+#ReadLib("rss.gi");
+#ReadLib("basicim.gi");
+#ReadLib("solmxgrp.gi");

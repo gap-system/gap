@@ -2,7 +2,6 @@
 ##
 #W  ctblgrp.gi                   GAP library                 Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C) 1993, 1997
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -819,7 +818,7 @@ end);
 #F  CharacterMorphismOrbits(<D>,<space>) . . stabilizer and invariantspace
 ##
 CharacterMorphismOrbits := function(D,space)
-  local a,b,s,o,gen;
+  local a,b,s,o,gen,b1;
   if not IsBound(space.stabilizer) then
     if IsBound(space.approxStab) then
       a:=space.approxStab;
@@ -836,9 +835,14 @@ CharacterMorphismOrbits := function(D,space)
     a:=DxActiveCols(D,space);
     # calculate invariant space as intersection of E.S to E.V. 1
     for gen in GeneratorsOfGroup(s) do
-        if Length(b)>0 then
-	b:=NullspaceMat(List(b,i->D.asCharacterMorphism(i,gen){a})
-                -IdentityMat(Length(b),o))*b;
+      if Length(b)>0 then
+	b1:=NullspaceMat(List(b,i->D.asCharacterMorphism(i,gen){a})
+                -IdentityMat(Length(b),o));
+	if Length(b1)=0 then
+	  b:=[];
+	else
+	  b:=b1*b;
+	fi;
       fi;
 #T cheaper!
       b:=rec(base:=b,dim:=Length(b));

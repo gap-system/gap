@@ -107,7 +107,34 @@ DeclareAttribute( "InducedPcgsWrtFamilyPcgs", IsGroup );
 ##  computes a pcgs for <grp> which is induced by <pcgs>. If <pcgs> has
 ##  a parent pcgs, then the result is induced with respect to this parent
 ##  pcgs.
+##
+##  `InducedPcgs' is a wrapper function only. Therefore, methods for computing 
+##  computing an induced pcgs should be installed for the
+##  operation `InducedPcgsOp'.
+##
 DeclareOperation( "InducedPcgs", [IsPcgs,IsGroup] );
+
+#############################################################################
+##
+#O  InducedPcgsOp( <pcgs>, <grp> )
+##
+##  computes a pcgs for <grp> which is induced by <pcgs>. <pcgs> must not
+##  be an induced pcgs. This operation should not be called directly. 
+##  Instead, please use `InducedPcgs' which caches its results.
+##  
+DeclareOperation( "InducedPcgsOp", [IsPcgs,IsGroup] );
+
+#############################################################################
+##
+#A  ComputedInducedPcgses( <grp> )
+##
+##  This attribute stores previously computed induced generating systems
+##  of the group <grp>. It is a list of the form
+##  [<ppcgs_1>, <ipcgs_1>, <ppcgs_2>, <ipcgs_2>, ...],
+##  where <ppcgs_n> is a parent pcgs and <igs_n> is the corresponding
+##  induced generating system.
+##  
+DeclareAttribute ("ComputedInducedPcgses", IsGroup, "mutable");
 
 #############################################################################
 ##
@@ -121,7 +148,6 @@ DeclareOperation( "InducedPcgs", [IsPcgs,IsGroup] );
 ##  is computed that by this calculation is known to be compatible with the
 ##  home pcgs of the calculation.
 DeclareGlobalFunction( "SetInducedPcgs" );
-
 
 #############################################################################
 ##

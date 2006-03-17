@@ -46,7 +46,8 @@ InstallMethod( IsCyclic,
 
     # if <G> has a generator list of length 1 then <G> is cyclic
     if HasGeneratorsOfGroup( G ) and Length( GeneratorsOfGroup(G) ) = 1 then
-        return true;
+      SetMinimalGeneratingSet(G,GeneratorsOfGroup(G));
+      return true;
 
     # if <G> is not commutative it is certainly not cyclic
     elif not IsCommutative( G )  then
@@ -65,18 +66,22 @@ InstallMethod( IsCyclic,
     fi;
     end );
 
-InstallOtherMethod( GeneratorOfCyclicGroup,"generic method for groups",true,
+InstallOtherMethod( MinimalGeneratingSet,"cyclic groups",true,
     [ IsGroup ],0,
 function ( G )
 local g;
-  if not IsAbelian(G) then
-    Error("not abelian");
+  if not IsAbelian(G) and IsCyclic(G) then
+    TryNextMethod();
+  fi;
+  if HasMinimalGeneratingSet(G) then
+    # cyclic test might set min gen set
+    return MinimalGeneratingSet(G);
   fi;
   g:=Product(IndependentGeneratorsOfAbelianGroup(G),One(G));
   if Index(G,Subgroup(G,[g]))>1 then
     Error("not cyclic");
   fi;
-  return g;
+  return [g];
 end);
 
 
@@ -481,7 +486,7 @@ InstallMethod( AsGroup,
     local   G,  L;
 
     D := AsSSortedList( D );
-    if IsEmpty( D ) then
+    if IsEmpty( D ) or not IsGeneratorsOfMagmaWithInverses( D ) then
       return fail;
     fi;
     L := ShallowCopy( D );
@@ -827,14 +832,24 @@ InstallMethod( Exponent,
 ##
 #M  FittingSubgroup( <G> )  . . . . . . . . . . . Fitting subgroup of a group
 ##
-InstallMethod( FittingSubgroup, [ IsGroup and IsTrivial ], 0, IdFunc );
+InstallMethod( FittingSubgroup, "for nilpotent group",
+    [ IsGroup and IsNilpotentGroup ], 0, IdFunc );
 
 InstallMethod( FittingSubgroup,
     "generic method for groups",
-    [ IsGroup ],
-    G -> SubgroupNC( G, Filtered(Union( List( Set( FactorsInt( Size( G ) ) ),
+    [ IsGroup and IsFinite ],
+    function (G)
+        if IsTrivial (G) then
+            return G;
+        else
+            return SubgroupNC( G, Filtered(Union( List( Set( FactorsInt( Size( G ) ) ),
                          p -> GeneratorsOfGroup( PCore( G, p ) ) ) ),
-			 p->p<>One(G))) );
+			 p->p<>One(G)));
+        fi;
+    end);
+
+RedispatchOnCondition( FittingSubgroup, true, [IsGroup], [IsFinite], 0);
+
 
 #############################################################################
 ##
@@ -1084,12 +1099,18 @@ InstallMethod( ComputedOmegas, [ IsGroup ], 0, G -> [  ] );
 ##
 #M  RadicalGroup( <G> ) . . . . . . . . . . . . . . . . .  radical of a group
 ##
-InstallMethod( RadicalGroup,
-    "for a group",
-    [ IsGroup ],
-    function ( G )
-    Error( "sorry, cannot compute the radical of <G>" );
-    end );
+InstallMethod(RadicalGroup,
+  "factor out Fitting subgroup",
+  [IsGroup and IsFinite],
+function(G)
+  local F,f;
+  F := FittingSubgroup(G);
+  if IsTrivial(F) then return F; fi;
+  f := NaturalHomomorphismByNormalSubgroupNC(G,F);
+  return PreImage(f,RadicalGroup(Image(f)));
+end);
+
+RedispatchOnCondition( RadicalGroup, true, [IsGroup], [IsFinite], 0);
 
 InstallMethod( RadicalGroup,
     "solvable group is its own radical",
@@ -1169,7 +1190,7 @@ end);
 ##  For these cases, the eigenspaces of the dual submodule are calculated,
 ##  and the preimages of their orthogonal spaces are used to construct new
 ##  normal subgroups with supersolvable factor groups.
-##  If no eigenspace is found within one step, the residdum is reached.
+##  If no eigenspace is found within one step, the residuum is reached.
 ##
 ##  The component `ds' describes a series such that any composition series
 ##  through `ds' from <G> down to the residuum is a chief series.
@@ -3672,7 +3693,8 @@ end );
 ##
 #M  \.   Access to generators
 ##
-InstallMethod(\.,"group generators",true,[IsGroup,IsPosInt],
+InstallMethod(\.,"group generators",true,
+  [IsGroup and HasGeneratorsOfGroup,IsPosInt],
 function(g,n)
   g:=GeneratorsOfGroup(g);
   n:=NameRNam(n);
@@ -4251,7 +4273,7 @@ end);
 #M  Order( <G> )
 ##
 ##  Since groups are domains, the recommended command to compute the order
-##  of a group if `Size' (see~"Size").
+##  of a group is `Size' (see~"Size").
 ##  For convenience, group orders can also be computed with `Order'.
 ##
 ##  *Note* that the existence of this method makes it necessary that no

@@ -259,6 +259,19 @@ end);
 ##
 DeclareOperation( "Display", [ IsObject ] );
 
+#############################################################################
+##
+#O  DisplayString( <obj> )  . . . . . . . . . . . . . . . . display an object
+##
+##
+##  Returns a string which could be used to 
+##  display the object <obj> in a nice, formatted way which is easy to read
+##  (but might be difficult for machines to understand). The actual format
+##  used for this depends on the type of <obj>. Each method should include a
+##  newline character as last character.
+##
+DeclareOperation( "DisplayString", [ IsObject ] );
+
 
 #############################################################################
 ##

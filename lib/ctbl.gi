@@ -829,15 +829,16 @@ InstallMethod( Irr,
     "for a <p>-solvable Brauer table (use the Fong-Swan Theorem)",
     [ IsBrauerTable ],
     function( modtbl )
-
     local p,       # characteristic
           ordtbl,  # ordinary character table
-          i,       # loop variable
           rest,    # restriction of characters to `p'-regular classes
           irr,     # list of Brauer characters
           cd,      # list of ordinary character degrees
+          chars,   # nonlinear characters distributed by degree
+          i,       # loop variable
           deg,     # one character degree
-          chars,   # characters of a given degree
+          pos,     # position of a degree
+          list,    # characters of one degree
           dec;     # decomposition of ordinary characters
                    # into known Brauer characters
 
@@ -862,21 +863,31 @@ InstallMethod( Irr,
       # in particular leave the trivial character at first position
       # if this is the case for `ordtbl'.)
       irr:= [];
+      cd:= [];
+      chars:= [];
       for i in rest do
-        if DegreeOfCharacter( i ) = 1 and not i in irr then
-          Add( irr, i );
+        deg:= DegreeOfCharacter( i );
+        if deg = 1 then
+          if not i in irr then
+            Add( irr, i );
+          fi;
+        else
+          pos:= Position( cd, deg );
+          if pos = fail then
+            Add( cd, deg );
+            Add( chars, [ i ] );
+          elif not i in chars[ pos ] then
+            Add( chars[ pos ], i );
+          fi;
         fi;
       od;
-      cd:= Set( List( rest, DegreeOfCharacter ) );
-      RemoveSet( cd, 1 );
+      SortParallel( cd, chars );
 
-      for deg in cd do
-        chars:= Set( Filtered( rest, x -> DegreeOfCharacter( x ) = deg ) );
-#T improve this!!!
-        dec:= Decomposition( irr, chars, "nonnegative" );
+      for list in chars do
+        dec:= Decomposition( irr, list, "nonnegative" );
         for i in [ 1 .. Length( dec ) ] do
           if dec[i] = fail then
-            Add( irr, chars[i] );
+            Add( irr, list[i] );
           fi;
         od;
       od;
@@ -4190,7 +4201,7 @@ InstallMethod( PrintObj,
 ##
 #F  CharacterTableDisplayStringEntryDefault( <entry>, <data> )
 ##
-InstallGlobalFunction( CharacterTableDisplayStringEntryDefault,
+BindGlobal( "CharacterTableDisplayStringEntryDefault",
     function( entry, data )
     local irrstack, irrnames, i, val, name, n, letters, ll;
 
@@ -4248,7 +4259,7 @@ end );
 ##
 #F  CharacterTableDisplayStringEntryDataDefault( <tbl> )
 ##
-InstallGlobalFunction( CharacterTableDisplayStringEntryDataDefault,
+BindGlobal( "CharacterTableDisplayStringEntryDataDefault",
     tbl -> rec( irrstack := [],
                 irrnames := [],
                 letters  := [ "A","B","C","D","E","F","G","H","I","J","K",
@@ -4258,61 +4269,65 @@ InstallGlobalFunction( CharacterTableDisplayStringEntryDataDefault,
 
 #############################################################################
 ##
-#F  CharacterTableDisplayPrintLegendDefault( <data> )
+#F  CharacterTableDisplayLegendDefault( <data> )
 ##
-InstallGlobalFunction( CharacterTableDisplayPrintLegendDefault,
+BindGlobal( "CharacterTableDisplayLegendDefault",
     function( data )
-    local irrstack, irrnames, i, q;
+    local result, irrstack, irrnames, i, q;
 
+    result:= "";
     irrstack:= data.irrstack;
     if not IsEmpty( irrstack ) then
       irrnames:= data.irrnames;
-      Print( "\n" );
+      Append( result, "\n" );
     fi;
-    for i in [1..Length(irrstack)] do
-      Print( irrnames[i], " = ", irrstack[i], "\n" );
+    for i in [ 1 .. Length( irrstack ) ] do
+      Append( result, irrnames[i] );
+      Append( result, " = " );
+      Append( result, String( irrstack[i] ) );
+      Append( result, "\n" );
       q:= Quadratic( irrstack[i] );
       if q <> fail then
-        Print( "  = ", q.display, " = ", q.ATLAS, "\n" );
+        Append( result, "  = " );
+        Append( result, q.display );
+        Append( result, " = " );
+        Append( result, q.ATLAS );
+        Append( result, "\n" );
       fi;
     od;
-end );
+
+    return result;
+    end );
 
 
 #############################################################################
 ##
-#M  Display( <tbl> )  . . . . . . . . . . . . .  for a nearly character table
-#M  Display( <tbl>, <record> )
+#F  CharacterTableDisplayPrintLegendDefault( <data> )
 ##
-InstallMethod( Display,
-    "for a nearly character table",
-    [ IsNearlyCharacterTable ],
-    function( tbl )
-    Display( tbl, rec() );
+#T only for backwards compatibility ...
+##
+BindGlobal( "CharacterTableDisplayPrintLegendDefault",
+    function( data )
+    Print( CharacterTableDisplayLegendDefault( data ) );
     end );
 
-InstallMethod( Display,
-    "for a nearly character table with display options",
-    [ IsNearlyCharacterTable and HasDisplayOptions ],
-    function( tbl )
-    Display( tbl, DisplayOptions( tbl ) );
-    end );
 
-InstallOtherMethod( Display,
-    "for a nearly character table, and a list",
-    [ IsNearlyCharacterTable, IsList ],
-    function( tbl, list )
-    Display( tbl, rec( chars:= list ) );
-    end );
+#############################################################################
+##
+#F  CharacterTableDisplayDefault( <tbl>, <options> )
+##
+CambridgeMaps:= "dummy";  # the function is in the character table library
 
-InstallOtherMethod( Display,
-    "for a nearly character table, and a record",
-    [ IsNearlyCharacterTable, IsRecord ],
-    function( tbl, options )
+BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
     local i, j,              # loop variables
+          colWidth,          # local function
+          record,            # loop over options records
+          printLegend,       # local function
+          legend,            # local function
+          cletter,           # character name
+          chars_from_irr,    # are the characters contained in `Irr( tbl )'?
           chars,             # list of characters
           cnr,               # list of character numbers
-          cletter,           # character name
           classes,           # list of classes
           powermap,          # list of primes
           centralizers,      # boolean
@@ -4331,10 +4346,8 @@ InstallOtherMethod( Display,
           indicator,         # list of primes
           indic,             # indicators
           iw,                # width of indicator column
-          colWidth,          # local function
           stringEntry,       # local function
           stringEntryData,   # data accessed by `stringEntry'
-          printLegend,       # local function
           cc,                # column number
           charnames,         # list of character names
           charvals,          # matrix of strings of character values
@@ -4345,19 +4358,40 @@ InstallOtherMethod( Display,
     colWidth:= function( col )
        local len, width;
 
-       # the class name should fit into the column
-       width:= Length( nam[col] );
-
-       # the class names of power classes should fit into the column
-       for i in powermap do
-         len:= tbl_powermap[i][ col ];
-         if IsInt( len ) then
-           len:= Length( nam[ len ] );
-           if len > width then
-             width:= len;
-           fi;
+       if IsRecord( powermap ) then
+         # the three components should fit into the column
+         width:= Length( powermap.power[ col ] );
+         len:= Length( powermap.prime[ col ] );
+         if len > width then
+           width:= len;
          fi;
-       od;
+         len:= Length( powermap.names[ col ] );
+         if len > width then
+           width:= len;
+         fi;
+       else
+         # the class name should fit into the column
+         width:= Length( nam[col] );
+
+         # the class names of power classes should fit into the column
+         for i in powermap do
+           len:= tbl_powermap[i][ col ];
+           if IsInt( len ) then
+             len:= Length( nam[ len ] );
+             if len > width then
+               width:= len;
+             fi;
+           fi;
+         od;
+       fi;
+
+       if centralizers = "ATLAS" then
+         # The centralizer orders should fit into the column.
+         len:= Length( String( tbl_centralizers[ col ] ) );
+         if len > width then
+           width:= len;
+         fi;
+       fi;
 
        # each character value should fit into the column
        for i in [ 1 .. Length( cnr ) ] do
@@ -4369,93 +4403,144 @@ InstallOtherMethod( Display,
 
        # at least one blank should separate the column entries
        return width + 1;
-
     end;
 
-    # function (of one or two arguments) to display a single entry
-    if   IsBound( options.StringEntry ) then
-      stringEntry:= options.StringEntry;
-    else
-      stringEntry:= CharacterTableDisplayStringEntryDefault;
+    # Prepare a list of the available options records.
+    options:= [ options ];
+    if HasDisplayOptions( tbl ) and
+       not IsIdenticalObj( options[1], DisplayOptions( tbl ) ) then
+      Add( options, DisplayOptions( tbl ) );
     fi;
-    if IsBound( options.StringEntryData ) then
-      stringEntryData:= options.StringEntryData( tbl );
-    else
-      stringEntryData:= CharacterTableDisplayStringEntryDataDefault( tbl );
+    if IsBound( CharacterTableDisplayDefaults.User ) and
+       not IsIdenticalObj( options[1],
+               CharacterTableDisplayDefaults.User ) then
+      Add( options, CharacterTableDisplayDefaults.User );
     fi;
-    if IsBound( options.PrintLegend ) then
-      printLegend:= options.PrintLegend;
-    else
-      printLegend:= CharacterTableDisplayPrintLegendDefault;
+    if not IsIdenticalObj( options[1],
+                CharacterTableDisplayDefaults.Global ) then
+      Add( options, CharacterTableDisplayDefaults.Global );
     fi;
 
-    # default:
-    # options
-    cletter:= "X";
+    # Get the options that are in at least one record.
+    for record in options do
+      if IsBound( record.StringEntry ) then
+        stringEntry:= record.StringEntry;
+        break;
+      fi;
+    od;
+    for record in options do
+      if IsBound( record.StringEntryData ) then
+        stringEntryData:= record.StringEntryData( tbl );
+        break;
+      fi;
+    od;
+    for record in options do
+      if   IsBound( record.PrintLegend ) then
+        # for backwards compatibility with GAP 4.4 ...
+        printLegend:= record.PrintLegend;
+        break;
+      elif IsBound( record.Legend ) then
+        legend:= record.Legend;
+        printLegend:= function( data ) Print( legend( data ) ); end;
+        break;
+      fi;
+    od;
+    for record in options do
+      if IsBound( record.letter ) and Length( record.letter ) = 1 then
+        cletter:= record.letter;
+        break;
+      fi;
+    od;
+    for record in options do
+      if IsBound( record.centralizers ) then
+        centralizers:= record.centralizers;
+        break;
+      fi;
+    od;
 
-    # choice of characters
-    if IsBound( options.chars ) then
-       if IsCyclotomicCollection( options.chars ) then
-          cnr:= options.chars;
+    # Get the options that have no global default.
+    # choice of characters and character names
+    chars_from_irr:= true;
+    for record in options do
+      if IsBound( record.chars ) then
+        if IsList( record.chars ) and ForAll( record.chars, IsPosInt ) then
+          cnr:= record.chars;
           chars:= List( Irr( tbl ){ cnr }, ValuesOfClassFunction );
-       elif IsInt( options.chars ) then
-          cnr:= [ options.chars ];
+        elif IsInt( record.chars ) then
+          cnr:= [ record.chars ];
           chars:= List( Irr( tbl ){ cnr }, ValuesOfClassFunction );
-       elif IsHomogeneousList( options.chars ) then
-          chars:= options.chars;
-          cletter:= "Y";
+        elif IsHomogeneousList( record.chars ) then
+          chars:= record.chars;
           cnr:= [ 1 .. Length( chars ) ];
-       else
+          chars_from_irr:= false;
+          cletter:= "Y";
+        else
+          cnr:= [];
           chars:= [];
-       fi;
-    else
+        fi;
+        break;
+      fi;
+    od;
+    if not IsBound( chars ) then
+      # Perhaps the irreducibles have to be computed here,
+      # so we do not use this before evaluating the options.
       chars:= List( Irr( tbl ), ValuesOfClassFunction );
       cnr:= [ 1 .. Length( chars ) ];
+      if HasCharacterNames( tbl ) then
+        charnames:= CharacterNames( tbl );
+      else
+      fi;
     fi;
-
-    if IsBound( options.letter ) and Length( options.letter ) = 1 then
-       cletter:= options.letter;
+    if not IsBound( charnames ) then
+      charnames:= List( cnr,
+          i -> Concatenation( cletter, ".", String( i ) ) );
     fi;
 
     # choice of classes
-    if IsBound( options.classes ) then
-      if IsInt( options.classes ) then
-        classes:= [ options.classes ];
-      else
-        classes:= options.classes;
+    classes:= [ 1 .. NrConjugacyClasses( tbl ) ];
+    for record in options do
+      if IsBound( record.classes ) then
+        if IsInt( record.classes ) then
+          classes:= [ record.classes ];
+        else
+          classes:= record.classes;
+        fi;
+        break;
       fi;
-    else
-      classes:= [ 1 .. NrConjugacyClasses( tbl ) ];
-    fi;
+    od;
 
     # choice of power maps
     tbl_powermap:= ComputedPowerMaps( tbl );
     powermap:= Filtered( [ 2 .. Length( tbl_powermap ) ],
                          x -> IsBound( tbl_powermap[x] ) );
-    if IsBound( options.powermap ) then
-       if IsInt( options.powermap ) then
-          IntersectSet( powermap, [ options.powermap ] );
-       elif IsList( options.powermap ) then
-          IntersectSet( powermap, options.powermap );
-       elif options.powermap = false then
+    for record in options do
+      if IsBound( record.powermap ) then
+        if IsInt( record.powermap ) then
+          IntersectSet( powermap, [ record.powermap ] );
+        elif record.powermap = "ATLAS" and IsBound( CambridgeMaps ) then
+          powermap:= "ATLAS";
+          powermap:= CambridgeMaps( tbl );
+        elif IsList( record.powermap ) then
+          IntersectSet( powermap, record.powermap );
+        elif record.powermap = false then
           powermap:= [];
-       fi;
-    fi;
-
-    # print factorized centralizer orders?
-    centralizers:=    not IsBound( options.centralizers )
-                   or options.centralizers;
+        fi;
+        break;
+      fi;
+    od;
 
     # print Frobenius-Schur indicators?
     indicator:= [];
-    if     IsBound( options.indicator )
-       and not ( IsBound( options.chars ) and IsMatrix( options.chars ) ) then
-       if options.indicator = true then
-          indicator:= [2];
-       elif IsRowVector( options.indicator ) then
-          indicator:= Set( Filtered( options.indicator, IsPosInt ) );
-       fi;
-    fi;
+    for record in options do
+      if IsBound( record.indicator ) then
+        if record.indicator = true then
+          indicator:= [ 2 ];
+        elif IsList( record.indicator ) then
+          indicator:= Set( Filtered( record.indicator, IsPosInt ) );
+        fi;
+        break;
+      fi;
+    od;
 
     # (end of options handling)
 
@@ -4463,54 +4548,45 @@ InstallOtherMethod( Display,
     linelen:= SizeScreen()[1] - 1;
 
     # prepare centralizers
-    if centralizers then
-       fak:= FactorsInt( Size( tbl ) );
-       primes:= Set( fak );
-       cen:= [];
-       for prime in primes do
-          cen[prime]:= [ Number( fak, x -> x = prime ) ];
-       od;
-    fi;
-
-    # prepare classnames
-    nam:= ClassNames( tbl );
-
-    # prepare character names
-    if HasCharacterNames( tbl ) and not IsBound( options.chars ) then
-      charnames:= CharacterNames( tbl );
-    else
-      charnames:= [];
-      for i in [ 1 .. Length( cnr ) ] do
-        charnames[i]:= Concatenation( cletter, ".", String( cnr[i] ) );
+    if centralizers = "ATLAS" then
+      tbl_centralizers:= SizesCentralizers( tbl );
+    elif centralizers = true then
+      tbl_centralizers:= SizesCentralizers( tbl );
+      primes:= Set( FactorsInt( Size( tbl ) ) );
+      cen:= [];
+      for prime in primes do
+        cen[ prime ]:= [];
       od;
     fi;
 
-    # prepare indicator
-    iw:= [0];
-    if indicator <> [] and not HasComputedIndicators( tbl ) then
-       indicator:= [];
+    # prepare class names
+    if IsRecord( powermap ) then
+      nam:= ClassNames( tbl, "ATLAS" );
+    else
+      nam:= ClassNames( tbl );
     fi;
-    if indicator <> [] then
-       indic:= [];
-       for i in indicator do
-          if IsBound( ComputedIndicators( tbl )[i] ) then
-            indic[i]:= [];
-            for j in cnr do
-              indic[i][j]:= ComputedIndicators( tbl )[i][j];
-            od;
 
-            if i = 2 then
-              iw[i]:= 2;
-            else
-              iw[i]:= Maximum( Length(String(Maximum(Set(indic[i])))),
-                               Length(String(Minimum(Set(indic[i])))),
-                               Length(String(i)) )+1;
-            fi;
-            iw[1]:= iw[1] + iw[i];
-          fi;
-       od;
-       iw[1]:= iw[1] + 1;
-       indicator:= Filtered( indicator, x-> IsBound( indic[x] ) );
+    # prepare indicator
+    # (compute the values if they are not stored but use stored values)
+    iw:= [ 0 ];
+    if indicator <> [] then
+      indic:= [];
+      for i in indicator do
+        if chars_from_irr and IsBound( ComputedIndicators( tbl )[i] ) then
+          indic[i]:= ComputedIndicators( tbl )[i]{ cnr };
+        else
+          indic[i]:= Indicator( tbl, Irr( tbl ){ cnr }, i );
+        fi;
+        if i = 2 then
+          iw[i]:= 2;
+        else
+          iw[i]:= Maximum( Length( String( Maximum( Set( indic[i] ) ) ) ),
+                           Length( String( Minimum( Set( indic[i] ) ) ) ),
+                           Length( String( i ) ) ) + 1;
+        fi;
+        iw[1]:= iw[1] + iw[i];
+      od;
+      iw[1]:= iw[1] + 1;
     fi;
 
     if Length( cnr ) = 0 then
@@ -4542,12 +4618,12 @@ InstallOtherMethod( Display,
        while col+acol < ncols and len < linelen do
           acol:= acol + 1;
           if Length(prin) < col + acol then
-             cc:= classes[ col + acol - 1 ];
-             for i in [ 1 .. Length( cnr ) ] do
-               charvals[i][ cc ]:= stringEntry( chars[i][ cc ],
-                                                stringEntryData );
-             od;
-             prin[col + acol]:= colWidth( classes[col + acol - 1] );
+            cc:= classes[ col + acol - 1 ];
+            for i in [ 1 .. Length( cnr ) ] do
+              charvals[i][ cc ]:= stringEntry( chars[i][ cc ],
+                                               stringEntryData );
+            od;
+            prin[ col + acol ]:= colWidth( cc );
           fi;
           len:= len + prin[col+acol];
        od;
@@ -4561,9 +4637,17 @@ InstallOtherMethod( Display,
        fi;
 
        # centralizers
-       if centralizers then
+       if centralizers = "ATLAS" then
+#T Admit splitting into two lines,
+#T admit that the first centralizer starts in the character names' area.
+         Print( "\n" );
+         Print( FormattedString( "", prin[1] ) );
+         for j in [ col + 1 .. col + acol ] do
+           Print( FormattedString( tbl_centralizers[ j-1 ], prin[j] ) );
+         od;
+         Print( "\n" );
+       elif centralizers = true then
           Print( "\n" );
-          tbl_centralizers:= SizesCentralizers( tbl );
           for i in [col..col+acol-1] do
              fak:= FactorsInt( tbl_centralizers[classes[i]] );
              for prime in Set( fak ) do
@@ -4589,27 +4673,51 @@ InstallOtherMethod( Display,
           od;
        fi;
 
-       # class names
-       Print( "\n" );
-       Print( FormattedString( "", prin[1] ) );
-       for i in [ 1 .. acol ] do
-         Print( FormattedString( nam[classes[col+i-1]], prin[col+i] ) );
-       od;
+       # class names and power maps
+       if IsRecord( powermap ) then
+         # three lines: power maps, p' part, and class names
+         Print( "\n" );
+         Print( FormattedString( "p ", prin[1] ) );
+         for j in [ 1 .. acol ] do
+           Print( FormattedString( powermap.power[classes[col+j-1]],
+                                   prin[col+j] ) );
+         od;
+         Print( "\n" );
+         Print( FormattedString( "p'", prin[1] ) );
+         for j in [ 1 .. acol ] do
+           Print( FormattedString( powermap.prime[classes[col+j-1]],
+                                   prin[col+j] ) );
+         od;
+         Print( "\n" );
+         Print( FormattedString( "", prin[1] ) );
+         for j in [ 1 .. acol ] do
+           Print( FormattedString( powermap.names[classes[col+j-1]],
+                                   prin[col+j] ) );
+         od;
 
-       # power maps
-       for i in powermap do
-          Print("\n");
-          Print( FormattedString( Concatenation( String(i), "P" ),
-                                  prin[1] ) );
-          for j in [1..acol] do
+       else
+
+         # first class names, then a line for each power map
+         Print( "\n" );
+         Print( FormattedString( "", prin[1] ) );
+         for i in [ 1 .. acol ] do
+           Print( FormattedString( nam[classes[col+i-1]], prin[col+i] ) );
+         od;
+         for i in powermap do
+           Print( "\n" );
+           Print( FormattedString( Concatenation( String(i), "P" ),
+                                   prin[1] ) );
+           for j in [ 1 .. acol ] do
              q:= tbl_powermap[i][classes[col+j-1]];
-             if IsInt(q) then
+             if IsInt( q ) then
                 Print( FormattedString( nam[q], prin[col+j] ) );
              else
                 Print( FormattedString( "?", prin[col+j] ) );
              fi;
-          od;
-       od;
+           od;
+         od;
+
+       fi;
 
        # empty column resp. indicators
        Print( "\n" );
@@ -4631,27 +4739,23 @@ InstallOtherMethod( Display,
 
           # indicators
           for j in indicator do
-             if IsBound(indic[j][cnr[i]]) then
-                if j = 2 then
-                   if indic[j][cnr[i]] = 0 then
-                      Print( FormattedString( "o", iw[j] ) );
-                   elif indic[j][cnr[i]] = 1 then
-                      Print( FormattedString( "+", iw[j] ) );
-                   elif indic[j][cnr[i]] = -1 then
-                      Print( FormattedString( "-", iw[j] ) );
-                   fi;
-                else
-                   if indic[j][cnr[i]] = 0 then
-                      Print( FormattedString( "0", iw[j] ) );
-                   else
-                      Print( FormattedString( stringEntry( indic[j][cnr[i]],
-                                                           stringEntryData ),
-                                              iw[j]) );
-                   fi;
-                fi;
-             else
-                Print( FormattedString( "", iw[j] ) );
-             fi;
+            if j = 2 then
+               if indic[j][i] = 0 then
+                 Print( FormattedString( "o", iw[j] ) );
+               elif indic[j][i] = 1 then
+                 Print( FormattedString( "+", iw[j] ) );
+               elif indic[j][i] = -1 then
+                 Print( FormattedString( "-", iw[j] ) );
+               fi;
+            else
+               if indic[j][i] = 0 then
+                 Print( FormattedString( "0", iw[j] ) );
+               else
+                 Print( FormattedString( stringEntry( indic[j][i],
+                                                      stringEntryData ),
+                                         iw[j]) );
+              fi;
+            fi;
           od;
           if indicator <> [] then
             Print(" ");
@@ -4671,9 +4775,63 @@ InstallOtherMethod( Display,
 
     # print legend for cyclos
     printLegend( stringEntryData );
-
     end );
-#T support also Cambridge format!
+
+Unbind( CambridgeMaps );
+
+
+#############################################################################
+##
+#V  CharacterTableDisplayDefaults
+##
+InstallValue( CharacterTableDisplayDefaults, rec(
+      Global:= rec(
+        letter          := "X",
+        centralizers    := true,
+
+        Display         := CharacterTableDisplayDefault,
+        StringEntry     := CharacterTableDisplayStringEntryDefault,
+        StringEntryData := CharacterTableDisplayStringEntryDataDefault,
+        Legend          := CharacterTableDisplayLegendDefault,
+    ) ) );
+
+
+#############################################################################
+##
+#M  Display( <tbl> )  . . . . . . . . . . . . .  for a nearly character table
+#M  Display( <tbl>, <record> )
+##
+InstallMethod( Display,
+    "for a nearly character table",
+    [ IsNearlyCharacterTable ],
+    function( tbl )
+    # Make sure that the `Display' function in the right record is used.
+    if   HasDisplayOptions( tbl ) then
+      Display( tbl, DisplayOptions( tbl ) );
+    elif IsBound( CharacterTableDisplayDefaults.User ) then
+      Display( tbl, CharacterTableDisplayDefaults.User );
+    else
+      Display( tbl, CharacterTableDisplayDefaults.Global );
+    fi;
+    end );
+
+InstallOtherMethod( Display,
+    "for a nearly character table, and a list",
+    [ IsNearlyCharacterTable, IsList ],
+    function( tbl, list )
+    Display( tbl, rec( chars:= list ) );
+    end );
+
+InstallOtherMethod( Display,
+    "for a nearly character table, and a record",
+    [ IsNearlyCharacterTable, IsRecord ],
+    function( tbl, record )
+    if IsBound( record.Display ) then
+      record.Display( tbl, record );
+    else
+      CharacterTableDisplayDefaults.Global.Display( tbl, record );
+    fi;
+    end );
 
 
 #############################################################################
@@ -5642,24 +5800,20 @@ InstallGlobalFunction( PermutationToSortCharacters,
     # characters shall be put together.
     if galois = true then
       galois:= GaloisMat( chars ).galoisfams;
-      if Length( galois ) <> Length( chars ) then
-        galois:= false;
-      else
-        galoisfams:= [];
-        for i in [ 1 .. Length( chars ) ] do
-          if galois[i] = 1 then
-            if ForAll( chars[i], x -> x = 1 ) then
-              galoisfams[i]:= -1;
-            else
-              galoisfams[i]:= 0;
-            fi;
-          elif IsList( galois[i] ) then
-            for j in galois[i][1] do
-              galoisfams[j]:= i;
-            od;
+      galoisfams:= [];
+      for i in [ 1 .. Length( chars ) ] do
+        if galois[i] = 1 then
+          if ForAll( chars[i], x -> x = 1 ) then
+            galoisfams[i]:= -1;
+          else
+            galoisfams[i]:= 0;
           fi;
-        od;
-      fi;
+        elif IsList( galois[i] ) then
+          for j in galois[i][1] do
+            galoisfams[j]:= i;
+          od;
+        fi;
+      od;
     else
       galoisfams:= [];
       for i in [ 1 .. Length( chars ) ] do

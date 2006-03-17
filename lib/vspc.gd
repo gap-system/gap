@@ -292,7 +292,7 @@ DeclareSynonymAttr( "TrivialSubspace", TrivialSubmodule );
 ##  <gens> if the argument `\"basis\"' is given.
 #T crossref. to `FreeLeftModule' as soon as the modules chapter is reliable!
 ##
-DeclareSynonym( "VectorSpace", FreeLeftModule );
+DeclareGlobalFunction( "VectorSpace" );
 
 
 #############################################################################

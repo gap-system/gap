@@ -372,6 +372,7 @@ DeclareSynonym( "UnivariateLaurentPolynomialByCoefficients",
 #############################################################################
 ##
 #F  LaurentPolynomialByExtRep( <fam>, <cofs>,<val> ,<ind> )
+#F  LaurentPolynomialByExtRepNC( <fam>, <cofs>,<val> ,<ind> )
 ##
 ##  creates a Laurent polynomial in the family <fam> with [<cofs>,<val>] as
 ##  value of `CoefficientsOfLaurentPolynomial'. No coefficient shifting is
@@ -380,46 +381,66 @@ DeclareSynonym( "UnivariateLaurentPolynomialByCoefficients",
 ##  will not perform any tests. Unless this is guaranteed for the
 ##  parameters, `LaurentPolynomialByCoefficients'
 ##  (see~"LaurentPolynomialByCoefficients") should be used.
-DeclareGlobalFunction( "LaurentPolynomialByExtRep");
+DeclareGlobalFunction( "LaurentPolynomialByExtRepNC");
+DeclareSynonym("LaurentPolynomialByExtRep",LaurentPolynomialByExtRepNC);
 
 #############################################################################
 ##
 #F  PolynomialByExtRep( <rfam>, <extrep> )
+#F  PolynomialByExtRepNC( <rfam>, <extrep> )
 ##
 ##  constructs a polynomial (in the representation `IsPolynomialDefaultRep')
 ##  in the rational function family <rfam>, the polynomial itself is given
 ##  by the external representation <extrep>.
-##  No test for validity of the arguments is performed.
+##
+##  The variant `PolynomialByExtRepNC' does not perform any test of
+##  the arguments and thus potentially can create illegal objects. It only
+##  should be used if speed is required and the arguments are known to be
+##  in correct form.
 DeclareGlobalFunction( "PolynomialByExtRep" );
-DeclareSynonym( "PolynomialByExtRepNC",PolynomialByExtRep);
+DeclareGlobalFunction( "PolynomialByExtRepNC" );
 
 #############################################################################
 ##
 #F  RationalFunctionByExtRep( <rfam>, <num>, <den> )
+#F  RationalFunctionByExtRepNC( <rfam>, <num>, <den> )
 ##
 ##  constructs a rational function (in the representation
 ##  `IsRationalFunctionDefaultRep') in the rational function family <rfam>,
 ##  the rational function itself is given by the external representations
 ##  <num> and <den> for numerator and denominator.
-##  No test for validity of the arguments is performed and no cancellation
-##  takes place.
+##  No cancellation takes place.
+##
+##  The variant `RationalFunctionByExtRepNC' does not perform any test of
+##  the arguments and thus potentially can create illegal objects. It only
+##  should be used if speed is required and the arguments are known to be
+##  in correct form.
 DeclareGlobalFunction( "RationalFunctionByExtRep" );
+DeclareGlobalFunction( "RationalFunctionByExtRepNC" );
 
 #############################################################################
 ##
 #F  UnivariateRationalFunctionByExtRep(<fam>,<ncof>,<dcof>,<val> ,<ind> )
+#F  UnivariateRationalFunctionByExtRepNC(<fam>,<ncof>,<dcof>,<val> ,<ind> )
 ##
 ##  creates a univariate rational function in the family <fam> with
 ##  [<ncof>,<dcof>,<val>] as
 ##  value of `CoefficientsOfUnivariateRationalFunction'. No coefficient
 ##  shifting is performed.  This is the lowest level function to create a
 ##  univariate rational function but will rely on the coefficients being
-##  shifted properly and will not perform any tests. Unless this is
+##  shifted properly. Unless this is
 ##  guaranteed for the parameters,
 ##  `UnivariateLaurentPolynomialByCoefficients'
 ##  (see~"UnivariateLaurentPolynomialByCoefficients") should be used.
 ##  No cancellation is performed.
-DeclareGlobalFunction( "UnivariateRationalFunctionByExtRep");
+##
+##  The variant `UnivariateRationalFunctionByExtRepNC' does not perform any test of
+##  the arguments and thus potentially can create illegal objects. It only
+##  should be used if speed is required and the arguments are known to be
+##  in correct form.
+DeclareGlobalFunction( "UnivariateRationalFunctionByExtRepNC");
+DeclareSynonym("UnivariateRationalFunctionByExtRep",
+  UnivariateRationalFunctionByExtRepNC);
 
 #############################################################################
 ##
@@ -675,11 +696,12 @@ DeclareOperation("DegreeIndeterminate",[IsPolynomial,IsPosInt]);
 ##
 #O  Derivative( <ufun> )
 #O  Derivative( <ratfun>,<ind> )
+#O  Derivative( <ratfun>,<inum> )
 ##
 ##  returns the derivative $<upoly>'$ of the univariate rational function
 ##  <ufun> by its indeterminant. The second version returns the derivative
 ##  of <ratfun> by the indeterminate <ind> (respectively indeterminate
-##  number <ind>) when viewing <ratfun> as univariate in <ind>.
+##  number <inum>) when viewing <ratfun> as univariate in <ind>.
 ##
 DeclareAttribute("Derivative",IsUnivariateRationalFunction);
 DeclareOperation("Derivative",[IsPolynomialFunction,IsPosInt]);
@@ -700,11 +722,12 @@ DeclareOperation( "Resultant",[ IsPolynomial, IsPolynomial, IsPosInt]);
 ##
 #O  Discriminant( <upol> )
 #O  Discriminant( <pol>,<ind> )
+#O  Discriminant( <pol>,<inum> )
 ##
 ##  returns the discriminant disc($<upoly>$) of the univariate polynomial
 ##  <upoly> by its indeterminant. The second version returns the
 ##  discriminant of <pol> by the indeterminate <ind> (respectively
-##  indeterminate number <ind>).
+##  indeterminate number <inum>).
 ##
 DeclareOperation("Discriminant",[IsPolynomial]);
 

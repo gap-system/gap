@@ -108,6 +108,14 @@ function( ring, cofs )
 end );
 
 #############################################################################
+InstallOtherMethod( UnivariatePolynomial, "ring,empty cof",true,
+    [ IsRing, IsEmpty ], 0,
+function( ring, cofs )
+    return LaurentPolynomialByCoefficients( ElementsFamily(FamilyObj(ring)),
+                                            cofs, 0, 1 );
+end );
+
+#############################################################################
 InstallMethod( CoefficientsOfUnivariatePolynomial, "use laurent coeffs",true,
     [ IsUnivariatePolynomial ], 0,
 function(f);

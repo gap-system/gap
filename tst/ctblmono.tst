@@ -34,16 +34,16 @@ gap> List( Irr( Sl23 ), Degree );
 
 gap> n:= DerivedSubgroup( Sl23 );;      
 gap> chi:= Irr( Sl23 )[7];
-Character( CharacterTable( SL(2,3) ), [ 3, 3, 0, 0, 0, 0, -1 ] )
+Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] )
 gap> test:= TestHomogeneous( chi, n );;
 gap> test.isHomogeneous;  test.comment;  test.multiplicity;
 false
 "restriction checked"
 1
 gap> chi:= Irr( Sl23 )[4];
-Character( CharacterTable( SL(2,3) ), [ 2, -2, 1, 1, -1, -1, 0 ] )
+Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] )
 gap> cln:= ClassPositionsOfNormalSubgroup( CharacterTable( Sl23 ), n );
-[ 1, 2, 7 ]
+[ 1, 4, 7 ]
 gap> TestHomogeneous( chi, cln );
 rec( isHomogeneous := true, comment := "restricts irreducibly" )
 gap> chi:= Irr( Sl23 )[4];;

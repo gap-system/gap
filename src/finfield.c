@@ -1389,13 +1389,7 @@ Obj             InvFFE (
 
     /* get the operand                                                     */
     v = VAL_FFE( op );
-    if ( v == 0 ) {
-      /*        op = ErrorReturnObj(
-            "FFE operations: <divisor> must not be zero",
-            0L, 0L,
-            "you can replace <divisor> via 'return <divisor>;'" ); */
-        return Fail;
-    }
+    if ( v == 0 ) return Fail;
 
     /* compute and return the result                                       */
     vX = QUO_FFV( 1, v, sX ); 
@@ -1851,6 +1845,9 @@ Obj FuncINT_FFE_DEFAULT (
 */
 static Obj ZOp;
 
+
+
+
 Obj FuncZ (
     Obj                 self,
     Obj                 q )
@@ -1902,6 +1899,34 @@ Obj FuncZ (
 
     /* make the root                                                       */
     return NEW_FFE( ff, (p == 2 && d == 1 ? 1 : 2) );
+}
+
+Obj FuncZ2 ( Obj self, Obj p, Obj d)
+{
+  FF ff;
+  Int ip,id,id1;
+  UInt q;
+  if (ARE_INTOBJS(p,d))
+    {
+      ip = INT_INTOBJ(p);
+      id = INT_INTOBJ(d);
+      if (ip > 1 && id > 0 && id <= 16 && ip <= 65536)
+	{
+	  id1 = id;
+	  q = ip;
+	  while (--id1 > 0 && q <= 65536)
+	    q *= ip;
+	  if (q <= 65536)
+	    {
+	      /* get the finite field                                                */
+	      ff = FiniteField( ip, id );
+	      
+	      /* make the root                                                       */
+	      return NEW_FFE( ff, (ip == 2 && id == 1 ? 1 : 2) );
+	    }
+	}
+    }
+  return CALL_2ARGS(ZOp, p, d);
 }
 
 
@@ -1989,6 +2014,8 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );
+    InitHandlerFunc( FuncZ2, "src/finfield.c: Z (2 args)");
+
 
     /* install the printing method                                         */
     PrintObjFuncs[ T_FFE ] = PrFFE;
@@ -2055,6 +2082,7 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
+    HDLR_FUNC(VAL_GVAR(GVarName("Z")),2) = FuncZ2;
 
     /* return success                                                      */
     return 0;

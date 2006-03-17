@@ -174,7 +174,7 @@ InstallMethod( PreImagesRepresentative, "perm direct product embedding",
 #T a permutation moves points outside a given set.
 #T Inverting the mapping permutation in each call could be avoided
 #T by storing also the inverse, and the conjugation could be improved.
-    if g = RestrictedPerm( g, info.news[ emb!.component ] ) then
+    if g = RestrictedPermNC( g, info.news[ emb!.component ] ) then
       return g ^ (info.perms[ emb!.component ] ^ -1);
     else
       return fail;
@@ -276,7 +276,7 @@ InstallMethod( ImagesRepresentative,"perm direct product projection",
     function( prj, g )
     local info;
     info := DirectProductInfo( Source( prj ) );
-    return RestrictedPerm( g, info.news[ prj!.component ] )
+    return RestrictedPermNC( g, info.news[ prj!.component ] )
            ^ ( info.perms[ prj!.component ] ^ -1 );
 end );
 
@@ -450,7 +450,7 @@ InstallMethod( ImagesRepresentative,"perm subdirect product projection",
     function( prj, g )
     local info;
     info := SubdirectProductInfo( Source( prj ) );
-    return RestrictedPerm( g, info.news[ prj!.component ] )
+    return RestrictedPermNC( g, info.news[ prj!.component ] )
            ^ ( info.perms[ prj!.component ] ^ -1 );
 end );
 
@@ -746,7 +746,7 @@ InstallMethod( PreImagesRepresentative,
     if not g in info.base then
       return fail;
     fi;
-    return RestrictedPerm( g, info.components[ emb!.component ] )
+    return RestrictedPermNC( g, info.components[ emb!.component ] )
            ^ (info.perms[ emb!.component ] ^ -1);
 end );
 

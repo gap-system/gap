@@ -642,8 +642,7 @@ gap> KnownPropertiesOfObject(g);
 [ "IsFinite", "CanEasilyCompareElements", "CanEasilySortElements", 
   "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses", "IsAssociative", 
   "IsSimpleSemigroup", "IsFinitelyGeneratedGroup", 
-  "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose", "IsChainTypeGroup", 
-  "IsStabChainViaChainSubgroup" ]
+  "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose" ]
 gap> Size(g);
 6
 gap> KnownPropertiesOfObject(g);
@@ -652,7 +651,7 @@ gap> KnownPropertiesOfObject(g);
   "IsGeneratorsOfMagmaWithInverses", "IsAssociative", "IsSimpleSemigroup", 
   "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
   "KnowsHowToDecompose", "IsPerfectGroup", "IsSolvableGroup", 
-  "IsPolycyclicGroup", "IsChainTypeGroup", "IsStabChainViaChainSubgroup" ]
+  "IsPolycyclicGroup" ]
 gap> KnownTruePropertiesOfObject(g);
 [ "IsNonTrivial", "IsFinite", "CanEasilyCompareElements", 
   "CanEasilySortElements", "IsDuplicateFree", 

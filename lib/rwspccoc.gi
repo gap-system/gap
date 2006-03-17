@@ -26,9 +26,9 @@ DeclareRepresentation(
 
 #############################################################################
 ##
-#M  SetConjugate( <cc>, <i>, <j>, <rhs> ) . . . . combinatorial collector rep
+#M  SetConjugate( <cc>, <j>, <i>, <rhs> ) . . . . combinatorial collector rep
 ##
-##  required: <i> > <j>
+##  required: <j> > <i>
 ##
 InstallMethod( SetConjugate,
     "combinatorial collector rep",
@@ -291,7 +291,12 @@ InstallMethod( CombinatorialCollectorByGenerators,
     0,
 
 function( efam, gens, orders )
-    local   cc;
+    local   co,  cc;
+
+    co := Collected( orders );
+    if Length( co ) <> 1 or not IsPrime( co[1][1] ) then
+        Error( "only prime orders allowed in combinatorial collector" );
+    fi;
 
     # create a single collector first
     cc := SingleCollectorByGenerators( efam, gens, orders );

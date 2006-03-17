@@ -612,6 +612,17 @@ InstallMethod( Int,
 
 #############################################################################
 ##
+#M IntFFE( <obj> )  . .  . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
+##
+
+InstallMethod(IntFFE,
+        [IsZmodpZObj and IsModulusRep],
+        x->x![1]);
+        
+
+
+#############################################################################
+##
 #M  IntFFESymm( <obj> )  . . . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
 ##
 InstallOtherMethod(IntFFESymm,"Z/nZ (ModulusRep)",
@@ -625,6 +636,30 @@ local p;
     return z![1];
   fi;
 end);
+
+#############################################################################
+##
+#M  Z(p) ... return a primitive root
+##
+
+InstallMethod(ZOp,
+        [IsPosInt],
+        function(p)
+    local   f;
+    if p <= MAXSIZE_GF_INTERNAL then
+        TryNextMethod(); # should never happen
+    fi;
+    if not IsProbablyPrimeInt(p) then
+        TryNextMethod();
+    fi;
+    f := FFEFamily(p);
+    if not IsBound(f!.primitiveRootModP) then
+        f!.primitiveRootModP := PrimitiveRootMod(p);
+    fi;
+    return ZmodnZObj(f!.primitiveRootModP,p);
+end);
+
+        
 
 
 #############################################################################

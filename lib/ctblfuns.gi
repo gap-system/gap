@@ -453,21 +453,23 @@ InstallOtherMethod( \*,
 
 #############################################################################
 ##
-#M  Order( <chi> )  . . . . . . . . . . . . . . . . . . . determinantal order
+#M  Order( <chi> )  . . . . . . . . . . . . . . . . order of a class function
 ##
-##  Note that we are not allowed to regard the determinantal order of any
-##  (virtual) character as order, since nonlinear characters do not have an
-##  order as mult. elements.
+##  Note that we are not allowed to regard the determinantal order of an
+##  arbitrary (virtual) character as its order,
+##  since nonlinear characters do not have an order as mult. elements.
 ##
 InstallMethod( Order,
     "for a class function",
     [ IsClassFunction ],
     function( chi )
     local order, values;
+
     values:= ValuesOfClassFunction( chi );
     if   0 in values then
       Error( "<chi> is not invertible" );
-    elif ForAny( values, i -> i * GaloisCyc( i, -1 ) <> 1 ) then
+    elif ForAny( values, cyc -> not IsIntegralCyclotomic( cyc )
+                                or cyc * GaloisCyc( cyc, -1 ) <> 1 ) then
       return infinity;
     fi;
     order:= Conductor( values );
@@ -487,24 +489,14 @@ InstallMethod( InverseOp,
     [ IsClassFunction ],
     function( chi )
     local values;
+
     values:= List( ValuesOfClassFunction( chi ), Inverse );
     if fail in values then
       return fail;
+    elif HasIsCharacter( chi ) and IsCharacter( chi ) and values[1] = 1 then
+      return Character( UnderlyingCharacterTable( chi ), values );
     else
-      return ClassFunction( UnderlyingCharacterTable(chi), values );
-    fi;
-    end );
-
-InstallMethod( InverseOp,
-    "for a linear character",
-    [ IsCharacter ],
-    function( chi )
-    local values;
-    values:= List( ValuesOfClassFunction( chi ), Inverse );
-    if chi[1] = 1 then
-      return Character( UnderlyingCharacterTable(chi), values );
-    else
-      return ClassFunction( UnderlyingCharacterTable(chi), values );
+      return ClassFunction( UnderlyingCharacterTable( chi ), values );
     fi;
     end );
 

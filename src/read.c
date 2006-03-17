@@ -958,6 +958,8 @@ void ReadFuncExpr (
         ASS_LIST( nams, narg+nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
         while ( Symbol == S_COMMA ) {
+            /* init to avoid strange message in case of empty string */
+            Value[0] = '\0';
             Match( S_COMMA, ",", follow );
             for ( i = 1; i <= narg; i++ ) {
                 if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
@@ -2298,6 +2300,7 @@ UInt ReadEvalFile ( void )
         ASS_LIST( nams, nloc, name );
         Match( S_IDENT, "identifier", STATBEGIN|S_END );
         while ( Symbol == S_COMMA ) {
+            Value[0] = '\0';
             Match( S_COMMA, ",", 0L );
             for ( i = 1; i <= nloc; i++ ) {
                 if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {

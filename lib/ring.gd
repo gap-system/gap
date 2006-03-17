@@ -639,8 +639,8 @@ DeclareOperation( "EuclideanQuotient",
 
 #############################################################################
 ##
-#O  QuotientRemainder( <R>, <r>, <s> )
-#O  QuotientRemainder( <r>, <s> )
+#O  QuotientRemainder( <R>, <r>, <m> )
+#O  QuotientRemainder( <r>, <m> )
 ##
 ##  In the first form `QuotientRemainder' returns the Euclidean quotient
 ##  and the Euclidean remainder of the ring elements <r> and <m> in the ring

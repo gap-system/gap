@@ -44,14 +44,15 @@
 ##
 ##  The option '-fno-check-types' tells 'gac' to  emit  no  error checks  for
 ##  list access, which makes it faster but may dump core if an error happens.
-##
+#
 ##  The option '-p <option>' tells 'gac' to pass the option  <option> to  the
 ##  C compiler.
 ##
 ##  The option '-P <option>' tells 'gac' to pass the option  <option> to  the
 ##  C linker.
 ##
-gap_bin=`echo $0 | sed -e 's:/[^/]*$::'`
+gap_bin=@gapbin@
+
 if [ "X${gap_bin}" = "X$0" ];  then
     gap_dir="../../";
     gap_compiler="./gap";
@@ -319,7 +320,7 @@ while [ $# -gt 0 ]; do
 
     -l|--gap-binary)      shift; gap_binary="$1";;
 
-    -p)                   shift; c_options="${c_options} $1";;
+    -p)                   shift; c_options="${c_options} $1" c_dyn_options="${c_dyn_options} $1";;
 
     -P)                   shift; c_link_options="${c_link_options} $1";;
 

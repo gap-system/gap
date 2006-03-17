@@ -29,6 +29,23 @@ Revision.obsolete_g :=
     "@(#)$Id$";
 
 
+##### Declarations from `utils.gd' which unfortuynately are used in packages
+
+DeclareSynonym( "PrimeOfPGroup", PrimePGroup );
+
+##  Underlying field of a vector space or algebra.
+DeclareAttribute( "UnderlyingField", IsVectorSpace );
+InstallMethod(UnderlyingField,"vector space",true,[IsVectorSpace],0,
+  LeftActingDomain);
+DeclareAttribute( "UnderlyingField", IsFFEMatrixGroup );
+InstallMethod(UnderlyingField,"generic",true,[IsVectorSpace],0,
+  FieldOfMatrixGroup);
+
+##  Dimension of matrices in an algebra.
+DeclareSynonym( "MatrixDimension", DimensionOfMatrixGroup);
+
+#####
+
 # monomial ordering: the function was badly defined, name is now obsolete
 DeclareSynonym( "MonomialTotalDegreeLess", MonomialExtGrlexLess );
 

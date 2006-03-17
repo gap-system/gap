@@ -1794,7 +1794,7 @@ end );
 ##
 ##  This had been called `OneDimSubspacesTransversal' in {\GAP}~4.3,
 ##  and special code in `ActionHomomorphismConstructor' relied on the fact
-##  that on argument was *not* an object returned by
+##  that one of its arguments was *not* an object returned by
 ##  `OneDimSubspacesTransversal'.
 ##  Now the result is just the ``sparse equivalent'' of `NormedRowVectors',
 ##  it does not carry any nasty `PositionCanonical' magic.

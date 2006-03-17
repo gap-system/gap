@@ -293,7 +293,7 @@ Int SyFindOrLinkGapRootFile (
         module[0] = '\0';
         SyStrncat( module, "bin/", 4 );
         SyStrncat( module, SyArchitecture, SyStrlen(SyArchitecture) );
-        SyStrncat( module, "/compiled/", 1 );
+        SyStrncat( module, "/compiled/", 10 );
         SyStrncat( module, filename, SyStrlen(filename) );
 #if SYS_MAC_MWC
         SyStrncat( module, ".shlb", 5 );

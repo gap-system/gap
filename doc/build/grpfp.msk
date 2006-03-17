@@ -455,7 +455,9 @@ See also~`CosetTableBySubgroup' ("CosetTableBySubgroup").
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Low Index Subgroups}
 
-\Declaration{LowIndexSubgroupsFpGroup}
+\index{iterator!for low index subgroups}
+
+\Declaration{LowIndexSubgroupsFpGroupIterator}
 
 \beginexample
 gap> li:=LowIndexSubgroupsFpGroup( g, TrivialSubgroup( g ), 10 );
@@ -464,10 +466,26 @@ gap> li:=LowIndexSubgroupsFpGroup( g, TrivialSubgroup( g ), 10 );
 \endexample
 
 By default, the algorithm computes no generating sets for the subgroups.
-This can be enforced with `GeneratorsOfGroup':
+This can be enforcd with `GeneratorsOfGroup':
 \beginexample
 gap> GeneratorsOfGroup(li[2]);
 [ a, b*a*b^-1 ]
+\endexample
+
+If we are interested just in one (proper) subgroup of index at most $10$,
+we can use the function that returns an iterator.
+The first subgroup found is the group itself,
+except if a list of excluded elements is entered (see below),
+so we look at the second subgroup.
+
+\beginexample
+gap> iter:= LowIndexSubgroupsFpGroupIterator( g, 10 );;
+gap> s1:= NextIterator( iter );;  Index( g, s1 );
+1
+gap> IsDoneIterator( iter );
+false
+gap> s2:= NextIterator( iter );;  s2 = li[2];
+true
 \endexample
 
 As an example for an application of the optional parameter <excluded>, we
@@ -490,7 +508,7 @@ gap> lis := LowIndexSubgroupsFpGroup( G, TrivialSubgroup( G ), 24, torsion );;
 #I   class 3 of index 24 and length 24
 #I   class 4 of index 24 and length 24
 #I   class 5 of index 24 and length 24
-#I  LowIndexSubgroupsFpGroup returns 5 classes
+#I  LowIndexSubgroupsFpGroup done. Found 5 classes
 gap> SetInfoLevel( InfoFpGroup, 0 );
 \endexample
 

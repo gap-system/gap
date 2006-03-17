@@ -1,0 +1,42 @@
+St. Andrews 21.12.05
+
+We tested the manual examples with the test scripts 
+in doc/test. 
+
+The differences listed below, show up when all packages
+are loaded. We decided to ignore these differences,
+because either packages changed the behaviour how output is
+printed (Case 1, 3) or the documentation explicitly allows
+a different behavior (Case 2 ). 
+
+1.
+=================================alglie================================
+1687c1688
+< -1*y5*y7*y8*v0-1*y5*y9*v0
+---
+> -1*y5*y7*y8*v0+-1*y5*y9*v0
+
+Comment: Caused by the package "quagroup".
+
+2.
+=================================  coll ================================
+
+609c609
+< 1
+---
+> 0
+
+Comment: caused by Representative( Rationals );
+The documentation says, that this function does not guaranty
+the same output, when it is called several times.
+
+
+3.
+================================= ratfun================================
+
+962c962
+< PolynomialRing(..., [ x_1 ])
+---
+> GF(7)[x_1]
+
+Comment: Caused by the package "resclasses".

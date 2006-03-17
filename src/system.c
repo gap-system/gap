@@ -99,7 +99,7 @@ extern int    fputs ( const char *, FILE * );
 **
 *V  SyKernelVersion  . . . . . . . . . . . . . . . .  name of the architecture
 */
-const Char * SyKernelVersion = "4.4.6";
+const Char * SyKernelVersion = "4.4.7";
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
@@ -2000,7 +2000,7 @@ struct optInfo options[] = {
 #endif
   { 'R',  unsetString, &SyRestoring, 0},
   { 'T',  toggle, &SyBreakSuppress, 0},
-  { 'U',  storeString, &SyCompileOptions, 1},
+  { 'U',  storeString, SyCompileOptions, 1},
 #if SYS_MAC_MWC
   { 'W',  storeMemory, &gMaxLogSize, 1},
 #endif
@@ -2544,14 +2544,16 @@ fullusage:
  FPUTS_TO_STDERR("\n");
  FPUTS_TO_STDERR("\n");
 
- FPUTS_TO_STDERR("  -b          toggle banner suppression\n");
- FPUTS_TO_STDERR("  -q          toggle quiet mode\n");
- FPUTS_TO_STDERR("  -e          toggle quitting on <ctr>-D\n");
+ FPUTS_TO_STDERR("  -h          print this help and exit\n");
+ FPUTS_TO_STDERR("  -b          disable/enable the banner\n");
+ FPUTS_TO_STDERR("  -q          enable/disable quiet mode\n");
+ FPUTS_TO_STDERR("  -e          disable/enable quitting on <ctr>-D\n");
  FPUTS_TO_STDERR("  -f          force line editing\n");
- FPUTS_TO_STDERR("  -n          disable line editing\n");
+ FPUTS_TO_STDERR("  -n          prevent line editing\n");
  FPUTS_TO_STDERR("  -x <num>    set line width\n");
  FPUTS_TO_STDERR("  -y <num>    set number of lines\n");
 #if SYS_OS2_EMX
+ /* This flag does not exist? */
  FPUTS_TO_STDERR("  -E          running under Emacs under OS/2\n");
 #endif
 
@@ -2567,34 +2569,42 @@ fullusage:
 
  FPUTS_TO_STDERR("\n");
  FPUTS_TO_STDERR("  -l <paths>  set the GAP root paths\n");
- FPUTS_TO_STDERR("  -r          toggle reading of the '.gaprc' file \n");
- FPUTS_TO_STDERR("  -A          toggle autoloading of GAP packages\n");
+ FPUTS_TO_STDERR("  -r          disable/enable reading of the '.gaprc' file \n");
+ FPUTS_TO_STDERR("  -A          disable/enable autoloading of GAP packages\n");
  FPUTS_TO_STDERR("  -B <name>   current architecture\n");
- FPUTS_TO_STDERR("  -D          toggle debugging the loading of library files\n");
- FPUTS_TO_STDERR("  -M          toggle loading of compiled modules\n");
- FPUTS_TO_STDERR("  -N          toggle check for completion files\n");
+ FPUTS_TO_STDERR("  -D          enable/disable debugging the loading of library files\n");
+ FPUTS_TO_STDERR("  -M          disable/enable loading of compiled modules\n");
+ FPUTS_TO_STDERR("  -N          disable/enable check for completion files\n");
 #if SYS_MAC_MWC
- FPUTS_TO_STDERR("  -P          set amount of memory reserved for printing\n");
+ FPUTS_TO_STDERR("  -P <mem>    set amount of memory reserved for printing\n");
 #endif
- FPUTS_TO_STDERR("  -T          toggle break loop\n");
+ FPUTS_TO_STDERR("  -T          disable/enable break loop\n");
 #if SYS_MAC_MWC
- FPUTS_TO_STDERR("  -W          set amoount of memory available for GAP log window\n");
+ FPUTS_TO_STDERR("  -W <mem>    set amount of memory available for GAP log window\n");
 #endif
- FPUTS_TO_STDERR("  -X          toggle CRC for comp. files while reading\n");
- FPUTS_TO_STDERR("  -Y          toggle CRC for comp. files while completing\n");
+ FPUTS_TO_STDERR("  -X          enable/disable CRC for comp. files while reading\n");
+ FPUTS_TO_STDERR("  -Y          enable/disable CRC for comp. files while completing\n");
  FPUTS_TO_STDERR("  -i <file>   change the name of the init file\n");
 
  FPUTS_TO_STDERR("\n");
  FPUTS_TO_STDERR("  -L <file>   restore a saved workspace\n");
- FPUTS_TO_STDERR("  -R          disable restoring of workspace\n");
+ FPUTS_TO_STDERR("  -R          prevent restoring of workspace (ignoring -L)\n");
 
  FPUTS_TO_STDERR("\n");
 #if SYS_BSD || SYS_MACH || SYS_USG
- FPUTS_TO_STDERR("  -p          toggle package output mode\n");
+/* This flag is available on all systems, but only advertised for some? */
+ FPUTS_TO_STDERR("  -p          enable/disable package output mode\n");
 #endif
 #if SYS_MSDOS_DJGPP || SYS_TOS_GCC2 || SYS_MAC_MPW || SYS_MAC_MWC
  FPUTS_TO_STDERR("  -z <freq>   set interrupt check frequency\n");
 #endif
+/* -C -U undocumented options to the compiler. 
+   Also unadvertisted compatibility flag:
+ FPUTS_TO_STDERR("  -O          enable/disable old behavior, fail := false\n");
+*/
+
+ FPUTS_TO_STDERR("  Boolean options (b,q,e,r,A,D,M,N,T,X,Y) toggle the current value\n");
+ FPUTS_TO_STDERR("  each time they are called. Default actions are indicated first.\n");
 
  FPUTS_TO_STDERR("\n");
  SyExit( 1 );

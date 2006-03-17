@@ -20,7 +20,7 @@
 ##  You won't have to change this unless you move the installation.
 ##
 if [ "x$GAP_DIR" = "x" ];  then
-GAP_DIR=@gapdir@
+GAP_DIR="@gapdir@"
 fi
 
 
@@ -50,7 +50,7 @@ fi
 ##  the 'bin' directory.
 ##
 if [ "x$GAP_PRG" = "x" ];  then
-GAP_PRG=@target@-@CC@/gap
+GAP_PRG=@target@-@CC@/gap@EXEEXT@
 fi
 
 
@@ -60,4 +60,4 @@ fi
 ##
 ##  You  probably should  not change  this line,  which  finally starts  GAP.
 ##
-exec $GAP_DIR/bin/$GAP_PRG -m $GAP_MEM -l $GAP_DIR $*
+exec "$GAP_DIR/bin/$GAP_PRG" -m $GAP_MEM -l "$GAP_DIR" $*

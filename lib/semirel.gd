@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  semirel.gd                  GAP library                   Andrew Solomon
+#W  semirel.gd                  GAP library                   James D Mitchell
 ##
 #H  @(#)$Id$
 ##
@@ -42,32 +42,68 @@ Revision.semirel_gd :=
 
 #############################################################################
 ##  
-#P  IsGreensRelation(<equiv-relation>)
+#P  IsGreensRelation(<bin-relation>)
 #P  IsGreensRRelation(<equiv-relation>)
 #P  IsGreensLRelation(<equiv-relation>)
 #P  IsGreensJRelation(<equiv-relation>)
 #P  IsGreensHRelation(<equiv-relation>)
 #P  IsGreensDRelation(<equiv-relation>)
 ##
-##  return `true' if the equivalence relation <equiv-relation> is
-##  a Green's relation of any type, or of <R>, <L>, <J>, <H>, <D> type,
-##  respectively, or `false' otherwise.
 ##
-DeclareProperty("IsGreensRelation", IsEquivalenceRelation);
-DeclareProperty("IsGreensRRelation", IsEquivalenceRelation);
-DeclareProperty("IsGreensLRelation", IsEquivalenceRelation);
-DeclareProperty("IsGreensJRelation", IsEquivalenceRelation);
-DeclareProperty( "IsGreensHRelation", IsEquivalenceRelation);
-DeclareProperty( "IsGreensDRelation", IsEquivalenceRelation);
+DeclareCategory("IsGreensRelation", IsBinaryRelation);
+DeclareCategory("IsGreensRRelation", IsGreensRelation);
+DeclareCategory("IsGreensLRelation", IsGreensRelation);
+DeclareCategory("IsGreensJRelation", IsGreensRelation);
+DeclareCategory( "IsGreensHRelation", IsGreensRelation);
+DeclareCategory( "IsGreensDRelation", IsGreensRelation);
+
+DeclareProperty("IsFiniteSemigroupGreensRelation", IsGreensRelation);
 
 #############################################################################
-##  
-#A  AssociatedSemigroup(<equiv-relation>) . . . . .  for equivalence relation
 ##
-##  Add a new attribute to an equivalence relation so that it
-##  knows what semigroup it is associated with. 
-## 
-DeclareAttribute("AssociatedSemigroup", IsEquivalenceRelation);
+#A  GreensRRelation(<semigroup>)
+#A  GreensLRelation(<semigroup>)
+#A  GreensJRelation(<semigroup>)
+#A  GreensDRelation(<semigroup>)
+#A  GreensHRelation(<semigroup>)
+##
+##  The Green's relations (which are equivalence relations)
+##  are attributes of the semigroup <semigroup>.
+
+DeclareAttribute("GreensRRelation", IsSemigroup);
+DeclareAttribute("GreensLRelation", IsSemigroup);
+DeclareAttribute("GreensJRelation", IsSemigroup);
+DeclareAttribute("GreensDRelation", IsSemigroup);
+DeclareAttribute("GreensHRelation", IsSemigroup);
+
+#############################################################################
+##
+#O  GreensRClassOfElement(<S>, <a>)
+#O  GreensLClassOfElement(<S>, <a>)
+#O  GreensDClassOfElement(<S>, <a>)
+#O  GreensJClassOfElement(<S>, <a>)
+#O  GreensHClassOfElement(<S>, <a>)
+##
+##  Creates the <> class of the element <a> in the semigroup <S>
+##  where <> is one of L, R, D, J or H.
+
+DeclareOperation("GreensRClassOfElement", [IsSemigroup, IsObject]);
+DeclareOperation("GreensLClassOfElement", [IsSemigroup, IsObject]);
+DeclareOperation("GreensDClassOfElement", [IsSemigroup, IsObject]);
+DeclareOperation("GreensJClassOfElement", [IsSemigroup, IsObject]);
+DeclareOperation("GreensHClassOfElement", [IsSemigroup, IsObject]);
+
+#######################
+#######################
+
+DeclareOperation("FroidurePinSimpleAlg", [IsMonoid and HasIsFinite and IsFinite]);
+DeclareOperation("FroidurePinExtendedAlg", [IsSemigroup and HasIsFinite and IsFinite]);
+
+DeclareAttribute("AssociatedConcreteSemigroup", IsFpSemigroup);
+DeclareAttribute("AssociatedFpSemigroup", IsSemigroup);
+
+DeclareSynonymAttr("LeftCayleyGraphSemigroup", CayleyGraphDualSemigroup);
+DeclareSynonymAttr("RightCayleyGraphSemigroup", CayleyGraphSemigroup);
 
 #############################################################################
 ##
@@ -82,6 +118,7 @@ DeclareAttribute("AssociatedSemigroup", IsEquivalenceRelation);
 ##  a Green's class of any type, or of <R>, <L>, <J>, <H>, <D> type,
 ##  respectively, or `false' otherwise.
 ##
+
 DeclareProperty("IsGreensClass", IsEquivalenceClass);
 DeclareProperty("IsGreensRClass", IsEquivalenceClass);
 DeclareProperty("IsGreensLClass", IsEquivalenceClass);
@@ -89,76 +126,44 @@ DeclareProperty("IsGreensJClass", IsEquivalenceClass);
 DeclareProperty("IsGreensHClass", IsEquivalenceClass);
 DeclareProperty("IsGreensDClass", IsEquivalenceClass);
 
+InstallTrueMethod(IsGreensClass, IsGreensRClass);
+InstallTrueMethod(IsGreensClass, IsGreensLClass);
+InstallTrueMethod(IsGreensClass, IsGreensJClass);
+InstallTrueMethod(IsGreensClass, IsGreensHClass);
+InstallTrueMethod(IsGreensClass, IsGreensDClass);
+
+
 #############################################################################
 ##
 #A  AssociatedSemigroup(<greens-class>) . . . . . . . . .   for Green's class
 ##
-##  A greens class needs what semigroup it is associated with
+##  A Greens class needs what semigroup it is associated with
 ##
-DeclareAttribute("AssociatedSemigroup", IsGreensClass);
+
+DeclareSynonymAttr("AssociatedSemigroup", ParentAttr);
 
 #############################################################################
 ##
-#A  InternalRepresentative(<greens class>)
-##
-##  The internal representation of the Green's class might be different
-##  than a collection elements of the semigroup.
-##
-DeclareAttribute("InternalRepresentative", IsGreensClass);
-
-
-#############################################################################
-##
-#A  GreensRRelation(<semigroup>)
-#A  GreensLRelation(<semigroup>)
-#A  GreensJRelation(<semigroup>)
-#A  GreensDRelation(<semigroup>)
-#A  GreensHRelation(<semigroup>)
-##
-##  The Green's relations (which are equivalence relations)
-##  are attributes of the semigroup <semigroup>.
-##
-DeclareAttribute("GreensRRelation", IsSemigroup);
-DeclareAttribute("GreensLRelation", IsSemigroup);
-DeclareAttribute("GreensJRelation", IsSemigroup);
-DeclareAttribute("GreensDRelation", IsSemigroup);
-DeclareAttribute("GreensHRelation", IsSemigroup);
-
-#############################################################################
-##
-#O  GreensRClasses(<semigroup>)
-#O  GreensLClasses(<semigroup>)
-#O  GreensJClasses(<semigroup>)
-#O  GreensDClasses(<semigroup>)
-#O  GreensHClasses(<semigroup>)
+#A  GreensRClasses(<semigroup>)
+#A  GreensLClasses(<semigroup>)
+#A  GreensJClasses(<semigroup>)
+#A  GreensDClasses(<semigroup>)
+#A  GreensHClasses(<semigroup>)
 ##
 ##  return the <R>, <L>, <J>, <H>, or <D> Green's classes, respectively for
-##  semigroup <semigroup>. 
-##
-DeclareOperation("GreensRClasses", [IsSemigroup]);
-DeclareOperation("GreensLClasses", [IsSemigroup]);
-DeclareOperation("GreensJClasses", [IsSemigroup]);
-DeclareOperation("GreensDClasses", [IsSemigroup]);
-DeclareOperation("GreensHClasses", [IsSemigroup]);
+##  semigroup <semigroup>. EquivlanceClasses for a Green's relation lead to one of 
+##  these functions.
+##  
 
-DeclareOperation("GreensHClasses", [IsGreensClass]);
+DeclareAttribute("GreensRClasses", IsSemigroup);
+DeclareAttribute("GreensLClasses", IsSemigroup);
+DeclareAttribute("GreensJClasses", IsSemigroup);
+DeclareAttribute("GreensDClasses", IsSemigroup);
+DeclareAttribute("GreensHClasses", IsSemigroup);
 
-#############################################################################
-##
-#O  GreensRClassOfElement(<S>, <a>)
-#O  GreensLClassOfElement(<S>, <a>)
-#O  GreensDClassOfElement(<S>, <a>)
-#O  GreensJClassOfElement(<S>, <a>)
-#O  GreensHClassOfElement(<S>, <a>)
-##
-##  Creates the <X> class of the element <a> in the semigroup <S>
-##  where <X> is one of L, R, D, J or H.
-##
-DeclareOperation("GreensRClassOfElement", [IsSemigroup, IsObject]);
-DeclareOperation("GreensLClassOfElement", [IsSemigroup, IsObject]);
-DeclareOperation("GreensDClassOfElement", [IsSemigroup, IsObject]);
-DeclareOperation("GreensJClassOfElement", [IsSemigroup, IsObject]);
-DeclareOperation("GreensHClassOfElement", [IsSemigroup, IsObject]);
+DeclareAttribute("GreensHClasses", IsGreensClass);
+DeclareAttribute("GreensRClasses", IsGreensDClass);
+DeclareAttribute("GreensLClasses", IsGreensDClass);
 
 #############################################################################
 ## 
@@ -180,8 +185,12 @@ DeclareOperation("IsGreensLessThanOrEqual", [IsGreensClass, IsGreensClass]);
 ##  classes. `RClassOfHClass' and `LClassOfHClass' return the <R> and 
 ##  <L> classes	respectively in which an <H> class is contained.   
 ##
-DeclareAttribute("RClassOfHClass", IsGreensHClass);
-DeclareAttribute("LClassOfHClass", IsGreensHClass);
+
+DeclareAttribute("RClassOfHClass", IsGreensHClass); 
+DeclareAttribute("LClassOfHClass", IsGreensHClass); 
+DeclareAttribute("DClassOfHClass", IsGreensHClass); 
+DeclareAttribute("DClassOfLClass", IsGreensLClass); 
+DeclareAttribute("DClassOfRClass", IsGreensRClass); 
 
 ############################################################################
 ##
@@ -191,6 +200,7 @@ DeclareAttribute("LClassOfHClass", IsGreensHClass);
 ##  returns a group H class of the D class, or `fail' if there is no
 ##  group H class.
 ##
+
 DeclareAttribute("GroupHClassOfGreensDClass",IsGreensDClass);
 
 #############################################################################
@@ -204,6 +214,7 @@ DeclareAttribute("GroupHClassOfGreensDClass",IsGreensDClass);
 ##  an idempotent is regular. Conversely, it is true that a regular  D  class
 ##  must contain at least one idempotent. (See~\cite{Howie76}, Prop.~3.2).
 ##
+
 DeclareProperty("IsRegularDClass", IsGreensDClass);
 
 #############################################################################
@@ -213,6 +224,7 @@ DeclareProperty("IsRegularDClass", IsGreensDClass);
 ##  returns `true' if the Greens H class <Hclass> is a group, which  in  turn
 ##  is true if and only if <Hclass>^2 intersects <Hclass>.
 ##
+
 DeclareProperty("IsGroupHClass", IsGreensHClass);
 
 #############################################################################
@@ -222,6 +234,7 @@ DeclareProperty("IsGroupHClass", IsGreensHClass);
 ##  returns for a Green's D class <Dclass> a matrix whose  rows  represent  R
 ##  classes and columns represent L classes. The entries are the H classes.
 ##
+
 DeclareAttribute("EggBoxOfDClass", IsGreensDClass);
 
 #############################################################################
@@ -231,8 +244,14 @@ DeclareAttribute("EggBoxOfDClass", IsGreensDClass);
 ##  displays a ``picture'' of the D class <Dclass>, as an array of 1s and 0s.
 ##  A 1 represents a group H class.
 ##
+
 DeclareGlobalFunction("DisplayEggBoxOfDClass");
 
-#############################################################################
-##
-#E semirel.gd 
+#######################
+#######################
+
+DeclareAttribute("InternalRepGreensRelation", IsGreensRelation);
+DeclareAttribute("CanonicalGreensClass", IsGreensClass);
+#JDM Should be IsTransformationSemigroup
+DeclareOperation("DisplayEggBoxesOfSemigroup", [IsSemigroup]);
+

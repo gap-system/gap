@@ -97,8 +97,25 @@ InstallMethod( OneOp,
     SetOne( F, one );
 
     return one;
-    end );
+end );
 
+#############################################################################
+##
+#M  IsGeneratorsOfMagmaWithInverses( <elms> ) a collection of magma by 
+##   multiplication table elements will always be acceptable
+##   as generators, provided each one individually has an inverse.    
+##    
+
+InstallMethod( IsGeneratorsOfMagmaWithInverses, 
+        "for a collection of magma by mult table elements",
+        [IsCollection],
+        function(c)
+    if ForAll(c, x-> IsMagmaByMultiplicationTableObj(x) and IsMultiplicativeElementWithInverse(x)) then
+        return true;
+    fi;
+    TryNextMethod();
+end);
+    
 
 #############################################################################
 ##

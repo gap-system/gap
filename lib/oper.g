@@ -995,7 +995,14 @@ end );
 
 DeclareOperationKernel( "ViewObj", [ IS_OBJECT ], VIEW_OBJ );
 
-
+#############################################################################
+##
+#O  ViewString( <obj> )  . . . . . . . . . . . . . . . . . . . view an object
+##
+##  'ViewString' returns a string which would be displayed by ViewObj for an
+##  object.
+##
+DeclareOperation( "ViewString", [ IS_OBJECT ]);
 
 
 #############################################################################

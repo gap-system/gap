@@ -511,13 +511,13 @@ Group(())
 \Declaration{PCore}
 \beginexample
 gap> PCore(g,2);
-Group([ (1,4)(2,3), (1,3)(2,4) ])
+Group([ (1,4)(2,3), (1,2)(3,4) ])
 \endexample
 
 \Declaration{NormalClosure}
 \beginexample
 gap> NormalClosure(g,Subgroup(g,[(1,2,3)]));
-Group([ (1,2,3), (1,3,4) ])
+Group([ (1,2,3), (2,3,4) ])
 \endexample
 
 \Declaration{NormalIntersection}
@@ -571,7 +571,7 @@ gap> CommutatorLength( g );
 \Declaration{FittingSubgroup}
 \beginexample
 gap> FittingSubgroup(g);
-Group([ (1,3)(2,4), (1,4)(2,3) ])
+Group([ (1,2)(3,4), (1,4)(2,3) ])
 \endexample
 
 \Declaration{FrattiniSubgroup}
@@ -599,7 +599,7 @@ Group([  ])
 \Declaration{PerfectResiduum}
 \beginexample
 gap> PerfectResiduum(Group((1,2,3,4,5),(1,2)));
-Group([ (1,3,2), (2,4,3), (2,3)(4,5) ])
+Group([ (1,3,2), (2,4,3), (3,5,4) ])
 \endexample
 
 \Declaration{RadicalGroup}
@@ -833,7 +833,7 @@ gap> ChiefSeries(g);
 \Declaration{SubnormalSeries}
 \beginexample
 gap> s:=SubnormalSeries(g,Group((1,2)(3,4)));
-[ Group([ (1,2,3,4), (1,2) ]), Group([ (1,2)(3,4), (1,4)(2,3) ]), 
+[ Group([ (1,2,3,4), (1,2) ]), Group([ (1,2)(3,4), (1,3)(2,4) ]), 
   Group([ (1,2)(3,4) ]) ]
 \endexample
 
@@ -968,9 +968,9 @@ Group([ (2,3) ])
 \Declaration{ConjugacyClassesSubgroups}
 \beginexample
 gap> ConjugacyClassesSubgroups(g);
-[ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (1,2) ] )^G, 
+[ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (3,4) ] )^G, 
   Group( [ (2,4,3) ] )^G, Group( [ (1,4)(2,3), (1,3)(2,4) ] )^G, 
-  Group( [ (1,2)(3,4), (1,2) ] )^G, Group( [ (1,2)(3,4), (1,4,2,3) ] )^G, 
+  Group( [ (1,2)(3,4), (3,4) ] )^G, Group( [ (1,2)(3,4), (1,3,2,4) ] )^G, 
   Group( [ (3,4), (2,4,3) ] )^G, Group( [ (1,3)(2,4), (1,4)(2,3), (1,2) ] )^G,
   Group( [ (1,3)(2,4), (1,4)(2,3), (2,4,3) ] )^G, 
   Group( [ (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,2) ] )^G ]
@@ -1033,9 +1033,9 @@ gap> g:=SymmetricGroup(4);;
 gap> l:=LatticeSubgroups(g);
 <subgroup lattice of Sym( [ 1 .. 4 ] ), 11 classes, 30 subgroups>
 gap> ConjugacyClassesSubgroups(l);
-[ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (1,2) ] )^G, 
+[ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (3,4) ] )^G, 
   Group( [ (2,4,3) ] )^G, Group( [ (1,4)(2,3), (1,3)(2,4) ] )^G, 
-  Group( [ (1,2)(3,4), (1,2) ] )^G, Group( [ (1,2)(3,4), (1,4,2,3) ] )^G, 
+  Group( [ (1,2)(3,4), (3,4) ] )^G, Group( [ (1,2)(3,4), (1,3,2,4) ] )^G,
   Group( [ (3,4), (2,4,3) ] )^G, Group( [ (1,3)(2,4), (1,4)(2,3), (1,2) ] )^G,
   Group( [ (1,3)(2,4), (1,4)(2,3), (2,4,3) ] )^G, 
   Group( [ (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,2) ] )^G ]
@@ -1047,7 +1047,7 @@ gap> ConjugacyClassesSubgroups(l);
 gap> MaximalSubgroupsLattice(l);
 [ [  ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], 
   [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ] ], [ [ 3, 1 ], [ 3, 6 ], [ 2, 3 ] ], 
-  [ [ 2, 3 ] ], [ [ 4, 1 ], [ 3, 4 ], [ 3, 5 ], [ 3, 6 ] ], 
+  [ [ 2, 3 ] ], [ [ 4, 1 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ] ],
   [ [ 7, 1 ], [ 6, 1 ], [ 5, 1 ] ], 
   [ [ 5, 1 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ], 
   [ [ 10, 1 ], [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 8, 1 ], [ 8, 2 ], [ 8, 3 ], 
@@ -1055,7 +1055,7 @@ gap> MaximalSubgroupsLattice(l);
 gap> last[6];
 [ [ 3, 1 ], [ 3, 6 ], [ 2, 3 ] ]
 gap> u1:=Representative(ConjugacyClassesSubgroups(l)[6]);
-Group([ (1,2)(3,4), (1,2) ])
+Group([ (1,2)(3,4), (3,4) ])
 gap> u2:=ClassElementLattice(ConjugacyClassesSubgroups(l)[3],1);;
 gap> u3:=ClassElementLattice(ConjugacyClassesSubgroups(l)[3],6);;
 gap> u4:=ClassElementLattice(ConjugacyClassesSubgroups(l)[2],3);;
@@ -1070,16 +1070,16 @@ true
 gap> MinimalSupergroupsLattice(l);
 [ [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], [ 3, 4 ], 
       [ 3, 5 ], [ 3, 6 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ], 
-  [ [ 5, 1 ], [ 6, 2 ], [ 7, 2 ] ], [ [ 6, 1 ], [ 8, 2 ], [ 8, 4 ] ], 
-  [ [ 8, 1 ], [ 10, 1 ] ], [ [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 10, 1 ] ], 
+  [ [ 5, 1 ], [ 6, 2 ], [ 7, 2 ] ], [ [ 6, 1 ], [ 8, 1 ], [ 8, 3 ] ], 
+  [ [ 8, 1 ], [ 10, 1 ] ], [ [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 10, 1 ] ],
   [ [ 9, 1 ] ], [ [ 9, 1 ] ], [ [ 11, 1 ] ], [ [ 11, 1 ] ], [ [ 11, 1 ] ], 
   [  ] ]
 gap> last[3];
-[ [ 6, 1 ], [ 8, 2 ], [ 8, 4 ] ]
-gap> u5:=ClassElementLattice(ConjugacyClassesSubgroups(l)[8],2);
-Group([ (1,3), (1,3,2) ])
-gap> u6:=ClassElementLattice(ConjugacyClassesSubgroups(l)[8],4);
-Group([ (1,4), (1,4,2) ])
+[ [ 6, 1 ], [ 8, 1 ], [ 8, 3 ] ]
+gap> u5:=ClassElementLattice(ConjugacyClassesSubgroups(l)[8],1);
+Group([ (3,4), (2,4,3) ])
+gap> u6:=ClassElementLattice(ConjugacyClassesSubgroups(l)[8],3);
+Group([ (1,3), (1,3,4) ])
 gap> IsSubgroup(u5,u2);
 true
 gap> IsSubgroup(u6,u2);
@@ -1091,11 +1091,11 @@ true
 gap> m11:=TransitiveGroup(11,6);
 M(11)
 gap> r:=RepresentativesPerfectSubgroups(m11);
-[ Group([ (3,5,8)(4,11,7)(6,9,10), (1,10)(2,9)(3,7)(4,11) ]), 
-  Group([ (2,3,5)(4,10,9)(6,7,11), (1,10)(2,9)(3,7)(4,11) ]), 
-  Group([ (3,4,8,9)(6,7,11,10), (1,10)(2,9)(3,7)(4,11) ]), 
-  Group([ (3,4,10)(5,11,6)(7,9,8), (1,10)(2,9)(3,7)(4,11) ]), M(11), 
-  Group(()) ]
+[ Group([ (3,6,7)(4,5,9)(8,10,11), (1,10)(2,8)(4,7)(5,9) ]),
+  Group([ (2,3,7)(4,11,9)(5,8,10), (1,10)(2,8)(4,7)(5,9) ]),
+  Group([ (4,9,10,11)(5,6,8,7), (1,10)(2,8)(4,7)(5,9) ]),
+  Group([ (3,4,10)(5,11,6)(7,9,8), (1,10)(2,8)(4,7)(5,9) ]), M(11), Group(()) 
+ ]
 gap> List(r,Size);
 [ 60, 60, 360, 660, 7920, 1 ]
 \endexample
@@ -1103,10 +1103,10 @@ gap> List(r,Size);
 \Declaration{ConjugacyClassesPerfectSubgroups}
 \beginexample
 gap> ConjugacyClassesPerfectSubgroups(m11);
-[ Group( [ ( 3, 5, 8)( 4,11, 7)( 6, 9,10), ( 1,10)( 2, 9)( 3, 7)( 4,11) ] )^G, 
-  Group( [ ( 2, 3, 5)( 4,10, 9)( 6, 7,11), ( 1,10)( 2, 9)( 3, 7)( 4,11) ] )^G, 
-  Group( [ ( 3, 4, 8, 9)( 6, 7,11,10), ( 1,10)( 2, 9)( 3, 7)( 4,11) ] )^G, 
-  Group( [ ( 3, 4,10)( 5,11, 6)( 7, 9, 8), ( 1,10)( 2, 9)( 3, 7)( 4,11) ] )^G, 
+[ Group( [ ( 3, 6, 7)( 4, 5, 9)( 8,10,11), ( 1,10)( 2, 8)( 4, 7)( 5, 9) ] )^G,
+  Group( [ ( 2, 3, 7)( 4,11, 9)( 5, 8,10), ( 1,10)( 2, 8)( 4, 7)( 5, 9) ] )^G,
+  Group( [ ( 4, 9,10,11)( 5, 6, 8, 7), ( 1,10)( 2, 8)( 4, 7)( 5, 9) ] )^G,
+  Group( [ ( 3, 4,10)( 5,11, 6)( 7, 9, 8), ( 1,10)( 2, 8)( 4, 7)( 5, 9) ] )^G,
   M(11)^G, Group( () )^G ]
 \endexample
 

@@ -270,6 +270,7 @@ end );
 #############################################################################
 ##
 #O  RestrictedPerm(<perm>,<list>)  restriction of a perm. to an invariant set
+#O  RestrictedPermNC(<perm>,<list>)  restriction of a perm. to an invariant set
 ##
 ##  `RestrictedPerm' returns  the new permutation <new>  that acts on the
 ##  points in the list <list> in the same  way as the permutation <perm>,
@@ -278,39 +279,34 @@ end );
 ##  <list> the image `<i>^<perm>' is also in <list>,
 ##  i.e., <list> must be the union of cycles of <perm>.
 ##
+##  `RestrictedPermNC' does not check whether <list> is a union of cycles.
+##
 DeclareOperation( "RestrictedPerm", [ IsPerm, IsList ] );
+DeclareOperation( "RestrictedPermNC", [ IsPerm, IsList ] );
 
-InstallMethod( RestrictedPerm,
-    "for internally represented permutation, and list",
-    [ IsPerm and IsInternalRep, IsList ],
-    function( g, D )
-    local   res, d, e, max;
+InstallMethod(RestrictedPermNC,"kernel method",true,
+  [IsPerm and IsInternalRep, IsList],0,
+function(g,D)
+local p;
+  p:=RESTRICTED_PERM(g,D,false);
+  if p=fail then
+    Error("<g> must be a permutation and <D> a plain list or range,\n",
+	  "   consisting of a union of cycles of <g>");
+  fi;
+  return p;
+end);
 
-    # special case for the identity
-    if IsOne( g )  then return ();  fi;
-
-    # compute the largest point that we must consider
-    max := 1;
-    for d  in D  do
-        e := d ^ g;
-        if d <> e  and max < d  then
-            max := d;
-        fi;
-    od;
-
-    # compute the restricted permutation <res>
-    res := [ 1 .. max ];
-    for d  in D  do
-        e := d ^ g;
-        if d <= max  then
-            res[d] := e;
-        fi;
-    od;
-
-    # return the restricted permutation <res>
-    return PermList( res );
-    end );
-
+InstallMethod( RestrictedPerm,"use kernel method, test",true,
+  [IsPerm and IsInternalRep, IsList],0,
+function(g,D)
+  local p;
+  p:=RESTRICTED_PERM(g,D,true);
+  if p=fail then
+    Error("<g> must be a permutation and <D> a plain list or range,\n",
+	  "   consisting of a union of cycles of <g>");
+  fi;
+  return p;
+end);
 
 #############################################################################
 ##

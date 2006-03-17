@@ -764,6 +764,19 @@ end);
 
 #############################################################################
 ##
+#M  PadCoeffs( <vec>, <len> )
+##
+InstallMethod( PadCoeffs, "8 bit vector", true,
+        [IsMutable and IsRowVector and Is8BitVectorRep and IsAdditiveElementWithZeroCollection, IsPosInt ],
+        0,
+        function(vec, len)
+    if len > LEN_VEC8BIT(vec) then
+        RESIZE_VEC8BIT(vec, len);
+    fi;
+end);
+
+#############################################################################
+##
 #M  ShrinkRowVector( <vec> )  
 
 InstallMethod( ShrinkRowVector, "8 bit vector", true,
@@ -866,6 +879,41 @@ InstallOtherMethod( ReduceCoeffs, "8 bit vectors, kernel method (2 arg)",
     return REDUCE_COEFFS_VEC8BIT(v, Length(v),
                    MAKE_SHIFTED_COEFFS_VEC8BIT(w, Length(w)));
 end);
+
+#############################################################################
+##
+#M  QuotremCoeffs( <vec>, <len>, <vec>, <len>)
+##
+##
+InstallMethod( QuotRemCoeffs, "8 bit vectors, kernel method", IsFamXFamY,
+        [Is8BitVectorRep and IsRowVector and IsMutable, IsInt, Is8BitVectorRep and
+         IsRowVector, IsInt ], 0,
+        function(vl, ll, vr, lr)
+        local res;
+        if ADJUST_FIELDS_VEC8BIT(vl, vr) = fail then
+            TryNextMethod();
+        fi;
+    	res := QUOTREM_COEFFS_VEC8BIT( vl, ll, 
+			MAKE_SHIFTED_COEFFS_VEC8BIT(vr, lr));
+	if res = fail then 
+		TryNextMethod();
+	else
+		return res;
+	fi;
+end);
+
+InstallOtherMethod( QuotRemCoeffs, "8 bit vectors, kernel method (2 arg)", 
+        IsIdenticalObj,
+        [Is8BitVectorRep and IsRowVector and IsMutable, Is8BitVectorRep and
+         IsRowVector ], 0,
+        function(v,w) 
+    if ADJUST_FIELDS_VEC8BIT(v, w) = fail then
+        TryNextMethod();
+    fi;
+    return QUOTREM_COEFFS_VEC8BIT(v, Length(v),
+                   MAKE_SHIFTED_COEFFS_VEC8BIT(w, Length(w)));
+end);
+
 
 #############################################################################
 ##

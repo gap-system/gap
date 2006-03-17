@@ -147,7 +147,8 @@ ReadLib( "grppclat.gd" );
 
 ReadLib( "grppcaut.gd" );
 
-ReadLib( "straight.gd");
+ReadLib( "straight.gd" );
+ReadLib( "memory.gd"  );
 
 # files dealing with fp groups
 ReadLib( "grpfp.gd"    );
@@ -199,6 +200,7 @@ ReadLib( "fpmon.gd");
 ReadLib( "rwssmg.gd");
 ReadLib( "kbsemi.gd");
 ReadLib( "tcsemi.gd");
+ReadLib( "adjoin.gd");
 ReadLib( "semirel.gd");
 ReadLib( "semitran.gd");
 ReadLib( "reesmat.gd");
@@ -226,11 +228,10 @@ ReadLib("gasman.gd");
 ##
 #X  files dealing with subgroup chains
 ##
-ReadLib("utils.gd");
-ReadLib("quogphom.gd");
-ReadLib("gptransv.gd");
-ReadLib("grpchain.gd");
-ReadLib("rss.gd");
-ReadLib("basicim.gd");
-ReadLib("solmxgrp.gd");
-
+#ReadLib("utils.gd");
+#ReadLib("quogphom.gd");
+#ReadLib("gptransv.gd");
+#ReadLib("grpchain.gd");
+#ReadLib("rss.gd");
+#ReadLib("basicim.gd");
+#ReadLib("solmxgrp.gd");

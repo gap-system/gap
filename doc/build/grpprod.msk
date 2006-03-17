@@ -43,6 +43,11 @@ product. For example the direct product of permutation groups will be a
 permutation group again and the direct product of pc groups will be a pc
 group.
 
+If the groups are in different representations a generic direct product will
+be formed which may not be particularly efficient for many calculations.
+Instead it may be worth to convert all factors to a common representation
+first, before forming the product.
+
 \atindex{Embedding!example for direct products}%
 {@\noexpand`Embedding'!example for direct products}
 \atindex{Projection!example for direct products}%
@@ -83,7 +88,7 @@ gap> au:=DerivedSubgroup(AutomorphismGroup(n));;
 gap> Size(au);
 120
 gap> p:=SemidirectProduct(au,n);
-<permutation group with 4 generators>
+<permutation group with 5 generators>
 gap> Size(p);
 3000
 \endexample
@@ -107,22 +112,21 @@ gap> SemidirectProduct(au,n);
 gap> n:=AbelianGroup(IsPcGroup,[2,2]);
 <pc group of size 4 with 2 generators>
 gap> au:=AutomorphismGroup(n);
-<group with 4 generators>
+<group of size 6 with 2 generators>
 gap> apc:=IsomorphismPcGroup(au);
-CompositionMapping( Pcgs([ (2,3), (1,3,2) ]) -> 
+CompositionMapping( Pcgs([ (2,3), (1,2,3) ]) -> 
 [ f1, f2 ], <action isomorphism> )
 gap> g:=Image(apc);
 Group([ f1, f2 ])
 gap> apci:=InverseGeneralMapping(apc);
-[ f1*f2^2, f1*f2^2, f1*f2, <identity> of ... ] -> 
-[ [ f1, f2 ] -> [ f2, f1 ], [ f1, f2 ] -> [ f2, f1 ], 
-  [ f1, f2 ] -> [ f1*f2, f2 ], [ f1, f2 ] -> [ f1, f2 ] ]
+ [ f1*f2^2, f1*f2 ] -> [ Pcgs([ f1, f2 ]) -> [ f1*f2, f2 ], 
+   Pcgs([ f1, f2 ]) -> [ f2, f1 ] ]
 gap> IsGroupHomomorphism(apci);
 true
 gap> p:=SemidirectProduct(g,apci,n);
 <pc group of size 24 with 4 generators>
 gap> IsomorphismGroups(p,Group((1,2,3,4),(1,2)));
-[ f1, f2, f3, f4 ] -> [ (1,2), (1,2,4), (1,2)(3,4), (1,4)(2,3) ]
+[ f1, f2, f3, f4 ] -> [ (1,4), (1,4,3), (1,4)(2,3), (1,2)(3,4) ]
 \endexample
 
 \beginexample
@@ -281,6 +285,28 @@ gap> hom2:=GroupHomomorphismByImages(u,Group((1,2,3)),
 > GeneratorsOfGroup(u),[ (1,2,3), (1,2,3) ]);;
 gap> KuKGenerators(g,hom,hom2);
 [ (1,4)(2,5)(3,6), (1,6)(2,4)(3,5) ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Free Products}
+
+Let $G$ and $H$ be groups with presentations $\langle X\mid R\rangle$ and
+$\langle Y\mid S\rangle$ respectively. Then the free product $G*H$ is
+the group with presentation $\langle X\cup Y\mid R\cup S\rangle$. This
+construction can be generalized to an arbitrary number of groups.
+
+\Declaration{FreeProduct}
+
+\beginexample
+gap> g := DihedralGroup(8);;
+gap> h := CyclicGroup(5);;
+gap> fp := FreeProduct(g,h,h);
+<fp group on the generators [ f1, f2, f3, f4, f5 ]>
+gap> fp := FreeProduct([g,h,h]);
+<fp group on the generators [ f1, f2, f3, f4, f5 ]>
+gap> Embedding(fp,2);
+[ f1 ] -> [ f4 ]
 \endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

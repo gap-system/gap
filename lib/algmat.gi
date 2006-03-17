@@ -953,7 +953,7 @@ InstallMethod( RadicalOfAlgebra,
               for i in [1..r] do
                   for j in [1..r_prime] do
                       charPoly[i][j] :=
-                          CoefficientsOfUnivariatePolynomial( CharacteristicPolynomial( F, I[i]*I_prime[j] ) );
+                          CoefficientsOfUnivariatePolynomial( CharacteristicPolynomial( F, F, I[i]*I_prime[j] ) );
                   od;
               od;
               changed := false;

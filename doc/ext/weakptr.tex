@@ -49,8 +49,8 @@ programming with such an object.
 subobjects as <list>, that is it returns a *shallow* weak copy of <list>.
 
 \beginexample
-gap> w := WeakPointerObj( [ 1, , [2,3], fail, rec() ] );
-WeakPointerObj( [ 1, , [ 2, 3 ], fail, rec(  ) ] )
+gap> w := WeakPointerObj( [ 1, , [2,3], fail, rec( a := 1) ] );
+WeakPointerObj( [ 1, , [ 2, 3 ], fail, rec( a := 1 ) ] )
 gap> GASMAN("collect");
 gap> w;
 WeakPointerObj( [ 1, , , fail ] )

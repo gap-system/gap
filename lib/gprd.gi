@@ -24,12 +24,10 @@ local d;
   elif Length( arg ) = 1 and IsList( arg[1] ) then
     if IsEmpty( arg[1] ) then
       Error( "<arg>[1] must be nonempty" );
-    else
-      d:=DirectProductOp( arg[1], arg[1][1] );
     fi;
-  else
-    d:=DirectProductOp( arg, arg[1] );
+    arg:= arg[1];
   fi;
+  d:=DirectProductOp( arg, arg[1] );
   if ForAll(arg,HasSize) then
     SetSize(d,Product(List(arg,Size)));
   fi;
@@ -47,7 +45,7 @@ InstallMethod( DirectProductOp,
     [ IsList, IsGroup ], 0,
     function( list, gp )
 
-    local ids, tup, first, i, G, gens, g, new, D;
+    local ids, tup, first, i, G, gens, g, new, D, prop;
 
     # Check the arguments.
     if IsEmpty( list ) then
@@ -73,6 +71,18 @@ InstallMethod( DirectProductOp,
 
     D := GroupByGenerators( tup, Tuple( ids ) );
 
+    # test/set a few properties and attributes from factors
+    
+    for prop in [IsFinite, IsNilpotentGroup, IsAbelian, IsSolvableGroup] do
+        if ForAll (list, Tester (prop)) then
+            Setter (prop)(D, ForAll (list, prop));
+        fi;
+    od;
+    
+    if ForAll (list, G -> HasSize(G)) then
+        SetSize (G, Product (List (list, Size)));
+    fi;
+            
     SetDirectProductInfo( D, rec( groups := list,
                                   first  := first,
                                   embeddings := [],
@@ -198,39 +208,230 @@ end );
 
 #############################################################################
 ##
-#M  Pcgs( <D> )
+#M  IsNilpotentGroup( <D> )
 ##
+InstallMethod( IsNilpotentGroup, "for direct products", true, 
+               [IsGroup and HasDirectProductInfo], 0,
+function( D )
+    return ForAll( DirectProductInfo( D ).groups, IsNilpotentGroup );
+end );
+
+#############################################################################
+##
+#M  IsAbelian( <D> )
+##
+InstallMethod( IsAbelian, "for direct products", true, 
+               [IsGroup and HasDirectProductInfo], 0,
+function( D )
+    return ForAll( DirectProductInfo( D ).groups, IsAbelian );
+end );
+
+#############################################################################
+##
+#M  IsPGroup( <D> )
+##
+InstallMethod( IsPGroup, "for direct products", true, 
+               [IsGroup and HasDirectProductInfo], 0,
+function( D )
+    local list, G, p;
+    
+    list := DirectProductInfo( D ).groups;
+    
+    if ForAll (list, G -> IsPGroup(G)) then
+        p := fail;
+        for G in list do
+            if not IsTrivial (G) then
+                if p = fail then
+                    p := PrimePGroup (G);
+                elif p <> PrimePGroup (G) then
+                    p := false;
+                    break;
+                fi;
+            fi;
+        od;
+        if p <> false then
+            SetPrimePGroup (D, p);
+            return true;
+        fi;
+    fi;
+    return false;
+end );
+
+
+#############################################################################
+##
+#M  PrimePGroup( <D> )
+##
+InstallMethod( PrimePGroup, "for direct products", true, 
+               [IsPGroup and HasDirectProductInfo], 0,
+function( D )
+    local p;
+    Assert (1, ForAll (DirectProductInfo( D ).groups, IsPGroup));    
+    p := First (DirectProductInfo( D ).groups, G -> PrimePGroup (G) <> fail);
+    Assert (1, ForAll (DirectProductInfo( D ).groups, G -> PrimePGroup (G) in [fail, p]));
+    return p;
+end );
+
+
+#############################################################################
+##
+#R  IsPcgsDirectProductRep
+##
+DeclareRepresentation ("IsPcgsDirectProductRep", IsPcgsDefaultRep, ["pcgs","len"]);
+
+#############################################################################
+##
+#M  Pcgs( <D> )
+#M  PcgsElementaryAbelianSeries( <D> )
+#M  PcgsCentralSeries( <D> )
+##
+InstallGlobalFunction (PcgsDirectProduct,
+    function( D, pcgsop, indsop, filter )
+        local info, pcs, i, pcgs, rels, indices, inds, offset, one, new, g, attl;
+        if not IsTuple( One( D ) ) then TryNextMethod(); fi;
+        info := DirectProductInfo( D );
+        pcs := [];
+        rels := [];
+        pcgs := [];
+        indices := [];
+        one := List( info.groups, x -> One(x) );
+        offset := 0;
+        for i in [1..Length(info.groups)] do
+            pcgs[i] := pcgsop ( info.groups[i] );
+            if indsop <> fail then
+                inds := indsop (pcgs[i]) + offset;
+                Append (indices, inds{[1..Length(inds)-1]});
+            fi;
+            for g in pcgs[i] do
+                new := ShallowCopy( one );
+                new[i] := g;
+                Add( pcs, Tuple( new ) );
+            od;
+            Append( rels, RelativeOrders( pcgs[i] ) );
+            offset := offset + Length (pcgs[i]);
+        od;
+        attl := [RelativeOrders, rels, GroupOfPcgs, D, One, One(D)];
+        if indsop <> fail then
+            Add (indices, offset + 1);
+            Append (attl, [indsop, indices, filter, true]);
+        fi;
+        pcs := PcgsByPcSequenceCons( 
+            IsPcgsDefaultRep,
+            IsPcgs and IsPcgsDirectProductRep,
+            ElementsFamily(FamilyObj( D ) ), 
+            pcs,
+            attl );
+        pcs!.pcgs := pcgs;
+        return pcs;
+    end 
+);
+
+
 InstallMethod( Pcgs, "for direct products", true, 
-               [IsGroup and CanEasilyComputePcgs and HasDirectProductInfo], 
+               [IsGroup and HasDirectProductInfo], 
 	       Maximum(
 		RankFilter(IsPcGroup),
 		RankFilter(IsPermGroup and IsSolvableGroup)
 	        ),# this is better than these two common alternatives
-function( D )
-    local info, pcs, i, pcgs, rels, one, new, g;
-    if not IsTuple( One( D ) ) then TryNextMethod(); fi;
-    info := DirectProductInfo( D );
-    pcs := [];
-    rels := [];
-    one := List( info.groups, x -> One(x) );
-    for i in [1..Length(info.groups)] do
-        pcgs := Pcgs( info.groups[i] );
-        for g in pcgs do
-            new := ShallowCopy( one );
-            new[i] := g;
-            Add( pcs, Tuple( new ) );
-        od;
-        Append( rels, RelativeOrders( pcgs ) );
-    od;
-    pcs := PcgsByPcSequenceNC( ElementsFamily(FamilyObj( D ) ), pcs );
-    SetRelativeOrders( pcs, rels );
-    SetOneOfPcgs( pcs, One(D) );
-    return pcs;
-end );
+        D -> PcgsDirectProduct (D, Pcgs, fail, fail));
 
-#
-# subdirect product stuff
-#
+InstallMethod( PcgsElementaryAbelianSeries, "for direct products", true, 
+               [IsGroup and HasDirectProductInfo], 
+	       Maximum(
+		RankFilter(IsPcGroup),
+		RankFilter(IsPermGroup and IsSolvableGroup)
+	        ),# this is better than these two common alternatives
+        D -> PcgsDirectProduct (D, 
+                PcgsElementaryAbelianSeries, 
+                IndicesEANormalSteps, 
+                IsPcgsElementaryAbelianSeries)
+);
+
+InstallMethod( PcgsCentralSeries, "for direct products", true, 
+               [IsGroup and HasDirectProductInfo], 
+	       Maximum(
+		RankFilter(IsPcGroup),
+		RankFilter(IsPermGroup and IsSolvableGroup)
+	        ),# this is better than these two common alternatives
+        D -> PcgsDirectProduct (D, 
+                PcgsCentralSeries, 
+                IndicesCentralNormalSteps, 
+                IsPcgsCentralSeries)
+);
+
+InstallMethod( PcgsChiefSeries, "for direct products", true, 
+               [IsGroup and HasDirectProductInfo], 
+	       Maximum(
+		RankFilter(IsPcGroup),
+		RankFilter(IsPermGroup and IsSolvableGroup)
+	        ),# this is better than these two common alternatives
+        D -> PcgsDirectProduct (D, PcgsChiefSeries, IndicesChiefNormalSteps, IsPcgsChiefSeries)
+);
+
+InstallMethod( PcgsPCentralSeriesPGroup, "for direct products", true, 
+               [IsGroup and HasDirectProductInfo], 
+	       Maximum(
+		RankFilter(IsPcGroup),
+		RankFilter(IsPermGroup and IsSolvableGroup)
+	        ),# this is better than these two common alternatives
+        D -> PcgsDirectProduct (D, 
+                PcgsCentralSeries, 
+                IndicesPCentralNormalStepsPGroup, 
+                IsPcgsPCentralSeriesPGroup)
+);
+
+#############################################################################
+##
+#M  ExponentsOfPcElement( <pcgs>, <g> )
+##
+InstallMethod (ExponentsOfPcElement, "for pcgs of direct product", IsCollsElms,
+    [IsPcgs and IsPcgsDirectProductRep, IsTuple], 0,
+    
+    function (pcgs, g)
+        local exp, i;
+        
+        if Length (pcgs!.pcgs) <> Length (g) then
+            TryNextMethod ();
+        fi;
+        exp := [];
+        for i in [1..Length (g)] do
+            Append (exp, ExponentsOfPcElement (pcgs!.pcgs[i], g[i]));
+        od;
+        return exp;
+    end
+);
+
+
+#############################################################################
+##
+#M  DepthOfPcElement( <pcgs>, <g> )
+##
+InstallMethod (DepthOfPcElement, "for pcgs of direct product", IsCollsElms,
+    [IsPcgs and IsPcgsDirectProductRep, IsTuple], 0,
+    
+    function (pcgs, g)
+        local i, d, prevdepth;
+        
+        if Length (pcgs!.pcgs) <> Length (g) then
+            TryNextMethod ();
+        fi;
+        prevdepth := 0;
+        for i in [1..Length (g)] do
+            d := DepthOfPcElement (pcgs!.pcgs[i], g[i]);
+            if d <= Length (pcgs!.pcgs[i]) then 
+                return d + prevdepth;
+            fi;
+            prevdepth := prevdepth + Length (pcgs!.pcgs[i]);
+        od;
+        return prevdepth + 1;
+    end
+);
+
+
+#############################################################################
+##
+## subdirect product stuff
+##
 
 InstallGlobalFunction(SubdirectProduct,function(G,H,ghom,hhom)
 local iso;
@@ -535,7 +736,7 @@ end);
 InstallOtherMethod( WreathProduct,"generic groups with permhom", true,
  [ IsGroup, IsGroup, IsSPGeneralMapping ], 0,
 function(G,H,alpha)
-local I,n,fam,typ,gens,hgens,id,i,e,info,W;
+local I,n,fam,typ,gens,hgens,id,i,e,info,W,p;
   I:=Image(alpha,H);
   n:=LargestMovedPoint(I);
   fam:=NewFamily("WreathProductElemFamily",IsWreathProductElement);
@@ -559,11 +760,15 @@ local I,n,fam,typ,gens,hgens,id,i,e,info,W;
   id:=ListWithIdenticalEntries(n,One(G));
   Add(id,One(I));
   info.identvec:=ShallowCopy(id);
-  for i in GeneratorsOfGroup(G) do
-    e:=ShallowCopy(id);
-    e[1]:=i;
-    Add(gens,Objectify(typ,e));
+
+  for p in List(Orbits(I,[1..n]),i->i[1]) do
+    for i in GeneratorsOfGroup(G) do
+      e:=ShallowCopy(id);
+      e[p]:=i;
+      Add(gens,Objectify(typ,e));
+    od;
   od;
+
   info.basegens:=ShallowCopy(gens);
   hgens:=[];
   for i in GeneratorsOfGroup(H) do
@@ -1009,6 +1214,168 @@ function( S, i )
     return hom;
 end );
 
+#############################################################################
+##
+#F  FreeProduct( arg )                                       Robert F, Morse
+##
+##
+InstallGlobalFunction( FreeProduct, 
+function( arg )
+
+    ## Check to see that the proper argument number is given
+    ##
+    if Length( arg ) = 0 then
+        Error( "<arg> must be nonempty" );
+    elif Length( arg ) = 1 and IsList( arg[1] ) then
+        if IsEmpty( arg[1] ) then
+            Error( "<arg>[1] must be nonempty" );
+        fi;
+        arg:= arg[1];
+    fi;
+ 
+    ## Delegate the construction to FreeProductOp
+    ##
+    return FreeProductOp(arg,arg[1]);
+
+    end
+);
+
+############################################################################
+##
+#O  FreeProductOp( list, group )                            Robert F. Morse
+##
+InstallMethod( FreeProductOp,
+    "for a list (of groups), and a group",
+    true,
+    [ IsList, IsGroup ], 0,
+    function( list, gp ) 
+
+    local fpisolist,    # list of isomorphism from each group to an fp group
+          genindlist,   # Ranges into the free generators of the free
+                        # product
+          gennum,       # total number of free generators
+          gens,         # slice of generators of the free group of the free
+                        # product associated with a base group
+          fpgens,       # fp generators of a base group
+          r,            # relations index
+          g,            # particular base group either as given or its fp
+                        # repesentation
+          ggens,        # generators of base group g
+          i,            # index of generator range
+          embeddings,   # monomorphisms of base groups into free product
+          hom,          # holds a monomorphism
+          F,            # free group of free product
+          FP,           # free product
+          rels          # free product relators
+    ;
+        
+    ## Check the arguments.
+    ## 
+    if IsEmpty( list ) then
+        Error( "<list> must be nonempty" );
+    elif ForAny( list, G -> not IsGroup( G ) ) then
+       TryNextMethod();
+    fi;
+   
+    ## Create isomorphisms from the given group list to an
+    ## isomorphic finitely presented group.
+    ##
+    fpisolist   := List(list,IsomorphismFpGroup);
+
+    ## Create a list if indices for the generators of the free product
+    ##
+    genindlist  := List(fpisolist, x->Length(GeneratorsOfGroup(Image(x))));
+    gennum      := Sum(genindlist);
+    
+    ## Compute the accummalive sums which are the indices into 
+    ## the free group. Add a zero for convienence.
+    ##
+    genindlist  := List([1..Length(genindlist)],i->genindlist{[1..i]}); 
+    genindlist  := List(genindlist, Sum);
+    genindlist  := Concatenation([0], genindlist);
+    
+
+    ## Create the free group of the free product
+    ##
+    F := FreeGroup(gennum);
+
+    ## Create the relations for the for free product
+    ##
+    rels := [];
+
+    ## for each range of generators in the free group of the free product
+    ## create the relations of the for ith base group.
+    ##
+    for i in [1..Length(genindlist)-1] do
+    
+         ## get the generator range for this group in the free group
+         ## of the free product
+         gens := List([genindlist[i]+1..genindlist[i+1]],x->F.(x));
+
+         ## Fp representation of a base group of the free product
+         ## and its free generators
+         g    := Image(fpisolist[i]);
+         fpgens := GeneratorsOfGroup(FreeGroupOfFpGroup(g));
+ 
+         ## Map the relations of the base group into words in the 
+         ## free group of the free product
+         for r in RelatorsOfFpGroup(g) do
+             Add(rels, MappedWord(r, fpgens, gens));
+         od;
+    od;
+
+    ## Create the free product.
+    FP := F/rels;    
+    
+    ## Create all the embeddings into the free product since we have
+    ## all the needed information
+    ##
+    embeddings :=[];
+    
+    for i in [1..Length(genindlist)-1] do
+    
+         ## get the generator range for this group in the free product
+         gens := List([genindlist[i]+1..genindlist[i+1]],x->FP.(x));
+
+         ## get the ith base group as given and the generators in
+         ## g of the FP image -- which may not be the same as
+         ## the generators of g
+         g    := list[i];
+         ggens := List(GeneratorsOfGroup(Image(fpisolist[i])), 
+                      x->PreImage(fpisolist[i],x));
+
+         hom := GroupHomomorphismByImagesNC(g,FP,ggens,gens);
+         SetIsInjective(hom,true);
+
+         Add(embeddings,hom);
+
+    od;
+
+    ## Save the embedding information for possible use later.
+    SetFreeProductInfo( FP, 
+        rec( groups := list,
+             embeddings := embeddings ) );
+    
+    return FP;    
+
+    end 
+);
+
+#############################################################################
+##
+#M  Embedding (for free product)                             Robert F. Morse
+##
+InstallMethod( Embedding, "free products",
+    true, [ IsGroup and HasFreeProductInfo, IsPosInt ], 0,
+    function( G, i )
+        if i > Length(FreeProductInfo(G).embeddings) then
+            Error("Base group with index ",i, " does not exist");
+        else
+            return FreeProductInfo(G).embeddings[i];
+        fi;
+    end
+);
+   
 
 #############################################################################
 ##

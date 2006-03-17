@@ -160,9 +160,22 @@ dnl ##
 dnl ## check for file access functions
 dnl ##
 
-AC_CHECK_FUNCS( access stat unlink mkdir  mkdtemp mkstemp)
+AC_CHECK_FUNCS( access stat fstat lstat unlink mkdir mkdtemp mkstemp rmdir link rename symlink readlink chmod fchmod chown fchown lchown dup dup2 mknod mkfifo )
 AC_HEADER_STAT
 
+dnl #########################################################################
+dnl ##
+dnl ## check for socket access functions
+dnl ##
+AC_CHECK_FUNCS( socket listen accept connect bind getsockname recv recvfrom recvmsg send sendto sendmsg getsockopt setsockopt getprotobyname gethostbyname )
+
+dnl #########################################################################
+dnl ##
+dnl ## check for directory access functions
+dnl ##
+
+AC_HEADER_DIRENT
+AC_CHECK_FUNCS( opendir closedir dirfd readdir rewinddir seekdir telldir )
 
 dnl #########################################################################
 dnl ##
@@ -215,6 +228,9 @@ dnl #########################################################################
 dnl ##
 dnl ## generate a makefile
 dnl ##
+
+AC_SUBST(gapbin)
+gapbin=`pwd`
 
 AC_OUTPUT(gac:../cnf/gac.in Makefile:../cnf/Makegap.in)
 chmod a+x gac

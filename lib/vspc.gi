@@ -52,6 +52,21 @@ InstallMethod( IsLeftActedOnByDivisionRing,
 
 #############################################################################
 ##
+#F  VectorSpace( <F>, <gens>[, <zero>][, "basis"] )
+##
+##  The only difference between `VectorSpace' and `FreeLeftModule' shall be
+##  that the left acting domain of a vector space must be a division ring.
+##
+InstallGlobalFunction( VectorSpace, function( arg )
+    if Length( arg ) = 0 or not IsDivisionRing( arg[1] ) then
+      Error( "usage: VectorSpace( <F>, <gens>[, <zero>][, \"basis\"] )" );
+    fi;
+    return CallFuncList( FreeLeftModule, arg );
+    end );
+
+
+#############################################################################
+##
 #M  AsSubspace( <V>, <C> )  . . . . . . . for a vector space and a collection
 ##
 InstallMethod( AsSubspace,

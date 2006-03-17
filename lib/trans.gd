@@ -87,8 +87,9 @@ DeclareGlobalFunction("IdentityTransformation");
 #F  RandomTransformation(<n>)
 ##
 ##  returns a random transformation of degree <n>
-##
-DeclareGlobalFunction("RandomTransformation");
+##  JDM 
+DeclareOperation("RandomTransformation", 
+    [IsPosInt]);
 
 ############################################################################
 ##

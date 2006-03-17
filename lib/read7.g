@@ -37,5 +37,5 @@ ReadLib( "ctblpc.gi" );
 
 ReadLib( "tom.gi");
 ReadLib( "straight.gi");
-
+ReadLib( "memory.gi");
 

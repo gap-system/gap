@@ -224,7 +224,7 @@ a *level* that is defined as the number of selectors of the form
 
 \begintt
     l[pos1]{poss2}{poss3}[pos4]{poss5}[pos6]
-level   0      0      1     1      1     2
+level   0      0      1     2      2     3
 \endtt
 
 Then  a selector `<list>[<pos>]' of level <level> is computed as

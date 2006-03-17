@@ -44,7 +44,9 @@ options  start with a  hyphen `-', followed by a  single letter.  Options
 must not be   grouped, e.g.,  `gap  -gq' is   illegal, use   `gap -g  -q'
 instead.  Some options  require an argument, this  must follow the option
 and  must be separated   by a <space>, e.g.,  `gap   -m 256k', it is  not
-correct to say `gap -m256k' instead.
+correct to say `gap -m256k' instead. Certain Boolean options (b, q, e, r, 
+A, D, M, N, T, X, Y) toggle the current value so that `gap -b -b' is
+equivalent to `gap' and to `gap -b -q -b -q' etc.
 
 {\GAP} for UNIX will distinguish between upper and lower case options.
 
@@ -67,20 +69,23 @@ are ignored.
 `-b' &
 tells {\GAP} to suppress the banner. That means that  {\GAP}  immediately
 prints the prompt. This is useful when, after a while, you get  tired  of
-the banner.
+the banner. This option can be repeated to enable the banner; each `-b'
+toggles the state of banner display.
 
 \indextt{-q}
 `-q' &
 tells {\GAP} to be quiet. This means that  {\GAP}  displays  neither  the
 banner nor the prompt `gap>'. This is useful if you want to run {\GAP} as
 a filter with input and output redirection and want to avoid  the  banner
-and the prompts appearing in the output file.
+and the prompts appearing in the output file. This option may be repeated
+to disable quiet mode; each `-q' toggles quiet mode.
 
 \indextt{-e}
 `-e' &
 tells {\GAP} not to quit when receiving a `<ctr>-D'  on  an  empty  input
 line (see~"quit"). This option should not be used when  the  input  is  a
-file or pipe.
+file or pipe.  This option may be repeated to toggle this behavior on and
+off.
 
 \indextt{-f}
 `-f' &
@@ -90,7 +95,8 @@ tells {\GAP} to enable the line editing and history (see "Line Editing").
 In general  line editing will  be enabled if the input  is connected to a
 terminal.  There are rare circumstances, for  example when using a remote
 session with a corrupted telnet implementation, when this detection fails.
-Try using `-f' in this case to enable line editing.
+Try using `-f' in this case to enable line editing. This option does not
+toggle; you must use `-n' to disable line editing.
 
 \indextt{-n}
 `-n' &
@@ -102,6 +108,7 @@ You may want to do this if the command line  editing is incompatible with
 another program that is used to run {\GAP}.  For example if {\GAP} is run
 from inside a GNU Emacs shell window, `-n' should be used since otherwise
 every input line will be echoed twice, once by Emacs and once by {\GAP}.
+This option does not toggle; you must use `-f' to enable line editing.
 
 \indextt{-x}
 `-x <length>' &
@@ -237,7 +244,8 @@ specifying the correct root path using the `-l' option.
 \indextt{-r}
 `-r' &
 The option `-r'  tells {\GAP}  not to  read the user  supplied `~/.gaprc'
-files.
+files. This option may be repeated to enable reading again; each use of
+`-r' toggles whether to read the file.
 
 \indextt{-L}
 `-L <filename>' &
@@ -247,7 +255,7 @@ section~"Saving and Loading a Workspace".
 \indextt{-R}
 `-R' &
 The option `-R' tells {\GAP} not to load a saved workspace previously 
-specified via the `-L' option. 
+specified via the `-L' option. This option does not toggle.
 
 \index{options!command line, filenames}
 `<filename> ...' &
@@ -306,7 +314,8 @@ override this name, and this can be done using the `-B' option.
 \indextt{-D}
 `-D' &
 The `-D' option tells {\GAP} to print short messages when it  is  reading
-or completing files or loading modules. The message,
+or completing files or loading modules. This option may be repeated to
+toggle this behavior on and off. The message,
 
 \begintt
 #I  READ_GAP_ROOT: loading 'lib/kernel.g' as GAP file
@@ -345,35 +354,41 @@ tells you  that  {\GAP}  has  completed  the  file  `lib/domain.gd'.  See
 \indextt{-M}
 `-M' &
 tells {\GAP} not to check for, nor to use, compiled versions  of  library
-files.
+files. This option may be repeated to toggle this behavior on and off.
 
 \indextt{-N}
 `-N' &
 tells {\GAP} not  to  check  for,  nor  to  use,  completion  files,  see
-"Completion Files".
+"Completion Files".  This option may be repeated to toggle  this behavior 
+on and off.
 
 \indextt{-O}
 `-O' &
 enables a {\GAP}~3 compatibility mode, in which (for instance) the values
 `false' and `fail' are identified. Use of this mode  is  not  recommended
 other than as a transitional step in porting {\GAP}~3 code  to  {\GAP}~4,
-because the {\GAP}~4 library may not work reliably in this mode.
+because the {\GAP}~4 library may not work reliably in this mode.  Without
+the `-A' option, some packages may give errors on startup. The `-O' option
+may be repeated to toggle this behavior on and off.
 
 \indextt{-T}
 `-T' &
 suppresses the usual break loop behaviour of  {\GAP}.  With  this  option
 {\GAP} behaves as if the user `quit' immediately from every  break  loop.
-This is intended for automated testing of {\GAP}.
+This is intended for automated testing of {\GAP}. This option may be 
+repeated to toggle this behavior on and off.
 
 \indextt{-X}
 `-X' &
 tells {\GAP} to do a consistency  check  of  the  library  file  and  the
-corresponding completion file when reading the completion file.
+corresponding completion file when reading the completion file. This
+option may be repeated to toggle this behavior on and off.
 
 \indextt{-Y}
 `-Y' &
 tells {\GAP} to do a consistency  check  of  the  library  file  and  the
-corresponding completion file when completing the library file.
+corresponding completion file when completing the library file. This
+option may be repeated to toggle this behavior on and off.
 
 \indextt{-i}
 `-i <filename>' &
@@ -383,9 +398,9 @@ changes  the  name  of  the  init  file  from  the  default  `init.g'  to
 \enditems
 
 \index{options!command line, internal}
-\indextt{-C}\indextt{-U}\indextt{-P}\indextt{-W}\indextt{-z}
-Additional options, `-C', `-U', `-P', `-W' and `-z' are  used  internally
-in the {\GAP} compiler and/or on specific operating systems.
+\indextt{-C}\indextt{-U}\indextt{-P}\indextt{-W}\indextt{-z}\indextt{-p}
+Additional options, `-C', `-U', `-P', `-W', `-p' and `-z' are  used  
+internally in the {\GAP} compiler and/or on specific operating systems.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -798,7 +813,7 @@ to compile the `combinat.gi' file on a Linux machine.  Suppose we are in
 the home directory of the gap distribution.
 
 \begintt
-bin/gac -d lib/combinat.gi
+bin/i386-ibm-linux-gcc2/gac -d lib/combinat.gi
 \endtt
 
 creates a file `combinat.so'. We now put it in the right place, creating

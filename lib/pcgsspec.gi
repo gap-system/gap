@@ -620,6 +620,9 @@ function( pcgs )
         SetIsFiniteOrdersPcgs( newpcgs, true );
         SetIsPrimeOrdersPcgs( newpcgs, true );
     fi;
+    if HasGroupOfPcgs (pcgs) then
+	SetGroupOfPcgs (newpcgs, GroupOfPcgs (pcgs));
+    fi;
     return newpcgs;
 end );
 
@@ -684,6 +687,7 @@ function( group )
         spec := SpecialPcgs( Pcgs( group ) );
         SetPcgs( group, spec );
     fi;
+    SetGroupOfPcgs (spec, group);
     return spec;
 end );
 
@@ -758,31 +762,38 @@ end);
 InstallOtherMethod( InducedPcgsWrtSpecialPcgs, "method for pc groups",
     true, [ IsPcGroup ], 0,
 function( U )
-local spec;
+local spec, ind;
     spec := SpecialPcgs( FamilyPcgs( U ) );
     if HasPcgs(U) and spec=HomePcgs(U) then
       return InducedPcgsWrtHomePcgs(U);
     fi;
-    return InducedPcgsByGeneratorsNC( spec, GeneratorsOfGroup(U) );
+    ind := InducedPcgsByGeneratorsNC( spec, GeneratorsOfGroup(U) );
+    SetGroupOfPcgs (ind, U);
+    return ind;
 end );
 
 InstallOtherMethod( InducedPcgsWrtSpecialPcgs, "generic method for groups",
     true, [ IsGroup ], 0,
 function( U )
-local spec;
+local spec, ind;
   spec := SpecialPcgs( Parent( U ) );
-  return InducedPcgsByGeneratorsNC( spec, GeneratorsOfGroup(U) );
+  ind := InducedPcgsByGeneratorsNC( spec, GeneratorsOfGroup(U) );
+  SetGroupOfPcgs (ind, U);
+  return ind;
 end );
 
 IndPcgsWrtSpecFromFamOrHome:=function( U )
-local spec;
+local spec, ind;
   spec := SpecialPcgs( FamilyPcgs( U ) );
   if spec=HomePcgs(U) then
     return InducedPcgsWrtHomePcgs(U);
   elif IsSortedPcgsRep(spec) and spec!.sortingPcgs=HomePcgs(U) then
-    return InducedPcgsByPcSequenceNC(spec,AsList(InducedPcgsWrtHomePcgs(U)));
+    ind := InducedPcgsByPcSequenceNC(spec,AsList(InducedPcgsWrtHomePcgs(U)));
+  else
+     ind := InducedPcgsByGeneratorsNC( spec, InducedPcgsWrtHomePcgs(U) );
   fi;
-  return InducedPcgsByGeneratorsNC( spec, InducedPcgsWrtHomePcgs(U) );
+  SetGroupOfPcgs (ind, U);
+  return ind;
 end;
 
 InstallOtherMethod( InducedPcgsWrtSpecialPcgs,

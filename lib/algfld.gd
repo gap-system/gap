@@ -58,7 +58,7 @@ DeclareOperation( "AlgebraicElementsFamily",
 ##
 ##  constructs an extension <L> of the field <K> by one root of the irreducible
 ##  polynomial <f>, using Kronecker{\pif}s construction. <L> is a
-##  field whose `LeftActingDomain' is <K>. The  polynomial <p> is the
+##  field whose `LeftActingDomain' is <K>. The  polynomial <f> is the
 ##  `DefiningPolynomial' of <L> and the attribute `RootOfDefiningPolynomial'
 ##  of <L> holds a root of <f> in <L> (see~"RootOfDefiningPolynomial").
 DeclareOperation( "AlgebraicExtension",

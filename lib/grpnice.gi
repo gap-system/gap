@@ -583,8 +583,8 @@ local mon,iso;
     return fail;
   else
     iso:=mon*iso;
-    SetIsInjective(mon,true);
-    SetIsSurjective(mon,true);
+    SetIsInjective(iso,true);
+    SetIsSurjective(iso,true);
     mon:=MappingGeneratorsImages(iso);
     SetName(iso,Concatenation("<composed isomorphism:",
       String(mon[1]),"->",String(mon[2]),">"));

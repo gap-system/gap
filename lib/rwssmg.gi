@@ -9,7 +9,7 @@
 #Y  Copyright (C) 2002 The GAP Group
 ##
 ##  This file contains the declarations for semigroups defined by rws.
-##
+## JDM
 Revision.rwssmg_gi :=
     "@(#)$Id$";
 
@@ -339,6 +339,32 @@ InstallMethod(FreeMonoidOfRewritingSystem,
 function(rws)
   return FreeMonoidOfFpMonoid(
     MonoidOfRewritingSystem(rws));
+end);
+
+#############################################################################
+##
+#M  GeneratorsOfRws(<RWS>)
+##
+
+InstallOtherMethod(GeneratorsOfRws, 
+"for a monoid rewriting system", true, 
+[IsRewritingSystem and IsBuiltFromSemigroup], 0, 
+function(rws) 
+return GeneratorsOfSemigroup(FreeSemigroupOfRewritingSystem(rws));
+
+end);
+
+#############################################################################
+##
+#M  GeneratorsOfRws(<RWS>)
+##
+
+InstallOtherMethod(GeneratorsOfRws, 
+"for a monoid rewriting system", true, 
+[IsRewritingSystem and IsBuiltFromMonoid], 0, 
+function(rws) 
+return GeneratorsOfMonoid(FreeMonoidOfRewritingSystem(rws));
+
 end);
 
 #############################################################################

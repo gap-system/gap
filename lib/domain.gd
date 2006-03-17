@@ -182,7 +182,7 @@ DeclareOperation( "DomainByGenerators", [ IsFamily, IsList ] );
 ##
 ##  A stored parent can be accessed using `Parent'.
 ##  If <D> has no parent then `Parent' returns <D> itself,
-##  and `HasParent' will returns `false' also after a call to `Parent'.
+##  and `HasParent' will return `false' also after a call to `Parent'.
 ##  So `Parent' is *not* an attribute,
 ##  the underlying attribute to store the parent is `ParentAttr'.
 ##

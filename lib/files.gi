@@ -37,11 +37,11 @@ BindGlobal( "DirectoryType", NewType(
 #############################################################################
 ##
 #F  USER_HOME_EXPAND . . . . . . . . . . . .  expand leading ~ in file name
-##  
-##  If `GAPInfo.UserHome' has positive length then a leading '~' character in 
+##
+##  If `GAPInfo.UserHome' has positive length then a leading '~' character in
 ##  string `str' is substituted by the content of `GAPInfo.UserHome'.
 ##  Otherwise `str' itself is returned.
-##  
+##
 InstallGlobalFunction(USER_HOME_EXPAND, function(str)
   if Length(str) > 0 and str[1] = '~' and Length( GAPInfo.UserHome ) > 0 then
     return Concatenation( GAPInfo.UserHome, str{[2..Length(str)]});
@@ -49,7 +49,7 @@ InstallGlobalFunction(USER_HOME_EXPAND, function(str)
     return str;
   fi;
 end);
-    
+
 
 #############################################################################
 ##
@@ -79,7 +79,7 @@ end );
 #############################################################################
 ##
 #M  EQ( <dir1>, <dir2> ) . . . . . . . . . . . equality for directory objects
-##  
+##
 InstallMethod( EQ,
    "for two directories",
    [ IsDirectory, IsDirectory ],
@@ -150,7 +150,7 @@ end );
 #############################################################################
 ##
 #F  DirectoryContents(<name>)
-## 
+##
 InstallGlobalFunction(DirectoryContents, function(dirname)
   local str;
   # to make ~/mydir work
@@ -220,7 +220,15 @@ end );
 InstallMethod( ReadTest,
     "string",
     [ IsString ],
-    name -> READ_TEST( USER_HOME_EXPAND( name ) ) );  
+    function( name )
+    local oldvalue, result;
+
+    oldvalue:= SizeScreen();
+    SizeScreen( [ 80 ] );
+    result:= READ_TEST( USER_HOME_EXPAND( name ) );
+    SizeScreen( oldvalue );
+    return result;
+    end );
 
 
 #############################################################################
@@ -230,7 +238,7 @@ InstallMethod( ReadTest,
 InstallMethod( ReadAsFunction,
     "string",
     [ IsString ],
-    name -> READ_AS_FUNC( USER_HOME_EXPAND( name ) ) );  
+    name -> READ_AS_FUNC( USER_HOME_EXPAND( name ) ) );
 
 
 #############################################################################
@@ -245,7 +253,7 @@ InstallGlobalFunction( Edit, function( name )
     if editor = fail  then
         Error( "cannot locate editor `", EDITOR, "'" );
     fi;
-    ret := Process( DirectoryCurrent(), editor, InputTextUser(), 
+    ret := Process( DirectoryCurrent(), editor, InputTextUser(),
                     OutputTextUser(), [ name ] );
     if ret <> 0  then
         Error( "editor returned ", ret );
@@ -289,7 +297,7 @@ InstallGlobalFunction( CreateCompletionFiles, function( arg )
         Print( "#I  converting \"", i[1], "\" to \"", com, "\"\n" );
 
         # now find the input file
-        read := List( [1 .. Length(i[2]) ], x 
+        read := List( [1 .. Length(i[2]) ], x
            -> [ i[2][x], Filename( input, i[2][x] ), i[3][x] ] );
         if ForAny( read, x -> x[2] = fail )  then
             Error( "cannot locate input files" );
@@ -310,7 +318,7 @@ InstallGlobalFunction( CreateCompletionFiles, function( arg )
 
             # create `COM_FILE' header and `if' start
             APPEND_TO( com, "#C  load module, file, or complete\n" );
-            APPEND_TO( com, 
+            APPEND_TO( com,
               "COM_RESULT := COM_FILE( \"", j[1], "\", ", crc, " );\n",
               "if COM_RESULT = fail  then\n",
               "Error(\"cannot locate file \\\"", j[1], "\\\"\");\n",
@@ -345,7 +353,7 @@ end );
 #M  CheckCompletionFiles()  . . . . . . . . . . .  check the completion files
 ##
 InstallGlobalFunction( CheckCompletionFiles, function()
-    local   dirs,  file,  com,  stream,  next,  pos,  fname,  crc,  
+    local   dirs,  file,  com,  stream,  next,  pos,  fname,  crc,
             lfile,  new,  nook;
 
     dirs := DirectoriesLibrary("");

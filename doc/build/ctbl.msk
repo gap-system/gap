@@ -677,10 +677,20 @@ X.5     5  1 -1  .  .
 
 A = -E(5)-E(5)^4
   = (1-ER(5))/2 = -b5
+gap> CharacterTableDisplayDefaults.User:= rec(
+>        powermap:= "ATLAS", centralizers:= "ATLAS", chars:= false );;
+gap> Display( CharacterTable( "A5" ) );
+A5
+
+    60  4  3  5  5
+
+ p      A  A  A  A
+ p'     A  A  A  A
+    1A 2A 3A 5A B*
+
 gap> options:= rec( chars:= 4, classes:= [ tbl.3a .. tbl.5a ],
 >                   centralizers:= false, indicator:= true,
 >                   powermap:= [ 2 ] );;
-gap> Indicator( tbl, 2 );;
 gap> Display( tbl, options );
 A5
 
@@ -695,6 +705,7 @@ A5
        2P 3a 5b
        2
 X.4    +   1 -1
+gap> Unbind( CharacterTableDisplayDefaults.User );
 \endexample
 
 \Declaration{PrintCharacterTable}
@@ -759,22 +770,22 @@ gap> g:= SL(2,3);;
 gap> SizeScreen([ 87, ]);;
 gap> irr1:= IrrDixonSchneider( g );
 [ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 2, -2, 1, 1, -1, -1, 0 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 2, -2, E(3)^2, E(3), -E(3), -E(3)^2, 0 ] ),
-  Character( CharacterTable( SL(2,3) ), [ 2, -2, E(3), E(3)^2, -E(3)^2, -E(3), 0 ] ),
-  Character( CharacterTable( SL(2,3) ), [ 3, 3, 0, 0, 0, 0, -1 ] ) ]
+  Character( CharacterTable( SL(2,3) ), [ 1, E(3)^2, E(3), 1, E(3), E(3)^2, 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 1, E(3), E(3)^2, 1, E(3)^2, E(3), 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 2, E(3)^2, E(3), -2, -E(3), -E(3)^2, 0 ] ),
+  Character( CharacterTable( SL(2,3) ), [ 2, E(3), E(3)^2, -2, -E(3)^2, -E(3), 0 ] ),
+  Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] ) ]
 gap> irr2:= IrrConlon( g );
 [ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 3, 3, 0, 0, 0, 0, -1 ] ) ]
+  Character( CharacterTable( SL(2,3) ), [ 1, E(3), E(3)^2, 1, E(3)^2, E(3), 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 1, E(3)^2, E(3), 1, E(3), E(3)^2, 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] ) ]
 gap> irr3:= IrrBaumClausen( g );
 [ Character( CharacterTable( SL(2,3) ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ] ), 
-  Character( CharacterTable( SL(2,3) ), [ 3, 3, 0, 0, 0, 0, -1 ] ) ]
+  Character( CharacterTable( SL(2,3) ), [ 1, E(3), E(3)^2, 1, E(3)^2, E(3), 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 1, E(3)^2, E(3), 1, E(3), E(3)^2, 1 ] ), 
+  Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] ) ]
 gap> SizeScreen([ 80, ]);;
 gap> chi:= irr2[4];;  HasTestMonomial( chi );
 true

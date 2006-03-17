@@ -598,7 +598,7 @@ PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "cohorts.grp","irreducible solvable
 ##  version of GAP library
 ##
 Add( POST_RESTORE_FUNCS, function()
-    local wsp_version, name;
+    local wsp_version, name, iw;
 
     wsp_version := GAPInfo;
     RereadLib( "system.g" );
@@ -626,8 +626,15 @@ Add( POST_RESTORE_FUNCS, function()
       for name in NamesOfComponents(SY_RESTORE_OPTIONS) do
         GAPInfo.CommandLineOptionsRestore.(name) := SY_RESTORE_OPTIONS.(name);
       od;
-    od;
-RereadLib( "obsolete.g" );
+  od;
+  #
+  # Workaround for warning message from reread of obsolete.g
+  # SL
+  #
+  iw := InfoLevel(InfoWarning);
+  SetInfoLevel(InfoWarning,0);
+  RereadLib( "obsolete.g" );
+  SetInfoLevel(InfoWarning,iw);
 #T Remove this as soon as the globals corresponding to command line options
 #T have disappeared and are not getting unbound in `system.g'.
     end );

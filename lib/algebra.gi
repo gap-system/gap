@@ -3039,7 +3039,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
           ll,    # A list of structure constants.
           L,     # result.
           sym,   # if both products are (anti)symmetric, then the result
-                 # will have the sam property.
+                 # will have the same property.
           R1,R2, # Root systems of A1,A2.
           f1,f2, # Embeddings of A1,A2 in L.
           R,     # Root system of L.
@@ -3066,8 +3066,6 @@ InstallOtherMethod( DirectSumOfAlgebras,
 
     scT:= StructureConstantsTable( Basis( A2 ) );
 
-    if scT[n2+1] = sym then T[ n+1 ]:= sym; fi;
-
     for i in [1..n2] do
       for j in [1..n2] do
         ll:= ShallowCopy( scT[i][j] );
@@ -3075,6 +3073,17 @@ InstallOtherMethod( DirectSumOfAlgebras,
         T[n1+i][n1+j]:= ll;
       od;
     od;
+
+
+    # Set the (anti)symmetric flag
+    if scT[n2 + 1] = sym  then
+        T[n + 1] := sym;
+    fi;
+    if Characteristic( LeftActingDomain( A1 ) ) = 2 and sym in [ 1, -1 ]
+        and scT[n2 + 1] in [ 1, -1 ]  then
+        T[n + 1] := 1;
+    fi;
+
 
     L:= AlgebraByStructureConstants( LeftActingDomain( A1 ), T );
 

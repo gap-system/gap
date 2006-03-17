@@ -413,6 +413,7 @@ InstallGlobalFunction(TryPcgsPermGroup,function( G, cent, desc, elab )
     if whole  then
         SetIsSolvableGroup( grp, true );
         SetPcgs( grp, pcgs );
+        SetGroupOfPcgs (pcgs, grp);
         if cent  then
             SetIsNilpotentGroup( grp, true );
         fi;
@@ -475,9 +476,13 @@ local ppcgs,series,G,i;
         Unbind( series[ i ].relativeOrders );
         Unbind( series[ i ].base           );
         series[ i ] := GroupStabChain( G, series[ i ], true );
-        SetHomePcgs ( series[ i ], ppcgs );
-        SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
-        series[ i ]!.noInSeries := i;
+	if (not HasHomePcgs(series[i]) ) or
+	  HomePcgs(series[i])!.permpcgsNormalSteps=
+	  ppcgs!.permpcgsNormalSteps then
+	  SetHomePcgs ( series[ i ], ppcgs );
+	  SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
+	  series[ i ]!.noInSeries := i;
+	fi;
   od;
   return series;
 end);
@@ -1088,7 +1093,7 @@ local pcgs;
   fi;
   pcgs:=TryPcgsPermGroup( G, false, false, true );
   if IsPcgs(pcgs) and not HasPcgs(G) then
-    SetPcgs(G,pcgs);
+       SetPcgs(G,pcgs);
   fi;
   return pcgs;
 end);

@@ -12,19 +12,35 @@
 ##  This file declares operations for `FFE's.
 #1
 ##  For creating elements of a finite field the function `Z' can be used.
-##  The call `Z( <p>^<d> )' returns  the designated generator of  the 
-##  multiplicative
-##  group of the finite field with `<p>^<d>' elements.  <p>  must be a prime
-##  and `<p>^<d>' must be less than or equal to $2^{16} = 65536$.
+##  The call `Z(p,d)' (alternatively `Z( <p>^<d> )') returns the designated
+##  generator of the multiplicative group of the finite field with `<p>^<d>'
+##  elements.  <p> must be a prime.
 ##
-##  The  root returned by `Z' is  a generator of  the multiplicative group of
-##  the finite field with $p^d$ elements, which  is cyclic.  The order of the
-##  element is  of course $p^d-1$.  The $p^d-1$  different powers of the root
+##  GAP can represent elements of all finite fields `GF(p^d)' such that
+##  either (1) p^d \<= 65536 (in which case an extremely efficient internal
+##  representation is used); (2) d = 1, (in which case, for large p, the
+##  field is represented the machinery of Residue Class Rings (see
+##  section~"Residue Class Rings") or (3) if the Conway Polynomial of degree
+##  `d' over GF(p) is known, or can be computed, (see "Conway Polynomial").
+##
+##  If you attempt to construct an element of `GF(p^d)' for which `d > 1' and
+##  the relevant Conway Polynomial is not known, and not necessarily easy to
+##  find (see "IsCheapConwayPolynomial"), then {\GAP{ will stop with an error
+##  and enter the break loop. If you leave this break loop by entering
+##  `return;' {\GAP} will attempt to compute the Conway Polynomial, which may
+##  take a very long time.
+##
+##  The root returned by `Z' is a generator of the multiplicative group of
+##  the finite field with $p^d$ elements, which is cyclic.  The order of the
+##  element is of course $p^d-1$.  The $p^d-1$ different powers of the root
 ##  are exactly the nonzero elements of the finite field.
 ##
 ##  Thus  all nonzero elements of the  finite field  with `<p>^<d>' elements
 ##  can  be entered  as `Z(<p>^<d>)^<i>'.  Note that this is  also the form
-##  that {\GAP} uses to output those elements.
+##  that {\GAP} uses to output those elements when they are stored in the 
+##  internal representation. In larger fields, it is more convenient to enter
+##  and print elements as linear combinations of powers of the primitive 
+##  element. See section "Printing, Viewing and Displaying Finite Field Elements".
 ##
 ##  The additive neutral element  is `0\*Z(<p>)'.  It  is  different from the
 ##  integer `0' in subtle ways.  First `IsInt( 0\*Z(<p>)  )' (see "IsInt") is
@@ -49,10 +65,6 @@
 ##  Those polynomials were defined by J.~H.~Conway, and many of them were
 ##  computed by R.~A.~Parker.
 ##
-##  Elements of prime fields of order larger than $2^{16}$ can be handled
-##  using the machinery of Residue Class Rings
-##  (see section~"Residue Class Rings").
-##
 
 #############################################################################
 #2
@@ -70,9 +82,9 @@
 ##  for finite field elements are defined to return the *smallest* field
 ##  containing the given elements.
 ##
+
 Revision.ffe_gd :=
     "@(#)$Id$";
-
 
 #############################################################################
 ##
@@ -98,6 +110,29 @@ DeclareCategoryKernel( "IsFFE",
 DeclareCategoryCollections( "IsFFE" );
 DeclareCategoryCollections( "IsFFECollection" );
 DeclareCategoryCollections( "IsFFECollColl" );
+
+
+#############################################################################
+##
+#C  IsLexOrderedFFE(<ffe>)
+#C  IsLogOrderedFFE(<ffe>)
+##
+##  Finite field elements are ordered in GAP (by `\<') first by characteristic
+##  and then by their degree (ie the size of the smallest field containing 
+##  them). Amongst irreducible elements of a given field, the ordering 
+##  depends on which of these categories the elements of the field belong to
+##  (all elements of a given field should belong to the same one)
+##
+##  Elements in 'IsLexOrderedFFE' are ordered lexicographically by their 
+##  coefficients with respect to the canonical basis of the field
+##
+##  Elements in 'IsLogOrderedFFE' are ordered according to their discrete 
+##  logarithms with respect to the 'PrimitiveElement' of the field.
+
+
+DeclareCategory("IsLexOrderedFFE", IsFFE);
+DeclareCategory("IsLogOrderedFFE", IsFFE);
+InstallTrueMethod(IsLogOrderedFFE, IsFFE and IsInternalRep);
 
 
 #############################################################################
@@ -136,7 +171,9 @@ BIND_GLOBAL( "FAMS_FFE_LARGE", [ [], [] ] );
 #V  GALOIS_FIELDS
 ##
 ##  global list of finite fields `GF( <p>^<d> )',
-##  the field of size $p^d$ is stored in `GALOIS_FIELDS[<p>][<d>]'.
+##  the field of size $p^d$ is stored in `GALOIS_FIELDS[<p>][<d>]', provided 
+##  p^d < MAXSIZE_GF_INTERNAL. Larger fields are stored in the FFEFamily of the
+##  appropriate characteristic
 ##
 DeclareGlobalVariable( "GALOIS_FIELDS",
     "list of lists, GALOIS_FIELDS[p][n] = GF(p^n) if bound" );
@@ -144,12 +181,16 @@ DeclareGlobalVariable( "GALOIS_FIELDS",
 
 #############################################################################
 ##
-#F  LargeGaloisField( <p>^<n> )
-#F  LargeGaloisField( <p>, <n> )
+#O  LargeGaloisField( <p>^<n> )
+#O  LargeGaloisField( <p>, <n> )
+##
+##  Ideally these would be declared for IsPosInt, but this 
+##  causes problems with reading order.
 ##
 #T other construction possibilities?
 ##
-DeclareGlobalFunction( "LargeGaloisField" );
+DeclareOperation( "LargeGaloisField", [IS_INT] );
+DeclareOperation( "LargeGaloisField", [IS_INT, IS_INT] );
 
 #############################################################################
 ##
@@ -202,6 +243,7 @@ DeclareGlobalFunction( "GaloisField" );
 
 DeclareSynonym( "FiniteField", GaloisField );
 DeclareSynonym( "GF", GaloisField );
+
 
 
 #############################################################################

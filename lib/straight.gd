@@ -2,6 +2,7 @@
 ##
 #W  straight.gd              GAP library                        Thomas Breuer
 #W                                                           Alexander Hulpke
+#W                                                            Max Neunhoeffer
 ##
 #H  @(#)$Id$
 ##
@@ -430,6 +431,159 @@ DeclareOperation("StretchImportantSLPElement",
 ##  respect to <roots>. <tree> is a tree as given by the augmented coset
 ##  table routines.
 DeclareGlobalFunction("TreeRepresentedWord");
+
+
+#############################################################################
+##
+##  3. Functions for straight line programs, mostly needed for memory objects:
+##
+
+##
+#F  SLPChangesSlots( <l>, <nrinputs> )
+##
+##  l must be the lines of an slp, nrinps the number of inputs.
+##  This function returns a list with the same length than l, containing
+##  at each position the number of the slot that is changed in the
+##  corresponding line of the slp. In addition one more number is
+##  appended to the list, namely the number of the biggest slot used.
+##  For the moment, this function is intentionally left undocumented.
+##
+DeclareGlobalFunction( "SLPChangesSlots" );
+
+##
+#F  SLPOnlyNeededLinesBackward( <l>,<i>,<nrinps>,<changes>,<needed>,
+##                              <slotsused>,<ll> )
+##
+##  l is a list of lines of an slp, nrinps the number of inputs.
+##  i is the number of the last line, that is not a line of type 3 (results).
+##  changes is the result of SLPChangesSlots for that slp.
+##  needed is a list, where those entries are bound to true that are
+##  needed in the end of the slp. slotsused is a list that should be
+##  initialized with [1..nrinps] and which contains in the end the set
+##  of slots used.
+##  ll is any list.
+##  This functions goes backwards through the slp and adds exactly those 
+##  lines of the slp to ll that have to be executed to produce the
+##  result (in backward order). All lines are transformed into type 2
+##  lines ([assocword,slot]). Note that needed is changed underways.
+##  For the moment, this function is intentionally left undocumented.
+##
+DeclareGlobalFunction( "SLPOnlyNeededLinesBackward" );
+
+##
+#F  SLPReversedRenumbered( <ll>,<slotsused>,<nrinps>,<invtab> )
+##
+##  Internally used function.
+##
+DeclareGlobalFunction( "SLPReversedRenumbered" );
+
+##
+#F  RestrictOutputsOfSLP( <slp>, <k> )
+##
+##  Returns a new slp that calculates only those outputs specified by
+##  <k>. <k> may be an integer or a list of integers. If <k> is an integer,
+##  the resulting slp calculates only the result with that number. 
+##  If <k> is a list of integers, the resulting slp calculates those
+##  results with numbers in <k>. In both cases the resulting slp
+##  does only what is necessary. The slp must have a line with at least
+##  <k> expressions (lists) as its last line (if <k> is an integer).
+##  <slp> is either an slp or a pair where the first entry are the lines
+##  of the slp and the second is the number of inputs.
+##
+DeclareGlobalFunction( "RestrictOutputsOfSLP" );
+
+##
+#F  IntermediateResultOfSLP( <slp>, <k> )
+##
+##  Returns a new slp that calculates only the value of slot <k>
+##  at the end of <slp> doing only what is necessary. 
+##  slp is either an slp or a pair where the first entry are the lines
+##  of the slp and the second is the number of inputs.
+##  Note that this assumes a general SLP with possible overwriting.
+##  If you know that your SLP does not overwrite slots, please use
+##  "IntermediateResultOfSLPWithoutOverwrite", which is much faster in this
+##  case.
+##
+DeclareGlobalFunction( "IntermediateResultOfSLP" );
+
+##
+#F  IntermediateResultsOfSLPWithoutOverwriteInner( ... )
+##
+##  Internal function.
+##
+DeclareGlobalFunction( "IntermediateResultsOfSLPWithoutOverwriteInner" );
+
+##
+#F  IntermediateResultsOfSLPWithoutOverwrite( <slp>, <k> )
+##
+##  Returns a new slp that calculates only the value of slots contained
+##  in the list k.
+##  Note that <slp> must not overwrite slots but only append!!!
+##  Use "IntermediateResultOfSLP" in the other case!
+##  <slp> is either a slp or a pair where the first entry is the lines
+##  of the slp and the second is the number of inputs.
+##
+DeclareGlobalFunction( "IntermediateResultsOfSLPWithoutOverwrite" );
+
+##
+#F  IntermediateResultOfSLPWithoutOverwrite( <slp>, <k> )
+##
+##  Returns a new slp that calculates only the value of slot <k>, which
+##  must be an integer.
+##  Note that <slp> must not overwrite slots but only append!!!
+##  Use "IntermediateResultOfSLP" in the other case!
+##  <slp> is either an slp or a pair where the first entry is the lines
+##  of the slp and the second is the number of inputs.
+##
+DeclareGlobalFunction( "IntermediateResultOfSLPWithoutOverwrite" );
+
+##
+#F  ProductOfStraightLinePrograms( <s1>, <s2> )
+##
+##  <s1> and <s2> must be two slps that return a single element with the same
+##  number of inputs. This function contructs an slp that returns the product
+##  of the two results the slps <s1> and <s2> would produce with the same
+##  input.
+##
+DeclareGlobalFunction( "ProductOfStraightLinePrograms" );
+
+##
+#F  RewriteStraightLineProgram(<s>,<l>,<lsu>,<inputs>,<tabuslots>)
+##
+##  The purpose of this function is the following: Append the slp <s> to 
+##  the one currently built in <l>.
+##  The prospective inputs are already standing somewhere and some
+##  slots may not be used by the new copy of <s> within <l>.
+##
+##  <s> must be a GAP straight line program.
+##  <l> must be a mutable list making the beginning of a straight line program
+##  without result line so far. <lsu> must be the largest used slot of the
+##  slp in <l> so far. <inputs> is a list of slot numbers, in which the
+##  inputs are, that the copy of <s> in <l> should work on, that is, its length
+##  must be equal to the number of inputs <s> takes. <tabuslots> is a list of
+##  slot numbers which will not be overwritten by the new copy of <s> in <l>.
+##  This function changes <l> and returns a record with components 
+##  `l' being <l>, `results' being
+##  a list of slot numbers, in which the results of <s> are stored in the end
+##  and `lsu' being the number of the largest slot used by <l> up to now.
+##
+DeclareGlobalFunction( "RewriteStraightLineProgram" );
+
+##
+#F  NewCompositionOfStraightLinePrograms( <s2>, <s1> )
+##
+##  A new implementation of "CompositionOfStraightLinePrograms" using
+##  "RewriteStraightLineProgram".
+##
+DeclareGlobalFunction( "NewCompositionOfStraightLinePrograms" );
+
+##
+#F  NewProductOfStraightLinePrograms( <s2>, <s1> )
+##
+##  A new implementation of "ProductOfStraightLinePrograms" using
+##  "RewriteStraightLineProgram".
+##
+DeclareGlobalFunction( "NewProductOfStraightLinePrograms" );
 
 #############################################################################
 ##

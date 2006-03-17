@@ -1273,7 +1273,7 @@ function ( G )
     return classes;
 end);
 
-InstallMethod( IsomorphismFpGroup, "alternating group", true,
+InstallMethod( IsomorphismFpGroup, "symmetric group", true,
     [ IsNaturalSymmetricGroup ], 0,
 function(G)
   return IsomorphismFpGroup(G,

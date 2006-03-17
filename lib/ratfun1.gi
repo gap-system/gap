@@ -534,7 +534,7 @@ ADDITIVE_INV_RATFUN:=function( obj )
     for i  in [ 2, 4 .. Length(newnum) ]  do
         newnum[i] := -newnum[i];
     od;
-    return RationalFunctionByExtRep(fam,newnum,ExtRepDenominatorRatFun(obj));
+    return RationalFunctionByExtRepNC(fam,newnum,ExtRepDenominatorRatFun(obj));
 end;
 
 ADDITIVE_INV_POLYNOMIAL:=function( obj )
@@ -545,7 +545,7 @@ ADDITIVE_INV_POLYNOMIAL:=function( obj )
     for i  in [ 2, 4 .. Length(newnum) ]  do
         newnum[i] := -newnum[i];
     od;
-    return PolynomialByExtRep(fam,newnum);
+    return PolynomialByExtRepNC(fam,newnum);
 end;
 
 SMALLER_RATFUN:=function(left,right)
@@ -621,7 +621,7 @@ local   fam,  extrf;
     extrf:=Concatenation([[],cf],extrf);
   fi;
 
-  return PolynomialByExtRep(fam,extrf);
+  return PolynomialByExtRepNC(fam,extrf);
 
 end;
 
@@ -719,7 +719,7 @@ local   indn,  fam,  zero,  l,  r,  val,  sum;
   fi;
 
   # and return the polynomial (we might get a new valuation!)
-  return LaurentPolynomialByExtRep(fam, sum, val, indn );
+  return LaurentPolynomialByExtRepNC(fam, sum, val, indn );
 
 end;
 
@@ -777,7 +777,7 @@ local   indn,  fam,  zero,  l,  r,  val,  sum;
   fi;
 
   # and return the polynomial (we might get a new valuation!)
-  return LaurentPolynomialByExtRep(fam, sum, val, indn );
+  return LaurentPolynomialByExtRepNC(fam, sum, val, indn );
 
 end;
 
@@ -820,7 +820,7 @@ local   indn,  fam,  prd,  l,  r,  m,  n, val;
   val:=val+RemoveOuterCoeffs(prd,fam!.zeroCoefficient);
 
   # return the polynomial
-  return LaurentPolynomialByExtRep(fam,prd, val, indn );
+  return LaurentPolynomialByExtRepNC(fam,prd, val, indn );
 end;
 
 GCD_COEFFS:=function(u,v)
@@ -1014,7 +1014,7 @@ local indn,l,r,ln,ld,rn,rd,g,m,n;
   # product
   ln:=ProductCoeffs(ln,m,rn,n);
   ld:=ProductCoeffs(ld,rd);
-  return UnivariateRationalFunctionByExtRep(FamilyObj(left),
+  return UnivariateRationalFunctionByExtRepNC(FamilyObj(left),
            ln,ld,l[3]+r[3],indn);
 end;
 
@@ -1064,7 +1064,7 @@ local indn,l,r,ln,ld,rn,rd,g,m,n;
   # product
   ln:=ProductCoeffs(ln,m,rn,n);
   ld:=ProductCoeffs(ld,rd);
-  return UnivariateRationalFunctionByExtRep(FamilyObj(left),
+  return UnivariateRationalFunctionByExtRepNC(FamilyObj(left),
            ln,ld,l[3]-r[3],indn);
 end;
 
@@ -1146,7 +1146,7 @@ local l,r,indn,ld,rd,ln,rn,g,fam,zero,val;
     ld:=QUOTREM_LAURPOLS_LISTS(ShallowCopy(ld),g)[1];
   fi;
 
-  return UnivariateRationalFunctionByExtRep(fam,ln,ld,val,indn);
+  return UnivariateRationalFunctionByExtRepNC(fam,ln,ld,val,indn);
 
 end;
 

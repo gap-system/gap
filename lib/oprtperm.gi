@@ -1329,7 +1329,7 @@ InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
 	return fail;
       fi;
       if Length(d)=1 then
-	rep:=RepresentativeActionOp(G,d[1],e[1]);
+	rep:=RepresentativeActionOp(G,d[1],e[1],OnPoints);
       else
         rep := RepOpSetsPermGroup( G, d, e );
       fi;

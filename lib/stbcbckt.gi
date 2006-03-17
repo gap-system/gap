@@ -2395,7 +2395,7 @@ end );
 ##
 InstallGlobalFunction( IsomorphismPermGroups, function( arg )
     local   G,  E,  F,  Pr,  L,  R,  Omega,  rbase,  data,
-            Q,  BF;
+            Q,  BF,P;
     
     G := arg[ 1 ];
     E := arg[ 2 ];
@@ -2456,7 +2456,12 @@ InstallGlobalFunction( IsomorphismPermGroups, function( arg )
     Q := CollectedPartition( BF, 1 );
     data := [ Q, F, [  ], BF, [  ] ];
     if IsBound( rbase.reggrp )  then
-        Add( data, rbase.reggrp( F, Omega ) );
+      P:=rbase.reggrp( F, Omega );
+      if P=fail then
+	# the first group has an EARNS, the second not.
+        return fail;
+      fi;
+      Add( data, P );
     fi;
 
 

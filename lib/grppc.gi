@@ -70,6 +70,7 @@ function( grp )
     if igs = pa  then
         SetIsWholeFamily( grp, true );
     fi;
+    SetGroupOfPcgs (igs, grp);
     return igs;
 end );
 
@@ -84,7 +85,7 @@ FamilyPcgs);
 ##
 InstallMethod( InducedPcgsWrtHomePcgs,"from generators", true, [ IsGroup ], 0,
     function( G )
-    local   home;
+    local   home, ind;
     
     home := HomePcgs( G );
     if HasPcgs(G) and IsInducedPcgs(Pcgs(G))  then
@@ -92,7 +93,9 @@ InstallMethod( InducedPcgsWrtHomePcgs,"from generators", true, [ IsGroup ], 0,
             return Pcgs(G);
         fi;
     fi;
-    return InducedPcgsByGenerators( home, GeneratorsOfGroup( G ) );
+    ind := InducedPcgsByGenerators( home, GeneratorsOfGroup( G ) );
+    SetGroupOfPcgs (ind, G);
+    return ind;
 end );
 
 InstallMethod( InducedPcgsWrtHomePcgs,"pc group: home=family", true, 
@@ -103,17 +106,103 @@ InstallMethod( InducedPcgsWrtHomePcgs,"pc group: home=family", true,
 ##
 #M  InducedPcgs( <pcgs>,<G> )
 ##
-InstallMethod( InducedPcgs, true, [ IsPcgs,IsGroup ], 0,
+InstallMethod( InducedPcgs, "cache pcgs", true, [ IsPcgs,IsGroup ], 
+    2, # rank this method higher than the CRISP method which also caches
+       # induced pcgs
+
 function(pcgs, G )
-  if IsIdenticalObj(ParentPcgs(HomePcgs(G)),ParentPcgs(pcgs)) then
-    return InducedPcgsWrtHomePcgs(G);
-  elif HasParent(G) and HasSpecialPcgs(Parent(G)) 
-       and IsIdenticalObj(SpecialPcgs(Parent(G)),ParentPcgs(pcgs)) then
-    return InducedPcgsWrtSpecialPcgs(G);
-  else
-    return InducedPcgsByGenerators( ParentPcgs(pcgs), GeneratorsOfGroup( G ) );
+  local cache, i, igs;
+  
+  pcgs := ParentPcgs (pcgs);
+  cache := ComputedInducedPcgses(G);
+  i := 1;
+  while i <= Length (cache) do
+     if IsIdenticalObj (cache[i], pcgs) then
+        return cache[i+1];
+     fi;
+     i := i + 2;
+  od;
+  
+  igs := InducedPcgsOp( pcgs, G );
+  SetGroupOfPcgs (igs, G);
+
+  Append (cache, [pcgs, igs]);
+  if not HasPcgs(G) then
+     SetPcgs (G, igs);
   fi;
+  
+  # set home pcgs stuff
+  if not HasHomePcgs(G) then
+     SetHomePcgs (G, pcgs);
+  fi;
+  if IsIdenticalObj (HomePcgs(G), pcgs) then
+     SetInducedPcgsWrtHomePcgs (G, igs);
+  fi;  
+  
+  return igs;
 end );
+
+
+#############################################################################
+##
+#M  InducedPcgsOp
+##
+InstallMethod (InducedPcgsOp, "generic method", 
+   IsIdenticalObj, [IsPcgs, IsGroup],
+   function (pcgs, G)
+      return InducedPcgsByGenerators( 
+          ParentPcgs(pcgs), GeneratorsOfGroup( G ) );
+   end);
+	
+#############################################################################
+##
+#M  InducedPcgsOp
+##
+InstallMethod (InducedPcgsOp, "sift existing pcgs", 
+   IsIdenticalObj, [IsPcgs, IsGroup and HasPcgs],
+   function (pcgs, G)
+      local seq,    # pc sequence wrt pcgs (and its parent) 
+            depths, # depths of this sequence
+            len,    # length of the sequence
+            pos,    # index
+            x,      # a group element
+            d;      # depth of x
+            
+      pcgs := ParentPcgs (pcgs);
+      seq := [];  
+      depths := [];
+      len := 0;
+      for x in Reversed (Pcgs (G)) do
+         # sift x through seq
+         d := DepthOfPcElement (pcgs, x);
+         pos := PositionSorted (depths, d);
+   
+         while pos <= len and depths[pos] = d do
+            x := ReducedPcElement (pcgs, x, seq[pos]);
+            d := DepthOfPcElement (pcgs, x);
+            pos := PositionSorted (depths, d);
+         od;
+         if d> Length(pcgs) then
+         	Error ("Panic: Pcgs (G) does not seem to be a pcgs");
+         else
+            seq{[pos+1..len+1]} := seq{[pos..len]};
+            depths{[pos+1..len+1]} := depths{[pos..len]};
+            seq[pos] := x;
+            depths[pos] := d;
+            len := len + 1;
+         fi;
+      od;
+     return InducedPcgsByPcSequenceNC (pcgs, seq, depths);
+   end);
+
+	
+#############################################################################
+##
+#M  ComputedInducedPcgses
+##
+InstallMethod (ComputedInducedPcgses, "default method", [IsGroup], 
+   G -> []);
+
 
 #############################################################################
 ##
@@ -127,6 +216,7 @@ InstallGlobalFunction(SetInducedPcgs,function(home,G,pcgs)
       IsIdenticalObj(HomePcgs(G),home) then
     SetInducedPcgsWrtHomePcgs(G,pcgs); 
   fi;
+  SetGroupOfPcgs (pcgs, G);
 end);
 
 #############################################################################
@@ -230,6 +320,7 @@ local p,cs,csi,l,i,pcs,ins,j,u;
   od;
   l:=Length(pcs)+1;
   pcs:=PcgsByPcSequenceNC(FamilyObj(OneOfPcgs(p)),Reversed(pcs));
+  SetGroupOfPcgs (pcs, G);
   # store the indices
   SetIndicesChiefNormalSteps(pcs,Reversed(List(ins,i->l-i)));
   return pcs;
@@ -275,11 +366,11 @@ InstallMethod( GroupWithGenerators,
     fi;
 
     pcgs:=DefiningPcgs(ElementsFamily(fam));
-
+ 
     G:=rec();
     ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens),
                             FamilyPcgs,pcgs,HomePcgs,pcgs);
-
+    SetGroupOfPcgs (pcgs, G);
     return G;
     end );
 
@@ -317,7 +408,7 @@ InstallOtherMethod( GroupWithGenerators,
     G:=rec();
     ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens),
                             One,id,FamilyPcgs,pcgs,HomePcgs,pcgs);
-
+    SetGroupOfPcgs (pcgs, G);
     return G;
 end );
 
@@ -346,25 +437,82 @@ InstallOtherMethod( GroupWithGenerators,
     ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,[],
                             One,id,FamilyPcgs,pcgs,HomePcgs,pcgs);
 
+    SetGroupOfPcgs (pcgs, G);
     return G;
 end );
 
 
 #############################################################################
 ##
-
 #M  <elm> in <pcgrp>
 ##
 InstallMethod( \in,
-    "for pcgs computable groups",
+    "for pc group",
     IsElmsColls,
     [ IsMultiplicativeElementWithInverse,
       IsGroup and HasFamilyPcgs and CanEasilyComputePcgs
     ],
-    0,
+    2, # rank this method higher than the following one
 
 function( elm, grp )
     return SiftedPcElement(InducedPcgsWrtFamilyPcgs(grp),elm) = One(grp);
+end );
+
+
+#############################################################################
+##
+#M  <elm> in <pcgrp>
+##
+InstallMethod( \in,
+    "for pcgs computable groups with home pcgs",
+    IsElmsColls,
+    [ IsMultiplicativeElementWithInverse,
+      IsGroup and HasInducedPcgsWrtHomePcgs and CanEasilyComputePcgs
+    ],
+    1, # rank this method higher than the following one
+
+function( elm, grp )
+    local pcgs, ppcgs;
+    
+    pcgs := InducedPcgsWrtHomePcgs (grp);
+    ppcgs := ParentPcgs (pcgs);
+    if Length (pcgs) = Length (ppcgs) then
+        TryNextMethod();
+	fi;
+    if elm in GroupOfPcgs (ppcgs) then
+        return SiftedPcElement(InducedPcgsWrtHomePcgs(grp),elm) = One(grp);
+    else
+        return false;
+    fi;
+end );
+
+
+#############################################################################
+##
+#M  <elm> in <pcgrp>
+##
+InstallMethod( \in,
+    "for pcgs computable groups with induced pcgs",
+    IsElmsColls,
+    [ IsMultiplicativeElementWithInverse,
+      IsGroup and HasComputedInducedPcgses and CanEasilyComputePcgs
+    ],
+    0,
+
+function( elm, grp )
+    local pcgs, ppcgs;
+    
+    for pcgs in ComputedInducedPcgses(grp) do
+        ppcgs := ParentPcgs (pcgs);
+        if Length (pcgs) < Length (ppcgs) then
+            if elm in GroupOfPcgs (ppcgs) then
+                return SiftedPcElement(pcgs, elm) = One(grp);
+            else
+                return false;
+            fi;
+        fi;
+    od;
+    TryNextMethod();
 end );
 
 
@@ -446,6 +594,7 @@ function( G, pcgs )
     local U;
     U := SubgroupNC( G, AsList( pcgs ) );
     SetPcgs( U, pcgs );
+    SetGroupOfPcgs (pcgs, U);
     # home pcgs will be inherited
     if HasHomePcgs(U) and IsIdenticalObj(HomePcgs(U),ParentPcgs(pcgs)) then
       SetInducedPcgsWrtHomePcgs(U,pcgs);
@@ -806,6 +955,7 @@ function( U, g )
     N   := Subgroup( GroupOfPcgs(home), pag );
     SetHomePcgs( N, home );
     pag := InducedPcgsByPcSequenceNC( home, pag );
+    SetGroupOfPcgs (pag, N);
     SetInducedPcgsWrtHomePcgs( N, pag );
 
     # maintain useful information
@@ -858,6 +1008,7 @@ function( G, U )
 	  ip:=orb[i];
 	fi;
         SetInducedPcgsWrtHomePcgs( L, ip );
+        SetGroupOfPcgs (ip, L);
         res[i] := L;
     od;
     return res;
@@ -2194,6 +2345,50 @@ InstallMethod( IsConjugatorIsomorphism,
       return false;
     fi;
     end );
+
+#############################################################################
+##
+#M  IndependentGeneratorsOfAbelianGroup( <A> )
+##
+InstallMethod(IndependentGeneratorsOfAbelianGroup,
+  "Use Pcgs and NormalFormIntMat to find the independent generators",
+	[IsGroup and CanEasilyComputePcgs and IsAbelian],0,
+function(G)
+local matrix, snf, base, ord, cti, row, g, o, cf, j, i;
+
+  if IsTrivial(G) then return []; fi;
+
+  matrix:=List([1..Size(Pcgs(G))],g->List(ExponentsOfRelativePower(Pcgs(G),g)));
+  for i in [1..Size(Pcgs(G))] do
+    matrix[i][i]:=-RelativeOrders(Pcgs(G))[i];
+  od;
+  snf:=NormalFormIntMat(matrix,1+8+16);
+
+  base:=[];
+  ord:=[];
+  cti:=snf.coltrans^-1;
+  for i in [1..Length(cti)] do
+    row:=cti[i];
+    g:=Product( List([1..Length(row)],j->Pcgs(G)[j]^row[j]));
+    if not IsOne(g) then
+      # get the involved prime factors
+      o:=snf.normal[i][i];
+      cf:=Collected(Factors(o));
+      if Length(cf)>1 then
+        for j in cf do
+	  j:=j[1]^j[2];
+	  Add(ord,j);
+	  Add(base,g^(o/j));
+	od;
+      else
+	Add(base,g);
+	Add(ord,o);
+      fi;
+    fi;
+  od;
+  SortParallel(ord,base);
+  return base;
+end);
 
 
 #############################################################################

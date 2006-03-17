@@ -18,12 +18,14 @@ All files are available in the following formats:
                            breaks, they might not work under other
 			   architectures)
 
-The following contains brief installation  instructions.
+The following contains brief installation instructions aimed at experts.
 More detailed informations can be found on the GAP web pages 
 (http://www.gap-system.org) and in the `Installation'' chapter of
-the GAP reference manual. (You can find an HTML version of this manual also
-on the GAP web pages.) You also will find copyright and license information
-on those web pages.
+the GAP reference manual. You can find an HTML version of this manual also
+on the GAP web pages:
+http://www.gap-system.org/tmpsite/Manuals/docs/doc/htm/ref/CHAP073.htm
+
+You also will find copyright and license information on those web pages.
 
 If after reading the information on the web pages you still face
 unsurmountable problems, please send an email to
@@ -37,7 +39,7 @@ support@gap-system.org to inform us of the installation.
 For a complete installation fetch the files
 
    gap{{versionsuffix}}    ....   The main GAP system
-   packages{{versionsuffix}}  ....   Contributed packages
+   packages....  ....   Contributed packages
 
 (with the extensions of your choice, see above).
 Note,  that certain  packages  will not  or  not fully  work  on Windows  or
@@ -56,7 +58,7 @@ INSTALLATION UNDER UNIX AND OS X
 While the `gap{{versionsuffix}}' archive must be unpacked *in* the directory
 in which you want GAP's root directory to sit (say, '/usr/local/lib/', a
 subdirectory '{{gapdirname}}' is created), the
-`packages{{versionsuffix}}' archive must be extracted into the
+`packages...' archive must be extracted into the
 `{{gapdirname}}/pkg' subdirectory created by the first extraction.
 
 To compile GAP on UNIX/Linux/OS X systems you can often just say
@@ -68,13 +70,10 @@ inside  GAP's root  directory and  copy  the start  script bin/gap.sh  under
 some  name (probably  'gap')  into  a generally  used  bin directory  (e.g.,
 /usr/local/bin).
 
-(OS X in the ``Panther'' (10.3) release gets a substantial speedup when
-using:
+More information on compilation and optimization options can be found on the
+webpage:
 
-  make COPTS="-fast -mcpu=7450"                    (on a G4) or
-  make COPTS="-O3 -mtune=G5 -mcpu=G5 -mpowerpc64"  (on a G5)
-
-instead of the simple `make' call.
+http://www.math.colostate.edu/~hulpke/osx
 
 Note  that some  packages need  further installation/configuration.  See the
 README.* files in the 'pkg' subdirectory.
@@ -83,7 +82,7 @@ INSTALLATION UNDER WINDOWS
 
 Decompress  'gap{{versionsuffix}}-win.zip'   on  the  top-level  directory   of  drive  C:\.
 This  creates  a  directory  C:\{{ucgapdirname}},   the  'GAP  root  directory'.  Then
-extract  'packages{{versionsuffix}}-win.zip' into  C:\{{ucgapdirname}}\pkg\.   
+extract  'packages...-win.zip' into  C:\{{ucgapdirname}}\pkg\.   
 Click  on C:\gap{{versionsuffix}}\bin\gapw95.exe to start GAP.
 (It is possible that using the rxvt shell via
 C:\{{ucgapdirname}}\bin\gaprxvt.bat will give a nicer user interface. 
@@ -115,7 +114,7 @@ which you want  to install  GAP and decompress  it by dragging it onto the
 .  This  should  have  created  a  folder  'gap{{versionsuffix}}' with a 
 'GAP 4 ...' application in this directory.
 
-To install the GAP packages,  move 'packages{{versionsuffix}}.zoo' into the  
+To install the GAP packages,  move 'packages....zoo' into the  
 folder 'pkg' inside '{{gapdirname}}' and decompress them there.
 
   The GAP Group

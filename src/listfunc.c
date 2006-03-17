@@ -1635,6 +1635,131 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
 
 /****************************************************************************
 **
+*F  FuncBIMULT_MONOMIALS_ALGEBRA_ELEMENT
+**
+*/
+
+Obj FuncBIMULT_MONOMIALS_ALGEBRA_ELEMENT(Obj self, 
+                                         Obj mona, Obj poly, Obj monb)
+{
+  UInt len,la,lb,lm,i,j;
+  Obj prd;
+  Obj mon;
+  Obj *po,*pn;
+
+  /* TODO: test arguments */
+
+  /* Make a new polynomial */
+  len = LEN_PLIST(poly);
+  prd = NEW_PLIST( T_PLIST , len );
+  SET_LEN_PLIST( prd, len );
+
+  if (mona == False) {
+    la=0;
+  }
+  else {
+    la=LEN_PLIST(mona);
+  }
+
+  if (monb == False) {
+    lb=0;
+  }
+  else {
+    lb=LEN_PLIST(monb);
+  }
+
+  /* fill its entries */
+  for (i=1;i<=len;i=i+2) {
+    lm = LEN_PLIST(ELM_PLIST(poly,i));
+  /*Pr("i= %d, lm= %d \n",i,lm); */
+    /* new monomial */
+    mon = NEW_PLIST(T_PLIST,lm+la+lb);
+    SET_LEN_PLIST(mon,lm+la+lb);
+    pn = ADDR_OBJ(mon)+1;
+    
+    /* put in a */
+    j=1;
+    po = ADDR_OBJ(mona)+1;
+    while (j<=la) {
+      *pn++=*po++;
+      j++;
+    }
+
+    /* append monomial */
+    j=1;
+    po = ADDR_OBJ(ELM_PLIST(poly,i))+1;
+    while (j<=lm) {
+      *pn++=*po++;
+      j++;
+    }
+
+    /* append b */
+    j=1;
+    po = ADDR_OBJ(monb)+1;
+    while (j<=lb) {
+      *pn++=*po++;
+      j++;
+    }
+
+    SET_ELM_PLIST(prd,i,mon);
+    /* copy coefficient */
+    SET_ELM_PLIST(prd,i+1,ELM_PLIST(poly,i+1));
+    CHANGED_BAG(prd);
+  }
+
+  return prd;
+}
+
+/****************************************************************************
+**
+*F  FuncHORSPOOL_LISTS
+**
+*/
+
+Obj FuncHORSPOOL_LISTS(Obj self,Obj wrep, Obj subrep, Obj pre)
+{
+  UInt i,wsize,subsize,di;
+  Int j;
+  Obj pos;
+  Obj *pw,*ps,*pp;
+
+  wsize = LEN_PLIST(wrep);
+  subsize = LEN_PLIST(subrep);
+  pw=ADDR_OBJ(wrep);
+  ps=ADDR_OBJ(subrep);
+  pp=ADDR_OBJ(pre);
+ 
+  pos = Fail;
+
+  if ( subsize <= wsize ) {
+    i = 0;
+    di = wsize-subsize;
+    while (i <= di) {
+      j=subsize;
+      while (j>0) {
+ /* Pr("i= %d j=%d \n",i,j);  */
+        if (ps[j] != pw[i+j]) {
+	  j=-1;
+	}
+	else {
+	  j--;
+	}
+      }
+      if (j==0) {
+        pos=INTOBJ_INT(i+1);
+        i=wsize;
+      }
+      else {
+ /* Pr("pw: %d \n",INT_INTOBJ(pw[i+subsize]),0L);  */
+	      i = i + INT_INTOBJ(pp[INT_INTOBJ(pw[i+subsize])]);
+      }
+    }
+  }
+  return pos;
+}
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
@@ -1713,8 +1838,13 @@ static StructGVarFunc GVarFuncs [] = {
       FuncCOPY_LIST_ENTRIES, "src/listfunc.c:COPY_LIST_ENTRIES" },
 
     { "STRONGLY_CONNECTED_COMPONENTS_DIGRAPH", 1, "digraph",
-      FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH, "src/listfunc.c:sTRONGLY_CONNECTED_COMPONENTS_DIGRAPH" },
+      FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH, "src/listfunc.c:STRONGLY_CONNECTED_COMPONENTS_DIGRAPH" },
 
+    { "BIMULT_MONOMIALS_ALGEBRA_ELEMENT",3,"mon, poly, mon",
+      FuncBIMULT_MONOMIALS_ALGEBRA_ELEMENT,"src/listfunc.c:BIMULT_MONOMIALS_ALGEBRA_ELEMENT" },
+
+    { "HORSPOOL_LISTS",3,"list, sub, pre",
+      FuncHORSPOOL_LISTS,"src/listfunc.c:HORSPOOL_LISTS" },
 
     { 0 }
 

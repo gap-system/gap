@@ -24,8 +24,8 @@ initially knows the following groups:
   \item{$\bullet$} a library of groups of small order (see~"Small Groups"),
   \item{$\bullet$}  the  finite perfect  groups of   size  at most $10^6$
     (excluding 11 sizes) (see~"Finite perfect groups").
-  \item{$\bullet$}  a library of  primitive  permutation groups of degree
-    $\<1000$, complete  for degrees  $\<256$ (see~"Primitive  permutation
+  \item{$\bullet$}  the  primitive  permutation groups of degree
+    $\<2499$ (see~"Primitive  permutation
     groups"),
   \item{$\bullet$}  the  irreducible solvable subgroups of  $GL(n,p)$ for
     $n>1$ and $p^n \< 256$ (see "Irreducible Solvable Matrix Groups"),
@@ -605,14 +605,16 @@ the following sizes:
       numbers which are 52, 46, and 54, respectively.
 \endlist
 
-Except for these eleven sizes, the list of altogether 1096 perfect groups
-in the  library is complete. It  relies  on results  of Derek~F. Holt and
+Except for these eleven sizes, the list of altogether 1097 perfect groups
+in the  library is complete.  It relies  on results of  Derek~F. Holt and
 Wilhelm Plesken which  are published in their  book    ``Perfect Groups''
 \cite{HP89}. Moreover,   they     have  supplied us    with    files with
 presentations of 488 of the groups. In terms of  these, the remaining 607
 nontrivial groups in the library can be described as 276 direct products,
 107  central   products, and 224  subdirect  products.  They are computed
-automatically by suitable {\GAP} functions whenever they are needed.
+automatically by suitable {\GAP} functions whenever they are needed.  Two
+additional groups omitted from the book ``Perfect Groups'' have also been
+included.
 
 We are grateful to Derek Holt and Wilhelm Plesken for making their groups
 available to the {\GAP} community  by contributing their files. It should
@@ -635,10 +637,10 @@ is obtained by coset enumeration. Note that some of the library groups do
 not have a   faithful   permutation  representation  of small     degree.
 Computations in these groups may be rather time consuming.
 \beginexample
-gap> G:=PerfectGroup(IsPermGroup,129024,2);
-L2(8) N ( 2^6 E 2^1 A ) C 2^1
+gap> G:=PerfectGroup(IsPermGroup,823080,2);
+A5 2^1 19^2 C 19^1
 gap> NrMovedPoints(G);
-14336
+6859
 \endexample
 
 \Declaration{PerfectIdentification}
@@ -822,9 +824,9 @@ gap> NrPrimitiveGroups(25);
 gap> PrimitiveGroup(25,19);
 5^2:((Q(8):3)'4)
 gap> PrimitiveGroup(25,20);
-ASL(2,5)
+ASL(2, 5)
 gap> PrimitiveGroup(25,22);
-AGL(2,5)
+AGL(2, 5)
 gap> PrimitiveGroup(25,23);
 (A(5) x A(5)):2
 \endexample
@@ -884,14 +886,15 @@ in the {\GAP} library.
 
 The system `Magma' also provides a list of primitive groups
 (see \cite{RoneyDougal02}). For historical
-reasons, its indexing however differs from the one used by {\GAP}. The
+reasons, its indexing up to degree 999 
+differs from the one used by {\GAP}. The
 variable
 
 \>`PRIMITIVE_INDICES_MAGMA' V
 
 can be used to obtain this correspondence. The magma index number of
 the {\GAP} group `PrimitiveGroup(<deg>,<nr>)' is stored in the entry
-`PRIMITIVE_INDICES_MAGMA[<deg>][<nr>]'.
+`PRIMITIVE_INDICES_MAGMA[<deg>][<nr>]', for degree at most 999.
 
 Vice versa, the group of degree <deg> with `Magma' index number <nr> has the
 {\GAP} index 

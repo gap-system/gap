@@ -89,13 +89,9 @@ gap> g:= Group( (1,2,3), (1,2) );;
 #I  immediate: IsCyclic
 #I  immediate: IsCommutative
 #I  immediate: IsTrivial
-#I  immediate: IsStabChainViaChainSubgroup
-#I  immediate: IsChainTypeGroup
 gap> Size( g );
 #I  immediate: IsNonTrivial
 #I  immediate: Size
-#I  immediate: IsStabChainViaChainSubgroup
-#I  immediate: IsChainTypeGroup
 #I  immediate: IsNonTrivial
 #I  immediate: GeneralizedPcgs
 #I  immediate: IsPerfectGroup

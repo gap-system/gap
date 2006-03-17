@@ -271,7 +271,7 @@ InstallOtherMethod( One,
     else
       TryNextMethod();
     fi;
-    end );
+end );
 
 
 #############################################################################
@@ -281,28 +281,30 @@ InstallOtherMethod( One,
 ##
 #T other construction possibilities?
 ##
-InstallGlobalFunction( LargeGaloisField, function( arg )
+    
+    
+InstallMethod( LargeGaloisField, 
+        [IsPosInt],
+        function(q)
+    local p,d;
+    p := SmallestRootInt(q);
+    d := LogInt(q,p);
+    Assert(1, q = p^d);
+    Assert(1, IsPrimeInt(p));
+    return LargeGaloisField(p,d);
+end);
+    
 
-    local p, d;
-
-    # if necessary split the arguments
-    if Length( arg ) = 1 and IsInt( arg[1] ) and 0 < arg[1] then
-
-        # `LargeGaloisField( p^d )'
-        p := SmallestRootInt( arg[1] );
-        d := LogInt( arg[1], p );
-
-    elif Length( arg ) = 2 then
-        p := arg[1];
-        d := arg[2];
-    else
-        Error( "usage: LargeGaloisField( <subfield>, <extension> )" );
+InstallMethod( LargeGaloisField,
+        [IsPosInt, IsPosInt],
+        function(p,d)
+    if not IsPrimeInt(p) then
+        Error("LargeGalosField: Characteristic must be prime");
     fi;
-
-    if IsPrimeInt( p ) and d = 1 then
-      return ZmodpZNC( p );
+    if d = 1 then
+        return ZmodpZNC( p );
     else
-      Error( "sorry, large non-prime fields are not yet implemented" );
+        TryNextMethod();
     fi;
 end );
 
@@ -829,8 +831,28 @@ InstallMethod( Order,
 
     # return the order
     return ord;
-    end );
+end );
 
+InstallMethod( Order,
+        "for a general FFE",
+        [IsFFE],
+        function(z)
+    local   p,  d,  ord,  facs,  f,  i,  o;
+    p := Characteristic(z);
+    d := DegreeFFE(z);
+    ord := p^d-1;
+    facs := Collected(FactorsInt(ord));
+    for f in facs do
+        for i in [1..f[2]] do
+            o := ord/f[1];
+            if not IsOne(z^o) then
+                break;
+            fi;
+            ord := o;
+        od;
+    od;
+    return ord;
+end);
 
 #############################################################################
 ##
@@ -892,9 +914,9 @@ end);
 #M  Int( <z> ) . . . . . . . . . convert a finite field element to an integer
 ##
 InstallMethod( Int,
-    "for an internal FFE",
+    "for an FFE",
     true,
-    [ IsFFE and IsInternalRep ], 0,
+    [ IsFFE ], 0,
     IntFFE );
 
 
@@ -902,7 +924,7 @@ InstallMethod( Int,
 ##
 #M  IntFFESymm( <z> ) 
 ##
-InstallMethod(IntFFESymm,"internal FFE",true,[ IsFFE and IsInternalRep ],0,
+InstallMethod(IntFFESymm,"FFE",true,[ IsFFE ],0,
 function(z)
 local i,p;
   p:=Characteristic(z);
@@ -948,6 +970,8 @@ local   str, log,deg,char;
   ConvertToStringRep( str );
   return str;
 end );
+
+
 
 #############################################################################
 ##
@@ -1047,8 +1071,8 @@ InstallMethod( FieldByGenerators,
       z:= Z(q);
       SetPrimitiveRoot( F, z );
       gens:= [ z ];
-    elif d <> 1 then
-      Error( "sorry, large non-prime fields are not yet implemented" );
+#    elif d <> 1 then
+#      Error( "sorry, large non-prime fields are not yet implemented" );
     fi;
 
     SetGeneratorsOfDivisionRing( F, gens );

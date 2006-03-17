@@ -652,10 +652,10 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i;
 
         # if MappingPermListList took a family/group as an
         # argument then we could patch it instead
-        if IsHomCosetToPerm(One(G)) then
-            hom.conperm := HomCosetWithImage( Homomorphism(G.1), 
-                           One(Source(G)), hom.conperm );
-        fi;
+        #if IsHomCosetToPerm(One(G)) then
+        #    hom.conperm := HomCosetWithImage( Homomorphism(G.1), 
+        #                   One(Source(G)), hom.conperm );
+        #fi;
 
 
     # test for action on disjoint sets of numbers-> blocks homomorphism
@@ -2816,7 +2816,7 @@ InstallMethod( ImagesRepresentative,"restricted perm", FamSourceEqFamElm,
     local   xset;
     
     xset := UnderlyingExternalSet( hom );
-    return RestrictedPerm( Permutation( elm, HomeEnumerator( xset ),
+    return RestrictedPermNC( Permutation( elm, HomeEnumerator( xset ),
         FunctionAction( xset ) ),
         MovedPoints( ImagesSource( AsGroupGeneralMappingByImages( hom ) ) ) );
 end );

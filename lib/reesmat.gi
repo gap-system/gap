@@ -26,7 +26,7 @@ Revision.reesmat_gi :=
 ##  except for an occurrence of <s> at row <i> and column <lambda>
 ##
 DeclareRepresentation("IsReesMatrixSemigroupElementRep",
-	IsComponentObjectRep and IsAttributeStoringRep, rec());
+    IsComponentObjectRep and IsAttributeStoringRep, rec());
 
 
 #############################################################################
@@ -43,14 +43,13 @@ DeclareRepresentation("IsReesMatrixSemigroupElementRep",
 ##
 InstallGlobalFunction(ReesMatrixSemigroupElement,
 function(R, a, i, lambda)
-	local
-				S, 				# The underlying semigroup
-				elt;			# the newly created element
+local  S,      # The underlying semigroup
+       elt;    # the newly created element
 
-	# Check that R is a Rees Matrix semigroup
-	if not IsReesMatrixSemigroup(R) then
-		Error("ReesMatrixSemigroupElement - first argument must be a Rees Matrix semigroup");
-	fi;
+       # Check that R is a Rees Matrix semigroup
+      if not IsReesMatrixSemigroup(R) then
+          Error("ReesMatrixSemigroupElement - first argument must be a Rees Matrix semigroup");
+     fi;
 
 	S  := UnderlyingSemigroupOfReesMatrixSemigroup(R);
 	# check that <a> is in the underlying semigroup
@@ -634,8 +633,19 @@ end);
 InstallMethod(AssociatedReesMatrixSemigroupOfDClass, "for d class",
     [IsGreensDClass],
 function( D )
-    local h, phi, g, gz, fun, map, r, l, rreps, lreps, n, m, mat;
+    local   h,         # GroupHClassOfGreensDClass
+            phi,       # isomorphism of h as a perm group
+            gz,        # Injective zero magma for range phi
+            map,       # Mapping from h to gz 
+            fun,       # Mapping function uses phi
+            r,l,       # Right and left equivalence classes
+            rreps,     # Representatives of r
+            lreps,     # Represemtatives of l
+            n,m,       # Matrix dimensions
+            mat;       # Matrix
 
+    ## Check parameters and needed properties (finiteness and regularity)
+    ##
     if not IsFinite(AssociatedSemigroup(D)) then
         TryNextMethod();
     fi;
@@ -644,14 +654,16 @@ function( D )
         Error("D class must be regular");
     fi;
 
+    ## Compute the associated group, an isomorphism as a perm group
+    ## and create an InjectionZeroMagma from the perm group
+    ##
     h:= GroupHClassOfGreensDClass(D);
-
-    # find the isomorphic perm group.
     phi:= IsomorphismPermGroup(h);
-    g:= Range(phi);
-    gz:= Range(InjectionZeroMagma(g));
+    gz:= Range(InjectionZeroMagma(Range(phi)));
 
-    # build the function
+    ## Build the function and map from Associated semigroup for D
+    ## to Injective Zero magma
+    ##
     fun:= function(x)
         if not x in h then
             return MultiplicativeZero(gz);
@@ -661,19 +673,14 @@ function( D )
 
     map:= MappingByFunction(AssociatedSemigroup(D), gz, fun);
 
+
+    ## Create the Reese Matrix semigroup
+    ##
     r:= EquivalenceClassOfElement(GreensRRelation(AssociatedSemigroup(D)),
-        Representative(D));
+        Representative(h));
     l:= EquivalenceClassOfElement(GreensLRelation(AssociatedSemigroup(D)),
-        Representative(D));
+        Representative(h));
 
-    # AS: Replace this
-    # rreps:= List(l, x->Representative(
-                          # GreensHClassOfElement(AssociatedSemigroup(D),x)));
-    # lreps:= List(r, x->Representative(
-                          # GreensHClassOfElement(AssociatedSemigroup(D),x)));
-
-
-    # AS: with this
     rreps:= List(GreensHClasses(l), Representative);
     lreps:= List(GreensHClasses(r), Representative);
 
@@ -684,12 +691,11 @@ function( D )
     mat:= List([1..m], x->List([1..n], y->(lreps[x]*rreps[y])^map));
 
     if ForAll(mat, x->ForAll(x, y -> y <> MultiplicativeZero(gz))) then
-        return ReesMatrixSemigroup(g, mat);
+        return ReesMatrixSemigroup(Range(phi), mat);
     else
         return ReesZeroMatrixSemigroup(gz, mat);
     fi;
 end);
-
 
 #############################################################################
 ##

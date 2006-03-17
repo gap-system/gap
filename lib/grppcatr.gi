@@ -574,7 +574,6 @@ function( G )
     return Set(mingens);
 end );
 
-
 #############################################################################
 ##
 #M  SmallGeneratingSet(<G>) 
@@ -586,21 +585,6 @@ function (G)
     TryNextMethod();
   fi;
   return MinimalGeneratingSet(G);
-end);
-
-InstallOtherMethod( GeneratorOfCyclicGroup,"pc groups",true,
-    [ IsPcGroup and IsFinite ],0,
-function ( G )
-local g;
-  g:=MinimalGeneratingSet(G);
-  if Length(g)=1 then
-    return g[1];
-  elif IsTrivial(G) then
-    # trivial group
-    return One(G);
-  else
-    Error("not cyclic");
-  fi;
 end);
 
 #############################################################################

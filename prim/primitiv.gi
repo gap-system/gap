@@ -49,8 +49,7 @@ local s,fname,ind,new;
       while s>200 do
 	s:=s-PRIMLENGTHS[PRIMLOAD[1]];
 	Unbind(PRIMGRP[PRIMLOAD[1]]);
-	PRIMLOAD:=PRIMLOAD{[2..Length(PRIMLOAD)]};
-      od;
+	PRIMLOAD:=PRIMLOAD{[2..Length(PRIMLOAD)]};      od;
     fi;
 
     ind:=PRIMINDX[deg];
@@ -106,13 +105,16 @@ local l,g,fac,mats,perms,v,t;
                                     # action is irreducible
       Add(perms,Permutation(t,v,function(i,j) return i+j;end));
       g:= Group(perms);
+      SetSize(g, l[2]);
     else
       g:= Image(IsomorphismPermGroup(CyclicGroup(deg)));
     fi; 
-    SetName(g, l[7]);
+    if IsString(l[7]) and Length(l[7])>0 then
+      SetName(g, l[7]);
+    fi;
   else
     g:= GroupByGenerators( l[9], () );
-    if IsString(l[7]) and l[7]<>"" then
+    if IsString(l[7]) and Length(l[7])>0 then
       SetName(g,l[7]);
     #else
     #  SetName(g,Concatenation("p",String(deg),"n",String(num)));
@@ -124,6 +126,21 @@ local l,g,fac,mats,perms,v,t;
   SetSocleTypePrimitiveGroup(g,rec(series:=l[8][1],
                                    parameter:=l[8][2],
 				   width:=l[8][3]));
+  
+  if l[3] = 0 then
+    SetIsSimpleGroup(g, false);
+    SetIsSolvableGroup(g, false);
+  elif l[3] = 1 then
+    SetIsSimpleGroup(g, true);
+    SetIsSolvableGroup(g, false);
+  elif l[3] = 2 then
+    SetIsSimpleGroup(g, false);
+    SetIsSolvableGroup(g, true);
+  elif l[3] = 3 then
+    SetIsSimpleGroup(g, true);
+    SetIsSolvableGroup(g, true);
+  fi;
+  SetTransitivity(g, l[6]);
   if deg<=50 then
     SetSimsNo(g,l[10]);
   fi;

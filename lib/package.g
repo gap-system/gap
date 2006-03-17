@@ -23,7 +23,8 @@
 ##  `GAPInfo.PackageInfoCurrent'.
 ##
 #T TODO:
-#T - change `ReadAndCheckFunc' such that `ReadPackage' can use it
+#T - document the utilities `SuggestUpgrades', `CheckPackageLoading',
+#T   `ShowPackageVariables', `LoadAllPackages'.
 ##
 Revision.package_g :=
     "@(#)$Id$";
@@ -563,6 +564,119 @@ BindGlobal( "DefaultPackageBannerString", function( inforec )
 
 #############################################################################
 ##
+#F  DirectoriesPackagePrograms( <name> )
+##
+##  returns a list of the `bin/<architecture>' subdirectories of all
+##  packages <name> where <architecture> is the architecture on which {\GAP}
+#T As soon as `GAPInfo' is documented, add a cross-reference to it here!
+##  has been compiled and the version of the installed package coincides with
+##  the version of the package <name> that either is already loaded or that
+##  would be the first version {\GAP} would try to load (if no other version
+##  is explicitly prescribed).
+##
+##  Note that `DirectoriesPackagePrograms' is likely to be called in the
+##  `AvailabilityTest' function in the package's `PackageInfo.g' file,
+##  so we cannot guarantee that the returned directories belong to a version
+##  that really can be loaded.
+##
+##  The directories returned by `DirectoriesPackagePrograms' are the place
+##  where external binaries of the {\GAP} package <name> for the current
+##  package version and the current architecture should be located.
+##
+BIND_GLOBAL( "DirectoriesPackagePrograms", function( name )
+    local arch, dirs, info, version, r, path;
+
+    arch := GAPInfo.Architecture;
+    dirs := [];
+    # For the reason described above, we are not allowed to call
+    # `InstalledPackageVersion', `TestPackageAvailability' etc.
+    InitializePackagesInfoRecords( false );
+    info:= PackageInfo( name );
+    if IsBound( GAPInfo.PackagesLoaded.( name ) ) then
+      version:= GAPInfo.PackagesLoaded.( name )[2];
+    elif 0 < Length( info ) then
+      version:= info[1].Version;
+    else
+      version:= "";
+    fi;
+    for r in info do
+      if r.Version = version then
+        path:= Concatenation( r.InstallationPath, "/bin/", arch, "/" );
+        Add( dirs, Directory( path ) );
+      fi;
+    od;
+    return dirs;
+end );
+
+
+#############################################################################
+##
+#F  DirectoriesPackageLibrary( <name>[, <path>] )
+##
+##  takes the string <name>, a name of a {\GAP} package and returns a list of
+##  directory objects for those sub-directory/ies containing the library
+##  functions of this {\GAP} package, for the version that is already loaded
+##  or would be loaded if no other version is explicitly prescribed,
+##  up to one directory for each `pkg' sub-directory of a path in
+##  `GAPInfo.RootPaths'.
+#T As soon as `GAPInfo' is documented, add a cross-reference to it here!
+##  The default is that the library functions are in the subdirectory `lib'
+##  of the {\GAP} package's home directory.
+##  If this is not the case, then the second argument <path> needs to be
+##  present and must be a string that is a path name relative to the home
+##  directory  of the {\GAP} package with name <name>.
+##
+##  Note that `DirectoriesPackageLibrary' may be called in the
+##  `AvailabilityTest' function in the package's `PackageInfo.g' file,
+##  so we cannot guarantee that the returned directories belong to a version
+##  that really can be loaded.
+##
+BIND_GLOBAL( "DirectoriesPackageLibrary", function( arg )
+    local name, path, dirs, info, version, r, tmp;
+
+    if IsEmpty(arg) or 2 < Length(arg) then
+        Error( "usage: DirectoriesPackageLibrary( <name>[, <path>] )\n" );
+    elif not ForAll(arg, IsString) then
+        Error( "string argument(s) expected\n" );
+    fi;
+
+    name:= LowercaseString( arg[1] );
+    if '\\' in name or ':' in name  then
+        Error( "<name> must not contain '\\' or ':'" );
+    fi;
+
+    if 1 = Length(arg)  then
+        path := "lib";
+    else
+        path := arg[2];
+    fi;
+
+    dirs := [];
+    # For the reason described above, we are not allowed to call
+    # `InstalledPackageVersion', `TestPackageAvailability' etc.
+    InitializePackagesInfoRecords( false );
+    info:= PackageInfo( name );
+    if IsBound( GAPInfo.PackagesLoaded.( name ) ) then
+      version:= GAPInfo.PackagesLoaded.( name )[2];
+    elif 0 < Length( info ) then
+      version:= info[1].Version;
+    else
+      version:= "";
+    fi;
+    for r in info do
+      if r.Version = version then
+        tmp:= Concatenation( r.InstallationPath, "/", path );
+        if IsDirectoryPath( tmp ) = true then
+          Add( dirs, Directory( tmp ) );
+        fi;
+      fi;
+    od;
+    return dirs;
+end );
+
+
+#############################################################################
+##
 #F  ReadPackage( <name>, <file> )
 #F  ReadPackage( <pkg-file> )
 #F  RereadPackage( <name>, <file> )
@@ -596,11 +710,11 @@ BindGlobal( "DefaultPackageBannerString", function( inforec )
 ##  (cf~"ref:Reread" in the {\GAP} Reference Manual).
 ##
 BindGlobal( "ReadPackage", function( arg )
-    local pos, relpath, pkgname, dir, filename, rflc, rfc;
+    local pos, relpath, pkgname, filename, rflc, rfc;
 
     # Note that we cannot use `ReadAndCheckFunc' because this calls
-    # `READ_GAP_ROOT', but here we have to read the file in that directory
-    # where the package version resides that has been loaded
+    # `READ_GAP_ROOT', but here we have to read the file in one of those
+    # directories where the package version resides that has been loaded
     # or (at least currently) would be loaded.
     if   Length( arg ) = 1 then
       # Guess the package name.
@@ -614,46 +728,9 @@ BindGlobal( "ReadPackage", function( arg )
       Error( "expected 1 or 2 arguments" );
     fi;
 
-    # Determine the directory.
-    dir:= TestPackageAvailability( pkgname, "" );
-    if   dir = true then
-      # The package is already loaded, take its path.
-      dir:= GAPInfo.PackagesLoaded.( pkgname )[1];
-    elif dir = fail then
-      return false;
-    fi;
-
-    filename:= Concatenation( dir, "/", relpath );
-    if IsReadableFile( filename ) then
-      # The following is copied from `ReadAndCheckFunc',
-      # except that we use `Read' instead of `READ_GAP_ROOT'.
-      if IS_READ_OR_COMPLETE  then
-        # we are completing, store the filename and filter ranks
-        if relpath <> "read.g" then
-          ADD_LIST( READED_FILES,
-              Concatenation( "pkg/", pkgname, "/", relpath ) );
-          if IsBound(RANK_FILTER_LIST_CURRENT) then
-            rflc := RANK_FILTER_LIST_CURRENT;
-          fi;
-          if IsBound(RANK_FILTER_COUNT) then
-            rfc := RANK_FILTER_COUNT;
-          fi;
-          RANK_FILTER_LIST_CURRENT := [];
-          RANK_FILTER_COUNT := 0;
-          ADD_LIST( RANK_FILTER_LIST, RANK_FILTER_LIST_CURRENT );
-        fi;
-        Read( filename );
-        Unbind(RANK_FILTER_LIST_CURRENT);
-        if IsBound(rflc) then
-          RANK_FILTER_LIST_CURRENT := rflc;
-        fi;
-        Unbind(RANK_FILTER_COUNT);
-        if IsBound(rfc) then
-          RANK_FILTER_COUNT := rfc;
-        fi;
-      else
-        Read( filename );
-      fi;
+    filename:= Filename( DirectoriesPackageLibrary( pkgname, "" ), relpath );
+    if filename <> fail and IsReadableFile( filename ) then
+      Read( filename );
       return true;
     else
       return false;
@@ -930,77 +1007,6 @@ BindGlobal( "InstalledPackageVersion", function( name )
     info:= First( PackageInfo( name ), r -> r.InstallationPath = avail );
     return info.Version;
     end );
-
-
-#############################################################################
-##
-#F  DirectoriesPackagePrograms( <name> )
-##
-##  returns a list of the `bin/<architecture>' subdirectories of all
-##  packages <name> where <architecture> is the architecture on which {\GAP}
-##  has been compiled.
-##  The directories returned by `DirectoriesPackagePrograms' are the place
-##  where external binaries for the {\GAP} package <name> and the current
-##  architecture should be located.
-##
-BIND_GLOBAL( "DirectoriesPackagePrograms", function( name )
-    local arch, dirs, r, path;
-
-    arch := GAPInfo.Architecture;
-    dirs := [];
-    InitializePackagesInfoRecords( false );
-    for r in PackageInfo( LowercaseString( name ) ) do
-      path:= Concatenation( r.InstallationPath, "/bin/", arch, "/" );
-      Add( dirs, Directory( path ) );
-    od;
-    return dirs;
-end );
-
-
-#############################################################################
-##
-#F  DirectoriesPackageLibrary( <name>[, <path>] )
-##
-##  takes the string <name>, a name of a {\GAP} package and returns a list of
-##  directory objects for the sub-directory/ies containing the library
-##  functions of this {\GAP} package,
-##  up to one for each `pkg' sub-directory of a path in `GAPInfo.RootPaths'.
-##  The default is that the library functions are in the subdirectory `lib'
-##  of the {\GAP} package's home directory.
-##  If this is not the case, then the second argument <path> needs to be
-##  present and must be a string that is a path name relative to the home
-##  directory  of the {\GAP} package with name <name>.
-##
-BIND_GLOBAL( "DirectoriesPackageLibrary", function( arg )
-    local name, path, dirs, r, tmp;
-
-    if IsEmpty(arg) or 2 < Length(arg) then
-        Error( "usage: DirectoriesPackageLibrary( <name>[, <path>] )\n" );
-    elif not ForAll(arg, IsString) then
-        Error( "string argument(s) expected\n" );
-    fi;
-
-    name:= LowercaseString( arg[1] );
-    if '\\' in name or ':' in name  then
-        Error( "<name> must not contain '\\' or ':'" );
-    fi;
-
-    if 1 = Length(arg)  then
-        path := "lib";
-    else
-        path := arg[2];
-    fi;
-
-    dirs := [];
-    InitializePackagesInfoRecords( false );
-    for r in PackageInfo( LowercaseString( name ) ) do
-        tmp := Concatenation( r.InstallationPath, "/", path );
-        if IsDirectoryPath(tmp) = true  then
-            Add( dirs, Directory(tmp) );
-        fi;
-    od;
-    return dirs;
-end );
 
 
 #############################################################################
@@ -1546,6 +1552,7 @@ BindGlobal( "SuggestUpgrades", function( suggestedversions )
 
     # Deal with present packages which are not distributed.
     LoadPackage("blubberblaxyz");
+#T clean this!
     inform := Difference(NamesOfComponents(GAPInfo.PackagesInfo),
               List(suggestedversions, x-> LowercaseString(x[1])));
     if not IsEmpty( inform ) then
@@ -1945,6 +1952,11 @@ BindGlobal( "ShowPackageVariables", function( arg )
       Print( "\n" );
     od;
     end );
+#T improve this:
+#T List also all globals that differ from other globals (in the same package
+#T or defined outside) only by case -- note that the documentation is case
+#T insensitive, so it will be difficult to document variables that differ
+#T only by case!
 
 
 #############################################################################

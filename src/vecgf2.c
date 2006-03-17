@@ -1035,15 +1035,12 @@ Obj ShallowCopyVecGF2( Obj vec )
   UInt len;
   UInt *ptrS;
   UInt *ptrD;
-  UInt *endS;
   len = LEN_GF2VEC(vec);
   NEW_GF2VEC( copy, TYPE_LIST_GF2VEC, len);
   SET_LEN_GF2VEC(copy,len);
   ptrS = BLOCKS_GF2VEC(vec);
   ptrD = BLOCKS_GF2VEC(copy);
-  endS = ptrS + NUMBER_BLOCKS_GF2VEC(vec);
-  while (ptrS < endS)
-    *ptrD++ = *ptrS++;
+  memcpy((void *) ptrD, (void *) ptrS, NUMBER_BLOCKS_GF2VEC(vec)*sizeof(UInt));
   return copy;
 }
 
@@ -1348,6 +1345,7 @@ void ConvGF2Vec (
     Int                 i;              /* loop variable                   */
     UInt                block;          /* one block of the boolean list   */
     UInt                bit;            /* one bit of a block              */
+    Obj                 x;
         
     /* already in the correct representation                               */
     if ( IS_GF2VEC_REP(list) ) {
@@ -1375,14 +1373,24 @@ void ConvGF2Vec (
     block = 0;
     bit   = 1;
     for ( i = 1;  i <= len;  i++ ) {
-        if ( VAL_FFE( ELM_PLIST( list, i ) ) )
-            block |= bit;
-        bit = bit << 1;
-        if ( bit == 0 || i == len ) {
-            BLOCK_ELM_GF2VEC(list,i) = block;
-            block = 0;
-            bit   = 1;
-        }
+      x = ELM_PLIST(list, i);
+      if (x == GF2One)
+	block |= bit;
+      else if (x != GF2Zero)
+	{
+	  /* might be GF(2) elt written over bigger field */
+	  if (EQ(x, GF2One))
+	    block |= bit;
+	  else
+	    assert(EQ(x, GF2Zero));
+	}
+      
+      bit = bit << 1;
+      if ( bit == 0 || i == len ) {
+	BLOCK_ELM_GF2VEC(list,i) = block;
+	block = 0;
+	bit   = 1;
+      }
     }
 
     /* retype and resize bag                                               */
@@ -2627,7 +2635,8 @@ Obj FuncAPPEND_VECGF2( Obj self, Obj vecl, Obj vecr )
       {
 	*ptrl |= (*ptrr) << offl;
 	ptrl++;
-	if (nextr > lenr -1)
+	nextr += off2;
+	if (nextr >= lenr)
 	  break;
 	*ptrl = (*ptrr) >> off2;
 	ptrr++;
@@ -3892,24 +3901,31 @@ Obj FuncPROD_COEFFS_GF2VEC( Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2 )
 
 /****************************************************************************
 **
-*F  ReduceCoeffsGF2Vec(<vec1>, <vec2>, <len2> )
+*F  ReduceCoeffsGF2Vec(<vec1>, <vec2>, <len2>, <quotient> )
 **
 */
 
-void ReduceCoeffsGF2Vec( Obj vec1, Obj vec2, UInt len2 )
+void ReduceCoeffsGF2Vec( Obj vec1, Obj vec2, UInt len2, Obj quotient )
 {
   UInt len1 = LEN_GF2VEC(vec1);
-  UInt i,e;
-  UInt *ptr;
+  UInt i,j,e;
+  UInt *ptr, *qptr = (UInt *)0;
   if (len2 > len1)
     return;
   i = len1 -1;
   e = (i % BIPEB);
   ptr = BLOCKS_GF2VEC(vec1) + (i/BIPEB);
+  if (quotient != (Obj) 0)
+    qptr = BLOCKS_GF2VEC(quotient);
+  j = len1-len2+1;
   while (i+ 1 >= len2)
     {
       if (*ptr & ((UInt)1 << e))
-	AddShiftedVecGF2VecGF2(vec1, vec2, len2, i - len2 + 1);
+	{
+	  AddShiftedVecGF2VecGF2(vec1, vec2, len2, i - len2 + 1);
+	  if (qptr)
+	    qptr[(j-1)/BIPEB] |= MASK_POS_GF2VEC(j);
+	}
       assert(!(*ptr & ((UInt)1<<e)));
       if (e == 0)
 	{
@@ -3919,6 +3935,7 @@ void ReduceCoeffsGF2Vec( Obj vec1, Obj vec2, UInt len2 )
       else
 	e--;
       i--;
+      j--;
     }
  return;
 }
@@ -3963,10 +3980,68 @@ Obj FuncREDUCE_COEFFS_GF2VEC( Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
       return 0;
     }
   
-  ReduceCoeffsGF2Vec( vec1, vec2, len2a);
+  ReduceCoeffsGF2Vec( vec1, vec2, len2a, (Obj)0);
   last = RightMostOneGF2Vec(vec1);
   ResizeGF2Vec(vec1, last);
   return INTOBJ_INT(last);
+}
+
+/****************************************************************************
+**
+*F  FuncQUOTREM_COEFFS_GF2VEC( <self>, <vec1>, <len1>, <vec2>, <len2> )
+**
+*/
+Obj FuncQUOTREM_COEFFS_GF2VEC( Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
+{
+     Int len2a;
+     Int len1a = INT_INTOBJ(len1);
+     Obj quotv, remv, ret;
+     if (!IS_INTOBJ(len1))
+     ErrorMayQuit("QUOTREM_COEFFS_GF2VEC: given length <len1> of left argt must be a small integer, not a %s",
+		  (Int)TNAM_OBJ(len1),0L);
+     if (INT_INTOBJ(len1) < 0 || INT_INTOBJ(len1) > LEN_GF2VEC(vec1))
+     ErrorMayQuit("QuotremCoeffs: given length <len1> of left argt (%d)\nis longer than the argt (%d)",
+		  INT_INTOBJ(len1), LEN_GF2VEC(vec1));
+     if (!IS_INTOBJ(len2))
+     ErrorMayQuit("QUOTREM_COEFFS_GF2VEC: given length <len2> of right argt must be a small integer, not a %s",
+		  (Int)TNAM_OBJ(len2),0L);
+     len2a = INT_INTOBJ(len2);
+     if ( len2a < 0 ||  len2a > LEN_GF2VEC(vec2))
+     ErrorMayQuit("QuotremCoeffs: given length <len2> of right argt (%d)\nis longer than the argt (%d)",
+		  len2a, LEN_GF2VEC(vec2));
+     
+     while ( 0 < len2a ) {
+       if ( BLOCK_ELM_GF2VEC(vec2,len2a) == 0 )
+	 len2a = BIPEB*((len2a-1)/BIPEB);
+       else if ( BLOCK_ELM_GF2VEC(vec2,len2a) & MASK_POS_GF2VEC(len2a) )
+	 break;
+       else
+	 len2a--;
+     } 
+     if (len2a == 0) {
+       ErrorReturnVoid("QuotremCoeffs: second argument must not be zero", 0, 0,
+		       "you may 'return;' to skip the reduction");
+       return 0;
+     }
+
+     NEW_GF2VEC(remv, TYPE_LIST_GF2VEC, len1a);
+     SET_LEN_GF2VEC(remv, len1a);
+     memcpy((void *)BLOCKS_GF2VEC(remv), (void *)BLOCKS_GF2VEC(vec1),
+	    ((len1a + BIPEB-1)/BIPEB)*sizeof(UInt));
+     
+     NEW_GF2VEC(quotv, TYPE_LIST_GF2VEC, len1a-len2a+1);
+     SET_LEN_GF2VEC(quotv, len1a-len2a+1);
+     ReduceCoeffsGF2Vec( remv, vec2, len2a, quotv);
+     
+     ret = NEW_PLIST(T_PLIST_TAB, 2);
+     SET_LEN_PLIST(ret, 2);
+     
+     SET_ELM_PLIST(ret, 1, quotv);
+     SET_ELM_PLIST(ret, 2, remv);
+
+     CHANGED_BAG(ret);
+
+return ret;
 }
 
 
@@ -4310,6 +4385,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "REDUCE_COEFFS_GF2VEC", 4, "vec1, len1, vec2,len2",
       FuncREDUCE_COEFFS_GF2VEC, "sec/vecgf2.c:REDUCE_COEFFS_GF2VEC" },
+
+    { "QUOTREM_COEFFS_GF2VEC", 4, "vec1, len1, vec2,len2",
+      FuncQUOTREM_COEFFS_GF2VEC, "sec/vecgf2.c:QUOTREM_COEFFS_GF2VEC" },
 
     { "SEMIECHELON_LIST_GF2VECS", 1, "mat",
       FuncSEMIECHELON_LIST_GF2VECS, "sec/vecgf2.c:SEMIECHELON_LIST_GF2VECS" },

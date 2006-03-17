@@ -809,7 +809,7 @@ end);
 #   [IsAlgebraicExtension,IsScalar],0,
 # function(f,e)
 # local   p;
-#   p:=CharacteristicPolynomial(f,e);
+#   p:=CharacteristicPolynomial(f,f,e);
 #   p:=CoefficientsOfUnivariatePolynomial(p);
 #   return -p[Length(p)-1];
 # end);
@@ -822,7 +822,7 @@ end);
 #   [IsAlgebraicExtension,IsScalar],0,
 # function(f,e)
 # local   p;
-#   p:=CharacteristicPolynomial(f,e);
+#   p:=CharacteristicPolynomial(f,f,e);
 #   p:=CoefficientsOfUnivariatePolynomial(p);
 #   return p[1]*(-1)^(Length(p)-1);
 # end);

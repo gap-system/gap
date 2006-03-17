@@ -29,6 +29,15 @@ Revision.gprd_gd :=
 DeclareGlobalFunction( "DirectProduct" );
 DeclareOperation( "DirectProductOp", [ IsList, IsGroup ] );
 
+#############################################################################
+##
+#F  PcgsDirectProduct( ( <D>, <pcgsop>, <indsop>, <filter> )
+##
+##  constructs a new pcgs from pcgses of the components of D, setting 
+##  the necessary indices for the new pcgs and sets the property
+##  specified by filter.
+##
+DeclareGlobalFunction( "PcgsDirectProduct" );
 
 #############################################################################
 ##
@@ -131,6 +140,20 @@ DeclareGlobalFunction( "SubdirectProducts" );
 
 #############################################################################
 ##
+#F  FreeProduct( <G> \{, <H>\} )
+#F  FreeProduct( list )
+##
+##  constructs a finitely presented group which is the free product of 
+##  the groups given as arguments. If the group arguments are not finitely
+##  presented groups, then `IsomorphismFpGroup' must be defined for them.
+##  
+##  The operation `Embedding' operates on this product.
+##
+DeclareGlobalFunction("FreeProduct");
+DeclareOperation( "FreeProductOp", [ IsList, IsGroup ] );
+
+#############################################################################
+##
 #A  DirectProductInfo( <G> )
 ##
 DeclareAttribute( "DirectProductInfo", IsGroup, "mutable" );
@@ -152,6 +175,12 @@ DeclareAttribute( "SemidirectProductInfo", IsGroup, "mutable" );
 #A  WreathProductInfo( <G> )
 ##
 DeclareAttribute( "WreathProductInfo", IsGroup, "mutable" );
+
+#############################################################################
+##
+#A  FreeProductInfo( <G> )
+##
+DeclareAttribute( "FreeProductInfo", IsGroup, "mutable" );
 
 #############################################################################
 ##

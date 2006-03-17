@@ -243,7 +243,7 @@ Let $f_1, \ldots, f_n$ be the generators of the underlying free group
 A combinatorial collector can only be set up for a finite $p$-group.
 Here, the relative orders <relorders> must all be equal and a prime.
 
-\> SetConjugate( <coll>, <i>, <j>, <w> )
+\> SetConjugate( <coll>, <j>, <i>, <w> )
 
 set the conjugate $f_j^{f_i}$ to equal <w> where <w> is a word
 in $f_{i+1}, \ldots, f_n$ and $i\<j$.

@@ -324,6 +324,25 @@ InstallMethod( \*,
 
 #############################################################################
 ##
+#M  IsGeneratorsOfMagmaWithInverses( <list> )
+##
+InstallMethod( IsGeneratorsOfMagmaWithInverses,
+    "for list of tuples",
+    [ CategoryCollections (IsTuple) ],
+    function( l )
+        local n;
+        if IsEmpty (l) then
+            return true;
+        fi;
+        n := Length (l[1]);
+        if ForAny (l, x -> Length (x) <> n) then
+            return false;
+        fi;
+        return ForAll ([1..n], i -> IsGeneratorsOfMagmaWithInverses (l{[1..Length(l)]}[i]));
+    end );
+
+#############################################################################
+##
 #M  \^( <tuple>, <integer> )
 ##
 InstallMethod( \^,

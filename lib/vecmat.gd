@@ -261,7 +261,7 @@ end );
 ##  compact representation possible over <field>.
 ##  The input matrix <matrix> or
 ##  its rows might change the representation,
-##  however the result of `ConvertedMatrix' is not necessarily
+##  however the result of `ImmutableMatrix' is not necessarily
 ##  *identical* to <matrix> if a conversion is not possible.
 ##  If <change> is `true', the rows of `matrix' (or `matrix' itself) may be
 ##  changed to become immutable (otherwise they are copied first).

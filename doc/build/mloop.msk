@@ -721,16 +721,21 @@ Below we denote control keys by <ctrl>-<key> and escape keys by
 <esc>-<key>. The case of <key> does not matter, i.e., <ctrl>-`A' and
 <ctrl>-`a' are equivalent.
 
+Normally, line editing will be enabled if the input is connected to a
+terminal. Line editing can be enabled or disabled using the command line
+options `-f' and `-n' respectively (see~"Command Line Options"), however
+this is a machine dependent feature of {\GAP}.
+
 Typing <ctrl>-<key> or <esc>-<key> for characters not mentioned below
 always inserts <ctrl>-<key> resp.~<esc>-<key> at the current cursor position.
 
 The first few commands allow you to move the cursor on the current line.
 
-<ctrl>-`A' move the cursor to the beginning of the line. 
+<ctrl>-`A' move the cursor to the beginning of the line.
 
-<esc>-`B' move the cursor to the beginning of the previous word. 
+<esc>-`B' move the cursor to the beginning of the previous word.
 
-<ctrl>-`B' move the cursor backward one character. 
+<ctrl>-`B' move the cursor backward one character.
 
 <ctrl>-`F' move the cursor forward one character. 
 

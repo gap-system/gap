@@ -457,7 +457,7 @@ online help which provides useful search features.
 
 This section lists a few common problems when installing or running {\GAP}
 and their remedies. Also see the FAQ list on the {\GAP} web pages at
-\URL{http://www.gap-system.org/Info/Faq/faq.html}
+\URL{http://www.gap-system.org/Faq/faq.html}
 
 \beginitems
 {\GAP} starts with a warning ``{`hmm, I cannot find {'}lib/init.g{'}'}''.&
