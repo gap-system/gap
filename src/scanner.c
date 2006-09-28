@@ -1652,7 +1652,7 @@ extern void GetSymbol ( void );
 
 void GetIdent ( void )
 {
-    Int                 i;
+    Int                 i, fetch;
     Int                 isQuoted;
 
     /* initially it could be a keyword                                     */
@@ -1661,6 +1661,7 @@ void GetIdent ( void )
     /* read all characters into 'Value'                                    */
     for ( i=0; IsAlpha(*In) || IsDigit(*In) || *In=='_' || *In=='$' || *In=='\\'; i++ ) {
 
+        fetch = 1;
         /* handle escape sequences                                         */
         /* we ignore '\ newline' by decrementing i, except at the
            very start of the identifier, when we cannot do that
@@ -1668,6 +1669,14 @@ void GetIdent ( void )
         if ( *In == '\\' ) {
             GET_CHAR();
             if      ( *In == '\n' && i == 0 )  { GetSymbol();  return; }
+            else if ( *In == '\r' )  {
+                GET_CHAR();
+                if  ( *In == '\n' )  {
+                     if (i == 0) { GetSymbol();  return; }
+                     else i--;
+                }
+                else  {Value[i] = '\r'; fetch = 0;}
+            } 
             else if ( *In == '\n' && i < sizeof(Value)-1 )  i--;
             else if ( *In == 'n'  && i < sizeof(Value)-1 )  Value[i] = '\n';
             else if ( *In == 't'  && i < sizeof(Value)-1 )  Value[i] = '\t';
@@ -1685,7 +1694,7 @@ void GetIdent ( void )
         }
 
         /* read the next character                                         */
-        GET_CHAR();
+        if (fetch) GET_CHAR();
 
     }
 
@@ -1768,7 +1777,7 @@ void GetIdent ( void )
 */
 void GetInt ( void )
 {
-    Int                 i;
+    Int                 i, fetch;
     Int                 isInt;
 
     isInt = 1;
@@ -1777,10 +1786,16 @@ void GetInt ( void )
     for ( i=0; i < sizeof(Value)-1 && (IsDigit(*In) || IsAlpha(*In) || 
                                            *In=='_' || *In=='\\'); i++ ) {
 
+        fetch = 1;
         /* handle escape sequences                                         */
         if ( *In == '\\' ) {
             GET_CHAR();
             if      ( *In == '\n' && i < sizeof(Value)-1 )  i--;
+            else if ( *In == '\r' )  {
+                GET_CHAR();
+                if  ( *In == '\n' )  i--;
+                else  {Value[i] = '\r'; fetch = 0;}
+            } 
             else if ( *In == 'n'  && i < sizeof(Value)-1 )  Value[i] = '\n';
             else if ( *In == 't'  && i < sizeof(Value)-1 )  Value[i] = '\t';
             else if ( *In == 'r'  && i < sizeof(Value)-1 )  Value[i] = '\r';
@@ -1800,7 +1815,7 @@ void GetInt ( void )
         if ( ! IsDigit(*In) && *In != '\n' )  isInt = 0;
 
         /* get the next character                                          */
-        GET_CHAR();
+        if (fetch) GET_CHAR();
 
     }
 
@@ -1843,7 +1858,7 @@ void GetInt ( void )
 */
 void GetStr ( void )
 {
-    Int                 i = 0;
+    Int                 i = 0, fetch;
     Char                a, b, c;
 
     /* Avoid substitution of '?' in beginning of GetLine chunks */
@@ -1853,10 +1868,16 @@ void GetStr ( void )
     for ( i = 0; i < sizeof(Value)-1 && *In != '"' 
                                      && *In != '\n' && *In != '\377'; i++ ) {
 
+        fetch = 1;
         /* handle escape sequences                                         */
         if ( *In == '\\' ) {
             GET_CHAR();
             if      ( *In == '\n' )  i--;
+            else if ( *In == '\r' )  {
+                GET_CHAR();
+                if  ( *In == '\n' )  i--;
+                else  {Value[i] = '\r'; fetch = 0;}
+            } 
             else if ( *In == 'n'  )  Value[i] = '\n';
             else if ( *In == 't'  )  Value[i] = '\t';
             else if ( *In == 'r'  )  Value[i] = '\r';
@@ -1880,7 +1901,7 @@ void GetStr ( void )
         }
 
         /* read the next character                                         */
-        GET_CHAR();
+        if (fetch) GET_CHAR();
 
     }
 

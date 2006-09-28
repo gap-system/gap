@@ -1549,7 +1549,8 @@ DeclareGlobalFunction( "SymplecticComponents" );
 ##  Let <value> be a cyclotomic whose coefficients over the rationals are
 ##  in the ring $\Z_{<p>}$ of <p>-local numbers,
 ##  where <p> is a prime integer.
-##  Assume that <value> lies in $\Z_{<p>}[\zeta]$ for $\zeta = `E'(<p>^n)$.
+##  Assume that <value> lies in $\Z_{<p>}[\zeta]$ for $\zeta = `E'(<p>^n-1)$,
+##  for some positive integer $n$.
 ##
 ##  `FrobeniusCharacterValue' returns the image of <value> under the ring
 ##  homomorphism from $\Z_{<p>}[\zeta]$ to the field with $<p>^n$ elements

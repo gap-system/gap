@@ -973,5 +973,19 @@ end);
             
 #############################################################################
 ##
+#M  ZeroVector( <vector>, len )
+##
+InstallMethod( ZeroVector, "for an int and an 8bit vector",
+  [IsInt, Is8BitVectorRep],
+  function( len, v )
+    local w;
+    w := ZeroMutable(v);
+    RESIZE_VEC8BIT(w,len);
+    return w;
+  end );
+
+
+#############################################################################
+##
 #E
 ##

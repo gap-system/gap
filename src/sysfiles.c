@@ -4829,6 +4829,28 @@ Char * syFgets (
 
         }
 
+        /* strip away prompts in beginning (useful for pasting old stuff)  */
+        if (line[0]=='g'&&line[1]=='a'&&line[2]=='p'&&
+                          line[3]=='>'&&line[4]==' '){
+            for ( r = line, q = line+5; q[-1] != '\0'; r++, q++ )  *r = *q;
+            p-=5; if (p<line) p = line;
+        }
+        if (line[0]=='b'&&line[1]=='r'&&line[2]=='k'&&
+                          line[3]=='>'&&line[4]==' '){
+            for ( r = line, q = line+5; q[-1] != '\0'; r++, q++ )  *r = *q;
+            p-=5; if (p<line) p = line;
+        }
+        if (line[0]=='>'&&line[1]==' '){
+            for ( r = line, q = line+2; q[-1] != '\0'; r++, q++ )  *r = *q;
+            p-=2; if (p<line) p = line;
+        }
+
+        if ( ch==EOF || ch=='\n' || ch=='\r' || ch==CTR('O') ) {
+            /* if there is a hook for line ends, call it before echoing */
+            if ( EndLineHook ) CALL_0ARGS( EndLineHook );
+            syEchoch('\r',fid);  syEchoch('\n',fid);  break;
+        }
+
         if ( ch==EOF || ch=='\n' || ch=='\r' || ch==CTR('O') ) {
             /* if there is a hook for line ends, call it before echoing */
             if ( EndLineHook ) CALL_0ARGS( EndLineHook );
@@ -4888,14 +4910,6 @@ Char * syFgets (
 
     /* send the whole line (unclipped) to the window handler               */
     syWinPut( fid, (*line != '\0' ? "@r" : "@x"), line );
-
-    /* strip away prompts (useful for pasting old stuff)                  */
-    if (line[0]=='g'&&line[1]=='a'&&line[2]=='p'&&line[3]=='>'&&line[4]==' ')
-        for ( p = line, q = line+5; q[-1] != '\0'; p++, q++ )  *p = *q;
-    if (line[0]=='b'&&line[1]=='r'&&line[2]=='k'&&line[3]=='>'&&line[4]==' ')
-        for ( p = line, q = line+5; q[-1] != '\0'; p++, q++ )  *p = *q;
-    if (line[0]=='>'&&line[1]==' ')
-        for ( p = line, q = line+2; q[-1] != '\0'; p++, q++ )  *p = *q;
 
     /* switch back to cooked mode                                          */
     if ( SyLineEdit == 1 )

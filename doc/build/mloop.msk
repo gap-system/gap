@@ -143,6 +143,38 @@ produced a value or not, is available in the variable `time'. This is an
 integer that holds the number of milliseconds.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Special Rules for Input Lines}
+
+The input for some {\GAP} objects may not fit on one line, in particular 
+big integers, long strings or long identifiers. In these cases you can still
+type or paste them in long single lines, but on screen you will only
+see the last part (with a `\$' character in front). For nicer display you
+can also specify  the input on several lines. This is achieved by ending a
+line  by a backslash or by a backslash and a carriage return character, then
+continue the input on the beginning of the next line. When reading this 
+{\GAP} will ignore such continuation backslashes, carriage return characters 
+and newline characters. {\GAP} also prints long strings and integers this way.
+
+\beginexample
+gap> n := 1234\
+> 567890;
+1234567890
+gap> "This is a very long string that does not fit on a line \
+gap> and is therefore continued on the next line.";
+"This is a very long string that does not fit on a line and is therefore conti\
+nued on the next line."
+gap> bla\
+gap> bla := 5;; blabla;
+5
+\endexample
+
+There is a special rule about {\GAP} prompts in input lines: In line editing 
+mode (usual user input and {\GAP} started without `-n')  in lines starting 
+with `gap> ', `> ' or `brk> ' this beginning part is removed. This rule is very convenient because it allows to cut and paste input from other {\GAP} sessions
+or manual examples easily into your current session.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{View and Print}
 
 \Declaration{View}

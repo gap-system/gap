@@ -224,6 +224,9 @@ ReadLib("other.gd");
 
 ReadLib("gasman.gd");
 
+# random sources
+ReadLib("random.gi");
+
 #############################################################################
 ##
 #X  files dealing with subgroup chains

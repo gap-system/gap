@@ -821,8 +821,18 @@ InstallMethod( ConjugatorAutomorphismNC,
 #F  ConjugatorAutomorphism( <G>, <g> )
 ##
 InstallGlobalFunction( ConjugatorAutomorphism, function( G, g )
+local rep;
     if     IsCollsElms( FamilyObj( G ), FamilyObj( g ) )
        and IsNormal( Group( g ), G ) then
+      # ensure that g is chosen in G if possible
+      if not g in G then
+	rep:=RepresentativeAction(G,GeneratorsOfGroup(G),
+               List(GeneratorsOfGroup(G),x->x^g),OnTuples);
+        if rep<>fail then
+	  Info(InfoPerformance,2,"changed conjugator to make it inner");
+	  g:=rep;
+	fi;
+      fi;
       return ConjugatorAutomorphismNC( G, g );
     else
       return fail;
@@ -1125,13 +1135,18 @@ InstallMethod( IsInnerAutomorphism,
     fi;
     s:= Source( hom );
     gens:= GeneratorsOfGroup( s );
-    rep:= RepresentativeAction( s, gens, 
-              List( gens, i -> ImagesRepresentative( hom, i ) ), OnTuples );
-    if rep <> fail then
-      SetConjugatorOfConjugatorIsomorphism( hom, rep );
-      return true;
+    if HasConjugatorOfConjugatorIsomorphism(hom) then
+      rep:=ConjugatorOfConjugatorIsomorphism(hom);
+      return rep in s;
     else
-      return false;
+      rep:= RepresentativeAction( s, gens, 
+		List( gens, i -> ImagesRepresentative( hom, i ) ), OnTuples );
+      if rep <> fail then
+	SetConjugatorOfConjugatorIsomorphism( hom, rep );
+	return true;
+      else
+	return false;
+      fi;
     fi;
     end );
 

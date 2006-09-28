@@ -29,7 +29,7 @@ Revision.reesmat_gd :=
 ##  This can be thought of as a matrix with zero everywhere
 ##  except for an occurrence of <s> at row <i> and column <lambda>.
 ##  The multiplication is defined by 
-##  $(s, i, \lambda)*(t, j , \mu) =   (s P_{\lambda j} t, i, \mu)$ where
+##  $(i, s, \lambda)*(j, t, \mu) =   (i, s P_{\lambda j} t, \mu)$ where
 ##  $P$ is the defining matrix of the semigroup.
 ##  In the case that the underlying semigroup has a zero we can make the
 ##  ReesZeroMatrixSemigroup, wherein all elements whose <s> entry is the
@@ -185,7 +185,7 @@ DeclareAttribute("UnderlyingSemigroupOfReesZeroMatrixSemigroup",
 #A  UnderlyingElementOfReesZeroMatrixSemigroupElement( <x> )
 ##
 ##  For an element <x> of a Rees Matrix semigroup, of the form
-##  `(<s>, <i>, <lambda>)',
+##  `(<i>, <s>, <lambda>)',
 ##  the row index is <i>, the column index is <lambda> and the 
 ##  underlying element is <s>.
 ##  If we think of an element as a matrix then this corresponds to

@@ -93,7 +93,7 @@ end);
 ##
 InstallOtherMethod( IsomorphismPermGroup,
     "for a Green's group H class of a semigroup", true,
-    [ IsGreensHClass and IsEquivalenceClass ], 0,
+    [ IsGreensHClass and IsEquivalenceClass], 0,
 function( h )
 
     local enum,      # enumerator of h
@@ -108,26 +108,27 @@ function( h )
        TryNextMethod();
     fi;
 
-    # check if the H class is a group 
-    # h is a group iff it contains an idempotent
-    enum := Enumerator( h );
-    i := 1;
-    isgroup := false;
-    while IsBound( enum[ i ] ) and not( isgroup ) do	
-        if enum[ i ]*enum[ i ] = enum[ i ] then
-            isgroup := true;
-        fi;
-        i := i+1;
-    od;
-    if not( isgroup ) then
-        Error("Can only create Isomorphism of group H classes");	
+    
+     if not( IsGroupHClass(h) ) then
+        Error("can only create isomorphism of group H classes");	
     fi;
+
+#    i := 1;
+#    isgroup := false;
+#    while IsBound( enum[ i ] ) and not( isgroup ) do	
+#        if enum[ i ]*enum[ i ] = enum[ i ] then
+#            isgroup := true;
+#        fi;
+#        i := i+1;
+#    od;
+
 
     # now we build the Perm group
 
     # For each element of h we build the permutation induced in h by itself
     # These permutations are going to be the generators of the perm group
-    gens:=[];
+    gens:=[]; enum := Enumerator( h );
+
     i := 1;
     while IsBound( enum[ i ] ) do
         perm := [];
@@ -259,14 +260,14 @@ InstallGlobalFunction(FullTransformationSemigroup,
         fi;
 
         if d =1 then 
-            return Semigroup(Transformation([1]));
+            return Monoid(Transformation([1]));
         elif d=2 then
-            return Semigroup(Transformation([2,1]), 
+            return Monoid(Transformation([2,1]), 
                              Transformation([1,1]),
                              Transformation([2,2]) );
         fi;
          
-        s := Semigroup(Transformation(Concatenation([2..d],[1])),
+        s := Monoid(Transformation(Concatenation([2..d],[1])),
                        Transformation(Concatenation([2,1],[3..d])),
                        Transformation(Concatenation([1..d-1],[1])) );
          

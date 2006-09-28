@@ -120,9 +120,9 @@ DeclareOperation("LeadingTermOfPolynomial",
 ##
 ##  This function creates a lexicographic ordering for monomials. Monomials
 ##  are compared first by the exponents of the largest variable, then the
-##  exponents of the second larhgest variable and so on.
+##  exponents of the second largest variable and so on.
 ##
-##  The variables are ordered accoring to their (internal) index, i.e. $x_1$
+##  The variables are ordered according to their (internal) index, i.e. $x_1$
 ##  is larger than $x_2$ and so on.
 ##  If <vari> is given, and is a list of variables or variable indices,
 ##  instead this arrangement of variables (in descending order; i.e. the
@@ -139,7 +139,7 @@ DeclareGlobalFunction("MonomialLexOrdering");
 ##  monomials are compared first by their total degree, then lexicographically
 ##  (see `MonomialLexOrdering').
 ##
-##  The variables are ordered accoring to their (internal) index, i.e. $x_1$
+##  The variables are ordered according to their (internal) index, i.e. $x_1$
 ##  is larger than $x_2$ and so on.
 ##  If <vari> is given, and is a list of variables or variable indices,
 ##  instead this arrangement of variables (in descending order; i.e. the
@@ -156,7 +156,7 @@ DeclareGlobalFunction("MonomialGrlexOrdering");
 ##  are compared first by total degree and then backwards lexicographically.
 ##  (This is different than ``grlex'' ordering with variables reversed.) 
 ##
-##  The variables are ordered accoring to their (internal) index, i.e. $x_1$
+##  The variables are ordered according to their (internal) index, i.e. $x_1$
 ##  is larger than $x_2$ and so on.
 ##  If <vari> is given, and is a list of variables or variable indices,
 ##  instead this arrangement of variables (in descending order; i.e. the

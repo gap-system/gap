@@ -14,6 +14,7 @@
 Revision.semirel_gi :=
     "@(#)$Id$";
 
+
 #######################
 #######################
 ##
@@ -986,7 +987,7 @@ function(mono)
 
 local gens, k, free, freegens, actualelts, fpelts, rules, i, u, v, Last, currentlength, b, s, r, newelt, j, p, 
 new, length, newword, first, final, prefix, suffix, next, postmult, reducedflags, premult, fpsemi, old, 
-sortedelts, pos, semi, perm;
+sortedelts, pos, semi, perm, free2;
 
 if not IsMonoid(mono) then 
     semi := MonoidByAdjoiningIdentity(mono);
@@ -1109,6 +1110,7 @@ until u=Last+1;
 if IsMonoid(mono) then 
 
    fpsemi:=free/rules;
+   fpelts:=List(fpelts, x-> MappedWord(x, FreeGeneratorsOfFpMonoid(fpsemi), GeneratorsOfMonoid(fpsemi)));
    SetAsSSortedList(fpsemi, fpelts);
    SetSize(fpsemi, Last);
    SetLeftCayleyGraphSemigroup(fpsemi, premult);
@@ -1122,6 +1124,8 @@ if IsMonoid(mono) then
    premult:=Permuted(OnTuplesTuples(premult, perm), perm);
    postmult:=Permuted(OnTuplesTuples(postmult, perm), perm);
 
+  #JDM set IsInjective, IsSurjective, IsTotal, IsSingleValued for IsomorphismFpSemigroup
+   SetIsomorphismFpMonoid(mono, SemigroupHomomorphismByImagesNC(mono, fpsemi, List(pos, x-> fpelts[x])));
    SetAsSSortedList(mono, sortedelts);  
    SetSize(mono, Last);
    SetLeftCayleyGraphSemigroup(mono, premult);
@@ -1129,26 +1133,38 @@ if IsMonoid(mono) then
    SetAssociatedFpSemigroup(mono, fpsemi);
 else
  
-   fpsemi:=free/rules;
+   #get rid of the identity! JDM better to do this online?
+
+   free2:=FreeSemigroup(k);
+   fpelts:=List(fpelts{[2..Last]}, x-> MappedWord(x, GeneratorsOfMonoid(free), GeneratorsOfSemigroup(free2)));
+   rules:=List(rules, x-> [MappedWord(x[1], GeneratorsOfMonoid(free), GeneratorsOfSemigroup(free2)), MappedWord(x[2], GeneratorsOfMonoid(free), GeneratorsOfSemigroup(free2))]);
+
+   fpsemi:=free2/rules;
+
+   fpelts:=List(fpelts, x-> MappedWord(x, FreeGeneratorsOfFpSemigroup(fpsemi), GeneratorsOfSemigroup(fpsemi)));
+
+
    SetAsSSortedList(fpsemi, fpelts);
-   SetSize(fpsemi, Last);
+   SetSize(fpsemi, Last-1);
+
+   premult:=premult{[2..Length(premult)]}-1;
+   postmult:=postmult{[2..Length(postmult)]}-1;
+
    SetLeftCayleyGraphSemigroup(fpsemi, premult);
    SetRightCayleyGraphSemigroup(fpsemi, postmult);
    SetAssociatedConcreteSemigroup(fpsemi, mono);
 
-   #get rid of the identity! JDM better to do this online?
-
-   premult:=premult{[2..Length(premult)]}-1;
-   postmult:=postmult{[2..Length(postmult)]}-1;
    sortedelts:=sortedelts{[2..Last]}; 
-
    actualelts:=actualelts{[2..Length(actualelts)]};
-   perm:=PermListList(pos{[2..Last]}-1, [1..Last-1]);
+   pos:=pos{[2..Last]}-1;
+   perm:=PermListList(pos, [1..Last-1]);
    sortedelts := List(sortedelts, 
                       UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt);
    premult:=Permuted(OnTuplesTuples(premult, perm), perm);
    postmult:=Permuted(OnTuplesTuples(postmult, perm), perm);
-
+  
+  #JDM set IsInjective, IsSurjective, IsTotal, IsSingleValued for IsomorphismFpSemigroup
+  SetIsomorphismFpSemigroup(mono, SemigroupHomomorphismByImagesNC(mono, fpsemi, List(pos, x-> fpelts[x])));
    SetAsSSortedList(mono, sortedelts);
    SetSize(mono, Last-1);
    SetLeftCayleyGraphSemigroup(mono, premult);
@@ -1214,5 +1230,133 @@ InstallMethod(GreensHRelation, "for free semigroups", true,
             "Green's relations for infinite semigroups is not supported");
         return fail;
     end);
+
+
+#############################################################################
+##
+#O  SemigroupHomomorphismByImagesNC( <mapp> ) 
+##
+##  returns a `SemigroupHomomorphism' represented by
+## `IsSemigroupHomomorphismByImagesRep'.
+
+InstallMethod(SemigroupHomomorphismByImagesNC, "for a semigroup, semigroup, list", true, 
+[IsSemigroup, IsSemigroup, IsList], 0, 
+function(S, T, imgslist)
+local hom, filter;
+
+ if Size(S)<>Length(imgslist) then
+    Error("<S> and <T> must have the same size");
+  fi;
+
+  hom:=rec(imgslist:=imgslist);
+  
+Objectify(NewType( GeneralMappingsFamily
+    ( ElementsFamily( FamilyObj( S ) ),
+      ElementsFamily( FamilyObj( T ) ) ), IsSemigroupHomomorphism 
+      and IsSemigroupHomomorphismByImagesRep), hom);
+
+  SetSource(hom, S);
+  SetRange(hom, T);
+  
+  return hom;
+end);
+
+########
+########
+
+InstallMethod(ImagesRepresentative, "for semigroup homomorphism by images",  FamSourceEqFamElm, [IsSemigroupHomomorphism and IsSemigroupHomomorphismByImagesRep, IsMultiplicativeElement], 
+function(hom, elt)
+	
+return hom!.imgslist[Position(Elements(Source(hom)), elt)];
+end);
+
+########
+########
+
+InstallMethod(PreImagesRepresentative,  "for semigroup homomorphism by images",  FamRangeEqFamElm, [IsSemigroupHomomorphism and IsSemigroupHomomorphismByImagesRep, IsMultiplicativeElement],
+function(hom, x)
+local preimgs, imgs;
+
+imgs:=hom!.imgslist;
+
+preimgs:=List([1..Length(imgs)], function(y) 
+if imgs[y]=x then 
+  return Elements(Source(hom))[y];
+else 
+  return fail;
+fi;
+end);
+
+return Filtered(preimgs, x-> not x=fail);
+
+end);
+
+########
+########
+
+InstallMethod( ViewObj, "for semigroup homomorphism by images",
+   [IsSemigroupHomomorphism and IsSemigroupHomomorphismByImagesRep],   
+   function( obj )
+      Print( "SemigroupHomomorphismByImages ( ", Source(obj), "->", Range(obj), ")" );
+end );
+
+########
+########
+
+InstallMethod( PrintObj, "for semigroup homomorphism by images",
+   [IsSemigroupHomomorphism and IsSemigroupHomomorphismByImagesRep],   
+   function( obj )
+      Print( "SemigroupHomomorphismByImages ( ", Source(obj), "->", Range(obj), ")" );
+end );
+
+########
+########
+
+InstallMethod(ImagesElm, "for semigroup homomorphism by images",
+      FamSourceEqFamElm, [IsSemigroupHomomorphism and IsSemigroupHomomorphismByImagesRep, IsMultiplicativeElement],
+      function( hom, x)
+	
+      return [ImagesRepresentative(hom, x)];
+end);
+
+########
+########
+
+InstallMethod(CompositionMapping2, "for semigroup homomorphism by images", 
+#IsIdenticalObj, 
+[IsSemigroupHomomorphism and IsSemigroupHomomorphismByImagesRep, IsSemigroupHomomorphism and IsSemigroupHomomorphismByImagesRep], 0,
+function(hom1, hom2)
+local imgslist;
+
+if not IsSubset(Source(hom2), Range(hom1)) then 
+  Error("source of <hom2> must contain range of <hom>");
+fi;
+
+imgslist:=List(hom1!.imgslist, x-> ImageElm(hom2, x));
+
+return SemigroupHomomorphismByImagesNC(Source(hom1), Range(hom2), imgslist);
+
+end);
+
+########
+########
+
+InstallMethod(InverseGeneralMapping, "for semigroup homomorphism by images", [IsSemigroupHomomorphism and IsSemigroupHomomorphismByImagesRep and IsInjective and IsSurjective],  0,
+function(iso)
+
+return SemigroupHomomorphismByImagesNC(Range(iso), Source(iso), List(Elements(Range(iso)), x-> Elements(Source(iso))[Position(iso!.imgslist, x)]));
+
+end);
+
+########
+########
+
+InstallMethod(\=, "for semigroup homomorphism by images", IsIdenticalObj, [IsSemigroupHomomorphism and IsSemigroupHomomorphismByImagesRep, IsSemigroupHomomorphism and IsSemigroupHomomorphismByImagesRep],  0,
+function(hom1, hom2)
+
+return ForAll(GeneratorsOfSemigroup(Source(hom1)), 
+   x -> ImageElm(hom1,x) = ImageElm(hom2,x));
+
+end);
 
 

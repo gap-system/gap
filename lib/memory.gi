@@ -35,18 +35,44 @@ InstallGlobalFunction( GeneratorsWithMemory,
     return ll;
   end);
 
-InstallGlobalFunction( StripMemory,
-  function(l)
-    # l a list of generators with memory
-    if IsObjWithMemory(l) then
-        return l!.el;
-    elif IsList(l) and IsObjWithMemory(l[1]) then  
-        # in that case we assume that is a list of such els:
-        return List(l,StripMemory);
-    else
-        return l;
-    fi;
-  end);
+InstallMethod( StripMemory, "for an object with memory",
+  [ IsObjWithMemory ],
+  function( el )
+    return el!.el;
+  end );
+
+InstallMethod( StripMemory, "for a list",
+  [ IsList ],
+  function( l )
+    return List(l,StripMemory);
+  end );
+
+InstallMethod( StripMemory, "fallback for all objects",
+  [ IsObject ],
+  function( ob ) return ob; end );
+
+InstallMethod( ForgetMemory, "nice error message for all objects",
+  [ IsObject ],
+  function( ob )
+    Error( "This object does not allow forgetting memory." );
+  end );
+
+InstallMethod( ForgetMemory, "nice error message for memory objects",
+  [ IsObjWithMemory ],
+  function( el )
+    Error( "You probably mean \"StripMemory\" instead of \"ForgetMemory\"." );
+  end );
+
+InstallMethod( ForgetMemory, "for a mutable list",
+  [ IsList and IsMutable ],
+  function( l )
+    local i;
+    for i in [1..Length(l)] do
+        if IsBound(l[i]) and IsObjWithMemory(l[i]) then
+            l[i] := l[i]!.el;
+        fi;
+    od;
+  end );
 
 InstallGlobalFunction( StripStabChain,
   function(S)

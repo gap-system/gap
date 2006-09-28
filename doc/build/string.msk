@@ -239,17 +239,8 @@ too  long to  fit on  a single  line it  is possible  to *continue*  it over
 several lines.  In this case the  last character of each  input line, except
 the last line  must be a backslash. Both backslash  and <newline> are thrown
 away by  {\GAP} while reading  the string.  Note that the  same continuation
-mechanism is available for identifiers and integers.
-
-\beginexample
-gap> "This is a very long string that does not fit on a line \
-gap> and is therefore continued on the next line.";
-"This is a very long string that does not fit on a line and is therefore conti\
-nued on the next line."
-\endexample
-
-Note that the output is also continued, but at a different place
-that is determined by the value of `SizeScreen' (see~"SizeScreen").
+mechanism is available for identifiers and integers, 
+see~"Special Rules for Input Lines".
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

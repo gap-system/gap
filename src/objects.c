@@ -1264,7 +1264,7 @@ void LoadObjError (
                    )
 {
   ErrorQuit(
-            "Panic: tried to loade an object of unknown type '%d'",
+            "Panic: tried to load an object of unknown type '%d'",
             (Int)TNUM_OBJ(obj), 0L );
 }
 

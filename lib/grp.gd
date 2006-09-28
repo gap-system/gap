@@ -1357,7 +1357,7 @@ DeclareAttribute( "IndependentGeneratorsOfAbelianGroup",
 ##  tests whether the elements <x> and <y> or the subgroups <U> and <V> are
 ##  conjugate under the action of <G>. (They do not need to be contained in
 ##  <G>.) This command is only a shortcut to
-##  `RepresentativeOperation'.
+##  `RepresentativeAction'.
 ##
 DeclareOperation( "IsConjugate", [ IsGroup, IsObject, IsObject ] );
 

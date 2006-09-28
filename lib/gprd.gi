@@ -29,7 +29,9 @@ local d;
   fi;
   d:=DirectProductOp( arg, arg[1] );
   if ForAll(arg,HasSize) then
-    SetSize(d,Product(List(arg,Size)));
+    if   ForAll(arg,IsFinite)
+    then SetSize(d,Product(List(arg,Size)));
+    else SetSize(d,infinity); fi;
   fi;
   return d;
 end );

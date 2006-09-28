@@ -1031,28 +1031,6 @@ DeclareOperation("FieldOfMatrixList",[IsListOrCollection]);
 
 
 #############################################################################
-##  
-#O  Matrix( <vectorlist>, <vector> )
-#O  MatrixNC( <vectorlist>, <vector> )
-##
-##  returns a matrix containing the vectors in <vectorlist> as rows.
-##  The idea behind this operation is to be able to return a wrapped
-##  matrix object containing the vectors in <vectorlist> rather than
-##  just a list of vectors to be able to use the method selection
-##  later on. The representation of the result is determined by the
-##  sample vector <vector>.
-##  The elements in <vectorlist> must be vectors of the same length
-##  as the sample vector <vector>. The sample vector is always necessary
-##  to be able to use the method selection. The <vectorlist> may be empty.
-##  The NC method does not check the inputs.
-##  The default method simply returns <vectorlist>.
-##  For example a list of compressed vectors over the same field could
-##  be compressed into a compressed matrix object.
-##
-DeclareOperation("Matrix",[IsList,IsObject]);
-DeclareOperation("MatrixNC",[IsList,IsObject]);
-
-#############################################################################
 ##
 #O  BaseField( <matrixorvector> )
 ##
@@ -1066,19 +1044,19 @@ DeclareOperation("BaseField",[IsObject]);
 
 #############################################################################
 ##
-#O  ZeroVector( <vector>, <len> )
+#O  ZeroVector( <len>, <vector> )
 ## 
 ##  returns a new mutable zero vector in the same representation as
 ##  <vector> of a possibly different length <len>. The idea behind this
 ##  is to be able to write code that preserves for example compression
 ##  over a finite field but returning a vector of different length.
 ##
-DeclareOperation("ZeroVector",[IsObject,IsInt]);
+DeclareOperation("ZeroVector",[IsInt,IsObject]);
 
 
 #############################################################################
 ##
-#O  ZeroMatrix( <matrix>, <rows>, <cols> )
+#O  ZeroMatrix( <rows>, <cols>, <matrix>  )
 ## 
 ##  returns a new mutable zero matrix in the same representation as
 ##  <matrix> of possibly different dimensions. The number of rows of
@@ -1086,17 +1064,17 @@ DeclareOperation("ZeroVector",[IsObject,IsInt]);
 ##  The idea behind this is to be able to write code that preserves
 ##  for example compression over a finite field.
 ##
-DeclareOperation("ZeroMatrix",[IsObject,IsInt,IsInt]);
+DeclareOperation("ZeroMatrix",[IsInt,IsInt,IsObject]);
 
 
 #############################################################################
 ##
-#O  IdentityMatrix( <matrix>, <rows> )
+#O  IdentityMatrix( <rows>, <matrix> )
 ## 
 ##  returns a new mutable identity matrix in the same representation as
 ##  <matrix> with <rows> rows. 
 ##
-DeclareOperation("IdentityMatrix",[IsObject,IsInt]);
+DeclareOperation("IdentityMatrix",[IsInt,IsObject]);
 
 
 #############################################################################

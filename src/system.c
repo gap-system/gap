@@ -99,7 +99,7 @@ extern int    fputs ( const char *, FILE * );
 **
 *V  SyKernelVersion  . . . . . . . . . . . . . . . .  name of the architecture
 */
-const Char * SyKernelVersion = "4.4.7";
+const Char * SyKernelVersion = "4.4.8";
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
@@ -1198,7 +1198,7 @@ UInt * * * SyAllocBags (
     if ( ret != (UInt***)-1 ) {
         syWorksize += size;
        /* set the overrun flag if we became larger than SyStorMax */
-       if ( syWorksize  > SyStorMax)  {
+       if ( SyStorMax != 0 && syWorksize  > SyStorMax)  {
 	 SyStorOverrun = -1;
 	 SyStorMax=syWorksize*2; /* new maximum */
 	 InterruptExecStat(); /* interrupt at the next possible point */
@@ -1949,6 +1949,8 @@ static Int returnVal ( Char **argv, void * Value)
 static Int setScreenWidth( Char **argv, void * dummy)
 {
             SyNrCols = atoi(argv[0]);
+	    if (SyNrCols > 256) 
+	      SyNrCols = 256;
 	    SyNrColsLocked = 1;
 #if SYS_MAC_MWC
 	    SetLogWindowSize (-1, SyNrCols);
@@ -2352,7 +2354,7 @@ void InitSystem (
 #endif	
 
     /* fix max if it is lower than min                                     */
-    if ( SyStorMax < SyStorMin ) {
+    if ( SyStorMax != 0 && SyStorMax < SyStorMin ) {
         SyStorMax = SyStorMin;
     }
 

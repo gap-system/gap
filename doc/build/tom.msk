@@ -546,8 +546,8 @@ gap> repeat
 > until Order( y ) = 3 and Order( x*y ) = 5;
 gap> # Compute a representative w.r.t. these generators.
 gap> RepresentativeTomByGenerators( a5, 4, [ x, y ] );
-Group([ [ [ Z(2)^0, Z(2^2)^2 ], [ 0*Z(2), Z(2)^0 ] ], 
-  [ [ Z(2)^0, Z(2^2) ], [ 0*Z(2), Z(2)^0 ] ] ])
+Group([ [ [ Z(2)^0, Z(2^2) ], [ 0*Z(2), Z(2)^0 ] ],
+  [ [ Z(2)^0, Z(2^2)^2 ], [ 0*Z(2), Z(2)^0 ] ] ])
 gap> # Show that the new generators are really good.
 gap> grp:= UnderlyingGroup( a5 );;
 gap> iso:= GroupGeneralMappingByImages( grp, g,

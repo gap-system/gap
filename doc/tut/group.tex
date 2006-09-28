@@ -812,9 +812,9 @@ usual way we now look for the subgroups above `u105'.
 gap> blocks := Blocks( a8, orb );; Length( blocks );
 15
 gap> blocks[1];
-[ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,4)(2,3)(5,8)(6,7), 
-  (1,5)(2,6)(3,7)(4,8), (1,6)(2,5)(3,8)(4,7), (1,7)(2,8)(3,5)(4,6), 
-  (1,8)(2,7)(3,6)(4,5) ]
+[ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,8)(6,7), (1,4)(2,3)(5,7)(6,8), 
+  (1,5)(2,6)(3,8)(4,7), (1,6)(2,5)(3,7)(4,8), (1,7)(2,8)(3,6)(4,5), 
+  (1,8)(2,7)(3,5)(4,6) ]
 \endexample
 
 To find the subgroup of index 15 we  again use closure. Now  we must be a
@@ -1129,10 +1129,10 @@ automorphism group.
 gap> p:=Group((1,7,6,8)(2,5,3,4), (1,2,6,3)(4,8,5,7));;
 gap> aut := AutomorphismGroup( p );; NiceMonomorphism(aut);;
 gap> niceaut := NiceObject( aut );
-Group([ (1,2)(3,4), (3,4)(5,6), (1,3)(2,4)(5,6), (1,6)(2,5)(3,4) ])
+Group([ (1,2)(3,4), (3,4)(5,6), (1,5,2,6), (1,5,3)(2,6,4) ])
 gap> IsomorphismGroups( niceaut, SymmetricGroup( 4 ) );
-[ (1,2)(3,4), (3,4)(5,6), (1,3)(2,4)(5,6), (1,6)(2,5)(3,4) ] -> 
-[ (1,3)(2,4), (1,4)(2,3), (2,4), (1,2) ]
+[ (1,2)(3,4), (3,4)(5,6), (1,5,2,6), (1,5,3)(2,6,4) ] -> 
+[ (1,4)(2,3), (1,3)(2,4), (1,4,2,3), (1,3,2) ]
 \endexample
 
 %\exercise The nice monomorphism associated with the automorphism group of
@@ -1164,7 +1164,7 @@ gap> aut2 := GroupByGenerators( GeneratorsOfGroup( aut ) );;
 gap> SetIsHandledByNiceMonomorphism( aut2, true );
 gap> SetNiceMonomorphism( aut2, nicer );
 gap> NiceObject( aut2 );  # a pc group
-Group([ f4, f3, f1*f2^2*f3, f1*f2*f3*f4 ])
+Group([ f4, f3, f1*f2^2*f3*f4, f2^2*f3*f4 ])
 \endexample
 
 The star `*' denotes composition of mappings  from the left to the right,

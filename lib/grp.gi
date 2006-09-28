@@ -410,6 +410,25 @@ InstallMethod( IsSupersolvableGroup,
 
 #############################################################################
 ##
+#M  IsPolycyclicGroup( <G> )  . . . . . . . . . test if a group is polycyclic
+##
+InstallMethod( IsPolycyclicGroup,
+               "generic method for groups", true, [ IsGroup ], 0,
+
+  function ( G )
+
+    local  d;
+
+    if IsFinite(G) then return IsSolvableGroup(G); fi;
+    if not IsSolvableGroup(G) then return false; fi;
+    d := DerivedSeriesOfGroup(G);
+    return ForAll([1..Length(d)-1],i->Index(d[i],d[i+1]) < infinity
+                                   or IsFinitelyGeneratedGroup(d[i]/d[i+1]));
+  end );
+
+
+#############################################################################
+##
 #M  IsTrivial( <G> )  . . . . . . . . . . . . . .  test if a group is trivial
 ##
 InstallMethod( IsTrivial,
@@ -4118,7 +4137,13 @@ BindGlobal("Group_InitPseudoRandom",function( grp, len, scramble )
     local   gens,  seed,  i;
 
     # we need at least as many seeds as generators
-    gens := GeneratorsOfGroup(grp);
+    if CanEasilySortElements(One(grp)) then
+        gens := Set(GeneratorsOfGroup(grp));
+    elif CanEasilyCompareElements(One(grp)) then
+        gens := DuplicateFreeList(GeneratorsOfGroup);
+    else
+        gens := GeneratorsOfGroup(grp);
+    fi;
     if 0 = Length(gens)  then
         SetPseudoRandomSeed( grp, [[]] );
         return;

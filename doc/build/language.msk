@@ -114,18 +114,20 @@ the individual data types.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Lexical Structure}
 
-The input of {\GAP} consists of sequences of the following characters.
+Most input of {\GAP} consists of sequences of the following characters.
 
-Digits, uppercase and lowercase letters, <space>, <tab>, <newline>, and
-the special characters
+Digits, uppercase and lowercase letters, <space>, <tab>, <newline>, <return>
+and the special characters
 
 \begintt
-"    `    (    )    *    +    ,    _    #
-.    /    :    ;    <    =    >    ~    &
+"    `    (    )    *    +    ,    -    #
+.    /    :    ;    <    =    >    ~    
 [    \    ]    ^    _    {    }    ! 
 \endtt
 
-Other characters will be signalled as illegal.  Inside strings
+It is possible to use other characters in identifiers by escaping
+them with backslashes, but we do not recommend to use this feature.
+Inside strings
 (see section~"Symbols" and chapter~"Strings and Characters") and
 comments (see~"Whitespaces") the full character set supported by
 the computer is allowed.
@@ -139,10 +141,12 @@ symbols.  A *symbol* is a sequence of characters that form a lexical
 unit. The set of symbols consists of keywords, identifiers, strings,
 integers, and operator and delimiter symbols.
 
-A *keyword* is a reserved word consisting entirely of lowercase letters
-(see "Keywords"). An *identifier* is a sequence of letters and digits that
-contains at least one letter and is not a keyword (see "Identifiers").
-An integer is a sequence of digits (see "Integers").  A *string* is a
+A *keyword* is a reserved word (see "Keywords"). An *identifier* is 
+a sequence of letters, digits and underscores (or other characters
+escaped by backslashes) that
+contains at least one non-digit and is not a keyword (see "Identifiers").
+An integer is a sequence of digits (see "Integers"), possibly prepended 
+by `-' and `+' sign characters.  A *string* is a
 sequence of  arbitrary characters  enclosed in double quotes (see
 "Strings and Characters").
 
@@ -246,8 +250,8 @@ Info	Assert	SaveWorkspace   fail
 \Section{Identifiers}
 
 An *identifier* is used to refer to  a variable (see "Variables").  An
-identifier consists of letters, digits, and underscores `\_', and must
-contain at least one letter or underscore.  An identifier is terminated
+identifier usually consists of letters, digits, and underscores `\_', and must
+contain at least one non-digit.  An identifier is terminated
 by the first character not in this class. Examples of valid identifiers
 are
 

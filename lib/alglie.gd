@@ -149,7 +149,7 @@ DeclareSynonymAttr( "LieCenter", LieCentre );
 ##  $\sum_{j=1}^n d_{ij} b_j$.
 ##
 ##  `LeftDerivations( <B> )' returns the Lie algebra of derivations represented
-##  by theor left action on the algebra $A$. So the matrices contained in the
+##  by their left action on the algebra $A$. So the matrices contained in the
 ##  algebra output by `LeftDerivations( <B> )' are the transposes of the 
 ##  matrices contained in the output of `RightDerivations( <B> )'.
 ##

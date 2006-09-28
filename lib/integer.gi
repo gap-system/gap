@@ -1609,42 +1609,6 @@ InstallMethod( Random,
 
 #############################################################################
 ##
-#M  Random( <low>, <high> )
-##
-InstallOtherMethod( Random,
-    "for two integers",
-    IsIdenticalObj,
-    [ IsInt,
-      IsInt ],
-    0,
-
-function( a, b )
-    local   d,  x,  r,  y;
-
-    d := b-a;
-    if d < 0  then
-        return fail;
-    elif a = b  then
-        return a;
-    else
-        x := LogInt( d, 2 ) + 1;
-        r := 0;
-        while 0 < x  do
-            y := Minimum( 10, x );
-            x := x - y;
-            r := r*2^y + Random([0..2^y-1]);
-        od;
-        if d < r  then
-            return Random( a, b );
-        else
-            return a+r;
-        fi;
-    fi;
-end );
-
-
-#############################################################################
-##
 #M  Root( <n>, <k> )
 ##
 InstallMethod( Root,

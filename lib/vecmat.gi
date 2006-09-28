@@ -2024,5 +2024,19 @@ end);
 
 #############################################################################
 ##
+#M  ZeroVector( <vector>, len )
+##
+InstallMethod( ZeroVector, "for an int and a gf2 vector",
+  [IsInt, IsGF2VectorRep],
+  function( len, v )
+    local w;
+    w := ZeroMutable(v);
+    RESIZE_GF2VEC(w,len);
+    return w;
+  end );
+
+
+#############################################################################
+##
 #E
 ##

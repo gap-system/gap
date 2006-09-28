@@ -113,49 +113,83 @@ const char * Revision_blister_c =
 **
 **  'TypeBlist' is the function in 'KindObjFuncs' for boolean lists.
 */
-extern Obj KIND_LIST_EMPTY_MUTABLE;
-extern Obj KIND_LIST_EMPTY_IMMUTABLE;
 
-extern Obj KIND_LIST_HOM;
+/* The following are imported from the GAP level, we have one type for
+ * each blist TNUM. */
+Obj TYPE_BLIST_MUT;
+Obj TYPE_BLIST_IMM;
+Obj TYPE_BLIST_NSORT_MUT;
+Obj TYPE_BLIST_NSORT_IMM;
+Obj TYPE_BLIST_SSORT_MUT;
+Obj TYPE_BLIST_SSORT_IMM;
+Obj TYPE_BLIST_EMPTY_MUT;
+Obj TYPE_BLIST_EMPTY_IMM;
 
-
-Obj TypeBlist (
+Obj TypeBlistMut (
     Obj                 list )
 {
-    Obj                 kind;           /* kind, result                    */
-    Int                 ktype;          /* kind type of <list>             */
-    Obj                 family;         /* family of elements              */
-    Obj                 kinds;          /* kinds list of <family>          */
-
     /* special case for the empty blist                                    */
     if ( LEN_BLIST(list) == 0 ) {
-        if ( IS_MUTABLE_OBJ(list) ) {
-            return TYPE_LIST_EMPTY_MUTABLE;
-        }
-        else {
-            return TYPE_LIST_EMPTY_IMMUTABLE;
-        }
+        return TYPE_BLIST_EMPTY_MUT;
+    } else {
+        return TYPE_BLIST_MUT;
     }
-
-    /* get the kind type and the family of the elements                    */
-    ktype  = TNUM_OBJ( list );
-    family = FAMILY_TYPE( TYPE_OBJ( ELM_BLIST( list, 1 ) ) );
-
-    /* get the list kinds of that family                                   */
-    kinds  = TYPES_LIST_FAM( family );
-
-    /* get the kind, if it is not known, compute it                        */
-    kind = ELM0_LIST( kinds, (Int)(ktype-T_BLIST+1) );
-    if ( kind == 0 ) {
-        kind = CALL_2ARGS( TYPE_LIST_HOM,
-                           family, INTOBJ_INT(ktype-T_BLIST+1) );
-        ASS_LIST( kinds, (Int)(ktype-T_BLIST+1), kind );
-    }
-
-    /* return the kind                                                     */
-    return kind;
 }
 
+Obj TypeBlistImm (
+    Obj                 list )
+{
+    /* special case for the empty blist                                    */
+    if ( LEN_BLIST(list) == 0 ) {
+        return TYPE_BLIST_EMPTY_IMM;
+    } else {
+        return TYPE_BLIST_IMM;
+    }
+}
+
+Obj TypeBlistNSortMut (
+    Obj                 list )
+{
+    /* special case for the empty blist                                    */
+    if ( LEN_BLIST(list) == 0 ) {
+        return TYPE_BLIST_EMPTY_MUT;
+    } else {
+        return TYPE_BLIST_NSORT_MUT;
+    }
+}
+
+Obj TypeBlistNSortImm (
+    Obj                 list )
+{
+    /* special case for the empty blist                                    */
+    if ( LEN_BLIST(list) == 0 ) {
+        return TYPE_BLIST_EMPTY_IMM;
+    } else {
+        return TYPE_BLIST_NSORT_IMM;
+    }
+}
+
+Obj TypeBlistSSortMut (
+    Obj                 list )
+{
+    /* special case for the empty blist                                    */
+    if ( LEN_BLIST(list) == 0 ) {
+        return TYPE_BLIST_EMPTY_MUT;
+    } else {
+        return TYPE_BLIST_SSORT_MUT;
+    }
+}
+
+Obj TypeBlistSSortImm (
+    Obj                 list )
+{
+    /* special case for the empty blist                                    */
+    if ( LEN_BLIST(list) == 0 ) {
+        return TYPE_BLIST_EMPTY_IMM;
+    } else {
+        return TYPE_BLIST_SSORT_IMM;
+    }
+}
 
 /****************************************************************************
 **
@@ -2581,11 +2615,13 @@ static Int InitKernel (
         InitMarkFuncBags( t1 +IMMUTABLE +COPYING , MarkOneSubBags );
     }
 
-    /* install the type method                                             */
-    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
-        TypeObjFuncs[ t1            ] = TypeBlist;
-        TypeObjFuncs[ t1 +IMMUTABLE ] = TypeBlist;
-    }
+    /* install the type methods                                            */
+    TypeObjFuncs[ T_BLIST ] = TypeBlistMut;
+    TypeObjFuncs[ T_BLIST +IMMUTABLE ] = TypeBlistImm;
+    TypeObjFuncs[ T_BLIST_NSORT ] = TypeBlistNSortMut;
+    TypeObjFuncs[ T_BLIST_NSORT +IMMUTABLE ] = TypeBlistNSortImm;
+    TypeObjFuncs[ T_BLIST_SSORT ] = TypeBlistSSortMut;
+    TypeObjFuncs[ T_BLIST_SSORT +IMMUTABLE ] = TypeBlistSSortImm;
 
     /* initialise list tables                                              */
     InitClearFiltsTNumsFromTable   ( ClearFiltsTab );
@@ -2662,6 +2698,16 @@ static Int InitKernel (
     IsSSortListFuncs[ T_BLIST_NSORT +IMMUTABLE ] = IsSSortBlistNot;
     IsSSortListFuncs[ T_BLIST_SSORT            ] = IsSSortBlistYes;
     IsSSortListFuncs[ T_BLIST_SSORT +IMMUTABLE ] = IsSSortBlistYes;
+
+    /* Import the types of blists: */
+    ImportGVarFromLibrary( "TYPE_BLIST_MUT", &TYPE_BLIST_MUT );
+    ImportGVarFromLibrary( "TYPE_BLIST_IMM", &TYPE_BLIST_IMM );
+    ImportGVarFromLibrary( "TYPE_BLIST_NSORT_MUT", &TYPE_BLIST_NSORT_MUT );
+    ImportGVarFromLibrary( "TYPE_BLIST_NSORT_IMM", &TYPE_BLIST_NSORT_IMM );
+    ImportGVarFromLibrary( "TYPE_BLIST_SSORT_MUT", &TYPE_BLIST_SSORT_MUT );
+    ImportGVarFromLibrary( "TYPE_BLIST_SSORT_IMM", &TYPE_BLIST_SSORT_IMM );
+    ImportGVarFromLibrary( "TYPE_BLIST_EMPTY_MUT", &TYPE_BLIST_EMPTY_MUT );
+    ImportGVarFromLibrary( "TYPE_BLIST_EMPTY_IMM", &TYPE_BLIST_EMPTY_IMM );
 
     /* return success                                                      */
     return 0;

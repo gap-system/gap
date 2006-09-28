@@ -245,11 +245,6 @@ InstallMethod( RepresentativeSmallest,
 ##  an enumerator of <C> and selects a random element of this list using the
 ##  function `RANDOM_LIST', which is a pseudo random number generator.
 ##
-InstallMethod( Random, "for an internal list",
-    [ IsList and IsInternalRep ], 100,
-#T ?
-    RANDOM_LIST );
-
 InstallMethod( Random, "for a (finite) collection",
     [ IsCollection and IsFinite ],
     C -> RANDOM_LIST( Enumerator( C ) ) );

@@ -79,12 +79,26 @@ InstallMethod(SchurCover,"of fp group",true,[IsSubgroupFpGroup],0,
   SchurCoverFP);
 
 InstallMethod(EpimorphismSchurCover,"generic, via fp group",true,[IsGroup],1,
-function(G)
-local iso,hom,F,D,p,gens,Fgens,Dgens;
-  iso:=IsomorphismFpGroup(G);
-  F:=ImagesSource(iso);
-  Fgens:=GeneratorsOfGroup(F);
-  D:=SchurCoverFP(F);
+    function(G)
+    local iso,
+          hom,
+          F,D,p,gens,Fgens,Dgens;
+
+    ## Check to see if G is trivial -- if so then just return
+    ## the map from the trivial FP group and G.
+    if IsTrivial(G) then
+        F := FreeGroup(1);
+        D := F/[F.1];
+        return GroupHomomorphismByImages(
+                   D,  G,
+                   GeneratorsOfGroup(D), Elements(G));
+    fi;
+    ## 
+    ##
+    iso:=IsomorphismFpGroup(G);
+    F:=ImagesSource(iso);
+    Fgens:=GeneratorsOfGroup(F);
+    D:=SchurCoverFP(F);
 
   # simplify the fp group
   p:=PresentationFpGroup(D);
@@ -616,3 +630,106 @@ InstallOtherMethod(EpimorphismSchurCover,"Holt's algorithm, primes",true,
 InstallMethod(SchurCover,"general: Holt's algorithm",true,[IsGroup],0,
   G->Source(EpimorphismSchurCover(G)));
 
+############################################################################
+############################################################################
+##
+##  Additional attributes and properties                     Robert F. Morse
+##  derived from computing the Schur Cover 
+##  of a group.
+##
+##  A Epicentre
+##  O NonabelianExteriorSquare
+##  O EpimorphismNonabelianExteriorSquare
+##  P IsCapable
+##
+############################################################################
+##
+#A  Epicentre(<G>)
+##
+##  There are various ways of describing the epicentre of a group. It is
+##  the smallest normal subgroup $N$ of $G$ such that $G/N$ is a central
+##  quotient of some group $H$. It is also the exterior center of a group.
+##
+InstallMethod(Epicentre,"Naive Method",true,[IsGroup],0,
+    function(G)
+        local epi;
+        epi := EpimorphismSchurCover(G);
+        return Image(epi,Center(Source(epi)));
+    end
+);
+
+#############################################################################
+##
+#A  Epicentre(G,N)
+##
+##  Place holder attribute for computing the epicentre relative to a normal
+##  subgroup $N$. This is an attribute of $N$.
+##
+InstallOtherMethod(Epicentre,"Naive method",true,[IsGroup,IsGroup],0,
+    function(G,N)
+        TryNextMethod();    
+    end
+);
+
+#############################################################################
+##
+#O  NonabelianExteriorSquare
+##
+##  Computes the Nonabelian Exterior Square $G\wedge G$ of a group $G$.
+##  For finitely generated groups this is the derived subgroup of the
+##  Schur cover -- which is an invariant for all Schur covers of group.
+##
+InstallMethod(NonabelianExteriorSquare, "Naive method", true, [IsGroup],0,
+    G->DerivedSubgroup(SchurCover(G)));
+    
+#############################################################################
+##
+#O  EpimorphismNonabelianExteriorSquare(<G>)
+##  
+##  Computes the mapping $G\wedge G \to G$. The kernel of this 
+##  mapping is isomorphic to the Schur Multiplicator.
+##
+InstallMethod(EpimorphismNonabelianExteriorSquare, "Naive method", true, 
+    [IsGroup],0,
+    function(G)
+        local epi, ## Epimorphism from the Schur cover to G
+              D;   ## Derived subgroup of the Schur Cover
+      
+        epi := EpimorphismSchurCover(G);
+        D   := DerivedSubgroup(Source(epi));
+
+        ## Compute the restricted mapping of epi from 
+        ## D --> G
+        ##
+        ## Need to check that D is trivial i.e. has no generators.
+        ## In this case we create the homomorphism using the group's
+        ## elements rather than generators.
+        ##
+        if IsTrivial(D) then
+    
+            return GroupHomomorphismByImages(
+                       D, Image(epi,D),
+                       Elements(D), Elements(Image(epi,D)));
+        fi;
+
+        return GroupHomomorphismByImages(
+                   D, Image(epi,D),
+                   GeneratorsOfGroup(D),
+                   List(GeneratorsOfGroup(D),x->Image(epi,x)));
+            
+    end 
+);
+
+#############################################################################
+##
+#P  IsCentralFactor(<G>)
+## 
+##  Dertermines if $G$ is a central factor of some group $H$ or not. 
+##
+InstallMethod(IsCentralFactor, "Naive method", true, [IsGroup], 0,
+    G -> IsTrivial(Epicentre(G)));
+
+#############################################################################
+##
+#E
+##

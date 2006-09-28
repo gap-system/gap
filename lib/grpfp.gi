@@ -2460,6 +2460,7 @@ BindGlobal( "IsDoneIterator_LowIndexSubgroupsFpGroup", function( iter )
           numcos,
           perms,        # permutations on the cosets
           Q,            # Quotient group
+	  done,
           i, j;         # loop variables
 
     # Do nothing if we know already that the iterator is exhausted,
@@ -2631,22 +2632,28 @@ BindGlobal( "IsDoneIterator_LowIndexSubgroupsFpGroup", function( iter )
 
                 # run through the old and the new table in parallel
                 c := 1;  y := 1;
-                while c <= nrcos  and not coinc  and later[x] = 0  do
+
+                #while c <= nrcos  and not coinc  and later[x] = 0  do
+		done := coinc or later[x] <> 0;
+		while c <= nrcos  and not done  do
+
 
                     # get the corresponding coset for the new table
                     d := s[c];
 
                     # loop over the entries in this row
                     g := 1;
-                    while   g < nrgens
-                        and c <= nrcos  and not coinc  and later[x] = 0  do
+                    #while   g < nrgens
+                    #    and c <= nrcos  and not coinc  and later[x] = 0  do
+                    while g<nrgens and not done do
 
                         # if either entry is missing we cannot decide yet
                         if table[g][c] = 0  or table[g][d] = 0  then
                             c := nrcos + 1;
+			    done:=true;
 
-                        # if old and new both contain a definition
-                        elif r[ table[g][d] ] = 0 and table[g][c] = y+1  then
+			# if old and new contain defs, extend the renumbering
+			elif table[g][c] = y+1 and r[ table[g][d] ] = 0  then
                             y := y + 1;
                             r[ table[g][d] ] := y;
                             s[ y ] := table[g][d];
@@ -2654,8 +2661,14 @@ BindGlobal( "IsDoneIterator_LowIndexSubgroupsFpGroup", function( iter )
                         # if only new is a definition
                         elif r[ table[g][d] ] = 0  then
                             later[x] := nract;
+			    done:=true;
 
-                        # if new is the smaller one we have a coincidence
+			# if olds entry is smaller, old must be earlier
+			elif table[g][c] < r[ table[g][d] ]  then
+			    later[x] := nract; 
+			    done := true;
+
+			# if news entry is smaller, test if new contains sgr
                         elif r[ table[g][d] ] < table[g][c]  then
 
                             # check that <x> fixes <H>
@@ -2687,9 +2700,10 @@ BindGlobal( "IsDoneIterator_LowIndexSubgroupsFpGroup", function( iter )
 
                             od;
 
-                        # if old is the smaller one very good
-                        elif table[g][c] < r[ table[g][d] ]  then
-                            later[x] := nract;
+                        # # if old is the smaller one very good
+                        # elif table[g][c] < r[ table[g][d] ]  then
+                        #     later[x] := nract;
+			    done:=true;
 
                         fi;
 

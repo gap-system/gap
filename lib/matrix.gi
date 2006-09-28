@@ -3833,29 +3833,6 @@ InstallMethod( BaseOrthogonalSpaceMat,
 
 #############################################################################
 ##
-#M  MatrixNC( <vectorlist>, <vector> )
-##
-InstallMethod( MatrixNC, "for a vector list and a vector",
-  [IsList, IsVector and IsList],
-  function(vecs,v)
-    return vecs;
-  end );
-
-#############################################################################
-##
-#M  Matrix( <vectorlist>, <vector> )
-##
-InstallMethod( Matrix, "for a vector list and a vector",
-  [IsList, IsVector and IsList],
-  function(vecs,v)
-    if not ForAll(vecs,w->Length(w) = Length(v)) then
-        Error("not all vectors have same length");
-    fi;
-    return MatrixNC(vecs,v);
-  end );
-
-#############################################################################
-##
 #M  BaseField( <matrixorvector> )
 ##
 
@@ -3873,28 +3850,14 @@ InstallMethod( BaseField, "for a compressed 8bit vector",
 ##
 #M  ZeroVector( <vector>, <len> )
 ##
-InstallMethod( ZeroVector, "for a nonempty vector and a length",
-  [IsList, IsInt],
-  function(v,len)
+InstallMethod( ZeroVector, "for a length and a nonempty vector",
+  [IsInt, IsList],
+  function(len,v)
     if Length(v) > 0 then
         return ListWithIdenticalEntries(len,Zero(v[1]));
     else
         Error("vector must not be empty");
     fi;
-  end );
-InstallMethod( ZeroVector, "for a compressed gf2 vector and a length",
-  [IsGF2VectorRep, IsInt],
-  function(v, len)
-    v := ListWithIdenticalEntries(len,0*Z(2));
-    ConvertToVectorRep(v,2);
-    return v;
-  end );
-InstallMethod( ZeroVector, "for a compressed 8bit vector and a length",
-  [Is8BitVectorRep, IsInt],
-  function(v, len)
-    v := ListWithIdenticalEntries(len,0*v[1]);
-    ConvertToVectorRep(v);
-    return v;
   end );
     
 #############################################################################
@@ -3902,23 +3865,23 @@ InstallMethod( ZeroVector, "for a compressed 8bit vector and a length",
 #M  ZeroMatrix( <matrix>, <rows>, <cols> )
 ##
 InstallMethod( ZeroMatrix, "for a compressed gf2 matrix",
-  [IsGF2MatrixRep, IsInt, IsInt],
-  function( m, rows, cols )
+  [IsInt, IsInt, IsGF2MatrixRep],
+  function( rows, cols, m )
     local l,i;
     l := [];
     for i in [1..rows] do
-        Add(l,ZeroVector(m[1],cols));
+        Add(l,ZeroVector(cols,m[1]));
     od;
     ConvertToMatrixRep(l);
     return l;
   end );
 InstallMethod( ZeroMatrix, "for a compressed 8bit matrix",
-  [Is8BitMatrixRep, IsInt, IsInt],
-  function( m, rows, cols )
+  [IsInt, IsInt, Is8BitMatrixRep],
+  function( rows, cols, m )
     local l,i;
     l := [];
     for i in [1..rows] do
-        Add(l,ZeroVector(m[1],cols));
+        Add(l,ZeroVector(cols,m[1]));
     od;
     ConvertToMatrixRep(l);
     return l;
@@ -3929,19 +3892,19 @@ InstallMethod( ZeroMatrix, "for a compressed 8bit matrix",
 #M  IdentityMatrix( <matrix>, <rows> )
 ##
 InstallMethod( IdentityMatrix, "for a compressed gf2 matrix",
-  [IsGF2MatrixRep, IsInt],
-  function(m, rows)
+  [IsInt, IsGF2MatrixRep],
+  function(rows,m)
     local n;
-    n := IdentityMat(m,GF(2));
+    n := IdentityMat(rows,GF(2));
     ConvertToMatrixRep(n,2);
     return n;
   end );
 InstallMethod( IdentityMatrix, "for a compressed 8bit matrix",
-  [Is8BitMatrixRep, IsInt],
-  function(m, rows)
+  [IsInt, Is8BitMatrixRep],
+  function(rows,m)
     local f,n;
     f := BaseField(m);
-    n := IdentityMat(m,f);
+    n := IdentityMat(rows,f);
     ConvertToMatrixRep(n,Size(f));
     return n;
   end );

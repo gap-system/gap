@@ -211,9 +211,14 @@ UInt QUITTINGGVar;
 
 Obj OnGapPromptHook = 0;
 
+static char **sysargv;
+static char **sysenviron;
+
 int main (
 	  int                 argc,
-	  char *              argv [] )
+          char *              argv [],
+          char *              environ [] )
+ 
 {
   ExecStatus          status;                 /* result of ReadEvalCommand*/
   UInt                type;                   /* result of compile       */
@@ -222,6 +227,9 @@ int main (
   Int4                crc;                    /* crc of file to compile  */
   volatile UInt       i;                      /* loop variable           */
   Obj                 SaveOnExitFile;         /* contents of the GVar    */
+
+  sysargv = argv;
+  sysenviron = environ;
 
   /* initialize everything                                               */
   InitializeGap( &argc, argv );
@@ -845,7 +853,7 @@ Obj FuncWhere (
 	PrintStat( call );
       }
       else if ( T_FUNCCALL_0ARGS <= TNUM_EXPR(call)
-                && TNUM_EXPR(call)  <= T_FUNCCALL_XARGS ) {
+                && TNUM_EXPR(call)  <= T_POW ) {
         PrintExpr( call );
       }
       Pr( " called from\n", 0L, 0L );
@@ -3429,13 +3437,46 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    UInt                var;
-    Obj                 optrec;
+    UInt                var, lenvec, lenstr, i;
+    Obj                 optrec, tmp, str;
 
 
     optrec = MakeOptionsRecord();
     var = GVarName("SY_COMMAND_LINE_OPTIONS");
     AssGVar(var, optrec);
+    MakeReadOnlyGVar(var);
+
+    /* make command line and environment available to GAP level       */
+    for (lenvec=0; sysargv[lenvec]; lenvec++);
+    tmp = NEW_PLIST( T_PLIST+IMMUTABLE, lenvec );
+    SET_LEN_PLIST( tmp, lenvec );
+    for (i = 0; i<lenvec; i++) {
+      lenstr = SyStrlen(sysargv[i]);
+      str = NEW_STRING(lenstr);
+      SyStrncat(CSTR_STRING(str), sysargv[i], lenstr);
+      SET_LEN_STRING(str, lenstr);
+      SET_ELM_PLIST(tmp, i+1, str);
+      CHANGED_BAG(tmp);
+    }
+    var = GVarName("SYSTEM_COMMAND_LINE");
+    MakeReadWriteGVar(var);
+    AssGVar(var, tmp);
+    MakeReadOnlyGVar(var);
+
+    for (lenvec=0; sysenviron[lenvec]; lenvec++);
+    tmp = NEW_PLIST( T_PLIST+IMMUTABLE, lenvec );
+    SET_LEN_PLIST( tmp, lenvec );
+    for (i = 0; i<lenvec; i++) {
+      lenstr = SyStrlen(sysenviron[i]);
+      str = NEW_STRING(lenstr);
+      SyStrncat(CSTR_STRING(str), sysenviron[i], lenstr);
+      SET_LEN_STRING(str, lenstr);
+      SET_ELM_PLIST(tmp, i+1, str);
+      CHANGED_BAG(tmp);
+    }
+    var = GVarName("SYSTEM_ENVIRONMENT");
+    MakeReadWriteGVar(var);
+    AssGVar(var, tmp);
     MakeReadOnlyGVar(var);
 
     /* init the completion function                                        */

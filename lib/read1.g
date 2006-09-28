@@ -60,6 +60,8 @@ ReadLib( "info.gi"     );
 ReadLib( "assert.gi"   );
 ReadLib( "global.gi"   );
 
+ReadLib( "random.gd"   );
+
 ReadLib( "options.gd"  );
 ReadLib( "options.gi"  );
 

@@ -750,6 +750,7 @@ end);
 START_TEST := function( name )
     FlushCaches();
     RANDOM_SEED(1);
+    Reset(GlobalMersenneTwister, 1);
     GASMAN( "collect" );
     GAPInfo.TestData.START_TIME := Runtime();
     GAPInfo.TestData.START_NAME := name;

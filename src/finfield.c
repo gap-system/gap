@@ -1734,11 +1734,7 @@ Obj FuncLOG_FFE_DEFAULT (
         t = d;  d = c - (c/d) * d;  c = t;
     }
     if ( (vZ-1) % c != 0 ) {
-        opZ = ErrorReturnObj(
-            "LogFFE: <z> must be a power of <r>",
-             0L, 0L,
-             "you can replace <z> via 'return <z>;'" );
-        return FuncLOG_FFE_DEFAULT( self, opZ, opR );
+      return Fail;
     }
 
     /* return the logarithm                                                */

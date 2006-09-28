@@ -266,7 +266,8 @@ DeclareOperation( "DegreeFFE", [ IsFFE ] );
 ##  
 ##  `LogFFE' returns the discrete  logarithm of the element <z> in  a  finite
 ##  field with  respect  to  the  root <r>.
-##  An  error is signalled if <z> is zero, or if <z> is not a power of <r>.
+##  An  error is signalled if <z> is zero. `fail' is returned 
+##  if <z> is not a power of <r>.
 ##  
 ##  The *discrete logarithm* of an element $z$ with  respect to a root $r$ is
 ##  the smallest nonnegative integer $i$ such that $r^i = z$.

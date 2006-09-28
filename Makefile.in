@@ -54,6 +54,7 @@ BASECC=@BASECC@
 @SET_MAKE@
 
 TESTGAP = ./bin/gap.sh -b -m 100m -o 500m -A -N -q -x 80 -r
+TESTGAPauto = ./bin/gap.sh -b -m 100m -o 500m -N -q -x 80 -r
 
 default: strip
 
@@ -165,6 +166,21 @@ testmanuals:
 	( cd doc/test; \
           cat tut/diffs prg/diffs ref/diffs ext/diffs new/diffs \
           > `date -u +../../dev/log/testmanuals1_%Y-%m-%d-%H-%M` )
+	( rm doc/test/wsp.g )
+	( echo 'SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAPauto) )
+	( cd doc/test/tut; \
+          ../mktest.sh -p ../../tut/ -L ../wsp.g; ../mkdiff.sh -p ../../tut/ )
+	( cd doc/test/prg; \
+          ../mktest.sh -p ../../prg/ -L ../wsp.g; ../mkdiff.sh -p ../../prg/ )
+	( cd doc/test/ref; \
+          ../mktest.sh -p ../../ref/ -L ../wsp.g; ../mkdiff.sh -p ../../ref/ )
+	( cd doc/test/ext; \
+          ../mktest.sh -p ../../ext/ -L ../wsp.g; ../mkdiff.sh -p ../../ext/ )
+	( cd doc/test/new; \
+          ../mktest.sh -p ../../new/ -L ../wsp.g; ../mkdiff.sh -p ../../new/ )
+	( cd doc/test; \
+          cat tut/diffs prg/diffs ref/diffs ext/diffs new/diffs \
+          > `date -u +../../dev/log/testmanualsA_%Y-%m-%d-%H-%M` )
 	( rm doc/test/wsp.g )
 	( echo 'LoadAllPackages(); \
             SaveWorkspace( "doc/test/wsp.g" );' | $(TESTGAP) )

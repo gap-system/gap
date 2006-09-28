@@ -148,6 +148,43 @@ BIND_GLOBAL( "TYPE_LIST_EMPTY_IMMUTABLE", NewType( ListsFamily,
 
 #############################################################################
 ##
+#V  TYPE_BLIST_*
+##
+BIND_GLOBAL( "TYPE_BLIST_MUT", 
+  NewType( CollectionsFamily(BooleanFamily),
+    IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IS_BLIST_REP ) );
+BIND_GLOBAL( "TYPE_BLIST_IMM", 
+  NewType( CollectionsFamily(BooleanFamily),
+    IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IS_BLIST_REP ) );
+BIND_GLOBAL( "TYPE_BLIST_NSORT_MUT", 
+  NewType( CollectionsFamily(BooleanFamily),
+    IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IS_BLIST_REP and Tester(IsSSortedList) ) );
+BIND_GLOBAL( "TYPE_BLIST_NSORT_IMM", 
+  NewType( CollectionsFamily(BooleanFamily),
+    IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IS_BLIST_REP and Tester(IsSSortedList) ) );
+BIND_GLOBAL( "TYPE_BLIST_SSORT_MUT", 
+  NewType( CollectionsFamily(BooleanFamily),
+    IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IS_BLIST_REP and Tester(IsSSortedList) and IsSSortedList ) );
+BIND_GLOBAL( "TYPE_BLIST_SSORT_IMM", 
+  NewType( CollectionsFamily(BooleanFamily),
+    IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IS_BLIST_REP and Tester(IsSSortedList) and IsSSortedList ) );
+BIND_GLOBAL( "TYPE_BLIST_EMPTY_MUT",
+  NewType( CollectionsFamily(BooleanFamily),
+    IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IS_BLIST_REP and IsEmpty and Tester(IsEmpty) ) );
+BIND_GLOBAL( "TYPE_BLIST_EMPTY_IMM", 
+  NewType( CollectionsFamily(BooleanFamily),
+    IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IS_BLIST_REP and IsEmpty and Tester(IsEmpty) ) );
+
+#############################################################################
+##
 #F  TYPE_LIST_HOM( <family>, <kernel_number> )	. . return the type of a list
 ##
 ##  For <kernel_number> see "objects.h" and "plist.c":

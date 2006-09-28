@@ -106,9 +106,9 @@ which vanish on <z>.
 gap> MinimalPolynomial( Rationals, E(8) );
 x_1^4+1
 gap> MinimalPolynomial( CF(4), E(8) );
-x_1^2+-E(4)
+x_1^2+(-E(4))
 gap> MinimalPolynomial( CF(8), E(8) );
-x_1+-E(8)
+x_1+(-E(8))
 \endexample
 
 \Declaration{TracePolynomial}

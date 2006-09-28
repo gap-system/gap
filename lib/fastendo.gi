@@ -110,38 +110,35 @@ function(n, m)
 end);
 
 
-InstallMethod(CompositionMapping2, 
-	"IsEndoMapping, IsTransformationRepOfEndo", IsIdenticalObj,
-  [IsEndoMapping, 
-	IsTransformationRepOfEndo and IsEndoMapping], 0,
-function(n, m)
-  local mntrans;
+InstallMethod( CompositionMapping2,
+    "IsEndoMapping, IsTransformationRepOfEndo", IsIdenticalObj,
+    [ IsEndoMapping, IsTransformationRepOfEndo and IsEndoMapping ],
+    function( n, m )
+    if Source(n) <> Source(m) then
+#T Is this really necessary?
+      TryNextMethod();
+    fi;
 
-  if Source(n) <> Source(m) then
-		TryNextMethod();
-  fi;
-
-  mntrans := TransformationRepresentation(m)!.transformation* n!.transformation;
-
-	return EndoMappingByTransformation(Source(m),FamilyObj(m), mntrans);
-end);
+    return EndoMappingByTransformation( Source(m), FamilyObj(m),
+               m!.transformation
+               * TransformationRepresentation( n )!.transformation );
+    end );
 
 
-InstallMethod(CompositionMapping2, 
-	"IsTransformationRepOfEndo, IsEndoMapping", IsIdenticalObj,
-  [IsTransformationRepOfEndo and IsEndoMapping, 
-	IsEndoMapping], 0,
-function(n, m)
-  local mntrans;
+InstallMethod( CompositionMapping2,
+    "IsTransformationRepOfEndo, IsEndoMapping", IsIdenticalObj,
+    [ IsTransformationRepOfEndo and IsEndoMapping, IsEndoMapping ],
+    function( n, m )
+    if Source(n) <> Source(m) then
+#T Is this really necessary?
+      TryNextMethod();
+    fi;
 
-  if Source(n) <> Source(m) then
-		TryNextMethod();
-  fi;
+    return EndoMappingByTransformation( Source(m), FamilyObj(m),
+               TransformationRepresentation( m )!.transformation
+               * n!.transformation );
+    end );
 
-  mntrans := m!.transformation* TransformationRepresentation(n)!.transformation;
-
-	return EndoMappingByTransformation(Source(m),FamilyObj(m), mntrans);
-end);
 
 #############################################################################
 ##

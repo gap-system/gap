@@ -77,7 +77,7 @@ InstallMethod( Float,
 ##
 InstallMethod( Float,
                "for rationals", true, [ IsRat ], 0,
-               x -> FLOAT_INT(NumeratorRat(x))/FLOAT_INT(DenominatorRat(x)));
+               x -> Float(NumeratorRat(x))/Float(DenominatorRat(x)));
 
 #############################################################################
 ##
@@ -86,6 +86,30 @@ InstallMethod( Float,
 InstallMethod( Float,
                "for matrices", true, [ IsMatrix ], 0,
                M -> List( M, l -> List( l, Float ) ) );
+
+#############################################################################
+##
+#M  Float( x ) . . . . . . . . . . . . . . . . . . . . . . . .  for floats
+##
+InstallMethod( Float, "for floats", true, [ IsFloat ], 0,
+    IdFunc );
+
+
+#############################################################################
+##
+#M  Float( x ) . . . . . . . . . . . . . . . . . . . . . . . .  for strings
+##
+InstallMethod( Float, "for strings", true, [ IsString ], 0,
+    FLOAT_STRING );
+
+
+#############################################################################
+##
+#M  String( x ) . . . . . . . . . . . . . . . . . . . . . . . .  for floats
+##
+InstallMethod( String, "for floats", true, [ IsFloat ], 0,
+    STRING_FLOAT );
+
 
 #############################################################################
 ##

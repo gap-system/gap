@@ -181,7 +181,8 @@ local dom,dom2,sortfun,max,cd,ce,rep,dp,ep;
       fi;
       return rep;
     fi;
-  elif (opr=OnSets or opr=OnTuples) and (IsList(d) and IsList(e)) then
+  elif (opr=OnSets or opr=OnTuples) and (IsDuplicateFreeList(d) and
+    IsDuplicateFreeList(e)) then
     if Length(d)<>Length(e) then
       return fail;
     fi;
@@ -1001,7 +1002,7 @@ local dom, issym, o, b, w, perm, pg, l, is, ie, ll, syll, act, typ, sel,
       fi;
       is:=ie;
     od;
-    pg:=Group(pg);
+    pg:=Group(pg,());
   fi;
   if not issym then 
     pg:=AlternatingSubgroup(pg);
@@ -1176,7 +1177,8 @@ local dom,n,sortfun,max,cd,ce,p1,p2;
 	return p2;
       fi;
     fi;
-  elif (opr=OnSets or opr=OnTuples) and (IsList(d) and IsList(e)) then
+  elif (opr=OnSets or opr=OnTuples) and (IsDuplicateFreeList(d) and
+    IsDuplicateFreeList(e)) then
     if Length(d)<>Length(e) then
       return fail;
     fi;
@@ -1454,10 +1456,10 @@ local dom, l, sgs;
   dom:=Set(MovedPoints(G));
   l:=Length(dom);
   if IsBound(r.base) then
-    dom:=Concatenation(r.base,Difference(dom,r.base));
+    dom:=Concatenation(Filtered(r.base,i->i in dom),Difference(dom,r.base));
   fi;
   sgs:=List([1..l-1],i->(dom[i],dom[l]));
-  return StabChainBaseStrongGenerators(dom,sgs,());
+  return StabChainBaseStrongGenerators(dom{[1..Length(dom)-1]},sgs,());
 end);
 
 #############################################################################

@@ -355,6 +355,24 @@ The residue class rings are rings, thus all operations for rings (see
 Chapter~"Rings") apply.
 See also Chapters~"Finite fields" and "Number theory".
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Random Sources}
+
+{\GAP} provides `Random' methods (see~"Random") for many collections of 
+objects. 
+On a lower level these methods use *random sources* which provide 
+random integers and random choices from lists. 
+
+\Declaration{IsRandomSource}
+
+\Declaration{Random}
+
+\Declaration{State}
+
+\Declaration{IsGlobalRandomSource}
+
+\Declaration{RandomSource}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

@@ -28,7 +28,7 @@ DeclareInfoClass( "InfoSchur" );
 ##  If also the relation to <G> is needed, `EpimorphismSchurCover' should be
 ##  used.
 ##
-DeclareOperation( "SchurCover", [IsGroup] );
+DeclareAttribute( "SchurCover", IsGroup );
 
 ##############################################################################
 ##
@@ -41,15 +41,69 @@ DeclareOperation( "SchurCover", [IsGroup] );
 ##  If <pl> is given as a list of primes, only the multiplier part for these
 ##  primes is realized.
 ##  At the moment, <D> is represented as a finitely presented group.
-DeclareOperation( "EpimorphismSchurCover", [IsGroup] );
+DeclareAttribute( "EpimorphismSchurCover", IsGroup );
 
 ##############################################################################
 ##
-#O  AbelianInvariantsMultiplier(<G>)
+#A  AbelianInvariantsMultiplier(<G>)
 ##
 ##  \index{Multiplier}\atindex{Schur multiplier}{@Schur multiplier}
 ##  returns a list of the abelian invariants of the Schur multiplier of <G>.
-DeclareOperation( "AbelianInvariantsMultiplier", [IsGroup] );
+DeclareAttribute( "AbelianInvariantsMultiplier", IsGroup );
+
+##############################################################################
+####  Derived functions.                                       Robert F. Morse
+####  
+##############################################################################
+##
+#A  Epicentre(<G>)
+#A  ExteriorCentre(<G>)
+##
+##  There are various ways of describing the epicentre of a group. It is
+##  the smallest normal subgroup $N$ of $G$ such that $G/N$ is a central
+##  quotient of a group. It is also equal to the Exterior Center of $G$
+##  \cite{Ellis98}.
+##
+DeclareAttribute("Epicentre", IsGroup );
+DeclareSynonym("Epicenter", Epicentre);
+DeclareSynonym("ExteriorCentre", Epicentre);
+DeclareSynonym("ExteriorCenter", Epicentre);
+
+##############################################################################
+##
+#O  NonabelianExteriorSquare(<G>)
+##
+##  Computes the Nonabelian Exterior Square $G\wedge G$ of a group $G$ 
+##  which for a finitely presented group is the derived subgroup of 
+##  any Schur Cover of $G$ \cite{BJR87}.
+##  
+DeclareOperation("NonabelianExteriorSquare", [IsGroup]);
+
+##############################################################################
+##
+#O  EpimorphismNonabelianExteriorSquare(<G>)
+##  
+##  Computes the mapping $G\wedge G \to G$. The kernel of this
+##  mapping is equal to the Schur Multiplicator of $G$.
+##
+DeclareOperation("EpimorphismNonabelianExteriorSquare", [IsGroup]);
+
+##############################################################################
+##
+#P  IsCentralFactor(<G>) 
+##
+##  This method 
+##  determines if there exists a group $H$ such that <G> is isomormorphic 
+##  to the quotient $H/Z(H)$. A group with this property is called in 
+##  literature *capable*.
+##  A group being capable is 
+##  equivalent to the Epicentre of $G$ being trivial \cite{BFS79}.
+##  
+DeclareProperty("IsCentralFactor", IsGroup);
+
+##############################################################################
+###########################END RFM############################################
+
 
 ##############################################################################
 ##

@@ -715,11 +715,12 @@ local c,a1,a2,r,s,t,rg,st,i,j,nr,o,oi,nu,step,p,pinv,img,rep,
     for i in dcs do
       bsz:=bsz-i[2];
       r:=CanonicalRightCosetElement(a,i[1]);
-      if ForAny(t,j->r in RepresentativesContainedRightCosets(j)) then
+      if AssertionLevel()>0 and 
+	ForAny(t,j->r in RepresentativesContainedRightCosets(j)) then
 	Error("duplicate!");
       fi;
       r:=DoubleCoset(a,i[1],b);
-      if Size(r)<>i[2] then
+      if AssertionLevel()>0 and Size(r)<>i[2] then
 	Error("single size!");
       fi;
       Add(t,r);

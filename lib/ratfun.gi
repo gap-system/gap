@@ -156,7 +156,7 @@ local f;
 end );
 
 InstallGlobalFunction(RationalFunctionByExtRep,function(rfam,num,den)
-  return PolynomialByExtRepNC(rfam,SortedPolExtrepRatfun(rfam,num),
+  return RationalFunctionByExtRepNC(rfam,SortedPolExtrepRatfun(rfam,num),
                                    SortedPolExtrepRatfun(rfam,den));
 end);
 

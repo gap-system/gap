@@ -541,6 +541,22 @@ UInt            completion_rnam (
     return next != 0;
 }
 
+Obj FuncALL_RNAMES (
+    Obj                 self )
+{
+    Obj                 copy, s;
+    UInt                i;
+    Char*               name;
+
+    copy = NEW_PLIST( T_PLIST+IMMUTABLE, CountRNam );
+    for ( i = 1;  i <= CountRNam;  i++ ) {
+        name = NAME_RNAM( i );
+        C_NEW_STRING(s, strlen(name), name);
+        SET_ELM_PLIST( copy, i, s );
+    }
+    SET_LEN_PLIST( copy, CountRNam );
+    return copy;
+}
 
 /****************************************************************************
 **
@@ -597,6 +613,9 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "NameRNam", 1, "rnam",
       NameRNamHandler, "src/records.c:NameRNam" },
+
+    { "ALL_RNAMES", 0, "",
+      FuncALL_RNAMES, "src/records.c:ALL_RNAMES" },
 
     { 0 }
 

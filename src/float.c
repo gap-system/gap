@@ -105,6 +105,8 @@ void PrintFloat (
 }
 #endif
 
+
+
 /****************************************************************************
 **
 *F  EqFloat( <floatL>, <floatR> )  . . . . . . . . .  test if <floatL> =  <floatR>
@@ -393,6 +395,18 @@ Obj FuncFLOOR_FLOAT( Obj self, Obj f)
   return NEW_FLOAT(floor(VAL_FLOAT(f)));
 }
 
+Obj FuncSTRING_FLOAT( Obj self, Obj f)
+{
+  Char buf[32];
+  Obj str;
+  UInt len;
+  sprintf(buf, "%g",VAL_FLOAT(f));
+  len = SyStrlen(buf);
+  str = NEW_STRING(len);
+  SyStrncat(CSTR_STRING(str),buf,len);
+  return str;
+}
+
 /****************************************************************************
 **
 
@@ -439,6 +453,11 @@ static StructGVarFunc GVarFuncs [] = {
 
   { "FLOOR_FLOAT", 1, "float",
     FuncFLOOR_FLOAT, "src/float.c:FLOOR_FLOAT" },
+
+  { "STRING_FLOAT", 1, "float",
+    FuncSTRING_FLOAT, "src/float.c:STRING_FLOAT" },
+
+
 
   {0}
 };

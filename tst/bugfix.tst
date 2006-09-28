@@ -9,6 +9,10 @@
 
 gap> START_TEST("bugfixes test");
 
+gap> if LoadPackage("ctbllib") = fail then
+>     Print("Warning: The Character Table Library package is not available.\nSome tests will not complete correctly.\n");
+>    fi;
+
 ##  Bug 18 for fix 4
 ##
 gap> if LoadPackage( "ctbllib" ) <> fail then
@@ -112,6 +116,7 @@ gap> c := Transformation([2,3,1]);;
 gap> op3 := Semigroup(s,c);;
 gap> IsRegularSemigroup(op3);;
 gap> dcl := GreensDClasses(op3);;
+gap> dcl := SortedList(ShallowCopy(dcl));;
 gap> d2 := dcl[2];; d1:= dcl[1];;
 gap> i2 := SemigroupIdealByGenerators(op3,[Representative(d2)]);;
 gap> GeneratorsOfSemigroup(i2);;
@@ -823,10 +828,10 @@ gap> l;
 
 
 # 2005/06/23 (AH)
-gap> LoadPackage("Crisp");;
-gap> h:=Source(EpimorphismSchurCover(SmallGroup(64,150)));;
-gap> NormalSubgroups( Centre( h ) );;
-
+gap> if LoadPackage("crisp") <> fail then
+>     h:=Source(EpimorphismSchurCover(SmallGroup(64,150)));
+>     NormalSubgroups( Centre( h ) );
+>     fi;
 
 # 2005/07/09 (AH)
 gap> CompositionSeries(PerfectGroup(IsPermGroup,262440,1));;
@@ -1138,17 +1143,13 @@ true
 
 
 # 2005/10/14 (BH)
-## 2006/03/13 (JJM) - leave commented out until we know what should
-## be tested here
-gap> LoadPackage ("crisp", "1.2.1", false);
-true
-gap> G := DirectProduct( CyclicGroup(2) , CyclicGroup(3) ,  
-> SymmetricGroup(4) );;
-gap> AllInvariantSubgroupsWithQProperty (G, G, 
-> ReturnTrue, ReturnTrue, rec());;
-gap> (1, 5) in EnumeratorByPcgs ( Pcgs( SymmetricGroup (4) ) );
-false
-
+gap> if LoadPackage ("crisp", "1.2.1", false) <> fail then
+>     G := DirectProduct(CyclicGroup(2), CyclicGroup(3), SymmetricGroup(4));
+>     AllInvariantSubgroupsWithQProperty (G, G, ReturnTrue, ReturnTrue, rec());
+>     if ( (1, 5) in EnumeratorByPcgs ( Pcgs( SymmetricGroup (4) ) ) ) then
+>      Print( "problem with crisp (7)\n" );
+>     fi;
+>    fi;
 
 # 2005/10/26 (JS)
 gap> PolynomialByExtRep(FamilyObj(X(Rationals)),[[1,1],1,[2,1],1]); # x_2+x_1 in 4.4.6
@@ -1175,9 +1176,9 @@ gap> Dimension( rg / i );;
 gap> LoadPackage( "ctbllib" );
 true
 gap> t:= CharacterTable( "S12(2)" );;  p:= PrevPrimeInt( Exponent( t ) );;
-gap> IsSmallIntRep( p );
-false
-gap> PowerMap( t, p );;
+gap> IsSmallIntRep( p ) = (GAPInfo.BytesPerVariable > 4);
+true
+gap> if GAPInfo.BytesPerVariable = 4 then  PowerMap( t, p ); fi;
 
 
 # 2005/11/22 (TB)
@@ -1249,9 +1250,10 @@ gap> s:=FullTransformationSemigroup(4);;
 gap> ld:=GreensDClassOfElement(FullTransformationSemigroup(4),
 > Transformation([1,2,3,3]));;
 gap> rs:=AssociatedReesMatrixSemigroupOfDClass(ld);;
-gap> SandwichMatrixOfReesZeroMatrixSemigroup(rs)[3][5]=(1,2)(3,4)(5,6);
-true
-
+gap> SandwichMatrixOfReesZeroMatrixSemigroup(rs);
+[ [ 0, 0, 0, (), (), () ], [ 0, (), (), 0, 0, () ],
+  [ (), 0, (), 0, (1,2)(3,4)(5,6), 0 ],
+  [ (), (1,3)(2,5)(4,6), 0, (1,4,5)(2,6,3), 0, 0 ] ]
 
 # 2006/01/11 (MC)
 gap> d := DirectoryCurrent();;
@@ -1384,6 +1386,176 @@ gap> IdGroup(Image(Embedding(dp,1)));
 # 2005/12/28 (FL)
 gap> IsCheapConwayPolynomial(2,114);
 true
+
+#############################################################################
+##
+##  for changes 4.4.6 -> 4.4.7  (extracted from corresponding dev/Update)
+
+
+# For fixes:
+
+
+# 2006/04/07 (TB)
+gap> G:= SymmetricGroup(3);;
+gap> m:= InnerAutomorphism( G, (1,2) );;
+gap> n:= TransformationRepresentation( InnerAutomorphism( G, (1,2,3) ) );;
+gap> m * n;;  n * m;;
+
+
+# 2006/04/18 (SK)
+gap> gp := FreeGroup(1);; Size(gp);;  
+gap> DirectProduct(gp,gp);
+<fp group of size infinity on the generators [ f1, f2 ]>
+
+
+# 2006/04/18 (TB)
+gap> Decomposition( [ [1,1], [E(3),E(3)^2] ], [ [1,-1] ], 1 );
+[ fail ]
+
+
+# 2006/05/12 (TB)
+gap> Center( OctaveAlgebra( GF(13) ) );;
+
+
+# 2006/07/25 (AH)
+gap> g:=TransitiveGroup(10,8);;
+gap> ConjugatorOfConjugatorIsomorphism(ConjugatorAutomorphism(g,(4,9)));
+(1,6)(2,7)(3,8)(5,10)
+
+
+# 2006/07/27 (SK)
+gap> IsPolycyclicGroup(SymmetricGroup(4));
+true
+gap> IsPolycyclicGroup(SymmetricGroup(5));
+false
+gap> IsPolycyclicGroup(Group([[1,1],[0,1]]));
+true
+## 2006/09/20 (JJM)
+## comment out this test, since it will not complete without Polenta.
+#gap> IsPolycyclicGroup(Group([[1,1],[0,1]],[[0,1],[1,0]]));
+#false
+
+
+# 2006/07/28 (RFM)
+gap> g := CyclicGroup(1);; 
+gap> SchurCover(g);;        
+gap> sc := SchurCover(g);;
+gap> IdGroup(sc);
+[ 1, 1 ]
+gap> epi := EpimorphismSchurCover(g);;
+gap> Image(epi)=g;
+true
+gap> IdGroup(Source(epi));
+[ 1, 1 ]
+gap> G := SmallGroup(27,3);;
+gap> IsCentralFactor(G);
+true
+gap> AbelianInvariantsMultiplier(G);
+[ 3, 3 ]
+gap> AbelianInvariants(Kernel(EpimorphismNonabelianExteriorSquare(G)));
+[ 3, 3 ]
+gap> ec := Epicentre(DirectProduct(CyclicGroup(25),CyclicGroup(5)));;
+gap> IsTrivial(ec);
+false
+gap> ec := Epicentre(DirectProduct(CyclicGroup(3),CyclicGroup(3)));; 
+gap> IsTrivial(ec);
+true
+
+
+# 2006/08/19 (Max)
+gap> m := [[1]];;
+gap> IsMutable(m^1);
+true
+
+
+# 2006/08/19 (Max)
+gap> IsOperation(StripMemory);
+true
+
+
+# 2006/08/22 (Max)
+gap> "IS_BLIST_REP" in NamesFilter(TypeObj(BlistList([1,2],[2]))![2]);
+true
+
+
+# 2006/08/28 (FL)
+gap> for i in [1..10000] do a := PositionSorted(l,[i]); od; time1 := time;;
+gap> l := Immutable(l);;
+gap> for i in [1..10000] do a := PositionSorted(l,[i]); od; time2 := time;;
+gap> time1 < 2*time2; # time1 and time2 should be about the same
+true
+
+
+# 2006/08/29 (FL (and AH))
+gap> IsBound(ITER_POLY_WARN);
+true
+
+
+# 2006/08/28 (SL)
+
+gap> a := -70170876888665790351719387465587751111897440176;;
+gap> b := -24507694029460834590427275534096897425026491796;;
+gap> GcdInt(a,b);
+4
+
+
+# 2006/04/02 (AH)
+gap> F:=FreeGroup("x","y","z");;
+gap> x:=F.1;;y:=F.2;;z:=F.3;;
+gap> rels:=[x^2,y^2,z^4,Comm(z^-2,x),(z*x)^4,Comm(z^-1,y)^2,
+> (y*x)^4,(Comm(z,y)*x)^2,(Comm(y,z^-1)*x)^2,(y*z)^6,
+> z^-1*y*z^-1*x*z*y*z^-1*x*z*y*z^-1*x*z*y*z*x,y*z*x*z*y*x*y*z^-1*x*y*z^-1*x*y*z*x*y*z^-1*x];;
+gap> G:=F/rels;;
+gap> x:=G.1;;y:=G.2;;z:=G.3;;
+gap> s3:=Subgroup(G,[ z*y*z*y^-1, z^-1*y*z^-1*y^-1, y*z*x*z^-1*y^-1*x^-1,
+> z*x*y*z*x^-1*y^-1 ]);;
+gap> L:=LowIndexSubgroupsFpGroup(G,s3,4);;
+gap> Assert(0,Length(L)=27);
+
+
+# For new features:
+
+
+# 2006/06/19 (SK)
+gap> Positions([1,2,1,2,3,2,2],2);
+[ 2, 4, 6, 7 ]
+gap> Positions([1,2,1,2,3,2,2],4);
+[  ]
+
+
+# 2006/07/06 (SL)
+
+gap> z := Z(3,10);;
+gap> LogFFE(z,z^2);
+fail
+gap> z := Z(3,11);;
+gap> LogFFE(z,z^2);
+fail
+
+
+# 2006/08/16 (FL)
+gap> EvalString("1234\\\r\n567");
+1234567
+
+
+# 2006/08/16 (FL)
+gap> IsBound(GAPInfo.SystemEnvironment);
+true
+
+
+# 2006/08/28 (FL)
+gap> Length(IDENTS_BOUND_GVARS());;
+gap> Length(ALL_RNAMES());;        
+
+
+# 2006/08/28 (FL)
+gap> IsCheapConwayPolynomial(2,100);
+true
+
+
+# 2006/08/28 (FL)
+gap> Random(GlobalMersenneTwister,[1..6]);;
+
 
 gap> STOP_TEST( "bugfix.tst", 7621100000 );
 

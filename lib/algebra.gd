@@ -112,7 +112,7 @@ DeclareSynonymAttr( "IsLieAlgebra",
 ##
 ##  is `true' if the algebra <A> is simple, and `false' otherwise. This 
 ##  function is only implemented for the cases where <A> is an associative or
-##  a Lie algebra. And for Lie algebras it is only implemented fot the
+##  a Lie algebra. And for Lie algebras it is only implemented for the
 ##  case where the ground field is of characteristic $0$.
 ##
 DeclareProperty( "IsSimpleAlgebra", IsAlgebra );

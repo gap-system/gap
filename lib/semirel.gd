@@ -255,3 +255,46 @@ DeclareAttribute("CanonicalGreensClass", IsGreensClass);
 #JDM Should be IsTransformationSemigroup
 DeclareOperation("DisplayEggBoxesOfSemigroup", [IsSemigroup]);
 
+
+#############################################################################
+##
+#P  IsSemigroupGeneralMapping( <mapp> ) 
+#P  IsSemigroupHomomorphism( <mapp> )
+##
+##  A `SemigroupGeneralMapping' is a mapping which respects multiplication. 
+##  If it is total and single valued it is called a group homomorphism.
+##
+
+DeclareSynonymAttr( "IsSemigroupGeneralMapping", IsSPGeneralMapping and IsGeneralMapping and 
+ RespectsMultiplication);
+
+DeclareSynonymAttr("IsSemigroupHomomorphism", IsSemigroupGeneralMapping and
+ IsMapping);
+
+DeclareRepresentation( "IsSemigroupGeneralMappingRep",
+      IsSemigroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep, [] );
+
+#DeclareSynonymAttr( "IsSemigroupGeneralMapping", IsGeneralMapping);
+#DeclareSynonymAttr("IsSemigroupHomomorphism", IsSemigroupGeneralMapping and #RespectsMultiplication and IsTotal and IsSingleValued and #IsEndoGeneralMapping);
+
+#############################################################################
+##
+#F  IsSemigroupHomomorphismByImagesRep( <mapp> ) 
+##
+##  a `SemigroupHomomorphism' represented by a list of images of *all* 
+##  elements. 
+##
+
+#JDM include IsSemigroupGeneralMappingRep?
+
+DeclareRepresentation( "IsSemigroupHomomorphismByImagesRep", IsAttributeStoringRep, ["imgslist"] );
+
+#############################################################################
+##
+#O  SemigroupHomomorphismByImagesNC( <mapp> ) 
+##
+##  returns a `SemigroupHomomorphism' represented by
+## `IsSemigroupHomomorphismByImagesRep'.
+
+DeclareOperation("SemigroupHomomorphismByImagesNC", [IsSemigroup, IsSemigroup, IsList]);
+

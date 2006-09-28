@@ -21,7 +21,8 @@ DeclareRepresentation("IsObjWithMemory",
 DeclareAttribute("TypeOfObjWithMemory",IsFamily);
 
 DeclareGlobalFunction( "GeneratorsWithMemory" );
-DeclareGlobalFunction( "StripMemory" );
+DeclareOperation( "StripMemory", [IsObject] );
+DeclareOperation( "ForgetMemory", [IsObject] );
 DeclareGlobalFunction( "StripStabChain" );
 DeclareGlobalFunction( "CopyMemory" );
 DeclareGlobalFunction( "GroupWithMemory" );

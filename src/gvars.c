@@ -670,6 +670,23 @@ Obj FuncIDENTS_GVAR (
     return copy;
 }
 
+Obj FuncIDENTS_BOUND_GVARS (
+    Obj                 self )
+{
+    /*QQ extern Obj          NameGVars;   */
+    Obj                 copy;
+    UInt                i, j;
+
+    copy = NEW_PLIST( T_PLIST+IMMUTABLE, LEN_PLIST(NameGVars) );
+    for ( i = 1, j = 1;  i <= LEN_PLIST(NameGVars);  i++ ) {
+        if ( VAL_GVAR( i ) || ELM_PLIST( ExprGVars, i )) {
+           SET_ELM_PLIST( copy, j, ELM_PLIST( NameGVars, i ) );
+           j++;
+        }
+    }
+    SET_LEN_PLIST( copy, j - 1 );
+    return copy;
+}
 
 /****************************************************************************
 **
@@ -988,6 +1005,9 @@ static StructGVarFunc GVarFuncs [] = {
                
     { "IDENTS_GVAR", 0L, "",
       FuncIDENTS_GVAR, "src/gap.c:IDENTS_GVAR" },
+
+    { "IDENTS_BOUND_GVARS", 0L, "",
+      FuncIDENTS_BOUND_GVARS, "src/gap.c:IDENTS_BOUND_GVARS" },
 
     { "ISB_GVAR", 1L, "gvar",
       FuncISB_GVAR, "src/gap.c:ISB_GVAR" },

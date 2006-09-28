@@ -1,0 +1,157 @@
+  GAP 4.4 Update 8 (September 2006)   
+                  
+    New or improved functionality     
+                  
+   1. A function Positions with underlying operation      
+      PositionsOp, which returns the list of all          
+      positions at which a given object appears in a      
+      given list. 
+   2. LogFFE now returns `fail' when the element is not a 
+      power of the base.
+   3. It is now allowed to continue long integers,        
+      strings or identifiers by ending a line with a      
+      backslash or with a backslash and carriage return   
+      character. So, files with GAP code and              
+      DOS/Windows-style line breaks are now valid input   
+      on all architectures.           
+   4. The command line for starting the session and the   
+      system environment are now available in             
+      GAPInfo.SystemCommandLine and   
+      GAPInfo.SystemEnvironment.      
+   5. Names of all bound global variables and all          
+      component names are available on GAP level.         
+   6. Added a few new Conway polynomials computed by Kate 
+      Minola and John Bray.           
+   7. There is a new concept of random sources, see       
+      IsRandomSource, which provides random number        
+      generators which are independent of each other.
+      
+      There is kernel code for the Mersenne twister       
+      random number generator (based on the code by       
+      Makoto Matsumoto distributed at
+      http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html).
+      It provides fast 32 bit pseudo random integers with
+      a period of length 2^19937-1 and a 623-dimensional              
+      equidistribution. The library methods for random    
+      elements of lists and for random (long) integers    
+      (Random(low, high)) are using the Mersenne twister  
+      now.
+                  
+   8. In line editing mode (usual input mode without -n   
+      option) in lines starting with gap> , > or brk>     
+      this beginning part is immediately removed. This is 
+      a convenient feature that allows one to cut and     
+      paste input lines from other sessions or from       
+      manual examples into the current session.           
+
+    Fixed bugs which could produce wrong results          
+                  
+   1. The function Decomposition returned coefficient     
+      vectors also in certain situations where in fact no 
+      decomposition exists. This happened only if the     
+      matrix entered as the first argument contained      
+      irrational values and a row in the matrix entered   
+      as the second argument did not respect the          
+      algebraic conjugacy relations between the columns   
+      of the first argument. So there was no problem for  
+      the usual cases that the two matrices are integral  
+      or that they are lists of Brauer characters.        
+      [Reported by J"urgen M"uller]   
+   2. PC group homomorphisms can claim a wrong kernel     
+      after composition. [Reported by S.Bouc]             
+   3. The return value of OctaveAlgebra had an            
+      inconsistent defining structure constants table for 
+      the case of coefficients fields not containing the  
+      integer zero. [Reported by G'abor Nagy]             
+   4. The manual guarantees that a conjugator             
+      automorphism has a conjugating element in the group 
+      if possible. This was not guaranteed.               
+   5. StabChain for symmetric groups gave a wrong result  
+      if fixed points were prescribed for base.           
+   6. Contrary to what is documented the function         
+      POW_OBJ_INT returned an immutable result for        
+      POW_OBJ_INT(m,1) for a mutable object m. This is    
+      triggered by the code m^1.      
+   7. PseudoRandom for a group had a problem if the group 
+      had lots of equal generators. The produced elements 
+      were extremely poorly distributed in that case. This   
+      is now fixed for the case that elements of the      
+      group can easily be sorted.     
+   8. Fixed the bug that the type of a blist was computed 
+      wrongly: The type previously had IS_PLIST_REP       
+      instead of IS_BLIST_REP in its filter list.         
+   9. `Orbits' did not respect a special                  
+      `PositionCanonical' method for right transversals.  
+      [Reported by Steve Costenoble]  
+  10. Wrong results for GcdInt for some arguments on 64   
+      bit systems only. [Reported by Robert Morse]        
+  11. When prescribing a subgroup to be included, the low 
+      index algorithm for fp groups sometimes returned    
+      subgroups which are in fact conjugate. (No          
+      subgroups are missing.) [Reported by I.Soroko]      
+                  
+    Fixed bugs which could lead to crashes                
+                  
+   1. The command line option -x allowed arguments > 256  
+      which can then result in internal buffers           
+      overflowing. Can't really test it except by         
+      starting gap -x 300 and checking SizeScreen(); With 
+      the fix it is [256,24], without it was [300,24]     
+      [Reported by Michael Hartley]   
+                  
+    Other fixed bugs                  
+
+   1. Two special methods for the operation               
+      CompositionMapping2 were not correct, such that     
+      composing (and multiplying) certain group           
+      homomorphisms did not work. [Reported by Peter      
+      Mayr]       
+   2. In the definition of FrobeniusCharacterValue, it    
+      had been stated erroneously that the value must lie 
+      in the field of p^n-th roots of unity; the correct  
+      condition is that the value must lie in the field   
+      of (p^n-1)-th roots of unity. [Reported by Jack     
+      Schmidt]    
+   3. The function DirectProduct failed when one of the   
+      factors was known to be infinite.                   
+   4. For a linear action homomorphism PreImageElm was    
+      very slow because there was no good method to check 
+      for injectivity, which is needed for nearly all     
+      good methods for PreImageElm. This change adds such 
+      a new method for IsInjective. [Reported by Akos     
+      Seress]     
+   5. Rare errors in the complement routine for           
+      permutation groups.             
+   6. Blocks code now uses jellyfish-style random         
+      elements to avoid bad schreier trees                
+   7. A method for IsPolycyclicGroup has been added. Such 
+      a method was missing so far.    
+   8. Corrected EpimorphismSchurCover to handle the       
+      trivial group correctly. Added new methods that     
+      follow immediately from computing the Schur Cover   
+      of a group. The attribute Epicentre, the operations 
+      NonabelianExteriorSquare and    
+      EpimorphismNonabelianExteriorSquare, and the        
+      property IsCentralFactor are added to the library   
+      with documentation and references.                  
+   9. Display the correct expression in a call stack      
+      trace if an operation was called somewhere up due   
+      to the evaluation of a unary or binary operation.   
+  10. Made StripMemory an operation rather than a global  
+      function. Added ForgetMemory operation.             
+  11. Adjust things slightly to make later conversion to  
+      new vectors/matrices easier. Nothing of this should 
+      be visible. 
+  12. Corrected some details in the documentation of the  
+      GAP language. [Reported by AK]  
+  13. Now PositionSorted is much faster on long mutable   
+      plain lists. (The former operation is substituted   
+      by a function and a new operation                   
+      PositionSortedOp.) [Reported by Radu Silviu]        
+  14. Now it is possible to switch repeated warnings off  
+      when working with iterative polynomial rings.       
+                  
+
+     ----------------------------------------------------------------------
+  
+   The GAP Group, September 2006.

@@ -248,7 +248,8 @@ DeclareOperation( "ConjugatorIsomorphism",
 ##  with `ConjugatorIsomorphism' (see~"ConjugatorIsomorphism").
 ##
 ##  `ConjugatorAutomorphismNC' does the same as `ConjugatorAutomorphism',
-##  except that the check is omitted whether <g> normalizes <G>.
+##  except that the check is omitted whether <g> normalizes <G> and it is
+##  assumed that <g> is chosen to be in <G> if possible.
 ##
 DeclareGlobalFunction( "ConjugatorAutomorphism" );
 

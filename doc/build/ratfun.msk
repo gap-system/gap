@@ -441,7 +441,7 @@ gap> Factors( f );
 gap> Factors( PolynomialRing( Rationals ), f );
 [ x^2+1 ]
 gap> Factors( PolynomialRing( CF(4) ), f );
-[ x+-E(4), x+E(4) ]
+[ x+(-E(4)), x+E(4) ]
 \endexample
 
 \Declaration{FactorsSquarefree}
@@ -524,21 +524,21 @@ can affect the behavior of operations like factorization into irreducibles.
 \Declaration{CoefficientsRing}
 \beginexample
 gap> r:=PolynomialRing(GF(7));
-PolynomialRing(..., [ x_1 ])
+GF(7)[x_1]
 gap>  r:=PolynomialRing(GF(7),3);
-PolynomialRing(..., [ x_1, x_2, x_3 ])
+GF(7)[x_1,x_2,x_3]
 gap> IndeterminatesOfPolynomialRing(r);
 [ x_1, x_2, x_3 ]
 gap> r2:=PolynomialRing(GF(7),[5,7,12]);
-PolynomialRing(..., [ x_5, x_7, x_12 ])
+GF(7)[x_5,x_7,x_12]
 gap> CoefficientsRing(r);
 GF(7)
 gap> r:=PolynomialRing(GF(7),3);
-PolynomialRing(..., [ x_1, x_2, x_3 ])
+GF(7)[x_1,x_2,x_3]
 gap> r2:=PolynomialRing(GF(7),3,IndeterminatesOfPolynomialRing(r));
-PolynomialRing(..., [ x_4, x_5, x_6 ])
+GF(7)[x_4,x_5,x_6]
 gap> r:=PolynomialRing(GF(7),["x","y","z","z2"]);
-PolynomialRing(..., [ x, y, z, z2 ])
+GF(7)[x,y,z,z2]
 \endexample
 
 If you need to work with a polynomial ring and its indeterminates the
@@ -608,9 +608,9 @@ true
 \Declaration{IsUnivariatePolynomialRing}
 \beginexample
 gap> r:=UnivariatePolynomialRing(Rationals,"x");
-PolynomialRing(..., [ x ])
+Rationals[x]
 gap> r2:=PolynomialRing(Rationals,["q"]);
-PolynomialRing(..., [ q ])
+Rationals[q]
 gap> IsUnivariatePolynomialRing(r);
 true
 gap> IsUnivariatePolynomialRing(r2);

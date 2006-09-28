@@ -94,7 +94,7 @@ x_1
 gap> Factors( PolynomialRing( Rationals ), x^5-1 );
 [ x_1-1, x_1^4+x_1^3+x_1^2+x_1+1 ]
 gap> Factors( PolynomialRing( CF(5) ), x^5-1 );
-[ x_1-1, x_1+-E(5), x_1+-E(5)^2, x_1+-E(5)^3, x_1+-E(5)^4 ]
+[ x_1-1, x_1+(-E(5)), x_1+(-E(5)^2), x_1+(-E(5)^3), x_1+(-E(5)^4) ]
 \endexample
 
 

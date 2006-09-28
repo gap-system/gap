@@ -1078,6 +1078,7 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##  Note that `Random' is of course *not* an attribute.
 ##
 DeclareOperation( "Random", [ IsListOrCollection ] );
+DeclareOperation( "Random", [ IS_INT, IS_INT ] );
 
 ##
 #2
@@ -1117,31 +1118,6 @@ DeclareOperation( "Random", [ IsListOrCollection ] );
 ##
 DeclareSynonym( "RandomList", RANDOM_LIST);
 
-#############################################################################
-##
-#F  StateRandom()
-#F  RestoreStateRandom(<obj>)
-##
-##  For debugging purposes, it can be desirable to reset the random number
-##  generator to a state it had before. `StateRandom' returns a {\GAP}
-##  object that represents the current state of the random number generator
-##  used by `RandomList'.
-##
-##  By calling `RestoreStateRandom' with this object as argument, the
-##  random number is reset to this same state.
-##
-##  (The same result can be obtained by accessing the two global variables
-##  `R_N' and `R_X'.)
-##
-##  (The format of the object used to represent the random generator seed
-##  is not guaranteed to be stable betweed different machines or versions
-##  of {\GAP}.
-##
-DeclareGlobalFunction( "StateRandom" );
-DeclareGlobalFunction( "RestoreStateRandom" );
-
-# older documentation referred to `StatusRandom'. 
-DeclareSynonym("StatusRandom",StateRandom);
 
 #############################################################################
 ##
@@ -2034,7 +2010,6 @@ DeclareOperation( "CanComputeIsSubset", [IsObject,IsObject] );
 DeclareFilter( "CanComputeSize" );
 
 InstallTrueMethod( CanComputeSize, HasSize );
-
 
 #############################################################################
 ##

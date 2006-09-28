@@ -47,18 +47,23 @@ local lc;
 
 end );
 
+ITER_POLY_WARN:=true;
+
 InstallMethod( LaurentPolynomialByCoefficients, 
   "warn about iterated polynomials", true,
     [ IsFamily and HasCoefficientsFamily, IsList, IsInt, IsInt ], 0,
 function( fam, cofs, val, ind )
   # catch algebraic extensions
-  if not IsBound(fam!.primitiveElm) then
+  if ITER_POLY_WARN=true and not IsBound(fam!.primitiveElm) then
     Info(InfoWarning,1,
       "You are creating a polynomial *over* a polynomial ring (i.e. in an");
     Info(InfoWarning,1,
       "iterated polynomial ring). Are you sure you want to do this?");
     Info(InfoWarning,1,
     "If not, the first argument should be the base ring, not a polynomial ring"
+      );
+    Info(InfoWarning,1,
+    "Set ITER_POLY_WARN:=false; to remove this warning."
       );
   fi;
   TryNextMethod();
@@ -113,6 +118,23 @@ InstallOtherMethod( UnivariatePolynomial, "ring,empty cof",true,
 function( ring, cofs )
     return LaurentPolynomialByCoefficients( ElementsFamily(FamilyObj(ring)),
                                             cofs, 0, 1 );
+end );
+
+#############################################################################
+InstallOtherMethod( UnivariatePolynomial, "ring,empty cof, indnr",true,
+    [ IsRing, IsEmpty,IsObject ], 0,
+function( ring, cofs,inum )
+    return LaurentPolynomialByCoefficients( ElementsFamily(FamilyObj(ring)),
+                                            cofs, 0, inum );
+end );
+
+#############################################################################
+InstallOtherMethod( UnivariatePolynomial, "ring,cof,indpol",true,
+    [ IsRing, IsRingElementCollection,IsUnivariateRationalFunction ], 0,
+function( ring, cofs,ind )
+    return LaurentPolynomialByCoefficients( ElementsFamily(FamilyObj(ring)),
+                                            cofs, 0,
+		    IndeterminateNumberOfUnivariateRationalFunction(ind) );
 end );
 
 #############################################################################
@@ -1068,7 +1090,7 @@ RedispatchOnCondition(Value,true,[IsPolynomialFunction,IsRingElement],
 
 # print coeff list f.
 BindGlobal("StringUnivariateLaurent",function(fam,cofs,val,name)
-local str,zero,one,mone,i,c,lc;
+local str,zero,one,mone,i,c,lc,s;
   str:="";
   zero := fam!.zeroCoefficient;
   one  := fam!.oneCoefficient;
@@ -1105,7 +1127,11 @@ local str,zero,one,mone,i,c,lc;
 	  c:="";
 	else
 	  Append(str,"+");
-	  Append(str,String(cofs[i]));
+	  s:=String(cofs[i]);
+	  if '+' in s or '-' in s then
+	    s:=Concatenation("(",s,")");
+	  fi;
+	  Append(str,s);
 	fi;
       elif cofs[i]=one  then
 	c:="";
@@ -1113,7 +1139,11 @@ local str,zero,one,mone,i,c,lc;
 	Append(str,"-");
 	c:="";
       else
-	Append(str,String(cofs[i]));
+	s:=String(cofs[i]);
+	if not IsRat(cofs[i]) and ('+' in s or '-' in s) then
+	  s:=Concatenation("(",s,")");
+	fi;
+	Append(str,s);
       fi;
       if i+val <> 1  then
 	Append(str,c);

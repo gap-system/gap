@@ -789,7 +789,7 @@ InstallGlobalFunction( OctaveAlgebra, F -> AlgebraByStructureConstants(
         [[2],[-1]] ],
       [ [[],[]],[[8],[1]],[[6],[-1]],[[],[]],[[4],[1]],[[],[]],[[1],[-1]],
         [[],[]] ],
-      0, Zero(F) ],
+      0, 0 ],
     "s1", "t1", "s2", "t2", "s3", "t3", "s4", "t4" ) );
 
 

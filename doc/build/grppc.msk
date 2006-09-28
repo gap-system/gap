@@ -485,7 +485,7 @@ gap> M := GModuleByMats( mats, GF(2) );;
 gap> A := AutomorphismGroup( G );;
 gap> B := GL( 1, 2 );;
 gap> D := DirectProduct( A, B );
-<group with 6 generators>
+<group of size 6 with 4 generators>
 gap> P := CompatiblePairs( G, M, D );
 <group of size 6 with 2 generators>
 gap> ExtensionRepresentatives( G, M, P );
