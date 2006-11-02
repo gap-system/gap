@@ -927,7 +927,7 @@ gap> Size(g);
 6065280
 gap> d:= DixonInit( g );;
 #I  29 classes
-#I  choosing prime 51481
+#I  choosing prime 65521
 gap> c:= d.characterTable;;
 \endexample
 After the initialisation, one structure matrix is evaluated,
@@ -935,7 +935,7 @@ yielding smaller spaces and several irreducible characters.
 \beginexample
 gap> DixonSplit( d );
 #I  Matrix 17,Representative of Order 3,Centralizer: 5832
-#I  Dimensions: [ 1, 1, 2, 12, 1, 4, 1, 2, 1, 2, 1 ]
+#I  Dimensions: [ 1, 2, 1, 4, 12, 1, 1, 2, 1, 2, 1 ]
 #I  Two-dim space split
 #I  Two-dim space split
 #I  Two-dim space split
@@ -950,7 +950,7 @@ We obtain several irreducible characters by tensor products and notify them
 to the Dixon record.
 \beginexample
 gap> asp:= AntiSymmetricParts( c, d.irreducibles, 2 );;
-gap> ro:= ReducedOrdinary( c, d.irreducibles, asp );;
+gap> ro:= ReducedCharacters( c, d.irreducibles, asp );;
 gap> Length( ro.irreducibles );
 3
 gap> DxIncludeIrreducibles( d, ro.irreducibles );
@@ -962,7 +962,7 @@ of smaller norms, but no new irreducibles.
 \beginexample
 gap> nlc:= Filtered( d.irreducibles, i -> i[1] > 1 );;
 gap> t:= Tensored( nlc, nlc );;
-gap> ro:= ReducedOrdinary( c, d.irreducibles, t );;  ro.irreducibles;
+gap> ro:= ReducedCharacters( c, d.irreducibles, t );;  ro.irreducibles;
 [  ]
 gap> List( ro.remainders, i -> ScalarProduct( c, i, i) );
 [ 2, 2, 4, 4, 4, 4, 13, 13, 18, 18, 19, 21, 21, 36, 36, 29, 34, 34, 42, 34, 
@@ -976,8 +976,8 @@ gap> List( ro.remainders, i -> ScalarProduct( c, i, i) );
 gap> t:= SplitCharacters( d, ro.remainders );;
 gap> List( t, i -> ScalarProduct( c, i, i ) );
 [ 2, 2, 4, 2, 2, 4, 4, 3, 6, 5, 5, 9, 9, 4, 12, 13, 18, 18, 20, 18, 20, 24,
-  26, 32, 32, 16, 42, 59, 69, 69, 72, 72, 36, 72, 122, 127, 127, 64, 100,
-  144, 196, 274, 274, 280, 328, 373, 373, 456, 532, 576, 679, 683, 683, 754, 
+  26, 32, 32, 16, 42, 59, 69, 69, 72, 72, 36, 72, 78, 78, 84, 122, 127, 117,
+  117, 127, 64, 132, 100, 144, 196, 256, 456, 532, 576, 679, 683, 683, 754,
   768, 768, 890, 912, 962, 1453, 1453, 1601, 1601, 1728, 1739, 1739, 1802, 
   2058, 2379, 2414, 2543, 2744, 2744, 2920, 3078, 3078, 4275, 4275, 4494, 
   4760, 5112, 5115, 5115, 5414, 6080, 6318, 7100, 7369, 7369, 7798, 8644, 
@@ -988,7 +988,7 @@ Finally we calculate the characters induced from all cyclic subgroups and
 obtain the missing irreducibles by applying the LLL-algorithm to them.
 \beginexample
 gap> ic:= InducedCyclic( c, "all" );;
-gap> ro:= ReducedOrdinary( c, d.irreducibles, ic );;
+gap> ro:= ReducedCharacters( c, d.irreducibles, ic );;
 gap> Length( ro.irreducibles );
 0
 gap> l:= LLL( c, ro.remainders );;

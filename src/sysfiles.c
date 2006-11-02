@@ -3497,7 +3497,7 @@ Int SyFseek (
 Int syGetchTerm (
     Int                 fid )
 {
-    Char                ch;
+    UChar                ch;
     Char                str[2];
     Int ret;
 
@@ -3559,7 +3559,7 @@ Int syGetchTerm (
 Int syGetchNonTerm (
     Int                 fid )
 {
-    Char                ch;
+    UChar                ch;
     UInt                bufno;
     int                 ret;
 

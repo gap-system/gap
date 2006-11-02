@@ -99,7 +99,7 @@ extern int    fputs ( const char *, FILE * );
 **
 *V  SyKernelVersion  . . . . . . . . . . . . . . . .  name of the architecture
 */
-const Char * SyKernelVersion = "4.4.8";
+const Char * SyKernelVersion = "4.4.9";
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows

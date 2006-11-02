@@ -21,8 +21,8 @@ BIND_GLOBAL( "GAPInfo", rec(
 # do not edit the following two lines. They get replaced by string matching
 # in the distribution wrapper scripts. (Occurrences of `4.dev' and `today'
 # get replaced.)
-    Version := "4.4.8",
-    Date := "18-Sep-2006",
+    Version := "4.4.9",
+    Date := "6-Nov-2006",
 
     # The kernel version numbers are expected in the format `<v>.<r>.<p>'.
     KernelVersion := KERNEL_VERSION,

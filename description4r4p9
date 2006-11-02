@@ -1,0 +1,33 @@
+GAP 4.4 Update 9 (November 2006)                  
+                      
+  Fixed bugs which could produce wrong results    
+                      
+ 1. The methods of ReadByte for reading from      
+    files or terminals returned wrong results for 
+    characters in the range [128..255]. [Reported 
+    by Yevgen Muntyan]
+     
+  Other fixed bugs    
+
+ 1. A method for the operation PseudoRandom did   
+    not succeed.      
+ 2. A fix for `Orbits' with a set of points as a  
+    seed.             
+ 3. Added a generic method such that Positions    
+    works with all types of lists.                
+ 4. Fixed a problem in choosing the prime in the  
+    Dixon-Schneider algorithm. [Reported by       
+    Toshio Sumi]      
+
+  New or improved functionality                   
+
+ 1. ReducedOrdinary was used in the manual,       
+    section 69.17 but was not documented as such, 
+    being a synonym for the documented            
+    ReducedCharacters. Changed manual examples to 
+    use the latter form. [Reported by Vahid       
+    Dabbaghian]       
+
+----------------------------------------------------------------------
+
+   The GAP Group, November 2006

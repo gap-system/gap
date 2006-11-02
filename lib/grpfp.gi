@@ -3,7 +3,6 @@
 #W  grpfp.gi                    GAP library                    Volkmar Felsch
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -411,8 +410,57 @@ end);
 InstallMethod( PseudoRandom,"subgroups fp group: force generators",true,
     [IsSubgroupFpGroup],0,
 function( grp )
-  GeneratorsOfGroup(grp);
-  return Group_PseudoRandom(grp);
+local gens, lim, n, r, l, w, a,la,f,up;
+  gens:=GeneratorsOfGroup(grp);
+  lim:=ValueOption("radius");
+  if lim=fail then
+    return Group_PseudoRandom(grp);
+  else
+    n:=2*Length(gens)-1;
+    if not IsBound(grp!.randomrange) or lim<>grp!.randlim then
+      # there are 1+(n+1)(1+n+n^2+...+n^(lim-1))=(n^lim*(n+1)-2)/(n-1)
+      # words of length up to lim in the free group on |gens| generators
+      up:=(n^lim*(n+1)-2)/(n-1);
+      if up>=2^28 then
+	f:=Int(up/2^28+1);
+	grp!.randomrange:=[1..2^28-1];
+      else
+	grp!.randomrange:=[1..up];
+	f:=1;
+      fi;
+      l:=[Int(1/f),Int((n+2)/f)];
+      a:=n+1;
+      for r in [2..lim+1] do
+	a:=a*n;
+	l[r+1]:=l[r]+Maximum(1,Int(a/f));
+      od;
+      grp!.randdist:=l;
+      grp!.randlim:=lim;
+    fi;
+    r:=Random(grp!.randomrange); # equal distribution of uncancelled words
+    l:=1;
+    while r>grp!.randdist[l] do
+      l:=l+1;
+    od;
+    l:=l-1;
+    # we multiply a lot here, but multiplication is cheap
+    w:=One(grp);
+    la:=false;
+    n:=n+1;
+    for r in [1..l] do
+      repeat
+	a:=Random([1..n]);
+      until a<>la;
+      if a>Length(gens) then
+	la:=a-Length(gens);
+	w:=w/gens[la];
+      else
+	w:=w*gens[a];
+	la:=a+Length(gens);
+      fi;
+    od;
+    return w;
+  fi;
 end);
 
 #############################################################################

@@ -1325,7 +1325,7 @@ local   orbs, orb,sort,plist,pos,use,o;
   orbs := [  ];
   pos:=1;
   while Length(D)>0  and pos<=Length(D) do
-    orb := OrbitOp( G,D,D[pos], gens, acts, act );
+    orb := OrbitOp( G,D[pos], gens, acts, act );
     Add( orbs, orb );
     if plist then
       if sort then

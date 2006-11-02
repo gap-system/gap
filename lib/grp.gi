@@ -4140,7 +4140,7 @@ BindGlobal("Group_InitPseudoRandom",function( grp, len, scramble )
     if CanEasilySortElements(One(grp)) then
         gens := Set(GeneratorsOfGroup(grp));
     elif CanEasilyCompareElements(One(grp)) then
-        gens := DuplicateFreeList(GeneratorsOfGroup);
+        gens := DuplicateFreeList(GeneratorsOfGroup( grp ));
     else
         gens := GeneratorsOfGroup(grp);
     fi;

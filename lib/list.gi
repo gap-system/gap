@@ -13,7 +13,6 @@
 Revision.list_gi :=
     "@(#)$Id$";
 
-
 #############################################################################
 ##
 #M  methods for nesting depths for some quick cases
@@ -1340,7 +1339,17 @@ InstallGlobalFunction( Positions,
       return PositionsOp(list,obj);
     fi;
   end );
-
+# generic method for non-plain lists
+InstallMethod(PositionsOp, [IsList, IsObject], function(list, obj)
+  local res, p;
+  res := [];
+  p := Position(list, obj);
+  while p <> fail do
+    Add(res, p);
+    p := Position(list, obj, p);
+  od;
+  return res;
+end);
 
 #############################################################################
 ##

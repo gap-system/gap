@@ -1389,7 +1389,7 @@ true
 
 #############################################################################
 ##
-##  for changes 4.4.6 -> 4.4.7  (extracted from corresponding dev/Update)
+##  for changes 4.4.7 -> 4.4.8  (extracted from corresponding dev/Update)
 
 
 # For fixes:
@@ -1555,6 +1555,36 @@ true
 
 # 2006/08/28 (FL)
 gap> Random(GlobalMersenneTwister,[1..6]);;
+
+
+#############################################################################
+##
+##  for changes 4.4.8 -> 4.4.9  (extracted from corresponding dev/Update)
+
+
+# 2006/10/04 (TB)
+PseudoRandom( AutomorphismGroup( AlternatingGroup( 5 ) ) );;
+
+
+# 2006/10/23 (FL)
+gap> s := "";; for i in [0..255] do Add(s, CHAR_INT(i)); od;
+gap> fnam := Filename(DirectoryTemporary(), "guck");;
+gap> FileString(fnam, s);;
+gap> f := InputTextFile(fnam);;
+gap> List([0..255], i-> ReadByte(f)) = [0..255];
+true
+gap> RemoveFile(fnam);
+true
+
+
+# 2006/10/31 (FL)
+gap> Positions("abcdeca", 'c');
+[ 3, 6 ]
+
+
+# 2006/10/4 (AH)
+gap> g:=SmallGroup(1800,646);;c:=CharacterTable(g);;Irr(c);;
+
 
 
 gap> STOP_TEST( "bugfix.tst", 7621100000 );
