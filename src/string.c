@@ -1,7 +1,7 @@
 /****************************************************************************
 **
-*W  string.c                    GAP source                       Frank Celler
-*W                                                         & Martin Schoenert
+*W  string.c                    GAP source                     Frank Luebeck,
+*W                                            Frank Celler & Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -214,6 +214,49 @@ void LoadChar( Obj c )
 
 *F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
 */
+
+
+/****************************************************************************
+**
+*F  FuncEmptyString( <self>, <len> ) . . . . . . . empty string with space
+*
+* Returns an empty string, but with space for len characters preallocated.
+*
+*/
+Obj    FuncEmptyString( Obj self, Obj len )
+{
+    Obj                 new;
+    while ( ! IS_INTOBJ(len) ) {
+        len = ErrorReturnObj(
+            "<len> must be an integer (not a %s)",
+            (Int)TNAM_OBJ(len), 0L,
+            "you can replace <len> via 'return <len>;'" );
+    }
+
+    new = NEW_STRING(INT_INTOBJ(len));
+    SET_LEN_STRING(new, 0);
+    return new;
+}
+
+/****************************************************************************
+**
+*F  FuncShrinkAllocationString( <self>, <str> )  . . give back unneeded memory
+*
+*  Shrinks the bag of <str> to minimal possible size (possibly converts to 
+*  compact representation).
+*
+*/
+Obj   FuncShrinkAllocationString( Obj self, Obj str )
+{
+    while (! IsStringConv(str)) {
+       str = ErrorReturnObj(
+           "<str> must be a string, not a %s)",
+           (Int)TNAM_OBJ(str), 0L,
+           "you can replace <str> via 'return <str>;'" );
+    }
+    SHRINK_STRING(str);
+    return (Obj)0;
+}
 
 /****************************************************************************
 **
@@ -1731,6 +1774,7 @@ Obj FuncRemoveCharacters (
   i++;
   s[i] = '\0';
   SET_LEN_STRING(string, i);
+  SHRINK_STRING(string);
 
   /* unset REMCHARLIST  */
   len = GET_LEN_STRING(rem);
@@ -2304,6 +2348,12 @@ static StructGVarFunc GVarFuncs [] = {
     { "INTLIST_STRING", 2, "string, sign",
       FuncINTLIST_STRING, "src/string.c:INTLIST_STRING" },
 
+    { "EmptyString", 1, "len",
+      FuncEmptyString, "src/string.c:FuncEmptyString" },
+    
+    { "ShrinkAllocationString", 1, "str",
+      FuncShrinkAllocationString, "src/string.c:FuncShrinkAllocationString" },
+    
     { "REVNEG_STRING", 1, "string",
       FuncREVNEG_STRING, "src/string.c:REVNEG_STRING" },
 

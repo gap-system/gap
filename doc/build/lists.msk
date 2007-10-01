@@ -753,6 +753,36 @@ more efficient, the length of a list is stored along with the list.
 %  l[1] := first_value();
 %  for i from 2 to 1000 do l[i] := next_value(l[i-1]); od;
 
+For fine tuning code dealing with plain lists we provide the following
+two functions.
+
+\>EmptyPlist( <len> ) F
+
+\>ShrinkAllocationPlist( <l> ) F
+
+The function `EmptyPlist' returns an empty plain list which
+has enough memory allocated for <len> entries. This can be useful
+for creating and filling a plain list with a known number of entries.
+
+The function `ShrinkAllocationPlist' gives back to {\GAP}s
+memory manager the physical memory which is allocated for the plain list
+<l> but not needed by the current number of entries.
+
+Note that there are similar functions `EmptyString' and
+`ShrinkAllocationString' for strings instead of plain lists.
+
+\beginexample
+gap> l:=[]; for i in [1..160] do Add(l, i^2); od;
+[  ]
+gap> m:=EmptyPlist(160); for i in [1..160] do Add(m, i^2); od;
+[  ]
+gap> # now l uses about 25% more memory than the equal list m
+gap> ShrinkAllocationPlist(l);
+gap> # now l and m use the same amount of memory
+\endexample
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Comparisons of Lists}
 

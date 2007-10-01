@@ -1393,14 +1393,20 @@ Obj FuncBLIST_LIST (
                         ptrBlist[(t-1)/BIPEB] |= (1UL << (t-1)%BIPEB);
                 }
 
+     /* Nobody seems to remember what the code below is good for,
+      * we will now just assume that non-immediate integers are
+      * never in a range. I'll leave the old code in a comment
+      * for a while, the third arg for PosRange is wrong anyway.
+      * FL  */
                 /* otherwise it may be a record, let 'PosRange' handle it  */
-                else {
-		  Obj pos;
+              /*  else {
+		    Obj pos;
                     pos = PosRange( list, ptrSub[l], 0L );
-		    if (pos != Fail)
+		    if (pos != Fail) {
 		      k = INT_INTOBJ(pos);
-		    ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
-                }
+                      ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
+                    }  
+                } */
 
             }
         }
@@ -1965,14 +1971,15 @@ Obj FuncUNITE_BLIST_LIST (
                         ptrBlist[(t-1)/BIPEB] |= (1UL << (t-1)%BIPEB);
                 }
 
+       /* see comment where PosRange was used above   FL */         
                 /* otherwise it may be a record, let 'PosRange' handle it  */
-                else {
+              /*  else {
 		  Obj pos;
                     pos = PosRange( list, ptrSub[l], 0L );
 		    if (pos != Fail)
 		      k = INT_INTOBJ(pos);
 		    ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
-                }
+                }    */
 
             }
         }

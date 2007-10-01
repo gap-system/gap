@@ -574,13 +574,14 @@ Obj FuncPRINT_PREC_DEFAULT (
     Obj                 self,
     Obj                 rec )
 {
+    Int ind;
     /* print the record                                                    */
     Pr( "%2>rec(\n%2>", 0L, 0L );
-    for ( PrintObjIndex=1; PrintObjIndex<=LEN_PREC(rec); PrintObjIndex++ ) {
-        Pr( "%I", (Int)NAME_RNAM(GET_RNAM_PREC(rec,PrintObjIndex)), 0L );
+    for ( ind=1; ind<=LEN_PREC(rec); ind++ ) {
+        Pr( "%I", (Int)NAME_RNAM(GET_RNAM_PREC(rec,ind)), 0L );
         Pr( "%< := %>", 0L, 0L );
-        PrintObj( GET_ELM_PREC( rec, PrintObjIndex ) );
-        if ( PrintObjIndex < LEN_PREC(rec) ) {
+        PrintObj( GET_ELM_PREC( rec, ind ) );
+        if ( ind < LEN_PREC(rec) ) {
             Pr( "%2<,\n%2>", 0L, 0L );
         }
     }

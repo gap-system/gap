@@ -6358,7 +6358,7 @@ static Int postRestore (
 #if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || HAVE_PATH_ENV
     list = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( list, 0 );
-    for ( p = getenv("PATH"), i = 0, q = p;  ;  p++, i++ ) {
+    for ( p = getenv("PATH"), i = 0, q = p; p != NULL;  p++, i++ ) {
         if ( *p == ':' || *p == '\0' ) {
             if ( i == 0 ) {
                 tmp = NEW_STRING(2);

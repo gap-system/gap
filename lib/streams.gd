@@ -39,8 +39,6 @@ Revision.streams_gd :=
 ##  other unprintable characters by text streams is undefined. Binary streams
 ##  pass them unchanged.
 ## 
-##  Note that binary streams are *@not yet implemented@*.
-## 
 ##  Whereas it is  cheap  to append  to a  stream, streams do  consume system
 ##  resources, and only a  limited number can  be open at any time, therefore
 ##  it is   necessary   to close   a  stream  as   soon as   possible  using

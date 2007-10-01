@@ -519,7 +519,7 @@ void SaveWPObj( Obj wpobj )
   UInt len, i;
   Obj *ptr;
   Obj x;
-  ptr = ADDR_OBJ(wpobj);
+  ptr = ADDR_OBJ(wpobj)+1;
   len = STORED_LEN_WPOBJ(wpobj);
   SaveUInt(len);
   for (i = 1; i <= len; i++)
@@ -545,7 +545,7 @@ void LoadWPObj( Obj wpobj )
 {
   UInt len, i;
   Obj *ptr;
-  ptr = ADDR_OBJ(wpobj);
+  ptr = ADDR_OBJ(wpobj)+1;
   len =   LoadUInt();
   STORE_LEN_WPOBJ(wpobj, len);
   for (i = 1; i <= len; i++)

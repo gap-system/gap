@@ -1568,16 +1568,13 @@ Obj             EvalIsbList (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-    while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
-        pos = ErrorReturnObj(
-            "List Element: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <position> via 'return <position>;'" );
-    }
-    p = INT_INTOBJ( pos );
-
-    /* return the result                                                   */
-    return (ISB_LIST( list, p ) ? True : False);
+    if (IS_INTOBJ(pos))
+      {
+	p = INT_INTOBJ( pos );
+	return (ISB_LIST( list, p ) ? True : False);
+      }
+    else
+      return ISBB_LIST(list, pos) ? True : False;
 }
 
 

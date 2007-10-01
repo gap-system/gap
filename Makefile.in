@@ -79,7 +79,7 @@ static: config
 	( cd bin/@target@-@BASECC@ ; strip gap@EXEEXT@)
 
 strip: compile
-	( cd bin/@target@-@BASECC@ ; strip gap@EXEEXT@)
+	if ! grep darwin sysinfo.gap ; then ( cd bin/@target@-@BASECC@ ; strip gap@EXEEXT@) ; fi
        
 removewin: strip
 	( rm -f bin/*.exe bin/*.dll bin/*.bat bin/*.pif "bin/GAP 4 PPC")

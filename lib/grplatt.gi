@@ -1410,6 +1410,7 @@ InstallMethod(NormalSubgroups,"homomorphism principle perm groups",true,
 InstallMethod(Socle,"from normal subgroups",true,[IsGroup],0,
 function(G)
 local n,i,s;
+  if Size(G)=1 then return G;fi;
   # this could be a bit shorter, but the groups in question have few normal
   # subgroups
   n:=NormalSubgroups(G);

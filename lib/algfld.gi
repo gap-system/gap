@@ -184,6 +184,7 @@ local f,p,nam,e,fam,colf;
 	SetSize(e,Size(f)^fam!.deg);
       fi;
     else
+      SetIsNumberField(e,true);
       SetIsFinite(e,false);
       SetSize(e,infinity);
     fi;
@@ -211,6 +212,25 @@ InstallOtherMethod(AlgebraicExtension,"with name",true,
 ##
 InstallMethod(FieldExtension,"generic",true,
   [IsField,IsUnivariatePolynomial],0,AlgebraicExtension);
+
+#############################################################################
+##
+#M  PrintObj
+#M  ViewObj
+##
+InstallMethod( PrintObj, "for algebraic extension", true,
+[IsNumberField and IsAlgebraicExtension], 0,
+function( F )
+    Print( "<algebraic extension over the Rationals of degree ",
+           DegreeOverPrimeField( F ), ">" );
+end );
+
+InstallMethod( ViewObj, "for algebraic extension", true,
+[IsNumberField and IsAlgebraicExtension], 0,
+function( F )
+    Print("<algebraic extension over the Rationals of degree ",
+          DegreeOverPrimeField( F ), ">" );
+end );
 
 #############################################################################
 ##

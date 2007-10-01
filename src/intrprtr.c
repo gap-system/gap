@@ -2280,6 +2280,11 @@ void            IntrListExprEnd (
         /* push the list again                                             */
         PushObj( list );
     }
+    else {
+        list = PopObj( );
+        SHRINK_PLIST( list, LEN_PLIST(list) );
+        PushObj( list );
+    }
 }
 
 

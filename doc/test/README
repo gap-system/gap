@@ -8,9 +8,8 @@
 ##
 #############################################################################
 
-(1) The scripts 'mktest.sh' and 'mkdiff.sh' in the subdirectories of the
-    present 'gap/doc/test' directory are tools to test the GAP manual
-    examples.
+(1) The scripts 'mktest.sh' and 'mkdiff.sh' in the 'gap/doc/test' directory
+    are tools to test the GAP manual examples.
 
 (2) You can, for instance, run a test over all GAP manual examples by
     just calling

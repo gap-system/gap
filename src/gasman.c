@@ -1610,8 +1610,8 @@ void GenStackFuncBags ()
     }
 
     /* mark from registers, dirty dirty hack                               */
-    for ( p = (Bag*)RegsBags;
-          p < (Bag*)RegsBags+sizeof(RegsBags)/sizeof(Bag);
+    for ( p = (Bag*)((void*)RegsBags);
+          p < (Bag*)((void*)RegsBags)+sizeof(RegsBags)/sizeof(Bag);
           p++ )
         MARK_BAG( *p );
 

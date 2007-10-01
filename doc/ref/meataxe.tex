@@ -53,6 +53,14 @@ bases used are needed as well.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Module Constructions}
 
+\>PermutationGModule( <G>, <F> ) F
+
+Called with a permutation group <G> and a finite field <F>,
+`PermutationGModule' returns the natural permutation module $M$ over <F>
+for the group of permutation matrices that acts on the canonical basis of $M$
+in the same way as <G> acts on the points up to its largest moved point
+(see~"LargestMovedPoint").
+
 \>TensorProductGModule (<m1>,<m2>) F
 
 TensorProductGModule calculates the tensor product of the modules

@@ -2,8 +2,6 @@
 ##
 #W  ringpoly.gi                 GAP Library                      Frank Celler
 ##
-#H  @(#)$Id$
-##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
@@ -444,7 +442,7 @@ function( ogens )
          HasCoefficientsOfLaurentPolynomial(ogens[i]));
 
     univ:=Filtered(ogens{g},
-	     i->DegreeOfUnivariateLaurentPolynomial(i)>0 and
+	     i->DegreeOfUnivariateLaurentPolynomial(i)>-1 and
 		DegreeOfUnivariateLaurentPolynomial(i)<infinity);
 
     gens:=ogens{Difference([1..Length(ogens)],g)};

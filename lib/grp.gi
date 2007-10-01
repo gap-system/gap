@@ -5,8 +5,6 @@
 #W                                                               Bettina Eick
 #W                                                             Heiko Theissen
 ##
-#H  @(#)$Id$
-##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C) 2002 The GAP Group
@@ -2043,7 +2041,7 @@ InstallMethod( CoreOp,
 #M  \/( <G>, <N> )
 ##
 InstallGlobalFunction( FactorGroup,function(G,N)
-  if not (IsGroup(G) and IsGroup(N) and IsNormal(G,N)) then
+  if not (IsGroup(G) and IsGroup(N) and IsSubgroup(G,N) and IsNormal(G,N)) then
     Error("<N> must be a normal subgroup of <G>");
   fi;
   return FactorGroupNC(G,N);
@@ -2107,9 +2105,9 @@ InstallMethod(IsConjugate,"subgroups",IsFamFamFam,[IsGroup, IsGroup,IsGroup],
 function(g,x,y)
   # shortcut for normal subgroups
   if (HasIsNormalInParent(x) and IsNormalInParent(x)
-      and CanComputeIsSubset(Parent(x),y) and IsSubset(Parent(x),y))
+      and CanComputeIsSubset(Parent(x),g) and IsSubset(Parent(x),g))
   or (HasIsNormalInParent(y) and IsNormalInParent(y)
-      and CanComputeIsSubset(Parent(y),x) and IsSubset(Parent(y),x)) then
+      and CanComputeIsSubset(Parent(y),g) and IsSubset(Parent(y),g)) then
     return x=y;
   fi;
 

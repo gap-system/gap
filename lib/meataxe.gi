@@ -1952,9 +1952,9 @@ SMTX.FieldGenCentMat:=function ( module )
     fi;
 
     # enforce absirred knowledge as well.
-    if not SMTX.IsAbsolutelyIrreducible (module) then
-      Error ("GModule is not absolutely irreducible.");
-    fi;
+    #if not SMTX.IsAbsolutelyIrreducible (module) then
+    #  Error ("GModule is not absolutely irreducible.");
+    #fi;
 
     if SMTX.CentMat(module)=fail then
       Error ("No CentMat component!");
@@ -1978,9 +1978,11 @@ SMTX.FieldGenCentMat:=function ( module )
 
     looking:=true;
     while looking do
+      if genpol <> minpol then
       okd:=FFPOrderKnownDividend (R, genpol, minpol, pp); 
-      if okd[1] * Order (F, okd[2]) = qe then
+      if okd[1] * Order (One(F)*okd[2]) = qe then
 	  looking:=false;
+      fi;
       fi;
       if looking then
 	  repeat
@@ -1993,7 +1995,7 @@ SMTX.FieldGenCentMat:=function ( module )
     centmat:=SMTX.CentMat (module);
     newcentmat:=Value (genpol, centmat,centmat^0);
     SMTX.SetFGCentMat (module, newcentmat);
-    SMTX.SetFGCentMatMinPoly (module, MinimalPolynomial (newcentmat));
+    SMTX.SetFGCentMatMinPoly(module,MinimalPolynomialMatrixNC(F,newcentmat,1));
     # Ugh! That was very inefficient - should work out the min poly using
     # polynomials, but will sort that out if its ever needed.
   fi;

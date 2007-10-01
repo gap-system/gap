@@ -517,7 +517,7 @@ Group([ (1,4)(2,3), (1,2)(3,4) ])
 \Declaration{NormalClosure}
 \beginexample
 gap> NormalClosure(g,Subgroup(g,[(1,2,3)]));
-Group([ (1,2,3), (2,3,4) ])
+Group([ (1,2,3), (1,3,4) ])
 \endexample
 
 \Declaration{NormalIntersection}
@@ -559,7 +559,7 @@ gap> Size(last);
 \Declaration{DerivedSubgroup}
 \beginexample
 gap> DerivedSubgroup(g);
-Group([ (1,3,2), (2,4,3) ])
+Group([ (1,3,2), (1,4,3) ])
 \endexample
 
 \Declaration{CommutatorLength}
@@ -599,7 +599,7 @@ Group([  ])
 \Declaration{PerfectResiduum}
 \beginexample
 gap> PerfectResiduum(Group((1,2,3,4,5),(1,2)));
-Group([ (1,3,2), (2,4,3), (3,5,4) ])
+Group([ (1,3,2), (1,4,3), (1,5,4) ])
 \endexample
 
 \Declaration{RadicalGroup}
@@ -619,7 +619,7 @@ Group([ (1,4)(2,3), (1,2)(3,4) ])
 \Declaration{SupersolvableResiduum}
 \beginexample
 gap> SupersolvableResiduum(g);
-Group([ (1,3)(2,4), (1,4)(2,3) ])
+Group([ (1,2)(3,4), (1,4)(2,3) ])
 \endexample
 
 \Declaration{PRump}
@@ -1014,7 +1014,7 @@ gap> MaximalNormalSubgroups( g );
 \Declaration{MinimalNormalSubgroups}
 \beginexample
 gap> MinimalNormalSubgroups( g );
-[ Group([ (1,2)(3,4), (1,3)(2,4) ]) ]
+[ Group([ (1,4)(2,3), (1,3)(2,4) ]) ]
 \endexample
 
 %%  Bettina Eick designed and wrote the code for maximal subgroups of a solvable

@@ -1001,16 +1001,6 @@ DeclareAttributeSuppCT( "CharacterNames", IsNearlyCharacterTable,
 
 #############################################################################
 ##
-##  The following declaration is made here because several library functions
-##  have to be aware of the attribute values when constructing new tables,
-##  for example `CharacterTableDirectProduct'.
-##  The documentation, however, is referenced from the {\GAP} Character Table
-##  Library, hence the explicit reference in the text.
-##
-
-
-#############################################################################
-##
 #A  ClassParameters( <tbl> )
 #A  CharacterParameters( <tbl> )
 ##
@@ -1027,8 +1017,7 @@ DeclareAttributeSuppCT( "CharacterNames", IsNearlyCharacterTable,
 ##  parameters stored.
 ##
 ##  If <tbl> is a $p$-modular Brauer table such that class parameters are
-##  stored in the underlying ordinary table
-##  (see~"ref:OrdinaryCharacterTable" in the {\GAP} Reference Manual)
+##  stored in the underlying ordinary table (see~"OrdinaryCharacterTable")
 ##  of <tbl> then `ClassParameters' returns the sublist of class parameters
 ##  of the ordinary table, for $p$-regular classes.
 ##
@@ -1925,10 +1914,22 @@ DeclareAttribute( "ComputedBrauerTables", IsOrdinaryTable, "mutable" );
 ##
 #F  CharacterTableRegular( <tbl>, <p> ) .  table consist. of <p>-reg. classes
 ##
-##  preconstructor for the <p>-modular Brauer table of the ordinary character
-##  table <tbl>,
-##  used by the operation `BrauerTableOp' that should be called by
-##  the user.
+##  For an ordinary character table <tbl> and a prime integer <p>,
+##  `CharacterTableRegular' returns the ``table head'' of the
+##  <p>-modular Brauer character table of <tbl>.
+##  This is the restriction of <tbl> to its <p>-regular classes,
+##  like the return value of `BrauerTable' (see~"BrauerTable"),
+##  but without the irreducible Brauer characters.
+##  (In general, these characters are hard to compute,
+##  and `BrauerTable' may return `fail' for the given
+##  arguments,
+##  for example if <tbl> is a table from the {\GAP} character table
+##  library.)
+##
+##  The returned table head can be used to create <p>-modular Brauer
+##  characters, by restricting ordinary characters, for example when one
+##  is interested in approximations of the (unknown) irreducible Brauer
+##  characters.
 ##
 DeclareGlobalFunction( "CharacterTableRegular" );
 
@@ -2016,6 +2017,13 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  The number of columns printed at one time depends on the actual
 ##  line length, which can be accessed and changed by the function
 ##  `SizeScreen' (see~"SizeScreen").
+##
+##  An interesting variant of `Display' is the function `PageDisplay'
+##  which belongs to the \package{GAPDoc} package.
+##  Convenient ways to print the `Display' format to a file are given
+##  by the \package{GAPDoc} function `PrintTo1'
+##  or by using `PageDisplay' and the facilities of the pager used,
+##  cf.~"Pager".
 ##
 ##  `Display' shows certain characters (by default all irreducible
 ##  characters) of <tbl>, together with the orders of the centralizers in

@@ -1094,7 +1094,7 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 	    if incstb=false then
 
 	      # must the orbit contain the whole domain => extend?
-	      if ind=doml and D<>false and Length(orb)<doml then
+	      if ind=doml and (not IsBool(D)) and Length(orb)<doml then
 		if blist=false then
 		  orb:=D;
 		else

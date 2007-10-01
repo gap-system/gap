@@ -416,7 +416,7 @@ to get such a value when the attribute is called again.
 
 The stored value of an attribute is in general immutable
 (see~"Mutability and Copyability"), except if the attribute had been
-specally constructed as ``mutable attribute''.
+specially constructed as ``mutable attribute''.
 
 It depends on the representation of an object (see~"Representation")
 which attribute values it stores.  An object in the representation

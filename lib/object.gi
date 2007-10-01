@@ -472,6 +472,185 @@ end );
 
 #############################################################################
 ##
+#M  MemoryUsage( <obj> ) . . . . . . . . . . . . . various methods
+##  
 
+InstallGlobalFunction( MU_ClearCache,
+  function( )
+    MEMUSAGECACHE.ids := [];
+    MEMUSAGECACHE.depth := 0;
+  end );
+
+InstallGlobalFunction( MU_AddToCache,
+  function( ob )
+    local id,pos,len;
+    id := MASTER_POINTER_NUMBER(ob);
+    pos := PositionSorted( MEMUSAGECACHE.ids, id );
+    len := Length(MEMUSAGECACHE.ids);
+    if pos <= len and MEMUSAGECACHE.ids[pos] = id then
+        return true;
+    else
+        if pos <= len then
+            COPY_LIST_ENTRIES(MEMUSAGECACHE.ids,pos,1,
+                              MEMUSAGECACHE.ids,pos+1,1,
+                              len-pos+1);
+        fi;
+        MEMUSAGECACHE.ids[pos] := id;
+        return false;
+    fi;
+  end );
+
+InstallGlobalFunction( MU_Finalize,
+  function( )
+    if MEMUSAGECACHE.depth <= 0 then
+        Error( "MemoryUsage depth has gone below zero!" );
+    fi;
+    MEMUSAGECACHE.depth := MEMUSAGECACHE.depth - 1;
+    if MEMUSAGECACHE.depth = 0 then
+        MEMUSAGECACHE.ids := [];
+    fi;
+  end );
+
+InstallMethod( MemoryUsage, "fallback method for objs without subobjs",
+  [ IsObject ],
+  function( o )
+    local mem;
+    mem := SHALLOW_SIZE(o);
+    if mem = 0 then 
+        return MU_MemPointer;
+    else
+        # a proper object, thus we have to add it to the database
+        # to not count it again!
+        if not(MU_AddToCache(o)) then
+            return mem + MU_MemBagHeader + MU_MemPointer;
+            # This is for the bag, the header, and the master pointer
+        else 
+            return 0;   # already counted
+        fi;
+    fi;
+  end );
+
+InstallMethod( MemoryUsage, "for a plist",
+  [ IsList and IsPlistRep ],
+  function( o )
+    local mem,known,i;
+    known := MU_AddToCache( o );
+    if known = false then    # not yet known
+        MEMUSAGECACHE.depth := MEMUSAGECACHE.depth + 1;
+        mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
+        # Again the bag, its header, and the master pointer
+        for i in [1..Length(o)] do
+            if IsBound(o[i]) then
+                if SHALLOW_SIZE(o[i]) > 0 then    # a subobject!
+                    mem := mem + MemoryUsage(o[i]);
+                fi;
+            fi;
+        od;
+        MU_Finalize();
+        return mem;
+    fi;
+    return 0;    # already counted
+  end );
+
+InstallMethod( MemoryUsage, "for a record",
+  [ IsRecord ],
+  function( o )
+    local mem,known,i,s;
+    known := MU_AddToCache( o );
+    if known = false then    # not yet known
+        MEMUSAGECACHE.depth := MEMUSAGECACHE.depth + 1;
+        mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
+        # Again the bag, its header, and the master pointer
+        for i in RecFields(o) do
+            s := o.(i);
+            if SHALLOW_SIZE(s) > 0 then    # a subobject!
+                mem := mem + MemoryUsage(s);
+            fi;
+        od;
+        MU_Finalize();
+        return mem;
+    fi;
+    return 0;    # already counted
+  end );
+
+InstallMethod( MemoryUsage, "for a positional object",
+  [ IsPositionalObjectRep ],
+  function( o )
+    local mem,known,i;
+    known := MU_AddToCache( o );
+    if known = false then    # not yet known
+        MEMUSAGECACHE.depth := MEMUSAGECACHE.depth + 1;
+        mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
+        # Again the bag, its header, and the master pointer
+        for i in [1..(SHALLOW_SIZE(o)/MU_MemPointer)-1] do
+            if IsBound(o![i]) then
+                if SHALLOW_SIZE(o![i]) > 0 then    # a subobject!
+                    mem := mem + MemoryUsage(o![i]);
+                fi;
+            fi;
+        od;
+        MU_Finalize();
+        return mem;
+    fi;
+    return 0;    # already counted
+  end );
+
+InstallMethod( MemoryUsage, "for a component object",
+  [ IsComponentObjectRep ],
+  function( o )
+    local mem,known,i,s;
+    known := MU_AddToCache( o );
+    if known = false then    # not yet known
+        MEMUSAGECACHE.depth := MEMUSAGECACHE.depth + 1;
+        mem := SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer;
+        # Again the bag, its header, and the master pointer
+        for i in NamesOfComponents(o) do
+            s := o!.(i);
+            if SHALLOW_SIZE(s) > 0 then    # a subobject!
+                mem := mem + MemoryUsage(s);
+            fi;
+        od;
+        MU_Finalize();
+        return mem;
+    fi;
+    return 0;    # already counted
+  end );
+
+InstallMethod( MemoryUsage, "for a rational",
+  [ IsRat ],
+  function( o )
+    if IsInt(o) then TryNextMethod(); fi;
+    if not(MU_AddToCache(o)) then
+        return   SHALLOW_SIZE(o) + MU_MemBagHeader + MU_MemPointer
+               + SHALLOW_SIZE(NumeratorRat(o)) 
+               + SHALLOW_SIZE(DenominatorRat(o));
+    else
+        return 0;
+    fi;
+  end );
+
+InstallMethod( MemoryUsage, "for a function",
+  [ IsFunction ],
+  function( o )
+    if not(MU_AddToCache(o)) then
+        return SHALLOW_SIZE(o) + 2*(MU_MemBagHeader + MU_MemPointer) +
+               FUNC_BODY_SIZE(o);
+    else
+        return 0;
+    fi;
+  end );
+
+# Intentionally ignore families and types:
+
+InstallMethod( MemoryUsage, "for a family",
+  [ IsFamily ],
+  function( o ) return 0; end );
+
+InstallMethod( MemoryUsage, "for a type",
+  [ IsType ],
+  function( o ) return 0; end );
+
+#############################################################################
+##
 #E
 

@@ -841,7 +841,7 @@ Int             IsPossRange (
 *F  PosRange(<list>,<val>,<start>)  . . . . position of an element in a range
 **
 **  'PosRange' returns the position  of the value <val>  in the range  <list>
-**  after the first position <start> as a C integer.   0 is returned if <val>
+**  after the first position <start> as a GAP integer. Fail is returned if <val>
 **  is not in the list.
 **
 **  'PosRange' is the function in 'PosListFuncs' for ranges.
@@ -892,8 +892,12 @@ Obj             PosRange (
         }
     }
 
+ /* I have no idea how a record can ever be equal to an integer. I'll leave
+  * the code in comments for a while, in case someone digs out what this is
+  * good for. FL
+  * */
     /* for a record compare every entry                                    */
-    else if ( TNUM_OBJ(val) == T_PREC ) {
+/*    else if ( TNUM_OBJ(val) == T_PREC ) {
         for ( k = istart+1; k <= lenList; k++ ) {
             if ( EQ( INTOBJ_INT( low + (k-1) * inc ), val ) )
                 break;
@@ -901,7 +905,7 @@ Obj             PosRange (
         if ( lenList < k ) {
             k = 0;
         }
-    }
+    }  */
 
     /* otherwise it can not be an element of the range                     */
     else {

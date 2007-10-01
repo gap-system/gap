@@ -353,7 +353,7 @@ gap> WriteByte(s,INT_CHAR('\n'));
 true
 gap> y := ReadAll(s);;
 gap> Length(y);
-4095
+4096
 gap> CloseStream(s);
 gap> s;
 < closed input/output stream to rev >

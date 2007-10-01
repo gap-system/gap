@@ -99,7 +99,7 @@ extern int    fputs ( const char *, FILE * );
 **
 *V  SyKernelVersion  . . . . . . . . . . . . . . . .  name of the architecture
 */
-const Char * SyKernelVersion = "4.4.9";
+const Char * SyKernelVersion = "4.4.10";
 
 /****************************************************************************
 *V  SyWindowsPath  . . . . . . . . . . . . . . . . . default path for Windows
@@ -1556,9 +1556,9 @@ void            SyExit ( ret )
 #if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || HAVE_SLASH_SEPARATOR \
     || SYS_MAC_MWC
 
-void SySetGapRootPath( Char * string )
+void SySetGapRootPath( const Char * string )
 {
-    Char *          p;
+    const Char *          p;
     Char *          q;
     Int             i;
     Int             n;
@@ -1951,6 +1951,8 @@ static Int setScreenWidth( Char **argv, void * dummy)
             SyNrCols = atoi(argv[0]);
 	    if (SyNrCols > 256) 
 	      SyNrCols = 256;
+	    if (SyNrCols < 2) 
+	      SyNrCols = 2;
 	    SyNrColsLocked = 1;
 #if SYS_MAC_MWC
 	    SetLogWindowSize (-1, SyNrCols);
@@ -2075,7 +2077,7 @@ void InitSystem (
 # endif
 #endif
 
-    preAllocAmount = 100*1024;
+    preAllocAmount = 4*1024*1024;
     
 #if SYS_MAC_MWC	
 # if !TARGET_API_MAC_CARBON && !powerc 

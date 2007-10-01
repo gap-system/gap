@@ -1681,7 +1681,7 @@ void            PrintIntExpr (
         Pr( "%d", INT_INTEXPR(expr), 0L );
     }
     else {
-        Pr( "<<not yet implemented>>", 0L, 0L );
+        PrintInt(EvalIntExpr(expr));
     }
 }
 

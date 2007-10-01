@@ -1059,7 +1059,7 @@ local i,newRaeume,raum,neuer,j,ch,irrs,mods,incirrs,incmods,nb,rt,neuc;
   incmods:=[];
   for i in [1..Length(D.raeume)] do
     raum:=D.raeume[i];
-    if raum.dim=2 and not IsBound(raum.twofail) then
+    if false and raum.dim=2 and not IsBound(raum.twofail) then
       neuer:=SplitTwoSpace(D,raum);
     else
       neuer:=[];
@@ -1494,22 +1494,21 @@ AsCharacterMorphismFunction := function(pcgs,gals,tme)
       fi;
       c:=[];
       for i in [1..Length(p)] do
-        j:=i^g;
-        c[j]:=p[i]*x[j];
+        c[i]:=p[i/g]*x[i];
       od;
       return c;
     elif IsVectorSpace(p) then # Space
       gens:=BasisVectors(Basis(p));
       c:=List(gens,i ->[]);
       for i in [1..Length(gens[1])] do
-        j:=i^g;
+        j:=i/g;
         for k in [1..Length(gens)] do
-          c[k][j]:=gens[k][i] * x[j];
+          c[k][i]:=gens[k][j] * x[i];
         od;
       od;
       return VectorSpace(LeftActingDomain(p),gens);
     else
-      Error("darf nicht");
+      Error("action not defined");
     fi;
   end;
 end;
@@ -1531,6 +1530,9 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,hom,pow,pos,i,j,k,gen,
 
   piso:=IsomorphismPcGroup(D.galMorphisms);
   k:=Image(piso,D.galMorphisms);
+  # Temporary workaround, 7/30/07, AH. It seems that permuting classes does
+  # not easily transfer to mod p.
+  k:=Image(piso,TrivialSubgroup(D.galMorphisms));
   gpcgs:=Pcgs(k);
   gals:=List(gpcgs,i->PreImagesRepresentative(piso,i));
   ord:=List(gpcgs,i->RelativeOrderOfPcElement(gpcgs,i));
@@ -1541,7 +1543,7 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,hom,pow,pos,i,j,k,gen,
   tm.re:=[];
   for i in tm.a do
     f:=Factors(i);
-    ord:=Concatenation(ord,f);
+ 
     Add(tm.ro,f[1]);
     Add(tm.re,Length(f));
   od;
@@ -1605,10 +1607,15 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,hom,pow,pos,i,j,k,gen,
     # add commutator relations between galois and tensor
     for j in [1..l] do
       # compute commutator Comm(tens[i],gal[j])
-      comm:=Permuted(gen,gals[j]);
+      #comm:=Permuted(gen,gals[j]);
+      #for k in [1..Length(comm)] do
+      #  comm[k]:=gen[k]^-1*comm[k];
+      #od;
+      comm:=[];
       for k in [1..Length(comm)] do
-        comm[k]:=gen[k]^-1*comm[k];
+	comm[k]:=gen[k]^-1*gen[k/gals[j]];
       od;
+
       # find decomposition
       k:=PositionProperty(tme,i->i[2]=comm);
       cof:=tme[k][1];
@@ -1996,8 +2003,8 @@ local G,     # group
 
   # Galois group operating on the columns
   ga:= GroupByGenerators( Set( List( Flat( GeneratorsPrimeResidues(
-                        Exponent(G)).generators),
-      i->PermList(List([1..k],j->PowerMap(D.characterTable,i,j))))),());
+		      Exponent(G)).generators),
+    i->PermList(List([1..k],j->PowerMap(D.characterTable,i,j))))),());
 
   D.galMorphisms:=ga;
   D.galoisOrbits:=List([1..k],i->Set(Orbit(ga,i)));

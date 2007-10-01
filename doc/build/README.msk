@@ -1,6 +1,13 @@
                   README for GAP {{versionnumber}}
 
-These archives contain the current release of GAP. It is version {{versionnumber}}
+These archives contain the current release of GAP. It is version
+{{versionnumber}}.  They also contain a number of contributed
+packages, found in the subdirectories pkg and small of the main
+distribution directory. Each package is a separate work for copyright
+and license purposes, included in this archive for the convenience of
+the user. The main GAP system is distributed under the GPL version 2,
+packages may have other licenses. Check the documentation and/or the
+website for more details.
 
 All files are available in the following formats:
 
@@ -25,7 +32,6 @@ the GAP reference manual. You can find an HTML version of this manual also
 on the GAP web pages:
 http://www.gap-system.org/tmpsite/Manuals/docs/doc/htm/ref/CHAP073.htm
 
-You also will find copyright and license information on those web pages.
 
 If after reading the information on the web pages you still face
 unsurmountable problems, please send an email to

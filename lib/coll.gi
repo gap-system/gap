@@ -735,7 +735,7 @@ InstallGlobalFunction( List,
         return ShallowCopy( C );
       else
         func:= arg[2];
-        res := [];
+        res := EmptyPlist(Length(C));
         i   := 0;
         for elm in C do
           i:= i+1;
@@ -781,6 +781,34 @@ InstallMethod( ListOp,
     for elm in C do
       i:= i+1;
       res[i]:= func( elm );
+    od;
+    return res;
+    end );
+InstallMethod( ListOp,
+    "for a list, and a function",
+    true,
+    [ IsList, IsFunction ], 0,
+    function ( C, func )
+    local   res, i, elm;
+    res := [];
+    i   := 0;
+    for elm in [1..Length(C)] do
+      if IsBound(C[elm]) then
+          i:= i+1;
+          res[i]:= func( C[elm] );
+      fi;
+    od;
+    return res;
+    end );
+InstallMethod( ListOp,
+    "for a dense list, and a function",
+    true,
+    [ IsDenseList, IsFunction ], 0,
+    function ( C, func )
+    local   res, elm;
+    res := 0*[1..Length(C)];
+    for elm in [1..Length(C)] do
+      res[elm]:= func( C[elm] );
     od;
     return res;
     end );
@@ -1303,6 +1331,36 @@ InstallMethod( FilteredOp,
     od;
     return res;
     end );
+InstallMethod( FilteredOp,
+    "for a list, and a function",
+    [ IsList, IsFunction ],
+    function ( C, func )
+    local res, elm, ob;
+    res := [];
+    for elm in [1..Length(C)] do
+        if IsBound(C[elm]) then
+            ob := C[elm];
+            if func( ob ) then
+                Add( res, ob );
+            fi;
+        fi;
+    od;
+    return res;
+    end );
+InstallMethod( FilteredOp,
+    "for a dense list, and a function",
+    [ IsDenseList, IsFunction ],
+    function ( C, func )
+    local res, elm, ob;
+    res := [];
+    for elm in [1..Length(C)] do
+        ob := C[elm];
+        if func( ob ) then
+            Add( res, ob );
+        fi;
+    od;
+    return res;
+    end );
 
 #T Is this useful compared to the previous method? (FL)
 InstallMethod( FilteredOp,
@@ -1368,6 +1426,34 @@ InstallMethod( NumberOp,
     od;
     return nr;
     end );
+InstallMethod( NumberOp,
+    "for a list, and a function",
+    [ IsList, IsFunction ],
+    function ( C, func )
+    local nr, elm;
+    nr := 0;
+    for elm in [1..Length(C)] do
+        if IsBound(C[elm]) then
+            if func( C[elm] ) then
+                nr:= nr + 1;
+            fi;
+        fi;
+    od;
+    return nr;
+    end );
+InstallMethod( NumberOp,
+    "for a dense list, and a function",
+    [ IsDenseList, IsFunction ],
+    function ( C, func )
+    local nr, elm;
+    nr := 0;
+    for elm in [1..Length(C)] do
+        if func( C[elm] ) then
+            nr:= nr + 1;
+        fi;
+    od;
+    return nr;
+    end );
 
 
 #############################################################################
@@ -1385,6 +1471,22 @@ InstallOtherMethod( NumberOp,
     od;
     return nr;
     end );
+InstallOtherMethod( NumberOp,
+    "for a list",
+    [ IsList ],
+    function ( C )
+    local nr, elm;
+    nr := 0;
+    for elm in [1..Length(C)] do
+        if IsBound(C[elm]) then
+            nr := nr + 1;
+        fi;
+    od;
+    return nr;
+    end );
+InstallOtherMethod( NumberOp,
+    "for a dense list",
+    [ IsDenseList ], Length );
 
 
 #############################################################################
@@ -1419,6 +1521,32 @@ InstallMethod( ForAllOp,
     local elm;
     for elm in C do
         if not func( elm ) then
+            return false;
+        fi;
+    od;
+    return true;
+    end );
+InstallMethod( ForAllOp,
+    "for a list, and a function",
+    [ IsList and IsFinite, IsFunction ],
+    function ( C, func )
+    local elm;
+    for elm in [1..Length(C)] do
+        if IsBound(C[elm]) then
+            if not func( C[elm] ) then
+                return false;
+            fi;
+        fi;
+    od;
+    return true;
+    end );
+InstallMethod( ForAllOp,
+    "for a dense list, and a function",
+    [ IsDenseList and IsFinite, IsFunction ],
+    function ( C, func )
+    local elm;
+    for elm in [1..Length(C)] do
+        if not func( C[elm] ) then
             return false;
         fi;
     od;
@@ -1464,6 +1592,33 @@ InstallMethod( ForAnyOp,
     local elm;
     for elm in C do
         if func( elm ) then
+            return true;
+        fi;
+    od;
+    return false;
+end );
+
+InstallMethod( ForAnyOp,
+    "for a list, and a function",
+    [ IsList and IsFinite, IsFunction ],
+    function ( C, func )
+    local elm;
+    for elm in [1..Length(C)] do
+        if IsBound(C[elm]) then
+            if func( C[elm] ) then
+                return true;
+            fi;
+        fi;
+    od;
+    return false;
+    end );
+InstallMethod( ForAnyOp,
+    "for a dense list, and a function",
+    [ IsDenseList and IsFinite, IsFunction ],
+    function ( C, func )
+    local elm;
+    for elm in [1..Length(C)] do
+        if func( C[elm] ) then
             return true;
         fi;
     od;
@@ -2049,9 +2204,8 @@ function ( D, E )
 end );
 
 
-InstallOtherMethod( IsSubset,
+InstallMethod( IsSubset,
     "for two internal lists",
-    IsIdenticalObj,
     [ IsList and IsInternalRep,
       IsList and IsInternalRep ],
     IsSubsetSet );

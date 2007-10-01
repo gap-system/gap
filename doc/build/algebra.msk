@@ -272,7 +272,7 @@ For constructing and working with ideals in algebras the same functions
 are available as for ideals in rings. So for the precise description of
 these functions we refer to Chapter "Rings". Here we give examples
 demonstrating the use of ideals in algebras. For an introduction into
-the concstruction of quotient algebras we refer to Chapter "tut:algebras"
+the construction of quotient algebras we refer to Chapter "tut:algebras"
 of the user's tutorial.
 
 \beginexample

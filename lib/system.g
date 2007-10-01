@@ -21,12 +21,12 @@ BIND_GLOBAL( "GAPInfo", rec(
 # do not edit the following two lines. They get replaced by string matching
 # in the distribution wrapper scripts. (Occurrences of `4.dev' and `today'
 # get replaced.)
-    Version := "4.4.9",
-    Date := "6-Nov-2006",
+    Version := "4.4.10",
+    Date := "02-Oct-2007",
 
     # The kernel version numbers are expected in the format `<v>.<r>.<p>'.
     KernelVersion := KERNEL_VERSION,
-    NeedKernelVersion := "4.4.8",
+    NeedKernelVersion := ["4.4.10"],
 
     Architecture := GAP_ARCHITECTURE,
 

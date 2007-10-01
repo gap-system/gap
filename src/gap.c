@@ -2608,6 +2608,23 @@ Obj FuncHANDLE_OBJ (
     return hnum;
 }
 
+Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
+{
+    if ((void **) o >= (void **) MptrBags && (void **) o < (void **) OldBags) {
+        return INTOBJ_INT( ((void **) o - (void **) MptrBags) + 1 );
+    } else {
+        return INTOBJ_INT( 0 );
+    }
+}
+
+Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
+{
+    Obj body;
+    if (TNUM_OBJ(f) != T_FUNCTION) return Fail;
+    body = BODY_FUNC(f);
+    if (body == 0) return INTOBJ_INT(0);
+    else return INTOBJ_INT( SIZE_BAG( body ) );
+}
 
 /****************************************************************************
 **
@@ -3310,6 +3327,12 @@ static StructGVarFunc GVarFuncs [] = {
 
     { "CallFuncTrapError", 1, "func",
       FuncCallFuncTrapError, "src/gap.c:FuncCallFuncTrapError" },
+
+    { "MASTER_POINTER_NUMBER", 1, "ob",
+      FuncMASTER_POINTER_NUMBER, "src/gap.c:MASTER_POINTER_NUMBER" },
+
+    { "FUNC_BODY_SIZE", 1, "f",
+      FuncFUNC_BODY_SIZE, "src/gap.c:FUNC_BODY_SIZE" },
 
     { 0 }
 

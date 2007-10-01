@@ -29,13 +29,13 @@ fi
 ##  GAP_MEM . . . . . . . . . . . . . . . . . . . amount of initial workspace
 ##
 ##  Set 'GAP_MEM' to the amount of memory GAP shall use as initial workspace.
-##  The default is 12 MByte, which is the minimal reasonable amount of memory.
+##  The default is 32 MByte, which is the minimal reasonable amount of memory.
 ##  You have to change it if you want  GAP to use a larger initial workspace.
 ##  If you are not going to run  GAP  in parallel with other programs you may
 ##  want to set this value close to the  amount of memory your  computer has.
 ##
 if [ "x$GAP_MEM" = "x" ];  then
-GAP_MEM=24m
+GAP_MEM=32m
 fi
 
 

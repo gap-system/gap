@@ -13,6 +13,7 @@
 Revision.list_gi :=
     "@(#)$Id$";
 
+
 #############################################################################
 ##
 #M  methods for nesting depths for some quick cases
@@ -717,7 +718,7 @@ InstallOtherMethod( SSortedList,
 ##  lists.)
 ##
 BindGlobal( "IsDoneIterator_List",
-    iter -> ( iter!.pos = Length( iter!.list ) ) );
+    iter -> ( iter!.pos = iter!.len ) );
 
 BindGlobal( "NextIterator_List", function ( iter )
     if iter!.pos = Length( iter!.list ) then
@@ -730,20 +731,21 @@ BindGlobal( "NextIterator_List", function ( iter )
     return iter!.list[ iter!.pos ];
     end );
 
-BindGlobal( "IsDoneIterator_DenseList",
-    iter -> not IsBound( iter!.list[ iter!.pos + 1 ] ) );
+#BindGlobal( "IsDoneIterator_DenseList",
+#    iter -> not IsBound( iter!.list[ iter!.pos + 1 ] ) );
 
 BindGlobal( "NextIterator_DenseList", function ( iter )
     iter!.pos := iter!.pos + 1;
-    if not IsBound( iter!.list[ iter!.pos ] ) then
-        Error("<iter> is exhausted");
-    fi;
+    #if not IsBound( iter!.list[ iter!.pos ] ) then
+    #    Error("<iter> is exhausted");
+    #fi;
     return iter!.list[ iter!.pos ];
     end );
 
 BindGlobal( "ShallowCopy_List",
     iter -> rec( list := iter!.list,
-                 pos  := iter!.pos ) );
+                 pos  := iter!.pos,
+                 len  := iter!.len ) );
 
 InstallGlobalFunction( IteratorList, function ( list )
     local   iter;
@@ -752,10 +754,11 @@ InstallGlobalFunction( IteratorList, function ( list )
                 list := list,
 #T call `Immutable'?
                 pos  := 0,
+                len := Length(list),
                 ShallowCopy := ShallowCopy_List );
 
     if IsDenseList( list ) and not IsMutable( list ) then
-      iter.IsDoneIterator := IsDoneIterator_DenseList;
+      iter.IsDoneIterator := IsDoneIterator_List;
       iter.NextIterator   := NextIterator_DenseList;
     else
       iter.IsDoneIterator := IsDoneIterator_List;
@@ -1530,12 +1533,17 @@ InstallMethod( PositionSublist,
     "list,sub,pos",
     [IsList,IsList,IS_INT],
     function( list,sub,start )
-    local m,n,i,j,next;
+      local n, m, next, j, max, c, i;
+  
+  n:=Length(list);
+  m:=Length(sub);
+  # trivial case
+  if m = 1 then
+    return Position(list, sub[1], start);
+  fi;
 
   # string-match algorithm, cf. Manber, section 6.7
 
-  n:=Length(list);
-  m:=Length(sub);
   # compute the next entries
   next:=[-1,0];
   for i in [3..m] do
@@ -1546,6 +1554,28 @@ InstallMethod( PositionSublist,
     next[i]:=j;
   od;
 
+  if Maximum(next) * 3 < m then
+    # in this case reduce overhead and use naive loop
+    m := Length(sub);
+    max := n - m + 1;
+    c := sub[1];
+    for i in [start+1..max] do
+      if c = list[i] then
+        for j in [2..m] do
+          if list[i+j-1] <> sub[j] then
+            j := 0;
+            break;
+          fi;
+        od;
+        if j <> 0 then
+          return i;
+        fi;
+      fi;
+    od;
+    return fail;
+  fi;
+   
+  # otherwise repeat with Manber
   i:=Maximum(1,start+1); # to catch index 0
   j:=1;
   while i<=n do

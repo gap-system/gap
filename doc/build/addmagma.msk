@@ -18,7 +18,7 @@ the domain is called an *additive magma* then;
 every module (see~"Modules"), vector space (see~"Vector Spaces"),
 ring (see~"Rings"), or field (see~"Fields and Division Rings")
 is an additive magma.
-In the cases of al *(near-)additive magma-with-zero* or
+In the cases of all *(near-)additive magma-with-zero* or
 *(near-)additive magma-with-inverses*,
 additional additive structure is present
 (see~"(Near-)Additive Magma Categories").

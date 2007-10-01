@@ -273,7 +273,9 @@ InstallGlobalFunction( CollectorSQ, function( G, M, isSplit )
         k := Characteristic( M.field );
         for i  in [ 1 .. Length(r.orders) ]  do
             for j  in [ 1 .. i ]  do
-                if r.orders[i] <> k and r.orders[j] <> k  then
+		# we can avoid
+		if Order(pcgs[i]) mod k <>0 and Order(pcgs[j]) mod k <>0 then
+		# was: r.orders[i] <> k and r.orders[j] <> k  then
                     AddSet( r.avoid, (i^2-i)/2 + j );
                 fi;
             od;

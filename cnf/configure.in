@@ -40,7 +40,7 @@ dnl ##
 dnl ## find a canonical name for the system
 dnl ##
 
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 AC_DEFINE_UNQUOTED( SYS_ARCH, "$target-$CC" )
 
 dnl This has to be left until after we know the system type

@@ -246,6 +246,14 @@ gap> ScalarProduct( TrivialCharacter( tbl ), Sum( Irr( tbl ) ) );
 1
 gap> ScalarProduct( tbl, [ 1, 1, 1, 1, 1 ], Sum( Irr( tbl ) ) );
 1
+gap> tbl2:= tbl mod 2;
+BrauerTable( "A5", 2 )
+gap> chi:= Irr( tbl2 )[1];
+Character( BrauerTable( "A5", 2 ), [ 1, 1, 1, 1 ] )
+gap> ScalarProduct( chi, chi );
+3/4
+gap> ScalarProduct( tbl2, [ 1, 1, 1, 1 ], [ 1, 1, 1, 1 ] );
+3/4
 gap> chars:= Irr( tbl ){ [ 2 .. 4 ] };;
 gap> chars:= Set( Tensored( chars, chars ) );;
 gap> MatScalarProducts( Irr( tbl ), chars );

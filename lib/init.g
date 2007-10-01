@@ -255,8 +255,9 @@ end;
 ##
 GAPInfo.CompareKernelVersions := function()
     local nondigits, digits, i, char, have, need, haveint, needint;
-
-    if GAPInfo.KernelVersion <> GAPInfo.NeedKernelVersion then
+    
+    if (not IS_STRING(GAPInfo.NeedKernelVersion) and not GAPInfo.KernelVersion in GAPInfo.NeedKernelVersion) or
+      (IS_STRING(GAPInfo.NeedKernelVersion) and  GAPInfo.KernelVersion <> GAPInfo.NeedKernelVersion) then
       Print( "\n\n",
         "You are running a GAP kernel which does not fit with the library.\n",
         "Probably you forgot to apply the kernel part or the library part\n",
@@ -788,7 +789,11 @@ BANNER_ORIG:= BANNER;
 MakeReadWriteGlobal("BANNER");
 UnbindGlobal("BANNER");
 BANNER:= false;
+GAPInfo.InfoWarningLevel:= InfoLevel( InfoWarning );
+SetInfoLevel( InfoWarning, 0 );
   AutoloadPackages();
+SetInfoLevel( InfoWarning, GAPInfo.InfoWarningLevel );
+Unbind( GAPInfo.InfoWarningLevel );
 BANNER:= BANNER_ORIG;
 MakeReadOnlyGlobal("BANNER");
 Unbind( BANNER_ORIG );

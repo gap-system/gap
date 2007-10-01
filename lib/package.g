@@ -24,7 +24,7 @@
 ##
 #T TODO:
 #T - document the utilities `SuggestUpgrades', `CheckPackageLoading',
-#T   `ShowPackageVariables', `LoadAllPackages'.
+#T   `ShowPackageVariables', `LoadAllPackages', `ValidatePackageInfo'.
 ##
 Revision.package_g :=
     "@(#)$Id$";
@@ -427,7 +427,11 @@ InstallGlobalFunction( "TestPackageAvailability", function( arg )
     #    (Note that they are ordered w.r.t. descending version numbers.)
     for inforec in PackageInfo( name ) do
 
-      dep:= inforec.Dependencies;
+      if IsBound( inforec.Dependencies ) then
+        dep:= inforec.Dependencies;
+      else
+        dep:= rec();
+      fi;
 
       if     CompareVersionNumbers( inforec.Version, version, equal )
          and inforec.AvailabilityTest() = true
@@ -905,27 +909,29 @@ PACKAGES_VERSIONS.( name ):= info.Version;
       Add( outercalls, name );
     fi;
 
-    # Load the needed other packages.
-    # (This is expected to work because of `TestPackageAvailability' above.)
-    dep:= info.Dependencies;
-    if IsBound( dep.NeededOtherPackages ) then
-      for pair in dep.NeededOtherPackages do
-        if LoadPackage( pair[1], pair[2], banner, outercalls ) <> true then
-          # The package was classified as available, but we cannot load it?
-          Error( "this should not happen" );
-        fi;
-      od;
-    fi;
+    if IsBound( info.Dependencies ) then
+      # Load the needed other packages.
+      # (This is expected to work because of `TestPackageAvailability' above.)
+      dep:= info.Dependencies;
+      if IsBound( dep.NeededOtherPackages ) then
+        for pair in dep.NeededOtherPackages do
+          if LoadPackage( pair[1], pair[2], banner, outercalls ) <> true then
+            # The package was classified as available, but we cannot load it?
+            Error( "this should not happen" );
+          fi;
+        od;
+      fi;
 
-    # Try to load the suggested other packages,
-    # and issue a warning for each such package where this is not possible.
-    if IsBound( dep.SuggestedOtherPackages ) then
-      for pair in dep.SuggestedOtherPackages do
-        if LoadPackage( pair[1], pair[2], banner, outercalls ) <> true then
-          Info( InfoWarning, 2,
-                "suggested package `", pair[1], "' cannot be loaded" );
-        fi;
-      od;
+      # Try to load the suggested other packages,
+      # and issue a warning for each such package where this is not possible.
+      if IsBound( dep.SuggestedOtherPackages ) then
+        for pair in dep.SuggestedOtherPackages do
+          if LoadPackage( pair[1], pair[2], banner, outercalls ) <> true then
+            Info( InfoWarning, 2,
+                  "suggested package `", pair[1], "' cannot be loaded" );
+          fi;
+        od;
+      fi;
     fi;
 
     # If wanted then show a package banner.
@@ -1175,6 +1181,9 @@ BindGlobal( "DeclareAutoreadableVariables",
 ##  the components that are needed for composing the package overview Web
 ##  page or for updating the package archives.
 ##
+#T Add an argument that distinguishes components needed for loading the
+#T package and those needed only for submitted packages!
+##
 BindGlobal( "ValidatePackageInfo", function( record )
     local IsStringList, IsRecordList, IsProperBool,
           result,
@@ -1311,18 +1320,19 @@ BindGlobal( "ValidatePackageInfo", function( record )
         TestMandat( subrec, "Autoload", IsProperBool, "`true' or `false'" );
       od;
     fi;
-    if TestMandat( record, "Dependencies", IsRecord, "a record" ) then
-      TestMandat( record.Dependencies, "NeededOtherPackages",
+    if     TestOption( record, "Dependencies", IsRecord, "a record" )
+       and IsBound( record.Dependencies ) then
+      TestOption( record.Dependencies, "NeededOtherPackages",
           comp -> IsList( comp ) and ForAll( comp,
                       l -> IsList( l ) and Length( l ) = 2
                                        and ForAll( l, IsString ) ),
           "a list of pairs `[ <pkgname>, <pkgversion> ]' of strings" );
-      TestMandat( record.Dependencies, "SuggestedOtherPackages",
+      TestOption( record.Dependencies, "SuggestedOtherPackages",
           comp -> IsList( comp ) and ForAll( comp,
                       l -> IsList( l ) and Length( l ) = 2
                                        and ForAll( l, IsString ) ),
           "a list of pairs `[ <pkgname>, <pkgversion> ]' of strings" );
-      TestMandat( record.Dependencies, "ExternalConditions",
+      TestOption( record.Dependencies, "ExternalConditions",
           comp -> IsList( comp ) and ForAll( comp,
                       l -> IsString( l ) or ( IsList( l ) and Length( l ) = 2
                                       and ForAll( l, IsString ) ) ),
@@ -1666,10 +1676,11 @@ NamesUserGVars   := "dummy";
 ##  actual rendering.
 ##
 BindGlobal( "PackageVariablesInfo", function( arg )
-    local pkgname, version, test, info, banner, outercalls, pair,
-          user_vars_orig, new, redeclared, newmethod, rules, data, rule,
-          loaded, pkg, args, docmark, done, result, subrule, added,
-          subresult, entry, isrelevantvarname, globals, protected;
+    local pkgname, version, test, info, banner, outercalls, name, pair,
+          user_vars_orig, new, new_up_to_case, redeclared, newmethod, rules,
+          data, rule, loaded, pkg, args, docmark, done, result, subrule,
+          added, prev, subresult, entry, isrelevantvarname, globals,
+          protected;
 
     # Get and check the arguments.
     if   Length( arg ) = 1 and IsString( arg[1] ) then
@@ -1707,10 +1718,15 @@ BindGlobal( "PackageVariablesInfo", function( arg )
     banner:= not GAPInfo.CommandLineOptions.q and
              not GAPInfo.CommandLineOptions.b;
     outercalls:= [ pkgname ];
-    for pair in Concatenation( info.Dependencies.NeededOtherPackages,
-                               info.Dependencies.SuggestedOtherPackages ) do
-      LoadPackage( pair[1], pair[2], banner, outercalls );
-    od;
+    if IsBound( info.Dependencies ) then
+      for name in [ "NeededOtherPackages", "SuggestedOtherPackages" ] do
+        if IsBound( info.Dependencies.( name ) ) then
+          for pair in info.Dependencies.( name ) do
+            LoadPackage( pair[1], pair[2], banner, outercalls );
+          od;
+        fi;
+      od;
+    fi;
 
     # Store the current list of global variables.
     user_vars_orig:= Union( NamesSystemGVars(), NamesUserGVars() );
@@ -1719,6 +1735,17 @@ BindGlobal( "PackageVariablesInfo", function( arg )
           return fail;
         else
           return [ entry[1], ValueGlobal( entry[1] ) ];
+        fi;
+      end;
+
+    new_up_to_case:= function( entry )
+        if   entry[1] in user_vars_orig then
+          return fail;
+        elif LowercaseString( entry[1] ) in GAPInfo.data.lowercase_vars then
+          return [ entry[1], ValueGlobal( entry[1] ) ];
+        else
+          Add( GAPInfo.data.lowercase_vars, LowercaseString( entry[1] ) );
+          return fail;
         fi;
       end;
 
@@ -1747,49 +1774,60 @@ BindGlobal( "PackageVariablesInfo", function( arg )
     # List the cases to be dealt with.
     rules:= [
       [ "DeclareGlobalFunction",
-        [ "new global functions",
-          entry -> [ entry[1], ValueGlobal( entry[1] ) ] ] ],
+        [ "new global functions", new ],
+        [ "globals that are new only up to case", new_up_to_case ] ],
       [ "DeclareGlobalVariable",
-        [ "new global variables",
-          entry -> [ entry[1], ValueGlobal( entry[1] ) ] ] ],
+        [ "new global variables", new ],
+        [ "globals that are new only up to case", new_up_to_case ] ],
       [ "DeclareOperation",
         [ "new operations", new ],
-        [ "redeclared operations", redeclared ] ],
+        [ "redeclared operations", redeclared ],
+        [ "globals that are new only up to case", new_up_to_case ] ],
       [ "DeclareAttribute",
         [ "new attributes", new ],
-        [ "redeclared attributes", redeclared ] ],
+        [ "redeclared attributes", redeclared ],
+        [ "globals that are new only up to case", new_up_to_case ] ],
       [ "DeclareProperty",
         [ "new properties", new ],
-        [ "redeclared properties", redeclared ] ],
+        [ "redeclared properties", redeclared ],
+        [ "globals that are new only up to case", new_up_to_case ] ],
       [ "DeclareCategory",
         [ "new categories", new ],
-        [ "redeclared categories", redeclared ] ],
+        [ "redeclared categories", redeclared ],
+        [ "globals that are new only up to case", new_up_to_case ] ],
       [ "DeclareRepresentation",
         [ "new representations", new ],
-        [ "redeclared representations", redeclared ] ],
+        [ "redeclared representations", redeclared ],
+        [ "globals that are new only up to case", new_up_to_case ] ],
       [ "DeclareFilter",
         [ "new plain filters", new ],
-        [ "redeclared plain filters", redeclared ] ],
+        [ "redeclared plain filters", redeclared ],
+        [ "globals that are new only up to case", new_up_to_case ] ],
       [ "InstallMethod",
         [ "new methods", newmethod ] ],
       [ "InstallOtherMethod",
         [ "new other methods", newmethod ] ],
       [ "DeclareSynonymAttr",
-        [ "new synonyms of attributes", new ] ],
+        [ "new synonyms of attributes", new ],
+        [ "globals that are new only up to case", new_up_to_case ] ],
       [ "DeclareSynonym",
-        [ "new synonyms", new ] ],
+        [ "new synonyms", new ],
+        [ "globals that are new only up to case", new_up_to_case ] ],
       ];
 
     # Save the relevant global variables, and replace them.
     GAPInfo.data:= rec();
+    GAPInfo.data.lowercase_vars:= List( user_vars_orig, LowercaseString );
     for rule in rules do
       GAPInfo.data.( rule[1] ):= [ ValueGlobal( rule[1] ), [] ];
       MakeReadWriteGlobal( rule[1] );
       UnbindGlobal( rule[1] );
       BindGlobal( rule[1], EvalString( Concatenation(
-          "function( arg ) Add( GAPInfo.data.( \"", rule[1],
-          "\" )[2], arg ); CallFuncList( GAPInfo.data.( \"", rule[1],
-          "\" )[1], arg ); end" ) ) );
+          "function( arg ) ",
+          "Add( GAPInfo.data.( \"", rule[1], "\" )[2], arg ); ",
+          "CallFuncList( GAPInfo.data.( \"", rule[1], "\" )[1], arg ); ",
+          "end" ) ) );
+
     od;
 
     # Load the package `pkgname', under the assumption that the
@@ -1854,20 +1892,28 @@ BindGlobal( "PackageVariablesInfo", function( arg )
       for subrule in rule{ [ 2 .. Length( rule ) ] } do
         added:= Filtered( List( GAPInfo.data.( rule[1] )[2], subrule[2] ),
                           x -> x <> fail );
-        if IsEmpty( added ) then
-          subresult:= [ Concatenation( "no ", subrule[1] ), [] ];
+        prev:= First( result, x -> x[1] = subrule[1] );
+        if prev = fail then
+          Add( result, [ subrule[1], added ] );
         else
-          subresult:= [ Concatenation( subrule[1], ":" ), [] ];
-          Sort( added, function( a, b ) return a[1] < b[1]; end );
-          for entry in added do
-            Add( subresult[2], [ "  ", entry[1], args( entry[2] ),
-                                 docmark( entry[1] ) ] );
-            AddSet( done, entry[1] );
-          od;
+          Append( prev[2], added );
         fi;
-        Add( result, subresult );
-      # Print( "\n" );
       od;
+    od;
+    for subresult in result do
+      if IsEmpty( subresult[2] ) then
+        subresult[1]:= Concatenation( "no ", subresult[1] );
+      else
+        subresult[1]:= Concatenation( subresult[1], ":" );
+        added:= subresult[2];
+        subresult[2]:= [];
+        Sort( added, function( a, b ) return a[1] < b[1]; end );
+        for entry in added do
+          Add( subresult[2], [ "  ", entry[1], args( entry[2] ),
+                               docmark( entry[1] ) ] );
+          AddSet( done, entry[1] );
+        od;
+      fi;
     od;
     Unbind( GAPInfo.data );
 
@@ -1927,7 +1973,7 @@ Unbind( NamesUserGVars );
 ##  `ShowPackageVariables' prints a list of global variables that become
 ##  bound and of methods that become installed when the package is loaded.
 ##  (For that, the package is actually loaded, so `ShowPackageVariables' can
-##  be called only once for the same package and in the same {\GAP} session.)
+##  be called only once for the same package in the same {\GAP} session.)
 ##
 ##  If a version number <version> is given (see Section~"ext:Version Numbers"
 ##  of ``Extending GAP'') then this version of the package is considered.
@@ -1935,14 +1981,22 @@ Unbind( NamesUserGVars );
 ##  An error message is printed if (the given version of) the package
 ##  is not available or already loaded.
 ##
+##  Information is printed about new and redeclared global variables,
+##  and about names of global variables introduced in the package
+##  that differ from existing globals only by case;
+##  note that the {\GAP} help system is case insensitive,
+##  so it is difficult to document identifiers that differ only by case.
+##
+##  Info lines for undocumented variables are marked with an asterisk `\*'.
+##
 ##  The following entries are omitted from the list:
-##  Default setter methods for attributes and properties that are declared in
+##  default setter methods for attributes and properties that are declared in
 ##  the package,
 ##  and `Set<attr>' and `Has<attr>' type variables where <attr> is an
 ##  attribute or property.
 ##
 BindGlobal( "ShowPackageVariables", function( arg )
-    local data, entry, subentry;
+    local entry, subentry;
 
     for entry in CallFuncList( PackageVariablesInfo, arg ) do
       Print( entry[1], "\n" );
@@ -1952,14 +2006,10 @@ BindGlobal( "ShowPackageVariables", function( arg )
       Print( "\n" );
     od;
     end );
-#T improve this:
-#T List also all globals that differ from other globals (in the same package
-#T or defined outside) only by case -- note that the documentation is case
-#T insensitive, so it will be difficult to document variables that differ
-#T only by case!
 
 
 #############################################################################
 ##
 #E
+
 

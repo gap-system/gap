@@ -16,7 +16,7 @@
 **  where N is at most $2^16$.
 **
 **  Internally a permutation  is viewed as a mapping  of [ 0,  1,  .., N-1 ],
-**  because in C indexing of  arrays is done  with the origin  0 instad of 1.
+**  because in C indexing of  arrays is done with the origin  0 instead of 1.
 **  A permutation is represented by a bag of type 'T_PERM' of the form
 **
 **      +-------+-------+-------+-------+- - - -+-------+-------+
@@ -3925,15 +3925,19 @@ Obj             OnTuplesPerm (
 
         /* loop over the entries of the tuple                              */
         for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup--, ptRes-- ) {
-            if ( TNUM_OBJ( *ptTup ) == T_INT && 0 < INT_INTOBJ( *ptTup ) ) {
+            if (IS_INTOBJ(*ptTup)) {
                 k = INT_INTOBJ( *ptTup );
-                if ( k <= lmp )
-                    tmp = INTOBJ_INT( ptPrm2[k-1] + 1 );
+                if ( k <= 0 || k > lmp )
+                    tmp = *ptTup;
                 else
-                    tmp = INTOBJ_INT( k );
+                    tmp = INTOBJ_INT( ptPrm2[k-1] + 1 );
                 *ptRes = tmp;
             }
             else {
+                if (*ptTup == NULL) {
+                  ErrorQuit("OnTuples for perm: list must not contain holes",
+                            0L, 0L);
+                }
                 tmp = POW( *ptTup, perm );
                 ptTup = ADDR_OBJ(tup) + i;
                 ptRes = ADDR_OBJ(res) + i;
@@ -3956,15 +3960,19 @@ Obj             OnTuplesPerm (
 
         /* loop over the entries of the tuple                              */
         for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup--, ptRes-- ) {
-            if ( TNUM_OBJ( *ptTup ) == T_INT && 0 < INT_INTOBJ( *ptTup ) ) {
+            if (IS_INTOBJ(*ptTup)) {
                 k = INT_INTOBJ( *ptTup );
-                if ( k <= lmp )
-                    tmp = INTOBJ_INT( ptPrm4[k-1] + 1 );
+                if ( k <= 0 || k > lmp )
+                    tmp = *ptTup;
                 else
-                    tmp = INTOBJ_INT( k );
+                    tmp = INTOBJ_INT( ptPrm4[k-1] + 1 );
                 *ptRes = tmp;
             }
             else {
+                if (*ptTup == NULL) {
+                  ErrorQuit("OnTuples for perm: list must not contain holes",
+                            0L, 0L);
+                }
                 tmp = POW( *ptTup, perm );
                 ptTup = ADDR_OBJ(tup) + i;
                 ptRes = ADDR_OBJ(res) + i;

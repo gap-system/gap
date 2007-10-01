@@ -767,7 +767,7 @@ void MakeImmutableDatObj( Obj obj)
 Obj FuncMakeImmutable( Obj self, Obj obj)
 {
   MakeImmutable(obj);
-  return (Obj) 0;
+  return obj;
 }
 
 

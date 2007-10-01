@@ -169,10 +169,7 @@ InstallMethod( LeftModuleGeneralMappingByImages,
                              IsSPGeneralMapping
                          and IsLeftModuleGeneralMapping
                          and IsLinearGeneralMappingByImagesDefaultRep ),
-                     rec(
-#                          generators := gens,
-#                          genimages  := imgs
-                         ) );
+                     rec() );
 
     SetMappingGeneratorsImages(map,[gens,imgs]);
     # Handle the case that `gens' is a basis.
@@ -283,9 +280,17 @@ BindGlobal( "MakeImagesInfoLinearGeneralMappingByImages", function( map )
           B;
 
     preimage:= PreImagesRange( map );
-    mapi:=MappingGeneratorsImages(map);
+    mapi:= MappingGeneratorsImages( map );
 
-    if IsGaussianRowSpace( Source( map ) ) then
+    if   Dimension( preimage ) = 0 then
+
+      # Set the entries explicitly.
+      map!.basispreimage       := Basis( preimage );
+      map!.corelations         := IdentityMat( Length( mapi[2] ),
+                                      LeftActingDomain( preimage ) );
+      map!.imagesbasispreimage := Immutable( [] );
+
+    elif IsGaussianRowSpace( Source( map ) ) then
 #T operation MakeImagesInfo( map, source )
 #T to leave this to the method selection ?
 #T or flag `IsFromGaussianSpace' ?
@@ -295,8 +300,8 @@ BindGlobal( "MakeImagesInfoLinearGeneralMappingByImages", function( map )
       # given by `ech.coeffs'.
 
       ech:= SemiEchelonMatTransformation( mapi[1] );
-      map!.basispreimage       := Immutable( SemiEchelonBasisNC(
-                                      preimage, ech.vectors ) );
+      map!.basispreimage       := SemiEchelonBasisNC(
+                                      preimage, ech.vectors );
       map!.corelations         := Immutable( ech.relations );
       map!.imagesbasispreimage := Immutable( ech.coeffs * mapi[2] );
 
@@ -306,10 +311,9 @@ BindGlobal( "MakeImagesInfoLinearGeneralMappingByImages", function( map )
       B:= Basis( preimage );
       ech:= SemiEchelonMatTransformation( List( mapi[1],
                      x -> Coefficients( B, x ) ) );
-      map!.basispreimage       := Immutable( BasisNC(
-                                      preimage,
+      map!.basispreimage       := BasisNC( preimage,
                                       List( ech.vectors,
-                                        x -> LinearCombination( B, x ) ) ) );
+                                        x -> LinearCombination( B, x ) ) );
       map!.corelations         := Immutable( ech.relations );
       map!.imagesbasispreimage := Immutable( List( ech.coeffs,
                                         x -> LinearCombination( x,
@@ -332,18 +336,24 @@ BindGlobal( "MakePreImagesInfoLinearGeneralMappingByImages", function( map )
 	  mapi,
           B;
 
-    mapi:=MappingGeneratorsImages(map);
+    mapi:= MappingGeneratorsImages( map );
     image:= ImagesSource( map );
 
-    if IsGaussianRowSpace( Range( map ) ) then
+    if   Dimension( image ) = 0 then
+
+      # Set the entries explicitly.
+      map!.basisimage          := Basis( image );
+      map!.relations           := IdentityMat( Length( mapi[1] ),
+                                      LeftActingDomain( image ) );
+      map!.preimagesbasisimage := Immutable( [] );
+
+    elif IsGaussianRowSpace( Range( map ) ) then
 
       # The preimages of the basis vectors are obtained on
       # forming the linear combinations of preimages of genimages
       # given by `ech.coeffs'.
-
       ech:= SemiEchelonMatTransformation( mapi[2] );
-      map!.basisimage          := Immutable( SemiEchelonBasisNC(
-                                      image, ech.vectors ) );
+      map!.basisimage          := SemiEchelonBasisNC( image, ech.vectors );
       map!.relations           := Immutable( ech.relations );
       map!.preimagesbasisimage := Immutable( ech.coeffs * mapi[1]);
 
@@ -353,10 +363,9 @@ BindGlobal( "MakePreImagesInfoLinearGeneralMappingByImages", function( map )
       B:= Basis( image );
       ech:= SemiEchelonMatTransformation( List( mapi[2],
                      x -> Coefficients( B, x ) ) );
-      map!.basisimage          := Immutable( BasisNC(
-                                      image,
+      map!.basisimage          := BasisNC( image,
                                       List( ech.vectors,
-                                        x -> LinearCombination( B, x ) ) ) );
+                                        x -> LinearCombination( B, x ) ) );
       map!.relations           := Immutable( ech.relations );
       map!.preimagesbasisimage := Immutable( List( ech.coeffs,
                                       row -> LinearCombination(
@@ -466,6 +475,8 @@ InstallMethod( ImagesRepresentative,
     elm:= Coefficients( map!.basispreimage, elm );
     if elm = fail then
       return fail;
+    elif IsEmpty( elm ) then
+      return Zero( Range( map ) );
     fi;
     return LinearCombination( map!.imagesbasispreimage, elm );
     end );
@@ -1134,10 +1145,9 @@ BindGlobal( "MakePreImagesInfoLinearMappingByMatrix", function( map )
 
     ech:= SemiEchelonMatTransformation( map!.matrix );
     B:= Basis( Range( map ) );
-    map!.basisimage          := Immutable( BasisNC(
-                                    ImagesSource( map ),
+    map!.basisimage          := BasisNC( ImagesSource( map ),
                                     List( ech.vectors,
-                                      x -> LinearCombination( B, x ) ) ) );
+                                      x -> LinearCombination( B, x ) ) );
     map!.relations           := Immutable( ech.relations );
 
     map!.preimagesbasisimage := Immutable( List( ech.coeffs,

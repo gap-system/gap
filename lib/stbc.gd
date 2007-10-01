@@ -26,6 +26,11 @@ Revision.stbc_gd :=
 ##  additionally, `StabChainMutable' is also an attribute for the group
 ##  homomorphism <permhomom> whose source is a permutation group.
 ##  
+##  (The mathematical background of stabilizer chains is sketched
+##  in~"Stabilizer Chains",
+##  more information about the objects representing stabilizer chains
+##  in {\GAP} can be found in~"Stabilizer Chain Records".)
+##
 ##  `StabChainOp' is an operation with two arguments <G> and <options>,
 ##  the latter being a record which controls some aspects of the computation
 ##  of a stabilizer chain (see below);

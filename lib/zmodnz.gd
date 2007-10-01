@@ -148,6 +148,7 @@ DeclareGlobalFunction( "ZmodpZNC" );
 ##
 DeclareOperation( "ZmodnZObj", [ IsZmodnZObjNonprimeFamily, IsInt ] );
 DeclareOperation( "ZmodnZObj", [ IsInt, IsPosInt ] );
+DeclareSynonym( "ZmodpZObj", ZmodnZObj );
 
 
 #############################################################################

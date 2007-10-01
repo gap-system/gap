@@ -175,6 +175,8 @@ dnl ##
 AC_DEFUN(GP_PROG_CC_DYNFLAGS,
 [AC_CACHE_CHECK(dynamic module compile options, gp_cv_prog_cc_cdynoptions,
  [ case "$host-$CC" in
+    *-apple-darwin*gcc* )
+        gp_cv_prog_cc_cdynoptions="-fPIC";;
     *-hpux-gcc )
         gp_cv_prog_cc_cdynoptions="-fpic";;
     *-gcc | *-egcs )
@@ -192,6 +194,8 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
  ])
  AC_CACHE_CHECK(dynamic linker, gp_cv_prog_cc_cdynlinker,
  [ case "$host-$CC" in
+    *-apple-darwin*gcc* )
+        gp_cv_prog_cc_cdynlinker="ld";;
     *-gcc | *-egcs )
         gp_cv_prog_cc_cdynlinker="ld";;
     *-next-nextstep-cc )
@@ -226,6 +230,8 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
         gp_cv_prog_cc_cdynlinking="-G -Bdynamic";;
     *sunos* )
         gp_cv_prog_cc_cdynlinking="-assert pure-text -Bdynamic -x";;
+    *-apple-darwin*gcc* )
+        gp_cv_prog_cc_cdynlinking='-bundle -bundle_loader ${gap_bin}/gap -lc -lm';;
     * )
         gp_cv_prog_cc_cdynlinking="UNSUPPORTED";;
    esac 

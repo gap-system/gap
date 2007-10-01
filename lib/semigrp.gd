@@ -247,6 +247,22 @@ DeclareProperty("IsRegularSemigroup", IsSemigroup);
 
 #############################################################################
 ##
+#M  IsInverseSemigroup( <S> );
+##  <#GAPDoc Label="IsInverseSemigroup">
+##  <ManSection>
+##  <Prop Name="IsInverseSemigroup" Arg='S'/>
+##
+##  <Description>
+##  returns <K>true</K> if <A>S</A> is an inverse semigroup---i.e. if every element of <A>S</A> has a unique (semigroup) inverse.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+
+DeclareProperty("IsInverseSemigroup", IsSemigroup);
+
+#############################################################################
+##
 #O  DisplaySemigroup( <S> )
 ##
 ##  Produces a convenient display of a semigroup's DClass

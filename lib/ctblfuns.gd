@@ -824,15 +824,25 @@ DeclareOperation( "IsIrreducibleCharacter",
 ##
 #O  ScalarProduct( [<tbl>, ]<chi>, <psi> )
 ##
-##  For two class functions <chi> and <psi> of the same ordinary character
-##  table <tbl>, `ScalarProduct' returns the scalar product.
+##  For two class functions <chi> and <psi> which belong to the same
+##  character table <tbl>, `ScalarProduct' returns their scalar product.
 ##
-##  If $G$ is the underlying group of <tbl> and the two class functions are
-##  $\chi$ and $\psi$ then this is defined as
+##  If <chi> and <psi> are class function objects,
+##  the argument <tbl> is not needed,
+##  but <tbl> is necessary if at least one of <chi>, <psi>
+##  is just a plain list.
+##
+##  The scalar product of two *ordinary* class functions $\chi$, 
+##  $\psi$ of a group $G$ is defined as
 ##  $\frac{1}{|G|} \sum_{g \in G} \chi(g) \psi(g^{-1})$.
 ##
+##  For two *$p$-modular* class functions,
+##  the scalar product is defined as
+##  $\frac{1}{|G|} \sum_{g \in S} \chi(g) \psi(g^{-1})$.
+##  where $S$ is the set of $p$-regular elements in $G$.
+##
 DeclareOperation( "ScalarProduct",
-    [ IsOrdinaryTable, IsRowVector, IsRowVector ] );
+    [ IsCharacterTable, IsRowVector, IsRowVector ] );
 
 
 #############################################################################

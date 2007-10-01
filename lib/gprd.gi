@@ -1167,7 +1167,7 @@ end);
 InstallMethod( Embedding, "vectorspace semidirect products",
     true, [ IsGroup and HasSemidirectProductInfo, IsPosInt ], 0,
 function( S, i )
-    local  info, G, genG, imgs, hom,j,m,n,d;
+    local  info, G, genG, imgs, hom,j,k,m,n,d,v,w;
 
     info := SemidirectProductInfo( S );
     if not IsBound(info.vectorspace) then
@@ -1188,7 +1188,15 @@ function( S, i )
 
       # image of vectorspace
       n:=[];
-      for j in BasisVectors(Basis(info.vectorspace)) do
+      v:=BasisVectors(Basis(info.vectorspace));
+      w:=[];
+      for j in BasisVectors(Basis(info.field)) do
+	for k in v do
+	  Add(w,j*k);
+	od;
+      od;
+
+      for j in w do
 	m:=MutableIdentityMat(d+1,info.field);
 	m[d+1]{[1..d]}:=j;
 	Add(n,ImmutableMatrix(info.field,m));

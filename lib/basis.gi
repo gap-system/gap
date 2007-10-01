@@ -16,6 +16,39 @@ Revision.basis_gi :=
 
 #############################################################################
 ##
+#M  IsSmallList( <B> )  . . . . . . . . . . . . . . . . . . . . for any basis
+##
+#T  preliminary fix:
+#T  Set `IsSmallList' whenever a `BasisVectors' value is entered that knows
+#T  whether it is in `IsSmallList', and whenever a `UnderlyingLeftModule' is
+#T  entered that knows its dimension.
+#T  (This is not sufficient, since immediate methods may be switched off,
+#T  but I do not like the idea to add this kind of code in each method that
+#T  creates a basis object.)
+##
+InstallImmediateMethod( IsSmallList,
+    IsBasis and HasBasisVectors and IsAttributeStoringRep, 0,
+    function( B )
+    B:= BasisVectors( B );
+    if HasIsSmallList( B ) then
+      return IsSmallList( B );
+    fi;
+    TryNextMethod();
+    end );
+
+InstallImmediateMethod( IsSmallList,
+    IsBasis and HasUnderlyingLeftModule and IsAttributeStoringRep, 0,
+    function( B )
+    B:= UnderlyingLeftModule( B );
+    if HasDimension( B ) then
+      return Dimension( B ) <= MAX_SIZE_LIST_INTERNAL;
+    fi;
+    TryNextMethod();
+    end );
+
+
+#############################################################################
+##
 #M  IsCanonicalBasis( <B> ) . . . . . . . . . . . . . . . . . . for any basis
 ##
 ##  Note that we run into an error if no canonical basis is defined for the

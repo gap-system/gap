@@ -1210,32 +1210,35 @@ local pcgs;
   return pcgs;
 end);
 
-#############################################################################
-##
-#M  DerivedSeriesOfGroup( <G> ) . . . . . . . . . . . . . . .  derived series
-##
-InstallMethod( DerivedSeriesOfGroup,"for permgrp", true, [ IsPermGroup ], 0,
-    function( G )
-    local  pcgs,  series;
-
-    if   (not DefaultStabChainOptions.tryPcgs
-       or ( HasIsSolvableGroup( G )  and  not IsSolvableGroup( G ) ))
-       and not (HasIsSolvableGroup(G) and IsSolvableGroup(G)) then
-        TryNextMethod();
-    fi;
-    
-    pcgs := TryPcgsPermGroup( G, false, true, false );
-    if not IsPcgs( pcgs )  then
-        TryNextMethod();
-    fi;
-    SetIndicesEANormalSteps(pcgs,pcgs!.permpcgsNormalSteps);
-    series := EANormalSeriesByPcgs( pcgs );
-    if not HasDerivedSubgroup( G )  then
-        if Length( series ) > 1  then  SetDerivedSubgroup( G, series[ 2 ] );
-                                 else  SetDerivedSubgroup( G, G );  fi;
-    fi;
-    return series;
-end );
+#T AH, 3/26/07: This method triggers a bug with indices. It is not clear
+#T form the description why TryPcgs... should also give a drived series. Thus
+#T disabled.
+# #############################################################################
+# ##
+# #M  DerivedSeriesOfGroup( <G> ) . . . . . . . . . . . . . . .  derived series
+# ##
+# InstallMethod( DerivedSeriesOfGroup,"for permgrp", true, [ IsPermGroup ], 0,
+#     function( G )
+#     local  pcgs,  series;
+# 
+#     if   (not DefaultStabChainOptions.tryPcgs
+#        or ( HasIsSolvableGroup( G )  and  not IsSolvableGroup( G ) ))
+#        and not (HasIsSolvableGroup(G) and IsSolvableGroup(G)) then
+#         TryNextMethod();
+#     fi;
+#     
+#     pcgs := TryPcgsPermGroup( G, false, true, false );
+#     if not IsPcgs( pcgs )  then
+#         TryNextMethod();
+#     fi;
+#     SetIndicesEANormalSteps(pcgs,pcgs!.permpcgsNormalSteps);
+#     series := EANormalSeriesByPcgs( pcgs );
+#     if not HasDerivedSubgroup( G )  then
+#         if Length( series ) > 1  then  SetDerivedSubgroup( G, series[ 2 ] );
+#                                  else  SetDerivedSubgroup( G, G );  fi;
+#     fi;
+#     return series;
+# end );
 
 #############################################################################
 ##

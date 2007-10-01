@@ -2657,6 +2657,10 @@ UInt CosetLeadersInner8Bits( Obj veclis,
 	      CHANGED_BAG(leaders);
 	      /* Also record all the multiples here */
 	      wc = ZeroVec8Bit(q,lenw,1);
+	      settab = SETELT_FIELDINFO_8BIT(info);
+	      gettab = GETELT_FIELDINFO_8BIT(info);
+	      ptr = BYTES_VEC8BIT(v)+ (i-1)/elts;
+	      ptrw = BYTES_VEC8BIT(w);
 	      for (k = 1; k < q; k++)
 		{		  
 		  qk = FFE_FELT_FIELDINFO_8BIT(info)[k];
@@ -2669,6 +2673,10 @@ UInt CosetLeadersInner8Bits( Obj veclis,
 		      sy += gettab[ptrw[j / elts] + 256* (j % elts)];
 		    }
 		  vc = ZeroVec8Bit(q, len, 0);
+		  settab = SETELT_FIELDINFO_8BIT(info);
+		  gettab = GETELT_FIELDINFO_8BIT(info);
+		  ptr = BYTES_VEC8BIT(v)+ (i-1)/elts;
+		  ptrw = BYTES_VEC8BIT(w);
 		  MultVec8BitFFEInner(vc,v,qk,1,len);
 		  SET_ELM_PLIST(leaders, sy+1, vc);
 		  CHANGED_BAG(leaders);
@@ -2676,10 +2684,6 @@ UInt CosetLeadersInner8Bits( Obj veclis,
 	      found += (q-1);
 	      if (found == tofind)
 		return found;
-	      settab = SETELT_FIELDINFO_8BIT(info);
-	      gettab = GETELT_FIELDINFO_8BIT(info);
-	      ptr = BYTES_VEC8BIT(v)+ (i-1)/elts;
-	      ptrw = BYTES_VEC8BIT(w);
 	    }
 	  u = ELM_PLIST(vp,q+1);
 	  AddVec8BitVec8BitInner(w,w,u,1,lenw);
@@ -2913,7 +2917,7 @@ Obj FuncELMS_VEC8BIT (
     UInt                 len2;
 
     len = LEN_PLIST(poss);
-    info = ELM_PLIST(FieldInfo8Bit,FIELD_VEC8BIT(list));
+    info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
     len2 = LEN_VEC8BIT(list);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     res = NewBag(T_DATOBJ, SIZE_VEC8BIT( len, elts));
@@ -2985,7 +2989,7 @@ Obj FuncELMS_VEC8BIT_RANGE (
     UInt                 e;
     UInt1                byte;
     
-    info = ELM_PLIST(FieldInfo8Bit,FIELD_VEC8BIT(list));
+    info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     len = GET_LEN_RANGE(range);
     low = GET_LOW_RANGE(range);
@@ -3225,7 +3229,7 @@ Obj FuncUNB_VEC8BIT (
     }
     else if ( /* p > 1 && */ LEN_VEC8BIT(list) == p ) {
       /* zero out the last entry first, for safety */
-      info = ELM_PLIST(FieldInfo8Bit,FIELD_VEC8BIT(list));
+      info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
       elts = ELS_BYTE_FIELDINFO_8BIT(info);
       BYTES_VEC8BIT(list)[(p-1)/elts] =
 	SETELT_FIELDINFO_8BIT(info)[((p-1) % elts)*256 +

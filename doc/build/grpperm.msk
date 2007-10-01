@@ -621,7 +621,7 @@ to be solvable, that it is, using `SetIsSolvableGroup(<G>,true)'.
 
 The second aspect concerns memory usage. A permutation on more than 65536
 points requires 4 byte per point for storing. So permutations on 256000
-poitns require roughly 1MB of storage per permutation. Just storing the
+points require roughly 1MB of storage per permutation. Just storing the
 permutations required for a stabilizer chain might already go beyond the
 available memory, in particular if the base is not very short. In such a
 situation it can be useful, to replace the permutations by straight line

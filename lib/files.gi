@@ -155,9 +155,6 @@ InstallGlobalFunction(DirectoryContents, function(dirname)
   local str;
   # to make ~/mydir work
   dirname := USER_HOME_EXPAND(dirname);
-  if dirname[Length(dirname)] <> '/' then
-    Add(dirname, '/');
-  fi;
   str := STRING_LIST_DIR(dirname);
   if str = fail then
     Error("Could not open ", dirname, " as directory,\nsee LastSystemError();");

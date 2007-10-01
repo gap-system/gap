@@ -487,29 +487,6 @@ InstallMethod( Representative,
 
 #############################################################################
 ##
-#M  GeneratorsOfRing( <F> ) . . . . . . .  ring generators of a division ring
-##
-InstallMethod( GeneratorsOfRing,
-    "for a division ring with known generators",
-    [ IsDivisionRing and HasGeneratorsOfDivisionRing ],
-    F -> Concatenation( GeneratorsOfDivisionRing( F ),
-                        [ One( F ) ],
-                        List( GeneratorsOfDivisionRing( F ), Inverse ) ) );
-
-
-#############################################################################
-##
-#M  GeneratorsOfRingWithOne( <F> )  . . . . . . . . . . . for a division ring
-##
-InstallMethod( GeneratorsOfRingWithOne,
-    "for a division ring with known generators",
-    [ IsDivisionRing and HasGeneratorsOfDivisionRing ],
-    F -> Concatenation( GeneratorsOfDivisionRing( F ),
-                        List( GeneratorsOfDivisionRing( F ), Inverse ) ) );
-
-
-#############################################################################
-##
 #M  Enumerator( <F> ) . . . . . . . . . .  elements of a (finite) prime field
 #M  EnumeratorSorted( <F> ) . . . . . . .  elements of a (finite) prime field
 ##

@@ -4,7 +4,6 @@
 #W							         Scott Murray
 #W                                                           Alexander Hulpke
 ##
-#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1999,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 #Y  (C) 1999 School Math and Comp. Sci., University of St.  Andrews, Scotland
@@ -915,6 +914,17 @@ local f,n;
 	    return sy;
            end;
   fi;
+end);
+
+InstallMethod(DenseIntKey,"for lists of vectors",true,
+    [ IsFFECollColl,IsObject ], 0,
+function(m,v)
+local f,n;
+  if not IsList(m) and ForAll(m,i->IsRowVector(i)) then
+    TryNextMethod();
+  fi;
+  f:=DefaultFieldOfMatrix(m);
+  return DenseIntKey(f^Length(v),v);
 end);
 
 InstallMethod(DenseIntKey,

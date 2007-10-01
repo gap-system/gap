@@ -124,6 +124,17 @@ extern  Int             GrowString (
             Obj                 list,
             UInt                need );
 
+/****************************************************************************
+**
+*F  SHRINK_STRING(<list>) . . . . . . . . .  shrink a string to minimal size
+**
+**  'SHRINK_STRING' gives back not needed memory allocated by string.
+**
+**  Note that 'SHRINK_STRING' is a macro, so do not call it with arguments that
+**  have sideeffects.
+*/
+#define SHRINK_STRING(list)   ResizeBag((list),\
+                            (SIZEBAG_STRINGLEN(GET_LEN_STRING((list)))));
 
 /****************************************************************************
 **

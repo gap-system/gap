@@ -642,8 +642,8 @@ local g,	# group
   len:=Length(e);
 
   if IsBound(opt.groups) then
-    start:=1;
-    while ForAll(opt.groups,i->IsSubgroup(e[start],i)) do
+    start:=0;
+    while start+1<=Length(e) and ForAll(opt.groups,i->IsSubgroup(e[start+1],i)) do
       start:=start+1;
     od;
     Info(InfoPcSubgroup,1,"starting index ",start);
@@ -651,6 +651,10 @@ local g,	# group
     lastepi:=epi;
     f:=Image(epi,g);
     grps:=List(opt.groups,i->Image(epi,i));
+    if not IsBound(opt.grpsnorms) then
+      opt:=ShallowCopy(opt);
+      opt.grpsnorms:=List(opt.groups,i->Normalizer(e[1],i));
+    fi;
     grpsnorms:=List(opt.grpsnorms,i->Image(epi,i));
   else
     # search the largest elementary abelian quotient

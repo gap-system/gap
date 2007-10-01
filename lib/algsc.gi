@@ -592,18 +592,32 @@ InstallAccessToGenerators( IsSCAlgebraObjCollection and IsFullSCAlgebra,
 
 #############################################################################
 ##
-#F  QuaternionAlgebra( <F>, <a>, <b> )
-#F  QuaternionAlgebra( <F> )
+#V  QuaternionAlgebraData
+##
+InstallFlushableValue( QuaternionAlgebraData, [] );
+
+
+#############################################################################
+##
+#F  QuaternionAlgebra( <F>[, <a>, <b>] )
 ##
 InstallGlobalFunction( QuaternionAlgebra, function( arg )
-    local F, a, b, e, filter, A;
+    local F, a, b, e, stored, filter, A;
 
     if Length( arg ) = 1 and IsRing( arg[1] ) then
       F:= arg[1];
       a:= AdditiveInverse( One( F ) );
       b:= a;
+    elif Length( arg ) = 1 and IsCollection( arg[1] ) then
+      F:= Field( arg[1] );
+      a:= AdditiveInverse( One( F ) );
+      b:= a;
     elif Length( arg ) = 3 and IsRing( arg[1] ) then
       F:= arg[1];
+      a:= arg[2];
+      b:= arg[3];
+    elif Length( arg ) = 3 and IsCollection( arg[1] ) then
+      F:= Field( arg[1] );
       a:= arg[2];
       b:= arg[3];
     else
@@ -612,6 +626,14 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
     e:= One( F );
     if e = fail then
       Error( "<F> must have an identity element" );
+    fi;
+
+    # Generators in the right family may be already available.
+    stored:= First( QuaternionAlgebraData,
+                    t ->     t[1] = a and t[2] = b
+                         and IsIdenticalObj( t[3], FamilyObj( F ) ) );
+    if stored <> fail then
+      return AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
     fi;
 
     # Construct a filter describing element properties,
@@ -638,6 +660,7 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
                 0, Zero(F) ],
               "e", "i", "j", "k" ],
             filter );
+    SetFilterObj( A, IsAlgebraWithOne );
 
     # A quaternion algebra with negative parameters over a real field
     # is a division ring.
@@ -648,6 +671,9 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
       SetFilterObj( A, IsMagmaWithInversesIfNonzero );
 #T better use `DivisionRingByGenerators'?
     fi;
+
+    # Store the data for the next call.
+    Add( QuaternionAlgebraData, [ a, b, FamilyObj( F ), A ] );
 
     # Return the quaternion algebra.
     return A;

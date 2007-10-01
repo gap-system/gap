@@ -9,10 +9,6 @@
 Revision.grppcrep_gi :=
     "@(#)$Id$";
 
-##
-#W Once large galois fields are implemented, the limitation 
-#W to < MAXSIZE_GF_INTERNAL used in this file might be removed. 
-##
 
 #############################################################################
 ##
@@ -346,12 +342,7 @@ InstallGlobalFunction( ExtensionsOfModule, function( pcgsS, modu, conj, dim )
 	  b := dE * d;
 
 	  # construct new field of dimension b
-	  if p^b >= MAXSIZE_GF_INTERNAL then
-	    if dim = 0 or b * modu.dimension <= dim then
-		Error("field too big: ",p,"^",b," \n");
-	    fi;
-
-	  elif dim = 0 or b * modu.dimension <= dim then
+	  if dim = 0 or b * modu.dimension <= dim then
 	    L := GF(p^b);
 	    for j in [1..Length(f)] do
 	      w := PrimitiveRoot( L ) ^ ((p^b - 1)/r);
@@ -390,12 +381,7 @@ InstallGlobalFunction( ExtensionsOfModule, function( pcgsS, modu, conj, dim )
     # if we have we do not have any root in E, go over to extension
     # construct new field of dimension b
     b := dE * r;
-    if p^b >= MAXSIZE_GF_INTERNAL then
-        if dim = 0 or b * modu.dimension <= dim then
-            Error("field too big: ",p,"^",b," \n");
-        fi;
-
-    elif dim = 0 or b * modu.dimension <= dim then
+    if dim = 0 or b * modu.dimension <= dim then
         L := GF( p^b );
         c := PrimitiveRoot( L ) ^ QuoInt( LogFFE( e, PrimitiveRoot( L ) ), r );
         mats:=List(Concatenation([c*iso],modu.generators),
@@ -432,14 +418,8 @@ InstallGlobalFunction( InitAbsAndIrredModules, function( r, F, dim )
             l := DegreeOfLaurentPolynomial( f[1] );
             b := l * d;
 
-            # check the fieldsize
-            if p^b >= MAXSIZE_GF_INTERNAL then
-                if dim = 0 or b <= dim then
-                   Error("field too big: ",p,"^",b," \n");
-                fi;
-
             # construct l-dimensional module
-            elif dim = 0 or b <= dim then
+            if dim = 0 or b <= dim then
                 E := GF( p^b );
                 for j in [ 1..Length( f ) ] do
                     w := PrimitiveRoot(E)^QuoInt( p^b-1, r );

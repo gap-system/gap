@@ -1617,22 +1617,21 @@ InstallMethod( ScalarProduct,
 ##
 InstallMethod( ScalarProduct,
     "for ordinary table and two homogeneous lists",
-    [ IsOrdinaryTable, IsRowVector, IsRowVector ],
+    [ IsCharacterTable, IsRowVector, IsRowVector ],
     function( tbl, x1, x2 )
+    local i,       # loop variable
+          scpr,    # scalar product, result
+          weight;  # lengths of conjugacy classes
 
-     local i,       # loop variable
-           scpr,    # scalar product, result
-           weight;  # lengths of conjugacy classes
-
-     weight:= SizesConjugacyClasses( tbl );
-     x1:= ValuesOfClassFunction( x1 );
-     x2:= ValuesOfClassFunction( x2 );
-     scpr:= 0;
-     for i in [ 1 .. Length( x1 ) ] do
-       scpr:= scpr + x1[i] * GaloisCyc( x2[i], -1 ) * weight[i];
-     od;
-     return scpr / Size( tbl );
-     end );
+    weight:= SizesConjugacyClasses( tbl );
+    x1:= ValuesOfClassFunction( x1 );
+    x2:= ValuesOfClassFunction( x2 );
+    scpr:= 0;
+    for i in [ 1 .. Length( x1 ) ] do
+      scpr:= scpr + x1[i] * GaloisCyc( x2[i], -1 ) * weight[i];
+    od;
+    return scpr / Size( tbl );
+    end );
 
 
 #############################################################################

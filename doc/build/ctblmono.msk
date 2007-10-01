@@ -67,7 +67,7 @@ rec( isHomogeneous := false, comment := "restriction checked",
   character := Character( CharacterTable( Group(
     [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 
       [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
-      [ [ Z(3), Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ]) ), [ 1, -1, 1, -1, 1 ] ),
+      [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ), [ 1, -1, 1, -1, 1 ] ),
   multiplicity := 1 )
 gap> chi:= Irr( Sl23 )[4];
 Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] )
@@ -98,7 +98,7 @@ rec( isQuasiPrimitive := false, comment := "restriction checked",
   character := Character( CharacterTable( Group(
     [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 
       [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
-      [ [ Z(3), Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ]) ), [ 1, -1, 1, -1, 1 ] ) )
+      [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ), [ 1, -1, 1, -1, 1 ] ) )
 \endexample
 
 \Declaration{TestInducedFromNormalSubgroup}
