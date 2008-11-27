@@ -111,8 +111,7 @@ InstallMethod( \*,
 ##
 InstallOtherMethod( DegreeFFE,
     "for a row vector of FFEs",
-    true,
-    [ IsRowVector and IsFFECollection ], 0,
+    [ IsRowVector and IsFFECollection ],
     function( list )
     local deg, i;
     
@@ -139,8 +138,7 @@ InstallOtherMethod( DegreeFFE,
 ##
 InstallOtherMethod( DegreeFFE,
     "for a matrix of FFEs",
-    true,
-    [ IsMatrix and IsFFECollColl ], 0,
+    [ IsMatrix and IsFFECollColl ],
     function( mat )
     local deg, i;
     deg:= DegreeFFE( mat[1] );
@@ -174,8 +172,7 @@ end );
 ##
 InstallMethod( IntVecFFE,
     "for a row vector of FFEs",
-    true,
-    [ IsRowVector and IsFFECollection ], 0,
+    [ IsRowVector and IsFFECollection ],
     v -> List( v, IntFFE ) );
 
 
@@ -244,8 +241,7 @@ end );
 ##
 InstallOtherMethod( Zero,
     "for a family of FFEs",
-    true,
-    [ IsFFEFamily ], 0,
+    [ IsFFEFamily ],
     function( fam )
     local char;
     char:= Characteristic( fam );
@@ -263,8 +259,7 @@ InstallOtherMethod( Zero,
 ##
 InstallOtherMethod( One,
     "for a family of FFEs",
-    true,
-    [ IsFFEFamily ], 0,
+    [ IsFFEFamily ],
     function( fam )
     local char;
     char:= Characteristic( fam );
@@ -330,7 +325,6 @@ end );
 GFCACHE:=[0,0];
 
 InstallGlobalFunction( GaloisField, function ( arg )
-
     local F,         # the field, result
           p,         # characteristic
           d,         # degree over the prime field
@@ -523,9 +517,8 @@ end );
 ##
 InstallOtherMethod( FieldExtension,
     "for a field of FFEs, and a univ. Laurent polynomial",
-    true,
 #T CollPoly
-    [ IsField and IsFFECollection, IsLaurentPolynomial ], 0,
+    [ IsField and IsFFECollection, IsLaurentPolynomial ],
     function( F, poly )
 
     local coeffs, p, d, z, r, one, zero, E;
@@ -570,29 +563,27 @@ InstallOtherMethod( FieldExtension,
 ##
 #M  DefiningPolynomial( <F> ) . . . . . . . . . .  for standard finite fields
 ##
-##  If <F> is a finite field without defining polynomial stored then the
-##  subfield is the prime field and the polynomial is the Conway polynomial.
-##
 InstallMethod( DefiningPolynomial,
-    "for a field of FFEs (return the Conway polynomial)",
-    true,
-    [ IsField and IsFFECollection ], 0,
+    "for a field of FFEs",
+    [ IsField and IsFFECollection ],
     function( F )
-    local size;
-    Assert( 1, IsPrimeField( LeftActingDomain( F ) ),
-            "here the subfield is expected to be a prime field" );
+    local root;
 
-    # Store also a root whenever this is reasonable.
-    size:= Size( F );
-    if IsPrimeField( F ) then
-      SetRootOfDefiningPolynomial( F, PrimitiveRootMod( size ) * One( F ) );
-    elif size <= MAXSIZE_GF_INTERNAL then
-      SetRootOfDefiningPolynomial( F, Z( size ) );
+    if HasRootOfDefiningPolynomial( F ) then
+      # We must choose a compatible polynomial.
+      return MinimalPolynomial( LeftActingDomain( F ),
+                                RootOfDefiningPolynomial( F ) );
     fi;
 
-    # Return the polynomial.
-    return ConwayPolynomial( Characteristic( F ),
-                             DegreeOverPrimeField( F ) );
+    # Choose a primitive polynomial, and store a root.
+    root:= Z( Size( F ) );
+    SetRootOfDefiningPolynomial( F, root );
+    if IsPrimeField( LeftActingDomain( F ) ) then
+      return ConwayPolynomial( Characteristic( F ),
+                               DegreeOverPrimeField( F ) );
+    else
+      return MinimalPolynomial( LeftActingDomain( F ), root );
+    fi;
     end );
 
 
@@ -600,14 +591,9 @@ InstallMethod( DefiningPolynomial,
 ##
 #M  RootOfDefiningPolynomial( <F> ) . . . . . . .  for standard finite fields
 ##
-##  If <F> is a finite field without root of the defining polynomial stored
-##  then the subfield is the prime field and the polynomial is the Conway
-##  polynomial.
-##
 InstallMethod( RootOfDefiningPolynomial,
     "for a small field of FFEs",
-    true,
-    [ IsField and IsFFECollection ], 0,
+    [ IsField and IsFFECollection ],
     function( F )
     local coeffs, p, d, z, r, one, zero;
 
@@ -651,7 +637,6 @@ InstallMethod( RootOfDefiningPolynomial,
 ##
 InstallMethod( ViewObj,
     "for a field of FFEs",
-    true,
     [ IsField and IsFFECollection ], 10,
     function( F )
     if IsPrimeField( F ) then
@@ -676,7 +661,6 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( PrintObj,
     "for a field of FFEs",
-    true,
     [ IsField and IsFFECollection ], 10,
     function( F )
     if IsPrimeField( F ) then
@@ -695,6 +679,24 @@ InstallMethod( PrintObj,
     end );
 #T or consider how the field was defined ?
 
+#############################################################################
+##
+#M  String( <F> ) . . . . . . . . . . a string representing a field of `FFE's
+##
+InstallMethod( String,
+               "for a field of FFEs", true,
+               [ IsField and IsFFECollection ], 10,
+
+  function( F )
+
+    local  str, out;
+
+    str := "";
+    out := OutputTextString( str, true );
+    PrintTo( out, F );
+    CloseStream(out);
+    return str;
+  end );
 
 #############################################################################
 ##
@@ -703,7 +705,7 @@ InstallMethod( PrintObj,
 InstallMethod( \in,
     "for a FFE, and a field of FFEs",
     IsElmsColls,
-    [ IsFFE, IsField and IsFFECollection ], 0,
+    [ IsFFE, IsField and IsFFECollection ],
     function ( z, F )
     return DegreeOverPrimeField( F ) mod DegreeFFE( z ) = 0;
     end );
@@ -716,7 +718,7 @@ InstallMethod( \in,
 InstallMethod( Intersection2,
     "for two fields of FFEs",
     IsIdenticalObj,
-    [ IsField and IsFFECollection, IsField and IsFFECollection ], 0,
+    [ IsField and IsFFECollection, IsField and IsFFECollection ],
     function ( F, G )
     return GF( Characteristic( F ), GcdInt( DegreeOverPrimeField( F ),
                                             DegreeOverPrimeField( G ) ) );
@@ -731,7 +733,7 @@ InstallMethod( Conjugates,
     "for two fields of FFEs, and a FFE",
     IsCollsXElms,
     [ IsField and IsFinite and IsFFECollection,
-      IsField and IsFinite and IsFFECollection, IsFFE ], 0,
+      IsField and IsFinite and IsFFECollection, IsFFE ],
     function( L, K, z )
     local   cnjs,       # conjugates of <z> in <L>/<K>, result
             ord,        # order of the subfield <K>
@@ -766,7 +768,7 @@ InstallMethod( Norm,
     "for two fields of FFEs, and a FFE",
     IsCollsXElms,
     [ IsField and IsFinite and IsFFECollection,
-      IsField and IsFinite and IsFFECollection, IsFFE ], 0,
+      IsField and IsFinite and IsFFECollection, IsFFE ],
     function( L, K, z )
 
     if DegreeOverPrimeField( L ) mod DegreeFFE(z) <> 0  then
@@ -789,7 +791,7 @@ InstallMethod( Trace,
     "for two fields of FFEs, and a FFE",
     IsCollsXElms,
     [ IsField and IsFinite and IsFFECollection,
-      IsField and IsFinite and IsFFECollection, IsFFE ], 0,
+      IsField and IsFinite and IsFFECollection, IsFFE ],
     function( L, K, z )
     local   trc,        # trace of <z> in <L>/<K>, result
             ord,        # order of the subfield <K>
@@ -822,8 +824,7 @@ InstallMethod( Trace,
 ##
 InstallMethod( Order,
     "for an internal FFE",
-    true,
-    [ IsFFE and IsInternalRep ], 0,
+    [ IsFFE and IsInternalRep ],
     function ( z )
     local   ord,        # order of <z>, result
             chr,        # characteristic of <F> (and <z>)
@@ -870,7 +871,7 @@ end);
 InstallMethod( SquareRoots,
     "for a field of FFEs, and a FFE",
     IsCollsElms,
-    [ IsField, IsFFE ], 0,
+    [ IsField, IsFFE ],
     function( F, z )
     local r;
     if IsZero( z ) then
@@ -902,7 +903,7 @@ InstallMethod( SquareRoots,
 #M  NthRoot( <F>, <z>, <n> )
 ##
 InstallMethod( NthRoot, "for a field of FFEs, and a FFE", IsCollsElmsX,
-    [ IsField, IsFFE,IsPosInt ], 0,
+    [ IsField, IsFFE,IsPosInt ],
 function( F, a,n )
 local z,qm;
   if IsOne(a) or IsZero(a) or n=1 then
@@ -924,8 +925,7 @@ end);
 ##
 InstallMethod( Int,
     "for an FFE",
-    true,
-    [ IsFFE ], 0,
+    [ IsFFE ],
     IntFFE );
 
 
@@ -1015,8 +1015,7 @@ end );
 ##
 InstallMethod( FieldOverItselfByGenerators,
     "for a collection of FFEs",
-    true,
-    [ IsFFECollection ], 0,
+    [ IsFFECollection ],
     function( elms )
 
     local F, d, q;
@@ -1051,7 +1050,7 @@ InstallMethod( FieldOverItselfByGenerators,
 InstallMethod( FieldByGenerators,
     "for two coll. of FFEs, the first a field",
     IsIdenticalObj,
-    [ IsFFECollection and IsField, IsFFECollection ], 0,
+    [ IsFFECollection and IsField, IsFFECollection ],
     function( subfield, gens )
 
     local F, d, subd, q, z;
@@ -1098,14 +1097,13 @@ InstallMethod( FieldByGenerators,
 ##
 InstallMethod( DefaultFieldByGenerators,
     "for a collection of FFEs that is a list",
-    true,
-    [ IsFFECollection and IsList ], 0,
+    [ IsFFECollection and IsList ],
     gens -> GF( Characteristic( gens ), DegreeFFE( gens ) ) );
 
 InstallOtherMethod( DefaultFieldByGenerators,
     "for a finite field, and a collection of FFEs that is a list",
     IsIdenticalObj,
-    [ IsField and IsFinite, IsFFECollection and IsList ], 0,
+    [ IsField and IsFinite, IsFFECollection and IsList ],
     function( F, gens )
     return GF( F, DegreeFFE( gens ) );
     end );
@@ -1134,20 +1132,17 @@ end;
 
 InstallMethod( RingByGenerators,
     "for a collection of FFE",
-    true,
-    [ IsFFECollection ], 0,
+    [ IsFFECollection ],
     RingFromFFE );
 
 InstallMethod( RingWithOneByGenerators,
     "for a collection of FFE",
-    true,
-    [ IsFFECollection ], 0,
+    [ IsFFECollection ],
     RingFromFFE );
 
 InstallMethod( DefaultRingByGenerators,
     "for a collection of FFE",
-    true,
-    [ IsFFECollection and IsList ], 0,
+    [ IsFFECollection and IsList ],
     RingFromFFE );
 
 
@@ -1179,8 +1174,7 @@ InstallMethod( FLMLORWithOneByGenerators,
 ##
 InstallMethod( IsGeneratorsOfMagmaWithInverses,
     "for a collection of FFEs",
-    true,
-    [ IsFFECollection ], 0,
+    [ IsFFECollection ],
     ffelist -> ForAll( ffelist, x -> not IsZero( x ) ) );
 
 

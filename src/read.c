@@ -2382,7 +2382,7 @@ void            ReadEvalError ( void )
 **
 **  The current reader context is saved and a new one is started.
 */
-void Call0ArgsInNewReader(Obj f)
+Obj Call0ArgsInNewReader(Obj f)
 
 {
   /* for the new interpreter context: */
@@ -2393,6 +2393,7 @@ void Call0ArgsInNewReader(Obj f)
   UInt                readTilde;
   UInt                currLHSGVar;
   jmp_buf             readJmpError;
+  Obj result;
 
   /* remember the old reader context                                     */
   stackNams   = StackNams;
@@ -2411,11 +2412,12 @@ void Call0ArgsInNewReader(Obj f)
   IntrBegin( BottomLVars );
 
   if (!READ_ERROR()) {
-    CALL_0ARGS(f);
+    result = CALL_0ARGS(f);
     PushVoidObj();
     /* end the interpreter                                                 */
     IntrEnd( 0UL );
   } else {
+    result = (Obj) 0L;
     IntrEnd( 1UL );
     ClearError();
   } 
@@ -2427,6 +2429,7 @@ void Call0ArgsInNewReader(Obj f)
   ReadTop     = readTop;
   ReadTilde   = readTilde;
   CurrLHSGVar = currLHSGVar;
+  return result;
 }
 
 /****************************************************************************
@@ -2435,7 +2438,7 @@ void Call0ArgsInNewReader(Obj f)
 **
 **  The current reader context is saved and a new one is started.
 */
-void Call1ArgsInNewReader(Obj f,Obj a)
+Obj Call1ArgsInNewReader(Obj f,Obj a)
 
 {
   /* for the new interpreter context: */
@@ -2445,7 +2448,9 @@ void Call1ArgsInNewReader(Obj f,Obj a)
   UInt                readTop;
   UInt                readTilde;
   UInt                currLHSGVar;
+  UInt                userHasQuit;
   jmp_buf             readJmpError;
+  Obj result;
 
   /* remember the old reader context                                     */
   stackNams   = StackNams;
@@ -2453,6 +2458,7 @@ void Call1ArgsInNewReader(Obj f,Obj a)
   readTop     = ReadTop;
   readTilde   = ReadTilde;
   currLHSGVar = CurrLHSGVar;
+  userHasQuit = UserHasQuit;
   memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
 
   /* intialize everything and begin an interpreter                       */
@@ -2461,14 +2467,16 @@ void Call1ArgsInNewReader(Obj f,Obj a)
   ReadTop     = 0;
   ReadTilde   = 0;
   CurrLHSGVar = 0;
+  UserHasQuit = 0;
   IntrBegin( BottomLVars );
 
   if (!READ_ERROR()) {
-    CALL_1ARGS(f,a);
+    result = CALL_1ARGS(f,a);
     PushVoidObj();
     /* end the interpreter                                                 */
     IntrEnd( 0UL );
   } else {
+    result = (Obj) 0L;
     IntrEnd( 1UL );
     ClearError();
   } 
@@ -2480,6 +2488,8 @@ void Call1ArgsInNewReader(Obj f,Obj a)
   ReadTop     = readTop;
   ReadTilde   = readTilde;
   CurrLHSGVar = currLHSGVar;
+  UserHasQuit = userHasQuit;
+  return result;
 }
 
 

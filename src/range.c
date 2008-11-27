@@ -1230,11 +1230,23 @@ void MakeImmutableRange( Obj range )
 **
 */
 
+static Int egcd (Int a, Int b, Int *lastx, Int *lasty)
+{
+  Int x = 0, y = 1;
+  *lastx = 1; *lasty = 0;
 
+  while (b != 0) {
+    Int t, q;
+    t = b; q = a / b; b = a % b; a = t;
+    if (lastx) { t = x; x = *lastx - q*x; *lastx = t; }
+    if (lasty) { t = y; y = *lasty - q*y; *lasty = t; }
+  }
+  return a;
+} /* returns g=gcd(a,b), with lastx*a+lasty*b = g */
 
 Obj FuncINTER_RANGE( Obj self, Obj r1, Obj r2)
 {
-  Int low1, low2, inc1, inc2, lowi, inci;
+  Int low1, low2, inc1, inc2, lowi, inci, g, x, y;
   UInt len1, len2, leni;
   
   low1 = GET_LOW_RANGE(r1);
@@ -1243,7 +1255,7 @@ Obj FuncINTER_RANGE( Obj self, Obj r1, Obj r2)
   inc2 = GET_INC_RANGE(r2);
   len1 = GET_LEN_RANGE(r1);
   len2 = GET_LEN_RANGE(r2);
-  
+
   if (inc1 < 0)
     {
       low1 = low1 + (len1-1)*inc1;
@@ -1255,55 +1267,67 @@ Obj FuncINTER_RANGE( Obj self, Obj r1, Obj r2)
       inc2 = -inc2;
     }
 
-  if (inc1 > 1 && inc2 > 1)
-    return TRY_NEXT_METHOD;
-
   if (low1 > low2)
     {
       Int t;
       UInt ut;
-      t = low1;
-      low1 = low2;
-      low2 = t;
-      t = inc1;
-      inc1 = inc2;
-      inc2 = t;
-      ut = len1;
-      len1 = len2;
-      len2 = ut;
+      t = low1; low1 = low2; low2 = t;
+      t = inc1; inc1 = inc2; inc2 = t;
+      ut = len1; len1 = len2; len2 = ut;
     }
 
-  if ( low2 > low1 + (len1-1)*inc1)
-    {
-      RetypeBag(r1, T_PLIST_EMPTY);
-      ResizeBag(r1,0);
-      return (Obj) 0;
-    }
+  g = egcd(inc1, inc2, &x, &y);
 
-  if (inc1 == 1)
-    {
-      lowi = low2;
-      inci = inc2;
-      leni = (len1 - (low2 - low1) + inc2 -1)/inc2;
-      if (leni > len2)
-	leni = len2;
-    }
+  inci = (inc1 / g) * inc2;
+
+  if (inci / inc2 != inc1 / g) /* overflow */
+    goto empty_range;
+
+  if ((low2 - low1) % g) /* ranges are disjoint */
+    goto empty_range;
+
+  x = (-y * ((low2 - low1) / g)) % (inc1 / g);
+  if (x < 0)
+    x += inc1/g;
+  lowi = low2 + inc2 * x;
+
+  x = (low1 + (len1-1)*inc1 - lowi);
+  y = (low2 + (len2-1)*inc2 - lowi);
+  if (x < 0 || y < 0)
+    goto empty_range;
+  if (x > y)
+    leni = 1 + y / inci;
   else
-    {
-      lowi = low1 + inc1*((low2 + inc1-1 - low1)/inc1);
-      inci = inc1;
-      leni = len1 - ((low2 + inc1-1 - low1)/inc1);
-      if (leni > (len2+inc1-1)/inc1)
-	leni = (len2+inc1-1)/inc1;
-    }
+    leni = 1 + x / inci;
   
   SET_LOW_RANGE(r1,lowi);
   SET_LEN_RANGE(r1,leni);
   SET_INC_RANGE(r1,inci);
   return (Obj)0;
+
+ empty_range:
+  RetypeBag(r1, T_PLIST_EMPTY);
+  ResizeBag(r1,0);
+  return (Obj) 0;
 }
-  
-     
+/* torture:
+a := [-10..10];; INTER_RANGE(a,[-10..10]); a;
+a := [-10..10];; INTER_RANGE(a,[-11..10]); a;
+a := [-10..10];; INTER_RANGE(a,[-10..11]); a;
+a := [-10..10];; INTER_RANGE(a,[-11..9]); a;
+a := [-10..10];; INTER_RANGE(a,[-9..11]); a;
+a := [-10..10];; INTER_RANGE(a,[-21,-18..21]); a;
+a := [-10..10];; INTER_RANGE(a,[-6,-3..21]); a;
+a := [-10..10];; INTER_RANGE(a,[-21,-18..6]); a;
+a := [-10,-7..20];; INTER_RANGE(a,[-21,-18..6]); a;
+a := [-9,-6..21];; INTER_RANGE(a,[-21,-18..6]); a;
+a := [-12,-10..20];; INTER_RANGE(a,[-21,-18..6]); a;
+a := [-15,-12..3];; INTER_RANGE(a,[-21,-18..6]); a;
+a := [-12,-9..3];; INTER_RANGE(a,[-21,-18..6]); a;
+a := [-9,-6..3];; INTER_RANGE(a,[-21,-18..6]); a;
+a := [-9,-3..3];; INTER_RANGE(a,[-21,-18..6]); a;
+a := [-9,-5..3];; INTER_RANGE(a,[-21,-18..6]); a;
+*/    
 
 /****************************************************************************
 **

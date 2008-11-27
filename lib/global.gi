@@ -204,7 +204,7 @@ InstallGlobalFunction( MakeReadWriteGlobal,
     CheckGlobalName( name );
     if not IS_READ_ONLY_GLOBAL( name ) then
         Info( InfoWarning + InfoGlobal, 1, 
-              "MakeReadWriteGlobal: ", name, "already read-write");
+              "MakeReadWriteGlobal: ", name, " already read-write");
     fi;
     Info( InfoGlobal, 2, "MakeReadWriteGlobal: called for ", name);
     MAKE_READ_WRITE_GLOBAL( name );

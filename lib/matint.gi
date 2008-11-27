@@ -394,9 +394,10 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
 	fi;
 	t := MATINTmgcdex(N,a,[b])[1];
 	tmp := A[r][c1]+t*A[r][j];
-	if tmp=0 or tmp*A[k][c2]=(A[k][c1]+t*A[k][j])*A[r][c2] then
+	while tmp=0 or tmp*A[k][c2]=(A[k][c1]+t*A[k][j])*A[r][c2] do
 	  t := t+1+MATINTmgcdex(N,a+t*b+b,[b])[1];
-	fi;
+          tmp := A[r][c1]+t*A[r][j];
+        od;
 	if t>0 then
 	  for i in [1..n] do A[i][c1] := A[i][c1]+t*A[i][j]; od;
 	  if opt[4] then B[j][c1] := B[j][c1]+t; fi;

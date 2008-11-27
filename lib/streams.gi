@@ -310,13 +310,14 @@ end );
 ##
 InstallOtherMethod( LogTo, "for output file", [ IsString ],
 function(name)
+  local expandname;
   if IN_LOGGING_MODE<>false then
     Print("#I  Already logging to ",IN_LOGGING_MODE,"\n");
     return;
   fi;
-  IN_LOGGING_MODE:=name;
-  name := USER_HOME_EXPAND(name);
-  LOG_TO(name);
+  expandname := USER_HOME_EXPAND( name );
+  LOG_TO( expandname );
+  IN_LOGGING_MODE := name;
 end ); # ignore return value
 
 

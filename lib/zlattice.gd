@@ -130,7 +130,7 @@ DeclareGlobalFunction( "StandardScalarProduct" );
 ##  even if there might be a unique integral solution for some equation
 ##  system.
 ##
-DeclareGlobalFunction( "Decomposition" );
+DeclareOperation( "Decomposition", [IsMatrix,IsList,IsObject] );
 
 
 #############################################################################

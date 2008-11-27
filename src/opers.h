@@ -184,7 +184,7 @@ extern Obj TRY_NEXT_METHOD;
 **
 *F  SET_AND_CACHE_FLAGS( <flags>, <len> ) set the `and' cache of a flags list
 */
-#define SET_AND_CACHE_FLAGS(flags,and)  (ADDR_OBJ(flags)[3]=(and))
+#define SET_AND_CACHE_FLAGS(flags,andc)  (ADDR_OBJ(flags)[3]=(andc))
 
 
 /****************************************************************************

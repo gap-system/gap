@@ -214,7 +214,11 @@ Obj OnGapPromptHook = 0;
 static char **sysargv;
 static char **sysenviron;
 
+#ifdef COMPILECYGWINDLL
+int realmain (
+#else
 int main (
+#endif
 	  int                 argc,
           char *              argv [],
           char *              environ [] )

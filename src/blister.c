@@ -577,7 +577,7 @@ Obj ElmsBlist (
                 block |= bit;
             bit <<= 1;
             if ( bit == 0 || i == lenPoss ) {
-                BLOCK_ELM_BLIST( elms, i) = block;
+                BLOCK_ELM_BLIST( elms, i) =  block;
                 block = 0;
                 bit = 1;
             }
@@ -630,7 +630,7 @@ Obj ElmsBlist (
                 block |= bit;
             bit <<= 1;
             if ( bit == 0 || i == lenPoss ) {
-                BLOCK_ELM_BLIST(elms, i) = block;
+                BLOCK_ELM_BLIST(elms, i) =  block;
                 block = 0;
                 bit = 1;
             }
@@ -791,11 +791,13 @@ Obj PosBlist (
     Obj                 val,
     Obj                 start )
 {
-    Int                 k;              /* position, result                */
     Int                 len;            /* logical length of the list      */
     UInt *              ptr;            /* pointer to the blocks           */
     UInt                i,  j;          /* loop variables                  */
     UInt                istart;
+    UInt                firstblock, lastblock;
+    UInt                firstoffset, lastoffset;
+    UInt                x;
 
     if (!IS_INTOBJ(start))
       return Fail;
@@ -806,59 +808,83 @@ Obj PosBlist (
 
     /* look just beyond end                                                */
     if ( len == istart ) {
-        k = 0;
+      return Fail;
     }
 
+    ptr = BLOCKS_BLIST(list);
+    firstblock = istart/BIPEB;
+    lastblock = (len-1)/BIPEB;
+    firstoffset = istart%BIPEB;
+    lastoffset = (len-1)%BIPEB;
+
     /* look for 'true'                                                     */
-    else if ( val == True ) {
-        ptr = BLOCKS_BLIST(list);
-        if ( ptr[istart/BIPEB] >> (istart%BIPEB) != 0 ) {
-            i = istart/BIPEB;
-            for ( j = istart%BIPEB; j < BIPEB; j++ ) {
-                if ( (ptr[i] & (1UL << j)) != 0 )  break;
-            }
-        }
-        else {
-            for ( i = istart/BIPEB+1; i < (len-1)/BIPEB; i++ ) {
-                if ( ptr[i] != 0UL )  break;
-            }
-            for ( j = 0; j < BIPEB; j++ ) {
-                if ( (ptr[i] & (1UL<<j)) != 0 )  break;
-            }
-        }
-        k = (BIPEB*i+j+1 <= len ? BIPEB*i+j+1 : 0);
+     if ( val == True ) {
+
+       x = ptr[firstblock];
+       if (firstblock == lastblock) 
+	 {
+	   if (x != 0)
+	     for (j = firstoffset; j <= lastoffset; j++)
+	       if ((x & (1UL << j)) != 0)
+		 return INTOBJ_INT(BIPEB*firstblock + j + 1);
+	   return Fail;
+	 }
+       if (x != 0)
+	 for (j = firstoffset; j < BIPEB; j++)
+	   if ((x & (1UL << j)) != 0)
+	     return INTOBJ_INT(BIPEB*firstblock + j + 1);
+       for (i  = firstblock + 1; i < lastblock; i++)
+	 {
+	   x = ptr[i];
+	   if (x != 0)
+	     for (j = 0; j < BIPEB; j++)
+	       if ((x & (1UL << j)) != 0)
+		 return INTOBJ_INT(BIPEB*i + j + 1);
+	 }
+       x = ptr[lastblock];
+       if (x != 0)
+	 for (j = 0; j <= lastoffset; j++)
+	   if ((x & (1UL << j)) != 0)
+	     return INTOBJ_INT(BIPEB*lastblock + j + 1);
+       return Fail;
     }
 
     /* look for 'false'                                                    */
     else if ( val == False ) {
-        ptr = BLOCKS_BLIST(list);
-        if ( ~ptr[istart/BIPEB] >> (istart%BIPEB) != 0 ) {
-            i = istart/BIPEB;
-            for ( j = istart%BIPEB; j < BIPEB; j++ ) {
-                if ( (ptr[i] & (1UL<<j)) == 0 )  break;
-            }
-        }
-        else {
-            for ( i = istart/BIPEB+1; i < (len-1)/BIPEB; i++ ) {
-                if ( ptr[i] != ~(UInt)0 )  break;
-            }
-            for ( j = 0; j < BIPEB; j++ ) {
-                if ( (ptr[i] & (1UL<<j)) == 0 )  break;
-            }
-        }
-        k = (BIPEB*i+j+1 <= len ? BIPEB*i+j+1 : 0);
+      x = ptr[firstblock];
+      if (firstblock == lastblock) 
+	{
+	  if (x != ~0UL)
+	    for (j = firstoffset; j <= lastoffset; j++)
+	      if ((x & (1UL << j)) == 0)
+		return INTOBJ_INT(BIPEB*firstblock + j + 1);
+	   return Fail;
+	 }
+       if (x != ~0UL)
+	 for (j = firstoffset; j < BIPEB; j++)
+	   if ((x & (1UL << j)) == 0)
+	     return INTOBJ_INT(BIPEB*firstblock + j + 1);
+       for (i  = firstblock + 1; i < lastblock; i++)
+	 {
+	   x = ptr[i];
+	   if (x != ~0UL)
+	     for (j = 0; j < BIPEB; j++)
+	       if ((x & (1UL << j)) == 0)
+		 return INTOBJ_INT(BIPEB*i + j + 1);
+	 }
+       x = ptr[lastblock];
+       if (x != ~0UL)
+	 for (j = 0; j <= lastoffset; j++)
+	   if ((x & (1UL << j)) == 0)
+	     return INTOBJ_INT(BIPEB*lastblock + j + 1);
+       return Fail;
     }
 
     /* look for something else                                             */
     else {
-        k = 0;
+      return Fail;
     }
 
-    /* return the position                                                 */
-    if (k == 0)
-      return Fail;
-    else
-      return INTOBJ_INT(k);
 }
 
 
@@ -1544,7 +1570,7 @@ Obj FuncBLIST_LIST (
             /* if block is full add it to the boolean list and start next  */
             bit = bit << 1;
             if ( bit == 0 || l == lenList ) {
-                BLOCK_ELM_BLIST( blist, l ) = block;
+                BLOCK_ELM_BLIST( blist, l) =  block;
                 block = 0;
                 bit   = 1;
             }
@@ -2127,7 +2153,7 @@ Obj FuncUNITE_BLIST_LIST (
             /* if block is full add it to the boolean list and start next  */
             bit = bit << 1;
             if ( bit == 0 || l == lenList ) {
-                BLOCK_ELM_BLIST( blist, l ) |= block;
+                BLOCK_ELM_BLIST( blist,l) |= block;
                 block = 0;
                 bit   = 1;
             }

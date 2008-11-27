@@ -452,24 +452,26 @@ describes the options `-D' and `-N'.)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{DeclareAutoreadableVariables}
 
-The completion mechanism is designed for delaying reading function bodies
-whose headers has to be read when the package is loaded;
-this is necessary for example for the installation of methods.
+Package files containing method installations must be read
+when the package is loaded.
+Note that the completion mechanism used in the main {\GAP} library
+(see Section~"Completion Files" in the {\GAP} Reference Manual)
+cannot be used for packages.
 
-For files *not* containing functions --this applies to many data files--
-completion does not help.
-However, another mechanism allows one to delay reading such files
+For package files *not* containing method installations
+--this applies to many data files--
+another mechanism allows one to delay reading such files
 until the data are actually accessed.
 
 \>DeclareAutoreadableVariables( <pkgname>, <filename>, <varlist> )
 
-Let <pkgname> be the name of a package,let <filename> be the name of
+Let <pkgname> be the name of a package, let <filename> be the name of
 a file relative to the home directory of this package,
 and let <varlist> be a list of strings that are the names of global
 variables which get bound when the file is read.
-`DeclareAutoreadableVariables' notifies the names in <varlist> such that
-the first attempt to access one of the variables causes the file to be
-read.
+`DeclareAutoreadableVariables' notifies the names in <varlist>
+such that the first attempt to access one of the variables
+causes the file <filename> to be read.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -493,15 +495,23 @@ versions. In this case, all versions,  whose number is equal or larger
 than  the requested  number  are acceptable.  It is  the  task of  the
 package author to provide upwards compatibility.
 
+Loading a specific version of a package (that is, *not* one with a larger
+version number) can be achieved by prepending `=' to the desired
+version number.
+For example, `LoadPackage( "example", "=1.0" )' will load version `"1.0"'
+of the package "example", even if version `"1.1"' is avaiable.
+As a consequence, version numbers must not start with `=',
+so `"=1.0"' is not a valid version number.
+
 The global  variable `GAPInfo.Version' contains the  version number of
 the  version  of  {\GAP}  and  also  can  be  checked  against  (using
 `CompareVersionNumbers', see~"ref:CompareVersionNumbers" in the {\GAP}
 Reference Manual).
 
-Package authors should choose a version numbering scheme that allows a
+Package authors should choose a version numbering scheme that admits a
 new  version  number even  after  tiny  changes  to the  package.  The
 automatic update of  package archives in the  {\GAP} distribution will
-only work if a package becomes a new version number.
+only work if a package has a new version number.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Wrapping Up a GAP Package}
@@ -526,10 +536,6 @@ first two are needed by the {\GAP} help system, and the `manual.lab' file is
 needed if  the main  manual is  referring to your  package. Use  the command
 `GAPDocManualLab( packagename );' to create this file for your help books if
 you use \package{GAPDoc}.)
-
-If the  package provides a substantial  amount of code, especially  if it is
-intended to be loaded automatically,  create a completion file (see~"Package
-Completion") and include it with the package.
 
 Currently, the {\GAP} distribution provides archives in four different
 formats.

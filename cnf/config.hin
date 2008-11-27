@@ -79,6 +79,9 @@
 /* define as 1 on SPARC architecture to flush register windows */
 #define SPARC                   0
 
+/* define as 1 on Itanium architecture to flush and mark register stack */
+#define ITANIUM                   0
+
 /* define as 1 if you symbols in ".o" files begin with `_'                 */
 #define C_UNDERSCORE_SYMBOLS	0
 

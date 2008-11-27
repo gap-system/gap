@@ -475,6 +475,16 @@ void InitSweepFuncBags (
     TabSweepFuncBags[type] = sweep_func;
 }
 
+#if ITANIUM
+extern void * ItaniumRegisterStackTop();
+
+static Bag* ItaniumRegisterStackBottom = (Bag *)0;
+
+static void ItaniumSpecialMarkingInit() {
+    ItaniumRegisterStackBottom = (Bag *)ItaniumRegisterStackTop();
+}
+
+#endif
 
 /****************************************************************************
 **
@@ -962,6 +972,9 @@ void            InitBags (
     StackFuncBags   = stack_func;
     StackBottomBags = stack_bottom;
     StackAlignBags  = stack_align;
+#if ITANIUM
+    ItaniumSpecialMarkingInit();
+#endif
 
     /* first get some storage from the operating system                    */
     initial_size    = (initial_size + 511) & ~(511);
@@ -1589,6 +1602,7 @@ void SparcStackFuncBags( void )
 #endif
 #endif
 
+
 void GenStackFuncBags ()
 {
     Bag *               top;            /* top of stack                    */
@@ -1608,6 +1622,14 @@ void GenStackFuncBags ()
                 MARK_BAG( *p );
         }
     }
+#if ITANIUM 
+    /* Itanium has two stacks */
+    top = ItaniumRegisterStackTop();
+    for ( i = 0; i < sizeof(Bag*); i += StackAlignBags ) {
+	for ( p = (Bag*)((char*)ItaniumRegisterStackBottom + i); p < top; p++ )
+	    MARK_BAG( *p );
+    }
+#endif
 
     /* mark from registers, dirty dirty hack                               */
     for ( p = (Bag*)((void*)RegsBags);
@@ -1903,14 +1925,22 @@ again:
 
             /* update count                                                */
             nrDeadBags += 1;
+#ifdef      USE_NEWSHAPE
+	    sizeDeadBags +=  ((UInt *)src)[0] >> 16;
+#else
 	    sizeDeadBags += ((UInt *)src)[1];
-	    
+#endif    
 
 #ifdef  COUNT_BAGS
             /* update the statistics                                       */
             InfoBags[*(UInt*)src & 0xFFL].nrLive -= 1;
+#ifdef USE_NEWSHAPE
+            InfoBags[*(UInt*)src & 0xFFL].sizeLive -=
+	    ((UInt *)src)[0] >>16;
+#else
             InfoBags[*(UInt*)src & 0xFFL].sizeLive -=
 	    ((UInt *)src)[1];
+#endif
 #endif
 
             /* free the identifier                                         */

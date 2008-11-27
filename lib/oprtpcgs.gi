@@ -422,21 +422,21 @@ function( G, pt, U, V, act )
   return DoPcgsOrbitOp(G,false,pt,U,V,act);
 end);
 
-#############################################################################
-##
-#M  RepresentativeActionOp( <G>, <D>, <d>, <e>, <pcgs>, <acts>, <act> )  .
-##
-InstallOtherMethod( RepresentativeActionOp, true,
-        [ IsGroup, IsList, IsObject, IsObject, IsPrimeOrdersPcgs,
-          IsList, IsFunction ], 0,
-    function( G, D, d, e, pcgs, acts, act )
-    local   dset,  eset;
-    
-    dset := ExternalOrbit( G, D, d, pcgs, acts, act );
-    eset := ExternalOrbit( G, D, e, pcgs, acts, act );
-    return ActorOfExternalSet( dset ) /
-           ActorOfExternalSet( eset );
-end );
+# #############################################################################
+# ##
+# #M  RepresentativeActionOp( <G>, <D>, <d>, <e>, <pcgs>, <acts>, <act> )  .
+# ##
+# InstallOtherMethod( RepresentativeActionOp, true,
+#         [ IsGroup, IsList, IsObject, IsObject, IsPrimeOrdersPcgs,
+#           IsList, IsFunction ], 0,
+#     function( G, D, d, e, pcgs, acts, act )
+#     local   dset,  eset;
+#     
+#     dset := ExternalOrbit( G, D, d, pcgs, acts, act );
+#     eset := ExternalOrbit( G, D, e, pcgs, acts, act );
+#     return ActorOfExternalSet( dset ) /
+#            ActorOfExternalSet( eset );
+# end );
 
 #############################################################################
 ##

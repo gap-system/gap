@@ -252,23 +252,41 @@ function( r,n,a )
 	    RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),1,[n],a));
 end);
 
+#############################################################################
+##
+#M  ViewString( <pring> ) . . . . . . . . . . . . . . . for a polynomial ring
+##
+InstallMethod( ViewString,
+               "for a polynomial ring", true,  [ IsPolynomialRing ], 0,
+
+  R -> Concatenation(String(LeftActingDomain(R)),
+                     Filtered(String(IndeterminatesOfPolynomialRing(R)),
+                              ch -> ch <> ' ')) );
 
 #############################################################################
 ##
-#M  ViewObj( <pring> )
+#M  ViewObj( <pring> ) . . . . . . . . . . . . . . . .  for a polynomial ring
 ##
 InstallMethod( ViewObj,
-    "for a polynomial ring",
-    true,
-    [ IsPolynomialRing ],
-    # override the higher ranking FLMLOR method
-    RankFilter(IsFLMLOR),
+              "for a polynomial ring", true, [ IsPolynomialRing ],
+              # override the higher ranking FLMLOR method
+              RankFilter(IsFLMLOR),
 
-function( obj )
-    Print( "PolynomialRing(..., ",
-        IndeterminatesOfPolynomialRing(obj), ")" );
-end );
+  function( R )
+    Print(ViewString(R));
+  end );
 
+#############################################################################
+##
+#M  String( <pring> ) . . . . . . . . . . . . . . . . . for a polynomial ring
+##
+InstallMethod( String,
+               "for a polynomial ring", true, [ IsPolynomialRing ],
+               RankFilter(IsFLMLOR),
+               R -> Concatenation("PolynomialRing( ",
+                                   String(LeftActingDomain(R)),", ",
+                                   String(IndeterminatesOfPolynomialRing(R)),
+                                  " )") );
 
 #############################################################################
 ##

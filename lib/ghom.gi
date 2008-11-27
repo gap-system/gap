@@ -324,6 +324,11 @@ local   hom;
   return hom;
 end );
 
+InstallOtherMethod( GroupHomomorphismByImagesNC, "for group with no generators",
+    [IsGroup,IsGroup,IsEmpty,IsEmpty], SUM_FLAGS,
+        function(g,h,gg,gh)
+    return GroupHomomorphismByFunction(g,h,x->One(h),x->One(g));
+end);
 
 #############################################################################
 ##

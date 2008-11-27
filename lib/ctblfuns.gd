@@ -1268,6 +1268,24 @@ DeclareOperation( "InducedClassFunctions",
 
 #############################################################################
 ##
+#F  InducedClassFunctionsByFusionMap( <subtbl>, <tbl>, <chars>, <fusionmap> )
+##
+##  Let <subtbl> and <tbl> be two character tables of groups
+##  $H$ and $G$, such that $H$ is a subgroup of $G$,
+##  let <chars> be a list of class functions of <subtbl>, and
+##  let <fusionmap> be a fusion map from <subtbl> to <tbl>.
+##  The function returns the list of induced class functions of <tbl>
+##  that correspond to <chars>, w.r.t. the given fusion map.
+##  
+##  `InducedClassFunctionsByFusionMap' is the function that does
+##  the work for `InducedClassFunction' and `InducedClassFunctions',
+##  see "InducedClassFunction" and "InducedClassFunctions".
+##
+DeclareGlobalFunction( "InducedClassFunctionsByFusionMap" );
+
+
+#############################################################################
+##
 #O  Induced( <subtbl>, <tbl>, <chars> )
 #O  Induced( <subtbl>, <tbl>, <chars>, <specification> )
 #O  Induced( <subtbl>, <tbl>, <chars>, <fusionmap> )

@@ -213,6 +213,8 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
         fi;
       else
         Print( "#W  corrupted 'manual.six': ", line );
+        Print( "#W (in stream: ", stream, ")\n");
+        break;
       fi;
     fi;
   until IsEndOfStream(stream);

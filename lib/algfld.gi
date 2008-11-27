@@ -89,8 +89,8 @@ local fam,i,cof,red,rchar,impattr,deg;
 
   # Important trivia
   fam!.baseField:=f;
-  fam!.baseZero:=Zero(f);
-  fam!.baseOne:=One(f);
+  fam!.zeroCoefficient:=Zero(f);
+  fam!.oneCoefficient:=One(f);
   if Size(f)<=256 then
     rchar:=Size(f);
   else
@@ -102,8 +102,8 @@ local fam,i,cof,red,rchar,impattr,deg;
   fam!.polCoeffs:=CoefficientsOfUnivariatePolynomial(p);
   deg:=DegreeOfLaurentPolynomial(p);
   fam!.deg:=deg;
-  i:=List([1..DegreeOfLaurentPolynomial(p)],i->fam!.baseZero);
-  i[2]:=fam!.baseOne;
+  i:=List([1..DegreeOfLaurentPolynomial(p)],i->fam!.zeroCoefficient);
+  i[2]:=fam!.oneCoefficient;
   if rchar>0 then
     ConvertToVectorRep(i,rchar);
   fi;
@@ -111,16 +111,16 @@ local fam,i,cof,red,rchar,impattr,deg;
   fam!.indeterminateName:="a";
 
   # reductions
-  red:=IdentityMat(deg,fam!.baseOne);
+  red:=IdentityMat(deg,fam!.oneCoefficient);
   for i in [deg..2*deg-2] do
-    cof:=ListWithIdenticalEntries(i,fam!.baseZero);
-    Add(cof,fam!.baseOne);
+    cof:=ListWithIdenticalEntries(i,fam!.zeroCoefficient);
+    Add(cof,fam!.oneCoefficient);
     if rchar>0 then
       ConvertToVectorRep(cof,rchar);
     fi;
     ReduceCoeffs(cof,fam!.polCoeffs);
     while Length(cof)<deg do
-      Add(cof,fam!.baseZero);
+      Add(cof,fam!.zeroCoefficient);
     od;
     Add(red,cof);
   od;
@@ -203,8 +203,15 @@ end;
 InstallMethod(AlgebraicExtension,"generic",true,
   [IsField,IsUnivariatePolynomial],0,DoAlgebraicExt);
 
+RedispatchOnCondition(AlgebraicExtension,true,[IsField,IsRationalFunction],
+  [IsField,IsUnivariatePolynomial],0);
+
 InstallOtherMethod(AlgebraicExtension,"with name",true,
   [IsField,IsUnivariatePolynomial,IsString],0,DoAlgebraicExt);
+
+RedispatchOnCondition(AlgebraicExtension,true,
+  [IsField,IsRationalFunction,IsString],
+  [IsField,IsUnivariatePolynomial,IsString],0);
 
 #############################################################################
 ##
@@ -246,7 +253,7 @@ local f,l;
   f:=FamilyObj(e);
   l:=[e![1]];
   while Length(l)<f!.deg do
-    Add(l,f!.baseZero);
+    Add(l,f!.zeroCoefficient);
   od;
   return l;
 end);
@@ -293,11 +300,11 @@ BindGlobal("AlgExtElm",function(fam,e)
     if Length(e)<fam!.deg then
       e:=ShallowCopy(e);
       while Length(e)<fam!.deg do
-        Add(e,fam!.baseZero);
+        Add(e,fam!.zeroCoefficient);
       od;
     fi;
     # try to get into small rep
-    if ForAll(e{[2..fam!.deg]},i->i=fam!.baseZero) then
+    if ForAll(e{[2..fam!.deg]},i->i=fam!.zeroCoefficient) then
       e:=e[1];
     elif Length(e)>fam!.deg then
       e:=e{[1..fam!.deg]};
@@ -317,32 +324,9 @@ end);
 
 InstallMethod(PrintObj,"AlgElm",true,[IsAlgExtRep],0,
 function(a)
-local fam,i,p,anam;
+local fam;
   fam:=FamilyObj(a);
-  anam:=fam!.indeterminateName;
-  Print("(");
-  p:=false;
-  for i in [1..fam!.deg] do
-    if a![1][i]<>fam!.baseZero then
-      if p and (not IsRationals(fam!.baseField) or a![1][i]>0) then
-	Print("+");
-      fi;
-      p:=true;
-      if i=1 or a![1][i]<>fam!.baseOne then
-	Print(a![1][i]);
-	if i>1 then
-	  Print("*");
-	fi;
-      fi;
-      if i>1 then
-        Print(anam);
-	if i>2 then
-	  Print("^",i-1);
-        fi;
-      fi;
-    fi;
-  od;
-  Print(")");
+  Print(StringUnivariateLaurent(fam,a![1],0,fam!.indeterminateName));
 end);
 
 #############################################################################
@@ -356,34 +340,9 @@ end);
 
 InstallMethod(String,"AlgElm",true,[IsAlgExtRep],0,
 function(a)
-local fam,i,p,str,anam;
+local fam;
   fam:=FamilyObj(a);
-  anam:=fam!.indeterminateName;
-  str:="(";
-  p:=false;
-  for i in [1..fam!.deg] do
-    if a![1][i]<>fam!.baseZero then
-      if p and (not IsRationals(fam!.baseField) or a![1][i]>0) then
-	Add(str,'+');
-      fi;
-      p:=true;
-      if i=1 or a![1][i]<>fam!.baseOne then
-	Append(str,String(a![1][i]));
-	if i>1 then
-	  Add(str,'*');
-	fi;
-      fi;
-      if i>1 then
-        Append(str,anam);
-	if i>2 then
-	  Add(str,'^');
-	  Append(str,String(i-1));
-        fi;
-      fi;
-    fi;
-  od;
-  Add(str,')');
-  return str;
+  return StringUnivariateLaurent(fam,a![1],0,fam!.indeterminateName);
 end);
 
 #############################################################################
@@ -419,7 +378,7 @@ function(a,b)
 local fam;
   fam:=FamilyObj(a);
   a:=ShallowCopy(a![1]);
-  a[1]:=a[1]+(b*fam!.baseOne);
+  a[1]:=a[1]+(b*fam!.oneCoefficient);
   return ObjByExtRep(fam,a);
 end);
 
@@ -428,7 +387,7 @@ function(a,b)
 local fam;
   fam:=FamilyObj(b);
   b:=ShallowCopy(b![1]);
-  b[1]:=b[1]+(a*fam!.baseOne);
+  b[1]:=b[1]+(a*fam!.oneCoefficient);
   return ObjByExtRep(fam,b);
 end);
 
@@ -500,7 +459,7 @@ InstallMethod(\*,"Alg*FElm",IsElmsCoeffs,[IsAlgebraicElement,IsRingElement],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
-  b:=a![1]*(b*fam!.baseOne);
+  b:=a![1]*(b*fam!.oneCoefficient);
   return AlgExtElm(fam,b);
 end);
 
@@ -508,7 +467,7 @@ InstallMethod(\*,"FElm*Alg",IsCoeffsElms,[IsRingElement,IsAlgebraicElement],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(b);
-  a:=b![1]*(a*fam!.baseOne);
+  a:=b![1]*(a*fam!.oneCoefficient);
   return AlgExtElm(fam,a);
 end);
 
@@ -532,8 +491,8 @@ local i,fam,f,g,t,h,rf,rg,rh,z;
   fam:=FamilyObj(a);
   f:=a![1];
   g:=ShallowCopy(fam!.polCoeffs);
-  rf:=[fam!.baseOne];
-  z:=fam!.baseZero;
+  rf:=[fam!.oneCoefficient];
+  z:=fam!.zeroCoefficient;
   rg:=[];
   while g<>[] do
     t:=QuotRemPolList(f,g);
@@ -592,10 +551,10 @@ local fam,i;
   # simulate comparison of lists
   if a![1][1]=b![1] then
     i:=2;
-    while i<=fam!.deg and a![1][i]=fam!.baseZero do
+    while i<=fam!.deg and a![1][i]=fam!.zeroCoefficient do
       i:=i+1;
     od;
-    if i<=fam!.deg and a![1][i]<fam!.baseZero then
+    if i<=fam!.deg and a![1][i]<fam!.zeroCoefficient then
       return true;
     fi;
     return false;
@@ -611,10 +570,10 @@ local fam,i;
   # simulate comparison of lists
   if b![1][1]=a![1] then
     i:=2;
-    while i<=fam!.deg and b![1][i]=fam!.baseZero do
+    while i<=fam!.deg and b![1][i]=fam!.zeroCoefficient do
       i:=i+1;
     od;
-    if i<=fam!.deg and b![1][i]<fam!.baseZero then
+    if i<=fam!.deg and b![1][i]<fam!.zeroCoefficient then
       return false;
     fi;
     return true;
@@ -635,10 +594,10 @@ local fam,i;
   # simulate comparison of lists
   if a![1][1]=b then
     i:=2;
-    while i<=fam!.deg and a![1][i]=fam!.baseZero do
+    while i<=fam!.deg and a![1][i]=fam!.zeroCoefficient do
       i:=i+1;
     od;
-    if i<=fam!.deg and a![1][i]<fam!.baseZero then
+    if i<=fam!.deg and a![1][i]<fam!.zeroCoefficient then
       return true;
     fi;
     return false;
@@ -654,10 +613,10 @@ local fam,i;
   # simulate comparison of lists
   if b![1][1]=a then
     i:=2;
-    while i<=fam!.deg and b![1][i]=fam!.baseZero do
+    while i<=fam!.deg and b![1][i]=fam!.zeroCoefficient do
       i:=i+1;
     od;
-    if i<=fam!.deg and b![1][i]<fam!.baseZero then
+    if i<=fam!.deg and b![1][i]<fam!.zeroCoefficient then
       return false;
     fi;
     return true;
@@ -693,7 +652,7 @@ local fam;
   fam:=FamilyObj(a);
   # simulate comparison of lists
   if a![1][1]=b![1] then
-    return ForAll([2..fam!.deg],i->a![1][i]=fam!.baseZero);
+    return ForAll([2..fam!.deg],i->a![1][i]=fam!.zeroCoefficient);
   else
     return false;
   fi;
@@ -705,7 +664,7 @@ local fam;
   fam:=FamilyObj(b);
   # simulate comparison of lists
   if b![1][1]=a![1] then
-    return ForAll([2..fam!.deg],i->b![1][i]=fam!.baseZero);
+    return ForAll([2..fam!.deg],i->b![1][i]=fam!.zeroCoefficient);
   else
     return false;
   fi;
@@ -722,7 +681,7 @@ local fam;
   fam:=FamilyObj(a);
   # simulate comparison of lists
   if a![1][1]=b then
-    return ForAll([2..fam!.deg],i->a![1][i]=fam!.baseZero);
+    return ForAll([2..fam!.deg],i->a![1][i]=fam!.zeroCoefficient);
   else
     return false;
   fi;
@@ -734,7 +693,7 @@ local fam;
   fam:=FamilyObj(b);
   # simulate comparison of lists
   if b![1][1]=a then
-    return ForAll([2..fam!.deg],i->b![1][i]=fam!.baseZero);
+    return ForAll([2..fam!.deg],i->b![1][i]=fam!.zeroCoefficient);
   else
     return false;
   fi;
@@ -794,7 +753,7 @@ local fam,c,m;
   m:=NullspaceMat(m)[1];
   # make monic
   m:=m/m[Length(m)];
-  return UnivariatePolynomialByCoefficients(FamilyObj(fam!.baseZero),m,inum);
+  return UnivariatePolynomialByCoefficients(FamilyObj(fam!.zeroCoefficient),m,inum);
 end);
 
 #T  The method might be installed since it avoids the computations with
@@ -1300,7 +1259,7 @@ local atc, kl, inum, alfam, red, c, operations, i;
       fi;
     od;
   fi;
-  return LaurentPolynomialByExtRep(RationalFunctionsFamily(alfam),
+  return LaurentPolynomialByExtRepNC(RationalFunctionsFamily(alfam),
            kl,atc[2],inum);
 end);
 
@@ -1334,6 +1293,9 @@ local K, inum, fact, degf, m, degm, dis, def, cf, d, avoid, bw, zaehl, p,
   degf:=DegreeOfLaurentPolynomial(f);
 
   m:=DefiningPolynomial(K);
+  if IndeterminateNumberOfUnivariateLaurentPolynomial(m)<>inum then
+    m:=Value(m,X(LeftActingDomain(K),inum));
+  fi;
   degm:=DegreeOfLaurentPolynomial(m);
 
   dis:=Discriminant(m);
@@ -1520,13 +1482,13 @@ local K, inum, fact, degf, m, degm, dis, def, cf, d, avoid, bw, zaehl, p,
     for i in [1..nm] do
       if IsPolynomial(mmf[i]) then
 	cf:=CoefficientsOfUnivariateLaurentPolynomial(mmf[i]);
-	mmf[i]:=LaurentPolynomialByExtRep(rfunfam,List(cf[1],Int),cf[2],inum);
+	mmf[i]:=LaurentPolynomialByExtRepNC(rfunfam,List(cf[1],Int),cf[2],inum);
       else
 	mmf[i]:=Int(mmf[i]);
       fi;
       if IsPolynomial(U[i]) then
 	cf:=CoefficientsOfUnivariateLaurentPolynomial(U[i]);
-	U[i]:=LaurentPolynomialByExtRep(rfunfam, List(cf[1],Int),cf[2],inum);
+	U[i]:=LaurentPolynomialByExtRepNC(rfunfam, List(cf[1],Int),cf[2],inum);
       else
 	U[i]:=Int(U[i]);
       fi;
@@ -2040,7 +2002,7 @@ local opt,irrfacs, coeffring, i, factors, ind, coeffs, val,
 
     # The polynomial is a linear polynomial times a power of the indet.
     factors[1]:= coeffs[2] * factors[1];
-    factors[ val+1 ]:= LaurentPolynomialByExtRep( FamilyObj( pol ),
+    factors[ val+1 ]:= LaurentPolynomialByExtRepNC( FamilyObj( pol ),
 			    [coeffs[1] / coeffs[2], One(coeffring)],0,ind );
     StoreFactorsPol( coeffring, pol, factors );
     PopOptions();
@@ -2057,7 +2019,7 @@ local opt,irrfacs, coeffring, i, factors, ind, coeffs, val,
   if val = 0 then
     pol:= pol / lc;
   else
-    pol:= LaurentPolynomialByExtRep( FamilyObj( pol ), coeffs, 0, ind );
+    pol:= LaurentPolynomialByExtRepNC( FamilyObj( pol ), coeffs, 0, ind );
   fi;
 
   # Now compute the quotient of `pol' by the g.c.d. with its derivative,

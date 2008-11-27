@@ -499,15 +499,34 @@ InstallMethod( AsGroup, [ IsGroup ], 100, IdFunc );
 InstallMethod( AsGroup,
     "generic method for collections",
     [ IsCollection ],
-    function ( D )
-    local   G,  L;
+    function( D )
+    local M, gens, m, minv, G, L;
 
-    D := AsSSortedList( D );
-    if IsEmpty( D ) or not IsGeneratorsOfMagmaWithInverses( D ) then
+    if IsGroup( D ) then
+      return D;
+    fi;
+
+    # Check that the elements in the collection form a nonempty semigroup.
+    M:= AsMagma( D );
+    if M = fail or not IsAssociative( M ) then
       return fail;
     fi;
-    L := ShallowCopy( D );
-    G := TrivialSubgroup( GroupByGenerators( D ) );
+    gens:= GeneratorsOfMagma( M );
+    if IsEmpty( gens ) or not IsGeneratorsOfMagmaWithInverses( gens ) then
+      return fail;
+    fi;
+
+    # Check that this semigroup contains the inverses of its generators.
+    for m in gens do
+      minv:= Inverse( m );
+      if minv = fail or not minv in M then
+        return fail;
+      fi;
+    od;
+
+    D:= AsSSortedList( D );
+    G:= TrivialSubgroup( GroupByGenerators( gens ) );
+    L:= ShallowCopy( D );
     SubtractSet( L, AsSSortedList( G ) );
     while not IsEmpty(L)  do
         G := ClosureGroupDefault( G, L[1] );
@@ -2752,8 +2771,11 @@ InstallGlobalFunction( IsomorphismTypeInfoFiniteSimpleGroup, function( G )
     # grab the size of <G>
     if IsGroup( G )  then
         size := Size(G);
-    elif IsInt( G )  then
+    elif IsPosInt( G )  then
         size := G;
+        if size = 1 then
+          return fail;
+        fi;
     else
         Error("<G> must be a group or the size of a group");
     fi;
@@ -4255,39 +4277,339 @@ InstallSubsetMaintenance( CanComputeSizeAnySubgroup,
 #F  Factorization( <G>, <elm> )
 ##
 InstallGlobalFunction(Factorization,function(G,elm)
-local F, ggens, fgens, map, sel, elms, imgs, d, i, new, j;
-  if not IsBound(G!.factFreeMap) then
-    F:=FreeGroup(List([1..Length(GeneratorsOfGroup(G))],
-                 i->Concatenation("x",String(i))));
-    ggens:=GeneratorsOfGroup(G);
-    fgens:=GeneratorsOfGroup(F);
-    map:=GroupGeneralMappingByImages(G,F,ggens,fgens);
-    sel:=Filtered([1..Length(ggens)],i->Order(ggens[i])>2);
-    ggens:=Concatenation(ggens,List(ggens{sel},i->i^-1));
-    fgens:=Concatenation(fgens,List(fgens{sel},i->i^-1));
-    elms:=[One(G)];
-    imgs:=[One(F)];
-    d:=NewDictionary(G,false);
-    AddDictionary(d,One(G));
-    i:=1;
-    while Length(elms)<Size(G) do
-      for j in [1..Length(ggens)] do
-	new:=elms[i]*ggens[j];
-	if not KnowsDictionary(d,new) then
-	  Add(elms,new);
-	  Add(imgs,imgs[i]*fgens[j]);
-	  AddDictionary(d,new);
-	fi;
+# code based on work by N. Rohrbacher
+  local one, maxlist, rvalue, setrvalue, hom, names, F, gens, letters, info,
+  e, cnt, S, i, p, objelm, objnum, numobj, actobj, l, rs, idword, aim, ll,
+  from, to, diam, write, count, cont, ri, old, new, stop, pool, newpool, a,
+  w, na, rna, num, hold, nword, g,SC,olens,stblst,total,dist;
+
+  # A list can have length at most 2^27
+  maxlist:=2^27;
+  # for determining the mod3 entry for element number i we need to access
+  # within the right list
+  rvalue:=function(i)
+  local q, r, m;
+    i:=(i-1)*2; # 2 bits per number
+    q:=QuoInt(i,maxlist);
+    r:=rs[q+1];
+    m:=(i mod maxlist)+1;
+    if r[m] then
+      if r[m+1] then
+	return 2;
+      else
+	return 1;
+      fi;
+    elif r[m+1] then
+      return 0;
+    else
+      return 8; # both false is ``infinity'' value
+    fi;
+  end;
+
+  setrvalue:=function(i,v)
+  local q, r, m;
+    i:=(i-1)*2; # 2 bits per number
+    q:=QuoInt(i,maxlist);
+    r:=rs[q+1];
+    m:=(i mod maxlist)+1;
+    if v=0 then
+      r[m]:=false;r[m+1]:=true;
+    elif v=1 then
+      r[m]:=true;r[m+1]:=false;
+    elif v=2 then
+      r[m]:=true;r[m+1]:=true;
+    else
+      r[m]:=false;r[m+1]:=false;
+    fi;
+  end;
+
+  if not elm in G then
+    return fail;
+  fi;
+
+  one:=One(G);
+
+  if not IsBound(G!.factorinfo) then
+    hom:=EpimorphismFromFreeGroup(G:names:="x");
+    G!.factFreeMap:=hom; # compatibility
+    F:=Source(hom);
+    gens:=ShallowCopy(MappingGeneratorsImages(hom)[2]);
+    letters:=ShallowCopy(MappingGeneratorsImages(hom)[1]);
+    info:=rec();
+
+    e:= Enumerator(G);
+    objelm:=x->x;
+    objnum:=x->e[x];
+    numobj:=x->PositionCanonical(e,x);
+    actobj:=OnRight;
+    if IsPermGroup(G) then
+
+      #tune enumerator (use a bit more memory to get unfactorized transversal
+      # on top level)
+      if not IsPlistRep(e) then
+	e:=EnumeratorByFunctions( G, rec(
+		    ElementNumber:=e!.ElementNumber,
+		    NumberElement:=e!.NumberElement,
+		    Length:=e!.Length,
+		    PrintObj:=e!.PrintObj,
+		    stabChain:=ShallowCopy(e!.stabChain)));
+	S:=e!.stabChain;
+      else
+	S:=ShallowCopy(StabChainMutable(G));
+      fi;
+
+      cnt:=QuoInt(10^6,4*NrMovedPoints(G));
+      SC:=S;
+      repeat
+	S.newtransversal:=ShallowCopy(S.transversal);
+	S.stabilizer:=ShallowCopy(S.stabilizer);
+	i:=1;
+	while i<=Length(S.orbit) do
+	  p:=S.orbit[i];
+	  S.newtransversal[p]:=InverseRepresentative(S,p);
+	  i:=i+1;
+	od;
+	cnt:=cnt-Length(S.orbit);
+	S.transversal:=S.newtransversal;
+	Unbind(S.newtransversal);
+	S:=S.stabilizer;
+      until cnt<1 or Length(S.generators)=0;
+      # store orbit lengths
+      olens:=[];
+      stblst:=[];
+      S:=SC;
+      while Length(S.generators)>0 do
+	Add(olens,Length(S.orbit));
+	Add(stblst,S);
+	S:=S.stabilizer;
       od;
-      i:=i+1;
+      stblst:=Reversed(stblst);
+
+      # do we want to use base images instead
+      if Length(BaseStabChain(SC))<Length(SC.orbit)/3 then
+	e:=BaseStabChain(SC);
+	objelm:=x->OnTuples(e,x);
+	objnum:=
+	  function(pos)
+	  local stk, S, l, img, te, d, elm, i;
+	    pos:=pos-1;
+	    stk:=[];
+	    S:=SC;
+	    l:=Length(e);
+	    for d in [1..l] do
+	      img:=S.orbit[pos mod olens[d] + 1];
+	      pos:=QuoInt(pos,olens[d]);
+	      while img<>S.orbit[1] do
+		te:=S.transversal[img];
+		Add(stk,te);
+		img:=img^te;
+	      od;
+	      S:=S.stabilizer;
+	    od;
+	    elm:=ShallowCopy(e); # base;
+	    for d in [Length(stk),Length(stk)-1..1] do
+	      te:=stk[d];
+	      for i in [1..l] do
+		elm[i]:=elm[i]/te;
+	      od;
+	    od;
+	    return elm;
+	  end;
+
+	numobj:=
+	  function(elm)
+	  local pos, val, S, img, d,te;
+	    pos:=1;
+	    val:=1;
+	    S:=SC;
+	    for d in [1..Length(e)] do
+	      img:=elm[d]; # image base point
+	      pos:=pos+val*S.orbitpos[img];
+	      val:=val*S.ol;
+	      #elm:=OnTuples(elm,InverseRepresentative(S,img));
+	      while img<>S.orbit[1] do
+		te:=S.transversal[img];
+		img:=img^te;
+		elm:=OnTuples(elm,te);
+	      od;
+	      S:=S.stabilizer;
+	    od;
+	    return pos;
+	  end;
+
+	actobj:=OnTuples;
+      fi;
+    fi;
+    info.objelm:=objelm;
+    info.objnum:=objnum;
+    info.numobj:=numobj;
+    info.actobj:=actobj;
+    info.dist:=[1];
+
+    l:=Length(gens);
+    gens:=ShallowCopy(gens);
+    for i in [1..l] do
+      if Order(gens[i])>2 then
+	Add(gens,gens[i]^-1);
+	Add(letters,letters[i]^-1);
+      fi;
     od;
 
-    map!.elements:=elms;
-    map!.images:=imgs;
-    G!.factFreeMap:=map;
+    info.mygens:=gens;
+    info.mylett:=letters;
 
+    # initialize all lists
+    rs:=List([1..QuoInt(2*Size(G),maxlist)],i->BlistList([1..maxlist],[]));
+    Add(rs,BlistList([1..(2*Size(G) mod maxlist)],[]));
+    setrvalue(numobj(objelm(one)),0);
+    info.prodlist:=rs;
+    info.count:=Order(G)-1;
+    info.last:=[numobj(objelm(one))];
+    info.from:=1;
+    info.write:=1;
+    info.to:=1;
+
+    info.diam:=0;
+    G!.factorinfo:=info;
+
+  else
+    info:=G!.factorinfo;
+    rs:=info.prodlist;
   fi;
-  return ImagesRepresentativeGMBIByElementsList(G!.factFreeMap,elm);
+
+  hom:=EpimorphismFromFreeGroup(G);
+  F:=Source(hom);
+  idword:=One(F);
+  if IsOne(elm) then return idword;fi; # special treatment length 0
+
+  gens:=info.mygens;
+  letters:= info.mylett;
+  objelm:=info.objelm;
+  objnum:=info.objnum;
+  numobj:=info.numobj;
+  actobj:=info.actobj;
+
+  dist:=info.dist;
+
+  aim:=numobj(objelm(elm));
+  if rvalue(aim)=8 then
+    # element not yet found. We need to expand
+
+    ll:=info.last;
+    from:=info.from;
+    to:=info.to;
+    total:=to-from+1;
+    diam:=info.diam;
+    write:=info.write;
+    count:=info.count;
+    if diam>1 then
+      Info(InfoGroup,1,"continue diameter ",diam,", extend ",total,
+           " elements, ",count," elements left");
+    fi;
+
+    cont:=true;
+
+    while cont do
+      if from=1 then
+	diam:=diam+1;
+	dist[diam]:=total;
+	Info(InfoGroup,1,"process diameter ",diam,", extend ",total,
+	  " elements, ",count," elements left");
+      fi;
+      i:=ll[from];
+      from:=from+1;
+      if 0=from mod 20000 then
+	CompletionBar(InfoGroup,2,"#I  processed ",(total-(to-from))/(total+1));
+      fi;
+      ri:=(rvalue(i)+1) mod 3;
+      old:=objnum(i);
+      for g in gens do
+	new:=numobj(actobj(old,g));
+	if rvalue(new)=8 then
+	  setrvalue(new,ri);
+	  if new=aim then cont:=false;fi;
+	  # add new element
+	  if from>write then
+	    # overwrite old position
+	    ll[write]:=new;
+	    write:=write+1;
+	  else
+	    Add(ll,new);
+	  fi;
+	  count:=count-1;
+	fi;
+      od;
+      if from>to then
+	# we did all of the current length
+	l:=Length(ll);
+	# move the end in free space
+	i:=write;
+	while i<=to and l>to do
+	  ll[i]:=ll[l];
+	  Unbind(ll[l]);
+	  i:=i+1;
+	  l:=l-1;
+	od;
+	# the list gets shorter
+	while i<=to do
+	  Unbind(ll[i]);
+	  i:=i+1;
+	od;
+
+	if from>19999 then
+	  CompletionBar(InfoGroup,2,"#I  processed ",false);
+	fi;
+	from:=1;
+	to:=Length(ll);
+	total:=to-from+1;
+	write:=1;
+      fi;
+
+    od;
+    CompletionBar(InfoGroup,2,"#I  processed ",false);
+    info.from:=from;
+    info.to:=to;
+    info.write:=write;
+    info.count:=count;
+    info.diam:=diam;
+  fi;
+
+  stop:=false;
+
+  one:=objelm(one);
+  pool:=[];
+  pool[1]:=[objelm(elm), idword];
+
+  repeat
+    newpool:=[];
+    for p in pool do
+      a:=p[1];
+      w:=p[2];
+      na:=numobj(a);
+      rna:=rvalue(na);
+
+      num:=1;
+      while num<=Length(gens) and stop=false do
+	old:=actobj(a,gens[num]^-1);
+	hold:=numobj(old);
+
+	if rvalue(hold)= (rna - 1) mod 3 then
+	  nword:=w/letters[num];
+
+	  if one = old then 
+	    stop :=true;
+	  else
+	    Add(newpool, [old,nword]);
+	  fi;
+	fi;
+	num:=num+1;
+      od;
+    od;
+
+    pool:=newpool;
+
+  until stop;
+  return nword^-1;
 end);
 
 

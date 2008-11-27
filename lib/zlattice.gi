@@ -505,7 +505,9 @@ end );
 ##  even if there might be a unique integral solution for some equation
 ##  system.
 ##
-InstallGlobalFunction( Decomposition, function( A, B, depth_or_nonnegative )
+InstallMethod( Decomposition, "for a matrix of cyclotomics, a vector and a depth",
+	[IsMatrix,IsList,IsObject],
+        function( A, B, depth_or_nonnegative )
     local i, intA, intB, newintA, newintB, result, choice, inforec;
 
     # Check the input parameters.

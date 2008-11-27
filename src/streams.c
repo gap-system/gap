@@ -173,7 +173,7 @@ Int READ ( void )
         }
 
         /* handle quit command or <end-of-file>                            */
-        else if ( status  == STATUS_EOF) 
+        else if ( status  & (STATUS_ERROR | STATUS_EOF)) 
 	  break;
 	else if (status == STATUS_QUIT) {
 	  UserHasQuit = 1;
@@ -2397,6 +2397,8 @@ Obj FuncExecuteProcess (
     for ( i--;  0 < i;  i-- ) {
         ExecCArgs[i] = CSTR_STRING(ExecArgs[i]);
     }
+    if (SyWindow && out == INTOBJ_INT(1)) /* standard output */
+      syWinPut( INT_INTOBJ(out), "@z","");
 
     /* execute the process                                                 */
     res = SyExecuteProcess( CSTR_STRING(dir),
@@ -2405,6 +2407,8 @@ Obj FuncExecuteProcess (
                             INT_INTOBJ(out),
                             ExecCArgs );
 
+    if (SyWindow && out == INTOBJ_INT(1)) /* standard output */
+      syWinPut( INT_INTOBJ(out), "@mAgIc","");
     return res == 255 ? Fail : INTOBJ_INT(res);
 }
 

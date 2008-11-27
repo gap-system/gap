@@ -47,8 +47,8 @@ InstallGlobalFunction(Binomial,function ( n, k )
         # note that all intermediate results are binomial coefficients itself
         # hence integers!
         # slight improvement by Frank and Max.
-        for i  in [n,n-1..n-k+1]  do
-            bin := bin * i / j;
+        for i  in [0..k-1]  do
+            bin := bin * (n-i) / j;
             j := j + 1;
         od;
     fi;

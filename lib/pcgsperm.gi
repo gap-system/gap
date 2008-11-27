@@ -359,7 +359,7 @@ InstallGlobalFunction(TryPcgsPermGroup,function( G, cent, desc, elab )
         deg := NrMovedPoints( grp );
         if cent  then
             bound := Maximum( List( Collected( FactorsInt( deg ) ), p ->
-                             p[ 1 ] ^ ( LogInt( deg, p[ 1 ] ) - 1 ) ) );
+                             p[ 1 ] ^ ( LogInt( deg, p[ 1 ] ) ) ) );
         else
             bound := Int( LogInt( deg ^ 5, 3 ) / 2 );
         fi;

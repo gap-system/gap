@@ -395,6 +395,18 @@ gap> InducedClassFunctions( Irr( a5 ), s5 );
   Character( CharacterTable( "A5.2" ), [ 10, 2, -2, 0, 0, 0, 0 ] ) ]
 \endexample
 
+\Declaration{InducedClassFunctionsByFusionMap}
+\beginexample
+gap> fus:= PossibleClassFusions( a5, s5 );
+[ [ 1, 2, 3, 4, 4 ] ]
+gap> InducedClassFunctionsByFusionMap( a5, s5, Irr( a5 ), fus[1] );
+[ Character( CharacterTable( "A5.2" ), [ 2, 2, 2, 2, 0, 0, 0 ] ),
+  Character( CharacterTable( "A5.2" ), [ 6, -2, 0, 1, 0, 0, 0 ] ),
+  Character( CharacterTable( "A5.2" ), [ 6, -2, 0, 1, 0, 0, 0 ] ),
+  Character( CharacterTable( "A5.2" ), [ 8, 0, 2, -2, 0, 0, 0 ] ),
+  Character( CharacterTable( "A5.2" ), [ 10, 2, -2, 0, 0, 0, 0 ] ) ]
+\endexample
+
 \Declaration{InducedCyclic}
 \beginexample
 gap> InducedCyclic( a5, "all" );

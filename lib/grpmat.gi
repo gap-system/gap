@@ -188,15 +188,16 @@ end);
 #F  DoSparseLinearActionOnFaithfulSubset( <G>,<act>,<sort> )
 ##
 ##  computes a linear action of the matrix group <G> on the span of the
-##  standard basis. The action <act> must be `OnRight', `OnPoints' or
+##  standard basis. The action <act> must be `OnRight', or
 ##  `OnLines'. The calculation of further orbits stops, once a basis for the
-##  onderlying space has been reached, often giving a smaller degree
+##  underlying space has been reached, often giving a smaller degree
 ##  permutation representation.
 ##  The boolean <sort> indicates, whether the domain will be sorted.
 BindGlobal("DoSparseLinearActionOnFaithfulSubset",
 function(G,act,sort)
-local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
-      v,zero,zerov,en,lo,dim,field,start,acts,base,R,dict,xset;
+local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads, 
+      orb, delay, permimg, maxlim, starti, ll, ltwa, img, v, en, p, kill,
+      i, lo, imgs, xset, hom, R;
 
   field:=DefaultFieldOfMatrixGroup(G);
   dict := NewDictionary( One(G)[1], true , field ^ Length( One( G ) ) );
@@ -222,72 +223,115 @@ local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
   partbas:=[]; # la basis of space spanned so far
   heads:=[];
   orb:=[];
+  delay:=[]; # Vectors we delay later, because they are potentially very
+             # expensive.
   permimg:=List(acts,i->[]);
-  p:=1;
+  maxlim:=2000;
 
   starti:=1;
-  while starti<=Length(start) and Length(partbas)<dim do
-
-    ll:=Length(orb);
-    img:=start[starti];
-    v:=ShallowCopy(img);
-    for j in [ 1 .. Length( heads ) ] do
-      en:=v[heads[j]];
-      if en <> zero then
-	AddRowVector( v, partbas[j], - en );
-      fi;
-    od;
-
-    if not IsZero(v) then
-      Add(orb,img);
-      AddDictionary(dict,img,Length(orb));
-
-      # orbit algorithm with image keeper
-      while p<=Length(orb) do
-	for i in [1..Length(acts)] do
-	  img := act(orb[p],acts[i]);
-	  v:=LookupDictionary(dict,img);
-	  if v=fail then
-	    Add(orb,img);
-	    AddDictionary(dict,img,Length(orb));
-	    permimg[i][p]:=Length(orb);
-	  else
-	    permimg[i][p]:=v;
-	  fi;
+  while Length(partbas)<dim or 
+    (act=OnLines and not OnLines(Sum(base),One(G)) in orb) do
+    Info(InfoGroup,2,"dim=",Length(partbas)," ",
+         "|orb|=",Length(orb));
+    if Length(partbas)=dim and act=OnLines then
+      Info(InfoGroup,2,"add sum for projective action");
+      img:=OnLines(Sum(base),One(G));
+    else
+      if starti>Length(start) then
+	Sort(delay);
+	for i in delay do
+	  Add(start,i[2]);
 	od;
-	p:=p+1;
-      od;
-    fi;
-    starti:=starti+1;
+	maxlim:=maxlim*100;
+	Info(InfoGroup,2,
+	    "original pool exhausted, use delayed.  maxlim=",maxlim);
+	delay:=[];
+      fi;
 
-    # break criterion: do we actually *want* more points?
-
-    i:=ll+1;
-    lo:=Length(orb);
-    while i<=lo do
-      v:=ShallowCopy(orb[i]);
+      ll:=Length(orb);
+      ltwa:=Maximum(maxlim,(ll+1)*20);
+      img:=start[starti];
+      v:=ShallowCopy(img);
       for j in [ 1 .. Length( heads ) ] do
 	en:=v[heads[j]];
 	if en <> zero then
 	  AddRowVector( v, partbas[j], - en );
 	fi;
       od;
-      if v<>zerov then
-	Add(base,orb[i]);
-        Add(partbas,ShallowCopy(orb[i]));
-	TriangulizeMat(partbas);
-	heads:=List(partbas,PositionNonZero);
-	if Length(partbas)>=dim then
-	  # full dimension reached
-	  i:=lo;
+    fi;
+
+    if not IsZero(v) then
+      dict := NewDictionary( One(G)[1], true , field ^ Length( One( G ) ) );
+      Add(orb,img);
+      p:=Length(orb);
+      AddDictionary(dict,img,Length(orb));
+      kill:=false;
+
+      # orbit algorithm with image keeper
+      while p<=Length(orb) do
+	i:=1;
+	while i<=Length(acts) do
+	  img := act(orb[p],acts[i]);
+	  v:=LookupDictionary(dict,img);
+	  if v=fail then
+	    if Length(orb)>ltwa then
+	      Info(InfoGroup,2,"Very long orbit, delay");
+	      Add(delay,[Length(orb)-ll,orb[ll+1]]);
+	      kill:=true;
+	      for p in [ll+1..Length(orb)] do
+	        Unbind(orb[p]);
+		for i in [1..Length(acts)] do
+		  Unbind(permimg[i][p]);
+		od;
+	      od;
+	      i:=Length(acts)+1;
+	      p:=Length(orb)+1;
+	    else
+	      Add(orb,img);
+	      AddDictionary(dict,img,Length(orb));
+	      permimg[i][p]:=Length(orb);
+	    fi;
+	  else
+	    permimg[i][p]:=v;
+	  fi;
+	  i:=i+1;
+	od;
+	p:=p+1;
+      od;
+    fi;
+    starti:=starti+1;
+
+    if not kill then
+      # break criterion: do we actually *want* more points?
+      i:=ll+1;
+      lo:=Length(orb);
+      while i<=lo do
+	v:=ShallowCopy(orb[i]);
+	for j in [ 1 .. Length( heads ) ] do
+	  en:=v[heads[j]];
+	  if en <> zero then
+	    AddRowVector( v, partbas[j], - en );
+	  fi;
+	od;
+	if v<>zerov then
+	  Add(base,orb[i]);
+	  Add(partbas,ShallowCopy(orb[i]));
+	  TriangulizeMat(partbas);
+	  heads:=List(partbas,PositionNonZero);
+	  if Length(partbas)>=dim then
+	    # full dimension reached
+	    i:=lo;
+	  fi;
 	fi;
-      fi;
-      i:=i+1;
-    od;
+	i:=i+1;
+      od;
+    fi;
+
   od;
 
   # Das Dictionary hat seine Schuldigkeit getan
   Unbind(dict);
+  Info(InfoGroup,1,"found degree=",Length(orb));
 
   # any asymptotic argument is pointless here: In practice sorting is much
   # quicker than image computation.
@@ -323,6 +367,15 @@ local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
   fi;
   xset:=ExternalSet( G, orb, acts, acts, act);
 
+  # when acting projectively the sum of the base vectors must be part of the
+  # base -- that will guarantee that we can distinguish diagonal from scalar
+  # matrices.
+  if act=OnLines then
+    if Length(base)<=dim then
+      Add(base,OnLines(Sum(base),One(G)));
+    fi;
+  fi;
+
   # We know that the points corresponding to `start' give a base of the
   # vector space. We can use
   # this to get images quickly, using a stabilizer chain in the permutation
@@ -331,7 +384,10 @@ local orb,p,i,j,img,imgs,hom,permimg,imgn,starti,partbas,ll,heads,
   xset!.basePermImage:=List(base,b->PositionCanonical(orb,b));
 
   hom := ActionHomomorphism( xset,"surjective" );
-  SetIsInjective(hom,true); # we know by construction that its injective.
+  if act <> OnLines then
+    SetIsInjective(hom, true); # we know by construction that it is injective.
+  fi;
+  
   R:=Group(permimg,()); # `permimg' arose from `PermList'
   SetBaseOfGroup(R,xset!.basePermImage);
 

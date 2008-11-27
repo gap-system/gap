@@ -738,8 +738,16 @@ end);
 InstallOtherMethod( WreathProduct,"generic groups with permhom", true,
  [ IsGroup, IsGroup, IsSPGeneralMapping ], 0,
 function(G,H,alpha)
-local I,n,fam,typ,gens,hgens,id,i,e,info,W,p;
+local I,n,fam,typ,gens,hgens,id,i,e,info,W,p,dom;
   I:=Image(alpha,H);
+
+  # avoid sparse points.
+  dom:=MovedPoints(I);
+  if Maximum(dom)>Length(dom) then
+    alpha:=alpha*ActionHomomorphism(I,dom);
+    I:=Image(alpha,H);
+  fi;
+
   n:=LargestMovedPoint(I);
   fam:=NewFamily("WreathProductElemFamily",IsWreathProductElement);
   typ:=NewType(fam,IsWreathProductElementDefaultRep);

@@ -1077,23 +1077,21 @@ InstallGlobalFunction( StoreFusion, function( source, fusion, destination )
       return;
     fi;
 
-    # Check the arguments.
-    if not ( IsList(fusion) or ( IsRecord(fusion) and IsBound(fusion.map) ) )
-       then
-      Error( "<fusion> must be a list or a record containing at least",
-             " <fusion>.map" );
-    elif   IsRecord( fusion ) and IsBound( fusion.name )
-       and fusion.name <> Identifier( destination ) then
-      Error( "identifier of <destination> must be equal to <fusion>.name" );
-    fi;
-
-    if IsList( fusion ) then
+    if IsList( fusion ) and ForAll( fusion, IsPosInt ) then
       fusion:= rec( name := Identifier( destination ),
                     map  := Immutable( fusion ) );
-    else
+    elif IsRecord( fusion ) and IsBound( fusion.map )
+                            and ForAll( fusion.map, IsPosInt ) then
+      if     IsBound( fusion.name )
+         and fusion.name <> Identifier( destination ) then
+        Error( "identifier of <destination> must be equal to <fusion>.name" );
+      fi;
       fusion      := ShallowCopy( fusion );
       fusion.map  := Immutable( fusion.map );
       fusion.name := Identifier( destination );
+    else
+      Error( "<fusion> must be a list of pos. integers",
+             " or a record containing at least <fusion>.map" );
     fi;
 
     # Adjust the map to the stored permutation.

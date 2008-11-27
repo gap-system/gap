@@ -165,6 +165,12 @@ InstallMethod( MagmaGeneratorsOfFamily,
     return gens;
     end );
 
+# GeneratorsOfMonoid returns the generators in ascending order
+    
+InstallMethod( GeneratorsSmallest,
+        "for a free monoid",
+        [ IsFreeMonoid ],
+        GeneratorsOfMonoid);
 
 #############################################################################
 ##

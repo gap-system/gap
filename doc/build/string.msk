@@ -430,7 +430,7 @@ characters given in <chars> from <string>.
 \beginexample
 gap> s := "ab c\ndef\n\ng    h i .\n";
 "ab c\ndef\n\ng    h i .\n"
-gap> RemoveCharacters(s, WHITESPACE);
+gap> RemoveCharacters(s, " \n\t\r"); # remove all whitespace characters
 gap> s;
 "abcdefghi."
 \endexample

@@ -4560,8 +4560,8 @@ static Int InitKernel (
 
 
     /* install the comparison methods                                      */
-    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM+IMMUTABLE; t1++ ) {
-        for ( t2 = T_PLIST; t2 <= LAST_PLIST_TNUM+IMMUTABLE; t2++ ) {
+    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1++ ) {
+        for ( t2 = T_PLIST; t2 <= LAST_PLIST_TNUM; t2++ ) {
             EqFuncs[ t1 ][ t2 ] = EqPlist;
             LtFuncs[ t1 ][ t2 ] = LtPlist;
         }

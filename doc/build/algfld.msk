@@ -65,7 +65,7 @@ The usual field operations are applicable to algebraic elements.
 
 \beginexample
 gap> a^3/(a^2+a+1);
-(-1/2*a+1/2*a^2-1/2*a^3)
+-1/2*a^3+1/2*a^2-1/2*a
 gap> a*(1/a);
 !1
 \endexample
@@ -80,7 +80,7 @@ gap> ExtRepOfObj(One(a));
 gap> ExtRepOfObj(a^3+2*a-9);
 [ -9, 2, 0, 1 ]
 gap> ObjByExtRep(FamilyObj(a),[3,19,-27,433]);
-(3+19*a-27*a^2+433*a^3)
+433*a^3-27*a^2+19*a+3
 \endexample
 
 {\GAP} does *not* embed the base field in its algebraic extensions and

@@ -116,17 +116,17 @@ InstallMethod( PrintObj,
 #T these are `ViewObj' methods. How could real `PrintObj' methods look like?
 
 
-#############################################################################
-##
-#M  IsOne( <map> )  . . . . . . . . . . . . . . . . . . . for general mapping
-##
-InstallOtherMethod( IsOne,
-    "for general mapping",
-    true,
-    [ IsGeneralMapping ], 0,
-    map ->     Source( map ) = Range( map )
-           and IsBijective( map )
-           and ForAll( Source( map ), elm -> ImageElm( map, elm ) = elm ) );
+# #############################################################################
+# ##
+# #M  IsOne( <map> )  . . . . . . . . . . . . . . . . . . . for general mapping
+# ##
+# InstallOtherMethod( IsOne,
+#     "for general mapping",
+#     true,
+#     [ IsGeneralMapping ], 0,
+#     map ->     Source( map ) = Range( map )
+#            and IsBijective( map )
+#            and ForAll( Source( map ), elm -> ImageElm( map, elm ) = elm ) );
 
 
 #############################################################################

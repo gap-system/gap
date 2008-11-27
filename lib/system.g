@@ -21,12 +21,12 @@ BIND_GLOBAL( "GAPInfo", rec(
 # do not edit the following two lines. They get replaced by string matching
 # in the distribution wrapper scripts. (Occurrences of `4.dev' and `today'
 # get replaced.)
-    Version := "4.4.10",
-    Date := "02-Oct-2007",
+    Version := "4.4.11",
+    Date := "01-Dec-2008",
 
     # The kernel version numbers are expected in the format `<v>.<r>.<p>'.
     KernelVersion := KERNEL_VERSION,
-    NeedKernelVersion := ["4.4.10"],
+    NeedKernelVersion := ["4.4.11"],
 
     Architecture := GAP_ARCHITECTURE,
 
@@ -85,8 +85,10 @@ BIND_GLOBAL( "GAPInfo", rec(
 #T The value can be changed using the function `ViewLength' that is defined
 #T in `lib/oper.g' but currently is undocumented.
 #T Should it become documented or is it sufficient to document this variable?
-    ViewLength := 3
+    ViewLength := 3,
 
+    # the maximal number of arguments a method can have
+    MaxNrArgsMethod:= 6,
  ) );
 
 GAPInfo.ScanCommandLineOption := function( name, type, default )

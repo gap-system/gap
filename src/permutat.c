@@ -2747,7 +2747,7 @@ Obj             FuncCyclePermInt (
 **
 **  `CycleStructPerm( <perm> )'
 **
-**  'CycleStructPerm' returns a list of teh form as described under
+**  'CycleStructPerm' returns a list of the form as described under
 **  `CycleStructure'.
 **  integer, under the permutation <perm> as a list.
 */
@@ -2845,7 +2845,7 @@ Obj             FuncCycleStructurePerm (
 	list=NEW_PLIST(T_PLIST,max-1);
 	SET_LEN_PLIST(list,max-1);
         ptList = ADDR_OBJ(list);
-	for (pnt=1;pnt<=max;pnt++) { ptList[pnt]=0; } /* clean out */
+	for (pnt=1;pnt<=max-1;pnt++) { ptList[pnt]=0; } /* clean out */
 
 	for (cnt=0; cnt<ende;cnt++) {
 	  pnt=(UInt)offset2[cnt];

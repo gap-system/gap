@@ -87,11 +87,79 @@ end );
 #############################################################################
 ##
 #M  ComplexConjugate( <cyc> )
+#M  ComplexConjugate( <list> )
 ##
 InstallMethod( ComplexConjugate,
     "for a cyclotomic",
     [ IsCyc ],
     cyc -> GaloisCyc( cyc, -1 ) );
+
+InstallMethod( ComplexConjugate,
+    "for a list",
+    [ IsList ],
+    function( list )
+    local result, i;
+
+    result:= [];
+    for i in [ 1 .. Length( list ) ] do
+      if IsBound( list[i] ) then
+        result[i]:= ComplexConjugate( list[i] );
+      fi;
+    od;
+    return result;
+    end );
+
+
+#############################################################################
+##
+#M  RealPart( <z> )
+#M  RealPart( <list> )
+##
+InstallMethod( RealPart,
+    "for a scalar",
+    [ IsScalar ],
+    z -> ( z + ComplexConjugate( z ) ) / 2 );
+
+InstallMethod( RealPart,
+    "for a list",
+    [ IsList ],
+    function( list )
+    local result, i;
+
+    result:= [];
+    for i in [ 1 .. Length( list ) ] do
+      if IsBound( list[i] ) then
+        result[i]:= RealPart( list[i] );
+      fi;
+    od;
+    return result;
+    end );
+
+
+#############################################################################
+##
+#M  ImaginaryPart( <z> )
+#M  ImaginaryPart( <list> )
+##
+InstallMethod( ImaginaryPart,
+    "for a cyclotomic",
+    [ IsCyc ],
+    z -> E(4) * ( ComplexConjugate( z ) - z ) / 2 );
+
+InstallMethod( ImaginaryPart,
+    "for a list",
+    [ IsList ],
+    function( list )
+    local result, i;
+
+    result:= [];
+    for i in [ 1 .. Length( list ) ] do
+      if IsBound( list[i] ) then
+        result[i]:= ImaginaryPart( list[i] );
+      fi;
+    od;
+    return result;
+    end );
 
 
 #############################################################################

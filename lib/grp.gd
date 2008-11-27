@@ -979,7 +979,7 @@ DeclareAttribute( "RationalClasses", IsGroup );
 ##  lexicographic comparison of their sorted element lists yields the same
 ##  relation as lexicographic comparison of their smallest generating sets.
 ##
-DeclareAttribute( "GeneratorsSmallest", IsGroup );
+DeclareAttribute( "GeneratorsSmallest", IsMagma );
 
 
 #############################################################################

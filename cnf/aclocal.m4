@@ -51,7 +51,7 @@ AC_DEFUN(GP_C_LONG_ALIGN,
 [AC_CACHE_CHECK(unaligned access, gp_cv_c_long_align,
 [
 case "$host" in
-   alpha* )
+   ia64* | alpha* )
 	gp_cv_c_long_align=8;;
    mips-* | sparc-* )
         gp_cv_c_long_align=$ac_cv_sizeof_void_p;;
@@ -175,6 +175,8 @@ dnl ##
 AC_DEFUN(GP_PROG_CC_DYNFLAGS,
 [AC_CACHE_CHECK(dynamic module compile options, gp_cv_prog_cc_cdynoptions,
  [ case "$host-$CC" in
+    i686-pc-cygwin-gcc )
+        gp_cv_prog_cc_cdynoptions="";;
     *-apple-darwin*gcc* )
         gp_cv_prog_cc_cdynoptions="-fPIC";;
     *-hpux-gcc )
@@ -194,6 +196,8 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
  ])
  AC_CACHE_CHECK(dynamic linker, gp_cv_prog_cc_cdynlinker,
  [ case "$host-$CC" in
+    i686-pc-cygwin-gcc )
+        gp_cv_prog_cc_cdynlinker="gcc";;
     *-apple-darwin*gcc* )
         gp_cv_prog_cc_cdynlinker="ld";;
     *-gcc | *-egcs )
@@ -232,6 +236,8 @@ AC_DEFUN(GP_PROG_CC_DYNFLAGS,
         gp_cv_prog_cc_cdynlinking="-assert pure-text -Bdynamic -x";;
     *-apple-darwin*gcc* )
         gp_cv_prog_cc_cdynlinking='-bundle -bundle_loader ${gap_bin}/gap -lc -lm';;
+    i686-pc-cygwin-gcc )
+        gp_cv_prog_cc_cdynlinking='-shared ${gap_bin}/gap.dll';;
     * )
         gp_cv_prog_cc_cdynlinking="UNSUPPORTED";;
    esac 

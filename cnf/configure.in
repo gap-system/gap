@@ -200,8 +200,14 @@ case "$host" in
    sparc-* )
     AC_DEFINE( SPARC, 1)
    ;;
+
+   ia64-* ) 
+    AC_DEFINE(ITANIUM,1)
+    ITANIUMOBJ=itanium.o
+    ;;
 esac
 
+AC_SUBST(ITANIUMOBJ)
 
 AC_CYGWIN
 if test "$CYGWIN" = "yes"; then
@@ -219,7 +225,6 @@ case "$host" in
 	AC_DEFINE(SYS_IS_DARWIN, 0)
 	;;
 esac
-
 
 
 

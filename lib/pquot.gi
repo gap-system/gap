@@ -1667,7 +1667,9 @@ end;
 ##
 #F  Nucleus . . . . . . . . . . . . . . . . . . . .  the nucleus of a p-cover
 ##
-Nucleus := function( qs, G )
+InstallMethod(Nucleus, "for a p-quotient system and a group",
+    [IsPQuotientSystem,IsGroup],
+    function( qs, G )
     local   n,  gens,  m;
 
     n    := GeneratorNumberOfQuotient( qs );
@@ -1680,7 +1682,7 @@ Nucleus := function( qs, G )
 
     return Subgroup( G, gens{[n+1..n+m]} );
     
-end;
+end);
 
 #############################################################################
 ##

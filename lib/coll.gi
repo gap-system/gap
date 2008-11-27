@@ -2278,7 +2278,7 @@ InstallMethod( Intersection2,
     [ IsCollection, IsCollection and IsList ],
     function ( C1, C2 )
     local   I, elm;
-    if IsFinite( C1 ) then
+    if ( HasIsFinite( C1 ) or CanComputeSize( C1 ) ) and IsFinite( C1 ) then
         I := ShallowCopy( AsSSortedList( C1 ) );
         IntersectSet( I, C2 );
     else
@@ -2298,7 +2298,7 @@ InstallMethod( Intersection2,
     [ IsCollection and IsList, IsCollection ],
     function ( C1, C2 )
     local   I, elm;
-    if IsFinite( C2 ) then
+    if ( HasIsFinite( C2 ) or CanComputeSize( C2 ) ) and IsFinite( C2 ) then
         I := ShallowCopy( AsSSortedList( C2 ) );
         IntersectSet( I, C1 );
     else

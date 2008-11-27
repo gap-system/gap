@@ -332,6 +332,10 @@ end );
 BIND_GLOBAL( "NewOperation", function ( name, filters )
     local   oper,  filt,  filter;
 
+    if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
+             " arguments" );
+    fi;
     oper := NEW_OPERATION( name );
     filt := [];
     for filter  in filters  do
@@ -353,6 +357,10 @@ end );
 BIND_GLOBAL( "NewConstructor", function ( name, filters )
     local   oper,  filt,  filter;
 
+    if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
+             " arguments" );
+    fi;
     oper := NEW_CONSTRUCTOR( name );
     filt := [];
     for filter  in filters  do
@@ -376,7 +384,10 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
 
     local gvar, pos, filt, filter;
 
-    if ISB_GVAR( name ) then
+    if   GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
+             " arguments" );
+    elif ISB_GVAR( name ) then
 
       gvar:= VALUE_GLOBAL( name );
 
@@ -456,6 +467,11 @@ end );
 BIND_GLOBAL( "DeclareOperationKernel", function ( name, filters, oper )
     local   filt,  filter;
 
+    if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
+             " arguments" );
+    fi;
+
     # This will yield an error if `name' is already bound.
     BIND_GLOBAL( name, oper );
 
@@ -480,7 +496,10 @@ BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
 
     local gvar, pos, filt, filter;
 
-    if ISB_GVAR( name ) then
+    if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
+             " arguments" );
+    elif ISB_GVAR( name ) then
 
       gvar:= VALUE_GLOBAL( name );
 
@@ -526,6 +545,11 @@ end );
 ##
 BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
     local   filt,  filter;
+
+    if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
+             " arguments" );
+    fi;
 
     # This will yield an error if `name' is already bound.
     BIND_GLOBAL( name, oper );

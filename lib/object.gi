@@ -232,7 +232,6 @@ function( str, zero )
     return ShallowCopy(String( str )); 
 end );
 
-
 #############################################################################
 ##
 #M  PrintObj( <obj> )
@@ -263,6 +262,14 @@ InstallMethod( ViewObj,
     [ HasName ],
     SUM_FLAGS, # override anything specific
     function ( obj )  Print( Name( obj ) ); end );
+
+
+#############################################################################
+##
+#M  ViewString( <obj> ) . . . . . . . . . . . . . . . for an object with name
+##
+InstallMethod( ViewString, "for an object with name", true,
+               [ HasName ], 0 , Name );
 
 
 #############################################################################
@@ -522,12 +529,17 @@ InstallMethod( MemoryUsage, "fallback method for objs without subobjs",
         # a proper object, thus we have to add it to the database
         # to not count it again!
         if not(MU_AddToCache(o)) then
-            return mem + MU_MemBagHeader + MU_MemPointer;
+            mem := mem + MU_MemBagHeader + MU_MemPointer;
             # This is for the bag, the header, and the master pointer
         else 
-            return 0;   # already counted
+            mem := 0;   # already counted
+        fi;
+        if MEMUSAGECACHE.depth = 0 then   
+            # we were the first to be called, thus we have to do the cleanup
+            MEMUSAGECACHE.ids := [];
         fi;
     fi;
+    return mem;
   end );
 
 InstallMethod( MemoryUsage, "for a plist",

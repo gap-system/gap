@@ -518,8 +518,10 @@ BindGlobal( "NumberElement_PermGroup",
     S := enum!.stabChain;
     while Length( S.genlabels ) <> 0  do
         img := S.orbit[ 1 ] ^ elm;
-        pos := pos + val * ( Position( S.orbit, img ) - 1 );
-        val := val * Length( S.orbit );
+        #pos := pos + val * ( Position( S.orbit, img ) - 1 );
+        pos := pos + val * S.orbitpos[img];
+        #val := val * Length( S.orbit );
+        val := val * S.ol;
         elm := elm * InverseRepresentative( S, img );
         S := S.stabilizer;
     od;
@@ -532,7 +534,22 @@ end );
 InstallMethod( Enumerator,
     "for a permutation group",
     [ IsPermGroup ],
-    G -> EnumeratorByFunctions( G, rec(
+function(G)
+local e,S,i,p;
+    # get a good base
+    S:=G;
+    p:=[];
+    while Size(S)>1 do
+      e:=Orbits(S,MovedPoints(S));
+      i:=List(e,Length);
+      i:=Position(i,Maximum(i));
+      Add(p,e[i][1]);
+      S:=Stabilizer(S,e[i][1]);
+    od;
+    Info(InfoGroup,1,"choose base ",p);
+
+    S:=StabChainOp(G,rec(base:=p));
+    e:=EnumeratorByFunctions( G, rec(
              ElementNumber := ElementNumber_PermGroup,
              NumberElement := NumberElement_PermGroup,
              Length        := enum -> SizeStabChain( enum!.stabChain ),
@@ -540,7 +557,20 @@ InstallMethod( Enumerator,
                                   Print( "<enumerator of perm group>" );
                               end,
 
-             stabChain     := StabChainMutable( G ) ) ) );
+             stabChain     := S ) );
+  while Length(S.genlabels)<>0 do
+    S.ol:=Length(S.orbit);
+    S.orbitpos:=[];
+    for i in [1..Maximum(S.orbit)] do
+      p:=Position(S.orbit,i);
+      if p<>fail then
+	S.orbitpos[i]:=p-1;
+      fi;
+    od;
+    S:=S.stabilizer;
+  od;
+  return e;
+end);
 
 
 #############################################################################

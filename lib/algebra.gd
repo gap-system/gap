@@ -277,8 +277,11 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##
 #F  FullMatrixAlgebraCentralizer( <F>, <lst> )
 ##
-##  Compute the centralizer of the list of matrices in the list <lst> in the 
-##  full matrix algebra over the ring <F>. 
+##  Let <lst>  be a nonempty list of square matrices of the same
+##  dimension $n$, say, with entries in the field <F>.
+##  `FullMatrixAlgebraCentralizer' returns
+##  the centralizer of all matrices in <lst>, inside
+##  the full matrix algebra of $n \times n$ matrices over <F>.
 ##
 DeclareGlobalFunction( "FullMatrixAlgebraCentralizer" );
 

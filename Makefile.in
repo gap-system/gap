@@ -199,3 +199,40 @@ testmanuals:
           > `date -u +../../dev/log/testmanuals2_%Y-%m-%d-%H-%M` )
 	( rm doc/test/wsp.g )
 
+compilecygwindll:	config
+	( cd bin/@target@-@BASECC@ ; $(MAKE) CC='$(CC)' ; \
+	  ./gac -o gapw95 -p "-DIOSTATIC -DEDIVSTATIC -DNCURSESSTATIC" \
+	        -P "-lpanel -lncurses" ../../pkg/io/src/io.c \
+	        ../../pkg/edim/src/ediv.c ../../pkg/Browse/src/ncurses.c ; \
+	  strip gapw95.exe ; \
+	  cp gapw95.exe .. ; \
+          gcc -c -o gap.o ../../src/gap.c -I. -I../.. -DCONFIG_H \
+              -DCOMPILECYGWINDLL ; \
+	  gcc -o gap.dll -shared *.o ; \
+          rm -f gap.o ; \
+	  gcc -o gapw95p ../../src/gapw95.c gap.dll ; \
+	  strip gapw95p.exe ; \
+	  cp gapw95p.exe gap.dll .. ; \
+	  cp /bin/cygncurses-8.dll /bin/cygpanel-8.dll /bin/cygwin1.dll \
+	     /bin/libW11.dll /usr/bin/rxvt.exe /usr/bin/regtool.exe .. )
+	( cd pkg/io ; ./configure ; $(MAKE) CC='$(CC)' )
+	( cd pkg/edim ; ./configure ; $(MAKE) CC='$(CC)' )
+	( cd pkg/Browse ; ./configure ; $(MAKE) CC='$(CC)' )
+	( rm -rf terminfo )
+	( mkdir terminfo ; mkdir terminfo/c ; mkdir terminfo/r ; \
+	  mkdir terminfo/x )
+	( cp /usr/share/terminfo/c/cygwin terminfo/c )
+	( cp /usr/share/terminfo/r/rxvt terminfo/r )
+	( cp /usr/share/terminfo/x/xterm terminfo/x )
+	
+winbinp:
+	( tar cfz ../winbin.tgz bin/cyg*dll bin/gap.dll \
+	  bin/gapw95.exe \
+	  bin/gapw95p.exe bin/@target@-@BASECC@/gac \
+	  bin/@target@-@BASECC@/config.h \
+	  bin/@target@-@BASECC@/gap.dll \
+	  pkg/io/bin/@target@-@BASECC@/io.so \
+	  pkg/edim/bin/@target@-@BASECC@/ediv.so \
+	  pkg/Browse/bin/@target@-@BASECC@/ncurses.so \
+	  terminfo )
+

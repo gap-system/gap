@@ -1175,7 +1175,15 @@ InstallEqMethodForMappingsFromGenerators( IsLeftOperatorRingWithOne,
     RespectsMultiplication and RespectsOne and RespectsScalarMultiplication,
     " that respect add.,add.inv.,mult.,one,scal. mult." );
 
-#T no methods that use 'GeneratorsOfDivisionRing' ?
+
+#############################################################################
+##
+#M  \=( <map1>, <map2> )   s.v.g.m. resp. add.,add.inv.,mult.,one,scal. mult.
+##
+InstallEqMethodForMappingsFromGenerators( IsField,
+    GeneratorsOfField,
+    IsFieldHomomorphism,
+    " that is a field homomorphism" );
 
 
 #############################################################################

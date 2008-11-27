@@ -199,10 +199,10 @@ BindGlobal( "CreateTestallFile", function()
             error:= true;
             Print( "#E  no `START_TEST' in `", file, "'\n" );
           else
-            stoppos:= PositionSublist( filecontents, "STOP_TEST( \"" );
+            stoppos:= PositionSublist( filecontents, "STOP_TEST" );
             if stoppos = fail then
               error:= true;
-              Print( "#E  no `STOP_TEST( \"' in `", file, "'\n" );
+              Print( "#E  no `STOP_TEST' in `", file, "'\n" );
             elif filecontents{ [ stoppos+12 .. stoppos+12+Length( name ) ] }
                  <> Concatenation( name, "\"" ) then
               error:= true;
@@ -271,6 +271,10 @@ BindGlobal( "CreatePackageTestsInput", function( scriptfile, outfiles, gap )
              and IsBound( entry.TestFile ) then
             for pair in TransposedMat( [ outfiles, [ "false", "true" ] ] ) do
               Append( result, Concatenation(
+                  "echo 'Testing ", name, " ", entry.Version, ", test=", 
+		          Filename( DirectoriesPackageLibrary( name, "" )[1], entry.TestFile ), 
+		          ", all packages=", pair[2], "'\n" ) );
+              Append( result, Concatenation(
                   "echo 'RunPackageTests( \"", name,
                   "\", \"", entry.Version, "\", \"", entry.TestFile,
                   "\", ", pair[2], " );' | ", gap, " > ",
@@ -297,7 +301,7 @@ BindGlobal( "CreatePackageTestsInput", function( scriptfile, outfiles, gap )
 ##  statements and therefore must be read with `Read',
 ##  or it can be a file that itself must be read with `ReadTest';
 ##  the latter is detected from the occurrence of a substring
-##  `"gap> START_TEST("' in the file.
+##  `"START_TEST"' in the file.
 ##
 BindGlobal( "RunPackageTests", function( pkgname, version, testfile, other )
     local file, str;
@@ -320,7 +324,7 @@ BindGlobal( "RunPackageTests", function( pkgname, version, testfile, other )
              pkgname, "' (version ", version, ") not readable\n" );
       return;
     fi;
-    if PositionSublist( str, "gap> START_TEST(" ) = fail then
+    if PositionSublist( str, "START_TEST" ) = fail then
       if not READ( file ) then
         Print( "#E  RunPackageTests: file `", testfile, "' for package `",
                pkgname, "' (version ", version, ") not read\n" );

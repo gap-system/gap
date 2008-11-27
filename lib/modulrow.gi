@@ -63,6 +63,20 @@ InstallOtherMethod( \^,
 
 #############################################################################
 ##
+#M  IsRowModule .  return `false' for objects which are not free left modules 
+##
+InstallOtherMethod( IsRowModule,
+                    Concatenation("return `false' for objects which are ",
+                                  "not free left modules"),
+                    true, [ IsObject ], 0,
+
+  function ( obj )
+    if not IsFreeLeftModule(obj) then return false; else TryNextMethod(); fi;
+  end );
+
+
+#############################################################################
+##
 #M  IsRowModule( <M> )
 ##
 InstallMethod( IsRowModule,
@@ -149,6 +163,14 @@ InstallMethod( ViewObj,
 
 #############################################################################
 ##
+#M  ViewString( <M> ) . . . . . . . . . . . . . . . . .  for full row modules
+##
+InstallMethod( ViewString, "for full row modules", true,
+               [ IsFreeLeftModule and IsFullRowModule ], 0, String );
+
+
+#############################################################################
+##
 #M  PrintObj( <M> )
 ##
 InstallMethod( PrintObj,
@@ -157,6 +179,16 @@ InstallMethod( PrintObj,
     function( M )
     Print( "( ", LeftActingDomain( M ), "^", DimensionOfVectors( M ), " )" );
     end );
+
+
+#############################################################################
+##
+#M  String( <M> ) . . . . . . . . . . . . . . . . . . .  for full row modules
+##
+InstallMethod( String, "for full row modules", true,
+               [ IsFreeLeftModule and IsFullRowModule ], 0,
+  M -> Concatenation(List(["( ",LeftActingDomain(M),"^",
+                                DimensionOfVectors(M)," )"], String)) );
 
 
 #############################################################################

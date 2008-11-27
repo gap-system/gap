@@ -176,7 +176,7 @@ InstallTrueMethod( IsGeneratorsOfMagmaWithInverses,
 
 #############################################################################
 ##
-#F  AssignGeneratorVariables(<G>)
+#O  AssignGeneratorVariables(<G>)
 ##
 ##  If <G> is a group, whose generators are represented by symbols (for 
 ##  example a free group, a finitely presented group or a pc group) this
@@ -202,7 +202,7 @@ InstallTrueMethod( IsGeneratorsOfMagmaWithInverses,
 ##  any of the variables if write protected, or any of the generator names   
 ##  would not be a proper variable name, an error is raised.
 ##
-DeclareGlobalFunction( "AssignGeneratorVariables" );
+DeclareOperation( "AssignGeneratorVariables", [IsObject] );
 
 #############################################################################
 ##

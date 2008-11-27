@@ -326,6 +326,10 @@ BIND_GLOBAL( "INSTALL_METHOD",
       Error( "<arglist>[", pos, "] must be a list of filters" );
     fi;
     filters:= arglist[ pos ];
+    if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
+             " arguments" );
+    fi;
 
     # If the filters list is given by a list of strings then evaluate them
     # and set `info' if this is not set.

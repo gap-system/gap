@@ -527,20 +527,31 @@ BIND_GLOBAL( "ReObjectify", ChangeTypeObj );
 ##
 Unbind( SetFilterObj );
 BIND_GLOBAL( "SetFilterObj", function ( obj, filter )
+local type, newtype;
+
     if IS_POSOBJ( obj ) then
-      SET_TYPE_POSOBJ( obj, Subtype2( TYPE_OBJ(obj), filter ) );
-      if not IsNoImmediateMethodsObject(obj) then
-	RunImmediateMethods( obj, FLAGS_FILTER( filter ) );
+      type:= TYPE_OBJ( obj );
+      newtype:= Subtype2( type, filter );
+      SET_TYPE_POSOBJ( obj, newtype );
+      if not ( IGNORE_IMMEDIATE_METHODS
+               or IsNoImmediateMethodsObject(obj) ) then
+        RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
       fi;
     elif IS_COMOBJ( obj ) then
-      SET_TYPE_COMOBJ( obj, Subtype2( TYPE_OBJ(obj), filter ) );
-      if not IsNoImmediateMethodsObject(obj) then
-	RunImmediateMethods( obj, FLAGS_FILTER( filter ) );
+      type:= TYPE_OBJ( obj );
+      newtype:= Subtype2( type, filter );
+      SET_TYPE_COMOBJ( obj, newtype );
+      if not ( IGNORE_IMMEDIATE_METHODS
+               or IsNoImmediateMethodsObject(obj) ) then
+        RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
       fi;
     elif IS_DATOBJ( obj ) then
-      SET_TYPE_DATOBJ( obj, Subtype2( TYPE_OBJ(obj), filter ) );
-      if not IsNoImmediateMethodsObject(obj) then
-	RunImmediateMethods( obj, FLAGS_FILTER( filter ) );
+      type:= TYPE_OBJ( obj );
+      newtype:= Subtype2( type, filter );
+      SET_TYPE_DATOBJ( obj, newtype );
+      if not ( IGNORE_IMMEDIATE_METHODS
+               or IsNoImmediateMethodsObject(obj) ) then
+        RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
       fi;
     elif IS_PLIST_REP( obj )  then
         SET_FILTER_LIST( obj, filter );

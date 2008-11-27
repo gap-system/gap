@@ -106,6 +106,8 @@ static GVar G_INSTALL__METHOD;
 static Obj  GF_INSTALL__METHOD;
 static GVar G_DeclareGlobalFunction;
 static Obj  GF_DeclareGlobalFunction;
+static GVar G_GAPInfo;
+static Obj  GC_GAPInfo;
 static GVar G_EvalString;
 static Obj  GF_EvalString;
 static GVar G_WRAPPER__OPERATIONS;
@@ -151,6 +153,7 @@ static Obj  GF_CallFuncList;
 
 /* record names used in handlers */
 static RNam R_oper1__g;
+static RNam R_MaxNrArgsMethod;
 
 /* information for the functions */
 static Obj  NameFunc[17];
@@ -1385,6 +1388,28 @@ static Obj  HdlrFunc7 (
  /* filters := arglist[pos]; */
  C_ELM_LIST_FPL( t_1, a_arglist, l_pos )
  l_filters = t_1;
+ 
+ /* if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then */
+ t_3 = GC_GAPInfo;
+ CHECK_BOUND( t_3, "GAPInfo" )
+ t_2 = ELM_REC( t_3, R_MaxNrArgsMethod );
+ t_4 = GF_LEN__LIST;
+ t_3 = CALL_1ARGS( t_4, l_filters );
+ CHECK_FUNC_RESULT( t_3 )
+ t_1 = (Obj)(UInt)(LT( t_2, t_3 ));
+ if ( t_1 ) {
+  
+  /* Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod, " arguments" ); */
+  t_1 = GF_Error;
+  C_NEW_STRING( t_2, 25, "methods can have at most " )
+  t_4 = GC_GAPInfo;
+  CHECK_BOUND( t_4, "GAPInfo" )
+  t_3 = ELM_REC( t_4, R_MaxNrArgsMethod );
+  C_NEW_STRING( t_4, 10, " arguments" )
+  CALL_3ARGS( t_1, t_2, t_3, t_4 );
+  
+ }
+ /* fi */
  
  /* if 0 < LEN_LIST( filters ) then */
  t_3 = GF_LEN__LIST;
@@ -3417,6 +3442,9 @@ static Obj  HdlrFunc1 (
           Error( "<arglist>[", pos, "] must be a list of filters" );
       fi;
       filters := arglist[pos];
+      if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters )  then
+          Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod, " arguments" );
+      fi;
       if 0 < LEN_LIST( filters )  then
           info1 := "[ ";
           isstr := true;
@@ -3770,6 +3798,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "CHECK_INSTALL_METHOD", &GC_CHECK__INSTALL__METHOD );
  InitFopyGVar( "INSTALL_METHOD", &GF_INSTALL__METHOD );
  InitFopyGVar( "DeclareGlobalFunction", &GF_DeclareGlobalFunction );
+ InitCopyGVar( "GAPInfo", &GC_GAPInfo );
  InitFopyGVar( "EvalString", &GF_EvalString );
  InitCopyGVar( "WRAPPER_OPERATIONS", &GC_WRAPPER__OPERATIONS );
  InitFopyGVar( "INFO_INSTALL", &GF_INFO__INSTALL );
@@ -3793,39 +3822,39 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "CallFuncList", &GF_CallFuncList );
  
  /* information for the functions */
- InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(-93145418)" );
- InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(-93145418)" );
- InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](-93145418)" );
- InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(-93145418)" );
- InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](-93145418)" );
- InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(-93145418)" );
- InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](-93145418)" );
- InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(-93145418)" );
- InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](-93145418)" );
- InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(-93145418)" );
- InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](-93145418)" );
- InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(-93145418)" );
- InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](-93145418)" );
- InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(-93145418)" );
- InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](-93145418)" );
- InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(-93145418)" );
- InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](-93145418)" );
- InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(-93145418)" );
- InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](-93145418)" );
- InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(-93145418)" );
- InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](-93145418)" );
- InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(-93145418)" );
- InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](-93145418)" );
- InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(-93145418)" );
- InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](-93145418)" );
- InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(-93145418)" );
- InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](-93145418)" );
- InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(-93145418)" );
- InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](-93145418)" );
- InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(-93145418)" );
- InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](-93145418)" );
- InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/oper1.g:HdlrFunc16(-93145418)" );
- InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/oper1.g:NameFunc[16](-93145418)" );
+ InitGlobalBag( &DefaultName, "GAPROOT/lib/oper1.g:DefaultName(17199542)" );
+ InitHandlerFunc( HdlrFunc1, "GAPROOT/lib/oper1.g:HdlrFunc1(17199542)" );
+ InitGlobalBag( &(NameFunc[1]), "GAPROOT/lib/oper1.g:NameFunc[1](17199542)" );
+ InitHandlerFunc( HdlrFunc2, "GAPROOT/lib/oper1.g:HdlrFunc2(17199542)" );
+ InitGlobalBag( &(NameFunc[2]), "GAPROOT/lib/oper1.g:NameFunc[2](17199542)" );
+ InitHandlerFunc( HdlrFunc3, "GAPROOT/lib/oper1.g:HdlrFunc3(17199542)" );
+ InitGlobalBag( &(NameFunc[3]), "GAPROOT/lib/oper1.g:NameFunc[3](17199542)" );
+ InitHandlerFunc( HdlrFunc4, "GAPROOT/lib/oper1.g:HdlrFunc4(17199542)" );
+ InitGlobalBag( &(NameFunc[4]), "GAPROOT/lib/oper1.g:NameFunc[4](17199542)" );
+ InitHandlerFunc( HdlrFunc5, "GAPROOT/lib/oper1.g:HdlrFunc5(17199542)" );
+ InitGlobalBag( &(NameFunc[5]), "GAPROOT/lib/oper1.g:NameFunc[5](17199542)" );
+ InitHandlerFunc( HdlrFunc6, "GAPROOT/lib/oper1.g:HdlrFunc6(17199542)" );
+ InitGlobalBag( &(NameFunc[6]), "GAPROOT/lib/oper1.g:NameFunc[6](17199542)" );
+ InitHandlerFunc( HdlrFunc7, "GAPROOT/lib/oper1.g:HdlrFunc7(17199542)" );
+ InitGlobalBag( &(NameFunc[7]), "GAPROOT/lib/oper1.g:NameFunc[7](17199542)" );
+ InitHandlerFunc( HdlrFunc8, "GAPROOT/lib/oper1.g:HdlrFunc8(17199542)" );
+ InitGlobalBag( &(NameFunc[8]), "GAPROOT/lib/oper1.g:NameFunc[8](17199542)" );
+ InitHandlerFunc( HdlrFunc9, "GAPROOT/lib/oper1.g:HdlrFunc9(17199542)" );
+ InitGlobalBag( &(NameFunc[9]), "GAPROOT/lib/oper1.g:NameFunc[9](17199542)" );
+ InitHandlerFunc( HdlrFunc10, "GAPROOT/lib/oper1.g:HdlrFunc10(17199542)" );
+ InitGlobalBag( &(NameFunc[10]), "GAPROOT/lib/oper1.g:NameFunc[10](17199542)" );
+ InitHandlerFunc( HdlrFunc11, "GAPROOT/lib/oper1.g:HdlrFunc11(17199542)" );
+ InitGlobalBag( &(NameFunc[11]), "GAPROOT/lib/oper1.g:NameFunc[11](17199542)" );
+ InitHandlerFunc( HdlrFunc12, "GAPROOT/lib/oper1.g:HdlrFunc12(17199542)" );
+ InitGlobalBag( &(NameFunc[12]), "GAPROOT/lib/oper1.g:NameFunc[12](17199542)" );
+ InitHandlerFunc( HdlrFunc13, "GAPROOT/lib/oper1.g:HdlrFunc13(17199542)" );
+ InitGlobalBag( &(NameFunc[13]), "GAPROOT/lib/oper1.g:NameFunc[13](17199542)" );
+ InitHandlerFunc( HdlrFunc14, "GAPROOT/lib/oper1.g:HdlrFunc14(17199542)" );
+ InitGlobalBag( &(NameFunc[14]), "GAPROOT/lib/oper1.g:NameFunc[14](17199542)" );
+ InitHandlerFunc( HdlrFunc15, "GAPROOT/lib/oper1.g:HdlrFunc15(17199542)" );
+ InitGlobalBag( &(NameFunc[15]), "GAPROOT/lib/oper1.g:NameFunc[15](17199542)" );
+ InitHandlerFunc( HdlrFunc16, "GAPROOT/lib/oper1.g:HdlrFunc16(17199542)" );
+ InitGlobalBag( &(NameFunc[16]), "GAPROOT/lib/oper1.g:NameFunc[16](17199542)" );
  
  /* return success */
  return 0;
@@ -3893,6 +3922,7 @@ static Int InitLibrary ( StructInitInfo * module )
  G_CHECK__INSTALL__METHOD = GVarName( "CHECK_INSTALL_METHOD" );
  G_INSTALL__METHOD = GVarName( "INSTALL_METHOD" );
  G_DeclareGlobalFunction = GVarName( "DeclareGlobalFunction" );
+ G_GAPInfo = GVarName( "GAPInfo" );
  G_EvalString = GVarName( "EvalString" );
  G_WRAPPER__OPERATIONS = GVarName( "WRAPPER_OPERATIONS" );
  G_INFO__INSTALL = GVarName( "INFO_INSTALL" );
@@ -3917,6 +3947,7 @@ static Int InitLibrary ( StructInitInfo * module )
  
  /* record names used in handlers */
  R_oper1__g = RNamName( "oper1_g" );
+ R_MaxNrArgsMethod = RNamName( "MaxNrArgsMethod" );
  
  /* information for the functions */
  C_NEW_STRING( DefaultName, 14, "local function" )
@@ -4039,6 +4070,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_CHECK__INSTALL__METHOD = GVarName( "CHECK_INSTALL_METHOD" );
  G_INSTALL__METHOD = GVarName( "INSTALL_METHOD" );
  G_DeclareGlobalFunction = GVarName( "DeclareGlobalFunction" );
+ G_GAPInfo = GVarName( "GAPInfo" );
  G_EvalString = GVarName( "EvalString" );
  G_WRAPPER__OPERATIONS = GVarName( "WRAPPER_OPERATIONS" );
  G_INFO__INSTALL = GVarName( "INFO_INSTALL" );
@@ -4063,6 +4095,7 @@ static Int PostRestore ( StructInitInfo * module )
  
  /* record names used in handlers */
  R_oper1__g = RNamName( "oper1_g" );
+ R_MaxNrArgsMethod = RNamName( "MaxNrArgsMethod" );
  
  /* information for the functions */
  NameFunc[1] = DefaultName;
@@ -4127,7 +4160,7 @@ static StructInitInfo module = {
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
- /* crc         = */ -93145418,
+ /* crc         = */ 17199542,
  /* initKernel  = */ InitKernel,
  /* initLibrary = */ InitLibrary,
  /* checkInit   = */ 0,

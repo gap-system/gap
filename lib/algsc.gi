@@ -633,34 +633,41 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
                     t ->     t[1] = a and t[2] = b
                          and IsIdenticalObj( t[3], FamilyObj( F ) ) );
     if stored <> fail then
-      return AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
-    fi;
+      A:= AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
+      SetGeneratorsOfAlgebra( A, GeneratorsOfAlgebraWithOne( A ) );
+    else
 
-    # Construct a filter describing element properties,
-    # which will be stored in the family.
-    filter:= IsSCAlgebraObj and IsQuaternion;
-    if HasIsAssociative( F ) and IsAssociative( F ) then
-      filter:= filter and IsAssociativeElement;
-    fi;
-    if     IsNegRat( a ) and IsNegRat( b )
+      # Construct a filter describing element properties,
+      # which will be stored in the family.
+      filter:= IsSCAlgebraObj and IsQuaternion;
+      if HasIsAssociative( F ) and IsAssociative( F ) then
+        filter:= filter and IsAssociativeElement;
+      fi;
+      if     IsNegRat( a ) and IsNegRat( b )
 #T it suffices if the parameters are real and negative
-       and IsCyclotomicCollection( F ) and IsField( F )
-       and ForAll( GeneratorsOfDivisionRing( F ),
-                   x -> x = ComplexConjugate( x ) ) then
-      filter:= filter and IsZDFRE;
-    fi;
+         and IsCyclotomicCollection( F ) and IsField( F )
+         and ForAll( GeneratorsOfDivisionRing( F ),
+                     x -> x = ComplexConjugate( x ) ) then
+        filter:= filter and IsZDFRE;
+      fi;
 
-    # Construct the algebra.
-    A:= AlgebraByStructureConstantsArg(
-            [ F,
-              [ [ [[1],[e]], [[2],[ e]], [[3],[ e]], [[4],[   e]] ],
-                [ [[2],[e]], [[1],[ a]], [[4],[ e]], [[3],[   a]] ],
-                [ [[3],[e]], [[4],[-e]], [[1],[ b]], [[2],[  -b]] ],
-                [ [[4],[e]], [[3],[-a]], [[2],[ b]], [[1],[-a*b]] ],
-                0, Zero(F) ],
-              "e", "i", "j", "k" ],
-            filter );
-    SetFilterObj( A, IsAlgebraWithOne );
+      # Construct the algebra.
+      A:= AlgebraByStructureConstantsArg(
+              [ F,
+                [ [ [[1],[e]], [[2],[ e]], [[3],[ e]], [[4],[   e]] ],
+                  [ [[2],[e]], [[1],[ a]], [[4],[ e]], [[3],[   a]] ],
+                  [ [[3],[e]], [[4],[-e]], [[1],[ b]], [[2],[  -b]] ],
+                  [ [[4],[e]], [[3],[-a]], [[2],[ b]], [[1],[-a*b]] ],
+                  0, Zero(F) ],
+                "e", "i", "j", "k" ],
+              filter );
+      SetFilterObj( A, IsAlgebraWithOne );
+#T better introduce AlgebraWithOneByStructureConstants?
+
+      # Store the data for the next call.
+      Add( QuaternionAlgebraData, [ a, b, FamilyObj( F ), A ] );
+
+    fi;
 
     # A quaternion algebra with negative parameters over a real field
     # is a division ring.
@@ -670,10 +677,8 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
                    x -> x = ComplexConjugate( x ) ) then
       SetFilterObj( A, IsMagmaWithInversesIfNonzero );
 #T better use `DivisionRingByGenerators'?
+      SetGeneratorsOfDivisionRing( A, GeneratorsOfAlgebraWithOne( A ) );
     fi;
-
-    # Store the data for the next call.
-    Add( QuaternionAlgebraData, [ a, b, FamilyObj( F ), A ] );
 
     # Return the quaternion algebra.
     return A;
@@ -728,12 +733,42 @@ InstallMethod( ComplexConjugate,
     "for a quaternion",
     [ IsQuaternion and IsSCAlgebraObj ],
     function( quat )
-    local data;
-    data:= ShallowCopy( ExtRepOfObj( quat ) );
-    data[2]:= AdditiveInverse( data[2] );
-    data[3]:= AdditiveInverse( data[3] );
-    data[4]:= AdditiveInverse( data[4] );
-    return ObjByExtRep( FamilyObj( quat ), data );
+    local v;
+
+    v:= ExtRepOfObj( quat );
+    return ObjByExtRep( FamilyObj( quat ), [ v[1], -v[2], -v[3], -v[4] ] );
+    end );
+
+
+#############################################################################
+##
+#M  RealPart( <quat> )  . . . . . . . . . . . . . . . . . .  for a quaternion
+##
+InstallMethod( RealPart,
+    "for a quaternion",
+    [ IsQuaternion and IsSCAlgebraObj ],
+    function( quat )
+    local v, z;
+
+    v:= ExtRepOfObj( quat );
+    z:= Zero( v[1] );
+    return ObjByExtRep( FamilyObj( quat ), [ v[1], z, z, z ] );
+    end );
+
+
+#############################################################################
+##
+#M  ImaginaryPart( <quat> ) . . . . . . . . . . . . . . . .  for a quaternion
+##
+InstallMethod( ImaginaryPart,
+    "for a quaternion",
+    [ IsQuaternion and IsSCAlgebraObj ],
+    function( quat )
+    local v, z;
+
+    v:= ExtRepOfObj( quat );
+    z:= Zero( v[1] );
+    return ObjByExtRep( FamilyObj( quat ), [ v[2], z, v[4], -v[3] ] );
     end );
 
 
@@ -743,7 +778,6 @@ InstallMethod( ComplexConjugate,
 #F  ComplexificationQuat( <matrix> )
 ##
 InstallGlobalFunction( ComplexificationQuat, function( matrixorvector )
-
     local result,
           i, e,
           M,

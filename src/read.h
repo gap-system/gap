@@ -3,8 +3,6 @@
 *W  read.h                      GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
-**
-*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
@@ -116,7 +114,7 @@ extern UInt GlobalComesFromEnclosingForLoop (UInt var);
 **
 **  The current reader context is saved and a new one is started.
 */
-void Call0ArgsInNewReader(Obj f);
+Obj Call0ArgsInNewReader(Obj f);
 
 /****************************************************************************
 **
@@ -124,7 +122,7 @@ void Call0ArgsInNewReader(Obj f);
 **
 **  The current reader context is saved and a new one is started.
 */
-void Call1ArgsInNewReader(Obj f,Obj a);
+Obj Call1ArgsInNewReader(Obj f,Obj a);
 
 
 /****************************************************************************

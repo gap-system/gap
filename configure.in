@@ -4,7 +4,7 @@ AC_INIT(configure)
 if test "x$CFLAGS" = "x" ;  then
   CFLAGS=${COPTS}
 fi
-gp_configure_options=$*
+gp_configure_options=$ac_configure_args
 AC_SUBST(gp_configure_options)
 AC_CONFIG_AUX_DIR(cnf)
 AC_CANONICAL_SYSTEM

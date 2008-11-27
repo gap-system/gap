@@ -39,6 +39,9 @@ local lo,up,s;
   # simple binary search. The entry is in the range [lo..up]
   lo:=1;
   up:=Length(list);
+  if up = 0 then 
+    return fail; # empty list
+  fi;
   while lo<up do
     s:=Int((up+lo)/2);# middle entry
     if list[s][1]<obj then
@@ -47,8 +50,8 @@ local lo,up,s;
       up:=s; # So obj<=list[s][1], so the new range is [1..s].
     fi;
   od;
-  # now lo=up
-  if list[lo][1]=obj then
+  # now lo=up, unless lo=1, up=0 (fixed by Laurent Bartholdi)
+  if lo=up and list[lo][1]=obj then
     return lo;
   else
     return fail;

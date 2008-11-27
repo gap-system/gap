@@ -50,8 +50,8 @@ AlwaysMakegap.in:
 	@echo >> Makegap.in
 	@echo >> Makegap.in
 	@echo '# compile and link GAP' >> Makegap.in
-	@echo 'gap: $$(OBJECTS)' >> Makegap.in
-	@echo '	$$(CC) $$(CFLAGS) $$(LDFLAGS) -o gap $$(OBJECTS) -lm $$(MPILIBS) @LIBS@' >> Makegap.in
+	@echo 'gap: $$(OBJECTS) $$(ITANIUMOBJ)' >> Makegap.in
+	@echo '	$$(CC) $$(CFLAGS) $$(LDFLAGS) -o gap $$(OBJECTS) $$(ITANIUMOBJ) -lm $$(MPILIBS) $$(EXTOBJS)  @LIBS@' >> Makegap.in
 	@echo >> Makegap.in
 	@echo '# dependencies are automatically generated' >> Makegap.in
 	@(for i in `eval 'echo $(SOURCE)'`; do \

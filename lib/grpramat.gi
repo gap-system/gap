@@ -105,6 +105,32 @@ end);
 
 #############################################################################
 ##
+#M  \in( <g>, GL( <n>, Integers ) )
+##
+InstallMethod( \in,
+               "for matrix and GL(n,Z)", IsElmsColls,
+               [ IsMatrix, IsNaturalGLnZ ],
+
+  function ( g, GLnZ )
+    return DimensionsMat(g) = DimensionsMat(One(GLnZ))
+       and ForAll(Flat(g),IsInt) and DeterminantMat(g) in [-1,1];
+  end );
+
+#############################################################################
+##
+#M  \in( <g>, SL( <n>, Integers ) )
+##
+InstallMethod( \in,
+               "for matrix and SL(n,Z)", IsElmsColls,
+               [ IsMatrix, IsNaturalSLnZ ],
+
+  function ( g, SLnZ )
+    return DimensionsMat(g) = DimensionsMat(One(SLnZ))
+       and ForAll(Flat(g),IsInt) and DeterminantMat(g) = 1;
+  end );
+
+#############################################################################
+##
 #M  Normalizer( GLnZ, G ) . . . . . . . . . . . . . . . . .Normalizer in GLnZ
 ##
 InstallMethod( NormalizerOp, IsIdenticalObj,

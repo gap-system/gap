@@ -350,6 +350,12 @@ InstallMethod( MagmaGeneratorsOfFamily,
     F -> List( [ 1 .. Length( F!.names ) ],
                  i -> ObjByExtRep( F, 1, 1, [ i, 1 ] ) ) );
 
+# GeneratorsOfSemigroup returns the generators in ascending order
+
+InstallMethod( GeneratorsSmallest,
+        "for a free semigroup",
+        [ IsFreeSemigroup ],
+        GeneratorsOfSemigroup);
 
 #############################################################################
 ##

@@ -94,6 +94,12 @@ DeclareGlobalFunction("EpimorphismNilpotentQuotient");
 
 #############################################################################
 ##
+#F  Nucleus . . . . . . . . . . . . . . . . . . . .  the nucleus of a p-cover
+##
+DeclareOperation("Nucleus",[IsPQuotientSystem,IsGroup]);
+
+#############################################################################
+##
 #E  Emacs . . . . . . . . . . . . . . . . . . . . . . . . . . emacs variables
 ##  
 ##  Local Variables:

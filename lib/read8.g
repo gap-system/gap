@@ -10,3 +10,9 @@ ReadLib( "overload.g"  );
 ##
 ReadLib( "compiler.g"  );
 
+#############################################################################
+##
+#X  Teaching mode
+##
+ReadLib( "teachm2.g"  );
+

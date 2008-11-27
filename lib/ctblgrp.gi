@@ -1059,7 +1059,7 @@ local i,newRaeume,raum,neuer,j,ch,irrs,mods,incirrs,incmods,nb,rt,neuc;
   incmods:=[];
   for i in [1..Length(D.raeume)] do
     raum:=D.raeume[i];
-    if false and raum.dim=2 and not IsBound(raum.twofail) then
+    if raum.dim=2 and not IsBound(raum.twofail) then
       neuer:=SplitTwoSpace(D,raum);
     else
       neuer:=[];

@@ -95,7 +95,6 @@ end );
 ##
 InstallGlobalFunction( StringToStraightLineProgram,
     function( string, gens, script )
-
     local pos,
           extrep,
           len,
@@ -162,7 +161,9 @@ InstallGlobalFunction( StringToStraightLineProgram,
         return false;
       fi;
       slen:= Length( script ) + Length( gens );
-      Add( script, [ [ j, 1, slen, 1 ], slen + 1 ] );
+      if j < slen then
+        Add( script, [ [ j, 1, slen, 1 ], slen + 1 ] );
+      fi;
       return true;
 
     else
@@ -219,8 +220,9 @@ InstallGlobalFunction( StringToStraightLineProgram,
                 return false;
               fi;
               slen:= Length( script ) + Length( gens );
-              Add( script, [ [ j, 1, slen, 1 ], slen + 1 ] );
-
+              if j < slen then
+                Add( script, [ [ j, 1, slen, 1 ], slen + 1 ] );
+              fi;
             fi;
             return true;
 

@@ -41,7 +41,7 @@ InstallMethod( GeneratorsOfLeftModule,
     [ IsField and IsFinite ],
     function( F )
     local z;
-    z:= PrimitiveRoot( F );
+    z:= RootOfDefiningPolynomial( F );
     return List( [ 0 .. Dimension( F ) - 1 ], i -> z^i );
 #T call of `UseBasis' ?
     end );
@@ -472,11 +472,10 @@ InstallMethod( CanonicalBasis,
     "for a finite field",
     [ IsField and IsFinite ],
     function( F )
-
     local z,         # primitive root
           B;         # basis record, result
 
-    z:= PrimitiveRoot( F );
+    z:= RootOfDefiningPolynomial( F );
     B:= BasisNC( F, List( [ 0 .. Dimension( F ) - 1 ], i -> z ^ i ) );
     SetIsCanonicalBasis( B, true );
 
@@ -487,7 +486,7 @@ InstallMethod( CanonicalBasis,
 
 #############################################################################
 ##  
-#M  NormalBase( <F> )
+#M  NormalBase( <F>, <elm> )
 ##  
 ##  For finite fields just search.
 ##  

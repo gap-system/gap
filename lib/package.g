@@ -1036,6 +1036,7 @@ BindGlobal( "AutoloadPackages", function()
     local name, record;
 
     # Load the autoloadable packages (suppressing banners).
+    InitializePackagesInfoRecords( false );
     for name in GAPInfo.PackagesNames do
       Info( InfoWarning, 2, "considering for autoloading: ", name );
       LoadPackage( name, "", false );
@@ -1146,9 +1147,16 @@ fi;
 ##
 BindGlobal( "DeclareAutoreadableVariables",
     function( pkgname, filename, varlist )
-    CallFuncList( AUTO,
-        Concatenation( [ function( x ) RereadPackage( pkgname, filename ); end,
-                         filename ], varlist ) );
+    CallFuncList( AUTO, Concatenation( [
+      function( x )
+        # Avoid nested calls to `RereadPackage',
+        # which could cause that `REREADING' is set to `false' too early.
+        if REREADING then
+          ReadPackage( pkgname, filename );
+        else
+          RereadPackage( pkgname, filename );
+        fi;
+      end, filename ], varlist ) );
     end );
 
 

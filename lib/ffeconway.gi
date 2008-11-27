@@ -257,7 +257,7 @@ InstallMethod(DisplayString,"For large finite field elements",
             if Length(s) <> 0 then
                 Append(s,"+");
             fi;
-            if a <> 1 then
+            if a <> 1 or j = 0 then
                 Append(s,String(a));
             fi;
             if j <> 0 then
@@ -424,13 +424,14 @@ end;
 ##
 #F FFECONWAY.TryToWriteInSmallerField( <ffe>, <smalldeg> )
 ##
-## returns an element written over a field of degree <bigdeg>, but equal to <ffe>
+## returns an element written over a field of degree <smalldeg>, but equal to <ffe>
 ## if possibe, otherwise fail. The returned element may be an internal FFE
 ## or a ZmodpZ object.
 ##
 
 FFECONWAY.TryToWriteInSmallerField := function(x,d1)
-    local   dmin,  fam,  p,  d2,  r,  v,  v2,  i,  piv,  w,  z;
+    local   dmin,  fam,  p,  d2,  smalld,  r,  v,  v2,  i,  piv,  w,  
+            oversmalld,  z;
     if IsInternalRep(x) then
         return fail;
     fi;
@@ -464,10 +465,11 @@ FFECONWAY.TryToWriteInSmallerField := function(x,d1)
         x![1] := ShallowCopy(x![1]);
     fi;
     PadCoeffs(x![1],d2);
-    r := FFECONWAY.FiniteFieldEmbeddingRecord(p, d1, d2);
+    smalld := Gcd(d1,d2);
+    r := FFECONWAY.FiniteFieldEmbeddingRecord(p, smalld,d2);
     v := ShallowCopy(x![1]);
     v2 := ZeroMutable(r.convert[1]);
-    for i in [1..d1] do
+    for i in [1..smalld] do
         piv := r.pivots[i];
         w := r.semi[i];
         x := v[piv]/w[piv];
@@ -478,13 +480,18 @@ FFECONWAY.TryToWriteInSmallerField := function(x,d1)
         return fail;
     fi;
     if d1 = 1 then
-        return v2[1];
+        oversmalld :=  v2[1];
     elif p^d1 <= MAXSIZE_GF_INTERNAL then
-        z := Z(p^d1);
-        return Sum([1..d1], i-> z^(i-1)*v2[i]);
+        z := Z(p^smalld);
+        oversmalld :=  Sum([1..smalld], i-> z^(i-1)*v2[i]);
         
     else
-        return Objectify(fam!.ConwayFldEltDefaultType,[v2,d1,fail]);
+        oversmalld :=  Objectify(fam!.ConwayFldEltDefaultType,[v2,d1,fail]);
+    fi;
+    if smalld < d1 then
+        return FFECONWAY.WriteOverLargerField(oversmalld, d1);
+    else
+       return oversmalld;   
     fi;
 end;
 
@@ -1298,39 +1305,73 @@ FFECONWAY.DoLogFFERho :=function(y,z,ord,f,q)
     return fail;
 end;
 
+FFECONWAY.DoLogFFE := 
+        function(y,z)
+    local   d,  p,  q,  dy,  o,  ix,  f;
+    if IsZero(z)  then
+        Error("LogFFE: element is not a power of base");
+    fi;       
+    #
+    # Reduce to smallest possible fields.
+    #
+    
+    y := FFECONWAY.WriteOverSmallestField(y);
+    z := FFECONWAY.WriteOverSmallestField(z);
+    
+    #
+    # If we're in the Zech range then all is good
+    #
+    if IsInternalRep(z) then
+        if not IsInternalRep(y) then
+            Error("LogFFE: element is not a power of base");
+        else
+            return LogFFE(y,z);
+        fi;
+    fi;
+    
+    
+    d := DegreeFFE(z);
+    p := Characteristic(z);
+    q := p^d;
+    dy := DegreeFFE(y);
+    
+    if  d mod dy <> 0  then
+        Error("LogFFE: element is not a power of base");
+    fi;
+    
+    #
+    # If elements are not over same field then I can find the smallest power of z
+    # that lies in the right field and recurse. This handles the case that y is in internal rep
+    #
+    if d <> dy then
+        o := Order(z);
+        ix := o/Gcd(o,p^dy-1);
+        return LogFFE(y,z^ix)*ix;
+    fi;
+    
+    # use rho method
+    f:=FactorsInt(q-1:quiet); # Quick factorization, don't stop if its too hard
+     return FFECONWAY.DoLogFFERho(y,z,q-1,f,q);
+ end;
+ 
 InstallMethod( LogFFE,
         IsIdenticalObj,
         [IsFFE and IsCoeffsModConwayPolRep, IsFFE and IsCoeffsModConwayPolRep],
-        function(y,z)
-    local   d,  p,  q,  f;
-    d := DegreeFFE(z);
-    p := Characteristic(z);
-    q := p^d;
-    if IsZero(z) or d mod DegreeFFE(y) <> 0  then
-        
-        Error("LogFFE: element is not a power of base");
-    fi;
-    # use rho method
-    f:=FactorsInt(q-1:quiet); # Quick factorization, don't stop if its too hard
-     return FFECONWAY.DoLogFFERho(y,z,q-1,f,q);
-end);
+        FFECONWAY.DoLogFFE
+        );
 
-# Handle possibly easier case in the naive manner
+
 InstallMethod( LogFFE,
         IsIdenticalObj,
         [IsFFE and IsInternalRep, IsFFE and IsCoeffsModConwayPolRep],
-        function(y,z)
-    local   d,  p,  q,  f;
-    d := DegreeFFE(z);
-    p := Characteristic(z);
-    q := p^d;
-    if IsZero(z) or d mod DegreeFFE(y) <> 0  then
-        Error("LogFFE: element is not a power of base");
-    fi;
-    # use rho method
-    f:=FactorsInt(q-1:quiet); # Quick factorization, don't stop if its too hard
-     return FFECONWAY.DoLogFFERho(y,z,q-1,f,q);
-end);
+        FFECONWAY.DoLogFFE
+);
+
+InstallMethod( LogFFE,
+        IsIdenticalObj,
+        [ IsFFE and IsCoeffsModConwayPolRep, IsFFE and IsInternalRep],
+        FFECONWAY.DoLogFFE
+);
 
 
 #############################################################################

@@ -833,6 +833,9 @@ function( efam )
   # set the one and zero coefficient
   fam!.zeroCoefficient := Zero(efam);
   fam!.oneCoefficient  := One(efam);
+  if fam!.oneCoefficient=fail then
+    Info(InfoWarning,1,"The polynomial is created over a ring without one.");
+  fi;
   fam!.oneCoefflist  := Immutable([fam!.oneCoefficient]);
 
   # set the coefficients

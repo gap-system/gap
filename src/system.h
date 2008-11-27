@@ -58,7 +58,11 @@
 #if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
 # define SYS_INIT_DYNAMIC       "Init__Dynamic"
 #else
+#if defined(SYS_IS_CYGWIN32) && SYS_IS_CYGWIN32
+# define SYS_INIT_DYNAMIC       "Init__Dynamic"
+#else
 # define SYS_INIT_DYNAMIC       "_Init__Dynamic"
+#endif
 #endif
 #else
 # define SYS_INIT_DYNAMIC       "Init__Dynamic"

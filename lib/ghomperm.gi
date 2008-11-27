@@ -1261,11 +1261,13 @@ InstallMethod( StabChainMutable, "perm to perm mapping by images",true,
 ##
 #M  KernelOfMultiplicativeGeneralMapping(<hom>) . for perm to perm group homs
 ##
-InstallMethod( KernelOfMultiplicativeGeneralMapping, true,
+InstallMethod( KernelOfMultiplicativeGeneralMapping, 
+	"for perm to perm group homs, compute stab chain, try again",
         [ IsPermGroupGeneralMappingByImages and
           IsToPermGroupGeneralMappingByImages ], 0,
 function( hom )
 local ker;
+  if HasStabChainMutable( hom ) then TryNextMethod(); fi;
   StabChainPermGroupToPermGroupGeneralMappingByImages( hom );
   ker:=KernelOfMultiplicativeGeneralMapping( hom );
   if Size(ker)=1 then

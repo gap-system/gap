@@ -4575,7 +4575,6 @@ local G,t,p,H,max,sz,gens,rels,comb,l,m,i,j,trial,gen,bad;
     fi;
     if t.exponent=infinity then
       SetSize(G,infinity);
-      Error("<G> must be finite");
       return fail;
     fi;
     sz:=t.exponent*IndexCosetTab(t.cosetTable);
@@ -5144,6 +5143,8 @@ function(g)
         mon ,         # fp monoid
         isomfun,      # the isomorphism function
         invfun,       # the inverse isomorphism function
+        famg,
+        fammon,       # the families of elements in g and mon
         gens,
 	hom;
 
@@ -5185,11 +5186,14 @@ function(g)
   mon := FactorFreeMonoidByRelations( freemon, newrels);
   gens := GeneratorsOfMonoid( mon);
 
-  isomfun := x -> ElementOfFpMonoid( FamilyObj(gens[1] ),
+  famg := FamilyObj(One(g));
+  fammon := FamilyObj(One(mon));
+
+  isomfun := x -> ElementOfFpMonoid( fammon,
                   Gpword2MSword( idmon, UnderlyingElement(x),0 ));
 
   id := One( freegp );
-  invfun := x -> ElementOfFpGroup( FamilyObj(One(g)),
+  invfun := x -> ElementOfFpGroup( famg,
      MSword2gpword( id, UnderlyingElement( x ),0 ) );
   hom:=MagmaIsomorphismByFunctionsNC(g, mon, isomfun, invfun);
   return hom;
