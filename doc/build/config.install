@@ -2,9 +2,9 @@
 @gdfiles = ("../tst/testall.g","package.g","files.gd","system.g","process.gd","colorprompt.g");
 $DIR = "../ref";
 $LIB = "../../lib"; 
-versionnumber=4.4.11
-versionsuffix=4r4p11
+versionnumber=4.4.12
+versionsuffix=4r4p12
 gapdirname=gap4r4
 ucgapdirname=GAP4R4
-releaseday=01 December 2008
+releaseday=17 December 2008
 

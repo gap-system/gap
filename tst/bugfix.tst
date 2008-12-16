@@ -1837,9 +1837,10 @@ x_1^3+Z(3^2)^6*x_1^2+Z(3^2)*x_1+Z(3^2)^5
 
 
 # 2008/04/03 (JS)
-gap> LoadPackage("atlasrep");;
-gap> g:=(Group(AtlasGenerators("HS",1,4).generators));;
-gap> ConjugacyClassesMaximalSubgroups(g);; 
+gap> if LoadPackage( "atlasrep" ) <> fail then
+>      g:= Group( AtlasGenerators( "HS", 1, 4 ).generators );
+>      ConjugacyClassesMaximalSubgroups( g ); 
+>    fi;
 
 
 # 2008/04/23 (TB)

@@ -36,7 +36,7 @@ gap> e:=AlgebraicExtension(Rationals,p);
 gap> IsField(e);
 true
 gap> a:=RootOfDefiningPolynomial(e);
-(a)
+a
 \endexample
 
 \Declaration{IsAlgebraicExtension}
@@ -91,15 +91,15 @@ list(s) with the `One' of the extension which will embed all entries in the
 extension.
 \beginexample
 gap> m:=[[1,a],[0,1]];
-[ [ 1, (a) ], [ 0, 1 ] ]
+[ [ 1, a ], [ 0, 1 ] ]
 gap> IsMatrix(m);
 false
 gap> m:=m*One(e);
-[ [ !1, (a) ], [ !0, !1 ] ]
+[ [ !1, a ], [ !0, !1 ] ]
 gap> IsMatrix(m);
 true
 gap> m^2;
-[ [ !1, (2*a) ], [ !0, !1 ] ]
+[ [ !1, 2*a ], [ !0, !1 ] ]
 \endexample
 
 \Declaration{IsAlgebraicElement}

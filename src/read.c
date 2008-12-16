@@ -2392,7 +2392,11 @@ Obj Call0ArgsInNewReader(Obj f)
   UInt                readTop;
   UInt                readTilde;
   UInt                currLHSGVar;
+  UInt                userHasQuit;
   jmp_buf             readJmpError;
+  UInt                intrCoding;
+  UInt                intrIgnoring;
+  UInt                nrError;
   Obj result;
 
   /* remember the old reader context                                     */
@@ -2401,6 +2405,10 @@ Obj Call0ArgsInNewReader(Obj f)
   readTop     = ReadTop;
   readTilde   = ReadTilde;
   currLHSGVar = CurrLHSGVar;
+  userHasQuit = UserHasQuit;
+  intrCoding = IntrCoding;
+  intrIgnoring = IntrIgnoring;
+  nrError = NrError;
   memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
 
   /* intialize everything and begin an interpreter                       */
@@ -2409,6 +2417,10 @@ Obj Call0ArgsInNewReader(Obj f)
   ReadTop     = 0;
   ReadTilde   = 0;
   CurrLHSGVar = 0;
+  UserHasQuit = 0;
+  IntrCoding = 0;
+  IntrIgnoring = 0;
+  NrError = 0;
   IntrBegin( BottomLVars );
 
   if (!READ_ERROR()) {
@@ -2429,6 +2441,9 @@ Obj Call0ArgsInNewReader(Obj f)
   ReadTop     = readTop;
   ReadTilde   = readTilde;
   CurrLHSGVar = currLHSGVar;
+  IntrCoding = intrCoding;
+  IntrIgnoring = intrIgnoring;
+  NrError = nrError;
   return result;
 }
 
@@ -2449,8 +2464,11 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   UInt                readTilde;
   UInt                currLHSGVar;
   UInt                userHasQuit;
+  UInt                intrCoding;
+  UInt                intrIgnoring;
   jmp_buf             readJmpError;
   Obj result;
+  UInt                nrError;
 
   /* remember the old reader context                                     */
   stackNams   = StackNams;
@@ -2459,6 +2477,9 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   readTilde   = ReadTilde;
   currLHSGVar = CurrLHSGVar;
   userHasQuit = UserHasQuit;
+  intrCoding = IntrCoding;
+  intrIgnoring = IntrIgnoring;
+  nrError = NrError;
   memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
 
   /* intialize everything and begin an interpreter                       */
@@ -2468,6 +2489,9 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   ReadTilde   = 0;
   CurrLHSGVar = 0;
   UserHasQuit = 0;
+  IntrCoding = 0;
+  IntrIgnoring = 0;
+  NrError = 0;
   IntrBegin( BottomLVars );
 
   if (!READ_ERROR()) {
@@ -2483,12 +2507,15 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
   
   /* switch back to the old reader context                               */
   memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+  IntrCoding = intrCoding;
+  IntrIgnoring = intrIgnoring;
   StackNams   = stackNams;
   CountNams   = countNams;
   ReadTop     = readTop;
   ReadTilde   = readTilde;
   CurrLHSGVar = currLHSGVar;
   UserHasQuit = userHasQuit;
+  NrError = nrError;
   return result;
 }
 
