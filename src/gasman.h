@@ -40,6 +40,8 @@ const char * Revision_gasman_h =
 extern const char * Revision_gasman_h;  /* gap.c uses this. */
 extern const char * Revision_gasman_c;
 
+#define BOEHM_GC 1
+
 /* This definition switches to the bigger bag header, supporting bags up to
    4GB in length (lists limited to 1GB for other reasons) */
 
@@ -249,6 +251,9 @@ typedef UInt * *        Bag;
 **  Note that 'CHANGED_BAG' is a macro, so do not call it with arguments that
 **  have sideeffects.
 */
+
+#ifndef BOEHM_GC
+
 extern  Bag *                   YoungBags;
 
 extern  Bag                     ChangedBags;
@@ -257,6 +262,11 @@ extern  Bag                     ChangedBags;
                 if (   PTR_BAG(bag) <= YoungBags                              \
                   && PTR_BAG(bag)[-1] == (bag) ) {                          \
                     PTR_BAG(bag)[-1] = ChangedBags; ChangedBags = (bag);    }
+#else
+
+#define CHANGED_BAG(bag)
+
+#endif
 
 
 /****************************************************************************
@@ -734,6 +744,8 @@ extern  Bag                     MarkedBags;
 #define UNMARKED_HALFDEAD(x) ((Bag)(((Char *)(x))-2))
 
 
+#ifndef BOEHM_GC
+
 #define MARK_BAG(bag)                                                       \
                 if ( (((UInt)(bag)) & (sizeof(Bag)-1)) == 0                 \
                   && (Bag)MptrBags <= (bag)    && (bag) < (Bag)OldBags      \
@@ -741,6 +753,12 @@ extern  Bag                     MarkedBags;
                   && (IS_MARKED_DEAD(bag) || IS_MARKED_HALFDEAD(bag)) ) \
                   {                                                          \
                     PTR_BAG(bag)[-1] = MarkedBags; MarkedBags = (bag);      }
+
+#else
+
+#define MARK_BAG(bag)
+
+#endif
 
 /****************************************************************************
 **

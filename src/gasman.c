@@ -122,6 +122,11 @@ const char * Revision_gasman_c =
 #include        "gasman.h"              /* garbage collector               */
 #undef  INCLUDE_DECLARATION_PART
 
+#ifdef BOEHM_GC
+#include "gc/gc.h"
+#endif
+
+
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
@@ -449,7 +454,9 @@ TNumMsgsFuncBags        MsgsFuncBags;
 void            InitMsgsFuncBags (
     TNumMsgsFuncBags    msgs_func )
 {
+#ifndef BOEHM_GC
     MsgsFuncBags = msgs_func;
+#endif
 }
 
 
@@ -465,6 +472,7 @@ void InitSweepFuncBags (
     UInt                type,
     TNumSweepFuncBags    sweep_func )
 {
+#ifndef BOEHM_GC
 #ifdef CHECK_FOR_CLASH_IN_INIT_SWEEP_FUNC
     char                str[256];
 
@@ -480,6 +488,7 @@ void InitSweepFuncBags (
     }
 #endif
     TabSweepFuncBags[type] = sweep_func;
+#endif
 }
 
 #if ITANIUM
@@ -517,6 +526,7 @@ void InitMarkFuncBags (
     UInt                type,
     TNumMarkFuncBags    mark_func )
 {
+#ifndef BOEHM_GC
 #ifdef CHECK_FOR_CLASH_IN_INIT_MARK_FUNC
     char                str[256];
 
@@ -532,7 +542,9 @@ void InitMarkFuncBags (
     }
 #endif
     TabMarkFuncBags[type] = mark_func;
+#endif
 }
+
 
 void MarkNoSubBags (
     Bag                 bag )
@@ -633,6 +645,7 @@ void MarkBagWeakly(
 
 
 
+
 /****************************************************************************
 **
 *F  CallbackForAllBags( <func> ) call a C function on all non-zero mptrs
@@ -645,12 +658,14 @@ void MarkBagWeakly(
 void CallbackForAllBags(
      void (*func)(Bag) )
 {
+#ifndef BOEHM_GC
   Bag ptr;
   for (ptr = (Bag)MptrBags; ptr < (Bag)OldBags; ptr ++)
     if (*ptr != 0 && !IS_WEAK_DEAD_BAG(ptr) && (Bag)(*ptr) >= (Bag)OldBags)
       {
         (*func)(ptr);
       }
+#endif
 }
 
 
@@ -672,6 +687,7 @@ TNumGlobalBags GlobalBags;
 static UInt GlobalSortingStatus;
 Int WarnInitGlobalBag;
 
+#ifndef BOEHM_GC
 extern TNumAbortFuncBags   AbortFuncBags;
 
 void ClearGlobalBags ( void )
@@ -687,12 +703,13 @@ void ClearGlobalBags ( void )
   WarnInitGlobalBag = 0;
   return;
 }    
+#endif
 
 void InitGlobalBag (
     Bag *               addr,
     const Char *        cookie )
 {
-
+#ifndef BOEHM_GC
     if ( GlobalBags.nr == NR_GLOBAL_BAGS ) {
         (*AbortFuncBags)(
             "Panic: Gasman cannot handle so many global variables" );
@@ -716,10 +733,12 @@ void InitGlobalBag (
     GlobalBags.cookie[GlobalBags.nr] = cookie;
     GlobalBags.nr++;
     GlobalSortingStatus = 0;
+#endif
 }
 
 
 
+#ifndef BOEHM_GC
 static Int IsLessGlobal (
     const Char *	cookie1, 
     const Char *	cookie2,
@@ -737,11 +756,13 @@ static Int IsLessGlobal (
     return 1;
   return SyStrcmp(cookie1, cookie2) < 0;
 }
+#endif
 
 
 
 void SortGlobals( UInt byWhat )
 {
+#ifndef BOEHM_GC
   const Char *tmpcookie;
   Bag * tmpaddr;
   UInt len, h, i, k;
@@ -775,6 +796,7 @@ void SortGlobals( UInt byWhat )
   }
   GlobalSortingStatus = byWhat;
   return;
+#endif
 }
 
 
@@ -782,6 +804,7 @@ void SortGlobals( UInt byWhat )
 Bag * GlobalByCookie(
        const Char * cookie )
 {
+#ifndef BOEHM_GC
   UInt i,top,bottom,middle;
   Int res;
   if (cookie == 0L)
@@ -814,6 +837,9 @@ Bag * GlobalByCookie(
       }
       return (Bag *)0L;
     }
+#else
+    return (Bag *) 0;
+#endif /* !BOEHM_GC */
 }
                                       
 
@@ -822,6 +848,7 @@ extern TNumAllocFuncBags       AllocFuncBags;
 
 void StartRestoringBags( UInt nBags, UInt maxSize)
 {
+#ifndef BOEHM_GC
   UInt target;
   Bag *newmem;
 /*Bag *ptr; */
@@ -847,10 +874,12 @@ void StartRestoringBags( UInt nBags, UInt maxSize)
   SizeAllBags = 0;
   NrAllBags = 0;
   return;
+#endif
 }
 
 Bag NextBagRestoring( UInt size, UInt type)
 {
+#ifndef BOEHM_GC
   Bag bag;
   UInt i;
   *(Bag **)NextMptrRestoring = (AllocBags+HEADER_SIZE);
@@ -886,10 +915,14 @@ Bag NextBagRestoring( UInt size, UInt type)
   SizeAllBags += size;
   NrAllBags ++;
   return bag;
+#else
+  return 0;
+#endif
 }
 
 void FinishedRestoringBags( void )
 {
+#ifndef BOEHM_GC
   Bag p;
 /*  Bag *ptr; */
   YoungBags = AllocBags;
@@ -907,9 +940,11 @@ void FinishedRestoringBags( void )
   NrHalfDeadBags = 0;
   ChangedBags = 0;
   return;
+#endif
 }
 
 
+#ifndef BOEHM_GC
 /****************************************************************************
 **
 *F  InitFreeFuncBag(<type>,<free-func>) . . . . . .  install freeing function
@@ -932,6 +967,7 @@ void            InitFreeFuncBag (
     }
     TabFreeFuncBags[type] = free_func;
 }
+#endif
 
 
 /****************************************************************************
@@ -948,8 +984,10 @@ void            InitCollectFuncBags (
     TNumCollectFuncBags before_func,
     TNumCollectFuncBags after_func )
 {
+#ifndef BOEHM_GC
     BeforeCollectFuncBags = before_func;
     AfterCollectFuncBags  = after_func;
+#endif
 }
 
 
@@ -963,8 +1001,10 @@ void            InitCollectFuncBags (
 
 void FinishBags( void )
 {
+#ifndef BOEHM_GC
   (*AllocFuncBags)(-(sizeof(Bag)*SizeWorkspace/1024),2);
   return;
+#endif
 }
 
 /****************************************************************************
@@ -1000,6 +1040,7 @@ void            InitBags (
     UInt                dirty,
     TNumAbortFuncBags   abort_func )
 {
+#ifndef BOEHM_GC
     Bag *               p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
 
@@ -1060,7 +1101,11 @@ void            InitBags (
 
     /* Set ChangedBags to a proper initial value */
     ChangedBags = 0;
-
+#else /* BOEHM_GC */
+    GC_all_interior_pointers = 0;
+    GC_init();
+    GC_register_displacement(HEADER_SIZE*sizeof(Bag));
+#endif /* BOEHM_GC */
 }
 
 
@@ -1109,6 +1154,7 @@ Bag NewBag (
     Bag                 bag;            /* identifier of the new bag       */
     Bag *               dst;            /* destination of the new bag      */
 
+#ifndef BOEHM_GC
 #ifdef TREMBLE_HEAP
     CollectBags(0,0);
 #endif
@@ -1137,7 +1183,10 @@ Bag NewBag (
     /* allocate the storage for the bag                                    */
     dst       = AllocBags;
     AllocBags = dst + HEADER_SIZE + WORDS_BAG(size);
-
+#else /* BOEHM_GC */
+    dst = GC_malloc(HEADER_SIZE*sizeof(Bag) + size);
+    bag = GC_malloc(sizeof(Bag *));
+#endif /* BOEHM_GC */
 
     /* enter size-type words                                               */
 #ifdef USE_NEWSHAPE
@@ -1296,7 +1345,11 @@ void            RetypeBag (
     UInt                old_size;       /* old size of the bag             */
     Bag *               dst;            /* destination in copying          */
     Bag *               src;            /* source in copying               */
+#ifndef BOEHM_GC
     Bag *               end;            /* end in copying                  */
+#else
+    UInt                alloc_size;
+#endif
 
     /* check the size                                                      */
     
@@ -1316,7 +1369,13 @@ void            RetypeBag (
     SizeAllBags             += new_size - old_size;
 
     /* if the real size of the bag doesn't change                          */
+#ifndef BOEHM_GC
     if ( WORDS_BAG(new_size) == WORDS_BAG(old_size) ) {
+#else
+    alloc_size = GC_size(PTR_BAG(bag)-HEADER_SIZE);
+    if ( HEADER_SIZE*sizeof(Bag) + new_size <= alloc_size
+         && HEADER_SIZE*sizeof(Bag) + new_size >= alloc_size * 3/4) {
+#endif
 
         /* change the size word                                            */
 #ifdef USE_NEWSHAPE
@@ -1329,6 +1388,7 @@ void            RetypeBag (
     /* if the bag is shrunk                                                */
     /* we must not shrink the last bag by moving 'AllocBags',              */
     /* since the remainder may not be zero filled                          */
+#ifndef BOEHM_GC
     else if ( WORDS_BAG(new_size) < WORDS_BAG(old_size) ) {
 
       /* leave magic size-type word for the sweeper, type must be 255    */
@@ -1377,10 +1437,11 @@ void            RetypeBag (
       *(*bag-2) = new_size;
 #endif
     }
-
+#endif /* !BOEHM_GC */
     /* if the bag is enlarged                                              */
     else {
 
+#ifndef BOEHM_GC
         /* check that enough storage for the new bag is available          */
         if ( SizeAllocationArea <  HEADER_SIZE+WORDS_BAG(new_size)
           && CollectBags( new_size, 0 ) == 0 ) {
@@ -1390,14 +1451,21 @@ void            RetypeBag (
         /* allocate the storage for the bag                                */
         dst       = AllocBags;
         AllocBags = dst + HEADER_SIZE + WORDS_BAG(new_size);
+#else
+        dst       = GC_malloc( HEADER_SIZE*sizeof(Bag) + new_size );
+#endif
 	
         /* leave magic size-type word  for the sweeper, type must be 255   */
 #ifdef USE_NEWSHAPE
+#ifndef BOEHM_GC
 	*(*bag-2) = (((WORDS_BAG(old_size)+1) * sizeof(Bag))) << 16 | 255;
+#endif
 	*dst++ = (Bag)(new_size << 16 | type);
 #else
+#ifndef BOEHM_GC
 	*(*bag-3) = 255; 
         *(*bag-2) = (((WORDS_BAG(old_size)+2) * sizeof(Bag)));
+#endif
 	
         /* enter the new size-type word                                    */
 
@@ -1406,6 +1474,7 @@ void            RetypeBag (
 #endif
 	
 
+#ifndef BOEHM_GC
         /* if the bag is already on the changed bags list, keep it there   */
         if ( PTR_BAG(bag)[-1] != bag ) {
             *dst++ = PTR_BAG(bag)[-1];
@@ -1420,15 +1489,24 @@ void            RetypeBag (
         else {
             *dst++ = bag;
         }
-
+#else
+        *dst++ = bag;
+#endif
         /* set the masterpointer                                           */
         src = PTR_BAG(bag);
+#ifndef BOEHM_GC
         end = src + WORDS_BAG(old_size);
+#endif
         PTR_BAG(bag) = dst;
 
+#ifndef BOEHM_GC
         /* copy the contents of the bag                                    */
         while ( src < end )
             *dst++ = *src++;
+#else
+        if (dst != src)
+	    memcpy( dst, src, old_size < new_size ? old_size : new_size );
+#endif
 
     }
 
@@ -1638,6 +1716,7 @@ void            RetypeBag (
 **  the sweep functions have done their work then no  references to these bag
 **  identifiers can exist, and so 'CollectBags' frees these masterpointers.  
 */
+#ifndef BOEHM_GC
 #include <setjmp.h>
 
 jmp_buf RegsBags;
@@ -1713,7 +1792,6 @@ void GenStackFuncBags ()
         MARK_BAG( *p );
 
 }
-
 UInt FullBags;
 
 #ifdef  DEBUG_DEADSONS_BAGS
@@ -1729,11 +1807,14 @@ not look like valid pointers, and should be congruent to 1 mod sizeof(Bag) */
 Bag * NewWeakDeadBagMarker = (Bag *)(1000*sizeof(Bag) + 1L);
 Bag * OldWeakDeadBagMarker = (Bag *)(1001*sizeof(Bag) + 1L); 
 
+#endif /* !BOEHM_GC */
+
 
 UInt CollectBags (
     UInt                size,
     UInt                full )
 {
+#ifndef BOEHM_GC
     Bag                 first;          /* first bag on a linked list      */
     Bag *               p;              /* loop variable                   */
     Bag *               dst;            /* destination in sweeping         */
@@ -2342,6 +2423,10 @@ again:
     
     /* return success                                                      */
     return 1;
+#else
+    GC_gcollect();
+    return 1;
+#endif
 }
 
 
@@ -2351,6 +2436,7 @@ again:
 **
 */
 
+#ifndef BOEHM_GC
 void CheckMasterPointers( void )
 {
   Bag *ptr;
@@ -2365,6 +2451,7 @@ void CheckMasterPointers( void )
         (*AbortFuncBags)("Bad master pointer detected in check");
     }
 }
+#endif
 
 
 /****************************************************************************
